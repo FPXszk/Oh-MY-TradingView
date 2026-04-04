@@ -1,0 +1,8 @@
+{
+  "id": "mag7",
+  "name": "Magnificent 7",
+  "canonical_symbols": ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA"],
+  "symbol_aliases": {},
+  "exchange_candidates": ["NASDAQ"],
+  "notes": "初回は GOOGL を canonical とする。GOOG は別銘柄なので alias 吸収しない。TradingView 上の exchange prefix 差分は後続実装で吸収する。"
+}

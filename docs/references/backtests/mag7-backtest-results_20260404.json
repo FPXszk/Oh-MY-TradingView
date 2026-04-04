@@ -1,0 +1,2717 @@
+{
+  "generated_at": "2026-04-04T10:34:04.937Z",
+  "endpoint": {
+    "host": "172.31.144.1",
+    "port": "9223"
+  },
+  "defaults": {
+    "pine_version": 6,
+    "direction": "long_only",
+    "qty_type": "percent_of_equity",
+    "qty_value": 100,
+    "initial_capital": 10000,
+    "commission": 0,
+    "slippage": 0,
+    "date_range": {
+      "from": "2015-01-01",
+      "to": "2025-12-31"
+    }
+  },
+  "selected_strategy_ids": [
+    "sma-cross-5-20",
+    "ema-cross-9-21",
+    "macd-signal",
+    "rsi-mean-reversion",
+    "bb-mean-revert",
+    "donchian-breakout",
+    "supertrend-atr",
+    "sma-200-trend-filter",
+    "connors-rsi-pullback",
+    "adx-ema-filter"
+  ],
+  "selected_symbols": [
+    "AAPL",
+    "MSFT",
+    "GOOGL",
+    "AMZN",
+    "META",
+    "NVDA",
+    "TSLA"
+  ],
+  "runs": [
+    {
+      "strategy_id": "sma-cross-5-20",
+      "strategy_name": "SMA Cross 5/20",
+      "symbol": "AAPL",
+      "started_at": "2026-04-04T10:34:04.938Z",
+      "finished_at": "2026-04-04T10:34:17.084Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:AAPL",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 14,
+              "column": 16,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 17,
+              "column": 54,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 27865.180000000015,
+          "closed_trades": 43,
+          "percent_profitable": 48.84,
+          "profit_factor": 2.221644784029154,
+          "max_drawdown": 9294.159999999996
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "sma-cross-5-20",
+      "strategy_name": "SMA Cross 5/20",
+      "symbol": "MSFT",
+      "started_at": "2026-04-04T10:34:17.084Z",
+      "finished_at": "2026-04-04T10:34:28.989Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:MSFT",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 14,
+              "column": 16,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 17,
+              "column": 54,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 24194.60000000001,
+          "closed_trades": 65,
+          "percent_profitable": 47.69,
+          "profit_factor": 2.095617096890471,
+          "max_drawdown": 8441.749999999993
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "sma-cross-5-20",
+      "strategy_name": "SMA Cross 5/20",
+      "symbol": "GOOGL",
+      "started_at": "2026-04-04T10:34:28.990Z",
+      "finished_at": "2026-04-04T10:34:40.991Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:GOOGL",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 14,
+              "column": 16,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 17,
+              "column": 54,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -970.1200000000026,
+          "closed_trades": 61,
+          "percent_profitable": 29.51,
+          "profit_factor": 0.9131888329906057,
+          "max_drawdown": 4400.610000000002
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "sma-cross-5-20",
+      "strategy_name": "SMA Cross 5/20",
+      "symbol": "AMZN",
+      "started_at": "2026-04-04T10:34:40.992Z",
+      "finished_at": "2026-04-04T10:34:52.861Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:AMZN",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 14,
+              "column": 16,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 17,
+              "column": 54,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 34101.58999999998,
+          "closed_trades": 46,
+          "percent_profitable": 56.52,
+          "profit_factor": 2.9980190652519063,
+          "max_drawdown": 5585.980000000007
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "sma-cross-5-20",
+      "strategy_name": "SMA Cross 5/20",
+      "symbol": "META",
+      "started_at": "2026-04-04T10:34:52.861Z",
+      "finished_at": "2026-04-04T10:35:04.684Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:META",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 14,
+              "column": 16,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 17,
+              "column": 54,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 11812.880000000001,
+          "closed_trades": 67,
+          "percent_profitable": 40.3,
+          "profit_factor": 1.5557197898094266,
+          "max_drawdown": 5535.960000000003
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "sma-cross-5-20",
+      "strategy_name": "SMA Cross 5/20",
+      "symbol": "NVDA",
+      "started_at": "2026-04-04T10:35:04.684Z",
+      "finished_at": "2026-04-04T10:35:15.906Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:NVDA",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 14,
+              "column": 16,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 17,
+              "column": 54,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 50464.67,
+          "closed_trades": 43,
+          "percent_profitable": 51.16,
+          "profit_factor": 2.053394827863326,
+          "max_drawdown": 18855.20000000001
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "sma-cross-5-20",
+      "strategy_name": "SMA Cross 5/20",
+      "symbol": "TSLA",
+      "started_at": "2026-04-04T10:35:15.907Z",
+      "finished_at": "2026-04-04T10:35:27.814Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:TSLA",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 14,
+              "column": 16,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 17,
+              "column": 54,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 1493.1300000000083,
+          "closed_trades": 50,
+          "percent_profitable": 32,
+          "profit_factor": 1.0563853811063113,
+          "max_drawdown": 7571.149999999998
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "ema-cross-9-21",
+      "strategy_name": "EMA Cross 9/21",
+      "symbol": "AAPL",
+      "started_at": "2026-04-04T10:35:27.814Z",
+      "finished_at": "2026-04-04T10:35:39.773Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:AAPL",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 14,
+              "column": 16,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 17,
+              "column": 54,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 6105.299999999999,
+          "closed_trades": 33,
+          "percent_profitable": 45.45,
+          "profit_factor": 1.4872545889864326,
+          "max_drawdown": 6511.100000000002
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "ema-cross-9-21",
+      "strategy_name": "EMA Cross 9/21",
+      "symbol": "MSFT",
+      "started_at": "2026-04-04T10:35:39.777Z",
+      "finished_at": "2026-04-04T10:35:51.789Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:MSFT",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 14,
+              "column": 16,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 17,
+              "column": 54,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 9155.39,
+          "closed_trades": 47,
+          "percent_profitable": 34.04,
+          "profit_factor": 1.6987108551612347,
+          "max_drawdown": 4319.689999999999
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "ema-cross-9-21",
+      "strategy_name": "EMA Cross 9/21",
+      "symbol": "GOOGL",
+      "started_at": "2026-04-04T10:35:51.790Z",
+      "finished_at": "2026-04-04T10:36:03.821Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:GOOGL",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 14,
+              "column": 16,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 17,
+              "column": 54,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 10126.070000000003,
+          "closed_trades": 41,
+          "percent_profitable": 39.02,
+          "profit_factor": 2.1241945511468354,
+          "max_drawdown": 4172.550000000003
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "ema-cross-9-21",
+      "strategy_name": "EMA Cross 9/21",
+      "symbol": "AMZN",
+      "started_at": "2026-04-04T10:36:03.821Z",
+      "finished_at": "2026-04-04T10:36:15.718Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:AMZN",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 14,
+              "column": 16,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 17,
+              "column": 54,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 23162.220000000016,
+          "closed_trades": 30,
+          "percent_profitable": 36.67,
+          "profit_factor": 2.2950777782934244,
+          "max_drawdown": 11340.919999999998
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "ema-cross-9-21",
+      "strategy_name": "EMA Cross 9/21",
+      "symbol": "META",
+      "started_at": "2026-04-04T10:36:15.718Z",
+      "finished_at": "2026-04-04T10:36:27.627Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:META",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 14,
+              "column": 16,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 17,
+              "column": 54,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 22867.06,
+          "closed_trades": 45,
+          "percent_profitable": 28.89,
+          "profit_factor": 2.07503809189349,
+          "max_drawdown": 8066.880000000005
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "ema-cross-9-21",
+      "strategy_name": "EMA Cross 9/21",
+      "symbol": "NVDA",
+      "started_at": "2026-04-04T10:36:27.628Z",
+      "finished_at": "2026-04-04T10:36:38.863Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:NVDA",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 14,
+              "column": 16,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 17,
+              "column": 54,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 84988.47000000002,
+          "closed_trades": 24,
+          "percent_profitable": 41.67,
+          "profit_factor": 2.3102204274734697,
+          "max_drawdown": 48695.69
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "ema-cross-9-21",
+      "strategy_name": "EMA Cross 9/21",
+      "symbol": "TSLA",
+      "started_at": "2026-04-04T10:36:38.863Z",
+      "finished_at": "2026-04-04T10:36:50.723Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:TSLA",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 14,
+              "column": 16,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 17,
+              "column": 54,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 13328.930000000004,
+          "closed_trades": 31,
+          "percent_profitable": 29.03,
+          "profit_factor": 1.7560274347115357,
+          "max_drawdown": 8592.000000000004
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "macd-signal",
+      "strategy_name": "MACD Signal Cross",
+      "symbol": "AAPL",
+      "started_at": "2026-04-04T10:36:50.723Z",
+      "finished_at": "2026-04-04T10:37:02.751Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:AAPL",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 14,
+              "column": 16,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 17,
+              "column": 54,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 11056.07999999999,
+          "closed_trades": 58,
+          "percent_profitable": 56.9,
+          "profit_factor": 1.5898114228190707,
+          "max_drawdown": 6498.960000000006
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "macd-signal",
+      "strategy_name": "MACD Signal Cross",
+      "symbol": "MSFT",
+      "started_at": "2026-04-04T10:37:02.752Z",
+      "finished_at": "2026-04-04T10:37:14.568Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:MSFT",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 14,
+              "column": 16,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 17,
+              "column": 54,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 8570.8,
+          "closed_trades": 84,
+          "percent_profitable": 44.05,
+          "profit_factor": 1.3723071068834332,
+          "max_drawdown": 5391.709999999999
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "macd-signal",
+      "strategy_name": "MACD Signal Cross",
+      "symbol": "GOOGL",
+      "started_at": "2026-04-04T10:37:14.569Z",
+      "finished_at": "2026-04-04T10:37:26.570Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:GOOGL",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 14,
+              "column": 16,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 17,
+              "column": 54,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 8038.860000000015,
+          "closed_trades": 66,
+          "percent_profitable": 50,
+          "profit_factor": 1.8338504146504666,
+          "max_drawdown": 2769.409999999998
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "macd-signal",
+      "strategy_name": "MACD Signal Cross",
+      "symbol": "AMZN",
+      "started_at": "2026-04-04T10:37:26.571Z",
+      "finished_at": "2026-04-04T10:37:38.547Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:AMZN",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 14,
+              "column": 16,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 17,
+              "column": 54,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 9084.720000000007,
+          "closed_trades": 62,
+          "percent_profitable": 46.77,
+          "profit_factor": 1.7179196205537601,
+          "max_drawdown": 3047.3899999999994
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "macd-signal",
+      "strategy_name": "MACD Signal Cross",
+      "symbol": "META",
+      "started_at": "2026-04-04T10:37:38.548Z",
+      "finished_at": "2026-04-04T10:37:50.566Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:META",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 14,
+              "column": 16,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 17,
+              "column": 54,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 2296.3199999999997,
+          "closed_trades": 91,
+          "percent_profitable": 38.46,
+          "profit_factor": 1.094128603729531,
+          "max_drawdown": 6950.419999999997
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "macd-signal",
+      "strategy_name": "MACD Signal Cross",
+      "symbol": "NVDA",
+      "started_at": "2026-04-04T10:37:50.566Z",
+      "finished_at": "2026-04-04T10:38:01.662Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:NVDA",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 14,
+              "column": 16,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 17,
+              "column": 54,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 15755.21999999999,
+          "closed_trades": 65,
+          "percent_profitable": 43.08,
+          "profit_factor": 1.5657771885270386,
+          "max_drawdown": 8009.650000000001
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "macd-signal",
+      "strategy_name": "MACD Signal Cross",
+      "symbol": "TSLA",
+      "started_at": "2026-04-04T10:38:01.667Z",
+      "finished_at": "2026-04-04T10:38:13.593Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:TSLA",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 14,
+              "column": 16,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 17,
+              "column": 54,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 26295.90000000001,
+          "closed_trades": 54,
+          "percent_profitable": 42.59,
+          "profit_factor": 1.5565266307767425,
+          "max_drawdown": 17347.190000000002
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "rsi-mean-reversion",
+      "strategy_name": "RSI Oversold Bounce",
+      "symbol": "AAPL",
+      "started_at": "2026-04-04T10:38:13.594Z",
+      "finished_at": "2026-04-04T10:38:25.429Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:AAPL",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 5979.340000000002,
+          "closed_trades": 12,
+          "percent_profitable": 75,
+          "profit_factor": 8.163631571380636,
+          "max_drawdown": 3458.76
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "rsi-mean-reversion",
+      "strategy_name": "RSI Oversold Bounce",
+      "symbol": "MSFT",
+      "started_at": "2026-04-04T10:38:25.431Z",
+      "finished_at": "2026-04-04T10:38:37.313Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:MSFT",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 4594.259999999999,
+          "closed_trades": 7,
+          "percent_profitable": 71.43,
+          "profit_factor": 12.697372441185461,
+          "max_drawdown": 1742.9300000000003
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "rsi-mean-reversion",
+      "strategy_name": "RSI Oversold Bounce",
+      "symbol": "GOOGL",
+      "started_at": "2026-04-04T10:38:37.313Z",
+      "finished_at": "2026-04-04T10:38:49.146Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:GOOGL",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 3900.529999999997,
+          "closed_trades": 9,
+          "percent_profitable": 66.67,
+          "profit_factor": 4.5737138668743365,
+          "max_drawdown": 2549.76
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "rsi-mean-reversion",
+      "strategy_name": "RSI Oversold Bounce",
+      "symbol": "AMZN",
+      "started_at": "2026-04-04T10:38:49.146Z",
+      "finished_at": "2026-04-04T10:39:01.063Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:AMZN",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 8560.57,
+          "closed_trades": 11,
+          "percent_profitable": 90.91,
+          "profit_factor": 61.87300007110855,
+          "max_drawdown": 4159.760000000002
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "rsi-mean-reversion",
+      "strategy_name": "RSI Oversold Bounce",
+      "symbol": "META",
+      "started_at": "2026-04-04T10:39:01.063Z",
+      "finished_at": "2026-04-04T10:39:12.979Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:META",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 3393.4199999999973,
+          "closed_trades": 12,
+          "percent_profitable": 58.33,
+          "profit_factor": 1.7715474512300478,
+          "max_drawdown": 4432.010000000001
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "rsi-mean-reversion",
+      "strategy_name": "RSI Oversold Bounce",
+      "symbol": "NVDA",
+      "started_at": "2026-04-04T10:39:12.979Z",
+      "finished_at": "2026-04-04T10:39:24.091Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:NVDA",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 4555.449999999998,
+          "closed_trades": 6,
+          "percent_profitable": 83.33,
+          "profit_factor": 2.954290004290004,
+          "max_drawdown": 4149.179999999999
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "rsi-mean-reversion",
+      "strategy_name": "RSI Oversold Bounce",
+      "symbol": "TSLA",
+      "started_at": "2026-04-04T10:39:24.091Z",
+      "finished_at": "2026-04-04T10:39:35.950Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:TSLA",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 24150.569999999996,
+          "closed_trades": 14,
+          "percent_profitable": 78.57,
+          "profit_factor": 2.214562028708249,
+          "max_drawdown": 21087.780000000002
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "bb-mean-revert",
+      "strategy_name": "Bollinger Mean Reversion",
+      "symbol": "AAPL",
+      "started_at": "2026-04-04T10:39:35.950Z",
+      "finished_at": "2026-04-04T10:39:47.802Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:AAPL",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 2012.1599999999953,
+          "closed_trades": 34,
+          "percent_profitable": 73.53,
+          "profit_factor": 1.3558215162945153,
+          "max_drawdown": 5029.220000000001
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "bb-mean-revert",
+      "strategy_name": "Bollinger Mean Reversion",
+      "symbol": "MSFT",
+      "started_at": "2026-04-04T10:39:47.803Z",
+      "finished_at": "2026-04-04T10:39:59.667Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:MSFT",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 18022.019999999997,
+          "closed_trades": 34,
+          "percent_profitable": 82.35,
+          "profit_factor": 5.929490475825774,
+          "max_drawdown": 3203.970000000001
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "bb-mean-revert",
+      "strategy_name": "Bollinger Mean Reversion",
+      "symbol": "GOOGL",
+      "started_at": "2026-04-04T10:39:59.668Z",
+      "finished_at": "2026-04-04T10:40:11.546Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:GOOGL",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 12628.060000000001,
+          "closed_trades": 31,
+          "percent_profitable": 83.87,
+          "profit_factor": 3.8956732500040108,
+          "max_drawdown": 4574.560000000001
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "bb-mean-revert",
+      "strategy_name": "Bollinger Mean Reversion",
+      "symbol": "AMZN",
+      "started_at": "2026-04-04T10:40:11.547Z",
+      "finished_at": "2026-04-04T10:40:23.556Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:AMZN",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 11247.150000000005,
+          "closed_trades": 30,
+          "percent_profitable": 66.67,
+          "profit_factor": 2.6135032077398934,
+          "max_drawdown": 3896.2700000000004
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "bb-mean-revert",
+      "strategy_name": "Bollinger Mean Reversion",
+      "symbol": "META",
+      "started_at": "2026-04-04T10:40:23.557Z",
+      "finished_at": "2026-04-04T10:40:35.606Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:META",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 15067.810000000005,
+          "closed_trades": 38,
+          "percent_profitable": 73.68,
+          "profit_factor": 2.2719906127462366,
+          "max_drawdown": 5348.01
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "bb-mean-revert",
+      "strategy_name": "Bollinger Mean Reversion",
+      "symbol": "NVDA",
+      "started_at": "2026-04-04T10:40:35.607Z",
+      "finished_at": "2026-04-04T10:40:46.742Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:NVDA",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 20298.280000000006,
+          "closed_trades": 29,
+          "percent_profitable": 86.21,
+          "profit_factor": 2.4083323446418823,
+          "max_drawdown": 11510.43
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "bb-mean-revert",
+      "strategy_name": "Bollinger Mean Reversion",
+      "symbol": "TSLA",
+      "started_at": "2026-04-04T10:40:46.743Z",
+      "finished_at": "2026-04-04T10:40:58.659Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:TSLA",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 12415.620000000004,
+          "closed_trades": 33,
+          "percent_profitable": 69.7,
+          "profit_factor": 1.7594162298380935,
+          "max_drawdown": 9743.299999999997
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "donchian-breakout",
+      "strategy_name": "Donchian Breakout 20/10",
+      "symbol": "AAPL",
+      "started_at": "2026-04-04T10:40:58.660Z",
+      "finished_at": "2026-04-04T10:41:10.604Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:AAPL",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 37458.65000000001,
+          "closed_trades": 39,
+          "percent_profitable": 64.1,
+          "profit_factor": 3.375541190743301,
+          "max_drawdown": 5806.5899999999965
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "donchian-breakout",
+      "strategy_name": "Donchian Breakout 20/10",
+      "symbol": "MSFT",
+      "started_at": "2026-04-04T10:41:10.605Z",
+      "finished_at": "2026-04-04T10:41:22.539Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:MSFT",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 9816.190000000002,
+          "closed_trades": 48,
+          "percent_profitable": 39.58,
+          "profit_factor": 1.900302754876775,
+          "max_drawdown": 2483.2299999999977
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "donchian-breakout",
+      "strategy_name": "Donchian Breakout 20/10",
+      "symbol": "GOOGL",
+      "started_at": "2026-04-04T10:41:22.541Z",
+      "finished_at": "2026-04-04T10:41:34.609Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:GOOGL",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 3765.6799999999985,
+          "closed_trades": 52,
+          "percent_profitable": 44.23,
+          "profit_factor": 1.2496377095020212,
+          "max_drawdown": 6120.6300000000065
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "donchian-breakout",
+      "strategy_name": "Donchian Breakout 20/10",
+      "symbol": "AMZN",
+      "started_at": "2026-04-04T10:41:34.611Z",
+      "finished_at": "2026-04-04T10:41:46.503Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:AMZN",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 26921.000000000007,
+          "closed_trades": 44,
+          "percent_profitable": 56.82,
+          "profit_factor": 2.1789564958440275,
+          "max_drawdown": 5049.3299999999945
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "donchian-breakout",
+      "strategy_name": "Donchian Breakout 20/10",
+      "symbol": "META",
+      "started_at": "2026-04-04T10:41:46.504Z",
+      "finished_at": "2026-04-04T10:41:58.414Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:META",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 20109.469999999998,
+          "closed_trades": 48,
+          "percent_profitable": 45.83,
+          "profit_factor": 2.0510403012190506,
+          "max_drawdown": 6695.8499999999985
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "donchian-breakout",
+      "strategy_name": "Donchian Breakout 20/10",
+      "symbol": "NVDA",
+      "started_at": "2026-04-04T10:41:58.415Z",
+      "finished_at": "2026-04-04T10:42:09.537Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:NVDA",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 162788.12,
+          "closed_trades": 42,
+          "percent_profitable": 50,
+          "profit_factor": 2.341466222456218,
+          "max_drawdown": 51122.19
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "donchian-breakout",
+      "strategy_name": "Donchian Breakout 20/10",
+      "symbol": "TSLA",
+      "started_at": "2026-04-04T10:42:09.538Z",
+      "finished_at": "2026-04-04T10:42:21.421Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:TSLA",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 48293.64,
+          "closed_trades": 40,
+          "percent_profitable": 40,
+          "profit_factor": 1.765438575608584,
+          "max_drawdown": 17474.09000000001
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "supertrend-atr",
+      "strategy_name": "Supertrend ATR 10/3",
+      "symbol": "AAPL",
+      "started_at": "2026-04-04T10:42:21.421Z",
+      "finished_at": "2026-04-04T10:42:33.377Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:AAPL",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 12,
+              "column": 16,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 15,
+              "column": 54,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 44020.859999999986,
+          "closed_trades": 27,
+          "percent_profitable": 55.56,
+          "profit_factor": 2.697425377594576,
+          "max_drawdown": 10525.490000000005
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "supertrend-atr",
+      "strategy_name": "Supertrend ATR 10/3",
+      "symbol": "MSFT",
+      "started_at": "2026-04-04T10:42:33.379Z",
+      "finished_at": "2026-04-04T10:42:45.269Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:MSFT",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 12,
+              "column": 16,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 15,
+              "column": 54,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 10887.919999999998,
+          "closed_trades": 28,
+          "percent_profitable": 53.57,
+          "profit_factor": 1.991228365653794,
+          "max_drawdown": 3793.6600000000035
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "supertrend-atr",
+      "strategy_name": "Supertrend ATR 10/3",
+      "symbol": "GOOGL",
+      "started_at": "2026-04-04T10:42:45.271Z",
+      "finished_at": "2026-04-04T10:42:57.177Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:GOOGL",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 12,
+              "column": 16,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 15,
+              "column": 54,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 5340.2199999999975,
+          "closed_trades": 28,
+          "percent_profitable": 53.57,
+          "profit_factor": 1.7300618613076313,
+          "max_drawdown": 4028.4000000000024
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "supertrend-atr",
+      "strategy_name": "Supertrend ATR 10/3",
+      "symbol": "AMZN",
+      "started_at": "2026-04-04T10:42:57.178Z",
+      "finished_at": "2026-04-04T10:43:09.027Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:AMZN",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 12,
+              "column": 16,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 15,
+              "column": 54,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 1279.5699999999997,
+          "closed_trades": 27,
+          "percent_profitable": 51.85,
+          "profit_factor": 1.1332974281618775,
+          "max_drawdown": 8019.900000000001
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "supertrend-atr",
+      "strategy_name": "Supertrend ATR 10/3",
+      "symbol": "META",
+      "started_at": "2026-04-04T10:43:09.028Z",
+      "finished_at": "2026-04-04T10:43:20.990Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:META",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 12,
+              "column": 16,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 15,
+              "column": 54,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 51640.70999999999,
+          "closed_trades": 34,
+          "percent_profitable": 52.94,
+          "profit_factor": 3.6924445746736407,
+          "max_drawdown": 8262.51
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "supertrend-atr",
+      "strategy_name": "Supertrend ATR 10/3",
+      "symbol": "NVDA",
+      "started_at": "2026-04-04T10:43:20.992Z",
+      "finished_at": "2026-04-04T10:43:32.186Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:NVDA",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 12,
+              "column": 16,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 15,
+              "column": 54,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 189147.94,
+          "closed_trades": 25,
+          "percent_profitable": 44,
+          "profit_factor": 5.276415205890778,
+          "max_drawdown": 39451.23999999999
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "supertrend-atr",
+      "strategy_name": "Supertrend ATR 10/3",
+      "symbol": "TSLA",
+      "started_at": "2026-04-04T10:43:32.189Z",
+      "finished_at": "2026-04-04T10:43:44.018Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:TSLA",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 2,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 12,
+              "column": 16,
+              "message": "The \"ta.crossunder()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            },
+            {
+              "line": 15,
+              "column": 54,
+              "message": "The \"ta.crossover()\" call inside the conditional expression might not execute on every bar, which can cause inconsistent calculations because the function depends on historical results. For consistency, assign the call's result to a global variable and use that variable in the expression instead.",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 1249.6400000000012,
+          "closed_trades": 29,
+          "percent_profitable": 31.03,
+          "profit_factor": 1.0868059342349397,
+          "max_drawdown": 4772.2699999999995
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "sma-200-trend-filter",
+      "strategy_name": "200 Day SMA Trend Filter",
+      "symbol": "AAPL",
+      "started_at": "2026-04-04T10:43:44.019Z",
+      "finished_at": "2026-04-04T10:43:55.949Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:AAPL",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 11595.709999999995,
+          "closed_trades": 18,
+          "percent_profitable": 38.89,
+          "profit_factor": 4.272121090696679,
+          "max_drawdown": 1895.5200000000023
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "sma-200-trend-filter",
+      "strategy_name": "200 Day SMA Trend Filter",
+      "symbol": "MSFT",
+      "started_at": "2026-04-04T10:43:55.949Z",
+      "finished_at": "2026-04-04T10:44:07.848Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:MSFT",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 7614.0900000000065,
+          "closed_trades": 34,
+          "percent_profitable": 29.41,
+          "profit_factor": 2.0709635041219108,
+          "max_drawdown": 4634.479999999992
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "sma-200-trend-filter",
+      "strategy_name": "200 Day SMA Trend Filter",
+      "symbol": "GOOGL",
+      "started_at": "2026-04-04T10:44:07.851Z",
+      "finished_at": "2026-04-04T10:44:19.798Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:GOOGL",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 41191.11,
+          "closed_trades": 33,
+          "percent_profitable": 30.3,
+          "profit_factor": 8.052100935289852,
+          "max_drawdown": 2026.8200000000015
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "sma-200-trend-filter",
+      "strategy_name": "200 Day SMA Trend Filter",
+      "symbol": "AMZN",
+      "started_at": "2026-04-04T10:44:19.799Z",
+      "finished_at": "2026-04-04T10:44:31.646Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:AMZN",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 20325.93,
+          "closed_trades": 21,
+          "percent_profitable": 23.81,
+          "profit_factor": 2.3564519110581976,
+          "max_drawdown": 15318.980000000003
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "sma-200-trend-filter",
+      "strategy_name": "200 Day SMA Trend Filter",
+      "symbol": "META",
+      "started_at": "2026-04-04T10:44:31.652Z",
+      "finished_at": "2026-04-04T10:44:43.564Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:META",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 953.2999999999975,
+          "closed_trades": 19,
+          "percent_profitable": 26.32,
+          "profit_factor": 1.1937837947717196,
+          "max_drawdown": 3945.250000000002
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "sma-200-trend-filter",
+      "strategy_name": "200 Day SMA Trend Filter",
+      "symbol": "NVDA",
+      "started_at": "2026-04-04T10:44:43.565Z",
+      "finished_at": "2026-04-04T10:44:54.771Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:NVDA",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 2940215.11,
+          "closed_trades": 10,
+          "percent_profitable": 60,
+          "profit_factor": 10.252333100909073,
+          "max_drawdown": 295665.25
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "sma-200-trend-filter",
+      "strategy_name": "200 Day SMA Trend Filter",
+      "symbol": "TSLA",
+      "started_at": "2026-04-04T10:44:54.771Z",
+      "finished_at": "2026-04-04T10:45:06.707Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:TSLA",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 6208.299999999996,
+          "closed_trades": 41,
+          "percent_profitable": 24.39,
+          "profit_factor": 1.5248323838395277,
+          "max_drawdown": 4406.640000000001
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "connors-rsi-pullback",
+      "strategy_name": "Connors RSI Pullback",
+      "symbol": "AAPL",
+      "started_at": "2026-04-04T10:45:06.709Z",
+      "finished_at": "2026-04-04T10:45:18.664Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:AAPL",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 12488.02,
+          "closed_trades": 61,
+          "percent_profitable": 75.41,
+          "profit_factor": 3.190846109447395,
+          "max_drawdown": 2587.1099999999933
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "connors-rsi-pullback",
+      "strategy_name": "Connors RSI Pullback",
+      "symbol": "MSFT",
+      "started_at": "2026-04-04T10:45:18.665Z",
+      "finished_at": "2026-04-04T10:45:30.434Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:MSFT",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 11629.799999999997,
+          "closed_trades": 62,
+          "percent_profitable": 77.42,
+          "profit_factor": 3.233497663717429,
+          "max_drawdown": 2287.59
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "connors-rsi-pullback",
+      "strategy_name": "Connors RSI Pullback",
+      "symbol": "GOOGL",
+      "started_at": "2026-04-04T10:45:30.436Z",
+      "finished_at": "2026-04-04T10:45:42.337Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:GOOGL",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 11179.860000000022,
+          "closed_trades": 64,
+          "percent_profitable": 75,
+          "profit_factor": 2.4709509856679204,
+          "max_drawdown": 3218.989999999998
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "connors-rsi-pullback",
+      "strategy_name": "Connors RSI Pullback",
+      "symbol": "AMZN",
+      "started_at": "2026-04-04T10:45:42.338Z",
+      "finished_at": "2026-04-04T10:45:54.163Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:AMZN",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 5479.919999999996,
+          "closed_trades": 56,
+          "percent_profitable": 62.5,
+          "profit_factor": 1.5318673767393913,
+          "max_drawdown": 3556.079999999998
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "connors-rsi-pullback",
+      "strategy_name": "Connors RSI Pullback",
+      "symbol": "META",
+      "started_at": "2026-04-04T10:45:54.163Z",
+      "finished_at": "2026-04-04T10:46:05.995Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:META",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 32732.169999999966,
+          "closed_trades": 73,
+          "percent_profitable": 79.45,
+          "profit_factor": 3.3641529194233355,
+          "max_drawdown": 6120
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "connors-rsi-pullback",
+      "strategy_name": "Connors RSI Pullback",
+      "symbol": "NVDA",
+      "started_at": "2026-04-04T10:46:05.996Z",
+      "finished_at": "2026-04-04T10:46:17.157Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:NVDA",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 54804.72999999999,
+          "closed_trades": 48,
+          "percent_profitable": 83.33,
+          "profit_factor": 7.52092584395867,
+          "max_drawdown": 4852.77
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "connors-rsi-pullback",
+      "strategy_name": "Connors RSI Pullback",
+      "symbol": "TSLA",
+      "started_at": "2026-04-04T10:46:17.159Z",
+      "finished_at": "2026-04-04T10:46:29.044Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:TSLA",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 20585.10999999998,
+          "closed_trades": 58,
+          "percent_profitable": 68.97,
+          "profit_factor": 1.716253954424431,
+          "max_drawdown": 18430.020000000008
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "adx-ema-filter",
+      "strategy_name": "ADX-Filtered EMA Trend",
+      "symbol": "AAPL",
+      "started_at": "2026-04-04T10:46:29.047Z",
+      "finished_at": "2026-04-04T10:46:43.049Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:AAPL",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": false
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 9603.960000000008,
+          "closed_trades": 16,
+          "percent_profitable": 50,
+          "profit_factor": 2.523108397430817,
+          "max_drawdown": 2558.779999999999
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "adx-ema-filter",
+      "strategy_name": "ADX-Filtered EMA Trend",
+      "symbol": "MSFT",
+      "started_at": "2026-04-04T10:46:43.050Z",
+      "finished_at": "2026-04-04T10:46:54.907Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:MSFT",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 645.7999999999988,
+          "closed_trades": 10,
+          "percent_profitable": 20,
+          "profit_factor": 1.2444203060363257,
+          "max_drawdown": 2574.83
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "adx-ema-filter",
+      "strategy_name": "ADX-Filtered EMA Trend",
+      "symbol": "GOOGL",
+      "started_at": "2026-04-04T10:46:54.909Z",
+      "finished_at": "2026-04-04T10:47:06.850Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:GOOGL",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 201.66999999999916,
+          "closed_trades": 9,
+          "percent_profitable": 44.44,
+          "profit_factor": 1.1069039364736062,
+          "max_drawdown": 1615.7399999999998
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "adx-ema-filter",
+      "strategy_name": "ADX-Filtered EMA Trend",
+      "symbol": "AMZN",
+      "started_at": "2026-04-04T10:47:06.851Z",
+      "finished_at": "2026-04-04T10:47:18.757Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:AMZN",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 1259.3100000000063,
+          "closed_trades": 13,
+          "percent_profitable": 53.85,
+          "profit_factor": 1.3776325061848735,
+          "max_drawdown": 2396.4999999999945
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "adx-ema-filter",
+      "strategy_name": "ADX-Filtered EMA Trend",
+      "symbol": "META",
+      "started_at": "2026-04-04T10:47:18.759Z",
+      "finished_at": "2026-04-04T10:47:30.607Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:META",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 30516.170000000002,
+          "closed_trades": 11,
+          "percent_profitable": 72.73,
+          "profit_factor": 29.354955306535846,
+          "max_drawdown": 1771.2799999999988
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "adx-ema-filter",
+      "strategy_name": "ADX-Filtered EMA Trend",
+      "symbol": "NVDA",
+      "started_at": "2026-04-04T10:47:30.610Z",
+      "finished_at": "2026-04-04T10:47:41.833Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:NVDA",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 4019.760000000004,
+          "closed_trades": 14,
+          "percent_profitable": 57.14,
+          "profit_factor": 1.8312175997055422,
+          "max_drawdown": 3286.869999999999
+        },
+        "restore_success": true
+      }
+    },
+    {
+      "strategy_id": "adx-ema-filter",
+      "strategy_name": "ADX-Filtered EMA Trend",
+      "symbol": "TSLA",
+      "started_at": "2026-04-04T10:47:41.834Z",
+      "finished_at": "2026-04-04T10:47:53.688Z",
+      "result": {
+        "success": true,
+        "symbol": "BATS:TSLA",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -1964.9599999999969,
+          "closed_trades": 14,
+          "percent_profitable": 50,
+          "profit_factor": 0.5889308218203735,
+          "max_drawdown": 5201.74
+        },
+        "restore_success": true
+      }
+    }
+  ]
+}

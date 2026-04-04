@@ -1,0 +1,232 @@
+{
+  "$schema_version": "1.0.0",
+  "common_defaults": {
+    "pine_version": 6,
+    "direction": "long_only",
+    "qty_type": "percent_of_equity",
+    "qty_value": 100,
+    "initial_capital": 10000,
+    "commission": 0,
+    "slippage": 0,
+    "date_range": {
+      "from": "2015-01-01",
+      "to": "2025-12-31"
+    }
+  },
+  "strategies": [
+    {
+      "id": "sma-cross-5-20",
+      "name": "SMA Cross 5/20",
+      "category": "trend",
+      "builder": "ma_cross",
+      "parameters": {
+        "ma_type": "sma",
+        "fast_period": 5,
+        "slow_period": 20
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "既存 NVDA 固定実装のベースライン。",
+      "phase": "phase-2",
+      "implementation_stage": "baseline",
+      "priority": 1,
+      "status": "implemented",
+      "implementation_difficulty": "easy",
+      "pine_complexity": "trivial",
+      "tags": ["baseline", "ma", "crossover"]
+    },
+    {
+      "id": "sma-200-trend-filter",
+      "name": "200 Day SMA Trend Filter",
+      "category": "trend",
+      "builder": "price_vs_ma",
+      "parameters": {
+        "ma_type": "sma",
+        "period": 200,
+        "entry_condition": "close_above_ma",
+        "exit_condition": "close_below_ma"
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "長期トレンドの判定用として使いやすいが、横ばい局面の whipsaw に注意。",
+      "phase": "phase-2",
+      "implementation_stage": "first_wave",
+      "priority": 8,
+      "status": "ready",
+      "implementation_difficulty": "easy",
+      "pine_complexity": "simple",
+      "tags": ["trend-filter", "long-term", "defensive"]
+    },
+    {
+      "id": "ema-cross-9-21",
+      "name": "EMA Cross 9/21",
+      "category": "trend",
+      "builder": "ma_cross",
+      "parameters": {
+        "ma_type": "ema",
+        "fast_period": 9,
+        "slow_period": 21
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "加速相場に追随しやすく、SMA より反応が速い。",
+      "phase": "phase-2",
+      "implementation_stage": "first_wave",
+      "priority": 2,
+      "status": "ready",
+      "implementation_difficulty": "easy",
+      "pine_complexity": "trivial",
+      "tags": ["ema", "crossover", "momentum"]
+    },
+    {
+      "id": "macd-signal",
+      "name": "MACD Signal Cross",
+      "category": "trend",
+      "builder": "macd_signal",
+      "parameters": {
+        "fast_period": 12,
+        "slow_period": 26,
+        "signal_period": 9
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "モメンタムと方向感の両方を見やすい汎用候補。",
+      "phase": "phase-2",
+      "implementation_stage": "first_wave",
+      "priority": 3,
+      "status": "ready",
+      "implementation_difficulty": "easy",
+      "pine_complexity": "simple",
+      "tags": ["macd", "momentum", "trend"]
+    },
+    {
+      "id": "rsi-mean-reversion",
+      "name": "RSI Oversold Bounce",
+      "category": "mean_reversion",
+      "builder": "rsi_mean_reversion",
+      "parameters": {
+        "rsi_period": 14,
+        "entry_below": 30,
+        "exit_above": 55
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "volatile",
+      "mag7_notes": "決算後急落や短期過熱修正の戻りを拾いやすい。",
+      "phase": "phase-2",
+      "implementation_stage": "first_wave",
+      "priority": 4,
+      "status": "ready",
+      "implementation_difficulty": "easy",
+      "pine_complexity": "simple",
+      "tags": ["rsi", "oversold", "bounce"]
+    },
+    {
+      "id": "connors-rsi-pullback",
+      "name": "Connors RSI Pullback",
+      "category": "mean_reversion",
+      "builder": "connors_rsi_pullback",
+      "parameters": {
+        "price_rsi_period": 3,
+        "streak_rsi_period": 2,
+        "percent_rank_period": 100,
+        "entry_below": 15,
+        "exit_above": 70
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "volatile",
+      "mag7_notes": "短期の売られすぎを RSI より敏感に拾う候補。",
+      "phase": "phase-1",
+      "implementation_stage": "research_only",
+      "priority": 9,
+      "status": "research_only",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": ["connors-rsi", "pullback", "short-term"]
+    },
+    {
+      "id": "bb-mean-revert",
+      "name": "Bollinger Mean Reversion",
+      "category": "mean_reversion",
+      "builder": "bollinger_mean_reversion",
+      "parameters": {
+        "length": 20,
+        "stddev": 2,
+        "entry_condition": "close_below_lower_band",
+        "exit_condition": "close_above_basis"
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "ranging",
+      "mag7_notes": "高ボラの行き過ぎ修正を拾いやすいが、強い上放れ相場では逆張り化しやすい。",
+      "phase": "phase-2",
+      "implementation_stage": "first_wave",
+      "priority": 5,
+      "status": "ready",
+      "implementation_difficulty": "easy",
+      "pine_complexity": "simple",
+      "tags": ["bollinger", "mean-reversion", "volatility"]
+    },
+    {
+      "id": "donchian-breakout",
+      "name": "Donchian Breakout 20/10",
+      "category": "breakout",
+      "builder": "donchian_breakout",
+      "parameters": {
+        "entry_period": 20,
+        "exit_period": 10
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "新高値更新を取りにいく王道ブレイクアウト候補。",
+      "phase": "phase-2",
+      "implementation_stage": "first_wave",
+      "priority": 6,
+      "status": "ready",
+      "implementation_difficulty": "easy",
+      "pine_complexity": "simple",
+      "tags": ["donchian", "breakout", "trend"]
+    },
+    {
+      "id": "supertrend-atr",
+      "name": "Supertrend ATR 10/3",
+      "category": "trend",
+      "builder": "supertrend",
+      "parameters": {
+        "atr_period": 10,
+        "factor": 3
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "ATR ベースでボラに追従しながらトレンド継続を狙う。",
+      "phase": "phase-2",
+      "implementation_stage": "first_wave",
+      "priority": 7,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": ["supertrend", "atr", "trend"]
+    },
+    {
+      "id": "adx-ema-filter",
+      "name": "ADX-Filtered EMA Trend",
+      "category": "composite",
+      "builder": "adx_filtered_ma",
+      "parameters": {
+        "ma_type": "ema",
+        "fast_period": 20,
+        "slow_period": 50,
+        "adx_period": 7,
+        "adx_min": 25
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA クロスに ADX を被せて、方向性が弱い局面を除外する候補。",
+      "phase": "phase-1",
+      "implementation_stage": "research_only",
+      "priority": 10,
+      "status": "research_only",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": ["adx", "ema", "filter"]
+    }
+  ]
+}
