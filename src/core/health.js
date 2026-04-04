@@ -1,0 +1,97 @@
+import { getClient, getTargetInfo, evaluate } from '../connection.js';
+
+export async function healthCheck() {
+  await getClient();
+  const target = await getTargetInfo();
+
+  const state = await evaluate(`
+    (function() {
+      var result = { url: window.location.href, title: document.title };
+      try {
+        var chart = window.TradingViewApi._activeChartWidgetWV.value();
+        result.symbol = chart.symbol();
+        result.resolution = chart.resolution();
+        result.chartType = chart.chartType();
+        result.apiAvailable = true;
+      } catch(e) {
+        result.symbol = 'unknown';
+        result.resolution = 'unknown';
+        result.chartType = null;
+        result.apiAvailable = false;
+        result.apiError = e.message;
+      }
+      return result;
+    })()
+  `);
+
+  if (!state?.apiAvailable) {
+    throw new Error(
+      `Connected to TradingView target, but chart API is unavailable: ${state?.apiError || 'unknown error'}`
+    );
+  }
+
+  return {
+    success: true,
+    cdp_connected: true,
+    target_id: target.id,
+    target_url: target.url,
+    target_title: target.title,
+    chart_symbol: state?.symbol || 'unknown',
+    chart_resolution: state?.resolution || 'unknown',
+    chart_type: state?.chartType ?? null,
+    api_available: state?.apiAvailable ?? false,
+  };
+}
+
+export async function discover() {
+  const paths = await evaluate(`
+    (function() {
+      var results = {};
+      try {
+        var chart = window.TradingViewApi._activeChartWidgetWV.value();
+        var methods = [];
+        for (var k in chart) { if (typeof chart[k] === 'function') methods.push(k); }
+        results.chartApi = {
+          available: true,
+          path: 'window.TradingViewApi._activeChartWidgetWV.value()',
+          methodCount: methods.length,
+          methods: methods.slice(0, 50)
+        };
+      } catch(e) {
+        results.chartApi = { available: false, error: e.message };
+      }
+      try {
+        var col = window.TradingViewApi._chartWidgetCollection;
+        var colMethods = [];
+        for (var k in col) { if (typeof col[k] === 'function') colMethods.push(k); }
+        results.chartWidgetCollection = {
+          available: !!col,
+          path: 'window.TradingViewApi._chartWidgetCollection',
+          methodCount: colMethods.length,
+          methods: colMethods.slice(0, 30)
+        };
+      } catch(e) {
+        results.chartWidgetCollection = { available: false, error: e.message };
+      }
+      try {
+        var bwb = window.TradingView && window.TradingView.bottomWidgetBar;
+        var bwbMethods = [];
+        if (bwb) { for (var k in bwb) { if (typeof bwb[k] === 'function') bwbMethods.push(k); } }
+        results.bottomWidgetBar = {
+          available: !!bwb,
+          path: 'window.TradingView.bottomWidgetBar',
+          methodCount: bwbMethods.length,
+          methods: bwbMethods.slice(0, 20)
+        };
+      } catch(e) {
+        results.bottomWidgetBar = { available: false, error: e.message };
+      }
+      return results;
+    })()
+  `);
+
+  const available = Object.values(paths).filter(v => v.available).length;
+  const total = Object.keys(paths).length;
+
+  return { success: true, apis_available: available, apis_total: total, apis: paths };
+}

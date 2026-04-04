@@ -1,0 +1,30 @@
+{
+  "name": "oh-my-tradingview",
+  "version": "0.1.0",
+  "description": "MCP bridge for TradingView Desktop via Chrome DevTools Protocol — Pine Script development loop",
+  "type": "module",
+  "main": "src/server.js",
+  "bin": {
+    "tv": "src/cli/index.js"
+  },
+  "exports": {
+    ".": "./src/server.js",
+    "./core": "./src/core/index.js"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "tv": "node src/cli/index.js",
+    "test": "node --test tests/connection.test.js tests/pine.analyze.test.js",
+    "test:e2e": "node --test tests/e2e.pine-loop.test.js",
+    "test:all": "node --test tests/connection.test.js tests/pine.analyze.test.js tests/e2e.pine-loop.test.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "chrome-remote-interface": "^0.33.2",
+    "zod": "^3.24.2"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}
