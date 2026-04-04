@@ -33,22 +33,34 @@
 
 - [`docs/research/mag7-backtest-results_2015_2025.md`](./research/mag7-backtest-results_2015_2025.md)
 - [`docs/research/mag7-backtest-results-round2_2015_2025.md`](./research/mag7-backtest-results-round2_2015_2025.md)
+- [`docs/research/multi-universe-backtest-results-round3_2015_2025.md`](./research/multi-universe-backtest-results-round3_2015_2025.md)
 
 ### 生データを確認したいとき
 
 - [`docs/references/backtests/mag7-backtest-results_20260404.json`](./references/backtests/mag7-backtest-results_20260404.json)
 - [`docs/references/backtests/mag7-backtest-results_round2_20260404.json`](./references/backtests/mag7-backtest-results_round2_20260404.json)
+- [`docs/references/backtests/multi-universe-backtest-results_round3_20260404.json`](./references/backtests/multi-universe-backtest-results_round3_20260404.json)
+- [`docs/references/backtests/multi-universe-backtest-results_round3_20260404.summary.json`](./references/backtests/multi-universe-backtest-results_round3_20260404.summary.json)
 
 ### 研究用 / session batch input を確認したいとき
 
 - [`config/backtest/strategy-presets.json`](../config/backtest/strategy-presets.json)
 - [`config/backtest/universes/mag7.json`](../config/backtest/universes/mag7.json)
-- これらは round1 / round2 の research batch で使った input であり、現時点の repo CLI / MCP の公開実装は `nvda-ma` 固定
+- [`config/backtest/universes/sp500-top10-point-in-time.json`](../config/backtest/universes/sp500-top10-point-in-time.json)
+- [`config/backtest/universes/mega-cap-ex-nvda.json`](../config/backtest/universes/mega-cap-ex-nvda.json)
+- これらは round1 / round2 / round3 の research batch で使う input であり、現時点の repo CLI / MCP の公開実装は `nvda-ma` 固定
+
+### round3 の調査メモを見たいとき
+
+- [`docs/research/market-regime-candidates-round3_2015_2025.md`](./research/market-regime-candidates-round3_2015_2025.md)
+- [`docs/research/universe-selection-candidates-round3_2015_2025.md`](./research/universe-selection-candidates-round3_2015_2025.md)
+- [`docs/research/multi-universe-strategy-shortlist-round3_2015_2025.md`](./research/multi-universe-strategy-shortlist-round3_2015_2025.md)
 
 ### セッションの判断経緯を追いたいとき
 
 - [`docs/working-memory/session-logs/mag7-backtest-session-summary_20260404_1106.md`](./working-memory/session-logs/mag7-backtest-session-summary_20260404_1106.md)
 - [`docs/working-memory/session-logs/mag7-backtest-session-summary_20260404_1252.md`](./working-memory/session-logs/mag7-backtest-session-summary_20260404_1252.md)
+- [`docs/working-memory/session-logs/multi-universe-backtest-session-summary_20260404_1345.md`](./working-memory/session-logs/multi-universe-backtest-session-summary_20260404_1345.md)
 
 ## 運用ルール
 

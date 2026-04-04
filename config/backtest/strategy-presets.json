@@ -442,6 +442,263 @@
       "implementation_difficulty": "easy",
       "pine_complexity": "simple",
       "tags": ["roc", "momentum", "zero-cross", "round2"]
+    },
+    {
+      "id": "sma-200-trend-filter-atr-stop",
+      "name": "200 Day SMA Trend Filter + ATR Stop",
+      "category": "trend",
+      "builder": "price_vs_ma",
+      "parameters": {
+        "ma_type": "sma",
+        "period": 200,
+        "entry_condition": "close_above_ma",
+        "exit_condition": "close_below_ma"
+      },
+      "exit_overlay": {
+        "type": "atr_trailing_stop",
+        "atr_period": 14,
+        "atr_multiplier": 3
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "round2 最上位の 200SMA フィルタに ATR トレーリングを足し、DD を抑える round3 本命改善案。",
+      "phase": "phase-3",
+      "implementation_stage": "round3",
+      "priority": 21,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": ["trend-filter", "atr-stop", "dd-reduction", "round3"]
+    },
+    {
+      "id": "sma-200-trend-filter-chandelier",
+      "name": "200 Day SMA Trend Filter + Chandelier Exit",
+      "category": "trend",
+      "builder": "price_vs_ma",
+      "parameters": {
+        "ma_type": "sma",
+        "period": 200,
+        "entry_condition": "close_above_ma",
+        "exit_condition": "close_below_ma"
+      },
+      "exit_overlay": {
+        "type": "chandelier_exit",
+        "atr_period": 22,
+        "atr_multiplier": 3
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "長期トレンドの滞在を残しつつ利を伸ばし、急落時の戻り売りを減らす exit 改善案。",
+      "phase": "phase-3",
+      "implementation_stage": "round3",
+      "priority": 22,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": ["trend-filter", "chandelier", "exit", "round3"]
+    },
+    {
+      "id": "sma-cross-10-50-baseline",
+      "name": "SMA Cross 10/50 Baseline",
+      "category": "trend",
+      "builder": "ma_cross",
+      "parameters": {
+        "ma_type": "sma",
+        "fast_period": 10,
+        "slow_period": 50
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "round2 上位の中期トレンド本線を round3 の再評価ベースラインとして再投入する。",
+      "phase": "phase-3",
+      "implementation_stage": "round3",
+      "priority": 23,
+      "status": "ready",
+      "implementation_difficulty": "easy",
+      "pine_complexity": "simple",
+      "tags": ["sma", "trend", "baseline", "round3"]
+    },
+    {
+      "id": "sma-cross-10-50-spy-filter",
+      "name": "SMA Cross 10/50 + SPY 200SMA Filter",
+      "category": "trend",
+      "builder": "ma_cross",
+      "parameters": {
+        "ma_type": "sma",
+        "fast_period": 10,
+        "slow_period": 50
+      },
+      "regime_filter": {
+        "type": "spy_above_sma200",
+        "reference_symbol": "SPY",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "exit_all"
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "S&P500 の長期トレンドが悪い局面を外し、whipsaw を減らせるかを見る round3 filter 案。",
+      "phase": "phase-3",
+      "implementation_stage": "round3",
+      "priority": 24,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": ["sma", "trend", "regime-filter", "spy", "round3"]
+    },
+    {
+      "id": "ema-50-trend-filter-baseline",
+      "name": "50 Day EMA Trend Filter Baseline",
+      "category": "trend",
+      "builder": "price_vs_ma",
+      "parameters": {
+        "ma_type": "ema",
+        "period": 50,
+        "entry_condition": "close_above_ma",
+        "exit_condition": "close_below_ma"
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "200SMA より速い baseline として、round2 の高順位が NVDA 依存だけではないかを再確認する。",
+      "phase": "phase-3",
+      "implementation_stage": "round3",
+      "priority": 25,
+      "status": "ready",
+      "implementation_difficulty": "easy",
+      "pine_complexity": "simple",
+      "tags": ["ema", "trend-filter", "baseline", "round3"]
+    },
+    {
+      "id": "ema-50-trend-filter-rsp-filter",
+      "name": "50 Day EMA Trend Filter + RSP 200SMA Filter",
+      "category": "trend",
+      "builder": "price_vs_ma",
+      "parameters": {
+        "ma_type": "ema",
+        "period": 50,
+        "entry_condition": "close_above_ma",
+        "exit_condition": "close_below_ma"
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "exit_all"
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "cap-weight の SPY ではなく equal-weight proxy の RSP を使い、市場の広がりが良い時だけ入る案。",
+      "phase": "phase-3",
+      "implementation_stage": "round3",
+      "priority": 26,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": ["ema", "trend-filter", "regime-filter", "rsp", "round3"]
+    },
+    {
+      "id": "donchian-breakout-55-20-baseline",
+      "name": "Donchian Breakout 55/20 Baseline",
+      "category": "breakout",
+      "builder": "donchian_breakout",
+      "parameters": {
+        "entry_period": 55,
+        "exit_period": 20
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "round2 で PF/DD バランスが良かったタートル寄り breakout を baseline として再評価する。",
+      "phase": "phase-3",
+      "implementation_stage": "round3",
+      "priority": 27,
+      "status": "ready",
+      "implementation_difficulty": "easy",
+      "pine_complexity": "simple",
+      "tags": ["donchian", "breakout", "baseline", "round3"]
+    },
+    {
+      "id": "donchian-breakout-55-20-spy-filter",
+      "name": "Donchian Breakout 55/20 + SPY 200SMA Filter",
+      "category": "breakout",
+      "builder": "donchian_breakout",
+      "parameters": {
+        "entry_period": 55,
+        "exit_period": 20
+      },
+      "regime_filter": {
+        "type": "spy_above_sma200",
+        "reference_symbol": "SPY",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "長い breakout を弱地合いで間引き、range/bear での無駄打ちを減らせるかを見る。",
+      "phase": "phase-3",
+      "implementation_stage": "round3",
+      "priority": 28,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": ["donchian", "breakout", "regime-filter", "spy", "round3"]
+    },
+    {
+      "id": "keltner-breakout-atr-trail",
+      "name": "Keltner Breakout + ATR Trail",
+      "category": "breakout",
+      "builder": "keltner_breakout",
+      "parameters": {
+        "ema_period": 20,
+        "atr_period": 10,
+        "atr_mult": 1.5
+      },
+      "exit_overlay": {
+        "type": "atr_trailing_stop",
+        "atr_period": 14,
+        "atr_multiplier": 2.5
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "round2 の新規上位 breakout を、利食いの遅さと DD の重さを抑える方向で改良する。",
+      "phase": "phase-3",
+      "implementation_stage": "round3",
+      "priority": 29,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": ["keltner", "breakout", "atr-trail", "round3"]
+    },
+    {
+      "id": "connors-rsi-pullback-bull-only",
+      "name": "Connors RSI Pullback Bull-Only",
+      "category": "mean_reversion",
+      "builder": "connors_rsi_pullback",
+      "parameters": {
+        "price_rsi_period": 3,
+        "streak_rsi_period": 2,
+        "percent_rank_period": 100,
+        "entry_below": 15,
+        "exit_above": 70
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "bull_pullback",
+      "mag7_notes": "逆張りは bull 限定の方が噛みやすいと仮定し、equal-weight proxy が悪い時は新規エントリーを止める。",
+      "phase": "phase-3",
+      "implementation_stage": "round3",
+      "priority": 30,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": ["connors-rsi", "pullback", "bull-only", "rsp", "round3"]
     }
   ]
 }

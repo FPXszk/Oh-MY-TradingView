@@ -1,0 +1,13 @@
+{
+  "id": "sp500-top10-point-in-time",
+  "name": "S&P 500 Top 10 by Market Cap (2015 annual snapshot)",
+  "snapshot_year": 2015,
+  "canonical_symbols": ["AAPL", "GOOGL", "MSFT", "BRK.B", "XOM", "AMZN", "META", "JNJ", "WFC", "JPM"],
+  "symbol_aliases": {
+    "META": ["FB"],
+    "BRK.B": ["BRK-B", "BRK/B"]
+  },
+  "exchange_candidates": ["BATS", "NASDAQ", "NYSE"],
+  "data_source": "Finhacker historical ranking of largest S&P 500 companies by market cap in 2015",
+  "notes": "2015 年の年間スナップショットを固定 basket 化した round3 用 alt universe。日次の完全 point-in-time reconstitution ではなく、annual snapshot ベースの近似。"
+}
