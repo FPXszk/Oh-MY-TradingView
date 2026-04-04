@@ -7,6 +7,8 @@ import {
   buildResult,
   runLocalFallbackBacktest,
   classifyTesterReadFailure,
+  canSafelyClearStudies,
+  hasStudyLimitDialog,
   isTesterPanelStateVisible,
 } from '../src/core/backtest.js';
 
@@ -83,6 +85,25 @@ describe('normalizeMetrics', () => {
     assert.equal(m.net_profit, '+$100');
     assert.equal(m.profit_factor, '2.5');
     assert.equal(m.closed_trades, null);
+  });
+
+  it('reads nested TradingView performance payloads', () => {
+    const m = normalizeMetrics({
+      performance: {
+        all: {
+          netProfit: 9549987.59,
+          totalTrades: 154,
+          percentProfitable: 0.3636363636,
+          profitFactor: 1.4566944756,
+        },
+        maxStrategyDrawDown: 4792475.62,
+      },
+    });
+    assert.equal(m.net_profit, 9549987.59);
+    assert.equal(m.closed_trades, 154);
+    assert.equal(m.percent_profitable, 36.36);
+    assert.equal(m.profit_factor, 1.4566944756);
+    assert.equal(m.max_drawdown, 4792475.62);
   });
 
   it('handles null / undefined input gracefully', () => {
@@ -248,6 +269,46 @@ describe('classifyTesterReadFailure', () => {
     });
     assert.ok(result.category);
     assert.ok(result.reason);
+  });
+});
+
+describe('hasStudyLimitDialog', () => {
+  it('detects the Japanese indicator-limit dialog text', () => {
+    const result = hasStudyLimitDialog([
+      'より多くのインジケーターで、より多くのトレードの可能性を すでに5個のインジケーターを適用しています ― 現在のプランでご利用いただける上限です。',
+    ]);
+    assert.equal(result, true);
+  });
+
+  it('returns false for unrelated dialogs', () => {
+    const result = hasStudyLimitDialog([
+      'スクリプトを保存 スクリプト名 保存 キャンセル',
+      'インジケーター、指標、ストラテジー ここにはまだ個人のスクリプトはありません',
+    ]);
+    assert.equal(result, false);
+  });
+});
+
+describe('canSafelyClearStudies', () => {
+  it('allows clearing when there are no existing studies', () => {
+    assert.equal(
+      canSafelyClearStudies({ existingStudies: [], studyTemplateSnapshot: null }),
+      true,
+    );
+  });
+
+  it('allows clearing when a study template snapshot exists', () => {
+    assert.equal(
+      canSafelyClearStudies({ existingStudies: [{ id: 's1', name: 'BB' }], studyTemplateSnapshot: { content: '{}' } }),
+      true,
+    );
+  });
+
+  it('blocks clearing when studies exist and no snapshot is available', () => {
+    assert.equal(
+      canSafelyClearStudies({ existingStudies: [{ id: 's1', name: 'BB' }], studyTemplateSnapshot: null }),
+      false,
+    );
   });
 });
 

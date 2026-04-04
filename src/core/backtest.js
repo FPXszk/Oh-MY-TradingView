@@ -1,4 +1,4 @@
-import { evaluate } from '../connection.js';
+import { evaluate, getClient } from '../connection.js';
 import { healthCheck } from './health.js';
 import { setActiveSymbol, getCurrentPrice, symbolMatches } from './price.js';
 import {
@@ -52,6 +52,11 @@ const TESTER_LABEL_ALIASES = {
   profit_factor: ['profit factor', 'プロフィットファクター'],
   max_drawdown: ['max drawdown', 'maximum drawdown', '最大ドローダウン'],
 };
+const STUDY_LIMIT_PATTERNS = [
+  /already\s*5\s*indicators/i,
+  /すでに5個のインジケーターを適用しています/i,
+  /現在のプランでご利用いただける上限です/i,
+];
 
 function calculateSma(values, period, index) {
   if (index < period - 1) return null;
@@ -161,10 +166,21 @@ export function runLocalFallbackBacktest(bars, { initialCapital = 10000 } = {}) 
 
 export function normalizeMetrics(raw) {
   const src = raw ?? {};
+  const performance = src.performance && typeof src.performance === 'object' ? src.performance : {};
+  const performanceAll = performance.all && typeof performance.all === 'object' ? performance.all : {};
+  const percentProfitable = performanceAll.percentProfitable;
   const out = {};
-  for (const key of METRIC_KEYS) {
-    out[key] = src[key] ?? null;
-  }
+  out.net_profit = src.net_profit ?? performanceAll.netProfit ?? null;
+  out.closed_trades = src.closed_trades ?? performanceAll.totalTrades ?? null;
+  out.percent_profitable = src.percent_profitable ?? (
+    Number.isFinite(percentProfitable) ? Number((percentProfitable * 100).toFixed(2)) : null
+  );
+  out.profit_factor = src.profit_factor ?? performanceAll.profitFactor ?? null;
+  out.max_drawdown =
+    src.max_drawdown ??
+    performance.maxStrategyDrawDown ??
+    performanceAll.maxStrategyDrawDown ??
+    null;
   return out;
 }
 
@@ -216,6 +232,20 @@ export function classifyTesterReadFailure({ testerState, hasApiResult, hasDomRes
     category: 'unknown',
     reason: 'Metrics reading failed for unknown reason',
   };
+}
+
+export function hasStudyLimitDialog(dialogTexts) {
+  const texts = Array.isArray(dialogTexts) ? dialogTexts : [dialogTexts];
+  return texts
+    .filter((text) => typeof text === 'string' && text.trim() !== '')
+    .some((text) => STUDY_LIMIT_PATTERNS.some((pattern) => pattern.test(text)));
+}
+
+export function canSafelyClearStudies({ existingStudies, studyTemplateSnapshot }) {
+  return Boolean(Array.isArray(existingStudies) && (
+    existingStudies.length === 0 ||
+    (studyTemplateSnapshot && typeof studyTemplateSnapshot.content === 'string')
+  ));
 }
 
 // ---------------------------------------------------------------------------
@@ -466,6 +496,180 @@ async function readChartBars(limit = 500) {
   `);
 }
 
+async function readVisibleDialogTexts() {
+  const dialogs = await evaluate(`
+    (function() {
+      return Array.from(document.querySelectorAll('[role="dialog"], [class*="dialog"], [class*="Dialog"]'))
+        .map(function(el) {
+          var rect = el.getBoundingClientRect();
+          var style = window.getComputedStyle(el);
+          if (style.display === 'none' || style.visibility === 'hidden' || rect.width <= 0 || rect.height <= 0) {
+            return '';
+          }
+          return ((el.innerText || el.textContent || '').trim().replace(/\\s+/g, ' '));
+        })
+        .filter(Boolean);
+    })()
+  `);
+
+  return Array.isArray(dialogs) ? dialogs : [];
+}
+
+async function dismissTransientDialogs() {
+  await evaluate(`
+    (function() {
+      Array.from(document.querySelectorAll('button')).forEach(function(btn) {
+        var text = ((btn.textContent || '') + ' ' + (btn.title || '') + ' ' + (btn.getAttribute('aria-label') || ''))
+          .trim();
+        if (/メニューを閉じる|キャンセル|close|閉じる/i.test(text)) {
+          btn.click();
+        }
+      });
+      return true;
+    })()
+  `);
+
+  const client = await getClient();
+  await client.Input.dispatchKeyEvent({
+    type: 'keyDown',
+    key: 'Escape',
+    code: 'Escape',
+    windowsVirtualKeyCode: 27,
+  });
+  await client.Input.dispatchKeyEvent({
+    type: 'keyUp',
+    key: 'Escape',
+    code: 'Escape',
+    windowsVirtualKeyCode: 27,
+  });
+
+  await new Promise((r) => setTimeout(r, 1000));
+}
+
+async function clearChartStudies() {
+  const cleared = await evaluate(`
+    (async function() {
+      try {
+        var chart = window.TradingViewApi._activeChartWidgetWV.value();
+        if (!chart || typeof chart.removeAllStudies !== 'function') return false;
+        var result = chart.removeAllStudies();
+        if (result && typeof result.then === 'function') {
+          await result;
+        }
+        return true;
+      } catch (e) {
+        return false;
+      }
+    })()
+  `, { awaitPromise: true });
+
+  if (!cleared) {
+    throw new Error('TradingView chart studies could not be cleared');
+  }
+
+  await new Promise((r) => setTimeout(r, 1500));
+}
+
+async function snapshotChartStudyTemplate() {
+  const snapshot = await evaluate(`
+    (function() {
+      try {
+        var chart = window.TradingViewApi._activeChartWidgetWV.value();
+        if (!chart || typeof chart.getStudyTemplateSnapshot !== 'function') return null;
+        var template = chart.getStudyTemplateSnapshot();
+        if (!template || typeof template.content !== 'string') return null;
+        return {
+          name: template.name || null,
+          content: template.content,
+          meta_info: template.meta_info || null,
+        };
+      } catch (e) {
+        return null;
+      }
+    })()
+  `);
+
+  return snapshot && typeof snapshot === 'object' ? snapshot : null;
+}
+
+async function restoreChartStudyTemplate(snapshot) {
+  if (!snapshot || typeof snapshot.content !== 'string') return;
+
+  const restored = await evaluate(`
+    (async function() {
+      try {
+        var chart = window.TradingViewApi._activeChartWidgetWV.value();
+        if (!chart || typeof chart.applyStudyTemplate !== 'function' || typeof chart.removeAllStudies !== 'function') {
+          return { ok: false, error: 'Study template restore API unavailable' };
+        }
+
+        var template = JSON.parse(${JSON.stringify(snapshot.content)});
+        var removed = chart.removeAllStudies();
+        if (removed && typeof removed.then === 'function') {
+          await removed;
+        }
+        await new Promise(function(resolve) { setTimeout(resolve, 1000); });
+
+        var applied = chart.applyStudyTemplate(template);
+        if (applied && typeof applied.then === 'function') {
+          await applied;
+        }
+        await new Promise(function(resolve) { setTimeout(resolve, 1500); });
+        return { ok: true };
+      } catch (e) {
+        return { ok: false, error: String(e) };
+      }
+    })()
+  `, { awaitPromise: true });
+
+  if (!restored?.ok) {
+    throw new Error(restored?.error || 'TradingView study template restore failed');
+  }
+}
+
+async function recoverFromStudyLimit({ source }) {
+  const dialogs = await readVisibleDialogTexts();
+  if (!hasStudyLimitDialog(dialogs)) {
+    return { attempted: false };
+  }
+
+  await dismissTransientDialogs();
+  await clearChartStudies();
+  await ensurePineEditorOpen();
+
+  const studiesBeforeCompile = await fetchChartStudies();
+  await setSource({ source });
+  const compileResult = await smartCompile();
+  if (compileResult.has_errors) {
+    return {
+      attempted: true,
+      compileResult,
+      strategyAttached: false,
+      verifyReason: 'compile_errors_after_study_limit_recovery',
+    };
+  }
+  const studiesAfterCompile = await fetchChartStudies();
+  const verifyResult = verifyStrategyAttachmentChange(
+    studiesBeforeCompile,
+    studiesAfterCompile,
+    STRATEGY_TITLE,
+    compileResult.study_added,
+  );
+
+  let strategyAttached = verifyResult.attached;
+  if (!strategyAttached) {
+    const retryResult = await retryApplyStrategy(STRATEGY_TITLE);
+    strategyAttached = retryResult.applied;
+  }
+
+  return {
+    attempted: true,
+    compileResult,
+    strategyAttached,
+    verifyReason: verifyResult.reason,
+  };
+}
+
 async function restorePineEditor() {
   try {
     await ensurePineEditorOpen();
@@ -484,6 +688,8 @@ export async function runNvdaMaBacktest() {
   const initialState = await healthCheck();
   const originalSymbol = initialState.chart_symbol;
   const originalSource = (await getSource()).source;
+  const originalStudies = await fetchChartStudies();
+  const originalStudyTemplate = await snapshotChartStudyTemplate();
   const source = buildNvdaMaSource();
   let result;
 
@@ -493,10 +699,15 @@ export async function runNvdaMaBacktest() {
 
     await getCurrentPrice({ symbol: 'NVDA' });
     await ensurePineEditorOpen();
+    await dismissTransientDialogs();
+    if (!canSafelyClearStudies({ existingStudies: originalStudies, studyTemplateSnapshot: originalStudyTemplate })) {
+      throw new Error('Cannot safely clear chart studies because TradingView study template snapshot is unavailable');
+    }
+    await clearChartStudies();
     const studiesBeforeCompile = await fetchChartStudies();
     await setSource({ source });
 
-    const compileResult = await smartCompile();
+    let compileResult = await smartCompile();
     if (compileResult.has_errors) {
       result = buildResult({
         compileSuccess: false,
@@ -516,10 +727,34 @@ export async function runNvdaMaBacktest() {
       compileResult.study_added,
     );
     strategyAttached = verifyResult.attached;
+    let applyFailureReason =
+      verifyResult.reason === 'preexisting_matching_strategy_only'
+        ? 'Matching strategy was already on chart before run, and this run could not verify a new or updated attachment'
+        : 'Strategy not verified in chart studies after compile + retry';
 
     if (!strategyAttached) {
       const retryResult = await retryApplyStrategy(STRATEGY_TITLE);
       strategyAttached = retryResult.applied;
+    }
+
+    if (!strategyAttached) {
+      const recovery = await recoverFromStudyLimit({ source });
+      if (recovery.attempted) {
+        compileResult = recovery.compileResult;
+        if (compileResult.has_errors) {
+          result = buildResult({
+            compileSuccess: false,
+            compileErrors: compileResult.errors,
+            symbol: chartSymbol,
+          });
+          return result;
+        }
+        strategyAttached = recovery.strategyAttached;
+        applyFailureReason =
+          recovery.verifyReason === 'preexisting_matching_strategy_only'
+            ? 'Matching strategy was already on chart before run, and this run could not verify a new or updated attachment'
+            : 'Strategy not verified in chart studies after compile + retry';
+      }
     }
 
     if (!strategyAttached) {
@@ -529,10 +764,7 @@ export async function runNvdaMaBacktest() {
         compileSuccess: true,
         compileDetail: compileResult,
         applyFailed: true,
-        applyReason:
-          verifyResult.reason === 'preexisting_matching_strategy_only'
-            ? 'Matching strategy was already on chart before run, and this run could not verify a new or updated attachment'
-            : 'Strategy not verified in chart studies after compile + retry',
+        applyReason: applyFailureReason,
         testerAvailable: false,
         testerReason: 'Skipped: strategy not applied',
         symbol: chartSymbol,
@@ -627,6 +859,12 @@ export async function runNvdaMaBacktest() {
       await setSource({ source: originalSource });
     } catch (err) {
       restoreIssues.push(`source restore failed: ${err.message}`);
+    }
+
+    try {
+      await restoreChartStudyTemplate(originalStudyTemplate);
+    } catch (err) {
+      restoreIssues.push(`study template restore failed: ${err.message}`);
     }
 
     try {

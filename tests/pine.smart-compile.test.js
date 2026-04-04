@@ -126,6 +126,88 @@ describe('pickApplyButton', () => {
     assert.equal(result.label, 'チャートに追加');
     assert.equal(result.index, 1);
   });
+
+  it('matches title attribute when button text is empty', () => {
+    const labels = [{ text: '', title: 'チャートに追加', ariaLabel: '' }];
+    const result = pickApplyButton(labels);
+    assert.notEqual(result, null);
+    assert.equal(result.label, 'チャートに追加');
+    assert.equal(result.index, 0);
+  });
+
+  it('prefers text over title when both match', () => {
+    const labels = [{ text: 'Add to chart', title: 'チャートに追加', ariaLabel: '' }];
+    const result = pickApplyButton(labels);
+    assert.equal(result.label, 'Add to chart');
+  });
+
+  it('falls back to ariaLabel when text and title are empty', () => {
+    const labels = [{ text: '', title: '', ariaLabel: 'Add to chart' }];
+    const result = pickApplyButton(labels);
+    assert.notEqual(result, null);
+    assert.equal(result.label, 'Add to chart');
+  });
+
+  it('respects priority for title-only button descriptors', () => {
+    const labels = [
+      { text: '', title: '保存してチャートに追加', ariaLabel: '' },
+      { text: '', title: 'チャートに追加', ariaLabel: '' },
+    ];
+    const result = pickApplyButton(labels);
+    assert.equal(result.label, 'チャートに追加');
+    assert.equal(result.index, 1);
+  });
+
+  it('handles mixed string and descriptor entries', () => {
+    const labels = ['Save', { text: '', title: 'チャートに追加', ariaLabel: '' }];
+    const result = pickApplyButton(labels);
+    assert.equal(result.label, 'チャートに追加');
+    assert.equal(result.index, 1);
+  });
+
+  it('picks unlabeled secondary button immediately before save button', () => {
+    const labels = [
+      { text: '', title: '', ariaLabel: '', className: 'secondary-PVWoXu5j', x: 839, y: 62 },
+      { text: '', title: 'スクリプトを保存', ariaLabel: '', className: 'saveButton-fF7iXGw2 ghost-PVWoXu5j', x: 881, y: 62 },
+    ];
+    const result = pickApplyButton(labels);
+    assert.notEqual(result, null);
+    assert.equal(result.label, 'toolbar_apply_unlabeled');
+    assert.equal(result.index, 0);
+  });
+
+  it('does not pick unlabeled secondary button when save button is missing', () => {
+    const labels = [
+      { text: '', title: '', ariaLabel: '', className: 'secondary-PVWoXu5j', x: 839, y: 62 },
+      { text: '', title: 'その他', ariaLabel: '', className: 'secondary-PVWoXu5j', x: 881, y: 62 },
+    ];
+    const result = pickApplyButton(labels);
+    assert.equal(result, null);
+  });
+
+  it('prefers the toolbar save button over unrelated save labels elsewhere', () => {
+    const labels = [
+      { text: '無題保存', title: '', ariaLabel: 'すべての変更を保存', className: 'button-IfxMm7Gw', x: 584, y: 0 },
+      { text: '', title: '', ariaLabel: '', className: 'secondary-PVWoXu5j', x: 839, y: 62 },
+      { text: '', title: 'スクリプトを保存', ariaLabel: '', className: 'saveButton-fF7iXGw2 ghost-PVWoXu5j', x: 881, y: 62 },
+    ];
+    const result = pickApplyButton(labels);
+    assert.notEqual(result, null);
+    assert.equal(result.label, 'toolbar_apply_unlabeled');
+    assert.equal(result.index, 1);
+  });
+
+  it('prefers labeled add-to-chart button over unlabeled toolbar candidate', () => {
+    const labels = [
+      { text: '', title: '', ariaLabel: '', className: 'secondary-PVWoXu5j', x: 839, y: 62 },
+      { text: '', title: 'スクリプトを保存', ariaLabel: '', className: 'saveButton-fF7iXGw2 ghost-PVWoXu5j', x: 881, y: 62 },
+      { text: 'チャートに追加', title: '', ariaLabel: '', className: 'button-GwQQdU8S', x: 920, y: 62 },
+    ];
+    const result = pickApplyButton(labels);
+    assert.notEqual(result, null);
+    assert.equal(result.label, 'チャートに追加');
+    assert.equal(result.index, 2);
+  });
 });
 
 describe('verifyStrategyAttachmentChange', () => {

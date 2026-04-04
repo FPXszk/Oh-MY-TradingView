@@ -289,6 +289,67 @@ const APPLY_PATTERNS = [
   { pattern: /^(update on chart|チャート上で更新)$/i, priority: 2 },
   { pattern: /^(save and add to chart|保存してチャートに追加)$/i, priority: 3 },
 ];
+const TOOLBAR_UNLABELED_APPLY_LABEL = 'toolbar_apply_unlabeled';
+
+function getButtonTextCandidates(entry) {
+  if (typeof entry === 'string') return [entry.trim()];
+  return [
+    (entry?.text || '').trim(),
+    (entry?.title || '').trim(),
+    (entry?.ariaLabel || '').trim(),
+  ].filter(Boolean);
+}
+
+function isSaveButtonDescriptor(entry) {
+  const className = entry?.className || '';
+  if (className.includes('saveButton-')) return true;
+
+  return getButtonTextCandidates(entry).some((text) => /save|保存/i.test(text));
+}
+
+function scoreSaveButton(entry) {
+  if (!isSaveButtonDescriptor(entry)) return 0;
+  const className = entry?.className || '';
+  return className.includes('saveButton-') ? 2 : 1;
+}
+
+function pickUnlabeledApplyButtonNearSave(entries) {
+  const saveCandidates = entries
+    .map((entry, index) => ({ entry, index, score: scoreSaveButton(entry) }))
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      const ax = Number.isFinite(a.entry?.x) ? a.entry.x : -Infinity;
+      const bx = Number.isFinite(b.entry?.x) ? b.entry.x : -Infinity;
+      return bx - ax;
+    });
+
+  for (const { entry: saveEntry, index: saveIndex } of saveCandidates) {
+    if (saveIndex <= 0) continue;
+
+    const saveX = Number.isFinite(saveEntry?.x) ? saveEntry.x : null;
+    const saveY = Number.isFinite(saveEntry?.y) ? saveEntry.y : null;
+
+    for (let i = saveIndex - 1; i >= 0; i--) {
+      const entry = entries[i];
+      const candidates = getButtonTextCandidates(entry);
+      const className = entry?.className || '';
+      if (candidates.length > 0) continue;
+      if (!className.includes('secondary-')) continue;
+
+      const entryX = Number.isFinite(entry?.x) ? entry.x : null;
+      const entryY = Number.isFinite(entry?.y) ? entry.y : null;
+      const sameRow = saveY === null || entryY === null ? true : Math.abs(saveY - entryY) <= 12;
+      const closeToSave = saveX === null || entryX === null ? saveIndex - i <= 1 : saveX > entryX && (saveX - entryX) <= 80;
+
+      if (sameRow && closeToSave) {
+        return { label: TOOLBAR_UNLABELED_APPLY_LABEL, index: i };
+      }
+    }
+  }
+
+  return null;
+}
 
 /**
  * Pick the best apply button from a list of button labels.
@@ -300,16 +361,22 @@ export function pickApplyButton(labels) {
   if (!Array.isArray(labels) || labels.length === 0) return null;
   let best = null;
   for (let i = 0; i < labels.length; i++) {
-    const text = labels[i].trim();
-    for (const { pattern, priority } of APPLY_PATTERNS) {
-      if (pattern.test(text)) {
-        if (!best || priority < best.priority) {
-          best = { label: text, index: i, priority };
+    const entry = labels[i];
+    const candidates = getButtonTextCandidates(entry);
+    for (const text of candidates) {
+      for (const { pattern, priority } of APPLY_PATTERNS) {
+        if (pattern.test(text)) {
+          if (!best || priority < best.priority) {
+            best = { label: text, index: i, priority };
+          }
         }
       }
     }
   }
-  return best ? { label: best.label, index: best.index } : null;
+
+  if (best) return { label: best.label, index: best.index };
+
+  return pickUnlabeledApplyButtonNearSave(labels);
 }
 
 // -- Functions requiring TradingView connection --
@@ -507,8 +574,10 @@ export async function clickApplyButtonByLabel(targetLabel) {
       var target = ${labelJson}.toLowerCase();
       var btns = document.querySelectorAll('button');
       for (var i = 0; i < btns.length; i++) {
-        var text = btns[i].textContent.trim().toLowerCase();
-        if (text === target) {
+        var text = (btns[i].textContent || '').trim().toLowerCase();
+        var title = (btns[i].title || '').trim().toLowerCase();
+        var ariaLabel = (btns[i].getAttribute('aria-label') || '').trim().toLowerCase();
+        if (text === target || title === target || ariaLabel === target) {
           btns[i].click();
           return true;
         }
@@ -518,17 +587,39 @@ export async function clickApplyButtonByLabel(targetLabel) {
   `);
 }
 
-async function clickPreferredApplyButton() {
-  const labels = await evaluate(`
+async function clickButtonByIndex(targetIndex) {
+  return evaluate(`
     (function() {
-      return Array.from(document.querySelectorAll('button'))
-        .map(function(btn) { return (btn.textContent || '').trim(); })
-        .filter(Boolean);
+      var btns = document.querySelectorAll('button');
+      var btn = btns[${JSON.stringify(targetIndex)}];
+      if (!btn) return false;
+      btn.click();
+      return true;
     })()
   `);
-  const picked = pickApplyButton(Array.isArray(labels) ? labels : []);
+}
+
+async function clickPreferredApplyButton() {
+  const buttons = await evaluate(`
+    (function() {
+      return Array.from(document.querySelectorAll('button'))
+        .map(function(btn) {
+          return {
+            text: (btn.textContent || '').trim(),
+            title: (btn.title || '').trim(),
+            ariaLabel: (btn.getAttribute('aria-label') || '').trim(),
+            className: btn.className || '',
+            x: Math.round(btn.getBoundingClientRect().x),
+            y: Math.round(btn.getBoundingClientRect().y)
+          };
+        });
+    })()
+  `);
+  const picked = pickApplyButton(Array.isArray(buttons) ? buttons : []);
   if (!picked) return null;
-  const clicked = await clickApplyButtonByLabel(picked.label);
+  const clicked = picked.label === TOOLBAR_UNLABELED_APPLY_LABEL
+    ? await clickButtonByIndex(picked.index)
+    : await clickApplyButtonByLabel(picked.label);
   return clicked ? picked.label : null;
 }
 
@@ -540,32 +631,49 @@ const APPLY_RETRY_LABELS = [
 const ATTACH_VERIFY_DELAY = 2000;
 const ATTACH_VERIFY_RETRIES = 2;
 
+async function verifyApplyAttempt(studiesBeforeRetry, expectedTitle, method) {
+  await new Promise((r) => setTimeout(r, ATTACH_VERIFY_DELAY));
+
+  for (let attempt = 0; attempt < ATTACH_VERIFY_RETRIES; attempt++) {
+    const studiesAfterClick = await fetchChartStudies();
+    const studyAdded = studiesAfterClick.length > studiesBeforeRetry.length;
+    const verification = verifyStrategyAttachmentChange(
+      studiesBeforeRetry,
+      studiesAfterClick,
+      expectedTitle,
+      studyAdded,
+    );
+    if (verification.attached) return { applied: true, method };
+    if (verification.reason === 'preexisting_matching_strategy_only') break;
+    await new Promise((r) => setTimeout(r, 1000));
+  }
+
+  return { applied: false, method: null };
+}
+
 /**
  * Retry applying the strategy to the chart by trying known button labels.
  * Returns { applied: boolean, method: string|null }.
  */
 export async function retryApplyStrategy(expectedTitle) {
   const studiesBeforeRetry = await fetchChartStudies();
+  const preferredMethod = await clickPreferredApplyButton();
+
+  if (preferredMethod) {
+    const preferredResult = await verifyApplyAttempt(
+      studiesBeforeRetry,
+      expectedTitle,
+      preferredMethod,
+    );
+    if (preferredResult.applied) return preferredResult;
+  }
 
   for (const label of APPLY_RETRY_LABELS) {
+    if (label === preferredMethod) continue;
     const clicked = await clickApplyButtonByLabel(label);
     if (!clicked) continue;
-
-    await new Promise((r) => setTimeout(r, ATTACH_VERIFY_DELAY));
-
-    for (let attempt = 0; attempt < ATTACH_VERIFY_RETRIES; attempt++) {
-      const studiesAfterClick = await fetchChartStudies();
-      const studyAdded = studiesAfterClick.length > studiesBeforeRetry.length;
-      const verification = verifyStrategyAttachmentChange(
-        studiesBeforeRetry,
-        studiesAfterClick,
-        expectedTitle,
-        studyAdded,
-      );
-      if (verification.attached) return { applied: true, method: label };
-      if (verification.reason === 'preexisting_matching_strategy_only') break;
-      await new Promise((r) => setTimeout(r, 1000));
-    }
+    const result = await verifyApplyAttempt(studiesBeforeRetry, expectedTitle, label);
+    if (result.applied) return result;
   }
   return { applied: false, method: null };
 }
