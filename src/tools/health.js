@@ -14,7 +14,8 @@ export function registerHealthTools(server) {
           {
             success: false,
             error: err.message,
-            hint: 'Is TradingView Desktop running with --remote-debugging-port=9222?',
+            hint: 'Is TradingView Desktop running with --remote-debugging-port=9222? ' +
+              'In WSL, set TV_CDP_HOST to the Windows host IP.',
           },
           true
         );

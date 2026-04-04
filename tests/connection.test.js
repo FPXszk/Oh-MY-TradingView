@@ -2,7 +2,13 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
 // Import the modules under test
-import { safeString, requireFinite, pickTarget } from '../src/connection.js';
+import {
+  safeString,
+  requireFinite,
+  pickTarget,
+  resolveCdpEndpoint,
+  buildConnectionHint,
+} from '../src/connection.js';
 
 describe('safeString', () => {
   it('wraps plain string in JSON quotes', () => {
@@ -87,5 +93,63 @@ describe('pickTarget', () => {
 
   it('returns null for empty array', () => {
     assert.equal(pickTarget([]), null);
+  });
+});
+
+describe('resolveCdpEndpoint', () => {
+  it('returns defaults when no env vars set', () => {
+    const ep = resolveCdpEndpoint({});
+    assert.equal(ep.host, 'localhost');
+    assert.equal(ep.port, 9222);
+  });
+
+  it('respects TV_CDP_HOST', () => {
+    const ep = resolveCdpEndpoint({ TV_CDP_HOST: '172.20.10.1' });
+    assert.equal(ep.host, '172.20.10.1');
+    assert.equal(ep.port, 9222);
+  });
+
+  it('respects TV_CDP_PORT', () => {
+    const ep = resolveCdpEndpoint({ TV_CDP_PORT: '9333' });
+    assert.equal(ep.host, 'localhost');
+    assert.equal(ep.port, 9333);
+  });
+
+  it('respects both TV_CDP_HOST and TV_CDP_PORT', () => {
+    const ep = resolveCdpEndpoint({ TV_CDP_HOST: '10.0.0.5', TV_CDP_PORT: '9444' });
+    assert.equal(ep.host, '10.0.0.5');
+    assert.equal(ep.port, 9444);
+  });
+
+  it('returns url property', () => {
+    const ep = resolveCdpEndpoint({ TV_CDP_HOST: '10.0.0.5', TV_CDP_PORT: '9444' });
+    assert.equal(ep.url, 'http://10.0.0.5:9444');
+  });
+
+  it('falls back to defaults for invalid port', () => {
+    const ep = resolveCdpEndpoint({ TV_CDP_PORT: 'abc' });
+    assert.equal(ep.port, 9222);
+  });
+});
+
+describe('buildConnectionHint', () => {
+  it('includes endpoint in message', () => {
+    const hint = buildConnectionHint('172.20.10.1', 9222);
+    assert.ok(hint.includes('172.20.10.1:9222'));
+  });
+
+  it('includes TV_CDP_HOST env var name', () => {
+    const hint = buildConnectionHint('localhost', 9222);
+    assert.ok(hint.includes('TV_CDP_HOST'));
+  });
+
+  it('includes TV_CDP_PORT env var name', () => {
+    const hint = buildConnectionHint('localhost', 9222);
+    assert.ok(hint.includes('TV_CDP_PORT'));
+  });
+
+  it('mentions WSL for non-localhost', () => {
+    const hint = buildConnectionHint('172.20.10.1', 9222);
+    assert.ok(hint.includes('WSL') || hint.includes('wsl'));
   });
 });

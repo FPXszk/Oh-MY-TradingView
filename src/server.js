@@ -2,6 +2,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { registerHealthTools } from './tools/health.js';
 import { registerPineTools } from './tools/pine.js';
+import { registerPriceTools } from './tools/price.js';
 
 const server = new McpServer(
   {
@@ -18,6 +19,10 @@ TOOL SELECTION GUIDE:
 Connection & discovery:
 - tv_health_check → verify CDP connection, get current chart state
 - tv_discover → list available TradingView internal APIs
+
+Price:
+- tv_get_price → get current price of the active chart symbol
+- tv_get_price with symbol → switch symbol first, then get price
 
 Pine Script development loop:
 - pine_get_source → read current editor content
@@ -37,12 +42,14 @@ WORKFLOW:
 IMPORTANT:
 - This is an unofficial tool. Not affiliated with TradingView Inc.
 - Ensure usage complies with TradingView's Terms of Use.
-- Local-only: connects to localhost CDP, no external data sent.`,
+- Connects to CDP endpoint (TV_CDP_HOST:TV_CDP_PORT, default localhost:9222).
+- In WSL, set TV_CDP_HOST to the Windows host IP.`,
   }
 );
 
 registerHealthTools(server);
 registerPineTools(server);
+registerPriceTools(server);
 
 process.stderr.write(
   '⚠  oh-my-tradingview  |  Unofficial tool. Not affiliated with TradingView Inc.\n'

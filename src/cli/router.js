@@ -71,7 +71,7 @@ export async function run(argv) {
     }
     const sub = cmd.subcommands.get(subName);
     if (!sub) {
-      console.error(`Unknown subcommand: ${cmdName} ${subName}`);
+      process.stderr.write(`Unknown subcommand: ${cmdName} ${subName}\n`);
       printCommandHelp(cmdName, cmd);
       process.exit(1);
     }

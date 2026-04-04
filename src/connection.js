@@ -2,10 +2,38 @@ import CDP from 'chrome-remote-interface';
 
 let client = null;
 let targetInfo = null;
-const CDP_HOST = process.env.TV_CDP_HOST || 'localhost';
-const CDP_PORT = Number(process.env.TV_CDP_PORT) || 9222;
 const MAX_RETRIES = 5;
 const BASE_DELAY = 500;
+
+/**
+ * Resolve CDP endpoint from environment variables.
+ * Pure function — accepts an env object for testability.
+ */
+export function resolveCdpEndpoint(env = process.env) {
+  const host = env.TV_CDP_HOST || 'localhost';
+  const parsed = Number(env.TV_CDP_PORT);
+  const port = Number.isFinite(parsed) && parsed > 0 ? parsed : 9222;
+  return { host, port, url: `http://${host}:${port}` };
+}
+
+/**
+ * Build a human-readable connection hint for error messages.
+ */
+export function buildConnectionHint(host, port) {
+  const lines = [
+    `Tried: http://${host}:${port}/json/list`,
+    'Set TV_CDP_HOST / TV_CDP_PORT to override the endpoint.',
+  ];
+  if (host !== 'localhost' && host !== '127.0.0.1') {
+    lines.push(`Current TV_CDP_HOST=${host} — ensure the Windows host is reachable from WSL.`);
+  } else {
+    lines.push(
+      'In WSL, localhost may not reach Windows. ' +
+      'Set TV_CDP_HOST to your Windows IP (e.g. from `ip route` or /etc/resolv.conf).'
+    );
+  }
+  return lines.join('\n');
+}
 
 /**
  * Sanitize a string for safe interpolation into JS evaluated via CDP.
@@ -54,17 +82,18 @@ export async function getClient() {
 }
 
 export async function connect() {
+  const { host, port } = resolveCdpEndpoint();
   let lastError;
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
     try {
-      const target = await findChartTarget();
+      const target = await findChartTarget(host, port);
       if (!target) {
         throw new Error(
           'No TradingView chart target found. Is TradingView Desktop running with a chart open?'
         );
       }
       targetInfo = target;
-      client = await CDP({ host: CDP_HOST, port: CDP_PORT, target: target.id });
+      client = await CDP({ host, port, target: target.id });
 
       await client.Runtime.enable();
       await client.Page.enable();
@@ -77,13 +106,16 @@ export async function connect() {
       await new Promise(r => setTimeout(r, delay));
     }
   }
+  const hint = buildConnectionHint(host, port);
   throw new Error(
-    `CDP connection failed after ${MAX_RETRIES} attempts: ${lastError?.message}`
+    `CDP connection failed after ${MAX_RETRIES} attempts: ${lastError?.message}\n${hint}`
   );
 }
 
-async function findChartTarget() {
-  const resp = await fetch(`http://${CDP_HOST}:${CDP_PORT}/json/list`);
+async function findChartTarget(host, port) {
+  const resp = await fetch(`http://${host}:${port}/json/list`, {
+    signal: AbortSignal.timeout(3000),
+  });
   const targets = await resp.json();
   return pickTarget(targets);
 }

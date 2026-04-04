@@ -1,40 +1,24 @@
 # Oh-MY-TradingView
 
-TradingView Desktop を **ローカルの Chrome DevTools Protocol (CDP)** 経由で操作する、**Copilot CLI 前提** の最小 MCP / CLI ブリッジです。
-
-最初のスコープは **接続確認** と **Pine Script 開発ループ MVP** です。
-
-- `tv_health_check` で TradingView Desktop への接続確認
-- `pine_set_source` で Pine Editor へコード注入
-- `pine_compile` / `pine_smart_compile` でコンパイル
-- `pine_get_errors` で Monaco のエラー取得
-- `tv` CLI からも同じ最小操作が可能
+TradingView Desktop を **Copilot CLI 前提** で扱う最小 MCP / CLI ブリッジです。  
+現在の対象は **Windows + WSL** を主軸にした **CDP 接続 / 現在価格取得 / Pine ループ** です。
 
 ## 重要な前提
 
 - **非公式**: TradingView Inc. とは無関係です
-- **ローカル限定**: `localhost:9222` の CDP にのみ接続します
+- **ローカル限定**: CDP だけを使い、外部送信はしません
 - **要ユーザー起動**: TradingView Desktop を `--remote-debugging-port=9222` 付きで起動しておく必要があります
-- **利用規約順守**: 利用者自身の責任で TradingView の Terms of Use に従ってください
+- **利用規約順守**: TradingView の Terms of Use は利用者責任です
 
-## アーキテクチャ
-
-```text
-Copilot CLI / tv CLI
-        ↓
-   MCP Server (stdio)
-        ↓
- Chrome DevTools Protocol
-        ↓
- TradingView Desktop (Electron)
-```
-
-## 現在の機能
+## できること
 
 ### MCP tools
 
 - `tv_health_check`
 - `tv_discover`
+- `tv_get_price`
+  - 現在チャート価格
+  - `symbol` 指定時は symbol 切替後に価格取得
 - `pine_get_source`
 - `pine_set_source`
 - `pine_compile`
@@ -42,15 +26,29 @@ Copilot CLI / tv CLI
 - `pine_smart_compile`
 - `pine_analyze`
 
-### CLI commands
+### CLI
 
 - `tv status`
 - `tv discover`
+- `tv price get`
+- `tv price get --symbol NVDA`
 - `tv pine get`
-- `tv pine set --file <path>` または `stdin`
+- `tv pine set --file <path>`
 - `tv pine compile`
 - `tv pine errors`
-- `tv pine analyze --file <path>` または `stdin`
+- `tv pine analyze --file <path>`
+
+## アーキテクチャ
+
+```text
+Copilot CLI / tv CLI (WSL or Windows)
+        ↓
+   MCP Server (stdio)
+        ↓
+ Chrome DevTools Protocol
+        ↓
+ TradingView Desktop (Electron)
+```
 
 ## セットアップ
 
@@ -60,24 +58,66 @@ Copilot CLI / tv CLI
 npm install
 ```
 
-### 2. TradingView Desktop を CDP 有効で起動
+### 2. TradingView Desktop を CDP 付きで起動
 
-Linux の例:
+Windows:
 
-```bash
-/path/to/TradingView --remote-debugging-port=9222
+```cmd
+"%LOCALAPPDATA%\TradingView\TradingView.exe" --remote-debugging-port=9222
 ```
 
-すでに `http://localhost:9222/json/list` が見えていれば準備完了です。
+必要なら次も試してください。
 
-### 3. Copilot CLI から MCP サーバとして使う
+```cmd
+"%LOCALAPPDATA%\TradingView\TradingView.exe" --remote-debugging-port=9222 --remote-debugging-address=0.0.0.0
+```
 
-Copilot CLI 側の MCP 設定で、このリポジトリの server を stdio command として登録します。
+### 3. WSL から Windows 側 CDP へ接続
 
-- command: `node`
-- args: `["/absolute/path/to/Oh-MY-TradingView/src/server.js"]`
+WSL から `localhost:9222` に届かない場合があります。  
+このケースではまず Windows 側で `9222` が **127.0.0.1 のみに bind** されていないか確認してください。
 
-この repo は **Claude Code 向けではなく Copilot CLI 前提** で説明を書いています。
+WSL 側の候補 IP:
+
+```bash
+grep nameserver /etc/resolv.conf
+ip route
+```
+
+接続先を指定:
+
+```bash
+export TV_CDP_HOST=<windows-host-ip>
+export TV_CDP_PORT=9222
+curl http://$TV_CDP_HOST:$TV_CDP_PORT/json/list
+```
+
+> `curl` が通らない場合は、Windows Firewall 許可か `portproxy` が必要です。
+
+### 4. Copilot CLI の MCP 設定
+
+```json
+{
+  "mcpServers": {
+    "oh-my-tradingview": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["/path/to/Oh-MY-TradingView/src/server.js"],
+      "env": {
+        "TV_CDP_HOST": "172.x.x.x",
+        "TV_CDP_PORT": "9222"
+      }
+    }
+  }
+}
+```
+
+## 環境変数
+
+| 変数 | デフォルト | 説明 |
+|---|---|---|
+| `TV_CDP_HOST` | `localhost` | CDP host。WSL では Windows host IP を指定 |
+| `TV_CDP_PORT` | `9222` | CDP port |
 
 ## 使い方
 
@@ -89,180 +129,57 @@ Copilot CLI 側の MCP 設定で、このリポジトリの server を stdio com
 node src/cli/index.js status
 ```
 
-Pine をファイルから注入:
+現在チャートの価格:
 
 ```bash
-node src/cli/index.js pine set --file ./example.pine
+node src/cli/index.js price get
 ```
 
-コンパイル:
+NVDA に切り替えて価格取得:
 
 ```bash
-node src/cli/index.js pine compile
+node src/cli/index.js price get --symbol NVDA
 ```
 
-エラー取得:
-
-```bash
-node src/cli/index.js pine errors
-```
-
-オフライン静的解析:
+Pine 解析:
 
 ```bash
 node src/cli/index.js pine analyze --file ./example.pine
 ```
 
-stdin から注入:
-
-```bash
-cat ./example.pine | node src/cli/index.js pine set
-```
-
 ### MCP workflow
 
-推奨ループは以下です。
-
 1. `tv_health_check`
-2. `pine_set_source`
-3. `pine_smart_compile`
-4. `pine_get_errors`
-5. 必要なら修正して 2 に戻る
+2. `tv_get_price`
+3. `tv_get_price` with `symbol: "NVDA"` if you need a specific symbol
+4. `pine_set_source`
+5. `pine_smart_compile`
+6. `pine_get_errors`
 
-## 開発
-
-ユニットテスト:
+## テスト
 
 ```bash
 npm test
-```
-
-E2E:
-
-```bash
 npm run test:e2e
+npm run test:all
 ```
 
-`test:e2e` は TradingView Desktop が CDP 付きで起動しているときだけ実行対象になります。  
-CDP が見つからない場合は skip されます。
-
-## 実装方針
-
-- `src/connection.js`: CDP 接続、target discovery、sanitize
-- `src/core/`: TradingView 操作ロジック
-- `src/tools/`: MCP tool 定義
-- `src/cli/`: CLI 入口
-- `tests/`: unit / e2e
+E2E は CDP が見つからない場合に skip されます。  
+WSL 環境では `TV_CDP_HOST` を設定してから実行してください。
 
 ## 制約
 
-- TradingView の内部 DOM / API に依存するため、Desktop 更新で壊れる可能性があります
-- いまは **Pine ループ MVP** に限定しており、chart navigation / replay / screenshot / alerts などは未実装です
-
-MCP bridge + CLI for TradingView Desktop via Chrome DevTools Protocol (CDP).
-
-Pine Script development loop: inject code → compile → check errors → iterate.
-
-> **⚠ Unofficial.** Not affiliated with TradingView Inc. or any AI vendor.
-> Ensure your usage complies with [TradingView's Terms of Use](https://www.tradingview.com/policies/).
-> Local-only: connects to `localhost` CDP — no data is sent externally.
-
-## Requirements
-
-- [TradingView Desktop](https://www.tradingview.com/desktop/) launched with CDP enabled
-- Node.js ≥ 20
-
-### Launch TradingView with CDP
-
-```bash
-# Linux
-/opt/TradingView/tradingview --remote-debugging-port=9222
-
-# macOS
-/Applications/TradingView.app/Contents/MacOS/TradingView --remote-debugging-port=9222
-
-# Windows
-"%LOCALAPPDATA%\TradingView\TradingView.exe" --remote-debugging-port=9222
-```
-
-Verify CDP is active:
-
-```bash
-curl http://localhost:9222/json/list
-```
-
-## Install
-
-```bash
-cd Oh-MY-TradingView
-npm install
-```
-
-## MCP Tools
-
-| Tool | Description |
-|------|-------------|
-| `tv_health_check` | Check CDP connection, return chart state |
-| `tv_discover` | List available TradingView internal APIs |
-| `pine_get_source` | Read current Pine Editor content |
-| `pine_set_source` | Inject Pine Script code into editor |
-| `pine_compile` | Click compile / add-to-chart button |
-| `pine_get_errors` | Read Monaco compilation errors |
-| `pine_smart_compile` | One-shot: compile + check errors + report study changes |
-| `pine_analyze` | Offline static analysis (no connection needed) |
-
-### Copilot CLI Setup
-
-Add to your MCP configuration (e.g. `~/.copilot/mcp-config.json`):
-
-```json
-{
-  "mcpServers": {
-    "oh-my-tradingview": {
-      "type": "stdio",
-      "command": "node",
-      "args": ["/path/to/Oh-MY-TradingView/src/server.js"]
-    }
-  }
-}
-```
-
-### Typical Workflow (from Copilot CLI)
-
-1. `tv_health_check` → confirm TradingView is connected
-2. `pine_set_source` → inject your Pine Script
-3. `pine_smart_compile` → compile, check errors
-4. `pine_get_errors` → read error details if any
-5. Fix code, repeat from step 2
-
-## CLI
-
-```bash
-# Check connection
-node src/cli/index.js status
-
-# Discover APIs
-node src/cli/index.js discover
-
-# Pine operations
-node src/cli/index.js pine get
-echo '//@version=6\nindicator("X")\nplot(close)' | node src/cli/index.js pine set
-node src/cli/index.js pine compile
-node src/cli/index.js pine errors
-echo '//@version=6\nindicator("X")\nplot(close)' | node src/cli/index.js pine analyze
-node src/cli/index.js pine analyze -f script.pine
-```
-
-All CLI commands output JSON — pipe to `jq` for formatting.
-
-## Tests
+- TradingView の内部 DOM / API 依存なので、Desktop 更新で壊れる可能性があります
+- 価格取得は `bars()` → `last_value()` → DOM の順に試します
+- WSL2 では Windows 側が `127.0.0.1:9222` にしか bind していないと接続できません
 
 ```bash
 # Unit tests (no TradingView needed)
 npm test
 
-# E2E tests (requires TradingView Desktop on localhost:9222)
-npm run test:e2e
+# E2E tests (requires TradingView Desktop with CDP)
+# In WSL, set TV_CDP_HOST first
+TV_CDP_HOST=172.x.x.x npm run test:e2e
 
 # All tests
 npm run test:all
@@ -273,24 +190,29 @@ npm run test:all
 ```
 src/
   server.js          # MCP server entry point (stdio transport)
-  connection.js      # CDP connection, target discovery, safety utils
+  connection.js      # CDP connection, target discovery, host resolution
   core/
     health.js        # Health check, API discovery logic
     pine.js          # Pine Editor operations, static analysis
+    price.js         # Current price retrieval (chart API + DOM fallback)
   tools/
     _format.js       # MCP response formatting
     health.js        # MCP tool registration: tv_health_check, tv_discover
     pine.js          # MCP tool registration: pine_* tools
+    price.js         # MCP tool registration: tv_get_price
   cli/
     index.js         # CLI entry point
     router.js        # Command router (node:util parseArgs)
     commands/
       health.js      # CLI: status, discover
       pine.js        # CLI: pine get/set/compile/errors/analyze
+      price.js       # CLI: price get
 tests/
-  connection.test.js      # Unit: safeString, requireFinite, pickTarget
+  connection.test.js      # Unit: safeString, requireFinite, pickTarget, resolveCdpEndpoint
   pine.analyze.test.js    # Unit: offline Pine static analysis
+  price.test.js           # Unit: formatPriceResult, validatePriceData
   e2e.pine-loop.test.js   # E2E: full pine loop (skips if no CDP)
+  e2e.price.test.js       # E2E: price retrieval (skips if no CDP)
 ```
 
 ## Safety

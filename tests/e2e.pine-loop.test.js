@@ -1,12 +1,14 @@
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
+import { resolveCdpEndpoint } from '../src/connection.js';
 
 /**
- * E2E tests require TradingView Desktop running with CDP on localhost:9222.
- * Skip gracefully if not available.
+ * E2E tests require TradingView Desktop running with CDP.
+ * Endpoint is resolved from TV_CDP_HOST / TV_CDP_PORT (default localhost:9222).
  */
 
-const CDP_URL = 'http://localhost:9222/json/list';
+const { url: CDP_BASE } = resolveCdpEndpoint();
+const CDP_URL = `${CDP_BASE}/json/list`;
 
 async function isCdpAvailable() {
   try {
