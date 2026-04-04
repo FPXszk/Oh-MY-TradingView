@@ -14,9 +14,9 @@
   "scripts": {
     "start": "node src/server.js",
     "tv": "node src/cli/index.js",
-    "test": "node --test tests/connection.test.js tests/pine.analyze.test.js tests/price.test.js",
-    "test:e2e": "node --test tests/e2e.pine-loop.test.js tests/e2e.price.test.js",
-    "test:all": "node --test tests/connection.test.js tests/pine.analyze.test.js tests/price.test.js tests/e2e.pine-loop.test.js tests/e2e.price.test.js"
+    "test": "node --test tests/connection.test.js tests/pine.analyze.test.js tests/price.test.js tests/backtest.test.js",
+    "test:e2e": "node --test tests/e2e.pine-loop.test.js tests/e2e.price.test.js tests/e2e.backtest.test.js",
+    "test:all": "node --test tests/connection.test.js tests/pine.analyze.test.js tests/price.test.js tests/backtest.test.js tests/e2e.pine-loop.test.js tests/e2e.price.test.js tests/e2e.backtest.test.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1",

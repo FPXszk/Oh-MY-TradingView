@@ -63,6 +63,7 @@ export async function ensurePineEditorOpen() {
       var bwb = window.TradingView && window.TradingView.bottomWidgetBar;
       if (!bwb) return;
       if (typeof bwb.activateScriptEditorTab === 'function') bwb.activateScriptEditorTab();
+      else if (typeof bwb.open === 'function') bwb.open('pine-editor');
       else if (typeof bwb.showWidget === 'function') bwb.showWidget('pine-editor');
     })()
   `);
@@ -247,11 +248,11 @@ export async function compile() {
       var fallback = null;
       for (var i = 0; i < btns.length; i++) {
         var text = btns[i].textContent.trim();
-        if (/save and add to chart/i.test(text)) {
+        if (/save and add to chart|保存してチャートに追加/i.test(text)) {
           btns[i].click();
-          return 'Save and add to chart';
+          return text || 'Save and add to chart';
         }
-        if (!fallback && /^(Add to chart|Update on chart)/i.test(text)) {
+        if (!fallback && /^(Add to chart|Update on chart|チャートに追加|チャート上で更新)$/i.test(text)) {
           fallback = btns[i];
         }
       }
@@ -329,12 +330,12 @@ export async function smartCompile() {
       var updateBtn = null;
       for (var i = 0; i < btns.length; i++) {
         var text = btns[i].textContent.trim();
-        if (/save and add to chart/i.test(text)) {
+        if (/save and add to chart|保存してチャートに追加/i.test(text)) {
           btns[i].click();
-          return 'Save and add to chart';
+          return text || 'Save and add to chart';
         }
-        if (!addBtn && /^add to chart$/i.test(text)) addBtn = btns[i];
-        if (!updateBtn && /^update on chart$/i.test(text)) updateBtn = btns[i];
+        if (!addBtn && /^(add to chart|チャートに追加)$/i.test(text)) addBtn = btns[i];
+        if (!updateBtn && /^(update on chart|チャート上で更新)$/i.test(text)) updateBtn = btns[i];
       }
       if (addBtn) { addBtn.click(); return 'Add to chart'; }
       if (updateBtn) { updateBtn.click(); return 'Update on chart'; }

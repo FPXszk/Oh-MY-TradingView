@@ -3,6 +3,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { registerHealthTools } from './tools/health.js';
 import { registerPineTools } from './tools/pine.js';
 import { registerPriceTools } from './tools/price.js';
+import { registerBacktestTools } from './tools/backtest.js';
 
 const server = new McpServer(
   {
@@ -32,12 +33,18 @@ Pine Script development loop:
 - pine_smart_compile → one-shot: compile + check errors + report study changes
 - pine_analyze → offline static analysis (no connection needed)
 
+Backtest:
+- tv_backtest_nvda_ma_5_20 → run fixed NVDA 5/20 SMA crossover backtest
+
 WORKFLOW:
 1. tv_health_check → confirm connection
 2. pine_set_source → inject code
 3. pine_smart_compile → compile and check
 4. pine_get_errors → if errors, read them
 5. Fix code and repeat from step 2
+
+BACKTEST WORKFLOW:
+1. tv_backtest_nvda_ma_5_20 → switches to NVDA, applies 5/20 MA cross strategy, reads Strategy Tester
 
 IMPORTANT:
 - This is an unofficial tool. Not affiliated with TradingView Inc.
@@ -50,6 +57,7 @@ IMPORTANT:
 registerHealthTools(server);
 registerPineTools(server);
 registerPriceTools(server);
+registerBacktestTools(server);
 
 process.stderr.write(
   '⚠  oh-my-tradingview  |  Unofficial tool. Not affiliated with TradingView Inc.\n'
