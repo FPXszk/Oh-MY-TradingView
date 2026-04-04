@@ -6,6 +6,8 @@ import {
   normalizeMetrics,
   buildResult,
   runLocalFallbackBacktest,
+  classifyTesterReadFailure,
+  isTesterPanelStateVisible,
 } from '../src/core/backtest.js';
 
 // ---------------------------------------------------------------------------
@@ -201,6 +203,126 @@ describe('buildResult', () => {
     });
     assert.equal(rTester.apply_failed, false);
     assert.equal(rTester.tester_reason, 'Strategy Tester opened but metrics could not be read');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// classifyTesterReadFailure
+// ---------------------------------------------------------------------------
+describe('classifyTesterReadFailure', () => {
+  it('returns panel_not_visible when testerState is null', () => {
+    const result = classifyTesterReadFailure({
+      testerState: null,
+      hasApiResult: false,
+      hasDomResult: false,
+    });
+    assert.equal(result.category, 'panel_not_visible');
+    assert.ok(result.reason);
+  });
+
+  it('returns no_strategy_applied when tester reports no strategy', () => {
+    const result = classifyTesterReadFailure({
+      testerState: { text: 'Apply a strategy to your chart', no_strategy: true },
+      hasApiResult: false,
+      hasDomResult: false,
+    });
+    assert.equal(result.category, 'no_strategy_applied');
+    assert.ok(result.reason.toLowerCase().includes('no strategy'));
+  });
+
+  it('returns metrics_unreadable when both API and DOM fail', () => {
+    const result = classifyTesterReadFailure({
+      testerState: { text: 'Net Profit ...', no_strategy: false },
+      hasApiResult: false,
+      hasDomResult: false,
+    });
+    assert.equal(result.category, 'metrics_unreadable');
+    assert.ok(result.reason);
+  });
+
+  it('returns unknown when hasApiResult is unexpectedly true', () => {
+    const result = classifyTesterReadFailure({
+      testerState: { text: '', no_strategy: false },
+      hasApiResult: true,
+      hasDomResult: false,
+    });
+    assert.ok(result.category);
+    assert.ok(result.reason);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// isTesterPanelStateVisible
+// ---------------------------------------------------------------------------
+describe('isTesterPanelStateVisible', () => {
+  it('returns true when panel_visible is true', () => {
+    assert.equal(
+      isTesterPanelStateVisible({ panel_visible: true, no_strategy: false, text: '' }),
+      true,
+    );
+  });
+
+  it('returns true when tester shows no-strategy guidance', () => {
+    assert.equal(
+      isTesterPanelStateVisible({
+        panel_visible: false,
+        no_strategy: true,
+        text: 'Apply a strategy to your chart',
+      }),
+      true,
+    );
+  });
+
+  it('returns false when tester state has no visible signal', () => {
+    assert.equal(
+      isTesterPanelStateVisible({ panel_visible: false, no_strategy: false, text: '' }),
+      false,
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// buildResult — tester_reason_category support
+// ---------------------------------------------------------------------------
+describe('buildResult — tester_reason_category', () => {
+  it('includes tester_reason_category when provided', () => {
+    const r = buildResult({
+      compileSuccess: true,
+      testerAvailable: false,
+      testerReason: 'Strategy Tester opened but metrics could not be read',
+      testerReasonCategory: 'metrics_unreadable',
+      symbol: 'NASDAQ:NVDA',
+    });
+    assert.equal(r.tester_reason_category, 'metrics_unreadable');
+    assert.equal(r.tester_reason, 'Strategy Tester opened but metrics could not be read');
+  });
+
+  it('omits tester_reason_category when tester is available', () => {
+    const r = buildResult({
+      compileSuccess: true,
+      testerAvailable: true,
+      metrics: { net_profit: '$500' },
+      testerReasonCategory: 'metrics_unreadable',
+      symbol: 'NASDAQ:NVDA',
+    });
+    assert.equal(r.tester_reason_category, undefined);
+  });
+
+  it('preserves tester_reason when fallback is added externally', () => {
+    const r = buildResult({
+      compileSuccess: true,
+      applyFailed: false,
+      testerAvailable: false,
+      testerReason: 'Strategy Tester opened but metrics could not be read from internal API or DOM',
+      testerReasonCategory: 'metrics_unreadable',
+      symbol: 'NASDAQ:NVDA',
+    });
+    r.fallback_source = 'chart_bars_local';
+    r.fallback_metrics = { net_profit: 100, closed_trades: 5 };
+
+    assert.equal(r.tester_reason, 'Strategy Tester opened but metrics could not be read from internal API or DOM');
+    assert.equal(r.tester_reason_category, 'metrics_unreadable');
+    assert.ok(r.fallback_metrics);
   });
 });
 

@@ -169,6 +169,56 @@ export function normalizeMetrics(raw) {
 }
 
 // ---------------------------------------------------------------------------
+// Tester panel state helpers (pure — unit testable)
+// ---------------------------------------------------------------------------
+export function isTesterPanelStateVisible(testerState) {
+  if (!testerState || typeof testerState !== 'object') {
+    return false;
+  }
+  if (testerState.panel_visible === true || testerState.no_strategy === true) {
+    return true;
+  }
+  const text = String(testerState.text ?? '').toLowerCase();
+  if (!text) {
+    return false;
+  }
+  if (/strategy tester|ストラテジーレポート|ストラテジーテスター/i.test(text)) {
+    return true;
+  }
+  return Object.values(TESTER_LABEL_ALIASES)
+    .flat()
+    .some((alias) => text.includes(String(alias).toLowerCase()));
+}
+
+// ---------------------------------------------------------------------------
+// Tester read failure classifier (pure — unit testable)
+// ---------------------------------------------------------------------------
+export function classifyTesterReadFailure({ testerState, hasApiResult, hasDomResult }) {
+  if (!isTesterPanelStateVisible(testerState)) {
+    return {
+      category: 'panel_not_visible',
+      reason: 'Strategy Tester panel could not be confirmed as visible',
+    };
+  }
+  if (testerState.no_strategy) {
+    return {
+      category: 'no_strategy_applied',
+      reason: 'Strategy Tester opened, but TradingView reports no strategy is applied to the chart',
+    };
+  }
+  if (!hasApiResult && !hasDomResult) {
+    return {
+      category: 'metrics_unreadable',
+      reason: 'Strategy Tester opened but metrics could not be read from internal API or DOM',
+    };
+  }
+  return {
+    category: 'unknown',
+    reason: 'Metrics reading failed for unknown reason',
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Result builder
 // ---------------------------------------------------------------------------
 export function buildResult({
@@ -179,6 +229,7 @@ export function buildResult({
   applyReason,
   testerAvailable,
   testerReason,
+  testerReasonCategory,
   metrics,
   symbol,
 }) {
@@ -208,6 +259,9 @@ export function buildResult({
     result.metrics = normalizeMetrics(metrics);
   } else {
     result.tester_reason = testerReason || 'Unknown';
+    if (testerReasonCategory) {
+      result.tester_reason_category = testerReasonCategory;
+    }
   }
 
   return result;
@@ -242,9 +296,19 @@ async function openStrategyTester() {
       } catch (e) { return false; }
     })()
   `);
-  if (!opened) return false;
-  await new Promise((r) => setTimeout(r, 1500));
-  return true;
+  if (!opened) {
+    return { attempted: false, confirmedVisible: false };
+  }
+
+  // Poll for tester panel visibility instead of fixed wait.
+  for (let i = 0; i < 10; i++) {
+    await new Promise((r) => setTimeout(r, 300));
+    const testerState = await readTesterState();
+    if (isTesterPanelStateVisible(testerState)) {
+      return { attempted: true, confirmedVisible: true };
+    }
+  }
+  return { attempted: true, confirmedVisible: false };
 }
 
 async function readTesterMetricsFromInternalApi() {
@@ -298,7 +362,9 @@ async function readTesterMetricsFromDom() {
         var rows = document.querySelectorAll(
           '[class*="reportContainer"] [class*="row"], ' +
           '[data-name="strategy-report"] tr, ' +
-          '[class*="strategyReport"] tr'
+          '[class*="strategyReport"] tr, ' +
+          '[class*="report-"] [class*="row"], ' +
+          '[class*="backtesting"] [class*="row"]'
         );
         if (!rows || rows.length === 0) return null;
 
@@ -306,7 +372,7 @@ async function readTesterMetricsFromDom() {
         var mapping = ${JSON.stringify(TESTER_LABEL_ALIASES)};
 
         for (var i = 0; i < rows.length; i++) {
-          var cells = rows[i].querySelectorAll('td, [class*="cell"], [class*="value"]');
+          var cells = rows[i].querySelectorAll('td, [class*="cell"], [class*="value"], span');
           if (cells.length < 2) continue;
           var label = (cells[0].textContent || '').trim().toLowerCase();
           var value = (cells[1].textContent || '').trim();
@@ -333,12 +399,26 @@ async function readTesterState() {
       try {
         var bottom = document.querySelector('[class*="layout__area--bottom"]');
         var text = bottom ? (bottom.innerText || '').trim() : '';
+        var noStrategy = /Apply a strategy to your chart|ストラテジーをテストするには、そのストラテジーをチャート上に適用してください/i.test(text);
+        var activeTesterTab = Array.from(document.querySelectorAll('button,[role="tab"]')).find(function(el) {
+          var label = ((el.textContent || '') + ' ' + (el.getAttribute('aria-label') || '')).trim();
+          if (!/Strategy Tester|ストラテジーレポート|ストラテジーテスター/i.test(label)) return false;
+          var selected = el.getAttribute('aria-selected');
+          var pressed = el.getAttribute('aria-pressed');
+          var className = typeof el.className === 'string' ? el.className : '';
+          return selected === 'true' || pressed === 'true' || /active|selected/i.test(className);
+        });
+        var reportRoot = document.querySelector(
+          '[data-name="strategy-report"], [class*="strategyReport"], [class*="reportContainer"], [class*="backtesting"]'
+        );
+        var reportTextVisible = /net profit|closed trades|profit factor|max drawdown|純利益|総取引数|プロフィットファクター|最大ドローダウン/i.test(text);
         return {
           text: text,
-          no_strategy: /Apply a strategy to your chart|ストラテジーをテストするには、そのストラテジーをチャート上に適用してください/i.test(text)
+          no_strategy: noStrategy,
+          panel_visible: Boolean(activeTesterTab || reportRoot || noStrategy || reportTextVisible),
         };
       } catch (e) {
-        return { text: '', no_strategy: false };
+        return { text: '', no_strategy: false, panel_visible: false };
       }
     })()
   `);
@@ -461,21 +541,24 @@ export async function runNvdaMaBacktest() {
     }
 
     // -- Strategy attached — open Strategy Tester --
-    const testerOpened = await openStrategyTester();
-    if (!testerOpened) {
+    const testerOpenState = await openStrategyTester();
+    if (!testerOpenState.attempted) {
       result = buildResult({
         compileSuccess: true,
         compileDetail: compileResult,
         applyFailed: false,
         testerAvailable: false,
         testerReason: 'Strategy Tester panel could not be opened',
+        testerReasonCategory: 'panel_not_visible',
         symbol: chartSymbol,
       });
       return result;
     }
 
     let rawMetrics = null;
-    let testerState = null;
+    let testerState = testerOpenState.confirmedVisible
+      ? { text: '', no_strategy: false, panel_visible: true }
+      : null;
     for (let i = 0; i < TESTER_READ_RETRIES; i++) {
       await new Promise((r) => setTimeout(r, TESTER_READ_DELAY));
       rawMetrics = await readTesterMetricsFromInternalApi();
@@ -488,7 +571,12 @@ export async function runNvdaMaBacktest() {
     }
 
     if (!rawMetrics) {
-      const noStrategyReported = Boolean(testerState?.no_strategy);
+      const failure = classifyTesterReadFailure({
+        testerState,
+        hasApiResult: false,
+        hasDomResult: false,
+      });
+      const noStrategyReported = failure.category === 'no_strategy_applied';
       const fallbackBars = await readChartBars();
       const fallbackMetrics = runLocalFallbackBacktest(fallbackBars);
       result = buildResult({
@@ -499,9 +587,8 @@ export async function runNvdaMaBacktest() {
           ? 'TradingView reports no strategy is applied to the chart (detected after tester open)'
           : undefined,
         testerAvailable: false,
-        testerReason: noStrategyReported
-          ? 'Strategy Tester opened, but TradingView reports no strategy is applied to the chart'
-          : 'Strategy Tester opened but metrics could not be read',
+        testerReason: failure.reason,
+        testerReasonCategory: failure.category,
         symbol: chartSymbol,
       });
       if (fallbackMetrics) {

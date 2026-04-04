@@ -56,6 +56,13 @@ describe('e2e: Backtest NVDA MA (requires TradingView Desktop)', async () => {
           assert.ok(result.metrics, 'metrics should be present when tester is available');
         } else {
           assert.ok(result.tester_reason, 'tester_reason should explain unavailability');
+          if (result.tester_reason_category) {
+            const validCategories = ['panel_not_visible', 'no_strategy_applied', 'metrics_unreadable', 'unknown'];
+            assert.ok(
+              validCategories.includes(result.tester_reason_category),
+              `tester_reason_category should be one of ${validCategories.join(', ')}, got: ${result.tester_reason_category}`,
+            );
+          }
         }
 
         // fallback metrics must indicate source
