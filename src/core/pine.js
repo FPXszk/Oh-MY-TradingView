@@ -235,33 +235,30 @@ export function verifyStrategyAttachmentChange(beforeStudies, afterStudies, expe
 
   const needle = expectedTitle.toLowerCase();
   const before = Array.isArray(beforeStudies) ? beforeStudies : [];
-  const beforeMatchingIds = new Set(
-    before
-      .filter((study) => {
-        const name = (study.name || '').toLowerCase();
-        const desc = (study.description || '').toLowerCase();
-        return name.includes(needle) || desc.includes(needle);
-      })
-      .map((study) => study.id)
-      .filter(Boolean),
-  );
-
-  const afterMatching = afterStudies.filter((study) => {
+  const matchesExpectedTitle = (study) => {
     const name = (study.name || '').toLowerCase();
     const desc = (study.description || '').toLowerCase();
     return name.includes(needle) || desc.includes(needle);
-  });
+  };
+  const beforeMatching = before.filter(matchesExpectedTitle);
+  const beforeMatchingIds = new Set(beforeMatching.map((study) => study.id).filter(Boolean));
+
+  const afterMatching = afterStudies.filter(matchesExpectedTitle);
 
   if (afterMatching.length === 0) {
     return { attached: false, matchedStudy: null, reason: 'no_matching_strategy_after' };
   }
 
+  const newlyAdded = afterMatching.find((study) => study.id && !beforeMatchingIds.has(study.id));
+  const matchingCountIncreased = afterMatching.length > beforeMatching.length;
+
   if (studyAdded) {
-    const matchedStudy = afterMatching[0].name || afterMatching[0].description || null;
-    return { attached: true, matchedStudy, reason: 'study_count_increased' };
+    if (newlyAdded) {
+      const matchedStudy = newlyAdded.name || newlyAdded.description || null;
+      return { attached: true, matchedStudy, reason: 'study_count_increased' };
+    }
   }
 
-  const newlyAdded = afterMatching.find((study) => study.id && !beforeMatchingIds.has(study.id));
   if (newlyAdded) {
     return {
       attached: true,
@@ -270,10 +267,18 @@ export function verifyStrategyAttachmentChange(beforeStudies, afterStudies, expe
     };
   }
 
+  if (matchingCountIncreased) {
+    return {
+      attached: true,
+      matchedStudy: afterMatching[afterMatching.length - 1].name || afterMatching[afterMatching.length - 1].description || null,
+      reason: 'matching_strategy_count_increased',
+    };
+  }
+
   return {
     attached: false,
     matchedStudy: afterMatching[0].name || afterMatching[0].description || null,
-    reason: beforeMatchingIds.size > 0 ? 'preexisting_matching_strategy_only' : 'matching_strategy_not_verified',
+    reason: beforeMatching.length > 0 ? 'preexisting_matching_strategy_only' : 'matching_strategy_not_verified',
   };
 }
 
@@ -350,24 +355,7 @@ export async function compile() {
   const editorReady = await ensurePineEditorOpen();
   if (!editorReady) throw new Error('Could not open Pine Editor.');
 
-  const clicked = await evaluate(`
-    (function() {
-      var btns = document.querySelectorAll('button');
-      var fallback = null;
-      for (var i = 0; i < btns.length; i++) {
-        var text = btns[i].textContent.trim();
-        if (/save and add to chart|保存してチャートに追加/i.test(text)) {
-          btns[i].click();
-          return text || 'Save and add to chart';
-        }
-        if (!fallback && /^(Add to chart|Update on chart|チャートに追加|チャート上で更新)$/i.test(text)) {
-          fallback = btns[i];
-        }
-      }
-      if (fallback) { fallback.click(); return fallback.textContent.trim(); }
-      return null;
-    })()
-  `);
+  const clicked = await clickPreferredApplyButton();
 
   if (!clicked) {
     const c = await getClient();
@@ -431,25 +419,7 @@ export async function smartCompile() {
     })()
   `);
 
-  const buttonClicked = await evaluate(`
-    (function() {
-      var btns = document.querySelectorAll('button');
-      var addBtn = null;
-      var updateBtn = null;
-      for (var i = 0; i < btns.length; i++) {
-        var text = btns[i].textContent.trim();
-        if (/save and add to chart|保存してチャートに追加/i.test(text)) {
-          btns[i].click();
-          return text || 'Save and add to chart';
-        }
-        if (!addBtn && /^(add to chart|チャートに追加)$/i.test(text)) addBtn = btns[i];
-        if (!updateBtn && /^(update on chart|チャート上で更新)$/i.test(text)) updateBtn = btns[i];
-      }
-      if (addBtn) { addBtn.click(); return 'Add to chart'; }
-      if (updateBtn) { updateBtn.click(); return 'Update on chart'; }
-      return null;
-    })()
-  `);
+  const buttonClicked = await clickPreferredApplyButton();
 
   if (!buttonClicked) {
     const c = await getClient();
@@ -548,6 +518,20 @@ export async function clickApplyButtonByLabel(targetLabel) {
   `);
 }
 
+async function clickPreferredApplyButton() {
+  const labels = await evaluate(`
+    (function() {
+      return Array.from(document.querySelectorAll('button'))
+        .map(function(btn) { return (btn.textContent || '').trim(); })
+        .filter(Boolean);
+    })()
+  `);
+  const picked = pickApplyButton(Array.isArray(labels) ? labels : []);
+  if (!picked) return null;
+  const clicked = await clickApplyButtonByLabel(picked.label);
+  return clicked ? picked.label : null;
+}
+
 const APPLY_RETRY_LABELS = [
   'Update on chart', 'チャート上で更新',
   'Add to chart', 'チャートに追加',
@@ -561,6 +545,8 @@ const ATTACH_VERIFY_RETRIES = 2;
  * Returns { applied: boolean, method: string|null }.
  */
 export async function retryApplyStrategy(expectedTitle) {
+  const studiesBeforeRetry = await fetchChartStudies();
+
   for (const label of APPLY_RETRY_LABELS) {
     const clicked = await clickApplyButtonByLabel(label);
     if (!clicked) continue;
@@ -568,9 +554,16 @@ export async function retryApplyStrategy(expectedTitle) {
     await new Promise((r) => setTimeout(r, ATTACH_VERIFY_DELAY));
 
     for (let attempt = 0; attempt < ATTACH_VERIFY_RETRIES; attempt++) {
-      const studies = await fetchChartStudies();
-      const { attached } = verifyStrategyAttached(studies, expectedTitle);
-      if (attached) return { applied: true, method: label };
+      const studiesAfterClick = await fetchChartStudies();
+      const studyAdded = studiesAfterClick.length > studiesBeforeRetry.length;
+      const verification = verifyStrategyAttachmentChange(
+        studiesBeforeRetry,
+        studiesAfterClick,
+        expectedTitle,
+        studyAdded,
+      );
+      if (verification.attached) return { applied: true, method: label };
+      if (verification.reason === 'preexisting_matching_strategy_only') break;
       await new Promise((r) => setTimeout(r, 1000));
     }
   }

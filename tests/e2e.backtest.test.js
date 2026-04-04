@@ -52,6 +52,15 @@ describe('e2e: Backtest NVDA MA (requires TradingView Desktop)', async () => {
           }
         }
 
+        if (
+          result.apply_failed === false &&
+          result.tester_reason_category === 'no_strategy_applied'
+        ) {
+          assert.fail(
+            'apply_failed=false contradicts tester_reason_category=no_strategy_applied',
+          );
+        }
+
         if (result.tester_available) {
           assert.ok(result.metrics, 'metrics should be present when tester is available');
         } else {

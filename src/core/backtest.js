@@ -253,6 +253,10 @@ export function buildResult({
     if (applyFailed && applyReason) {
       result.apply_reason = applyReason;
     }
+  } else if (testerReasonCategory === 'no_strategy_applied') {
+    result.apply_failed = true;
+    result.apply_reason =
+      applyReason || testerReason || 'TradingView reports no strategy is applied to the chart';
   }
 
   if (testerAvailable && metrics) {

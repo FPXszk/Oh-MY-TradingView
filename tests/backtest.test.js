@@ -324,6 +324,20 @@ describe('buildResult — tester_reason_category', () => {
     assert.equal(r.tester_reason_category, 'metrics_unreadable');
     assert.ok(r.fallback_metrics);
   });
+
+  it('infers apply_failed when tester reports no strategy applied', () => {
+    const r = buildResult({
+      compileSuccess: true,
+      compileDetail: { button_clicked: 'Add to chart' },
+      testerAvailable: false,
+      testerReason: 'TradingView reports no strategy is applied to the chart',
+      testerReasonCategory: 'no_strategy_applied',
+      symbol: 'NASDAQ:NVDA',
+    });
+    assert.equal(r.apply_failed, true);
+    assert.ok(r.apply_reason);
+    assert.equal(r.tester_reason_category, 'no_strategy_applied');
+  });
 });
 
 describe('runLocalFallbackBacktest', () => {

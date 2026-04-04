@@ -112,6 +112,20 @@ describe('pickApplyButton', () => {
     const result = pickApplyButton([]);
     assert.equal(result, null);
   });
+
+  it('prefers "Add to chart" over "Save and add to chart" when both exist', () => {
+    const labels = ['Save and add to chart', 'Add to chart'];
+    const result = pickApplyButton(labels);
+    assert.equal(result.label, 'Add to chart');
+    assert.equal(result.index, 1);
+  });
+
+  it('prefers "チャートに追加" over "保存してチャートに追加" when both exist', () => {
+    const labels = ['保存してチャートに追加', 'チャートに追加'];
+    const result = pickApplyButton(labels);
+    assert.equal(result.label, 'チャートに追加');
+    assert.equal(result.index, 1);
+  });
 });
 
 describe('verifyStrategyAttachmentChange', () => {
@@ -143,5 +157,27 @@ describe('verifyStrategyAttachmentChange', () => {
     const result = verifyStrategyAttachmentChange(beforeStudies, afterStudies, 'NVDA 5/20 MA Cross', false);
     assert.equal(result.attached, false);
     assert.equal(result.reason, 'preexisting_matching_strategy_only');
+  });
+
+  it('returns attached:false when study count increased for a non-matching study only', () => {
+    const beforeStudies = [{ id: 's9', name: 'NVDA 5/20 MA Cross' }];
+    const afterStudies = [
+      { id: 's9', name: 'NVDA 5/20 MA Cross' },
+      { id: 's10', name: 'Volume' },
+    ];
+    const result = verifyStrategyAttachmentChange(beforeStudies, afterStudies, 'NVDA 5/20 MA Cross', true);
+    assert.equal(result.attached, false);
+    assert.equal(result.reason, 'preexisting_matching_strategy_only');
+  });
+
+  it('returns attached:true when matching strategy count increases even if IDs are missing', () => {
+    const beforeStudies = [{ name: 'Volume' }];
+    const afterStudies = [
+      { name: 'Volume' },
+      { name: 'NVDA 5/20 MA Cross' },
+    ];
+    const result = verifyStrategyAttachmentChange(beforeStudies, afterStudies, 'NVDA 5/20 MA Cross', true);
+    assert.equal(result.attached, true);
+    assert.equal(result.reason, 'matching_strategy_count_increased');
   });
 });
