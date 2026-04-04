@@ -2,11 +2,11 @@
 
 set -Eeuo pipefail
 
-readonly SESSION_NAME="twitter-auto-poster"
-readonly ROOT_DIR="${HOME}/code/twitter-auto-poster"
+readonly SESSION_NAME="Oh-MY-TradingView"
+readonly ROOT_DIR="${HOME}/code/Oh-MY-TradingView"
 
 if [ ! -d "${ROOT_DIR}" ]; then
-  echo "エラー: ~/code/twitter-auto-poster が存在しません" >&2
+  echo "エラー: ~/code/Oh-MY-TradingView が存在しません" >&2
   exit 1
 fi
 
@@ -25,7 +25,7 @@ fi
 
 echo "Copilot CLI をスマホ表示向けモードで起動しています"
 
-readonly LOG_FILE="${ROOT_DIR}/twitter-auto-poster.log"
+readonly LOG_FILE="${ROOT_DIR}/Oh-MY-TradingView.log"
 
 die() {
   echo "devinit.sh: $*" >&2
@@ -89,7 +89,7 @@ start_commands() {
 
   gh auth status >/dev/null 2>&1 || gh auth login --hostname github.com --git-protocol ssh --web
 
-  copilot_cmd="cd $(escape "${ROOT_DIR}") && copilot --yolo --add-github-mcp-toolset all --add-dir ~/code/twitter-auto-poster"
+  copilot_cmd="cd $(escape "${ROOT_DIR}") && copilot --yolo --add-github-mcp-toolset all --add-dir ~/code/Oh-MY-TradingView"
   logs_cmd="cd ${ROOT_DIR} && touch $(escape "${LOG_FILE}") && tail -F $(escape "${LOG_FILE}")"
   git_cmd="cd ${ROOT_DIR} && echo 'Launching lazygit...' && lazygit"
 
