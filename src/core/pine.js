@@ -199,6 +199,114 @@ export function analyze({ source }) {
   };
 }
 
+// -- Strategy attach verification (pure) --
+
+/**
+ * Check whether a study list contains a strategy matching the expected title.
+ * @param {Array|null} studies - array of {id, name, ...} from chart.getAllStudies()
+ * @param {string} expectedTitle - strategy title to look for
+ * @returns {{ attached: boolean, matchedStudy: string|null }}
+ */
+export function verifyStrategyAttached(studies, expectedTitle) {
+  if (!Array.isArray(studies) || studies.length === 0) {
+    return { attached: false, matchedStudy: null };
+  }
+  const needle = expectedTitle.toLowerCase();
+  for (const study of studies) {
+    const name = (study.name || '').toLowerCase();
+    const desc = (study.description || '').toLowerCase();
+    if (name.includes(needle) || desc.includes(needle)) {
+      return { attached: true, matchedStudy: study.name || study.description };
+    }
+  }
+  return { attached: false, matchedStudy: null };
+}
+
+/**
+ * Verify that strategy attachment is evidenced by a change, not only by presence.
+ * Returns true when a matching strategy is present after apply and either:
+ * - study count increased, or
+ * - a new matching study ID appeared.
+ */
+export function verifyStrategyAttachmentChange(beforeStudies, afterStudies, expectedTitle, studyAdded = false) {
+  if (!Array.isArray(afterStudies) || afterStudies.length === 0) {
+    return { attached: false, matchedStudy: null, reason: 'no_matching_strategy_after' };
+  }
+
+  const needle = expectedTitle.toLowerCase();
+  const before = Array.isArray(beforeStudies) ? beforeStudies : [];
+  const beforeMatchingIds = new Set(
+    before
+      .filter((study) => {
+        const name = (study.name || '').toLowerCase();
+        const desc = (study.description || '').toLowerCase();
+        return name.includes(needle) || desc.includes(needle);
+      })
+      .map((study) => study.id)
+      .filter(Boolean),
+  );
+
+  const afterMatching = afterStudies.filter((study) => {
+    const name = (study.name || '').toLowerCase();
+    const desc = (study.description || '').toLowerCase();
+    return name.includes(needle) || desc.includes(needle);
+  });
+
+  if (afterMatching.length === 0) {
+    return { attached: false, matchedStudy: null, reason: 'no_matching_strategy_after' };
+  }
+
+  if (studyAdded) {
+    const matchedStudy = afterMatching[0].name || afterMatching[0].description || null;
+    return { attached: true, matchedStudy, reason: 'study_count_increased' };
+  }
+
+  const newlyAdded = afterMatching.find((study) => study.id && !beforeMatchingIds.has(study.id));
+  if (newlyAdded) {
+    return {
+      attached: true,
+      matchedStudy: newlyAdded.name || newlyAdded.description || null,
+      reason: 'new_matching_study_id',
+    };
+  }
+
+  return {
+    attached: false,
+    matchedStudy: afterMatching[0].name || afterMatching[0].description || null,
+    reason: beforeMatchingIds.size > 0 ? 'preexisting_matching_strategy_only' : 'matching_strategy_not_verified',
+  };
+}
+
+// -- Apply button picker (pure) --
+
+const APPLY_PATTERNS = [
+  { pattern: /^(add to chart|チャートに追加)$/i, priority: 1 },
+  { pattern: /^(update on chart|チャート上で更新)$/i, priority: 2 },
+  { pattern: /^(save and add to chart|保存してチャートに追加)$/i, priority: 3 },
+];
+
+/**
+ * Pick the best apply button from a list of button labels.
+ * Returns { label, index } or null if none found.
+ * @param {string[]} labels
+ * @returns {{ label: string, index: number }|null}
+ */
+export function pickApplyButton(labels) {
+  if (!Array.isArray(labels) || labels.length === 0) return null;
+  let best = null;
+  for (let i = 0; i < labels.length; i++) {
+    const text = labels[i].trim();
+    for (const { pattern, priority } of APPLY_PATTERNS) {
+      if (pattern.test(text)) {
+        if (!best || priority < best.priority) {
+          best = { label: text, index: i, priority };
+        }
+      }
+    }
+  }
+  return best ? { label: best.label, index: best.index } : null;
+}
+
 // -- Functions requiring TradingView connection --
 
 export async function getSource() {
@@ -397,4 +505,74 @@ export async function smartCompile() {
     infos: classified.infos,
     study_added: studyAdded,
   };
+}
+
+/**
+ * Fetch the list of studies currently on the active chart via CDP.
+ * Returns an array of { id, name } or an empty array on failure.
+ */
+export async function fetchChartStudies() {
+  const studies = await evaluate(`
+    (function() {
+      try {
+        var chart = window.TradingViewApi._activeChartWidgetWV.value();
+        if (!chart || typeof chart.getAllStudies !== 'function') return [];
+        return chart.getAllStudies().map(function(s) {
+          return { id: s.id || '', name: s.name || '', description: s.description || '' };
+        });
+      } catch(e) { return []; }
+    })()
+  `);
+  return Array.isArray(studies) ? studies : [];
+}
+
+/**
+ * Attempt to click a specific apply button by label via CDP.
+ * Returns true if the button was found and clicked.
+ */
+export async function clickApplyButtonByLabel(targetLabel) {
+  const labelJson = JSON.stringify(targetLabel);
+  return evaluate(`
+    (function() {
+      var target = ${labelJson}.toLowerCase();
+      var btns = document.querySelectorAll('button');
+      for (var i = 0; i < btns.length; i++) {
+        var text = btns[i].textContent.trim().toLowerCase();
+        if (text === target) {
+          btns[i].click();
+          return true;
+        }
+      }
+      return false;
+    })()
+  `);
+}
+
+const APPLY_RETRY_LABELS = [
+  'Update on chart', 'チャート上で更新',
+  'Add to chart', 'チャートに追加',
+  'Save and add to chart', '保存してチャートに追加',
+];
+const ATTACH_VERIFY_DELAY = 2000;
+const ATTACH_VERIFY_RETRIES = 2;
+
+/**
+ * Retry applying the strategy to the chart by trying known button labels.
+ * Returns { applied: boolean, method: string|null }.
+ */
+export async function retryApplyStrategy(expectedTitle) {
+  for (const label of APPLY_RETRY_LABELS) {
+    const clicked = await clickApplyButtonByLabel(label);
+    if (!clicked) continue;
+
+    await new Promise((r) => setTimeout(r, ATTACH_VERIFY_DELAY));
+
+    for (let attempt = 0; attempt < ATTACH_VERIFY_RETRIES; attempt++) {
+      const studies = await fetchChartStudies();
+      const { attached } = verifyStrategyAttached(studies, expectedTitle);
+      if (attached) return { applied: true, method: label };
+      await new Promise((r) => setTimeout(r, 1000));
+    }
+  }
+  return { applied: false, method: null };
 }

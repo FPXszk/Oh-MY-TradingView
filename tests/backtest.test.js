@@ -138,6 +138,70 @@ describe('buildResult', () => {
     assert.equal(r.success, false);
     assert.ok(r.compile_errors.length > 0);
   });
+
+  it('includes apply_failed:true when strategy apply failed', () => {
+    const r = buildResult({
+      compileSuccess: true,
+      compileDetail: { button_clicked: 'keyboard_shortcut' },
+      applyFailed: true,
+      applyReason: 'Strategy not found in chart studies after compile + retry',
+      testerAvailable: false,
+      testerReason: 'Skipped: strategy not applied',
+      symbol: 'NASDAQ:NVDA',
+    });
+    assert.equal(r.success, true);
+    assert.equal(r.apply_failed, true);
+    assert.equal(r.apply_reason, 'Strategy not found in chart studies after compile + retry');
+    assert.equal(r.tester_available, false);
+  });
+
+  it('includes apply_failed:false when strategy apply succeeded', () => {
+    const r = buildResult({
+      compileSuccess: true,
+      compileDetail: { button_clicked: 'Add to chart' },
+      applyFailed: false,
+      testerAvailable: true,
+      metrics: { net_profit: '$500' },
+      symbol: 'NASDAQ:NVDA',
+    });
+    assert.equal(r.success, true);
+    assert.equal(r.apply_failed, false);
+    assert.equal(r.apply_reason, undefined);
+  });
+
+  it('omits apply_failed when not provided (backward compat)', () => {
+    const r = buildResult({
+      compileSuccess: true,
+      compileDetail: { button_clicked: 'Add to chart' },
+      testerAvailable: true,
+      metrics: { net_profit: '$500' },
+      symbol: 'NASDAQ:NVDA',
+    });
+    assert.equal(r.apply_failed, undefined);
+  });
+
+  it('separates apply failure from tester read failure', () => {
+    const rApply = buildResult({
+      compileSuccess: true,
+      applyFailed: true,
+      applyReason: 'Strategy not attached',
+      testerAvailable: false,
+      testerReason: 'Skipped: strategy not applied',
+      symbol: 'NASDAQ:NVDA',
+    });
+    assert.equal(rApply.apply_failed, true);
+    assert.equal(rApply.tester_reason, 'Skipped: strategy not applied');
+
+    const rTester = buildResult({
+      compileSuccess: true,
+      applyFailed: false,
+      testerAvailable: false,
+      testerReason: 'Strategy Tester opened but metrics could not be read',
+      symbol: 'NASDAQ:NVDA',
+    });
+    assert.equal(rTester.apply_failed, false);
+    assert.equal(rTester.tester_reason, 'Strategy Tester opened but metrics could not be read');
+  });
 });
 
 describe('runLocalFallbackBacktest', () => {

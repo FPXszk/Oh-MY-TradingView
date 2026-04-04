@@ -42,10 +42,25 @@ describe('e2e: Backtest NVDA MA (requires TradingView Desktop)', async () => {
 
       if (result.success) {
         assert.equal(typeof result.tester_available, 'boolean');
+
+        // apply_failed must be present on success path
+        if (result.apply_failed !== undefined) {
+          assert.equal(typeof result.apply_failed, 'boolean');
+          if (result.apply_failed) {
+            assert.ok(result.apply_reason, 'apply_reason should explain apply failure');
+            assert.equal(result.tester_available, false);
+          }
+        }
+
         if (result.tester_available) {
           assert.ok(result.metrics, 'metrics should be present when tester is available');
         } else {
           assert.ok(result.tester_reason, 'tester_reason should explain unavailability');
+        }
+
+        // fallback metrics must indicate source
+        if (result.fallback_metrics) {
+          assert.ok(result.fallback_source, 'fallback_source should be present with fallback_metrics');
         }
       } else {
         assert.ok(Array.isArray(result.compile_errors), 'compile_errors should be an array');

@@ -1,7 +1,15 @@
 import { evaluate } from '../connection.js';
 import { healthCheck } from './health.js';
 import { setActiveSymbol, getCurrentPrice, symbolMatches } from './price.js';
-import { ensurePineEditorOpen, getSource, setSource, smartCompile } from './pine.js';
+import {
+  ensurePineEditorOpen,
+  getSource,
+  setSource,
+  smartCompile,
+  fetchChartStudies,
+  verifyStrategyAttachmentChange,
+  retryApplyStrategy,
+} from './pine.js';
 
 // ---------------------------------------------------------------------------
 // Pine source builder (NVDA 5/20 MA cross — fixed)
@@ -167,6 +175,8 @@ export function buildResult({
   compileSuccess,
   compileDetail,
   compileErrors,
+  applyFailed,
+  applyReason,
   testerAvailable,
   testerReason,
   metrics,
@@ -186,6 +196,13 @@ export function buildResult({
     compile_detail: compileDetail ?? null,
     tester_available: Boolean(testerAvailable),
   };
+
+  if (applyFailed === true || applyFailed === false) {
+    result.apply_failed = applyFailed;
+    if (applyFailed && applyReason) {
+      result.apply_reason = applyReason;
+    }
+  }
 
   if (testerAvailable && metrics) {
     result.metrics = normalizeMetrics(metrics);
@@ -392,6 +409,7 @@ export async function runNvdaMaBacktest() {
 
     await getCurrentPrice({ symbol: 'NVDA' });
     await ensurePineEditorOpen();
+    const studiesBeforeCompile = await fetchChartStudies();
     await setSource({ source });
 
     const compileResult = await smartCompile();
@@ -404,11 +422,51 @@ export async function runNvdaMaBacktest() {
       return result;
     }
 
+    // -- Verify strategy is actually attached to chart --
+    let strategyAttached = false;
+    const studiesAfterCompile = await fetchChartStudies();
+    const verifyResult = verifyStrategyAttachmentChange(
+      studiesBeforeCompile,
+      studiesAfterCompile,
+      STRATEGY_TITLE,
+      compileResult.study_added,
+    );
+    strategyAttached = verifyResult.attached;
+
+    if (!strategyAttached) {
+      const retryResult = await retryApplyStrategy(STRATEGY_TITLE);
+      strategyAttached = retryResult.applied;
+    }
+
+    if (!strategyAttached) {
+      const fallbackBars = await readChartBars();
+      const fallbackMetrics = runLocalFallbackBacktest(fallbackBars);
+      result = buildResult({
+        compileSuccess: true,
+        compileDetail: compileResult,
+        applyFailed: true,
+        applyReason:
+          verifyResult.reason === 'preexisting_matching_strategy_only'
+            ? 'Matching strategy was already on chart before run, and this run could not verify a new or updated attachment'
+            : 'Strategy not verified in chart studies after compile + retry',
+        testerAvailable: false,
+        testerReason: 'Skipped: strategy not applied',
+        symbol: chartSymbol,
+      });
+      if (fallbackMetrics) {
+        result.fallback_source = 'chart_bars_local';
+        result.fallback_metrics = fallbackMetrics;
+      }
+      return result;
+    }
+
+    // -- Strategy attached — open Strategy Tester --
     const testerOpened = await openStrategyTester();
     if (!testerOpened) {
       result = buildResult({
         compileSuccess: true,
         compileDetail: compileResult,
+        applyFailed: false,
         testerAvailable: false,
         testerReason: 'Strategy Tester panel could not be opened',
         symbol: chartSymbol,
@@ -430,13 +488,18 @@ export async function runNvdaMaBacktest() {
     }
 
     if (!rawMetrics) {
+      const noStrategyReported = Boolean(testerState?.no_strategy);
       const fallbackBars = await readChartBars();
       const fallbackMetrics = runLocalFallbackBacktest(fallbackBars);
       result = buildResult({
         compileSuccess: true,
         compileDetail: compileResult,
+        applyFailed: noStrategyReported,
+        applyReason: noStrategyReported
+          ? 'TradingView reports no strategy is applied to the chart (detected after tester open)'
+          : undefined,
         testerAvailable: false,
-        testerReason: testerState?.no_strategy
+        testerReason: noStrategyReported
           ? 'Strategy Tester opened, but TradingView reports no strategy is applied to the chart'
           : 'Strategy Tester opened but metrics could not be read',
         symbol: chartSymbol,
@@ -451,6 +514,7 @@ export async function runNvdaMaBacktest() {
     result = buildResult({
       compileSuccess: true,
       compileDetail: compileResult,
+      applyFailed: false,
       testerAvailable: true,
       metrics: rawMetrics,
       symbol: chartSymbol,
