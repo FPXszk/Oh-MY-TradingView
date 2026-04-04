@@ -27,23 +27,28 @@
 ### Mag7 戦略候補を知りたいとき
 
 - [`docs/research/mag7-strategy-shortlist_2015_2025.md`](./research/mag7-strategy-shortlist_2015_2025.md)
+- [`docs/research/mag7-strategy-shortlist-round2_2015_2025.md`](./research/mag7-strategy-shortlist-round2_2015_2025.md)
 
 ### 実測結果の要約を知りたいとき
 
 - [`docs/research/mag7-backtest-results_2015_2025.md`](./research/mag7-backtest-results_2015_2025.md)
+- [`docs/research/mag7-backtest-results-round2_2015_2025.md`](./research/mag7-backtest-results-round2_2015_2025.md)
 
 ### 生データを確認したいとき
 
 - [`docs/references/backtests/mag7-backtest-results_20260404.json`](./references/backtests/mag7-backtest-results_20260404.json)
+- [`docs/references/backtests/mag7-backtest-results_round2_20260404.json`](./references/backtests/mag7-backtest-results_round2_20260404.json)
 
-### 実行 input を確認したいとき
+### 研究用 / session batch input を確認したいとき
 
 - [`config/backtest/strategy-presets.json`](../config/backtest/strategy-presets.json)
 - [`config/backtest/universes/mag7.json`](../config/backtest/universes/mag7.json)
+- これらは round1 / round2 の research batch で使った input であり、現時点の repo CLI / MCP の公開実装は `nvda-ma` 固定
 
 ### セッションの判断経緯を追いたいとき
 
 - [`docs/working-memory/session-logs/mag7-backtest-session-summary_20260404_1106.md`](./working-memory/session-logs/mag7-backtest-session-summary_20260404_1106.md)
+- [`docs/working-memory/session-logs/mag7-backtest-session-summary_20260404_1252.md`](./working-memory/session-logs/mag7-backtest-session-summary_20260404_1252.md)
 
 ## 運用ルール
 

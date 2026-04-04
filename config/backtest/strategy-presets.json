@@ -1,5 +1,10 @@
 {
   "$schema_version": "1.0.0",
+  "execution_context": {
+    "current_repo_cli": "fixed_nvda_ma_only",
+    "current_batch_validation": "session_artifact_runner",
+    "note": "These presets are currently validated via the session batch runner for research rounds. The repo CLI/MCP runtime still exposes only the fixed nvda-ma path."
+  },
   "common_defaults": {
     "pine_version": 6,
     "direction": "long_only",
@@ -135,10 +140,10 @@
       "recommended_timeframes": ["D"],
       "recommended_regime": "volatile",
       "mag7_notes": "短期の売られすぎを RSI より敏感に拾う候補。",
-      "phase": "phase-1",
-      "implementation_stage": "research_only",
+      "phase": "phase-2",
+      "implementation_stage": "round2",
       "priority": 9,
-      "status": "research_only",
+      "status": "ready",
       "implementation_difficulty": "medium",
       "pine_complexity": "moderate",
       "tags": ["connors-rsi", "pullback", "short-term"]
@@ -220,13 +225,223 @@
       "recommended_timeframes": ["D"],
       "recommended_regime": "trending",
       "mag7_notes": "EMA クロスに ADX を被せて、方向性が弱い局面を除外する候補。",
-      "phase": "phase-1",
-      "implementation_stage": "research_only",
+      "phase": "phase-2",
+      "implementation_stage": "round2",
       "priority": 10,
-      "status": "research_only",
+      "status": "ready",
       "implementation_difficulty": "medium",
       "pine_complexity": "moderate",
       "tags": ["adx", "ema", "filter"]
+    },
+    {
+      "id": "sma-cross-10-50",
+      "name": "SMA Cross 10/50",
+      "category": "trend",
+      "builder": "ma_cross",
+      "parameters": {
+        "ma_type": "sma",
+        "fast_period": 10,
+        "slow_period": 50
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "5/20 よりノイズを抑えた中期トレンド追随の比較対象。",
+      "phase": "phase-2",
+      "implementation_stage": "round2",
+      "priority": 11,
+      "status": "ready",
+      "implementation_difficulty": "easy",
+      "pine_complexity": "trivial",
+      "tags": ["sma", "trend", "crossover", "round2"]
+    },
+    {
+      "id": "ema-cross-12-26",
+      "name": "EMA Cross 12/26",
+      "category": "trend",
+      "builder": "ma_cross",
+      "parameters": {
+        "ma_type": "ema",
+        "fast_period": 12,
+        "slow_period": 26
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "MACD の基本期間と揃えた反応の速いモメンタム比較枠。",
+      "phase": "phase-2",
+      "implementation_stage": "round2",
+      "priority": 12,
+      "status": "ready",
+      "implementation_difficulty": "easy",
+      "pine_complexity": "trivial",
+      "tags": ["ema", "trend", "crossover", "round2"]
+    },
+    {
+      "id": "ema-50-trend-filter",
+      "name": "50 Day EMA Trend Filter",
+      "category": "trend",
+      "builder": "price_vs_ma",
+      "parameters": {
+        "ma_type": "ema",
+        "period": 50,
+        "entry_condition": "close_above_ma",
+        "exit_condition": "close_below_ma"
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "200SMA より速く中期トレンドへ追随しやすい成長株向けフィルタ。",
+      "phase": "phase-2",
+      "implementation_stage": "round2",
+      "priority": 13,
+      "status": "ready",
+      "implementation_difficulty": "easy",
+      "pine_complexity": "simple",
+      "tags": ["ema", "trend-filter", "medium-term", "round2"]
+    },
+    {
+      "id": "donchian-breakout-55-20",
+      "name": "Donchian Turtle 55/20",
+      "category": "breakout",
+      "builder": "donchian_breakout",
+      "parameters": {
+        "entry_period": 55,
+        "exit_period": 20
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "長めのブレイクアウトで大相場を狙うタートル系の比較候補。",
+      "phase": "phase-2",
+      "implementation_stage": "round2",
+      "priority": 14,
+      "status": "ready",
+      "implementation_difficulty": "easy",
+      "pine_complexity": "simple",
+      "tags": ["donchian", "breakout", "turtle", "round2"]
+    },
+    {
+      "id": "supertrend-atr-14-2",
+      "name": "Supertrend ATR 14/2",
+      "category": "trend",
+      "builder": "supertrend",
+      "parameters": {
+        "atr_period": 14,
+        "factor": 2
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "10/3 より感度を上げた派生で、急騰局面への追随速度を比較する。",
+      "phase": "phase-2",
+      "implementation_stage": "round2",
+      "priority": 15,
+      "status": "ready",
+      "implementation_difficulty": "easy",
+      "pine_complexity": "simple",
+      "tags": ["supertrend", "atr", "trend", "round2"]
+    },
+    {
+      "id": "bb-tight-squeeze",
+      "name": "Bollinger Tight Squeeze",
+      "category": "mean_reversion",
+      "builder": "bollinger_mean_reversion",
+      "parameters": {
+        "length": 20,
+        "stddev": 1.5,
+        "entry_condition": "close_below_lower_band",
+        "exit_condition": "close_above_basis"
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "volatile",
+      "mag7_notes": "通常 BB より浅い押し目を拾う round2 比較用の短期逆張り候補。",
+      "phase": "phase-2",
+      "implementation_stage": "round2",
+      "priority": 16,
+      "status": "ready",
+      "implementation_difficulty": "easy",
+      "pine_complexity": "simple",
+      "tags": ["bollinger", "mean-reversion", "squeeze", "round2"]
+    },
+    {
+      "id": "stochastic-oversold",
+      "name": "Stochastic Oversold Bounce",
+      "category": "mean_reversion",
+      "builder": "stochastic_cross",
+      "parameters": {
+        "k_period": 14,
+        "k_smooth": 3,
+        "d_smooth": 3,
+        "entry_below": 20,
+        "exit_above": 80
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "volatile",
+      "mag7_notes": "RSI とは別角度で売られすぎ反発を測る高感度オシレーター候補。",
+      "phase": "phase-2",
+      "implementation_stage": "round2",
+      "priority": 17,
+      "status": "ready",
+      "implementation_difficulty": "easy",
+      "pine_complexity": "simple",
+      "tags": ["stochastic", "oversold", "bounce", "round2"]
+    },
+    {
+      "id": "psar-trend-flip",
+      "name": "Parabolic SAR Trend Flip",
+      "category": "trend",
+      "builder": "parabolic_sar",
+      "parameters": {
+        "start": 0.02,
+        "increment": 0.02,
+        "max": 0.2
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "トレンド反転の即応性を見るための軽量な追随系候補。",
+      "phase": "phase-2",
+      "implementation_stage": "round2",
+      "priority": 18,
+      "status": "ready",
+      "implementation_difficulty": "easy",
+      "pine_complexity": "simple",
+      "tags": ["psar", "trend", "reversal", "round2"]
+    },
+    {
+      "id": "keltner-breakout",
+      "name": "Keltner Channel Breakout",
+      "category": "breakout",
+      "builder": "keltner_breakout",
+      "parameters": {
+        "ema_period": 20,
+        "atr_period": 10,
+        "atr_mult": 1.5
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "ATR ベースのチャネル突破で、Donchian と異なるボラティリティ拡大型を比較する。",
+      "phase": "phase-2",
+      "implementation_stage": "round2",
+      "priority": 19,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": ["keltner", "breakout", "atr", "round2"]
+    },
+    {
+      "id": "roc-momentum-cross",
+      "name": "ROC Momentum Zero Cross",
+      "category": "momentum",
+      "builder": "roc_momentum",
+      "parameters": {
+        "roc_period": 12
+      },
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "価格加速がプラス転換した局面だけを拾う単純モメンタム候補。",
+      "phase": "phase-2",
+      "implementation_stage": "round2",
+      "priority": 20,
+      "status": "ready",
+      "implementation_difficulty": "easy",
+      "pine_complexity": "simple",
+      "tags": ["roc", "momentum", "zero-cross", "round2"]
     }
   ]
 }
