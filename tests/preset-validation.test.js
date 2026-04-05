@@ -573,7 +573,7 @@ describe('strategy-presets.json integration', () => {
   it('round1-3 presets are unchanged', async () => {
     const data = await loadPresets();
     const round1To3 = data.strategies.filter(
-      (p) => !['round4', 'round5', 'round6', 'round7'].includes(p.implementation_stage),
+      (p) => !['round4', 'round5', 'round6', 'round7', 'round8'].includes(p.implementation_stage),
     );
     assert.equal(round1To3.length, 30, 'Expected 30 round1-3 presets to remain');
   });
@@ -767,6 +767,149 @@ describe('strategy-presets.json integration', () => {
         `Preset "${preset.id}" should include taxonomy tag "${expectedAxisTags.get(preset.id)}"`,
       );
     }
+  });
+
+  it('contains round8 presets', async () => {
+    const data = await loadPresets();
+    const r8 = filterPresetsByRound(data.strategies, 'round8');
+    assert.equal(r8.length, 12, `Expected 12 round8 presets, got ${r8.length}`);
+  });
+
+  it('all round8 presets have "round8" tag', async () => {
+    const data = await loadPresets();
+    const r8 = filterPresetsByRound(data.strategies, 'round8');
+    for (const p of r8) {
+      assert.ok(
+        Array.isArray(p.tags) && p.tags.includes('round8'),
+        `Preset "${p.id}" missing "round8" tag`,
+      );
+    }
+  });
+
+  it('round8 includes all planned neighborhood variants', async () => {
+    const data = await loadPresets();
+    const r8 = filterPresetsByRound(data.strategies, 'round8');
+    const r8Ids = new Set(r8.map((p) => p.id));
+    const expected = [
+      'donchian-55-20-rsp-filter-rsi14-regime-40-theme-breadth-earlier',
+      'donchian-55-20-rsp-filter-rsi14-regime-50-theme-breadth-balanced',
+      'donchian-55-20-rsp-filter-rsi14-regime-45-hard-stop-6pct-theme-breadth-early-guarded',
+      'donchian-55-20-rsp-filter-rsi14-regime-45-hard-stop-6pct-theme-breadth-quality-early',
+      'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-6pct-theme-breadth-quality-strict',
+      'donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-10pct-theme-deep-pullback-earlier',
+      'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight',
+      'donchian-55-20-spy-filter-rsi14-regime-55-theme-quality-strict-balanced',
+      'donchian-55-20-spy-filter-rsi14-regime-60-hard-stop-6pct-theme-quality-strict-guarded',
+      'donchian-55-20-spy-filter-rsi14-regime-55-hard-stop-8pct-theme-quality-strict-stop-wide',
+      'donchian-20-10-spy-filter-rsi14-regime-55-hard-stop-8pct-theme-acceleration-balanced-strict',
+      'donchian-20-10-spy-filter-rsi14-regime-45-hard-stop-8pct-theme-acceleration-reentry-tight',
+    ];
+    for (const id of expected) {
+      assert.ok(r8Ids.has(id), `Missing round8 preset: ${id}`);
+    }
+  });
+
+  it('round8 stays within existing builder families', async () => {
+    const data = await loadPresets();
+    const r8 = filterPresetsByRound(data.strategies, 'round8');
+    for (const preset of r8) {
+      const allowedBuilders = ['donchian_breakout'];
+      assert.ok(
+        allowedBuilders.includes(preset.builder),
+        `Preset "${preset.id}" uses unexpected builder "${preset.builder}"`,
+      );
+    }
+  });
+
+  it('round8 presets keep theme metadata and taxonomy aligned', async () => {
+    const data = await loadPresets();
+    const r8 = filterPresetsByRound(data.strategies, 'round8');
+    const expectedThemeAxes = new Map([
+      ['donchian-55-20-rsp-filter-rsi14-regime-40-theme-breadth-earlier', 'breadth-persistence-earlier'],
+      ['donchian-55-20-rsp-filter-rsi14-regime-50-theme-breadth-balanced', 'breadth-persistence-balanced'],
+      ['donchian-55-20-rsp-filter-rsi14-regime-45-hard-stop-6pct-theme-breadth-early-guarded', 'breadth-persistence-early-guarded'],
+      ['donchian-55-20-rsp-filter-rsi14-regime-45-hard-stop-6pct-theme-breadth-quality-early', 'breadth-quality-early'],
+      ['donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-6pct-theme-breadth-quality-strict', 'breadth-quality-strict'],
+      ['donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-10pct-theme-deep-pullback-earlier', 'deep-pullback-earlier'],
+      ['donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight', 'deep-pullback-tight'],
+      ['donchian-55-20-spy-filter-rsi14-regime-55-theme-quality-strict-balanced', 'quality-strict-balanced'],
+      ['donchian-55-20-spy-filter-rsi14-regime-60-hard-stop-6pct-theme-quality-strict-guarded', 'quality-strict-guarded'],
+      ['donchian-55-20-spy-filter-rsi14-regime-55-hard-stop-8pct-theme-quality-strict-stop-wide', 'quality-strict-stop-wide'],
+      ['donchian-20-10-spy-filter-rsi14-regime-55-hard-stop-8pct-theme-acceleration-balanced-strict', 'acceleration-balanced-strict'],
+      ['donchian-20-10-spy-filter-rsi14-regime-45-hard-stop-8pct-theme-acceleration-reentry-tight', 'acceleration-reentry-tight'],
+    ]);
+    const expectedAxisTags = new Map([
+      ['donchian-55-20-rsp-filter-rsi14-regime-40-theme-breadth-earlier', 'theme-persistence'],
+      ['donchian-55-20-rsp-filter-rsi14-regime-50-theme-breadth-balanced', 'theme-persistence'],
+      ['donchian-55-20-rsp-filter-rsi14-regime-45-hard-stop-6pct-theme-breadth-early-guarded', 'theme-persistence'],
+      ['donchian-55-20-rsp-filter-rsi14-regime-45-hard-stop-6pct-theme-breadth-quality-early', 'theme-quality'],
+      ['donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-6pct-theme-breadth-quality-strict', 'theme-quality'],
+      ['donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-10pct-theme-deep-pullback-earlier', 'theme-deep-pullback'],
+      ['donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight', 'theme-deep-pullback'],
+      ['donchian-55-20-spy-filter-rsi14-regime-55-theme-quality-strict-balanced', 'theme-quality'],
+      ['donchian-55-20-spy-filter-rsi14-regime-60-hard-stop-6pct-theme-quality-strict-guarded', 'theme-quality'],
+      ['donchian-55-20-spy-filter-rsi14-regime-55-hard-stop-8pct-theme-quality-strict-stop-wide', 'theme-quality'],
+      ['donchian-20-10-spy-filter-rsi14-regime-55-hard-stop-8pct-theme-acceleration-balanced-strict', 'theme-balanced'],
+      ['donchian-20-10-spy-filter-rsi14-regime-45-hard-stop-8pct-theme-acceleration-reentry-tight', 'theme-reentry'],
+    ]);
+
+    assert.equal(r8.length, expectedThemeAxes.size, 'Round8 preset expectations are out of sync');
+
+    for (const preset of r8) {
+      assert.equal(
+        preset.theme_axis,
+        expectedThemeAxes.get(preset.id),
+        `Preset "${preset.id}" has unexpected theme_axis`,
+      );
+      assert.equal(typeof preset.theme_notes, 'string', `Preset "${preset.id}" should include theme_notes`);
+      assert.ok(preset.theme_notes.length > 0, `Preset "${preset.id}" should have non-empty theme_notes`);
+      assert.ok(
+        preset.tags.includes(expectedAxisTags.get(preset.id)),
+        `Preset "${preset.id}" should include taxonomy tag "${expectedAxisTags.get(preset.id)}"`,
+      );
+    }
+  });
+
+  it('round8 executable duplicates are explicit and limited', async () => {
+    const data = await loadPresets();
+    const r8 = filterPresetsByRound(data.strategies, 'round8');
+    const sortKeysDeep = (value) => {
+      if (Array.isArray(value)) {
+        return value.map(sortKeysDeep);
+      }
+      if (value && typeof value === 'object') {
+        return Object.fromEntries(
+          Object.keys(value)
+            .sort()
+            .map((key) => [key, sortKeysDeep(value[key])]),
+        );
+      }
+      return value;
+    };
+    const canonicalize = (preset) => JSON.stringify(sortKeysDeep({
+      builder: preset.builder,
+      parameters: preset.parameters,
+      regime_filter: preset.regime_filter ?? null,
+      rsi_regime_filter: preset.rsi_regime_filter ?? null,
+      stop_loss: preset.stop_loss ?? null,
+      exit_overlay: preset.exit_overlay ?? null,
+    }));
+
+    const grouped = new Map();
+    for (const preset of r8) {
+      const key = canonicalize(preset);
+      if (!grouped.has(key)) grouped.set(key, []);
+      grouped.get(key).push(preset.id);
+    }
+
+    const duplicateGroups = [...grouped.values()]
+      .filter((ids) => ids.length > 1)
+      .map((ids) => ids.sort());
+
+    assert.deepEqual(duplicateGroups, [[
+      'donchian-55-20-rsp-filter-rsi14-regime-45-hard-stop-6pct-theme-breadth-early-guarded',
+      'donchian-55-20-rsp-filter-rsi14-regime-45-hard-stop-6pct-theme-breadth-quality-early',
+    ]]);
   });
 });
 
