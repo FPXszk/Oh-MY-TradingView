@@ -142,3 +142,10 @@
 - shortlist doc: `docs/research/theme-strategy-shortlist-round6_2015_2025.md`
 - Mag7 doc: `docs/research/theme-backtest-results-round6_2015_2025.md`
 - alt doc: `docs/research/theme-backtest-results-round6-alt_2015_2025.md`
+
+## 完了状態
+
+- review: 完了
+- commit: `1de51b0dc6666b499b030ec95dcd61a383075911`
+- push: `origin/main`
+- current status: 次の指示待ち
