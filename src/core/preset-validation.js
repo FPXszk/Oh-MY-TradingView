@@ -21,6 +21,40 @@ const VALID_REGIME_FILTER_TYPES = [
 
 const VALID_MA_TYPES = ['sma', 'ema'];
 const VALID_REGIME_ACTIONS = ['no_new_entry', 'exit_all'];
+const VALID_RSI_REGIME_DIRECTIONS = ['above'];
+
+const BUILDER_PARAMETER_RULES = {
+  price_vs_ma: [
+    ['period', 'number'],
+    ['ma_type', VALID_MA_TYPES],
+  ],
+  ma_cross: [
+    ['fast_period', 'number'],
+    ['slow_period', 'number'],
+    ['ma_type', VALID_MA_TYPES],
+  ],
+  donchian_breakout: [
+    ['entry_period', 'number'],
+    ['exit_period', 'number'],
+  ],
+  keltner_breakout: [
+    ['ema_period', 'number'],
+    ['atr_period', 'number'],
+    ['atr_mult', 'number'],
+  ],
+  connors_rsi_pullback: [
+    ['price_rsi_period', 'number'],
+    ['streak_rsi_period', 'number'],
+    ['percent_rank_period', 'number'],
+    ['entry_below', 'number'],
+    ['exit_above', 'number'],
+  ],
+  rsi_mean_reversion: [
+    ['rsi_period', 'number'],
+    ['entry_below', 'number'],
+    ['exit_above', 'number'],
+  ],
+};
 
 export function validatePreset(preset) {
   const errors = [];
@@ -42,6 +76,23 @@ export function validatePreset(preset) {
   }
   if (!preset.parameters || typeof preset.parameters !== 'object') {
     errors.push('parameters is required and must be an object');
+  }
+
+  const parameterRules = BUILDER_PARAMETER_RULES[preset.builder];
+  if (parameterRules && preset.parameters && typeof preset.parameters === 'object') {
+    for (const [key, rule] of parameterRules) {
+      const value = preset.parameters[key];
+      if (rule === 'number') {
+        if (typeof value !== 'number') {
+          errors.push(`parameters.${key} is required for ${preset.builder} and must be a number`);
+        }
+        continue;
+      }
+
+      if (!rule.includes(value)) {
+        errors.push(`parameters.${key} must be one of: ${rule.join(', ')}`);
+      }
+    }
   }
 
   if (preset.exit_overlay) {
@@ -117,6 +168,25 @@ export function validatePreset(preset) {
     if (!VALID_REGIME_ACTIONS.includes(preset.regime_filter.action_when_false)) {
       errors.push(
         `regime_filter.action_when_false must be one of: ${VALID_REGIME_ACTIONS.join(', ')}`,
+      );
+    }
+  }
+
+  if (preset.rsi_regime_filter) {
+    if (typeof preset.rsi_regime_filter.rsi_period !== 'number') {
+      errors.push('rsi_regime_filter.rsi_period is required and must be a number');
+    }
+    if (typeof preset.rsi_regime_filter.threshold !== 'number') {
+      errors.push('rsi_regime_filter.threshold is required and must be a number');
+    } else if (
+      preset.rsi_regime_filter.threshold < 0 ||
+      preset.rsi_regime_filter.threshold > 100
+    ) {
+      errors.push('rsi_regime_filter.threshold must be between 0 and 100');
+    }
+    if (!VALID_RSI_REGIME_DIRECTIONS.includes(preset.rsi_regime_filter.direction)) {
+      errors.push(
+        `rsi_regime_filter.direction must be one of: ${VALID_RSI_REGIME_DIRECTIONS.join(', ')}`,
       );
     }
   }

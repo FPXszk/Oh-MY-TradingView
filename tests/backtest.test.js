@@ -543,4 +543,106 @@ describe('buildResearchStrategySource', () => {
     assert.ok(source.includes('regimeForceExit = true'));
     assert.ok(source.includes('strategy.close("Long", comment="Regime exit")'));
   });
+
+  it('builds RSI mean-reversion sources for long-only presets', () => {
+    const source = buildResearchStrategySource({
+      id: 'rsi2-buy-10-sell-65-long-only',
+      name: 'RSI 2 Buy 10 Sell 65 Long Only',
+      builder: 'rsi_mean_reversion',
+      parameters: {
+        rsi_period: 2,
+        entry_below: 10,
+        exit_above: 65,
+      },
+    }, defaults);
+
+    assert.ok(source.includes('rsiValue = ta.rsi(close, 2)'));
+    assert.ok(source.includes('entrySignal = rsiValue < 10'));
+    assert.ok(source.includes('exitSignal = rsiValue > 65'));
+  });
+
+  it('adds RSI regime guards when requested', () => {
+    const source = buildResearchStrategySource({
+      id: 'donchian-20-10-rsi14-regime-55-hard-stop-8pct',
+      name: 'Donchian 20/10 + RSI14 Regime 55 + 8% Hard Stop',
+      builder: 'donchian_breakout',
+      parameters: {
+        entry_period: 20,
+        exit_period: 10,
+      },
+      rsi_regime_filter: {
+        rsi_period: 14,
+        threshold: 55,
+        direction: 'above',
+      },
+    }, defaults);
+
+    assert.ok(source.includes('rsiRegimeValue = ta.rsi(close, 14)'));
+    assert.ok(source.includes('rsiRegimeOk = rsiRegimeValue > 55'));
+    assert.ok(source.includes('allowEntry = inDateRange and regimeOk and rsiRegimeOk'));
+  });
+
+  it('combines market and RSI regime guards when both are requested', () => {
+    const source = buildResearchStrategySource({
+      id: 'donchian-55-20-rsi14-regime-50-spy-filter',
+      name: 'Donchian 55/20 + RSI14 Regime 50 + SPY Filter',
+      builder: 'donchian_breakout',
+      parameters: {
+        entry_period: 55,
+        exit_period: 20,
+      },
+      regime_filter: {
+        type: 'spy_above_sma200',
+        reference_symbol: 'SPY',
+        reference_ma_type: 'sma',
+        reference_ma_period: 200,
+        action_when_false: 'no_new_entry',
+      },
+      rsi_regime_filter: {
+        rsi_period: 14,
+        threshold: 50,
+        direction: 'above',
+      },
+    }, defaults);
+
+    assert.ok(source.includes('request.security("BATS:SPY", timeframe.period, close)'));
+    assert.ok(source.includes('rsiRegimeValue = ta.rsi(close, 14)'));
+    assert.ok(source.includes('allowEntry = inDateRange and regimeOk and rsiRegimeOk'));
+  });
+
+  it('rejects unsupported regime filters in the generator', () => {
+    assert.throws(() => buildResearchStrategySource({
+      id: 'bad-regime',
+      name: 'Bad Regime',
+      builder: 'donchian_breakout',
+      parameters: {
+        entry_period: 20,
+        exit_period: 10,
+      },
+      regime_filter: {
+        type: 'vix_below_sma200',
+        reference_symbol: 'VIX',
+        reference_ma_type: 'sma',
+        reference_ma_period: 200,
+        action_when_false: 'no_new_entry',
+      },
+    }, defaults), /Unsupported regime filter/);
+  });
+
+  it('rejects unsupported RSI regime directions in the generator', () => {
+    assert.throws(() => buildResearchStrategySource({
+      id: 'bad-rsi-regime',
+      name: 'Bad RSI Regime',
+      builder: 'donchian_breakout',
+      parameters: {
+        entry_period: 20,
+        exit_period: 10,
+      },
+      rsi_regime_filter: {
+        rsi_period: 14,
+        threshold: 55,
+        direction: 'below',
+      },
+    }, defaults), /Unsupported RSI regime direction/);
+  });
 });

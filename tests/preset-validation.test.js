@@ -71,6 +71,21 @@ describe('validatePreset', () => {
     assert.equal(result.valid, false);
     assert.ok(result.errors.some((e) => /parameters/.test(e)));
   });
+
+  it('rejects an RSI mean-reversion preset missing required parameters', () => {
+    const result = validatePreset({
+      id: 'rsi-missing-entry',
+      name: 'RSI Missing Entry',
+      category: 'mean_reversion',
+      builder: 'rsi_mean_reversion',
+      parameters: {
+        rsi_period: 2,
+        exit_above: 65,
+      },
+    });
+    assert.equal(result.valid, false);
+    assert.ok(result.errors.some((e) => /parameters\.entry_below/.test(e)));
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -339,6 +354,60 @@ describe('validatePreset — regime_filter', () => {
 });
 
 // ---------------------------------------------------------------------------
+// validatePreset — rsi_regime_filter
+// ---------------------------------------------------------------------------
+describe('validatePreset — rsi_regime_filter', () => {
+  it('accepts a valid RSI regime filter', () => {
+    const result = validatePreset({
+      id: 'rsi-regime-valid',
+      name: 'RSI Regime Valid',
+      category: 'breakout',
+      builder: 'donchian_breakout',
+      parameters: { entry_period: 20, exit_period: 10 },
+      rsi_regime_filter: {
+        rsi_period: 14,
+        threshold: 55,
+        direction: 'above',
+      },
+    });
+    assert.equal(result.valid, true);
+  });
+
+  it('rejects RSI regime filter without threshold', () => {
+    const result = validatePreset({
+      id: 'rsi-regime-no-threshold',
+      name: 'RSI Regime No Threshold',
+      category: 'breakout',
+      builder: 'donchian_breakout',
+      parameters: { entry_period: 20, exit_period: 10 },
+      rsi_regime_filter: {
+        rsi_period: 14,
+        direction: 'above',
+      },
+    });
+    assert.equal(result.valid, false);
+    assert.ok(result.errors.some((e) => /rsi_regime_filter\.threshold/.test(e)));
+  });
+
+  it('rejects RSI regime filter with unsupported direction', () => {
+    const result = validatePreset({
+      id: 'rsi-regime-bad-direction',
+      name: 'RSI Regime Bad Direction',
+      category: 'breakout',
+      builder: 'donchian_breakout',
+      parameters: { entry_period: 20, exit_period: 10 },
+      rsi_regime_filter: {
+        rsi_period: 14,
+        threshold: 55,
+        direction: 'below',
+      },
+    });
+    assert.equal(result.valid, false);
+    assert.ok(result.errors.some((e) => /rsi_regime_filter\.direction/.test(e)));
+  });
+});
+
+// ---------------------------------------------------------------------------
 // validatePresetIds
 // ---------------------------------------------------------------------------
 describe('validatePresetIds', () => {
@@ -503,10 +572,56 @@ describe('strategy-presets.json integration', () => {
 
   it('round1-3 presets are unchanged', async () => {
     const data = await loadPresets();
-    const nonR4 = data.strategies.filter(
-      (p) => p.implementation_stage !== 'round4',
+    const round1To3 = data.strategies.filter(
+      (p) => !['round4', 'round5'].includes(p.implementation_stage),
     );
-    assert.equal(nonR4.length, 30, 'Expected 30 round1-3 presets to remain');
+    assert.equal(round1To3.length, 30, 'Expected 30 round1-3 presets to remain');
+  });
+
+  it('contains round5 presets', async () => {
+    const data = await loadPresets();
+    const r5 = filterPresetsByRound(data.strategies, 'round5');
+    assert.equal(r5.length, 20, `Expected 20 round5 presets, got ${r5.length}`);
+  });
+
+  it('all round5 presets have "round5" tag', async () => {
+    const data = await loadPresets();
+    const r5 = filterPresetsByRound(data.strategies, 'round5');
+    for (const p of r5) {
+      assert.ok(
+        Array.isArray(p.tags) && p.tags.includes('round5'),
+        `Preset "${p.id}" missing "round5" tag`,
+      );
+    }
+  });
+
+  it('round5 includes all planned RSI long-only variants', async () => {
+    const data = await loadPresets();
+    const r5 = filterPresetsByRound(data.strategies, 'round5');
+    const r5Ids = new Set(r5.map((p) => p.id));
+    const expected = [
+      'rsi2-buy-10-sell-65-long-only',
+      'rsi2-buy-10-sell-70-spy-filter-long-only',
+      'rsi3-buy-15-sell-65-long-only',
+      'rsi5-buy-25-sell-55-long-only',
+    ];
+    for (const id of expected) {
+      assert.ok(r5Ids.has(id), `Missing round5 preset: ${id}`);
+    }
+  });
+
+  it('round5 RSI long-only variants reuse the RSI mean-reversion builder', async () => {
+    const data = await loadPresets();
+    const r5 = filterPresetsByRound(data.strategies, 'round5');
+    const rsiLongOnly = r5.filter((p) => p.id.includes('long-only'));
+    assert.equal(rsiLongOnly.length, 4);
+    for (const preset of rsiLongOnly) {
+      assert.equal(
+        preset.builder,
+        'rsi_mean_reversion',
+        `Preset "${preset.id}" should reuse rsi_mean_reversion`,
+      );
+    }
   });
 });
 

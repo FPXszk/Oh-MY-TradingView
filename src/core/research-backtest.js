@@ -1,7 +1,6 @@
 const REFERENCE_SYMBOL_MAP = {
   SPY: 'BATS:SPY',
   RSP: 'BATS:RSP',
-  VIX: 'TVC:VIX',
 };
 
 function escapePineString(value) {
@@ -39,6 +38,10 @@ function buildRegimeBlock(regimeFilter) {
     ];
   }
 
+  if (!['spy_above_sma200', 'rsp_above_sma200'].includes(regimeFilter.type)) {
+    throw new Error(`Unsupported regime filter: ${regimeFilter.type}`);
+  }
+
   const refSymbol = REFERENCE_SYMBOL_MAP[regimeFilter.reference_symbol] || regimeFilter.reference_symbol;
   const maFunc = regimeFilter.reference_ma_type === 'ema' ? 'ta.ema' : 'ta.sma';
 
@@ -47,6 +50,21 @@ function buildRegimeBlock(regimeFilter) {
     `regimeRefMa = ${maFunc}(regimeRefClose, ${regimeFilter.reference_ma_period})`,
     'regimeOk = regimeRefClose > regimeRefMa',
     `regimeForceExit = ${regimeFilter.action_when_false === 'exit_all' ? 'true' : 'false'}`,
+  ];
+}
+
+function buildRsiRegimeBlock(rsiRegimeFilter) {
+  if (!rsiRegimeFilter) {
+    return ['rsiRegimeOk = true'];
+  }
+
+  if (rsiRegimeFilter.direction !== 'above') {
+    throw new Error(`Unsupported RSI regime direction: ${rsiRegimeFilter.direction}`);
+  }
+
+  return [
+    `rsiRegimeValue = ta.rsi(close, ${rsiRegimeFilter.rsi_period})`,
+    `rsiRegimeOk = rsiRegimeValue > ${rsiRegimeFilter.threshold}`,
   ];
 }
 
@@ -109,6 +127,15 @@ function buildBaseBlock(preset) {
       'plot(connorsRsi, "Connors RSI", color=color.aqua)',
       `entrySignal = connorsRsi < ${params.entry_below}`,
       `exitSignal = connorsRsi > ${params.exit_above}`,
+    ];
+  }
+
+  if (preset.builder === 'rsi_mean_reversion') {
+    return [
+      `rsiValue = ta.rsi(close, ${params.rsi_period})`,
+      'plot(rsiValue, "RSI", color=color.aqua)',
+      `entrySignal = rsiValue < ${params.entry_below}`,
+      `exitSignal = rsiValue > ${params.exit_above}`,
     ];
   }
 
@@ -183,12 +210,14 @@ function buildStopLossBlock(stopLoss) {
 }
 
 export function buildResearchStrategySource(preset, defaults = {}) {
+  const entryGuards = ['inDateRange', 'regimeOk', 'rsiRegimeOk'];
   const title = preset.name || preset.id;
   const lines = [
     ...buildHeader(title, defaults),
     ...buildRegimeBlock(preset.regime_filter),
+    ...buildRsiRegimeBlock(preset.rsi_regime_filter),
     ...buildBaseBlock(preset),
-    'allowEntry = inDateRange and regimeOk',
+    `allowEntry = ${entryGuards.join(' and ')}`,
     'if entrySignal and allowEntry and strategy.position_size <= 0',
     '    strategy.entry("Long", strategy.long)',
     'if exitSignal and strategy.position_size > 0',

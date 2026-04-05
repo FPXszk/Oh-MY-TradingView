@@ -18,6 +18,7 @@
 |---|---|---|
 | `docs/research/` | 調査結果、要約、推奨、意思決定 | 解釈の正本 |
 | `docs/references/` | raw artifact、参照用データ、外部資料の固定スナップショット | 生データの正本 |
+| `docs/bad-strategy/` | alt universe で負けた戦略の記録 | negative strategy log の正本 |
 | `docs/working-memory/session-logs/` | セッション要約、判断経緯、直近の作業コンテキスト | append-only |
 | `docs/design-docs/` | 設計検討、構造説明 | 設計の正本 |
 | `docs/exec-plans/` | 実装計画。`active/` でレビューし、完了後は `completed/` へ移す | 計画の正本 |
@@ -36,6 +37,9 @@
 - [`docs/research/multi-universe-backtest-results-round3_2015_2025.md`](./research/multi-universe-backtest-results-round3_2015_2025.md)
 - [`docs/research/mag7-backtest-results-round4_2015_2025.md`](./research/mag7-backtest-results-round4_2015_2025.md)
 - [`docs/research/multi-universe-backtest-results-round4_2015_2025.md`](./research/multi-universe-backtest-results-round4_2015_2025.md)
+- [`docs/research/mag7-backtest-results-round5_2015_2025.md`](./research/mag7-backtest-results-round5_2015_2025.md)
+- [`docs/research/multi-universe-backtest-results-round5_2015_2025.md`](./research/multi-universe-backtest-results-round5_2015_2025.md)
+- [`docs/bad-strategy/round5-negative-alt-strategies_2015_2025.md`](./bad-strategy/round5-negative-alt-strategies_2015_2025.md)
 
 ### 生データを確認したいとき
 
@@ -47,6 +51,10 @@
 - [`docs/references/backtests/breakout-deep-dive-round4_20260405.summary.json`](./references/backtests/breakout-deep-dive-round4_20260405.summary.json)
 - [`docs/references/backtests/breakout-deep-dive-round4-alt_20260405.json`](./references/backtests/breakout-deep-dive-round4-alt_20260405.json)
 - [`docs/references/backtests/breakout-deep-dive-round4-alt_20260405.summary.json`](./references/backtests/breakout-deep-dive-round4-alt_20260405.summary.json)
+- [`docs/references/backtests/breakout-rsi-round5_20260405.json`](./references/backtests/breakout-rsi-round5_20260405.json)
+- [`docs/references/backtests/breakout-rsi-round5_20260405.summary.json`](./references/backtests/breakout-rsi-round5_20260405.summary.json)
+- [`docs/references/backtests/breakout-rsi-round5-alt_20260405.json`](./references/backtests/breakout-rsi-round5-alt_20260405.json)
+- [`docs/references/backtests/breakout-rsi-round5-alt_20260405.summary.json`](./references/backtests/breakout-rsi-round5-alt_20260405.summary.json)
 
 ### 研究用 / session batch input を確認したいとき
 
@@ -68,6 +76,7 @@
 - [`docs/working-memory/session-logs/mag7-backtest-session-summary_20260404_1252.md`](./working-memory/session-logs/mag7-backtest-session-summary_20260404_1252.md)
 - [`docs/working-memory/session-logs/multi-universe-backtest-session-summary_20260404_1345.md`](./working-memory/session-logs/multi-universe-backtest-session-summary_20260404_1345.md)
 - [`docs/working-memory/session-logs/breakout-deep-dive-round4_20260405_0027.md`](./working-memory/session-logs/breakout-deep-dive-round4_20260405_0027.md)
+- [`docs/working-memory/session-logs/round5-breakout-rsi_20260405_1201.md`](./working-memory/session-logs/round5-breakout-rsi_20260405_1201.md)
 
 ## 運用ルール
 
