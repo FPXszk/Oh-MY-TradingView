@@ -120,3 +120,10 @@
 - Mag7 doc: `docs/research/mag7-backtest-results-round5_2015_2025.md`
 - alt doc: `docs/research/multi-universe-backtest-results-round5_2015_2025.md`
 - bad-strategy doc: `docs/bad-strategy/round5-negative-alt-strategies_2015_2025.md`
+
+## 完了状態
+
+- review 指摘（generator / validator 整合）は修正済み
+- `npm run test:all` 通過
+- commit: `1521a6499e1c81bc15f14b8c5c92f495091d450d`
+- push: `origin/main`
