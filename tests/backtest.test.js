@@ -1,5 +1,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 
 import {
   buildNvdaMaSource,
@@ -12,6 +15,17 @@ import {
   isTesterPanelStateVisible,
 } from '../src/core/backtest.js';
 import { buildResearchStrategySource } from '../src/core/research-backtest.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+async function loadPresets() {
+  const raw = await readFile(
+    join(__dirname, '..', 'config', 'backtest', 'strategy-presets.json'),
+    'utf8',
+  );
+  return JSON.parse(raw);
+}
 
 // ---------------------------------------------------------------------------
 // buildNvdaMaSource
@@ -666,6 +680,35 @@ describe('buildResearchStrategySource', () => {
     assert.ok(source.includes('rsiValue = ta.rsi(close, 2)'));
     assert.ok(source.includes('entrySignal = rsiValue < 10'));
     assert.ok(source.includes('allowEntry = inDateRange and regimeOk and rsiRegimeOk'));
+  });
+
+  it('builds round7 breadth-persistence preset sources from the preset catalog', async () => {
+    const data = await loadPresets();
+    const preset = data.strategies.find(
+      (entry) => entry.id === 'donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-6pct-theme-breadth-quality',
+    );
+
+    assert.ok(preset, 'Expected round7 breadth-quality preset to exist');
+    const source = buildResearchStrategySource(preset, defaults);
+
+    assert.ok(source.includes('request.security("BATS:RSP", timeframe.period, close)'));
+    assert.ok(source.includes('rsiRegimeOk = rsiRegimeValue > 50'));
+    assert.ok(source.includes('stopLossPrice = strategy.position_avg_price * (1 - 0.06)'));
+  });
+
+  it('builds round7 dip-reclaim preset sources from the preset catalog', async () => {
+    const data = await loadPresets();
+    const preset = data.strategies.find(
+      (entry) => entry.id === 'rsi3-buy-20-sell-70-spy-filter-long-only-theme-deep-dip',
+    );
+
+    assert.ok(preset, 'Expected round7 deep-dip preset to exist');
+    const source = buildResearchStrategySource(preset, defaults);
+
+    assert.ok(source.includes('request.security("BATS:SPY", timeframe.period, close)'));
+    assert.ok(source.includes('rsiValue = ta.rsi(close, 3)'));
+    assert.ok(source.includes('entrySignal = rsiValue < 20'));
+    assert.ok(source.includes('exitSignal = rsiValue > 70'));
   });
 
   it('rejects unsupported regime filters in the generator', () => {

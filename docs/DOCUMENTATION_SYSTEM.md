@@ -63,6 +63,10 @@
 - [`docs/references/backtests/round6-theme-alt_20260405.summary.json`](./references/backtests/round6-theme-alt_20260405.summary.json)
 - [`docs/references/backtests/round6-theme-alt-extension_20260405.json`](./references/backtests/round6-theme-alt-extension_20260405.json)
 - [`docs/references/backtests/round6-theme-alt-extension_20260405.summary.json`](./references/backtests/round6-theme-alt-extension_20260405.summary.json)
+- [`docs/references/backtests/round7-theme-mag7_20260405.json`](./references/backtests/round7-theme-mag7_20260405.json)
+- [`docs/references/backtests/round7-theme-mag7_20260405.summary.json`](./references/backtests/round7-theme-mag7_20260405.summary.json)
+- [`docs/references/backtests/round7-theme-alt_20260405.json`](./references/backtests/round7-theme-alt_20260405.json)
+- [`docs/references/backtests/round7-theme-alt_20260405.summary.json`](./references/backtests/round7-theme-alt_20260405.summary.json)
 
 ### 研究用 / session batch input を確認したいとき
 
@@ -70,7 +74,7 @@
 - [`config/backtest/universes/mag7.json`](../config/backtest/universes/mag7.json)
 - [`config/backtest/universes/sp500-top10-point-in-time.json`](../config/backtest/universes/sp500-top10-point-in-time.json)
 - [`config/backtest/universes/mega-cap-ex-nvda.json`](../config/backtest/universes/mega-cap-ex-nvda.json)
-- これらは round1 / round2 / round3 の research batch で使う input であり、現時点の repo CLI / MCP の公開実装は `nvda-ma` 固定
+- これらは各 research round の session batch input であり、現時点の repo CLI / MCP の公開実装は `nvda-ma` 固定
 
 ### round3 の調査メモを見たいとき
 
@@ -85,6 +89,13 @@
 - [`docs/research/theme-backtest-results-round6_2015_2025.md`](./research/theme-backtest-results-round6_2015_2025.md)
 - [`docs/research/theme-backtest-results-round6-alt_2015_2025.md`](./research/theme-backtest-results-round6-alt_2015_2025.md)
 
+### round7 のテーマ投資メモを見たいとき
+
+- [`docs/research/theme-signal-observation-round7_2015_2025.md`](./research/theme-signal-observation-round7_2015_2025.md)
+- [`docs/research/theme-strategy-shortlist-round7_2015_2025.md`](./research/theme-strategy-shortlist-round7_2015_2025.md)
+- [`docs/research/theme-backtest-results-round7_2015_2025.md`](./research/theme-backtest-results-round7_2015_2025.md)
+- [`docs/research/theme-backtest-results-round7-alt_2015_2025.md`](./research/theme-backtest-results-round7-alt_2015_2025.md)
+
 ### セッションの判断経緯を追いたいとき
 
 - [`docs/working-memory/session-logs/mag7-backtest-session-summary_20260404_1106.md`](./working-memory/session-logs/mag7-backtest-session-summary_20260404_1106.md)
@@ -93,6 +104,7 @@
 - [`docs/working-memory/session-logs/breakout-deep-dive-round4_20260405_0027.md`](./working-memory/session-logs/breakout-deep-dive-round4_20260405_0027.md)
 - [`docs/working-memory/session-logs/round5-breakout-rsi_20260405_1201.md`](./working-memory/session-logs/round5-breakout-rsi_20260405_1201.md)
 - [`docs/working-memory/session-logs/round6-theme-trend_20260405_0603.md`](./working-memory/session-logs/round6-theme-trend_20260405_0603.md)
+- [`docs/working-memory/session-logs/round7-theme-trend_20260405_0815.md`](./working-memory/session-logs/round7-theme-trend_20260405_0815.md)
 
 ## 運用ルール
 

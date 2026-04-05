@@ -573,7 +573,7 @@ describe('strategy-presets.json integration', () => {
   it('round1-3 presets are unchanged', async () => {
     const data = await loadPresets();
     const round1To3 = data.strategies.filter(
-      (p) => !['round4', 'round5', 'round6'].includes(p.implementation_stage),
+      (p) => !['round4', 'round5', 'round6', 'round7'].includes(p.implementation_stage),
     );
     assert.equal(round1To3.length, 30, 'Expected 30 round1-3 presets to remain');
   });
@@ -670,6 +670,101 @@ describe('strategy-presets.json integration', () => {
       assert.ok(
         allowedBuilders.includes(preset.builder),
         `Preset "${preset.id}" uses unexpected builder "${preset.builder}"`,
+      );
+    }
+  });
+
+  it('contains round7 presets', async () => {
+    const data = await loadPresets();
+    const r7 = filterPresetsByRound(data.strategies, 'round7');
+    assert.equal(r7.length, 10, `Expected 10 round7 presets, got ${r7.length}`);
+  });
+
+  it('all round7 presets have "round7" tag', async () => {
+    const data = await loadPresets();
+    const r7 = filterPresetsByRound(data.strategies, 'round7');
+    for (const p of r7) {
+      assert.ok(
+        Array.isArray(p.tags) && p.tags.includes('round7'),
+        `Preset "${p.id}" missing "round7" tag`,
+      );
+    }
+  });
+
+  it('round7 includes all planned theme-trend variants', async () => {
+    const data = await loadPresets();
+    const r7 = filterPresetsByRound(data.strategies, 'round7');
+    const r7Ids = new Set(r7.map((p) => p.id));
+    const expected = [
+      'donchian-55-20-rsp-filter-rsi14-regime-45-theme-breadth-early',
+      'donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-6pct-theme-breadth-quality',
+      'donchian-55-20-spy-filter-rsi14-regime-60-theme-quality-strict',
+      'donchian-55-20-spy-filter-rsi14-regime-55-hard-stop-6pct-theme-quality-strict',
+      'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-10pct-theme-deep-pullback',
+      'donchian-20-10-spy-filter-rsi14-regime-45-hard-stop-10pct-theme-acceleration-reentry',
+      'donchian-20-10-spy-filter-rsi14-regime-50-hard-stop-8pct-theme-acceleration-balanced',
+      'donchian-20-10-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-acceleration',
+      'rsi2-buy-10-sell-70-rsp-filter-long-only-theme-shallow-dip',
+      'rsi3-buy-20-sell-70-spy-filter-long-only-theme-deep-dip',
+    ];
+    for (const id of expected) {
+      assert.ok(r7Ids.has(id), `Missing round7 preset: ${id}`);
+    }
+  });
+
+  it('round7 stays within existing builder families', async () => {
+    const data = await loadPresets();
+    const r7 = filterPresetsByRound(data.strategies, 'round7');
+    for (const preset of r7) {
+      const allowedBuilders = ['donchian_breakout', 'rsi_mean_reversion'];
+      assert.ok(
+        allowedBuilders.includes(preset.builder),
+        `Preset "${preset.id}" uses unexpected builder "${preset.builder}"`,
+      );
+    }
+  });
+
+  it('round7 presets keep theme metadata and taxonomy aligned', async () => {
+    const data = await loadPresets();
+    const r7 = filterPresetsByRound(data.strategies, 'round7');
+    const expectedThemeAxes = new Map([
+      ['donchian-55-20-rsp-filter-rsi14-regime-45-theme-breadth-early', 'breadth-persistence-early'],
+      ['donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-6pct-theme-breadth-quality', 'breadth-quality'],
+      ['donchian-55-20-spy-filter-rsi14-regime-60-theme-quality-strict', 'quality-strict'],
+      ['donchian-55-20-spy-filter-rsi14-regime-55-hard-stop-6pct-theme-quality-strict', 'quality-strict-stop'],
+      ['donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-10pct-theme-deep-pullback', 'deep-pullback'],
+      ['donchian-20-10-spy-filter-rsi14-regime-45-hard-stop-10pct-theme-acceleration-reentry', 'acceleration-reentry'],
+      ['donchian-20-10-spy-filter-rsi14-regime-50-hard-stop-8pct-theme-acceleration-balanced', 'acceleration-balanced'],
+      ['donchian-20-10-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-acceleration', 'breadth-acceleration'],
+      ['rsi2-buy-10-sell-70-rsp-filter-long-only-theme-shallow-dip', 'shallow-dip-reclaim'],
+      ['rsi3-buy-20-sell-70-spy-filter-long-only-theme-deep-dip', 'deep-dip-reclaim'],
+    ]);
+    const expectedAxisTags = new Map([
+      ['donchian-55-20-rsp-filter-rsi14-regime-45-theme-breadth-early', 'theme-persistence'],
+      ['donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-6pct-theme-breadth-quality', 'theme-quality'],
+      ['donchian-55-20-spy-filter-rsi14-regime-60-theme-quality-strict', 'theme-quality'],
+      ['donchian-55-20-spy-filter-rsi14-regime-55-hard-stop-6pct-theme-quality-strict', 'theme-quality'],
+      ['donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-10pct-theme-deep-pullback', 'theme-deep-pullback'],
+      ['donchian-20-10-spy-filter-rsi14-regime-45-hard-stop-10pct-theme-acceleration-reentry', 'theme-reentry'],
+      ['donchian-20-10-spy-filter-rsi14-regime-50-hard-stop-8pct-theme-acceleration-balanced', 'theme-balanced'],
+      ['donchian-20-10-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-acceleration', 'theme-acceleration'],
+      ['rsi2-buy-10-sell-70-rsp-filter-long-only-theme-shallow-dip', 'theme-shallow-dip'],
+      ['rsi3-buy-20-sell-70-spy-filter-long-only-theme-deep-dip', 'theme-deep-dip'],
+    ]);
+
+    assert.equal(r7.length, expectedThemeAxes.size, 'Round7 preset expectations are out of sync');
+
+    for (const preset of r7) {
+      assert.equal(
+        preset.theme_axis,
+        expectedThemeAxes.get(preset.id),
+        `Preset "${preset.id}" has unexpected theme_axis`,
+      );
+      assert.equal(typeof preset.theme_notes, 'string', `Preset "${preset.id}" should include theme_notes`);
+      assert.ok(preset.theme_notes.length > 0, `Preset "${preset.id}" should have non-empty theme_notes`);
+      assert.ok(
+        preset.tags.includes(expectedAxisTags.get(preset.id)),
+        `Preset "${preset.id}" should include taxonomy tag "${expectedAxisTags.get(preset.id)}"`,
       );
     }
   });
