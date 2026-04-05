@@ -11,6 +11,7 @@ import {
   hasStudyLimitDialog,
   isTesterPanelStateVisible,
 } from '../src/core/backtest.js';
+import { buildResearchStrategySource } from '../src/core/research-backtest.js';
 
 // ---------------------------------------------------------------------------
 // buildNvdaMaSource
@@ -451,5 +452,95 @@ describe('runLocalFallbackBacktest', () => {
     const result = runLocalFallbackBacktest(bars);
     assert.equal(result.closed_trades, 0);
     assert.equal(result.net_profit, 0);
+  });
+});
+
+describe('buildResearchStrategySource', () => {
+  const defaults = {
+    initial_capital: 10000,
+    date_range: {
+      from: '2015-01-01',
+      to: '2025-12-31',
+    },
+  };
+
+  it('builds breakout sources with no averaging down by default', () => {
+    const source = buildResearchStrategySource({
+      id: 'donchian-55-20-baseline',
+      name: 'Donchian 55/20 Baseline',
+      builder: 'donchian_breakout',
+      parameters: {
+        entry_period: 55,
+        exit_period: 20,
+      },
+    }, defaults);
+
+    assert.ok(source.includes('pyramiding=0'));
+    assert.ok(source.includes('strategy.position_size <= 0'));
+    assert.ok(source.includes('donchianUpper = ta.highest(high, 55)[1]'));
+    assert.ok(source.includes('donchianLower = ta.lowest(low, 20)[1]'));
+  });
+
+  it('adds percent hard stop rules when requested', () => {
+    const source = buildResearchStrategySource({
+      id: 'donchian-55-20-hard-stop-8pct',
+      name: 'Donchian 55/20 Hard Stop 8%',
+      builder: 'donchian_breakout',
+      parameters: {
+        entry_period: 55,
+        exit_period: 20,
+      },
+      stop_loss: {
+        type: 'hard_percent',
+        value: 8,
+      },
+    }, defaults);
+
+    assert.ok(source.includes('stopLossPrice = strategy.position_avg_price * (1 - 0.08)'));
+    assert.ok(source.includes('strategy.exit("Stop Loss", "Long", stop=stopLossPrice)'));
+  });
+
+  it('adds bollinger 2-sigma exits when requested', () => {
+    const source = buildResearchStrategySource({
+      id: 'keltner-breakout-2sigma-exit',
+      name: 'Keltner Breakout 2 Sigma Exit',
+      builder: 'keltner_breakout',
+      parameters: {
+        ema_period: 20,
+        atr_period: 10,
+        atr_mult: 1.5,
+      },
+      exit_overlay: {
+        type: 'bollinger_2sigma_exit',
+        bb_length: 20,
+        bb_stddev: 2,
+      },
+    }, defaults);
+
+    assert.ok(source.includes('[overlayBasis, overlayUpper, overlayLower] = ta.bb(close, 20, 2)'));
+    assert.ok(source.includes('strategy.close("Long", comment="2sigma exit")'));
+  });
+
+  it('adds SPY regime filters with forced exits when requested', () => {
+    const source = buildResearchStrategySource({
+      id: 'donchian-55-20-spy-filter',
+      name: 'Donchian 55/20 + SPY Filter',
+      builder: 'donchian_breakout',
+      parameters: {
+        entry_period: 55,
+        exit_period: 20,
+      },
+      regime_filter: {
+        type: 'spy_above_sma200',
+        reference_symbol: 'SPY',
+        reference_ma_type: 'sma',
+        reference_ma_period: 200,
+        action_when_false: 'exit_all',
+      },
+    }, defaults);
+
+    assert.ok(source.includes('request.security("BATS:SPY", timeframe.period, close)'));
+    assert.ok(source.includes('regimeForceExit = true'));
+    assert.ok(source.includes('strategy.close("Long", comment="Regime exit")'));
   });
 });

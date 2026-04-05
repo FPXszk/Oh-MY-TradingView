@@ -1,0 +1,422 @@
+{
+  "meta": {
+    "generated_at": "2026-04-05T01:13:08.241Z",
+    "date_range": {
+      "from": {
+        "year": 2015,
+        "month": 1,
+        "day": 1
+      },
+      "to": {
+        "year": 2025,
+        "month": 12,
+        "day": 31
+      }
+    },
+    "strategy_ids": [
+      "donchian-55-20-baseline",
+      "donchian-55-20-spy-filter",
+      "donchian-55-20-rsp-filter",
+      "donchian-55-20-atr-trail",
+      "donchian-55-20-hard-stop-8pct",
+      "donchian-55-20-hard-stop-atr2",
+      "donchian-55-20-2sigma-exit",
+      "donchian-55-20-no-avg-down",
+      "donchian-20-10-baseline",
+      "donchian-20-10-hard-stop-8pct",
+      "donchian-20-10-atr-trail",
+      "donchian-20-10-2sigma-exit",
+      "keltner-breakout-baseline-r4",
+      "keltner-atr-trail-r4",
+      "keltner-breakout-hard-stop-atr2",
+      "keltner-breakout-2sigma-exit",
+      "donchian-55-20-spy-filter-hard-stop",
+      "donchian-55-20-rsp-filter-atr-trail",
+      "keltner-breakout-spy-filter",
+      "breakout-bollinger-2sigma-exit"
+    ],
+    "universe_ids": [
+      "mag7"
+    ],
+    "status_check": {
+      "success": true,
+      "cdp_connected": true,
+      "target_id": "79C4CE2D4AEA37CCB5FFAD3EB285A041",
+      "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+      "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+      "chart_symbol": "BATS:AAPL",
+      "chart_resolution": "D",
+      "chart_type": 1,
+      "api_available": true
+    }
+  },
+  "summary": {
+    "run_count": 140,
+    "success_count": 140,
+    "tester_available_count": 137,
+    "strategy_universe_summary": [
+      {
+        "universe_id": "mag7",
+        "strategy_id": "donchian-20-10-hard-stop-8pct",
+        "strategy_name": "Donchian 20/10 + 8% Hard Stop",
+        "run_count": 6,
+        "avg_net_profit": 36087.16,
+        "avg_profit_factor": 2.525,
+        "avg_max_drawdown": 6838.54,
+        "avg_win_rate": 49.67,
+        "best_symbol": "NVDA",
+        "best_net_profit": 116099.27
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "donchian-55-20-baseline",
+        "strategy_name": "Donchian 55/20 Baseline",
+        "run_count": 7,
+        "avg_net_profit": 34927.25,
+        "avg_profit_factor": 2.712,
+        "avg_max_drawdown": 8227.7,
+        "avg_win_rate": 52.13,
+        "best_symbol": "NVDA",
+        "best_net_profit": 155063.93
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "donchian-55-20-no-avg-down",
+        "strategy_name": "Donchian 55/20 No Avg Down (confirm)",
+        "run_count": 7,
+        "avg_net_profit": 34927.25,
+        "avg_profit_factor": 2.712,
+        "avg_max_drawdown": 8227.7,
+        "avg_win_rate": 52.13,
+        "best_symbol": "NVDA",
+        "best_net_profit": 155063.93
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "donchian-55-20-spy-filter",
+        "strategy_name": "Donchian 55/20 + SPY Filter",
+        "run_count": 7,
+        "avg_net_profit": 34423.58,
+        "avg_profit_factor": 3.09,
+        "avg_max_drawdown": 7917.23,
+        "avg_win_rate": 53.2,
+        "best_symbol": "NVDA",
+        "best_net_profit": 150230.1
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "donchian-20-10-baseline",
+        "strategy_name": "Donchian 20/10 Baseline",
+        "run_count": 6,
+        "avg_net_profit": 33872.34,
+        "avg_profit_factor": 2.308,
+        "avg_max_drawdown": 8224.23,
+        "avg_win_rate": 50.81,
+        "best_symbol": "NVDA",
+        "best_net_profit": 74947.55
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "donchian-55-20-rsp-filter",
+        "strategy_name": "Donchian 55/20 + RSP Filter",
+        "run_count": 6,
+        "avg_net_profit": 32058.43,
+        "avg_profit_factor": 3.112,
+        "avg_max_drawdown": 8205.77,
+        "avg_win_rate": 53.28,
+        "best_symbol": "NVDA",
+        "best_net_profit": 112145.93
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "donchian-55-20-hard-stop-atr2",
+        "strategy_name": "Donchian 55/20 + ATR×2 Stop",
+        "run_count": 7,
+        "avg_net_profit": 30016.44,
+        "avg_profit_factor": 2.614,
+        "avg_max_drawdown": 5241.21,
+        "avg_win_rate": 40.54,
+        "best_symbol": "NVDA",
+        "best_net_profit": 127000.05
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "donchian-55-20-hard-stop-8pct",
+        "strategy_name": "Donchian 55/20 + 8% Hard Stop",
+        "run_count": 7,
+        "avg_net_profit": 29970.83,
+        "avg_profit_factor": 2.886,
+        "avg_max_drawdown": 5972.8,
+        "avg_win_rate": 48.21,
+        "best_symbol": "NVDA",
+        "best_net_profit": 110886.37
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "donchian-55-20-spy-filter-hard-stop",
+        "strategy_name": "Donchian 55/20 + SPY Filter + 8% Stop",
+        "run_count": 7,
+        "avg_net_profit": 24102.17,
+        "avg_profit_factor": 2.766,
+        "avg_max_drawdown": 5522.12,
+        "avg_win_rate": 48.54,
+        "best_symbol": "NVDA",
+        "best_net_profit": 84034.13
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "keltner-breakout-baseline-r4",
+        "strategy_name": "Keltner Breakout Baseline (R4)",
+        "run_count": 7,
+        "avg_net_profit": 22044.3,
+        "avg_profit_factor": 1.964,
+        "avg_max_drawdown": 5870.14,
+        "avg_win_rate": 41.8,
+        "best_symbol": "NVDA",
+        "best_net_profit": 55096.19
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "keltner-breakout-hard-stop-atr2",
+        "strategy_name": "Keltner Breakout + ATR×2 Stop",
+        "run_count": 7,
+        "avg_net_profit": 20409.27,
+        "avg_profit_factor": 1.897,
+        "avg_max_drawdown": 5273.99,
+        "avg_win_rate": 40.91,
+        "best_symbol": "NVDA",
+        "best_net_profit": 49170.72
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "donchian-20-10-atr-trail",
+        "strategy_name": "Donchian 20/10 + ATR Trail",
+        "run_count": 7,
+        "avg_net_profit": 16502.89,
+        "avg_profit_factor": 1.858,
+        "avg_max_drawdown": 4888.97,
+        "avg_win_rate": 44.28,
+        "best_symbol": "TSLA",
+        "best_net_profit": 42647.41
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "donchian-55-20-rsp-filter-atr-trail",
+        "strategy_name": "Donchian 55/20 + RSP Filter + ATR Trail",
+        "run_count": 7,
+        "avg_net_profit": 16222.67,
+        "avg_profit_factor": 2.049,
+        "avg_max_drawdown": 5888.27,
+        "avg_win_rate": 47.36,
+        "best_symbol": "TSLA",
+        "best_net_profit": 49296.43
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "donchian-55-20-2sigma-exit",
+        "strategy_name": "Donchian 55/20 + 2σ Exit",
+        "run_count": 7,
+        "avg_net_profit": 15959.29,
+        "avg_profit_factor": 2.062,
+        "avg_max_drawdown": 5755.3,
+        "avg_win_rate": 72.65,
+        "best_symbol": "NVDA",
+        "best_net_profit": 79828.51
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "breakout-bollinger-2sigma-exit",
+        "strategy_name": "Bollinger Breakout + 2σ Exit",
+        "run_count": 7,
+        "avg_net_profit": 15959.29,
+        "avg_profit_factor": 2.062,
+        "avg_max_drawdown": 5755.3,
+        "avg_win_rate": 72.65,
+        "best_symbol": "NVDA",
+        "best_net_profit": 79828.51
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "donchian-55-20-atr-trail",
+        "strategy_name": "Donchian 55/20 + ATR Trail",
+        "run_count": 7,
+        "avg_net_profit": 15253.12,
+        "avg_profit_factor": 2.035,
+        "avg_max_drawdown": 7703.24,
+        "avg_win_rate": 46.99,
+        "best_symbol": "NVDA",
+        "best_net_profit": 51849.99
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "keltner-atr-trail-r4",
+        "strategy_name": "Keltner Breakout + ATR Trail (R4)",
+        "run_count": 7,
+        "avg_net_profit": 12932.49,
+        "avg_profit_factor": 1.615,
+        "avg_max_drawdown": 4451.6,
+        "avg_win_rate": 40.84,
+        "best_symbol": "NVDA",
+        "best_net_profit": 34122.04
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "keltner-breakout-spy-filter",
+        "strategy_name": "Keltner Breakout + SPY Filter",
+        "run_count": 7,
+        "avg_net_profit": 12464.45,
+        "avg_profit_factor": 1.735,
+        "avg_max_drawdown": 4460.25,
+        "avg_win_rate": 42.01,
+        "best_symbol": "NVDA",
+        "best_net_profit": 30359.46
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "donchian-20-10-2sigma-exit",
+        "strategy_name": "Donchian 20/10 + 2σ Exit",
+        "run_count": 7,
+        "avg_net_profit": 10283.19,
+        "avg_profit_factor": 1.64,
+        "avg_max_drawdown": 6892.69,
+        "avg_win_rate": 67.77,
+        "best_symbol": "NVDA",
+        "best_net_profit": 21283.35
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "keltner-breakout-2sigma-exit",
+        "strategy_name": "Keltner Breakout + 2σ Exit",
+        "run_count": 7,
+        "avg_net_profit": 6288.15,
+        "avg_profit_factor": 1.452,
+        "avg_max_drawdown": 3928.78,
+        "avg_win_rate": 59.05,
+        "best_symbol": "AAPL",
+        "best_net_profit": 15207.26
+      }
+    ],
+    "top_10": [
+      {
+        "universe_id": "mag7",
+        "strategy_id": "donchian-20-10-hard-stop-8pct",
+        "strategy_name": "Donchian 20/10 + 8% Hard Stop",
+        "run_count": 6,
+        "avg_net_profit": 36087.16,
+        "avg_profit_factor": 2.525,
+        "avg_max_drawdown": 6838.54,
+        "avg_win_rate": 49.67,
+        "best_symbol": "NVDA",
+        "best_net_profit": 116099.27
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "donchian-55-20-baseline",
+        "strategy_name": "Donchian 55/20 Baseline",
+        "run_count": 7,
+        "avg_net_profit": 34927.25,
+        "avg_profit_factor": 2.712,
+        "avg_max_drawdown": 8227.7,
+        "avg_win_rate": 52.13,
+        "best_symbol": "NVDA",
+        "best_net_profit": 155063.93
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "donchian-55-20-no-avg-down",
+        "strategy_name": "Donchian 55/20 No Avg Down (confirm)",
+        "run_count": 7,
+        "avg_net_profit": 34927.25,
+        "avg_profit_factor": 2.712,
+        "avg_max_drawdown": 8227.7,
+        "avg_win_rate": 52.13,
+        "best_symbol": "NVDA",
+        "best_net_profit": 155063.93
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "donchian-55-20-spy-filter",
+        "strategy_name": "Donchian 55/20 + SPY Filter",
+        "run_count": 7,
+        "avg_net_profit": 34423.58,
+        "avg_profit_factor": 3.09,
+        "avg_max_drawdown": 7917.23,
+        "avg_win_rate": 53.2,
+        "best_symbol": "NVDA",
+        "best_net_profit": 150230.1
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "donchian-20-10-baseline",
+        "strategy_name": "Donchian 20/10 Baseline",
+        "run_count": 6,
+        "avg_net_profit": 33872.34,
+        "avg_profit_factor": 2.308,
+        "avg_max_drawdown": 8224.23,
+        "avg_win_rate": 50.81,
+        "best_symbol": "NVDA",
+        "best_net_profit": 74947.55
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "donchian-55-20-rsp-filter",
+        "strategy_name": "Donchian 55/20 + RSP Filter",
+        "run_count": 6,
+        "avg_net_profit": 32058.43,
+        "avg_profit_factor": 3.112,
+        "avg_max_drawdown": 8205.77,
+        "avg_win_rate": 53.28,
+        "best_symbol": "NVDA",
+        "best_net_profit": 112145.93
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "donchian-55-20-hard-stop-atr2",
+        "strategy_name": "Donchian 55/20 + ATR×2 Stop",
+        "run_count": 7,
+        "avg_net_profit": 30016.44,
+        "avg_profit_factor": 2.614,
+        "avg_max_drawdown": 5241.21,
+        "avg_win_rate": 40.54,
+        "best_symbol": "NVDA",
+        "best_net_profit": 127000.05
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "donchian-55-20-hard-stop-8pct",
+        "strategy_name": "Donchian 55/20 + 8% Hard Stop",
+        "run_count": 7,
+        "avg_net_profit": 29970.83,
+        "avg_profit_factor": 2.886,
+        "avg_max_drawdown": 5972.8,
+        "avg_win_rate": 48.21,
+        "best_symbol": "NVDA",
+        "best_net_profit": 110886.37
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "donchian-55-20-spy-filter-hard-stop",
+        "strategy_name": "Donchian 55/20 + SPY Filter + 8% Stop",
+        "run_count": 7,
+        "avg_net_profit": 24102.17,
+        "avg_profit_factor": 2.766,
+        "avg_max_drawdown": 5522.12,
+        "avg_win_rate": 48.54,
+        "best_symbol": "NVDA",
+        "best_net_profit": 84034.13
+      },
+      {
+        "universe_id": "mag7",
+        "strategy_id": "keltner-breakout-baseline-r4",
+        "strategy_name": "Keltner Breakout Baseline (R4)",
+        "run_count": 7,
+        "avg_net_profit": 22044.3,
+        "avg_profit_factor": 1.964,
+        "avg_max_drawdown": 5870.14,
+        "avg_win_rate": 41.8,
+        "best_symbol": "NVDA",
+        "best_net_profit": 55096.19
+      }
+    ]
+  }
+}
