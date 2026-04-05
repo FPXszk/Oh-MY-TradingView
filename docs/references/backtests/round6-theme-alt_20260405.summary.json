@@ -1,0 +1,313 @@
+{
+  "meta": {
+    "generated_at": "2026-04-05T06:40:55.230Z",
+    "date_range": {
+      "from": {
+        "year": 2015,
+        "month": 1,
+        "day": 1
+      },
+      "to": {
+        "year": 2025,
+        "month": 12,
+        "day": 31
+      }
+    },
+    "strategy_ids": [
+      "donchian-55-20-spy-filter-rsi14-regime-55",
+      "donchian-55-20-rsp-filter-rsi14-regime-50",
+      "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct",
+      "donchian-55-20-spy-filter-rsi14-regime-50-hard-stop-8pct",
+      "donchian-20-10-rsp-filter-rsi14-regime-55-hard-stop-6pct",
+      "donchian-20-10-spy-filter-rsi14-regime-55-hard-stop-6pct"
+    ],
+    "universe_ids": [
+      "sp500-top10-point-in-time",
+      "mega-cap-ex-nvda"
+    ],
+    "status_check": {
+      "success": true,
+      "cdp_connected": true,
+      "target_id": "79C4CE2D4AEA37CCB5FFAD3EB285A041",
+      "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+      "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+      "chart_symbol": "BATS:AAPL",
+      "chart_resolution": "D",
+      "chart_type": 1,
+      "api_available": true
+    }
+  },
+  "summary": {
+    "run_count": 120,
+    "success_count": 120,
+    "tester_available_count": 120,
+    "strategy_universe_summary": [
+      {
+        "universe_id": "sp500-top10-point-in-time",
+        "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-50",
+        "strategy_name": "Donchian 55/20 + RSP Filter + RSI14 Regime 50",
+        "run_count": 10,
+        "avg_net_profit": 8418.29,
+        "avg_profit_factor": 2.349,
+        "avg_max_drawdown": 3810.76,
+        "avg_win_rate": 50.81,
+        "best_symbol": "META",
+        "best_net_profit": 27732.34
+      },
+      {
+        "universe_id": "mega-cap-ex-nvda",
+        "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-50",
+        "strategy_name": "Donchian 55/20 + RSP Filter + RSI14 Regime 50",
+        "run_count": 10,
+        "avg_net_profit": 8363.76,
+        "avg_profit_factor": 2.431,
+        "avg_max_drawdown": 3687.53,
+        "avg_win_rate": 51.37,
+        "best_symbol": "META",
+        "best_net_profit": 27732.34
+      },
+      {
+        "universe_id": "mega-cap-ex-nvda",
+        "strategy_id": "donchian-55-20-spy-filter-rsi14-regime-55",
+        "strategy_name": "Donchian 55/20 + SPY Filter + RSI14 Regime 55",
+        "run_count": 10,
+        "avg_net_profit": 8338.16,
+        "avg_profit_factor": 2.643,
+        "avg_max_drawdown": 2867,
+        "avg_win_rate": 51,
+        "best_symbol": "META",
+        "best_net_profit": 20183.99
+      },
+      {
+        "universe_id": "sp500-top10-point-in-time",
+        "strategy_id": "donchian-55-20-spy-filter-rsi14-regime-55",
+        "strategy_name": "Donchian 55/20 + SPY Filter + RSI14 Regime 55",
+        "run_count": 10,
+        "avg_net_profit": 8237.49,
+        "avg_profit_factor": 2.414,
+        "avg_max_drawdown": 3024.39,
+        "avg_win_rate": 50.11,
+        "best_symbol": "META",
+        "best_net_profit": 20183.99
+      },
+      {
+        "universe_id": "mega-cap-ex-nvda",
+        "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct",
+        "strategy_name": "Donchian 55/20 + RSP Filter + RSI14 Regime 55 + 8% Stop",
+        "run_count": 10,
+        "avg_net_profit": 7600.85,
+        "avg_profit_factor": 2.312,
+        "avg_max_drawdown": 3442.3,
+        "avg_win_rate": 49.7,
+        "best_symbol": "META",
+        "best_net_profit": 29187.99
+      },
+      {
+        "universe_id": "sp500-top10-point-in-time",
+        "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct",
+        "strategy_name": "Donchian 55/20 + RSP Filter + RSI14 Regime 55 + 8% Stop",
+        "run_count": 10,
+        "avg_net_profit": 7575.24,
+        "avg_profit_factor": 2.216,
+        "avg_max_drawdown": 3569.69,
+        "avg_win_rate": 49.41,
+        "best_symbol": "META",
+        "best_net_profit": 29187.99
+      },
+      {
+        "universe_id": "mega-cap-ex-nvda",
+        "strategy_id": "donchian-20-10-spy-filter-rsi14-regime-55-hard-stop-6pct",
+        "strategy_name": "Donchian 20/10 + SPY Filter + RSI14 Regime 55 + 6% Stop",
+        "run_count": 10,
+        "avg_net_profit": 6409.36,
+        "avg_profit_factor": 1.688,
+        "avg_max_drawdown": 3169.92,
+        "avg_win_rate": 46.42,
+        "best_symbol": "AAPL",
+        "best_net_profit": 22988.26
+      },
+      {
+        "universe_id": "mega-cap-ex-nvda",
+        "strategy_id": "donchian-55-20-spy-filter-rsi14-regime-50-hard-stop-8pct",
+        "strategy_name": "Donchian 55/20 + SPY Filter + RSI14 Regime 50 + 8% Stop",
+        "run_count": 10,
+        "avg_net_profit": 6345.06,
+        "avg_profit_factor": 2.253,
+        "avg_max_drawdown": 2799.07,
+        "avg_win_rate": 48.63,
+        "best_symbol": "MSFT",
+        "best_net_profit": 13325.36
+      },
+      {
+        "universe_id": "sp500-top10-point-in-time",
+        "strategy_id": "donchian-20-10-spy-filter-rsi14-regime-55-hard-stop-6pct",
+        "strategy_name": "Donchian 20/10 + SPY Filter + RSI14 Regime 55 + 6% Stop",
+        "run_count": 10,
+        "avg_net_profit": 6187.29,
+        "avg_profit_factor": 1.628,
+        "avg_max_drawdown": 3185.35,
+        "avg_win_rate": 46.03,
+        "best_symbol": "AAPL",
+        "best_net_profit": 22988.26
+      },
+      {
+        "universe_id": "sp500-top10-point-in-time",
+        "strategy_id": "donchian-55-20-spy-filter-rsi14-regime-50-hard-stop-8pct",
+        "strategy_name": "Donchian 55/20 + SPY Filter + RSI14 Regime 50 + 8% Stop",
+        "run_count": 10,
+        "avg_net_profit": 6164.25,
+        "avg_profit_factor": 2.01,
+        "avg_max_drawdown": 2960.61,
+        "avg_win_rate": 48,
+        "best_symbol": "MSFT",
+        "best_net_profit": 13325.36
+      },
+      {
+        "universe_id": "mega-cap-ex-nvda",
+        "strategy_id": "donchian-20-10-rsp-filter-rsi14-regime-55-hard-stop-6pct",
+        "strategy_name": "Donchian 20/10 + RSP Filter + RSI14 Regime 55 + 6% Stop",
+        "run_count": 10,
+        "avg_net_profit": 5646.06,
+        "avg_profit_factor": 1.586,
+        "avg_max_drawdown": 3153.44,
+        "avg_win_rate": 45.12,
+        "best_symbol": "AAPL",
+        "best_net_profit": 21993.9
+      },
+      {
+        "universe_id": "sp500-top10-point-in-time",
+        "strategy_id": "donchian-20-10-rsp-filter-rsi14-regime-55-hard-stop-6pct",
+        "strategy_name": "Donchian 20/10 + RSP Filter + RSI14 Regime 55 + 6% Stop",
+        "run_count": 10,
+        "avg_net_profit": 5369.19,
+        "avg_profit_factor": 1.526,
+        "avg_max_drawdown": 3173.55,
+        "avg_win_rate": 44.42,
+        "best_symbol": "AAPL",
+        "best_net_profit": 21993.9
+      }
+    ],
+    "top_10": [
+      {
+        "universe_id": "sp500-top10-point-in-time",
+        "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-50",
+        "strategy_name": "Donchian 55/20 + RSP Filter + RSI14 Regime 50",
+        "run_count": 10,
+        "avg_net_profit": 8418.29,
+        "avg_profit_factor": 2.349,
+        "avg_max_drawdown": 3810.76,
+        "avg_win_rate": 50.81,
+        "best_symbol": "META",
+        "best_net_profit": 27732.34
+      },
+      {
+        "universe_id": "mega-cap-ex-nvda",
+        "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-50",
+        "strategy_name": "Donchian 55/20 + RSP Filter + RSI14 Regime 50",
+        "run_count": 10,
+        "avg_net_profit": 8363.76,
+        "avg_profit_factor": 2.431,
+        "avg_max_drawdown": 3687.53,
+        "avg_win_rate": 51.37,
+        "best_symbol": "META",
+        "best_net_profit": 27732.34
+      },
+      {
+        "universe_id": "mega-cap-ex-nvda",
+        "strategy_id": "donchian-55-20-spy-filter-rsi14-regime-55",
+        "strategy_name": "Donchian 55/20 + SPY Filter + RSI14 Regime 55",
+        "run_count": 10,
+        "avg_net_profit": 8338.16,
+        "avg_profit_factor": 2.643,
+        "avg_max_drawdown": 2867,
+        "avg_win_rate": 51,
+        "best_symbol": "META",
+        "best_net_profit": 20183.99
+      },
+      {
+        "universe_id": "sp500-top10-point-in-time",
+        "strategy_id": "donchian-55-20-spy-filter-rsi14-regime-55",
+        "strategy_name": "Donchian 55/20 + SPY Filter + RSI14 Regime 55",
+        "run_count": 10,
+        "avg_net_profit": 8237.49,
+        "avg_profit_factor": 2.414,
+        "avg_max_drawdown": 3024.39,
+        "avg_win_rate": 50.11,
+        "best_symbol": "META",
+        "best_net_profit": 20183.99
+      },
+      {
+        "universe_id": "mega-cap-ex-nvda",
+        "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct",
+        "strategy_name": "Donchian 55/20 + RSP Filter + RSI14 Regime 55 + 8% Stop",
+        "run_count": 10,
+        "avg_net_profit": 7600.85,
+        "avg_profit_factor": 2.312,
+        "avg_max_drawdown": 3442.3,
+        "avg_win_rate": 49.7,
+        "best_symbol": "META",
+        "best_net_profit": 29187.99
+      },
+      {
+        "universe_id": "sp500-top10-point-in-time",
+        "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct",
+        "strategy_name": "Donchian 55/20 + RSP Filter + RSI14 Regime 55 + 8% Stop",
+        "run_count": 10,
+        "avg_net_profit": 7575.24,
+        "avg_profit_factor": 2.216,
+        "avg_max_drawdown": 3569.69,
+        "avg_win_rate": 49.41,
+        "best_symbol": "META",
+        "best_net_profit": 29187.99
+      },
+      {
+        "universe_id": "mega-cap-ex-nvda",
+        "strategy_id": "donchian-20-10-spy-filter-rsi14-regime-55-hard-stop-6pct",
+        "strategy_name": "Donchian 20/10 + SPY Filter + RSI14 Regime 55 + 6% Stop",
+        "run_count": 10,
+        "avg_net_profit": 6409.36,
+        "avg_profit_factor": 1.688,
+        "avg_max_drawdown": 3169.92,
+        "avg_win_rate": 46.42,
+        "best_symbol": "AAPL",
+        "best_net_profit": 22988.26
+      },
+      {
+        "universe_id": "mega-cap-ex-nvda",
+        "strategy_id": "donchian-55-20-spy-filter-rsi14-regime-50-hard-stop-8pct",
+        "strategy_name": "Donchian 55/20 + SPY Filter + RSI14 Regime 50 + 8% Stop",
+        "run_count": 10,
+        "avg_net_profit": 6345.06,
+        "avg_profit_factor": 2.253,
+        "avg_max_drawdown": 2799.07,
+        "avg_win_rate": 48.63,
+        "best_symbol": "MSFT",
+        "best_net_profit": 13325.36
+      },
+      {
+        "universe_id": "sp500-top10-point-in-time",
+        "strategy_id": "donchian-20-10-spy-filter-rsi14-regime-55-hard-stop-6pct",
+        "strategy_name": "Donchian 20/10 + SPY Filter + RSI14 Regime 55 + 6% Stop",
+        "run_count": 10,
+        "avg_net_profit": 6187.29,
+        "avg_profit_factor": 1.628,
+        "avg_max_drawdown": 3185.35,
+        "avg_win_rate": 46.03,
+        "best_symbol": "AAPL",
+        "best_net_profit": 22988.26
+      },
+      {
+        "universe_id": "sp500-top10-point-in-time",
+        "strategy_id": "donchian-55-20-spy-filter-rsi14-regime-50-hard-stop-8pct",
+        "strategy_name": "Donchian 55/20 + SPY Filter + RSI14 Regime 50 + 8% Stop",
+        "run_count": 10,
+        "avg_net_profit": 6164.25,
+        "avg_profit_factor": 2.01,
+        "avg_max_drawdown": 2960.61,
+        "avg_win_rate": 48,
+        "best_symbol": "MSFT",
+        "best_net_profit": 13325.36
+      }
+    ]
+  }
+}

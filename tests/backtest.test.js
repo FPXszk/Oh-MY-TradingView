@@ -610,6 +610,64 @@ describe('buildResearchStrategySource', () => {
     assert.ok(source.includes('allowEntry = inDateRange and regimeOk and rsiRegimeOk'));
   });
 
+  it('supports round6 theme breakout combos with market, RSI, and stop guards together', () => {
+    const source = buildResearchStrategySource({
+      id: 'donchian-20-10-rsp-filter-rsi14-regime-55-hard-stop-6pct',
+      name: 'Donchian 20/10 + RSP Filter + RSI14 Regime 55 + 6% Stop',
+      builder: 'donchian_breakout',
+      parameters: {
+        entry_period: 20,
+        exit_period: 10,
+      },
+      regime_filter: {
+        type: 'rsp_above_sma200',
+        reference_symbol: 'RSP',
+        reference_ma_type: 'sma',
+        reference_ma_period: 200,
+        action_when_false: 'no_new_entry',
+      },
+      rsi_regime_filter: {
+        rsi_period: 14,
+        threshold: 55,
+        direction: 'above',
+      },
+      stop_loss: {
+        type: 'hard_percent',
+        value: 6,
+      },
+    }, defaults);
+
+    assert.ok(source.includes('request.security("BATS:RSP", timeframe.period, close)'));
+    assert.ok(source.includes('rsiRegimeValue = ta.rsi(close, 14)'));
+    assert.ok(source.includes('stopLossPrice = strategy.position_avg_price * (1 - 0.06)'));
+    assert.ok(source.includes('allowEntry = inDateRange and regimeOk and rsiRegimeOk'));
+  });
+
+  it('supports round6 dip-reclaim RSI presets with breadth filters', () => {
+    const source = buildResearchStrategySource({
+      id: 'rsi2-buy-10-sell-65-rsp-filter-long-only',
+      name: 'RSI2 Buy 10 Sell 65 + RSP Filter Long Only',
+      builder: 'rsi_mean_reversion',
+      parameters: {
+        rsi_period: 2,
+        entry_below: 10,
+        exit_above: 65,
+      },
+      regime_filter: {
+        type: 'rsp_above_sma200',
+        reference_symbol: 'RSP',
+        reference_ma_type: 'sma',
+        reference_ma_period: 200,
+        action_when_false: 'no_new_entry',
+      },
+    }, defaults);
+
+    assert.ok(source.includes('request.security("BATS:RSP", timeframe.period, close)'));
+    assert.ok(source.includes('rsiValue = ta.rsi(close, 2)'));
+    assert.ok(source.includes('entrySignal = rsiValue < 10'));
+    assert.ok(source.includes('allowEntry = inDateRange and regimeOk and rsiRegimeOk'));
+  });
+
   it('rejects unsupported regime filters in the generator', () => {
     assert.throws(() => buildResearchStrategySource({
       id: 'bad-regime',

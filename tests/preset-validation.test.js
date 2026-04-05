@@ -573,7 +573,7 @@ describe('strategy-presets.json integration', () => {
   it('round1-3 presets are unchanged', async () => {
     const data = await loadPresets();
     const round1To3 = data.strategies.filter(
-      (p) => !['round4', 'round5'].includes(p.implementation_stage),
+      (p) => !['round4', 'round5', 'round6'].includes(p.implementation_stage),
     );
     assert.equal(round1To3.length, 30, 'Expected 30 round1-3 presets to remain');
   });
@@ -620,6 +620,56 @@ describe('strategy-presets.json integration', () => {
         preset.builder,
         'rsi_mean_reversion',
         `Preset "${preset.id}" should reuse rsi_mean_reversion`,
+      );
+    }
+  });
+
+  it('contains round6 presets', async () => {
+    const data = await loadPresets();
+    const r6 = filterPresetsByRound(data.strategies, 'round6');
+    assert.equal(r6.length, 10, `Expected 10 round6 presets, got ${r6.length}`);
+  });
+
+  it('all round6 presets have "round6" tag', async () => {
+    const data = await loadPresets();
+    const r6 = filterPresetsByRound(data.strategies, 'round6');
+    for (const p of r6) {
+      assert.ok(
+        Array.isArray(p.tags) && p.tags.includes('round6'),
+        `Preset "${p.id}" missing "round6" tag`,
+      );
+    }
+  });
+
+  it('round6 includes all planned theme-trend variants', async () => {
+    const data = await loadPresets();
+    const r6 = filterPresetsByRound(data.strategies, 'round6');
+    const r6Ids = new Set(r6.map((p) => p.id));
+    const expected = [
+      'donchian-55-20-spy-filter-rsi14-regime-55',
+      'donchian-55-20-rsp-filter-rsi14-regime-50',
+      'donchian-55-20-spy-filter-rsi14-regime-50-hard-stop-8pct',
+      'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct',
+      'donchian-20-10-spy-filter-rsi14-regime-50-hard-stop-10pct',
+      'donchian-20-10-rsp-filter-rsi14-regime-50-hard-stop-10pct',
+      'donchian-20-10-spy-filter-rsi14-regime-55-hard-stop-6pct',
+      'donchian-20-10-rsp-filter-rsi14-regime-55-hard-stop-6pct',
+      'rsi2-buy-10-sell-65-rsp-filter-long-only',
+      'rsi3-buy-15-sell-65-spy-filter-long-only',
+    ];
+    for (const id of expected) {
+      assert.ok(r6Ids.has(id), `Missing round6 preset: ${id}`);
+    }
+  });
+
+  it('round6 stays within existing builder families', async () => {
+    const data = await loadPresets();
+    const r6 = filterPresetsByRound(data.strategies, 'round6');
+    for (const preset of r6) {
+      const allowedBuilders = ['donchian_breakout', 'rsi_mean_reversion'];
+      assert.ok(
+        allowedBuilders.includes(preset.builder),
+        `Preset "${preset.id}" uses unexpected builder "${preset.builder}"`,
       );
     }
   });
