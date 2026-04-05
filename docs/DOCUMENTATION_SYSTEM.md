@@ -117,6 +117,7 @@
 - [`docs/working-memory/session-logs/round6-theme-trend_20260405_0603.md`](./working-memory/session-logs/round6-theme-trend_20260405_0603.md)
 - [`docs/working-memory/session-logs/round7-theme-trend_20260405_0815.md`](./working-memory/session-logs/round7-theme-trend_20260405_0815.md)
 - [`docs/working-memory/session-logs/round8-theme-trend_20260405_2219.md`](./working-memory/session-logs/round8-theme-trend_20260405_2219.md)
+- [`docs/working-memory/session-logs/tradingview-worker2-handoff_20260405_1514.md`](./working-memory/session-logs/tradingview-worker2-handoff_20260405_1514.md)
 
 ## 運用ルール
 
