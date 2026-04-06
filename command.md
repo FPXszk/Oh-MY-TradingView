@@ -147,6 +147,17 @@ wait
 - Strategy Tester の `指標` タブ活性化を伴う現在の backtest 実装であること
 - warmed state として、parallel 前に各 worker で individual backtest success を一度通しておくこと
 
+## 7b. both visible feasibility の結論
+
+- **推奨の stable 構成は引き続き `Session0 hidden + visible Session1`**
+- WSL から `cmd /c start` / `Start-Process` で TradingView を起動すると、新しい worker は Session0 に落ちやすい
+- **Task Scheduler の `/IT` 起動**なら worker を Session1 に載せられる
+- ただし **same-session の visible + visible** は
+  - individual backtest: worker1 / worker2 とも success
+  - parallel backtest: 両 worker とも `tester_reason_category: "metrics_unreadable"`
+  となり、実運用の stable 構成にはならなかった
+- そのため、可視性を上げたい場合でも **worker2 を visible に保ち、worker1 は Session0 hidden のまま使う**のが現時点の現実解
+
 期待する result shape:
 
 - `success: true`
@@ -186,6 +197,13 @@ wait
   - `restore_policy: "skip"`
   で warmed parallel の安定実行まで改善した
 - fresh cold start 側は引き続き注意する
+
+### 両方 visible にしたい
+
+- **起動自体**は Task Scheduler `/IT` を使えば可能
+- ただし 2026-04-06 の検証では、**same-session visible + visible** で parallel 実行時に両 worker が `metrics_unreadable` へ落ちた
+- 現時点では **same-session visible + visible は非推奨**
+- 追加で試す価値があるのは、**別 Windows user / 別 interactive session** を使った visible + visible だが、これは未検証
 
 ## 9. 参照先
 

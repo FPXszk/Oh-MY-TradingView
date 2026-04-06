@@ -153,6 +153,27 @@ wait
 
 > fresh profile / fresh app restart 直後の再現性は未検証。
 
+## Both-visible feasibility (follow-up)
+
+2026-04-06 の follow-up で、worker1 も Session1 に載せて **visible + visible** を試した。
+
+### Confirmed
+
+- WSL から通常の `cmd /c start` / `Start-Process` で起動した新規 worker は Session0 に落ちた
+- Task Scheduler の `/IT` 起動なら、TradingView worker を Session1 に載せられた
+- worker1 / worker2 を同じ Session1 へ載せた状態で
+  - individual preset backtest は両 worker success
+  - parallel distinct preset backtest では両 worker が `metrics_unreadable`
+
+### Current conclusion
+
+- **same-session visible + visible は launch 可能だが、parallel backtest の stable topology ではなかった**
+- 現時点の推奨構成は引き続き
+  - worker1: Session0 hidden
+  - worker2: Session1 visible
+- 追加で試す価値がある代替案は **別 Windows user / 別 interactive session の visible + visible** だが、これは未検証
+- 検証後は worker1 を Session0 に戻し、warm-up 後に parallel が再び読める状態まで確認した
+
 ## Troubleshooting
 
 ### `error code 32` / bind conflict
@@ -182,6 +203,11 @@ wait
   - tester `指標` タブの明示活性化
   - restore skip
   により、parallel command を安定運用コマンドとして使える状態まで寄せた
+
+### visible + visible では individual は通るのに parallel だけ落ちる
+
+- same-session visible + visible の follow-up では、individual success の後でも parallel 時に両 worker が `metrics_unreadable` を返した
+- つまり visible 化そのものよりも、**同一 visible session に 2 worker を載せたこと**が tester metrics 読み取りに悪影響を与えている可能性がある
 
 ### `dialog-window ... type=welcome` が残る
 
