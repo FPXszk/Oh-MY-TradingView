@@ -13,6 +13,7 @@ import {
   canSafelyClearStudies,
   hasStudyLimitDialog,
   isTesterPanelStateVisible,
+  loadPreset,
 } from '../src/core/backtest.js';
 import { buildResearchStrategySource } from '../src/core/research-backtest.js';
 
@@ -773,5 +774,51 @@ describe('buildResearchStrategySource', () => {
         direction: 'below',
       },
     }, defaults), /Unsupported RSI regime direction/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// loadPreset
+// ---------------------------------------------------------------------------
+describe('loadPreset', () => {
+  it('successfully loads a known preset (ema-cross-9-21)', async () => {
+    const { preset, defaults } = await loadPreset('ema-cross-9-21');
+    assert.ok(preset);
+    assert.equal(preset.id, 'ema-cross-9-21');
+  });
+
+  it('returns preset object with expected fields', async () => {
+    const { preset } = await loadPreset('ema-cross-9-21');
+    assert.equal(typeof preset.id, 'string');
+    assert.equal(typeof preset.name, 'string');
+    assert.equal(typeof preset.category, 'string');
+    assert.equal(typeof preset.builder, 'string');
+    assert.equal(typeof preset.parameters, 'object');
+  });
+
+  it('returns defaults with common_defaults', async () => {
+    const { defaults } = await loadPreset('ema-cross-9-21');
+    assert.ok(defaults);
+    assert.equal(typeof defaults.pine_version, 'number');
+    assert.equal(typeof defaults.direction, 'string');
+    assert.equal(typeof defaults.qty_type, 'string');
+    assert.equal(typeof defaults.qty_value, 'number');
+    assert.equal(typeof defaults.initial_capital, 'number');
+  });
+
+  it('throws for unknown preset id', async () => {
+    await assert.rejects(
+      () => loadPreset('nonexistent-preset-id'),
+      /not found/,
+    );
+  });
+
+  it('loaded preset is compatible with buildResearchStrategySource', async () => {
+    const { preset, defaults } = await loadPreset('ema-cross-9-21');
+    const source = buildResearchStrategySource(preset, defaults);
+    assert.ok(typeof source === 'string');
+    assert.ok(source.length > 0);
+    assert.ok(source.includes('//@version=6'));
+    assert.ok(source.includes(preset.name));
   });
 });

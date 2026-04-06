@@ -1,3 +1,6 @@
+import { readFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 import { evaluate, getClient } from '../connection.js';
 import { healthCheck } from './health.js';
 import { setActiveSymbol, getCurrentPrice, symbolMatches } from './price.js';
@@ -10,6 +13,11 @@ import {
   verifyStrategyAttachmentChange,
   retryApplyStrategy,
 } from './pine.js';
+import { validatePreset } from './preset-validation.js';
+import { buildResearchStrategySource } from './research-backtest.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // ---------------------------------------------------------------------------
 // Pine source builder (NVDA 5/20 MA cross — fixed)
@@ -847,6 +855,222 @@ export async function runNvdaMaBacktest() {
     const restoreIssues = [];
 
     if (originalSymbol && !symbolMatches(originalSymbol, 'NVDA')) {
+      try {
+        await setActiveSymbol({ symbol: originalSymbol });
+      } catch (err) {
+        restoreIssues.push(`symbol restore failed: ${err.message}`);
+      }
+    }
+
+    try {
+      await ensurePineEditorOpen();
+      await setSource({ source: originalSource });
+    } catch (err) {
+      restoreIssues.push(`source restore failed: ${err.message}`);
+    }
+
+    try {
+      await restoreChartStudyTemplate(originalStudyTemplate);
+    } catch (err) {
+      restoreIssues.push(`study template restore failed: ${err.message}`);
+    }
+
+    try {
+      await restorePineEditor();
+    } catch (err) {
+      restoreIssues.push(`pine editor restore failed: ${err.message}`);
+    }
+
+    if (result) {
+      result.restore_success = restoreIssues.length === 0;
+      if (restoreIssues.length > 0) {
+        result.restore_error = restoreIssues.join('; ');
+      }
+    } else if (restoreIssues.length > 0) {
+      throw new Error(`Backtest completed, but state restore failed: ${restoreIssues.join('; ')}`);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Preset loader (pure — unit testable)
+// ---------------------------------------------------------------------------
+const PRESETS_PATH = join(__dirname, '..', '..', 'config', 'backtest', 'strategy-presets.json');
+
+export async function loadPreset(presetId) {
+  const raw = await readFile(PRESETS_PATH, 'utf8');
+  const data = JSON.parse(raw);
+
+  const preset = data.strategies.find((s) => s.id === presetId);
+  if (!preset) {
+    throw new Error(`Preset "${presetId}" not found in strategy-presets.json`);
+  }
+
+  const validation = validatePreset(preset);
+  if (!validation.valid) {
+    throw new Error(
+      `Preset "${presetId}" failed validation: ${validation.errors.join('; ')}`,
+    );
+  }
+
+  return { preset, defaults: data.common_defaults };
+}
+
+// ---------------------------------------------------------------------------
+// Preset-driven backtest orchestration
+// ---------------------------------------------------------------------------
+export async function runPresetBacktest({ presetId, symbol = 'NVDA' }) {
+  const { preset, defaults } = await loadPreset(presetId);
+  const strategyTitle = preset.name;
+  const source = buildResearchStrategySource(preset, defaults);
+
+  const initialState = await healthCheck();
+  const originalSymbol = initialState.chart_symbol;
+  const originalSource = (await getSource()).source;
+  const originalStudies = await fetchChartStudies();
+  const originalStudyTemplate = await snapshotChartStudyTemplate();
+  let result;
+
+  try {
+    const symbolResult = await setActiveSymbol({ symbol });
+    const chartSymbol = symbolResult.chart_symbol;
+
+    await getCurrentPrice({ symbol });
+    await ensurePineEditorOpen();
+    await dismissTransientDialogs();
+    if (!canSafelyClearStudies({ existingStudies: originalStudies, studyTemplateSnapshot: originalStudyTemplate })) {
+      throw new Error('Cannot safely clear chart studies because TradingView study template snapshot is unavailable');
+    }
+    await clearChartStudies();
+    const studiesBeforeCompile = await fetchChartStudies();
+    await setSource({ source });
+
+    let compileResult = await smartCompile();
+    if (compileResult.has_errors) {
+      result = buildResult({
+        compileSuccess: false,
+        compileErrors: compileResult.errors,
+        symbol: chartSymbol,
+      });
+      return result;
+    }
+
+    let strategyAttached = false;
+    const studiesAfterCompile = await fetchChartStudies();
+    const verifyResult = verifyStrategyAttachmentChange(
+      studiesBeforeCompile,
+      studiesAfterCompile,
+      strategyTitle,
+      compileResult.study_added,
+    );
+    strategyAttached = verifyResult.attached;
+    let applyFailureReason =
+      verifyResult.reason === 'preexisting_matching_strategy_only'
+        ? 'Matching strategy was already on chart before run, and this run could not verify a new or updated attachment'
+        : 'Strategy not verified in chart studies after compile + retry';
+
+    if (!strategyAttached) {
+      const retryResult = await retryApplyStrategy(strategyTitle);
+      strategyAttached = retryResult.applied;
+    }
+
+    if (!strategyAttached) {
+      const recovery = await recoverFromStudyLimit({ source });
+      if (recovery.attempted) {
+        compileResult = recovery.compileResult;
+        if (compileResult.has_errors) {
+          result = buildResult({
+            compileSuccess: false,
+            compileErrors: compileResult.errors,
+            symbol: chartSymbol,
+          });
+          return result;
+        }
+        strategyAttached = recovery.strategyAttached;
+        applyFailureReason =
+          recovery.verifyReason === 'preexisting_matching_strategy_only'
+            ? 'Matching strategy was already on chart before run, and this run could not verify a new or updated attachment'
+            : 'Strategy not verified in chart studies after compile + retry';
+      }
+    }
+
+    if (!strategyAttached) {
+      result = buildResult({
+        compileSuccess: true,
+        compileDetail: compileResult,
+        applyFailed: true,
+        applyReason: applyFailureReason,
+        testerAvailable: false,
+        testerReason: 'Skipped: strategy not applied',
+        symbol: chartSymbol,
+      });
+      return result;
+    }
+
+    const testerOpenState = await openStrategyTester();
+    if (!testerOpenState.attempted) {
+      result = buildResult({
+        compileSuccess: true,
+        compileDetail: compileResult,
+        applyFailed: false,
+        testerAvailable: false,
+        testerReason: 'Strategy Tester panel could not be opened',
+        testerReasonCategory: 'panel_not_visible',
+        symbol: chartSymbol,
+      });
+      return result;
+    }
+
+    let rawMetrics = null;
+    let testerState = testerOpenState.confirmedVisible
+      ? { text: '', no_strategy: false, panel_visible: true }
+      : null;
+    for (let i = 0; i < TESTER_READ_RETRIES; i++) {
+      await new Promise((r) => setTimeout(r, TESTER_READ_DELAY));
+      rawMetrics = await readTesterMetricsFromInternalApi();
+      if (!rawMetrics) {
+        rawMetrics = await readTesterMetricsFromDom();
+      }
+      testerState = await readTesterState();
+      if (rawMetrics) break;
+      if (testerState?.no_strategy) break;
+    }
+
+    if (!rawMetrics) {
+      const failure = classifyTesterReadFailure({
+        testerState,
+        hasApiResult: false,
+        hasDomResult: false,
+      });
+      const noStrategyReported = failure.category === 'no_strategy_applied';
+      result = buildResult({
+        compileSuccess: true,
+        compileDetail: compileResult,
+        applyFailed: noStrategyReported,
+        applyReason: noStrategyReported
+          ? 'TradingView reports no strategy is applied to the chart (detected after tester open)'
+          : undefined,
+        testerAvailable: false,
+        testerReason: failure.reason,
+        testerReasonCategory: failure.category,
+        symbol: chartSymbol,
+      });
+      return result;
+    }
+
+    result = buildResult({
+      compileSuccess: true,
+      compileDetail: compileResult,
+      applyFailed: false,
+      testerAvailable: true,
+      metrics: rawMetrics,
+      symbol: chartSymbol,
+    });
+    return result;
+  } finally {
+    const restoreIssues = [];
+
+    if (originalSymbol && !symbolMatches(originalSymbol, symbol)) {
       try {
         await setActiveSymbol({ symbol: originalSymbol });
       } catch (err) {

@@ -1,9 +1,9 @@
 {
   "$schema_version": "1.0.0",
   "execution_context": {
-    "current_repo_cli": "fixed_nvda_ma_only",
+    "current_repo_cli": "preset_capable",
     "current_batch_validation": "session_artifact_runner",
-    "note": "These presets are currently validated via the session batch runner for research rounds. The repo CLI/MCP runtime still exposes only the fixed nvda-ma path."
+    "note": "The repo CLI supports preset-driven backtests via 'tv backtest preset <id>'. Presets are also validated via the session batch runner for research rounds."
   },
   "common_defaults": {
     "pine_version": 6,
