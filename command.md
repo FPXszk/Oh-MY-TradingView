@@ -106,6 +106,21 @@ Get-CimInstance Win32_Process |
 > profile の初期化 / ログインが完了しておらず、backtest が `study_added: false` のまま失敗することがある。  
 > 一時的に close しても再表示する場合は、TradingView ウィンドウ側で手動ログインまたは初期セットアップ完了が必要。
 
+### 手動ログイン後の再試行手順
+
+1. worker2 を `--user-data-dir=C:\TradingView\profiles\worker2` 付きで起動
+2. TradingView ウィンドウ側で **ブラウザログイン** または初期セットアップを完了
+3. `curl http://172.31.144.1:9225/json/list` で `dialog-window ... type=welcome` が消えていることを確認
+4. `TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9225 node src/cli/index.js status` を再実行
+5. `chart_symbol` と `api_available: true` が返ったら backtest を再試行
+
+```bash
+curl http://172.31.144.1:9225/json/list
+TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9225 node src/cli/index.js status
+TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9225 node src/cli/index.js backtest nvda-ma
+TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9225 node src/cli/index.js backtest preset rsi-mean-reversion --symbol NVDA
+```
+
 ## 5. portproxy / CDP 確認
 
 ### Windows で portproxy を確認
