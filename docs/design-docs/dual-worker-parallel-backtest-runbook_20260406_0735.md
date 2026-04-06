@@ -179,6 +179,16 @@ round8 の `204 run` workload を `worker1=Mag7 84 run` / `worker2=alt 120 run` 
 - strategy chunk なら retry 単位を `27 run` 前後まで縮めやすい
 - `30〜40 run` shard なら checkpoint / partial retry が実装しやすい
 
+### Small-sample caveat
+
+2026-04-06 の `20 run` sample benchmark では、warm-up 後でも `metrics_unreadable` が strategy ごとに固まり、
+
+- strategy-aware parallel: `279,535 ms`, unreadable `8`
+- 2-run shard parallel: `265,226 ms`, unreadable `7`
+
+となり、**小さい workload では shard の方が速かった**。  
+したがって、長時間 workload の第一候補は引き続き strategy-aware だが、**warm-up 後も unreadable cluster が見える場合は、より細かい shard を優先してよい**。
+
 ### Operational gates
 
 長時間 batch の前に、各 worker で以下を満たすことを**暫定基準**とする。

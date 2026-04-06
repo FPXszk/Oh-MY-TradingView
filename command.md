@@ -222,6 +222,11 @@ wait
   - `restore_policy: "skip"` 系 result shape の確認
   まで引き上げる
 - 本番中は **10 run ごと** に `status` / `json/version` を確認し、崩れたら full rerun ではなく partial retry を優先する
+- ただし `20 run` の小 sample benchmark では
+  - strategy-aware parallel: `279,535 ms`
+  - 2-run shard parallel: `265,226 ms`
+  で、**shard の方が速かった**
+- つまり、`metrics_unreadable` が strategy 単位で固まる局面では、理論上の runtime 均等化より **細かい shard の分散効果** が勝つことがある
 
 ## 9. 参照先
 
