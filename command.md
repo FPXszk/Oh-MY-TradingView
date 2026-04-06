@@ -223,3 +223,38 @@ PS C:\Users\szk>
 
 
 
+
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+新機能と改善のために最新の PowerShell をインストールしてください!https://aka.ms/PSWindows
+
+PS C:\WINDOWS\system32> Stop-Process -Id <PID1>,<PID2>,<PID3>
+>> ^C
+PS C:\WINDOWS\system32> Stop-Process -Id 5356 -Force
+PS C:\WINDOWS\system32> & "C:\TradingView\TradingView.exe" --remote-debugging-port=9224 --user-data-dir=C:\TradingView\profiles\worker2 --in-process-gpu
+>>
+PS C:\WINDOWS\system32> ^A^A26-04-06 15:59:45.814   [DBG] AppEventService.focusWebContent()
+ : 用語 '' は、コマンドレット、関数、スクリプト ファイル、または操作可能なプログラムの名前として認識されません。名
+前が正しく記述されていることを確認し、パスが含まれている場合はそのパスが正しいことを確認してから、再試行してください。
+発生場所 行:1 文字:1n ws://127.0.0.1:9224/devtools/browser/72af5670-f663-42dc-bf5d-9a85759b35d1
++ 26-04-06 15:52:04.185   [DBG] Check config path: 'C:\Users\szk\Documents\TradingView\configs\config.json'
++ ~~-04-06 15:52:04.185   [DBG] Check config path: 'C:\TradingView\resources\app.asar\configs\config.json'
+    + CategoryInfo          : ObjectNotFound: (:String) [], CommandNotFoundExceptionconfigs\config.json'
+    + FullyQualifiedErrorId : CommandNotFoundExceptionnfigFromEnvironment(): "TVD_DEBUGMODE: false"
+ 026-04-06 15:52:04.186   [DBG] Configuration.updateConfigFromEnvironment(): "TVD_LOG_VIEW_ENABLED: false"
+PS C:\WINDOWS\system32>   [DBG] Initializing UserService
+PS C:\WINDOWS\system32>   [INF] Initializing AppEventService
+PS C:\WINDOWS\system32>   [DBG] Initializing AuthenticationHandler
+PS C:\WINDOWS\system32>   [DBG] Logger initialized
+PS C:\WINDOWS\system32>   [DBG] Initializing PersistenceService
+PS C:\WINDOWS\system32> & "C:\TradingView\TradingView.exe" --remote-debugging-port=9224 --user-data-dir=C:\TradingView\profiles\worker2 --in-process-gpuMainService.subscribeAppEvents()
+>> 6-04-06 15:52:04.356   [DBG] Initializing LocaleService
+PS C:\WINDOWS\system32>   [INF] Main service created. appPath: 'C:\TradingView\resources\app.asar', documentsPath: 'C:\U
+Initializing LoggerServiceView'
+2026-04-06 16:03:13.174   [DBG] Electron.App (second-instance): AppEventsServiceHandler
+2026-04-06 16:03:13.174   [DBG] AppEventService.openForwardedUrl()
+2026-04-06 16:03:13.174   [DBG] Electron.App (second-instance): WindowServiceHandler
+2026-04-06 16:03:13.182   [DBG] AppEventService.focusWebContent()
+2026-04-06 16:03:13.189   [DBG] AppEventService.focusWebContent()
+2026-04-06 16:03:13.189   [DBG] AuthenticationHandler.tryObtainTokenFromClipboard()
+[14496:0406/160313.205:ERROR:net\socket\tcp_socket_win.cc:530] bind() returned an error: 通常、各ソケット アドレスに対してプロトコル、ネットワーク アドレス、またはポー
