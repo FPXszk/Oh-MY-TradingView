@@ -148,7 +148,7 @@ wait
 |---|---|---|
 | 1 | dual-worker reachability が維持されていること | CDP proxy 経由で両 worker に到達できなければ前提が崩れる |
 | 2 | `restore_policy: "skip"` であること | restore path の `main series is not started` を回避し、backtest-applied strategy を残す運用に寄せる |
-| 3 | Strategy Tester `指標` タブを明示活性化できる current CLI state であること | tester panel が visible でも metrics rows / API が空のまま止まる場合があった |
+| 3 | Strategy Tester `指標` タブを明示活性化できる現在の backtest 実装であること | tester panel が visible でも metrics rows / API が空のまま止まる場合があった |
 | 4 | warmed state であること | fresh cold start 直後は Pine Editor false negative を含む不安定さが残りうる |
 
 > fresh profile / fresh app restart 直後の再現性は未検証。
