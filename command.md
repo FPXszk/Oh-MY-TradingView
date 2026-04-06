@@ -102,6 +102,10 @@ Get-CimInstance Win32_Process |
 3. チャートが開ける状態まで進める
 4. 以後は同じ `--user-data-dir` を使って profile を再利用する
 
+> worker2 で `json/list` に `app/dialog-window ... type=welcome` が出る場合、  
+> profile の初期化 / ログインが完了しておらず、backtest が `study_added: false` のまま失敗することがある。  
+> 一時的に close しても再表示する場合は、TradingView ウィンドウ側で手動ログインまたは初期セットアップ完了が必要。
+
 ## 5. portproxy / CDP 確認
 
 ### Windows で portproxy を確認

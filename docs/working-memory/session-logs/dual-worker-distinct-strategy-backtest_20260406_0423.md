@@ -82,3 +82,16 @@ node src/cli/index.js backtest nvda-ma
 - worker1 can execute a preset-driven backtest successfully
 - worker2 still fails at TradingView strategy attachment even on the legacy `nvda-ma` path
 - Therefore the remaining blocker is currently treated as **TradingView UI / worker state**, not the new repo CLI implementation
+
+## Further worker2 UI cut
+
+- `9225/json/list` revealed an extra target:
+  - `file:///C:/TradingView/resources/app.asar/app/dialog-window/index.html?...type=welcome...`
+- The dialog body showed:
+  - `TradingViewへようこそ`
+  - `ブラウザでログイン`
+  - close button text `sign-in-button-close`
+- Closing that dialog through CDP removed the target temporarily, but it reappeared after chart navigation
+- Navigating worker2 to the worker1 saved chart URL resulted in:
+  - `Chart Not Found — TradingView`
+- This indicates the worker2 profile is still not fully initialized for the saved-chart path and likely needs **manual login / onboarding completion in the TradingView window**
