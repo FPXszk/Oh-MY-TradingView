@@ -107,6 +107,11 @@
 - [`docs/research/theme-backtest-results-round8_2015_2025.md`](./research/theme-backtest-results-round8_2015_2025.md)
 - [`docs/research/theme-backtest-results-round8-alt_2015_2025.md`](./research/theme-backtest-results-round8-alt_2015_2025.md)
 
+### TradingView dual-worker の運用手順を知りたいとき
+
+- [`docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`](./design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md)
+- [`command.md`](../command.md)
+
 ### セッションの判断経緯を追いたいとき
 
 - [`docs/working-memory/session-logs/mag7-backtest-session-summary_20260404_1106.md`](./working-memory/session-logs/mag7-backtest-session-summary_20260404_1106.md)
@@ -118,6 +123,10 @@
 - [`docs/working-memory/session-logs/round7-theme-trend_20260405_0815.md`](./working-memory/session-logs/round7-theme-trend_20260405_0815.md)
 - [`docs/working-memory/session-logs/round8-theme-trend_20260405_2219.md`](./working-memory/session-logs/round8-theme-trend_20260405_2219.md)
 - [`docs/working-memory/session-logs/tradingview-worker2-handoff_20260405_1514.md`](./working-memory/session-logs/tradingview-worker2-handoff_20260405_1514.md)
+- [`docs/working-memory/session-logs/wsl-dual-worker-reachability_20260406_0305.md`](./working-memory/session-logs/wsl-dual-worker-reachability_20260406_0305.md)
+- [`docs/working-memory/session-logs/dual-worker-distinct-strategy-backtest_20260406_0423.md`](./working-memory/session-logs/dual-worker-distinct-strategy-backtest_20260406_0423.md)
+- [`docs/working-memory/session-logs/tradingview-parallel-backtest-verification_20260406_0053.md`](./working-memory/session-logs/tradingview-parallel-backtest-verification_20260406_0053.md)
+- [`docs/working-memory/session-logs/dual-worker-parallel-backtest-handoff_20260406_0735.md`](./working-memory/session-logs/dual-worker-parallel-backtest-handoff_20260406_0735.md)
 
 ## 運用ルール
 
