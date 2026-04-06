@@ -176,3 +176,13 @@ netsh interface portproxy show all
 curl http://172.31.144.1:9225/json/version
 TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9225 node src/cli/index.js status
 ```
+
+## 8. 今回ユーザーが手で実行するコマンド
+
+### worker2 を見えるセッションで起動
+
+```powershell
+cmd /c start "" /D C:\TradingView C:\TradingView\TradingView.exe --remote-debugging-port=9224 --user-data-dir=C:\TradingView\profiles\worker2 --in-process-gpu
+```
+
+このコマンドを **Windows の見えているデスクトップで開いた PowerShell または Win+R から** 実行する。
