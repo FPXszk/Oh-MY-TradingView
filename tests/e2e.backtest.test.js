@@ -42,6 +42,13 @@ describe('e2e: Backtest NVDA MA (requires TradingView Desktop)', async () => {
 
       if (result.success) {
         assert.equal(typeof result.tester_available, 'boolean');
+        if (result.restore_success !== undefined) {
+          assert.equal(typeof result.restore_success, 'boolean');
+          if (!result.restore_success) {
+            assert.equal(typeof result.restore_error, 'string');
+            assert.ok(result.restore_error.length > 0);
+          }
+        }
 
         // apply_failed must be present on success path
         if (result.apply_failed !== undefined) {
@@ -80,6 +87,10 @@ describe('e2e: Backtest NVDA MA (requires TradingView Desktop)', async () => {
         }
       } else {
         assert.ok(Array.isArray(result.compile_errors), 'compile_errors should be an array');
+        if (result.editor_open_failed) {
+          assert.equal(typeof result.editor_open_reason, 'string');
+          assert.ok(result.editor_open_reason.length > 0);
+        }
       }
     },
   );

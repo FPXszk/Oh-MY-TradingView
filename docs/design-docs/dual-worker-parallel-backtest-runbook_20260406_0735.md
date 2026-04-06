@@ -117,21 +117,41 @@ wait
 - worker2 は browser login / clipboard handoff / onboarding 完了後に saved chart まで復旧した
 - worker2 では helper 単体 (`ensurePineEditorOpen`, `getSource`) や direct core replay の一部が成功した
 
-### Not yet stable
+### Stabilized in follow-up
 
-- fresh な CLI backtest は worker2 で Pine Editor failure を再現した
-- fresh な **並列** distinct preset backtest も stable ではなかった
-- editor warm-up 後の再試行でも失敗が残り、並列運用を stable と判定できなかった
+- `src/core/pine.js` 側で editor ensure retry を強化した
+- `src/core/backtest.js` 側で Strategy Tester の `指標` タブを明示活性化するようにした
+- restore policy は default `skip` となり、backtest-applied strategy / indicator をチャート上に残す運用へ寄せた
+- この current backtest 実装で
+  - worker1 individual preset backtest -> success
+  - worker2 individual preset backtest -> success
+  - warmed parallel distinct preset backtest -> **3 ラウンド連続 success**
+  を確認した
 
-> 具体的な失敗経緯とエラー文言は  
-> `docs/working-memory/session-logs/dual-worker-parallel-backtest-handoff_20260406_0735.md` を参照。
+期待できる result shape:
 
-### Current interpretation
+- `success: true`
+- `tester_available: true`
+- `restore_policy: "skip"`
+- `restore_success: true`
+- `restore_skipped: true`
 
-現時点で確認できたのは **dual-worker の reachability と worker2 ログイン復旧** までであり、
-**current CLI state のまま distinct backtest を安定して並列実行できる** とはまだ言えない。
+> 途中の失敗経緯と切り分けは  
+> `docs/working-memory/session-logs/dual-worker-parallel-backtest-handoff_20260406_0735.md` と  
+> `docs/working-memory/session-logs/tradingview-parallel-backtest-stabilization_20260406_0802.md` を参照。
 
-最狭い blocker は、CDP 接続や login ではなく **Pine Editor / chart state / restore path の不安定さ**。
+## Stability conditions (confirmed 2026-04-06)
+
+並列バックテストが安定するために確認された条件:
+
+| # | 条件 | 理由 |
+|---|---|---|
+| 1 | dual-worker reachability が維持されていること | CDP proxy 経由で両 worker に到達できなければ前提が崩れる |
+| 2 | `restore_policy: "skip"` であること | restore path の `main series is not started` を回避し、backtest-applied strategy を残す運用に寄せる |
+| 3 | Strategy Tester `指標` タブを明示活性化できる current CLI state であること | tester panel が visible でも metrics rows / API が空のまま止まる場合があった |
+| 4 | warmed state であること | fresh cold start 直後は Pine Editor false negative を含む不安定さが残りうる |
+
+> fresh profile / fresh app restart 直後の再現性は未検証。
 
 ## Troubleshooting
 
@@ -149,11 +169,19 @@ wait
 - UI が正しく描画されていなくても、`status` / `json/list` / saved chart URL の側は正常なことがある
 - 判定は UI の見た目ではなく CDP / CLI で行う
 
-### parallel command はあるのに latest verification が失敗した
+### parallel command が不安定だった理由
 
 - `status` success は backtest readiness を保証しない
-- 最新検証では `ensurePineEditorOpen` helper 単体は通っても、fresh CLI backtest では失敗した
-- current state では parallel command は **再試行用の実験コマンド** であり、安定運用コマンドではない
+- 途中の切り分けでは
+  - Pine Editor false negative
+  - Strategy Tester panel は開くが `指標` タブ内容が未描画
+  - restore path の `main series is not started`
+  が混在していた
+- follow-up では
+  - editor ensure retry
+  - tester `指標` タブの明示活性化
+  - restore skip
+  により、parallel command を安定運用コマンドとして使える状態まで寄せた
 
 ### `dialog-window ... type=welcome` が残る
 

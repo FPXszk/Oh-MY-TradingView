@@ -136,9 +136,24 @@ TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9225 node src/cli/index.js backtest preset 
 wait
 ```
 
-> 2026-04-06 の最新検証では、fresh な CLI 2 プロセスを同時起動すると  
-> `Could not open Pine Editor.` が両 worker で再現した。  
-> したがって **コマンド自体はこれでよいが、現時点では並列運用は未安定**。
+> 2026-04-06 の最新検証で、`restore_policy: "skip"` と Strategy Tester `指標` タブ活性化を含む
+> 現在の backtest 実装にて、warmed parallel distinct preset backtest が 3 ラウンド連続 success した。  
+> ただし fresh cold start 直後の並列再現性はまだ未検証。
+
+## 7a. 並列実行の安定条件
+
+- dual-worker reachability が維持されていること
+- `restore_policy` が `skip` であること（現在の default）
+- Strategy Tester の `指標` タブ活性化を伴う現在の backtest 実装であること
+- warmed state として、parallel 前に各 worker で individual backtest success を一度通しておくこと
+
+期待する result shape:
+
+- `success: true`
+- `tester_available: true`
+- `restore_policy: "skip"`
+- `restore_success: true`
+- `restore_skipped: true`
 
 ## 8. よくある失敗パターン
 
@@ -163,14 +178,19 @@ wait
 
 ### `status` は成功するのに backtest だけ失敗する
 
-- 2026-04-06 の最新検証では、`status.success: true` / `api_available: true` の状態でも
-  `Could not open Pine Editor.` が不定期に再現した
-- つまり現在の最狭い blocker は **CDP 到達性ではなく Pine Editor / chart state の不安定さ**
-- 詳細は handoff log を参照する
+- 途中の切り分けでは、`status.success: true` / `api_available: true` の状態でも
+  `Could not open Pine Editor.` や tester metrics unreadable が再現した
+- 後続の安定化では
+  - Pine Editor retry 強化
+  - Strategy Tester `指標` タブ活性化
+  - `restore_policy: "skip"`
+  で warmed parallel の安定実行まで改善した
+- fresh cold start 側は引き続き注意する
 
 ## 9. 参照先
 
 - `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
 - `docs/working-memory/session-logs/dual-worker-parallel-backtest-handoff_20260406_0735.md`
+- `docs/working-memory/session-logs/tradingview-parallel-backtest-stabilization_20260406_0802.md`
 - `docs/working-memory/session-logs/wsl-dual-worker-reachability_20260406_0305.md`
 - `docs/working-memory/session-logs/dual-worker-distinct-strategy-backtest_20260406_0423.md`

@@ -156,6 +156,12 @@ wait
   - **Pine Editor / chart state / restore path の不安定さ**
 - 次回は `ensurePineEditorOpen()` と backtest orchestration の間で、どの UI state change が editor を不安定化させるかをコード側で追うのが最短
 
+> **Update 2026-04-06**: 後続の
+> `docs/working-memory/session-logs/tradingview-parallel-backtest-stabilization_20260406_0802.md`
+> で、Pine Editor retry 強化・Strategy Tester `指標` タブ活性化・`restore_policy: "skip"` により
+> warmed parallel distinct preset backtest が 3 ラウンド連続 success した。
+> この handoff 時点の blocker は後続セッションで解消済み。
+
 ## Suggested next operator entry point
 
 1. `command.md` で起動 / 停止 / status コマンドを確認する

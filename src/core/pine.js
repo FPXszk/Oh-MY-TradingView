@@ -84,6 +84,90 @@ export async function ensurePineEditorOpen() {
   return false;
 }
 
+export async function diagnosePineEditorState() {
+  try {
+    const state = await evaluate(`
+      (function() {
+        try {
+          var monaco = ${FIND_MONACO};
+          var bwb = window.TradingView && window.TradingView.bottomWidgetBar;
+          var pineButton = document.querySelector('[aria-label="Pine"]')
+            || document.querySelector('[data-name="pine-dialog-button"]');
+          return {
+            monaco_ready: monaco !== null,
+            bottom_widget_bar: Boolean(bwb),
+            activate_script_editor_tab: Boolean(bwb && typeof bwb.activateScriptEditorTab === 'function'),
+            open_method: Boolean(bwb && typeof bwb.open === 'function'),
+            show_widget_method: Boolean(bwb && typeof bwb.showWidget === 'function'),
+            pine_button: Boolean(pineButton),
+          };
+        } catch (e) {
+          return {
+            monaco_ready: false,
+            diagnostic_error: String(e),
+          };
+        }
+      })()
+    `);
+
+    if (state?.monaco_ready) {
+      return { open: true, reason: 'monaco_already_present', detail: state };
+    }
+    if (!state?.bottom_widget_bar && !state?.pine_button) {
+      return {
+        open: false,
+        reason: 'no_bottom_widget_bar_and_no_pine_button',
+        detail: state,
+      };
+    }
+    if (
+      state?.bottom_widget_bar &&
+      !state?.activate_script_editor_tab &&
+      !state?.open_method &&
+      !state?.show_widget_method &&
+      !state?.pine_button
+    ) {
+      return {
+        open: false,
+        reason: 'bottom_widget_bar_exists_but_no_activation_method',
+        detail: state,
+      };
+    }
+    if (state?.diagnostic_error) {
+      return { open: false, reason: 'pine_editor_diagnostic_failed', detail: state };
+    }
+    return {
+      open: false,
+      reason: 'activation_attempted_but_monaco_not_found_after_poll',
+      detail: state,
+    };
+  } catch (err) {
+    return {
+      open: false,
+      reason: 'cdp_connection_failed',
+      detail: { error: err instanceof Error ? err.message : String(err) },
+    };
+  }
+}
+
+async function ensurePineEditorReady({ attempts = 3, delayMs = 1000 } = {}) {
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    const ready = await ensurePineEditorOpen();
+    if (ready) return true;
+
+    const diagnostic = await diagnosePineEditorState();
+    if (diagnostic.open || diagnostic.reason === 'monaco_already_present') {
+      return true;
+    }
+
+    if (attempt < attempts - 1) {
+      await new Promise((r) => setTimeout(r, delayMs));
+    }
+  }
+
+  return false;
+}
+
 // -- Offline static analysis --
 
 export function analyze({ source }) {
@@ -382,7 +466,7 @@ export function pickApplyButton(labels) {
 // -- Functions requiring TradingView connection --
 
 export async function getSource() {
-  const editorReady = await ensurePineEditorOpen();
+  const editorReady = await ensurePineEditorReady();
   if (!editorReady) throw new Error('Could not open Pine Editor or Monaco not found.');
 
   const source = await evaluate(`
@@ -401,7 +485,7 @@ export async function getSource() {
 }
 
 export async function setSource({ source }) {
-  const editorReady = await ensurePineEditorOpen();
+  const editorReady = await ensurePineEditorReady();
   if (!editorReady) throw new Error('Could not open Pine Editor.');
 
   const escaped = JSON.stringify(source);
@@ -419,7 +503,7 @@ export async function setSource({ source }) {
 }
 
 export async function compile() {
-  const editorReady = await ensurePineEditorOpen();
+  const editorReady = await ensurePineEditorReady();
   if (!editorReady) throw new Error('Could not open Pine Editor.');
 
   const clicked = await clickPreferredApplyButton();
@@ -437,7 +521,7 @@ export async function compile() {
 }
 
 export async function getErrors() {
-  const editorReady = await ensurePineEditorOpen();
+  const editorReady = await ensurePineEditorReady();
   if (!editorReady) throw new Error('Could not open Pine Editor.');
 
   const errors = await evaluate(`
@@ -473,7 +557,7 @@ export async function getErrors() {
 }
 
 export async function smartCompile() {
-  const editorReady = await ensurePineEditorOpen();
+  const editorReady = await ensurePineEditorReady();
   if (!editorReady) throw new Error('Could not open Pine Editor.');
 
   const studiesBefore = await evaluate(`

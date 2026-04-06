@@ -13,6 +13,9 @@ import {
   canSafelyClearStudies,
   hasStudyLimitDialog,
   isTesterPanelStateVisible,
+  normalizeRestorePolicy,
+  pickTesterMetricsTab,
+  RESTORE_POLICY,
   loadPreset,
 } from '../src/core/backtest.js';
 import { buildResearchStrategySource } from '../src/core/research-backtest.js';
@@ -241,6 +244,45 @@ describe('buildResult', () => {
     assert.equal(rTester.apply_failed, false);
     assert.equal(rTester.tester_reason, 'Strategy Tester opened but metrics could not be read');
   });
+
+  it('returns editor_open_failed details when Pine Editor could not be opened', () => {
+    const r = buildResult({
+      compileSuccess: false,
+      editorOpenFailed: true,
+      editorOpenReason: 'activation_attempted_but_monaco_not_found_after_poll',
+      symbol: 'NASDAQ:NVDA',
+    });
+    assert.equal(r.success, false);
+    assert.equal(r.editor_open_failed, true);
+    assert.equal(r.editor_open_reason, 'activation_attempted_but_monaco_not_found_after_poll');
+    assert.deepEqual(r.compile_errors, []);
+    assert.equal(r.symbol, 'NASDAQ:NVDA');
+  });
+
+  it('defaults editor_open_reason when not provided', () => {
+    const r = buildResult({
+      compileSuccess: false,
+      editorOpenFailed: true,
+      symbol: null,
+    });
+    assert.equal(r.success, false);
+    assert.equal(r.editor_open_failed, true);
+    assert.equal(r.editor_open_reason, 'Unknown');
+  });
+
+  it('prioritizes editor_open_failed over compileSuccess', () => {
+    const r = buildResult({
+      compileSuccess: true,
+      editorOpenFailed: true,
+      editorOpenReason: 'monaco_missing',
+      testerAvailable: true,
+      metrics: { net_profit: '$500' },
+      symbol: 'NASDAQ:NVDA',
+    });
+    assert.equal(r.success, false);
+    assert.equal(r.editor_open_failed, true);
+    assert.equal(r.metrics, undefined);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -324,6 +366,48 @@ describe('canSafelyClearStudies', () => {
     assert.equal(
       canSafelyClearStudies({ existingStudies: [{ id: 's1', name: 'BB' }], studyTemplateSnapshot: null }),
       false,
+    );
+  });
+});
+
+describe('normalizeRestorePolicy', () => {
+  it('defaults to skip for undefined input', () => {
+    assert.equal(normalizeRestorePolicy(undefined), RESTORE_POLICY.SKIP);
+  });
+
+  it('accepts required, best-effort, and skip', () => {
+    assert.equal(normalizeRestorePolicy('required'), RESTORE_POLICY.REQUIRED);
+    assert.equal(normalizeRestorePolicy('best-effort'), RESTORE_POLICY.BEST_EFFORT);
+    assert.equal(normalizeRestorePolicy('skip'), RESTORE_POLICY.SKIP);
+  });
+
+  it('falls back to skip for invalid policy', () => {
+    assert.equal(normalizeRestorePolicy('aggressive'), RESTORE_POLICY.SKIP);
+  });
+});
+
+describe('pickTesterMetricsTab', () => {
+  it('picks the exact Japanese 指標 tester tab', () => {
+    const picked = pickTesterMetricsTab([
+      { text: 'トレード一覧' },
+      { text: '指標' },
+      { text: 'その他' },
+    ]);
+    assert.deepEqual(picked, { index: 1, label: '指標' });
+  });
+
+  it('does not confuse the indicators dialog button with the tester tab', () => {
+    const picked = pickTesterMetricsTab([
+      { text: 'インジケーター', ariaLabel: 'インジケーター、指標、ストラテジー' },
+      { text: '指標' },
+    ]);
+    assert.deepEqual(picked, { index: 1, label: '指標' });
+  });
+
+  it('returns null when no tester metrics tab exists', () => {
+    assert.equal(
+      pickTesterMetricsTab([{ text: 'トレード一覧' }, { text: 'その他' }]),
+      null,
     );
   });
 });

@@ -6,6 +6,7 @@ import { healthCheck } from './health.js';
 import { setActiveSymbol, getCurrentPrice, symbolMatches } from './price.js';
 import {
   ensurePineEditorOpen,
+  diagnosePineEditorState,
   getSource,
   setSource,
   smartCompile,
@@ -65,6 +66,12 @@ const STUDY_LIMIT_PATTERNS = [
   /すでに5個のインジケーターを適用しています/i,
   /現在のプランでご利用いただける上限です/i,
 ];
+const TESTER_METRICS_TAB_PATTERNS = [/^指標$/, /^Performance Summary$/i, /^Summary$/i, /^Overview$/i];
+export const RESTORE_POLICY = Object.freeze({
+  REQUIRED: 'required',
+  BEST_EFFORT: 'best-effort',
+  SKIP: 'skip',
+});
 
 function calculateSma(values, period, index) {
   if (index < period - 1) return null;
@@ -256,6 +263,32 @@ export function canSafelyClearStudies({ existingStudies, studyTemplateSnapshot }
   ));
 }
 
+export function normalizeRestorePolicy(policy) {
+  if (policy === RESTORE_POLICY.REQUIRED || policy === RESTORE_POLICY.BEST_EFFORT || policy === RESTORE_POLICY.SKIP) {
+    return policy;
+  }
+  return RESTORE_POLICY.SKIP;
+}
+
+export function pickTesterMetricsTab(entries) {
+  if (!Array.isArray(entries) || entries.length === 0) return null;
+  for (let i = 0; i < entries.length; i += 1) {
+    const entry = entries[i];
+    const candidates = typeof entry === 'string'
+      ? [entry]
+      : [entry?.text, entry?.ariaLabel, entry?.aria]
+        .filter((value) => typeof value === 'string')
+        .map((value) => value.trim())
+        .filter(Boolean);
+    const matched = candidates.find((label) =>
+      TESTER_METRICS_TAB_PATTERNS.some((pattern) => pattern.test(label)));
+    if (matched) {
+      return { index: i, label: matched };
+    }
+  }
+  return null;
+}
+
 // ---------------------------------------------------------------------------
 // Result builder
 // ---------------------------------------------------------------------------
@@ -263,6 +296,8 @@ export function buildResult({
   compileSuccess,
   compileDetail,
   compileErrors,
+  editorOpenFailed,
+  editorOpenReason,
   applyFailed,
   applyReason,
   testerAvailable,
@@ -271,6 +306,16 @@ export function buildResult({
   metrics,
   symbol,
 }) {
+  if (editorOpenFailed) {
+    return {
+      success: false,
+      symbol: symbol ?? null,
+      editor_open_failed: true,
+      editor_open_reason: editorOpenReason || 'Unknown',
+      compile_errors: compileErrors ?? [],
+    };
+  }
+
   if (!compileSuccess) {
     return {
       success: false,
@@ -351,6 +396,47 @@ async function openStrategyTester() {
     }
   }
   return { attempted: true, confirmedVisible: false };
+}
+
+async function activateTesterMetricsTab() {
+  const tabs = await evaluate(`
+    (function() {
+      try {
+        var bottom = document.querySelector('[class*="layout__area--bottom"]') || document;
+        return Array.from(bottom.querySelectorAll('[role="tab"]')).map(function(el) {
+          return {
+            text: (el.textContent || '').trim(),
+            ariaLabel: (el.getAttribute('aria-label') || '').trim(),
+          };
+        });
+      } catch (e) {
+        return [];
+      }
+    })()
+  `);
+  const picked = pickTesterMetricsTab(Array.isArray(tabs) ? tabs : []);
+  if (!picked) return { clicked: false };
+
+  const clicked = await evaluate(`
+    (function() {
+      try {
+        var bottom = document.querySelector('[class*="layout__area--bottom"]') || document;
+        var tabs = Array.from(bottom.querySelectorAll('[role="tab"]'));
+        var target = tabs[${JSON.stringify(picked.index)}];
+        if (!target) return false;
+        target.click();
+        return true;
+      } catch (e) {
+        return false;
+      }
+    })()
+  `);
+
+  if (clicked) {
+    await new Promise((r) => setTimeout(r, 1000));
+  }
+
+  return { clicked, label: picked.label };
 }
 
 async function readTesterMetricsFromInternalApi() {
@@ -602,37 +688,133 @@ async function snapshotChartStudyTemplate() {
 
 async function restoreChartStudyTemplate(snapshot) {
   if (!snapshot || typeof snapshot.content !== 'string') return;
+  let lastError = 'TradingView study template restore failed';
 
-  const restored = await evaluate(`
-    (async function() {
-      try {
-        var chart = window.TradingViewApi._activeChartWidgetWV.value();
-        if (!chart || typeof chart.applyStudyTemplate !== 'function' || typeof chart.removeAllStudies !== 'function') {
-          return { ok: false, error: 'Study template restore API unavailable' };
+  for (let attempt = 0; attempt < STUDY_TEMPLATE_RESTORE_RETRIES; attempt += 1) {
+    await clearChartStudies();
+
+    let ready = false;
+    for (let waitAttempt = 0; waitAttempt < MAIN_SERIES_READY_RETRIES; waitAttempt += 1) {
+      ready = await evaluate(`
+        (function() {
+          try {
+            var chart = window.TradingViewApi._activeChartWidgetWV.value();
+            var model = chart && chart._chartWidget && typeof chart._chartWidget.model === 'function'
+              ? chart._chartWidget.model()
+              : null;
+            if (!model || typeof model.mainSeries !== 'function') return false;
+            var mainSeries = model.mainSeries();
+            if (!mainSeries) return false;
+            if (typeof mainSeries.isStarted === 'function') {
+              return Boolean(mainSeries.isStarted());
+            }
+            if (typeof mainSeries.bars !== 'function') return false;
+            var bars = mainSeries.bars();
+            if (!bars || typeof bars.lastIndex !== 'function') return false;
+            bars.lastIndex();
+            return true;
+          } catch (e) {
+            return false;
+          }
+        })()
+      `);
+      if (ready) break;
+      await new Promise((r) => setTimeout(r, MAIN_SERIES_READY_DELAY));
+    }
+
+    if (!ready) {
+      lastError = 'Cannot start studies: main series is not started';
+      await new Promise((r) => setTimeout(r, 1000));
+      continue;
+    }
+
+    const restored = await evaluate(`
+      (async function() {
+        try {
+          var chart = window.TradingViewApi._activeChartWidgetWV.value();
+          if (!chart || typeof chart.applyStudyTemplate !== 'function') {
+            return { ok: false, error: 'Study template restore API unavailable' };
+          }
+
+          var template = JSON.parse(${JSON.stringify(snapshot.content)});
+          var applied = chart.applyStudyTemplate(template);
+          if (applied && typeof applied.then === 'function') {
+            await applied;
+          }
+          await new Promise(function(resolve) { setTimeout(resolve, 1500); });
+          return { ok: true };
+        } catch (e) {
+          return { ok: false, error: String(e) };
         }
+      })()
+    `, { awaitPromise: true });
 
-        var template = JSON.parse(${JSON.stringify(snapshot.content)});
-        var removed = chart.removeAllStudies();
-        if (removed && typeof removed.then === 'function') {
-          await removed;
-        }
-        await new Promise(function(resolve) { setTimeout(resolve, 1000); });
+    if (restored?.ok) {
+      return;
+    }
 
-        var applied = chart.applyStudyTemplate(template);
-        if (applied && typeof applied.then === 'function') {
-          await applied;
-        }
-        await new Promise(function(resolve) { setTimeout(resolve, 1500); });
-        return { ok: true };
-      } catch (e) {
-        return { ok: false, error: String(e) };
-      }
-    })()
-  `, { awaitPromise: true });
-
-  if (!restored?.ok) {
-    throw new Error(restored?.error || 'TradingView study template restore failed');
+    lastError = restored?.error || lastError;
+    if (!/main series is not started/i.test(lastError)) {
+      break;
+    }
+    await new Promise((r) => setTimeout(r, 1000));
   }
+
+  throw new Error(lastError);
+}
+
+function isPineEditorUnavailableError(err) {
+  const message = err instanceof Error ? err.message : String(err);
+  return /Could not open Pine Editor/i.test(message) || /Monaco.*not found/i.test(message);
+}
+
+async function buildEditorOpenFailureResult({ symbol, fallbackReason } = {}) {
+  const diagnostic = await diagnosePineEditorState();
+  const reason = diagnostic.reason === 'monaco_already_present' && fallbackReason
+    ? fallbackReason
+    : (diagnostic.reason || fallbackReason || 'Unknown');
+  const result = buildResult({
+    compileSuccess: false,
+    compileErrors: [],
+    editorOpenFailed: true,
+    editorOpenReason: reason,
+    symbol,
+  });
+  if (diagnostic.detail && typeof diagnostic.detail === 'object') {
+    result.editor_open_detail = diagnostic.detail;
+  }
+  return result;
+}
+
+async function ensurePineEditorAvailable({ symbol, retryDelayMs = 1000 } = {}) {
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const ready = await ensurePineEditorOpen();
+    if (ready) {
+      return { ready: true };
+    }
+
+    const diagnostic = await diagnosePineEditorState();
+    if (diagnostic.open || diagnostic.reason === 'monaco_already_present') {
+      return { ready: true };
+    }
+
+    if (attempt < 2) {
+      await new Promise((r) => setTimeout(r, retryDelayMs));
+    } else {
+      return {
+        ready: false,
+        result: await buildEditorOpenFailureResult({
+          symbol,
+          fallbackReason: diagnostic.reason,
+        }),
+      };
+    }
+  }
+
+  return {
+    ready: false,
+    result: await buildEditorOpenFailureResult({ symbol }),
+  };
 }
 
 async function recoverFromStudyLimit({ source, strategyTitle }) {
@@ -686,29 +868,116 @@ async function restorePineEditor() {
   }
 }
 
+async function performRestore({
+  policy,
+  originalSymbol,
+  targetSymbol,
+  originalSource,
+  originalStudyTemplate,
+  result,
+}) {
+  if (policy === RESTORE_POLICY.SKIP) {
+    if (result) {
+      result.restore_policy = policy;
+      result.restore_success = true;
+      result.restore_skipped = true;
+    }
+    return;
+  }
+
+  const restoreIssues = [];
+
+  if (originalSymbol && !symbolMatches(originalSymbol, targetSymbol)) {
+    try {
+      await setActiveSymbol({ symbol: originalSymbol });
+    } catch (err) {
+      restoreIssues.push(`symbol restore failed: ${err.message}`);
+    }
+  }
+
+  if (originalSource !== null) {
+    try {
+      const restoreEditor = await ensurePineEditorAvailable({ symbol: originalSymbol });
+      if (!restoreEditor.ready) {
+        throw new Error(`Could not open Pine Editor (${restoreEditor.result?.editor_open_reason || 'Unknown'})`);
+      }
+      await setSource({ source: originalSource });
+    } catch (err) {
+      restoreIssues.push(`source restore failed: ${err.message}`);
+    }
+  }
+
+  if (originalStudyTemplate) {
+    try {
+      await restoreChartStudyTemplate(originalStudyTemplate);
+    } catch (err) {
+      restoreIssues.push(`study template restore failed: ${err.message}`);
+    }
+  }
+
+  try {
+    await restorePineEditor();
+  } catch (err) {
+    restoreIssues.push(`pine editor restore failed: ${err.message}`);
+  }
+
+  if (result) {
+    result.restore_policy = policy;
+    result.restore_success = restoreIssues.length === 0;
+    if (restoreIssues.length > 0) {
+      result.restore_error = restoreIssues.join('; ');
+    }
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Main orchestration
 // ---------------------------------------------------------------------------
-const TESTER_READ_RETRIES = 3;
-const TESTER_READ_DELAY = 2000;
+const TESTER_READ_RETRIES = 5;
+const TESTER_READ_DELAY = 2500;
+const MAIN_SERIES_READY_RETRIES = 20;
+const MAIN_SERIES_READY_DELAY = 500;
+const STUDY_TEMPLATE_RESTORE_RETRIES = 4;
+const DEFAULT_RESTORE_POLICY = normalizeRestorePolicy(process.env.TV_BACKTEST_RESTORE_POLICY);
 
 export async function runNvdaMaBacktest() {
-  const initialState = await healthCheck();
-  const originalSymbol = initialState.chart_symbol;
-  const originalSource = (await getSource()).source;
-  const originalStudies = await fetchChartStudies();
-  const originalStudyTemplate = await snapshotChartStudyTemplate();
   const source = buildNvdaMaSource();
+  let originalSymbol = null;
+  let originalSource = null;
+  let originalStudies = [];
+  let originalStudyTemplate = null;
   let result;
 
   try {
+    const initialState = await healthCheck();
+    originalSymbol = initialState.chart_symbol;
+
+    const initialEditor = await ensurePineEditorAvailable({ symbol: 'NVDA' });
+    if (!initialEditor.ready) {
+      result = initialEditor.result;
+      return result;
+    }
+
+    originalSource = (await getSource()).source;
+    originalStudies = await fetchChartStudies();
+    if (DEFAULT_RESTORE_POLICY !== RESTORE_POLICY.SKIP) {
+      originalStudyTemplate = await snapshotChartStudyTemplate();
+    }
+
     const symbolResult = await setActiveSymbol({ symbol: 'NVDA' });
     const chartSymbol = symbolResult.chart_symbol;
 
     await getCurrentPrice({ symbol: 'NVDA' });
-    await ensurePineEditorOpen();
+    const runtimeEditor = await ensurePineEditorAvailable({ symbol: chartSymbol });
+    if (!runtimeEditor.ready) {
+      result = runtimeEditor.result;
+      return result;
+    }
     await dismissTransientDialogs();
-    if (!canSafelyClearStudies({ existingStudies: originalStudies, studyTemplateSnapshot: originalStudyTemplate })) {
+    if (
+      DEFAULT_RESTORE_POLICY !== RESTORE_POLICY.SKIP &&
+      !canSafelyClearStudies({ existingStudies: originalStudies, studyTemplateSnapshot: originalStudyTemplate })
+    ) {
       throw new Error('Cannot safely clear chart studies because TradingView study template snapshot is unavailable');
     }
     await clearChartStudies();
@@ -798,6 +1067,7 @@ export async function runNvdaMaBacktest() {
       });
       return result;
     }
+    await activateTesterMetricsTab();
 
     let rawMetrics = null;
     let testerState = testerOpenState.confirmedVisible
@@ -812,6 +1082,9 @@ export async function runNvdaMaBacktest() {
       testerState = await readTesterState();
       if (rawMetrics) break;
       if (testerState?.no_strategy) break;
+      if (testerState?.panel_visible) {
+        await activateTesterMetricsTab();
+      }
     }
 
     if (!rawMetrics) {
@@ -851,44 +1124,24 @@ export async function runNvdaMaBacktest() {
       symbol: chartSymbol,
     });
     return result;
+  } catch (err) {
+    if (isPineEditorUnavailableError(err)) {
+      result = await buildEditorOpenFailureResult({
+        symbol: 'NVDA',
+        fallbackReason: err.message,
+      });
+      return result;
+    }
+    throw err;
   } finally {
-    const restoreIssues = [];
-
-    if (originalSymbol && !symbolMatches(originalSymbol, 'NVDA')) {
-      try {
-        await setActiveSymbol({ symbol: originalSymbol });
-      } catch (err) {
-        restoreIssues.push(`symbol restore failed: ${err.message}`);
-      }
-    }
-
-    try {
-      await ensurePineEditorOpen();
-      await setSource({ source: originalSource });
-    } catch (err) {
-      restoreIssues.push(`source restore failed: ${err.message}`);
-    }
-
-    try {
-      await restoreChartStudyTemplate(originalStudyTemplate);
-    } catch (err) {
-      restoreIssues.push(`study template restore failed: ${err.message}`);
-    }
-
-    try {
-      await restorePineEditor();
-    } catch (err) {
-      restoreIssues.push(`pine editor restore failed: ${err.message}`);
-    }
-
-    if (result) {
-      result.restore_success = restoreIssues.length === 0;
-      if (restoreIssues.length > 0) {
-        result.restore_error = restoreIssues.join('; ');
-      }
-    } else if (restoreIssues.length > 0) {
-      throw new Error(`Backtest completed, but state restore failed: ${restoreIssues.join('; ')}`);
-    }
+    await performRestore({
+      policy: DEFAULT_RESTORE_POLICY,
+      originalSymbol,
+      targetSymbol: 'NVDA',
+      originalSource,
+      originalStudyTemplate,
+      result,
+    });
   }
 }
 
@@ -929,22 +1182,42 @@ export async function loadPreset(presetId) {
 export async function runPresetBacktest({ presetId, symbol = 'NVDA' }) {
   const { preset, source } = await loadPreset(presetId);
   const strategyTitle = preset.name;
-
-  const initialState = await healthCheck();
-  const originalSymbol = initialState.chart_symbol;
-  const originalSource = (await getSource()).source;
-  const originalStudies = await fetchChartStudies();
-  const originalStudyTemplate = await snapshotChartStudyTemplate();
+  let originalSymbol = null;
+  let originalSource = null;
+  let originalStudies = [];
+  let originalStudyTemplate = null;
   let result;
 
   try {
+    const initialState = await healthCheck();
+    originalSymbol = initialState.chart_symbol;
+
+    const initialEditor = await ensurePineEditorAvailable({ symbol });
+    if (!initialEditor.ready) {
+      result = initialEditor.result;
+      return result;
+    }
+
+    originalSource = (await getSource()).source;
+    originalStudies = await fetchChartStudies();
+    if (DEFAULT_RESTORE_POLICY !== RESTORE_POLICY.SKIP) {
+      originalStudyTemplate = await snapshotChartStudyTemplate();
+    }
+
     const symbolResult = await setActiveSymbol({ symbol });
     const chartSymbol = symbolResult.chart_symbol;
 
     await getCurrentPrice({ symbol });
-    await ensurePineEditorOpen();
+    const runtimeEditor = await ensurePineEditorAvailable({ symbol: chartSymbol });
+    if (!runtimeEditor.ready) {
+      result = runtimeEditor.result;
+      return result;
+    }
     await dismissTransientDialogs();
-    if (!canSafelyClearStudies({ existingStudies: originalStudies, studyTemplateSnapshot: originalStudyTemplate })) {
+    if (
+      DEFAULT_RESTORE_POLICY !== RESTORE_POLICY.SKIP &&
+      !canSafelyClearStudies({ existingStudies: originalStudies, studyTemplateSnapshot: originalStudyTemplate })
+    ) {
       throw new Error('Cannot safely clear chart studies because TradingView study template snapshot is unavailable');
     }
     await clearChartStudies();
@@ -1026,6 +1299,7 @@ export async function runPresetBacktest({ presetId, symbol = 'NVDA' }) {
       });
       return result;
     }
+    await activateTesterMetricsTab();
 
     let rawMetrics = null;
     let testerState = testerOpenState.confirmedVisible
@@ -1040,6 +1314,9 @@ export async function runPresetBacktest({ presetId, symbol = 'NVDA' }) {
       testerState = await readTesterState();
       if (rawMetrics) break;
       if (testerState?.no_strategy) break;
+      if (testerState?.panel_visible) {
+        await activateTesterMetricsTab();
+      }
     }
 
     if (!rawMetrics) {
@@ -1073,43 +1350,23 @@ export async function runPresetBacktest({ presetId, symbol = 'NVDA' }) {
       symbol: chartSymbol,
     });
     return result;
+  } catch (err) {
+    if (isPineEditorUnavailableError(err)) {
+      result = await buildEditorOpenFailureResult({
+        symbol,
+        fallbackReason: err.message,
+      });
+      return result;
+    }
+    throw err;
   } finally {
-    const restoreIssues = [];
-
-    if (originalSymbol && !symbolMatches(originalSymbol, symbol)) {
-      try {
-        await setActiveSymbol({ symbol: originalSymbol });
-      } catch (err) {
-        restoreIssues.push(`symbol restore failed: ${err.message}`);
-      }
-    }
-
-    try {
-      await ensurePineEditorOpen();
-      await setSource({ source: originalSource });
-    } catch (err) {
-      restoreIssues.push(`source restore failed: ${err.message}`);
-    }
-
-    try {
-      await restoreChartStudyTemplate(originalStudyTemplate);
-    } catch (err) {
-      restoreIssues.push(`study template restore failed: ${err.message}`);
-    }
-
-    try {
-      await restorePineEditor();
-    } catch (err) {
-      restoreIssues.push(`pine editor restore failed: ${err.message}`);
-    }
-
-    if (result) {
-      result.restore_success = restoreIssues.length === 0;
-      if (restoreIssues.length > 0) {
-        result.restore_error = restoreIssues.join('; ');
-      }
-    } else if (restoreIssues.length > 0) {
-      throw new Error(`Backtest completed, but state restore failed: ${restoreIssues.join('; ')}`);
-    }
+    await performRestore({
+      policy: DEFAULT_RESTORE_POLICY,
+      originalSymbol,
+      targetSymbol: symbol,
+      originalSource,
+      originalStudyTemplate,
+      result,
+    });
   }
 }
