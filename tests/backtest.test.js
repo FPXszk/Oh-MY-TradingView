@@ -814,11 +814,18 @@ describe('loadPreset', () => {
   });
 
   it('loaded preset is compatible with buildResearchStrategySource', async () => {
-    const { preset, defaults } = await loadPreset('ema-cross-9-21');
-    const source = buildResearchStrategySource(preset, defaults);
+    const { preset, defaults, source } = await loadPreset('ema-cross-9-21');
     assert.ok(typeof source === 'string');
     assert.ok(source.length > 0);
     assert.ok(source.includes('//@version=6'));
     assert.ok(source.includes(preset.name));
+    assert.equal(source, buildResearchStrategySource(preset, defaults));
+  });
+
+  it('throws for presets whose builder is unsupported by the repo CLI generator', async () => {
+    await assert.rejects(
+      () => loadPreset('macd-signal'),
+      /not executable by repo CLI: Unsupported builder/,
+    );
   });
 });

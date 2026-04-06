@@ -3,7 +3,7 @@
   "execution_context": {
     "current_repo_cli": "preset_capable",
     "current_batch_validation": "session_artifact_runner",
-    "note": "The repo CLI supports preset-driven backtests via 'tv backtest preset <id>'. Presets are also validated via the session batch runner for research rounds."
+    "note": "The repo CLI supports preset-driven backtests via 'tv backtest preset <id>' for presets buildable by the current generator. Presets are also validated via the session batch runner for research rounds."
   },
   "common_defaults": {
     "pine_version": 6,

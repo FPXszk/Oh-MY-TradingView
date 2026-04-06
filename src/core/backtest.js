@@ -635,7 +635,7 @@ async function restoreChartStudyTemplate(snapshot) {
   }
 }
 
-async function recoverFromStudyLimit({ source }) {
+async function recoverFromStudyLimit({ source, strategyTitle }) {
   const dialogs = await readVisibleDialogTexts();
   if (!hasStudyLimitDialog(dialogs)) {
     return { attempted: false };
@@ -660,13 +660,13 @@ async function recoverFromStudyLimit({ source }) {
   const verifyResult = verifyStrategyAttachmentChange(
     studiesBeforeCompile,
     studiesAfterCompile,
-    STRATEGY_TITLE,
+    strategyTitle,
     compileResult.study_added,
   );
 
   let strategyAttached = verifyResult.attached;
   if (!strategyAttached) {
-    const retryResult = await retryApplyStrategy(STRATEGY_TITLE);
+    const retryResult = await retryApplyStrategy(strategyTitle);
     strategyAttached = retryResult.applied;
   }
 
@@ -746,7 +746,7 @@ export async function runNvdaMaBacktest() {
     }
 
     if (!strategyAttached) {
-      const recovery = await recoverFromStudyLimit({ source });
+      const recovery = await recoverFromStudyLimit({ source, strategyTitle: STRATEGY_TITLE });
       if (recovery.attempted) {
         compileResult = recovery.compileResult;
         if (compileResult.has_errors) {
@@ -913,16 +913,22 @@ export async function loadPreset(presetId) {
     );
   }
 
-  return { preset, defaults: data.common_defaults };
+  let source;
+  try {
+    source = buildResearchStrategySource(preset, data.common_defaults);
+  } catch (err) {
+    throw new Error(`Preset "${presetId}" is not executable by repo CLI: ${err.message}`);
+  }
+
+  return { preset, defaults: data.common_defaults, source };
 }
 
 // ---------------------------------------------------------------------------
 // Preset-driven backtest orchestration
 // ---------------------------------------------------------------------------
 export async function runPresetBacktest({ presetId, symbol = 'NVDA' }) {
-  const { preset, defaults } = await loadPreset(presetId);
+  const { preset, source } = await loadPreset(presetId);
   const strategyTitle = preset.name;
-  const source = buildResearchStrategySource(preset, defaults);
 
   const initialState = await healthCheck();
   const originalSymbol = initialState.chart_symbol;
@@ -975,7 +981,7 @@ export async function runPresetBacktest({ presetId, symbol = 'NVDA' }) {
     }
 
     if (!strategyAttached) {
-      const recovery = await recoverFromStudyLimit({ source });
+      const recovery = await recoverFromStudyLimit({ source, strategyTitle });
       if (recovery.attempted) {
         compileResult = recovery.compileResult;
         if (compileResult.has_errors) {
