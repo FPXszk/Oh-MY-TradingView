@@ -50,12 +50,15 @@ Get-CimInstance Win32_Process |
 
 ```powershell
 Stop-Process -Id <PID>
+
 ```
 
 複数ある場合は、確認した PID を並べて停止する。
 
 ```powershell
 Stop-Process -Id <PID1>,<PID2>,<PID3>
+Stop-Process -Id <PID>
+
 ```
 
 ### 停止できたか再確認
@@ -184,5 +187,39 @@ TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9225 node src/cli/index.js status
 ```powershell
 cmd /c start "" /D C:\TradingView C:\TradingView\TradingView.exe --remote-debugging-port=9224 --user-data-dir=C:\TradingView\profiles\worker2 --in-process-gpu
 ```
+Stop-Process -Id <PID1>,<PID2>,<PID3>
+C:\TradingView\TradingView.exe --remote-debugging-port=9224 --user-data-dir=C:\TradingView\profiles\worker2 --in-process-gpu
 
 このコマンドを **Windows の見えているデスクトップで開いた PowerShell または Win+R から** 実行する。
+
+
+
+
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+新機能と改善のために最新の PowerShell をインストールしてください!https://aka.ms/PSWindows
+
+PS C:\Users\szk> cmd /c start "" /D C:\TradingView C:\TradingView\TradingView.exe --remote-debugging-port=9224 --user-data-dir=C:\TradingView\profiles\worker2 --in-process-gpu
+PS C:\Users\szk> Stop-Process -Id 5356
+Stop-Process : 次のエラーのため、プロセス "TradingView (5356)" を停止できません: アクセスが拒否されました。
+発生場所 行:1 文字:1
++ Stop-Process -Id 5356
++ ~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : CloseError: (System.Diagnostics.Process (TradingView):Process) [Stop-Process]、ProcessCom
+    mandException
+    + FullyQualifiedErrorId : CouldNotStopProcess,Microsoft.PowerShell.Commands.StopProcessCommand
+
+PS C:\Users\szk>
+
+
+
+
+
+
+
+
+
+
+
+
