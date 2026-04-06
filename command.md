@@ -205,6 +205,24 @@ wait
 - 現時点では **same-session visible + visible は非推奨**
 - 追加で試す価値があるのは、**別 Windows user / 別 interactive session** を使った visible + visible だが、これは未検証
 
+## 7c. 長時間 workload の分割指針（暫定）
+
+- `Mag7 / alt` のような **意味上きれいな固定 2 分割** は、round8 follow-up では偏りと retry 範囲の大きさが目立った
+- round8 `204 run` の follow-up では
+  - fixed split: `84 / 120 run`
+  - past runtime 基準: `20.13 min / 29.93 min`
+  - worker2 途中断後の recovery target: `74 run`
+  だった
+- そのため、次回の暫定推奨は
+  1. **strategy 単位チャンク + runtime-aware 配分**
+  2. **30〜40 run shard + checkpoint / partial retry**
+- 長時間 batch の前提条件も、warm-up 1 回成功ではなく
+  - `tester_available: true` の **3 連続**
+  - `metrics_unreadable = 0`
+  - `restore_policy: "skip"` 系 result shape の確認
+  まで引き上げる
+- 本番中は **10 run ごと** に `status` / `json/version` を確認し、崩れたら full rerun ではなく partial retry を優先する
+
 ## 9. 参照先
 
 - `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`

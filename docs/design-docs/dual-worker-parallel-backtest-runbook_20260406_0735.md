@@ -153,6 +153,51 @@ wait
 
 > fresh profile / fresh app restart 直後の再現性は未検証。
 
+## Long-running research workload guidance (provisional)
+
+round8 の `204 run` workload を `worker1=Mag7 84 run` / `worker2=alt 120 run` で固定分割した follow-up では、
+
+- past runtime 基準で `20.13 min` vs `29.93 min`
+- gap `9.8 min`
+- 実測では worker2 途中断により `74 run` の retry
+
+となり、**少なくとも round8 follow-up の観測では、固定 universe 分割は長時間 workload の運用形として粗かった** と分かった。
+
+### Recommended split strategy
+
+長時間の research batch では、**現時点の暫定運用指針として** 次を優先する。
+
+1. **strategy 単位チャンク + runtime-aware 2-way balance**
+   - まず strategy ごとの chunk を作る
+   - 過去 `runtime_ms` を重みとして 2 worker の予測合計時間が近づくように割り当てる
+2. **または 30〜40 run shard + checkpoint**
+   - retry blast radius を小さくしたい場合の次善策
+
+### Why
+
+- 固定 `Mag7 / alt` 分割は retry 範囲が大きい
+- strategy chunk なら retry 単位を `27 run` 前後まで縮めやすい
+- `30〜40 run` shard なら checkpoint / partial retry が実装しやすい
+
+### Operational gates
+
+長時間 batch の前に、各 worker で以下を満たすことを**暫定基準**とする。
+
+1. `tester_available: true` を **3 連続**
+2. `metrics_unreadable = 0` の warm-up を通す
+3. `restore_policy: "skip"` / `restore_success: true` / `restore_skipped: true` を確認する
+
+### Health check cadence
+
+- **10 run ごと**に `status` / `json/version` を確認することを、現時点の暫定 cadence とする
+- 応答なし、または readiness 崩れを検知したら当該 shard で止める
+- recovery は full rerun ではなく **partial retry** を優先する
+
+### Restart budget
+
+- 1 parallel session あたり worker 再起動は **最大 1 回** を暫定 budget とする
+- 2 回目の crash では full batch 継続より原因切り分けを優先する
+
 ## Both-visible feasibility (follow-up)
 
 2026-04-06 の follow-up で、worker1 も Session1 に載せて **visible + visible** を試した。
