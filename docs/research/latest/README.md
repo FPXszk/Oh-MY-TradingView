@@ -5,8 +5,8 @@
 ## 読む順番
 
 1. この `README.md`
-2. `top4-backtest-handoff_20260407_0529.md`
-3. `top4-backtest-results_20260407_0529.md`
+2. `top4-period-slicing-handoff_20260407_1641.md`
+3. `top4-period-slicing-results_20260407_1641.md`
 4. 判断経緯が必要なら `docs/working-memory/session-logs/`
 
 ## 運用ルール

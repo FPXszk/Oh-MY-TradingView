@@ -573,7 +573,7 @@ describe('strategy-presets.json integration', () => {
   it('round1-3 presets are unchanged', async () => {
     const data = await loadPresets();
     const round1To3 = data.strategies.filter(
-      (p) => !['round4', 'round5', 'round6', 'round7', 'round8', 'round9', 'round10'].includes(p.implementation_stage),
+        (p) => !['round4', 'round5', 'round6', 'round7', 'round8', 'round9', 'round10', 'round11'].includes(p.implementation_stage),
     );
     assert.equal(round1To3.length, 30, 'Expected 30 round1-3 presets to remain');
   });
@@ -1237,6 +1237,186 @@ describe('strategy-presets.json integration', () => {
       .map((ids) => ids.sort());
 
     assert.deepEqual(crossDups, [], `Round10 cross-round executable duplicates found: ${JSON.stringify(crossDups)}`);
+  });
+
+  it('contains round11 presets', async () => {
+    const data = await loadPresets();
+    const r11 = filterPresetsByRound(data.strategies, 'round11');
+    assert.equal(r11.length, 12, `Expected 12 round11 presets, got ${r11.length}`);
+  });
+
+  it('all round11 presets have "round11" tag', async () => {
+    const data = await loadPresets();
+    const r11 = filterPresetsByRound(data.strategies, 'round11');
+    for (const p of r11) {
+      assert.ok(
+        Array.isArray(p.tags) && p.tags.includes('round11'),
+        `Preset "${p.id}" missing "round11" tag`,
+      );
+    }
+  });
+
+  it('round11 includes all planned period-slice variants', async () => {
+    const data = await loadPresets();
+    const r11 = filterPresetsByRound(data.strategies, 'round11');
+    const r11Ids = new Set(r11.map((p) => p.id));
+    const expected = [
+      'donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early',
+      'donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late',
+      'donchian-55-18-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-exit-tight',
+      'donchian-55-22-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-exit-wide',
+      'donchian-50-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-entry-early',
+      'donchian-60-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-entry-late',
+      'donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight',
+      'donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide',
+      'donchian-50-20-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide-entry-early',
+      'donchian-60-20-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide-entry-late',
+      'donchian-55-18-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide-exit-tight',
+      'donchian-55-22-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide-exit-wide',
+    ];
+    for (const id of expected) {
+      assert.ok(r11Ids.has(id), `Missing round11 preset: ${id}`);
+    }
+  });
+
+  it('round11 stays within existing builder families', async () => {
+    const data = await loadPresets();
+    const r11 = filterPresetsByRound(data.strategies, 'round11');
+    for (const preset of r11) {
+      const allowedBuilders = ['donchian_breakout'];
+      assert.ok(
+        allowedBuilders.includes(preset.builder),
+        `Preset "${preset.id}" uses unexpected builder "${preset.builder}"`,
+      );
+    }
+  });
+
+  it('round11 presets keep theme metadata and taxonomy aligned', async () => {
+    const data = await loadPresets();
+    const r11 = filterPresetsByRound(data.strategies, 'round11');
+    const expectedThemeAxes = new Map([
+      ['donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early', 'deep-pullback-strict-entry-early'],
+      ['donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late', 'deep-pullback-strict-entry-late'],
+      ['donchian-55-18-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-exit-tight', 'deep-pullback-strict-exit-tight'],
+      ['donchian-55-22-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-exit-wide', 'deep-pullback-strict-exit-wide'],
+      ['donchian-50-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-entry-early', 'deep-pullback-tight-entry-early'],
+      ['donchian-60-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-entry-late', 'deep-pullback-tight-entry-late'],
+      ['donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight', 'deep-pullback-tight-exit-tight'],
+      ['donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide', 'deep-pullback-tight-exit-wide'],
+      ['donchian-50-20-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide-entry-early', 'breadth-quality-balanced-wide-entry-early'],
+      ['donchian-60-20-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide-entry-late', 'breadth-quality-balanced-wide-entry-late'],
+      ['donchian-55-18-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide-exit-tight', 'breadth-quality-balanced-wide-exit-tight'],
+      ['donchian-55-22-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide-exit-wide', 'breadth-quality-balanced-wide-exit-wide'],
+    ]);
+    const expectedAxisTags = new Map([
+      ['donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early', 'theme-deep-pullback'],
+      ['donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late', 'theme-deep-pullback'],
+      ['donchian-55-18-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-exit-tight', 'theme-deep-pullback'],
+      ['donchian-55-22-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-exit-wide', 'theme-deep-pullback'],
+      ['donchian-50-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-entry-early', 'theme-deep-pullback'],
+      ['donchian-60-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-entry-late', 'theme-deep-pullback'],
+      ['donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight', 'theme-deep-pullback'],
+      ['donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide', 'theme-deep-pullback'],
+      ['donchian-50-20-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide-entry-early', 'theme-quality'],
+      ['donchian-60-20-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide-entry-late', 'theme-quality'],
+      ['donchian-55-18-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide-exit-tight', 'theme-quality'],
+      ['donchian-55-22-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide-exit-wide', 'theme-quality'],
+    ]);
+
+    assert.equal(r11.length, expectedThemeAxes.size, 'Round11 preset expectations are out of sync');
+
+    for (const preset of r11) {
+      assert.equal(
+        preset.theme_axis,
+        expectedThemeAxes.get(preset.id),
+        `Preset "${preset.id}" has unexpected theme_axis`,
+      );
+      assert.equal(typeof preset.theme_notes, 'string', `Preset "${preset.id}" should include theme_notes`);
+      assert.ok(preset.theme_notes.length > 0, `Preset "${preset.id}" should have non-empty theme_notes`);
+      assert.ok(
+        preset.tags.includes(expectedAxisTags.get(preset.id)),
+        `Preset "${preset.id}" should include taxonomy tag "${expectedAxisTags.get(preset.id)}"`,
+      );
+    }
+  });
+
+  it('round11 executable duplicates are absent', async () => {
+    const data = await loadPresets();
+    const r11 = filterPresetsByRound(data.strategies, 'round11');
+    const sortKeysDeep = (value) => {
+      if (Array.isArray(value)) {
+        return value.map(sortKeysDeep);
+      }
+      if (value && typeof value === 'object') {
+        return Object.fromEntries(
+          Object.keys(value)
+            .sort()
+            .map((key) => [key, sortKeysDeep(value[key])]),
+        );
+      }
+      return value;
+    };
+    const canonicalize = (preset) => JSON.stringify(sortKeysDeep({
+      builder: preset.builder,
+      parameters: preset.parameters,
+      regime_filter: preset.regime_filter ?? null,
+      rsi_regime_filter: preset.rsi_regime_filter ?? null,
+      stop_loss: preset.stop_loss ?? null,
+      exit_overlay: preset.exit_overlay ?? null,
+    }));
+
+    const grouped = new Map();
+    for (const preset of r11) {
+      const key = canonicalize(preset);
+      if (!grouped.has(key)) grouped.set(key, []);
+      grouped.get(key).push(preset.id);
+    }
+
+    const duplicateGroups = [...grouped.values()]
+      .filter((ids) => ids.length > 1)
+      .map((ids) => ids.sort());
+
+    assert.deepEqual(duplicateGroups, []);
+  });
+
+  it('round11 presets have no cross-round executable duplicates', async () => {
+    const data = await loadPresets();
+    const r11 = filterPresetsByRound(data.strategies, 'round11');
+    const r11Ids = new Set(r11.map((p) => p.id));
+    const sortKeysDeep = (value) => {
+      if (Array.isArray(value)) {
+        return value.map(sortKeysDeep);
+      }
+      if (value && typeof value === 'object') {
+        return Object.fromEntries(
+          Object.keys(value)
+            .sort()
+            .map((key) => [key, sortKeysDeep(value[key])]),
+        );
+      }
+      return value;
+    };
+    const canonicalize = (preset) => JSON.stringify(sortKeysDeep({
+      builder: preset.builder,
+      parameters: preset.parameters,
+      regime_filter: preset.regime_filter ?? null,
+      rsi_regime_filter: preset.rsi_regime_filter ?? null,
+      stop_loss: preset.stop_loss ?? null,
+      exit_overlay: preset.exit_overlay ?? null,
+    }));
+
+    const allCanonMap = new Map();
+    for (const preset of data.strategies) {
+      const key = canonicalize(preset);
+      if (!allCanonMap.has(key)) allCanonMap.set(key, []);
+      allCanonMap.get(key).push(preset.id);
+    }
+
+    const crossDups = [...allCanonMap.values()]
+      .filter((ids) => ids.length > 1 && ids.some((id) => r11Ids.has(id)))
+      .map((ids) => ids.sort());
+
+    assert.deepEqual(crossDups, [], `Round11 cross-round executable duplicates found: ${JSON.stringify(crossDups)}`);
   });
 });
 

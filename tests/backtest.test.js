@@ -894,6 +894,54 @@ describe('buildResearchStrategySource', () => {
     assert.ok(source.includes('stopLossPrice = strategy.position_avg_price * (1 - 0.08)'));
   });
 
+  it('builds round11 deep-pullback-strict-entry-early preset sources from the preset catalog', async () => {
+    const data = await loadPresets();
+    const preset = data.strategies.find(
+      (entry) => entry.id === 'donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early',
+    );
+
+    assert.ok(preset, 'Expected round11 deep-pullback-strict-entry-early preset to exist');
+    const source = buildResearchStrategySource(preset, defaults);
+
+    assert.ok(source.includes('request.security("BATS:RSP", timeframe.period, close)'));
+    assert.ok(source.includes('donchianUpper = ta.highest(high, 50)[1]'));
+    assert.ok(source.includes('donchianLower = ta.lowest(low, 20)[1]'));
+    assert.ok(source.includes('rsiRegimeOk = rsiRegimeValue > 60'));
+    assert.ok(source.includes('stopLossPrice = strategy.position_avg_price * (1 - 0.08)'));
+  });
+
+  it('builds round11 deep-pullback-tight-exit-tight preset sources from the preset catalog', async () => {
+    const data = await loadPresets();
+    const preset = data.strategies.find(
+      (entry) => entry.id === 'donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight',
+    );
+
+    assert.ok(preset, 'Expected round11 deep-pullback-tight-exit-tight preset to exist');
+    const source = buildResearchStrategySource(preset, defaults);
+
+    assert.ok(source.includes('request.security("BATS:RSP", timeframe.period, close)'));
+    assert.ok(source.includes('donchianUpper = ta.highest(high, 55)[1]'));
+    assert.ok(source.includes('donchianLower = ta.lowest(low, 18)[1]'));
+    assert.ok(source.includes('rsiRegimeOk = rsiRegimeValue > 55'));
+    assert.ok(source.includes('stopLossPrice = strategy.position_avg_price * (1 - 0.08)'));
+  });
+
+  it('builds round11 breadth-quality-balanced-wide-exit-wide preset sources from the preset catalog', async () => {
+    const data = await loadPresets();
+    const preset = data.strategies.find(
+      (entry) => entry.id === 'donchian-55-22-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide-exit-wide',
+    );
+
+    assert.ok(preset, 'Expected round11 breadth-quality-balanced-wide-exit-wide preset to exist');
+    const source = buildResearchStrategySource(preset, defaults);
+
+    assert.ok(source.includes('request.security("BATS:RSP", timeframe.period, close)'));
+    assert.ok(source.includes('donchianUpper = ta.highest(high, 55)[1]'));
+    assert.ok(source.includes('donchianLower = ta.lowest(low, 22)[1]'));
+    assert.ok(source.includes('rsiRegimeOk = rsiRegimeValue > 50'));
+    assert.ok(source.includes('stopLossPrice = strategy.position_avg_price * (1 - 0.08)'));
+  });
+
   it('rejects unsupported regime filters in the generator', () => {
     assert.throws(() => buildResearchStrategySource({
       id: 'bad-regime',
