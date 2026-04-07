@@ -137,3 +137,58 @@
 - そのうえで live では、preset `metrics_unreadable` が `rerun_recommended: true` のみ返すことを確認できた
 - 今回の変更は failure-side の秒数をさらに大きく縮めたわけではない
 - ただし **rerun の必要条件を誤解なく示す改善** としては有効で、degraded success を返してよい範囲を明確にできた
+
+## Follow-up: websocket report fallback 実装の再開
+
+### 実装
+
+- 中断していた active exec-plan `websocket-report-fallback-implementation_20260407_1334.md` を再開した
+- `src/core/backtest-report-websocket.js` を追加し、TradingView WebSocket payload の `~m~<len>~m~...` framing を decode できるようにした
+- raw frame から `du` message を抽出し、`report.performance` を持つ candidate を拾う helper を追加した
+- partial report を degraded success 扱いしないよう、5 指標が揃った complete report だけを fallback 候補にした
+- `src/core/backtest.js` では raw payload を listener に溜めるように変更し、`metrics_unreadable` 時のみ `websocket_report` を fallback 候補として評価するようにした
+- NVDA MA 経路では既存 `chart_bars_local` を backup fallback として残した
+- preset 経路に generic fallback は流さず、fallback が返る場合の source は `websocket_report` のみとした
+
+### テスト
+
+- `tests/backtest.test.js`
+  - framed payload parsing
+  - heartbeat skip
+  - candidate selection / mixed-session reject
+- `tests/e2e.backtest.test.js`
+  - preset 経路で `fallback_metrics` が返る場合は `websocket_report` 以外を許さない assertion を追加
+- `npm test`
+  - success
+- `TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9223 npm run test:all`
+  - success
+
+### live verification after restart
+
+1. startup
+   - worker1 / worker2 を再起動
+   - `172.31.144.1:9223`, `172.31.144.1:9225` とも status success
+2. warm-up
+   - worker1 `ema-cross-9-21`: success / `20.66s`
+   - worker2 `rsi-mean-reversion`: success / `20.65s`
+3. parallel attempt 1
+   - worker1: success / `20.48s`
+   - worker2: `metrics_unreadable` / `27.99s`
+   - `fallback_source`: なし
+   - `rerun_recommended: true`
+4. parallel attempt 2
+   - worker1: `metrics_unreadable` / `27.98s`
+   - worker2: success / `27.98s`
+   - `fallback_source`: なし
+
+### diagnostics
+
+- framing decode 後は `du` payload 自体は観測できた
+- ただし今回の probe では `du` の中身は `sds_*` bar update が中心で、`report.performance` を持つ candidate は 0 件だった
+- そのため `websocket_report` fallback は live では未発火だった
+
+### interpretation
+
+- **コード上は一段前進**しており、framed payload を捨てていた不具合は解消した
+- ただし **今回の再起動後 live run では speedup は確認できなかった**
+- 現在も実測上の主成果は、`metrics_unreadable` retry budget 短縮による **約 7.4〜7.5 秒短縮** のまま

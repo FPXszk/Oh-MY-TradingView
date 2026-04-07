@@ -2,6 +2,9 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { evaluate, getClient } from '../connection.js';
+import {
+  selectLatestWsReportCandidate,
+} from './backtest-report-websocket.js';
 import { healthCheck } from './health.js';
 import { setActiveSymbol, getCurrentPrice, symbolMatches } from './price.js';
 import {
@@ -822,6 +825,50 @@ async function readNvdaMaFallbackMetricsPayload() {
   };
 }
 
+// ---------------------------------------------------------------------------
+// WebSocket `du` frame listener — collects report frames via CDP Network
+// ---------------------------------------------------------------------------
+async function startWsReportListener() {
+  const cdp = await getClient();
+  await cdp.Network.enable();
+
+  const frames = [];
+  const handler = (params) => {
+    const { payloadData } = params.response || {};
+    if (typeof payloadData !== 'string') return;
+    frames.push(payloadData);
+  };
+
+  cdp.on('Network.webSocketFrameReceived', handler);
+
+  return {
+    getFrames() {
+      return frames;
+    },
+    stop() {
+      cdp.off('Network.webSocketFrameReceived', handler);
+    },
+  };
+}
+
+function readWsReportFallbackMetrics(wsListener) {
+  if (!wsListener) {
+    return null;
+  }
+
+  const candidate = selectLatestWsReportCandidate(wsListener.getFrames(), {
+    requireUniqueSession: true,
+  });
+  if (!candidate) {
+    return null;
+  }
+
+  return {
+    source: 'websocket_report',
+    metrics: normalizeMetrics(candidate.report),
+  };
+}
+
 async function readVisibleDialogTexts() {
   const dialogs = await evaluate(`
     (function() {
@@ -1286,61 +1333,77 @@ export async function runNvdaMaBacktest() {
     }
 
     // -- Strategy attached — open Strategy Tester --
-    const testerOpenState = await openStrategyTester();
-    if (!testerOpenState.attempted) {
+    let wsListener = null;
+    try {
+      wsListener = await startWsReportListener();
+    } catch {
+      // WS listener failure is non-fatal — proceed without it
+    }
+
+    try {
+      const testerOpenState = await openStrategyTester();
+      if (!testerOpenState.attempted) {
+        result = buildResult({
+          compileSuccess: true,
+          compileDetail: compileResult,
+          applyFailed: false,
+          testerAvailable: false,
+          testerReason: 'Strategy Tester panel could not be opened',
+          testerReasonCategory: 'panel_not_visible',
+          symbol: chartSymbol,
+        });
+        return result;
+      }
+      await activateTesterMetricsTab();
+
+      const { rawMetrics, testerState, failure: testerReadFailure } = await readTesterMetricsWithRetries({
+        testerOpenState,
+      });
+
+      if (!rawMetrics) {
+        const failure = testerReadFailure || classifyTesterReadFailure({
+          testerState,
+          hasApiResult: false,
+          hasDomResult: false,
+        });
+        const noStrategyReported = failure.category === 'no_strategy_applied';
+
+        const wsFallback = failure.category === 'metrics_unreadable'
+          ? readWsReportFallbackMetrics(wsListener)
+          : null;
+
+        const fallback = wsFallback || await readNvdaMaFallbackMetricsPayload();
+        result = attachFallbackMetrics(buildResult({
+          compileSuccess: true,
+          compileDetail: compileResult,
+          applyFailed: noStrategyReported,
+          applyReason: noStrategyReported
+            ? 'TradingView reports no strategy is applied to the chart (detected after tester open)'
+            : undefined,
+          testerAvailable: false,
+          testerReason: failure.reason,
+          testerReasonCategory: failure.category,
+          symbol: chartSymbol,
+        }), {
+          testerReasonCategory: failure.category,
+          fallbackMetrics: fallback?.metrics,
+          fallbackSource: fallback?.source,
+        });
+        return result;
+      }
+
       result = buildResult({
         compileSuccess: true,
         compileDetail: compileResult,
         applyFailed: false,
-        testerAvailable: false,
-        testerReason: 'Strategy Tester panel could not be opened',
-        testerReasonCategory: 'panel_not_visible',
+        testerAvailable: true,
+        metrics: rawMetrics,
         symbol: chartSymbol,
       });
       return result;
+    } finally {
+      if (wsListener) wsListener.stop();
     }
-    await activateTesterMetricsTab();
-
-    const { rawMetrics, testerState, failure: testerReadFailure } = await readTesterMetricsWithRetries({
-      testerOpenState,
-    });
-
-    if (!rawMetrics) {
-      const failure = testerReadFailure || classifyTesterReadFailure({
-        testerState,
-        hasApiResult: false,
-        hasDomResult: false,
-      });
-      const noStrategyReported = failure.category === 'no_strategy_applied';
-      const fallback = await readNvdaMaFallbackMetricsPayload();
-      result = attachFallbackMetrics(buildResult({
-        compileSuccess: true,
-        compileDetail: compileResult,
-        applyFailed: noStrategyReported,
-        applyReason: noStrategyReported
-          ? 'TradingView reports no strategy is applied to the chart (detected after tester open)'
-          : undefined,
-        testerAvailable: false,
-        testerReason: failure.reason,
-        testerReasonCategory: failure.category,
-        symbol: chartSymbol,
-      }), {
-        testerReasonCategory: failure.category,
-        fallbackMetrics: fallback?.metrics,
-        fallbackSource: fallback?.source,
-      });
-      return result;
-    }
-
-    result = buildResult({
-      compileSuccess: true,
-      compileDetail: compileResult,
-      applyFailed: false,
-      testerAvailable: true,
-      metrics: rawMetrics,
-      symbol: chartSymbol,
-    });
-    return result;
   } catch (err) {
     if (isPineEditorUnavailableError(err)) {
       result = await buildEditorOpenFailureResult({
@@ -1503,58 +1566,74 @@ export async function runPresetBacktest({ presetId, symbol = 'NVDA' }) {
       return result;
     }
 
-    const testerOpenState = await openStrategyTester();
-    if (!testerOpenState.attempted) {
+    let wsListener = null;
+    try {
+      wsListener = await startWsReportListener();
+    } catch {
+      // WS listener failure is non-fatal — proceed without it
+    }
+
+    try {
+      const testerOpenState = await openStrategyTester();
+      if (!testerOpenState.attempted) {
+        result = buildResult({
+          compileSuccess: true,
+          compileDetail: compileResult,
+          applyFailed: false,
+          testerAvailable: false,
+          testerReason: 'Strategy Tester panel could not be opened',
+          testerReasonCategory: 'panel_not_visible',
+          symbol: chartSymbol,
+        });
+        return result;
+      }
+      await activateTesterMetricsTab();
+
+      const { rawMetrics, testerState, failure: testerReadFailure } = await readTesterMetricsWithRetries({
+        testerOpenState,
+      });
+
+      if (!rawMetrics) {
+        const failure = testerReadFailure || classifyTesterReadFailure({
+          testerState,
+          hasApiResult: false,
+          hasDomResult: false,
+        });
+        const noStrategyReported = failure.category === 'no_strategy_applied';
+        const wsFallback = failure.category === 'metrics_unreadable'
+          ? readWsReportFallbackMetrics(wsListener)
+          : null;
+        result = attachFallbackMetrics(buildResult({
+          compileSuccess: true,
+          compileDetail: compileResult,
+          applyFailed: noStrategyReported,
+          applyReason: noStrategyReported
+            ? 'TradingView reports no strategy is applied to the chart (detected after tester open)'
+            : undefined,
+          testerAvailable: false,
+          testerReason: failure.reason,
+          testerReasonCategory: failure.category,
+          symbol: chartSymbol,
+        }), {
+          testerReasonCategory: failure.category,
+          fallbackMetrics: wsFallback?.metrics,
+          fallbackSource: wsFallback?.source,
+        });
+        return result;
+      }
+
       result = buildResult({
         compileSuccess: true,
         compileDetail: compileResult,
         applyFailed: false,
-        testerAvailable: false,
-        testerReason: 'Strategy Tester panel could not be opened',
-        testerReasonCategory: 'panel_not_visible',
+        testerAvailable: true,
+        metrics: rawMetrics,
         symbol: chartSymbol,
       });
       return result;
+    } finally {
+      if (wsListener) wsListener.stop();
     }
-    await activateTesterMetricsTab();
-
-    const { rawMetrics, testerState, failure: testerReadFailure } = await readTesterMetricsWithRetries({
-      testerOpenState,
-    });
-
-    if (!rawMetrics) {
-      const failure = testerReadFailure || classifyTesterReadFailure({
-        testerState,
-        hasApiResult: false,
-        hasDomResult: false,
-      });
-      const noStrategyReported = failure.category === 'no_strategy_applied';
-      result = attachFallbackMetrics(buildResult({
-        compileSuccess: true,
-        compileDetail: compileResult,
-        applyFailed: noStrategyReported,
-        applyReason: noStrategyReported
-          ? 'TradingView reports no strategy is applied to the chart (detected after tester open)'
-          : undefined,
-        testerAvailable: false,
-        testerReason: failure.reason,
-        testerReasonCategory: failure.category,
-        symbol: chartSymbol,
-      }), {
-        testerReasonCategory: failure.category,
-      });
-      return result;
-    }
-
-    result = buildResult({
-      compileSuccess: true,
-      compileDetail: compileResult,
-      applyFailed: false,
-      testerAvailable: true,
-      metrics: rawMetrics,
-      symbol: chartSymbol,
-    });
-    return result;
   } catch (err) {
     if (isPineEditorUnavailableError(err)) {
       result = await buildEditorOpenFailureResult({

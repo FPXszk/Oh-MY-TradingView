@@ -117,4 +117,43 @@ describe('e2e: Backtest NVDA MA (requires TradingView Desktop)', async () => {
       );
     },
   );
+
+  it(
+    'runPresetBacktest returns structured result without generic fallback leakage',
+    { skip: !await isCdpAvailable() && 'CDP not available' },
+    async () => {
+      const result = await backtest.runPresetBacktest({
+        presetId: 'ema-cross-9-21',
+        symbol: 'NVDA',
+      });
+
+      assert.equal(typeof result.success, 'boolean');
+      assert.ok(result.symbol, 'symbol should be present');
+
+      if (result.success) {
+        assert.equal(typeof result.tester_available, 'boolean');
+        if (result.tester_available) {
+          assert.ok(result.metrics, 'metrics should be present when tester is available');
+        } else {
+          assert.ok(result.tester_reason, 'tester_reason should explain unavailability');
+        }
+
+        if (result.fallback_metrics) {
+          assert.equal(
+            result.fallback_source,
+            'websocket_report',
+            'preset path must not reuse generic chart-bars fallback',
+          );
+          assert.equal(result.degraded_result, true);
+          assert.equal(result.rerun_recommended, false);
+        }
+
+        if (result.tester_reason_category === 'metrics_unreadable' && !result.fallback_metrics) {
+          assert.equal(result.rerun_recommended, true);
+        }
+      } else {
+        assert.ok(Array.isArray(result.compile_errors), 'compile_errors should be an array');
+      }
+    },
+  );
 });

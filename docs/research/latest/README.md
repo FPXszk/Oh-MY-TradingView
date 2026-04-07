@@ -5,10 +5,11 @@
 ## 読む順番
 
 1. この `README.md`
-2. `backtest-reliability-handoff_20260407_1026.md`
-3. `top4-period-slicing-handoff_20260407_1641.md`
-4. `top4-period-slicing-results_20260407_1641.md`
-5. 判断経緯が必要なら `docs/working-memory/session-logs/`
+2. `backtest-websocket-report-fallback_20260407_1334.md`
+3. `backtest-reliability-handoff_20260407_1026.md`
+4. `top4-period-slicing-handoff_20260407_1641.md`
+5. `top4-period-slicing-results_20260407_1641.md`
+6. 判断経緯が必要なら `docs/working-memory/session-logs/`
 
 ## 現在の要点
 
@@ -16,7 +17,9 @@
 - latest result の正本は recovered artifact / recovered summary を優先する
 - 直近の未解決課題は **長時間 batch での unreadable と rerun コスト**
 - 2026-04-07 の reliability pass では、repo core 側で `no_strategy_applied` を早期終了しつつ、`metrics_unreadable` 側の retry budget 短縮に着手した
-- 続く実装で、**strategy-aware fallback がある経路（現状は NVDA MA）だけ** `fallback_metrics` / `degraded_result` を返し、preset 経路の `metrics_unreadable` は `rerun_recommended: true` で扱う形に整理した
+- 一度は **strategy-aware fallback がある経路（当時は NVDA MA）だけ** `fallback_metrics` / `degraded_result` を返し、preset 経路の `metrics_unreadable` は `rerun_recommended: true` で扱う形に整理した
+- その次段で WebSocket `du` frame の report payload fallback を実装し、preset 経路でも **完全な report metrics を観測できた場合のみ** `websocket_report` による degraded success を許可する形へ拡張した
+- ただし **2026-04-07 の再起動後 live run では report-bearing frame を再現できず、speedup は未確認**
 
 ## 運用ルール
 

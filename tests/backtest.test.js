@@ -23,6 +23,16 @@ import {
   deriveMetricsFromTrades,
 } from '../src/core/backtest.js';
 import { buildResearchStrategySource } from '../src/core/research-backtest.js';
+import {
+  decodeWsJsonMessages,
+  parseDuFramePayload,
+  extractReportFromStudyData,
+  isSessionMatch,
+  extractMetricsFromWsReport,
+  collectWsReportCandidates,
+  selectLatestWsReportCandidate,
+  REQUIRED_PERFORMANCE_KEYS,
+} from '../src/core/backtest-report-websocket.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -1474,5 +1484,466 @@ describe('alternative source safety', () => {
     assert.equal(r.success, true);
     assert.ok(r.metrics);
     assert.equal(r.metrics._derivedFrom, undefined);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// WebSocket report fallback — parsing
+// ---------------------------------------------------------------------------
+describe('WebSocket report fallback — parsing', () => {
+  const framePayload = (message) => {
+    const json = JSON.stringify(message);
+    return `~m~${json.length}~m~${json}`;
+  };
+
+  const validDuFrame = {
+    m: 'du',
+    p: ['cs_abc123', {
+      st1: {
+        report: {
+          performance: {
+            all: {
+              netProfit: 1234.56,
+              totalTrades: 10,
+              percentProfitable: 0.6,
+              profitFactor: 2.0,
+            },
+            maxStrategyDrawDown: 200,
+          },
+        },
+      },
+    }],
+  };
+
+  it('extracts report from a valid du frame', () => {
+    const parsed = parseDuFramePayload(validDuFrame);
+    assert.ok(parsed);
+    assert.equal(parsed.sessionId, 'cs_abc123');
+    assert.ok(parsed.studyData);
+
+    const report = extractReportFromStudyData(parsed.studyData);
+    assert.ok(report);
+    assert.equal(report.performance.all.netProfit, 1234.56);
+    assert.equal(report.performance.maxStrategyDrawDown, 200);
+  });
+
+  it('parses a JSON string du frame', () => {
+    const parsed = parseDuFramePayload(JSON.stringify(validDuFrame));
+    assert.ok(parsed);
+    assert.equal(parsed.sessionId, 'cs_abc123');
+  });
+
+  it('parses a framed payload containing multiple websocket messages', () => {
+    const framed = framePayload({ m: 'qsd', p: ['qs_ignore', { n: 'NVDA' }] }) + framePayload(validDuFrame);
+    const parsed = parseDuFramePayload(framed);
+    assert.ok(parsed);
+    assert.equal(parsed.sessionId, 'cs_abc123');
+    assert.equal(parsed.studyData.st1.report.performance.all.netProfit, 1234.56);
+  });
+
+  it('decodeWsJsonMessages skips heartbeat frames and returns JSON payloads', () => {
+    const framed =
+      '~m~5~m~~h~17' +
+      framePayload({ m: 'qsd', p: ['qs_ignore', { n: 'NVDA', s: 'ok' }] });
+    const messages = decodeWsJsonMessages(framed);
+    assert.equal(messages.length, 1);
+    assert.equal(messages[0].m, 'qsd');
+  });
+
+  it('returns null for m !== "du"', () => {
+    assert.equal(parseDuFramePayload({ m: 'qsd', p: ['s', {}] }), null);
+    assert.equal(parseDuFramePayload({ m: 'protocol_error', p: [] }), null);
+  });
+
+  it('returns null when p is not an array', () => {
+    assert.equal(parseDuFramePayload({ m: 'du', p: 'bad' }), null);
+    assert.equal(parseDuFramePayload({ m: 'du', p: null }), null);
+    assert.equal(parseDuFramePayload({ m: 'du' }), null);
+  });
+
+  it('returns null when p has fewer than 2 elements', () => {
+    assert.equal(parseDuFramePayload({ m: 'du', p: ['only_one'] }), null);
+    assert.equal(parseDuFramePayload({ m: 'du', p: [] }), null);
+  });
+
+  it('returns null when session ID is not a non-empty string', () => {
+    assert.equal(parseDuFramePayload({ m: 'du', p: [123, {}] }), null);
+    assert.equal(parseDuFramePayload({ m: 'du', p: ['', {}] }), null);
+    assert.equal(parseDuFramePayload({ m: 'du', p: [null, {}] }), null);
+  });
+
+  it('returns null when study data is not a plain object', () => {
+    assert.equal(parseDuFramePayload({ m: 'du', p: ['sid', [1, 2]] }), null);
+    assert.equal(parseDuFramePayload({ m: 'du', p: ['sid', 'str'] }), null);
+    assert.equal(parseDuFramePayload({ m: 'du', p: ['sid', null] }), null);
+  });
+
+  it('returns null for invalid JSON strings', () => {
+    assert.equal(parseDuFramePayload('{bad json'), null);
+  });
+
+  it('returns null for non-object rawMessage', () => {
+    assert.equal(parseDuFramePayload(42), null);
+    assert.equal(parseDuFramePayload(null), null);
+    assert.equal(parseDuFramePayload(undefined), null);
+    assert.equal(parseDuFramePayload(true), null);
+  });
+
+  it('returns null when study data has no report', () => {
+    const report = extractReportFromStudyData({ st1: { data: [1, 2, 3] } });
+    assert.equal(report, null);
+  });
+
+  it('returns null when performance.all lacks netProfit', () => {
+    const data = {
+      st1: {
+        report: {
+          performance: {
+            all: { totalTrades: 5, profitFactor: 1.5 },
+          },
+        },
+      },
+    };
+    assert.equal(extractReportFromStudyData(data), null);
+  });
+
+  it('returns null when report lacks the full fallback metric set', () => {
+    const data = {
+      st1: {
+        report: {
+          performance: {
+            all: { netProfit: 100, totalTrades: 5, percentProfitable: 0.5 },
+            maxStrategyDrawDown: 80,
+          },
+        },
+      },
+    };
+    assert.equal(extractReportFromStudyData(data), null);
+  });
+
+  it('finds the report among multiple study keys', () => {
+    const data = {
+      st1: { data: [1, 2, 3] },
+      st2: {
+        report: {
+          performance: {
+            all: { netProfit: 999, totalTrades: 7, percentProfitable: 0.5, profitFactor: 1.8 },
+            maxStrategyDrawDown: 100,
+          },
+        },
+      },
+      st3: { other: true },
+    };
+    const report = extractReportFromStudyData(data);
+    assert.ok(report);
+    assert.equal(report.performance.all.netProfit, 999);
+  });
+
+  it('returns null for null/non-object studyData', () => {
+    assert.equal(extractReportFromStudyData(null), null);
+    assert.equal(extractReportFromStudyData('str'), null);
+    assert.equal(extractReportFromStudyData([1]), null);
+  });
+
+  it('extracted report passes through normalizeMetrics to existing shape', () => {
+    const parsed = parseDuFramePayload(validDuFrame);
+    const report = extractReportFromStudyData(parsed.studyData);
+    const normalized = normalizeMetrics(report);
+    assert.equal(normalized.net_profit, 1234.56);
+    assert.equal(normalized.closed_trades, 10);
+    assert.equal(normalized.percent_profitable, 60);
+    assert.equal(normalized.profit_factor, 2.0);
+    assert.equal(normalized.max_drawdown, 200);
+  });
+
+  it('exports REQUIRED_PERFORMANCE_KEYS with netProfit', () => {
+    assert.ok(Array.isArray(REQUIRED_PERFORMANCE_KEYS));
+    assert.ok(REQUIRED_PERFORMANCE_KEYS.includes('netProfit'));
+    assert.ok(REQUIRED_PERFORMANCE_KEYS.includes('totalTrades'));
+    assert.ok(REQUIRED_PERFORMANCE_KEYS.includes('percentProfitable'));
+    assert.ok(REQUIRED_PERFORMANCE_KEYS.includes('profitFactor'));
+  });
+});
+
+// ---------------------------------------------------------------------------
+// WebSocket report fallback — session correlation
+// ---------------------------------------------------------------------------
+describe('WebSocket report fallback — session correlation', () => {
+  it('returns true for exact session ID match', () => {
+    assert.equal(isSessionMatch('cs_abc', 'cs_abc'), true);
+  });
+
+  it('returns false for mismatched session IDs', () => {
+    assert.equal(isSessionMatch('cs_abc', 'cs_xyz'), false);
+  });
+
+  it('returns false when frameSessionId is falsy', () => {
+    assert.equal(isSessionMatch(null, 'cs_abc'), false);
+    assert.equal(isSessionMatch(undefined, 'cs_abc'), false);
+    assert.equal(isSessionMatch('', 'cs_abc'), false);
+  });
+
+  it('returns false when expectedSessionId is falsy', () => {
+    assert.equal(isSessionMatch('cs_abc', null), false);
+    assert.equal(isSessionMatch('cs_abc', ''), false);
+    assert.equal(isSessionMatch('cs_abc', undefined), false);
+  });
+
+  it('returns false for non-string types', () => {
+    assert.equal(isSessionMatch(123, 'cs_abc'), false);
+    assert.equal(isSessionMatch('cs_abc', 123), false);
+  });
+
+  it('extractMetricsFromWsReport returns null on session mismatch', () => {
+    const frame = {
+      m: 'du',
+      p: ['cs_abc', {
+        st1: {
+          report: {
+            performance: {
+              all: { netProfit: 100, totalTrades: 5, percentProfitable: 0.5, profitFactor: 1.5 },
+              maxStrategyDrawDown: 50,
+            },
+          },
+        },
+      }],
+    };
+    assert.equal(extractMetricsFromWsReport(frame, { expectedSessionId: 'cs_other' }), null);
+  });
+
+  it('extractMetricsFromWsReport returns report on session match', () => {
+    const frame = {
+      m: 'du',
+      p: ['cs_abc', {
+        st1: {
+          report: {
+            performance: {
+              all: { netProfit: 100, totalTrades: 5, percentProfitable: 0.5, profitFactor: 1.5 },
+              maxStrategyDrawDown: 50,
+            },
+          },
+        },
+      }],
+    };
+    const report = extractMetricsFromWsReport(frame, { expectedSessionId: 'cs_abc' });
+    assert.ok(report);
+    assert.equal(report.performance.all.netProfit, 100);
+  });
+
+  it('extractMetricsFromWsReport skips session check when expectedSessionId is omitted', () => {
+    const frame = {
+      m: 'du',
+      p: ['cs_any', {
+        st1: {
+          report: {
+            performance: {
+              all: { netProfit: 42, totalTrades: 4, percentProfitable: 0.5, profitFactor: 1.4 },
+              maxStrategyDrawDown: 20,
+            },
+          },
+        },
+      }],
+    };
+    const report = extractMetricsFromWsReport(frame);
+    assert.ok(report);
+    assert.equal(report.performance.all.netProfit, 42);
+  });
+
+  it('extractMetricsFromWsReport returns null for non-du frames', () => {
+    assert.equal(extractMetricsFromWsReport({ m: 'other', p: ['s', {}] }), null);
+  });
+
+  it('collectWsReportCandidates keeps only report-bearing du frames', () => {
+    const frames = [
+      { m: 'qsd', p: ['cs_ignore', {}] },
+      {
+        m: 'du',
+        p: ['cs_good', {
+          st1: {
+            report: {
+              performance: {
+                all: { netProfit: 100, totalTrades: 5, percentProfitable: 0.5, profitFactor: 1.5 },
+                maxStrategyDrawDown: 50,
+              },
+            },
+          },
+        }],
+      },
+      { m: 'du', p: ['cs_bad', { st2: { data: [1, 2, 3] } }] },
+    ];
+
+    const candidates = collectWsReportCandidates(frames);
+    assert.equal(candidates.length, 1);
+    assert.equal(candidates[0].sessionId, 'cs_good');
+    assert.equal(candidates[0].report.performance.all.netProfit, 100);
+  });
+
+  it('selectLatestWsReportCandidate returns latest report for a single candidate session', () => {
+    const frames = [
+      {
+        m: 'du',
+        p: ['cs_same', {
+          st1: {
+            report: {
+              performance: {
+                all: { netProfit: 100, totalTrades: 5, percentProfitable: 0.5, profitFactor: 1.5 },
+                maxStrategyDrawDown: 50,
+              },
+            },
+          },
+        }],
+      },
+      {
+        m: 'du',
+        p: ['cs_same', {
+          st1: {
+            report: {
+              performance: {
+                all: { netProfit: 150, totalTrades: 6, percentProfitable: 0.66, profitFactor: 1.8 },
+                maxStrategyDrawDown: 40,
+              },
+            },
+          },
+        }],
+      },
+    ];
+
+    const candidate = selectLatestWsReportCandidate(frames, { requireUniqueSession: true });
+    assert.ok(candidate);
+    assert.equal(candidate.sessionId, 'cs_same');
+    assert.equal(candidate.report.performance.all.netProfit, 150);
+  });
+
+  it('selectLatestWsReportCandidate rejects mixed candidate sessions when uniqueness is required', () => {
+    const frames = [
+      {
+        m: 'du',
+        p: ['cs_one', {
+          st1: {
+            report: {
+              performance: {
+                all: { netProfit: 100, totalTrades: 5, percentProfitable: 0.5, profitFactor: 1.5 },
+                maxStrategyDrawDown: 50,
+              },
+            },
+          },
+        }],
+      },
+      {
+        m: 'du',
+        p: ['cs_two', {
+          st1: {
+            report: {
+              performance: {
+                all: { netProfit: 150, totalTrades: 6, percentProfitable: 0.66, profitFactor: 1.8 },
+                maxStrategyDrawDown: 40,
+              },
+            },
+          },
+        }],
+      },
+    ];
+
+    assert.equal(
+      selectLatestWsReportCandidate(frames, { requireUniqueSession: true }),
+      null,
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// WebSocket report fallback — integration with attachFallbackMetrics
+// ---------------------------------------------------------------------------
+describe('WebSocket report fallback — integration with attachFallbackMetrics', () => {
+  it('marks metrics_unreadable with WS fallback as degraded, not rerun-recommended', () => {
+    const wsFrame = {
+      m: 'du',
+      p: ['cs_session1', {
+        st1: {
+          report: {
+            performance: {
+              all: { netProfit: 500, totalTrades: 20, percentProfitable: 0.65, profitFactor: 2.5 },
+              maxStrategyDrawDown: 150,
+            },
+          },
+        },
+      }],
+    };
+
+    const parsed = parseDuFramePayload(wsFrame);
+    const wsReport = extractReportFromStudyData(parsed.studyData);
+    const wsMetrics = normalizeMetrics(wsReport);
+
+    const base = buildResult({
+      compileSuccess: true,
+      testerAvailable: false,
+      testerReason: 'Strategy Tester opened but metrics could not be read from internal API or DOM',
+      testerReasonCategory: 'metrics_unreadable',
+      symbol: 'NASDAQ:NVDA',
+    });
+
+    const result = attachFallbackMetrics(base, {
+      testerReasonCategory: 'metrics_unreadable',
+      fallbackSource: 'websocket_report',
+      fallbackMetrics: wsMetrics,
+    });
+
+    assert.equal(result.fallback_source, 'websocket_report');
+    assert.equal(result.degraded_result, true);
+    assert.equal(result.rerun_recommended, false);
+    assert.equal(result.fallback_metrics.net_profit, 500);
+    assert.equal(result.fallback_metrics.closed_trades, 20);
+    assert.equal(result.fallback_metrics.percent_profitable, 65);
+    assert.equal(result.fallback_metrics.profit_factor, 2.5);
+    assert.equal(result.fallback_metrics.max_drawdown, 150);
+  });
+
+  it('does not use WS fallback when primary metrics succeed', () => {
+    const primaryResult = buildResult({
+      compileSuccess: true,
+      testerAvailable: true,
+      metrics: { net_profit: 1000, closed_trades: 30 },
+      symbol: 'NASDAQ:NVDA',
+    });
+
+    assert.equal(primaryResult.success, true);
+    assert.ok(primaryResult.metrics);
+    assert.equal(primaryResult.metrics.net_profit, 1000);
+    assert.equal(primaryResult.fallback_source, undefined);
+    assert.equal(primaryResult.fallback_metrics, undefined);
+    assert.equal(primaryResult.degraded_result, undefined);
+  });
+
+  it('preserves result shape — no extra keys from WS fallback', () => {
+    const wsMetrics = normalizeMetrics({
+      performance: {
+        all: { netProfit: 100, totalTrades: 5, percentProfitable: 0.4, profitFactor: 1.2 },
+        maxStrategyDrawDown: 80,
+      },
+    });
+
+    const base = buildResult({
+      compileSuccess: true,
+      testerAvailable: false,
+      testerReason: 'Metrics unreadable',
+      testerReasonCategory: 'metrics_unreadable',
+      symbol: 'NASDAQ:NVDA',
+    });
+
+    const result = attachFallbackMetrics(base, {
+      testerReasonCategory: 'metrics_unreadable',
+      fallbackSource: 'websocket_report',
+      fallbackMetrics: wsMetrics,
+    });
+
+    const allowedKeys = new Set([
+      'success', 'symbol', 'compile_detail', 'tester_available',
+      'apply_failed', 'apply_reason', 'metrics', 'tester_reason',
+      'tester_reason_category', 'fallback_source', 'fallback_metrics',
+      'degraded_result', 'rerun_recommended',
+    ]);
+    for (const key of Object.keys(result)) {
+      assert.ok(allowedKeys.has(key), `unexpected key in result: "${key}"`);
+    }
   });
 });
