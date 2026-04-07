@@ -3,6 +3,9 @@
 TradingView Desktop を **Copilot CLI 前提** で扱う最小 MCP / CLI ブリッジです。  
 現在の対象は **Windows + WSL** を主軸にした **CDP 接続 / 現在価格取得 / Pine ループ** です。
 
+- docs の入口: `docs/DOCUMENTATION_SYSTEM.md`
+- 現在の研究 handoff / 最新結果: `docs/research/latest/`
+
 ## 重要な前提
 
 - **非公式**: TradingView Inc. とは無関係です
@@ -207,6 +210,9 @@ node src/cli/index.js backtest preset ema-cross-9-21 --symbol NVDA
 運用コマンドは `command.md`、known-good 条件と制約は
 `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
 を参照してください。
+
+> docs 上で known-good として確認できているのは **dual-worker / 2 worker 並列** までです。  
+> `shard parallel` はこの 2 worker 前提の運用方針であり、4並列は未検証です。
 
 ### MCP workflow
 

@@ -17,6 +17,7 @@
 | path | role | source-of-truth |
 |---|---|---|
 | `docs/research/` | 調査結果、要約、推奨、意思決定 | 解釈の正本 |
+| `docs/research/latest/` | 現在の handoff、直近結果、次回の入口 | latest handoff の正本 |
 | `docs/references/` | raw artifact、参照用データ、外部資料の固定スナップショット | 生データの正本 |
 | `docs/bad-strategy/` | alt universe で負けた戦略の記録 | negative strategy log の正本 |
 | `docs/working-memory/session-logs/` | セッション要約、判断経緯、直近の作業コンテキスト | append-only |
@@ -24,6 +25,12 @@
 | `docs/exec-plans/` | 実装計画。`active/` でレビューし、完了後は `completed/` へ移す | 計画の正本 |
 
 ## バックテスト関連 docs の導線
+
+### いま何をしていたかを最短で思い出したいとき
+
+- `docs/research/latest/README.md`
+- `docs/research/latest/`
+- 補足の判断経緯は `docs/working-memory/session-logs/` を追う
 
 ### Mag7 戦略候補を知りたいとき
 
@@ -107,6 +114,20 @@
 - [`docs/research/theme-backtest-results-round8_2015_2025.md`](./research/theme-backtest-results-round8_2015_2025.md)
 - [`docs/research/theme-backtest-results-round8-alt_2015_2025.md`](./research/theme-backtest-results-round8-alt_2015_2025.md)
 
+### round9 のテーマ投資メモを見たいとき
+
+- [`docs/research/theme-signal-observation-round9_2015_2025.md`](./research/theme-signal-observation-round9_2015_2025.md)
+- [`docs/research/theme-strategy-shortlist-round9_2015_2025.md`](./research/theme-strategy-shortlist-round9_2015_2025.md)
+- [`docs/research/theme-backtest-results-round9_2015_2025.md`](./research/theme-backtest-results-round9_2015_2025.md)
+- [`docs/research/theme-backtest-results-round9-alt_2015_2025.md`](./research/theme-backtest-results-round9-alt_2015_2025.md)
+
+### round10 のテーマ投資メモを見たいとき
+
+- [`docs/research/theme-backtest-results-round10_2015_2025.md`](./research/theme-backtest-results-round10_2015_2025.md)
+- [`docs/research/theme-backtest-results-round10-alt_2015_2025.md`](./research/theme-backtest-results-round10-alt_2015_2025.md)
+- [`docs/research/latest/top4-backtest-handoff_20260407_0529.md`](./research/latest/top4-backtest-handoff_20260407_0529.md)
+- [`docs/research/latest/top4-backtest-results_20260407_0529.md`](./research/latest/top4-backtest-results_20260407_0529.md)
+
 ### TradingView dual-worker の運用手順を知りたいとき
 
 - [`docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`](./design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md)
@@ -127,9 +148,12 @@
 - [`docs/working-memory/session-logs/dual-worker-distinct-strategy-backtest_20260406_0423.md`](./working-memory/session-logs/dual-worker-distinct-strategy-backtest_20260406_0423.md)
 - [`docs/working-memory/session-logs/tradingview-parallel-backtest-verification_20260406_0053.md`](./working-memory/session-logs/tradingview-parallel-backtest-verification_20260406_0053.md)
 - [`docs/working-memory/session-logs/dual-worker-parallel-backtest-handoff_20260406_0735.md`](./working-memory/session-logs/dual-worker-parallel-backtest-handoff_20260406_0735.md)
+- [`docs/working-memory/session-logs/tradingview-parallel-backtest-stabilization_20260406_0802.md`](./working-memory/session-logs/tradingview-parallel-backtest-stabilization_20260406_0802.md)
+- [`docs/working-memory/session-logs/top4-backtest-continuation_20260407_0529.md`](./working-memory/session-logs/top4-backtest-continuation_20260407_0529.md)
 
 ## 運用ルール
 
 - 数値の正本は raw artifact に置き、summary doc には必要な集計だけを書く
 - strategy id は backtick 付きの kebab-case で統一する
 - 新しいバックテスト snapshot を追加したら、`research/` 側の summary と `DOCUMENTATION_SYSTEM.md` の導線も一緒に更新する
+- current handoff の正本は `docs/research/latest/` に置き、`docs/working-memory/session-logs/` には経緯だけを append する

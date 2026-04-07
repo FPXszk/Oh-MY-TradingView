@@ -866,6 +866,34 @@ describe('buildResearchStrategySource', () => {
     assert.ok(!source.includes('stopLossPrice = strategy.position_avg_price'));
   });
 
+  it('builds round10 quality-strict-relaxed-guarded preset sources from the preset catalog', async () => {
+    const data = await loadPresets();
+    const preset = data.strategies.find(
+      (entry) => entry.id === 'donchian-55-20-spy-filter-rsi14-regime-45-hard-stop-8pct-theme-quality-strict-relaxed-guarded',
+    );
+
+    assert.ok(preset, 'Expected round10 quality-strict-relaxed-guarded preset to exist');
+    const source = buildResearchStrategySource(preset, defaults);
+
+    assert.ok(source.includes('request.security("BATS:SPY", timeframe.period, close)'));
+    assert.ok(source.includes('rsiRegimeOk = rsiRegimeValue > 45'));
+    assert.ok(source.includes('stopLossPrice = strategy.position_avg_price * (1 - 0.08)'));
+  });
+
+  it('builds round10 breadth-quality-balanced-mid preset sources from the preset catalog', async () => {
+    const data = await loadPresets();
+    const preset = data.strategies.find(
+      (entry) => entry.id === 'donchian-55-20-rsp-filter-rsi14-regime-52-hard-stop-8pct-theme-breadth-quality-balanced-mid',
+    );
+
+    assert.ok(preset, 'Expected round10 breadth-quality-balanced-mid preset to exist');
+    const source = buildResearchStrategySource(preset, defaults);
+
+    assert.ok(source.includes('request.security("BATS:RSP", timeframe.period, close)'));
+    assert.ok(source.includes('rsiRegimeOk = rsiRegimeValue > 52'));
+    assert.ok(source.includes('stopLossPrice = strategy.position_avg_price * (1 - 0.08)'));
+  });
+
   it('rejects unsupported regime filters in the generator', () => {
     assert.throws(() => buildResearchStrategySource({
       id: 'bad-regime',

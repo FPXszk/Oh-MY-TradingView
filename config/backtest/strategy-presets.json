@@ -2763,6 +2763,198 @@
       "implementation_difficulty": "medium",
       "pine_complexity": "moderate",
       "tags": ["donchian", "breakout", "spy", "rsi-regime", "theme-quality", "theme-concentration", "round9"]
+    },
+    {
+      "id": "donchian-55-20-spy-filter-rsi14-regime-45-hard-stop-8pct-theme-quality-strict-relaxed-guarded",
+      "name": "Donchian 55/20 + SPY Filter + RSI14 Regime 45 + 8% Stop",
+      "category": "breakout",
+      "builder": "donchian_breakout",
+      "parameters": { "entry_period": 55, "exit_period": 20 },
+      "regime_filter": {
+        "type": "spy_above_sma200",
+        "reference_symbol": "SPY",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 45,
+        "direction": "above"
+      },
+      "stop_loss": { "type": "hard_percent", "value": 8 },
+      "theme_axis": "quality-strict-relaxed-guarded",
+      "theme_notes": "round9 の本命 relaxed に 8% stop を重ね、readable 完走を維持したまま DD を抑えられるかを確認する。",
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "quality-strict-relaxed の entry 速度は維持しつつ、guard 追加で NVDA 主導の急反落にどこまで耐えられるかを見る。",
+      "phase": "phase-10",
+      "implementation_stage": "round10",
+      "priority": 121,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": ["donchian", "breakout", "spy", "rsi-regime", "hard-stop", "theme-quality", "theme-concentration", "round10"]
+    },
+    {
+      "id": "donchian-55-20-spy-filter-rsi14-regime-45-hard-stop-6pct-theme-quality-strict-relaxed-tight",
+      "name": "Donchian 55/20 + SPY Filter + RSI14 Regime 45 + 6% Stop",
+      "category": "breakout",
+      "builder": "donchian_breakout",
+      "parameters": { "entry_period": 55, "exit_period": 20 },
+      "regime_filter": {
+        "type": "spy_above_sma200",
+        "reference_symbol": "SPY",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 45,
+        "direction": "above"
+      },
+      "stop_loss": { "type": "hard_percent", "value": 6 },
+      "theme_axis": "quality-strict-relaxed-tight",
+      "theme_notes": "quality-strict-relaxed の浅い guard 版として 6% stop を当て、8% との差で quality family の適正防御幅を切り分ける。",
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "round9 relaxed の upside を大きく壊さずに PF / DD を改善できるかを 6% guard で点検する。",
+      "phase": "phase-10",
+      "implementation_stage": "round10",
+      "priority": 122,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": ["donchian", "breakout", "spy", "rsi-regime", "hard-stop", "theme-quality", "theme-concentration", "round10"]
+    },
+    {
+      "id": "donchian-55-20-rsp-filter-rsi14-regime-57-hard-stop-6pct-theme-deep-pullback-tight-narrow",
+      "name": "Donchian 55/20 + RSP Filter + RSI14 Regime 57 + 6% Stop",
+      "category": "breakout",
+      "builder": "donchian_breakout",
+      "parameters": { "entry_period": 55, "exit_period": 20 },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 57,
+        "direction": "above"
+      },
+      "stop_loss": { "type": "hard_percent", "value": 6 },
+      "theme_axis": "deep-pullback-tight-narrow",
+      "theme_notes": "deep-pullback-tight を strict 側へ少しだけ寄せつつ stop を 6% に絞り、stable な深押し枝の DD 改善余地を測る。",
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "round9 tight の readability を保ちつつ、guard 幅をもう一段だけ浅くしたときに利益を崩さず残れるかを見る。",
+      "phase": "phase-10",
+      "implementation_stage": "round10",
+      "priority": 123,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": ["donchian", "breakout", "rsp", "rsi-regime", "hard-stop", "theme-breadth", "theme-deep-pullback", "round10"]
+    },
+    {
+      "id": "donchian-55-20-rsp-filter-rsi14-regime-48-hard-stop-8pct-theme-deep-pullback-tight-early",
+      "name": "Donchian 55/20 + RSP Filter + RSI14 Regime 48 + 8% Stop",
+      "category": "breakout",
+      "builder": "donchian_breakout",
+      "parameters": { "entry_period": 55, "exit_period": 20 },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 48,
+        "direction": "above"
+      },
+      "stop_loss": { "type": "hard_percent", "value": 8 },
+      "theme_axis": "deep-pullback-tight-early",
+      "theme_notes": "deep-pullback-tight の stop 幅は維持しつつ regime を 48 へ早め、strict / tight の外側で upside を取り戻せるかを確かめる。",
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "round9 tight の安定性を残したまま、押し目 entry を少し早めて Mag7 の上振れ回収を狙う。",
+      "phase": "phase-10",
+      "implementation_stage": "round10",
+      "priority": 124,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": ["donchian", "breakout", "rsp", "rsi-regime", "hard-stop", "theme-breadth", "theme-deep-pullback", "round10"]
+    },
+    {
+      "id": "donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-6pct-theme-deep-pullback-strict-narrow",
+      "name": "Donchian 55/20 + RSP Filter + RSI14 Regime 60 + 6% Stop",
+      "category": "breakout",
+      "builder": "donchian_breakout",
+      "parameters": { "entry_period": 55, "exit_period": 20 },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": { "type": "hard_percent", "value": 6 },
+      "theme_axis": "deep-pullback-strict-narrow",
+      "theme_notes": "deep-pullback-strict の strict entry を維持しながら stop を 6% に締め、深押し枝の防御限界を確認する。",
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "round9 strict が overfit ではなく quality 改善なら、浅い stop でも cross-universe で残るかを点検する。",
+      "phase": "phase-10",
+      "implementation_stage": "round10",
+      "priority": 125,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": ["donchian", "breakout", "rsp", "rsi-regime", "hard-stop", "theme-breadth", "theme-deep-pullback", "round10"]
+    },
+    {
+      "id": "donchian-55-20-rsp-filter-rsi14-regime-52-hard-stop-8pct-theme-breadth-quality-balanced-mid",
+      "name": "Donchian 55/20 + RSP Filter + RSI14 Regime 52 + 8% Stop",
+      "category": "breakout",
+      "builder": "donchian_breakout",
+      "parameters": { "entry_period": 55, "exit_period": 20 },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 52,
+        "direction": "above"
+      },
+      "stop_loss": { "type": "hard_percent", "value": 8 },
+      "theme_axis": "breadth-quality-balanced-mid",
+      "theme_notes": "breadth-quality-balanced-wide を strict 側へ少しだけ寄せ、watchlist 枝の quality 閾値最適点を細かく探る。",
+      "recommended_timeframes": ["D"],
+      "recommended_regime": "trending",
+      "mag7_notes": "round9 balanced-wide の readability を崩さず、threshold 52 の中間値で cross-universe の残り方が改善するかを見る。",
+      "phase": "phase-10",
+      "implementation_stage": "round10",
+      "priority": 126,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": ["donchian", "breakout", "rsp", "rsi-regime", "hard-stop", "theme-breadth", "theme-quality", "round10"]
     }
   ]
 }

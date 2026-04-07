@@ -4,6 +4,9 @@
 
 この runbook は、TradingView Desktop の worker1 / worker2 を使って、WSL から別々の backtest を並列実行するための既知の正常手順と、2026-04-06 時点の未解決制約をまとめる。
 
+> current handoff / latest result は `docs/research/latest/` を先頭に読む。  
+> この runbook の保証範囲は **dual-worker / 2 worker 並列** までで、4並列は未検証。
+
 ## Known-good topology
 
 | worker | Windows session | direct CDP | WSL proxy | profile | onboarding recovery baseline |
@@ -258,6 +261,7 @@ round8 の `204 run` workload を `worker1=Mag7 84 run` / `worker2=alt 120 run` 
 - 現時点の推奨構成は引き続き
   - worker1: Session0 hidden
   - worker2: Session1 visible
+- 4並列は worker3 / worker4 の topology、追加 portproxy、warm-up gate、health cadence を含めて未検証であり、現行 runbook には含めない
 - 追加で試す価値がある代替案は **別 Windows user / 別 interactive session の visible + visible** だが、これは未検証
 - 検証後は worker1 を Session0 に戻し、warm-up 後に parallel が再び読める状態まで確認した
 

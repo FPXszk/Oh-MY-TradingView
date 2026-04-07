@@ -2,6 +2,9 @@
 
 Windows 側は **PowerShell**、WSL 側は **bash** を前提にした運用メモ。
 
+> 現在の handoff と最新結果は `docs/research/latest/` を先頭に読む。  
+> この文書で known-good として扱うのは **dual-worker / 2 worker 並列** までで、4並列は未検証。
+
 ## 1. 現在の既知の正常トポロジ
 
 - worker1
@@ -216,6 +219,7 @@ wait
 - そのため、暫定推奨は以下の通り（小・中規模 benchmark の実測結果を反映して更新）
   1. **shard parallel**（小・中規模ともに最速。unreadable 分散効果が runtime-aware 均等化を上回った）
   2. **strategy-aware parallel**（理論的な runtime 均等化の利点はあるが、実測では shard に劣る）
+- ここでいう parallel は **current stable topology の 2 worker 並列** を指す
 - checkpoint は観測・再開境界として有用
 - ただし、naive な `unreadable 1 回` 即 rollback の partial retry は非推奨
 - 長時間 batch の前提条件も、warm-up 1 回成功ではなく
@@ -240,6 +244,7 @@ wait
   となり、**sequential より遅くなった**
 - そのため、現時点では **checkpoint は観測・再開境界として使い、`unreadable 1 回` を即 rollback trigger にしない** 方が安全
 - なお、この順位更新は `20 run` / `32 run` benchmark に基づくもので、`100+ run` の大規模 workload での追試はまだ未実施
+- 4並列は port / topology / health gate を含めて未検証であり、この文書の運用保証範囲には含めない
 
 ## 9. 参照先
 
