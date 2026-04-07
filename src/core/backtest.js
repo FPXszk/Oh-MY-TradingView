@@ -202,6 +202,108 @@ export function normalizeMetrics(raw) {
 }
 
 // ---------------------------------------------------------------------------
+// Alternative source observation helpers (pure — diagnostic only)
+// ---------------------------------------------------------------------------
+const PROBE_FIELDS = ['reportData', 'performance', 'ordersData', 'tradesData', 'equityData'];
+
+export function probeStrategySourceShape(source) {
+  const empty = {
+    hasReportData: false,
+    hasPerformance: false,
+    hasOrdersData: false,
+    hasTradesData: false,
+    hasEquityData: false,
+    reportDataKeyCount: 0,
+    performanceKeyCount: 0,
+    tradesDataCount: 0,
+    fieldCount: 0,
+  };
+  if (!source || typeof source !== 'object' || Array.isArray(source)) {
+    return empty;
+  }
+
+  const resolve = (val) => {
+    if (typeof val !== 'function') return val;
+    try { return val(); } catch { return undefined; }
+  };
+
+  const reportRaw = resolve(source.reportData);
+  const perfRaw = resolve(source.performance);
+  const ordersRaw = resolve(source.ordersData);
+  const tradesRaw = resolve(source.tradesData);
+  const equityRaw = resolve(source.equityData);
+
+  const hasReport = reportRaw != null && typeof reportRaw === 'object';
+  const hasPerf = perfRaw != null && typeof perfRaw === 'object';
+  const hasOrders = ordersRaw != null;
+  const hasTrades = tradesRaw != null;
+  const hasEquity = equityRaw != null;
+
+  let detected = 0;
+  if (hasReport) detected += 1;
+  if (hasPerf) detected += 1;
+  if (hasOrders) detected += 1;
+  if (hasTrades) detected += 1;
+  if (hasEquity) detected += 1;
+
+  return {
+    hasReportData: hasReport,
+    hasPerformance: hasPerf,
+    hasOrdersData: hasOrders,
+    hasTradesData: hasTrades,
+    hasEquityData: hasEquity,
+    reportDataKeyCount: hasReport ? Object.keys(reportRaw).length : 0,
+    performanceKeyCount: hasPerf ? Object.keys(perfRaw).length : 0,
+    tradesDataCount: Array.isArray(tradesRaw) ? tradesRaw.length : 0,
+    fieldCount: detected,
+  };
+}
+
+export function deriveMetricsFromTrades(trades, { initialCapital = 10000 } = {}) {
+  if (!Array.isArray(trades) || trades.length === 0) {
+    return null;
+  }
+
+  let netProfit = 0;
+  let grossProfit = 0;
+  let grossLoss = 0;
+  let profitable = 0;
+  let validCount = 0;
+  let peakEquity = initialCapital;
+  let maxDrawdown = 0;
+  let equity = initialCapital;
+
+  for (let i = 0; i < trades.length; i += 1) {
+    const p = Number(trades[i].profit);
+    if (!Number.isFinite(p)) continue;
+    validCount += 1;
+    netProfit += p;
+    equity += p;
+    if (p >= 0) {
+      grossProfit += p;
+      profitable += 1;
+    } else {
+      grossLoss += Math.abs(p);
+    }
+    peakEquity = Math.max(peakEquity, equity);
+    maxDrawdown = Math.max(maxDrawdown, peakEquity - equity);
+  }
+
+  if (validCount === 0) {
+    return null;
+  }
+
+  return {
+    net_profit: Number(netProfit.toFixed(2)),
+    closed_trades: validCount,
+    percent_profitable: Number(((profitable / validCount) * 100).toFixed(2)),
+    profit_factor: grossLoss > 0 ? Number((grossProfit / grossLoss).toFixed(4)) : null,
+    max_drawdown: Number(maxDrawdown.toFixed(2)),
+    _derivedFrom: 'strategy_trades',
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Tester panel state helpers (pure — unit testable)
 // ---------------------------------------------------------------------------
 export function isTesterPanelStateVisible(testerState) {

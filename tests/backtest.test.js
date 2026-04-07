@@ -19,6 +19,8 @@ import {
   pickTesterMetricsTab,
   RESTORE_POLICY,
   loadPreset,
+  probeStrategySourceShape,
+  deriveMetricsFromTrades,
 } from '../src/core/backtest.js';
 import { buildResearchStrategySource } from '../src/core/research-backtest.js';
 
@@ -1248,5 +1250,229 @@ describe('loadPreset', () => {
       () => loadPreset('macd-signal'),
       /not executable by repo CLI: Unsupported builder/,
     );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// probeStrategySourceShape — alternative source field inventory
+// ---------------------------------------------------------------------------
+describe('probeStrategySourceShape', () => {
+  it('returns empty inventory for null/undefined input', () => {
+    const shape = probeStrategySourceShape(null);
+    assert.equal(shape.hasReportData, false);
+    assert.equal(shape.hasPerformance, false);
+    assert.equal(shape.hasOrdersData, false);
+    assert.equal(shape.hasTradesData, false);
+    assert.equal(shape.hasEquityData, false);
+    assert.equal(shape.fieldCount, 0);
+  });
+
+  it('detects reportData presence and key count', () => {
+    const shape = probeStrategySourceShape({
+      reportData: { netProfit: 100, totalTrades: 5 },
+    });
+    assert.equal(shape.hasReportData, true);
+    assert.equal(shape.reportDataKeyCount, 2);
+    assert.equal(shape.hasPerformance, false);
+  });
+
+  it('detects performance nested structure', () => {
+    const shape = probeStrategySourceShape({
+      performance: {
+        all: { netProfit: 100, totalTrades: 5 },
+        maxStrategyDrawDown: 50,
+      },
+    });
+    assert.equal(shape.hasPerformance, true);
+    assert.equal(shape.performanceKeyCount, 2);
+  });
+
+  it('detects tradesData with item count', () => {
+    const trades = [
+      { profit: 100, entryPrice: 50, exitPrice: 52 },
+      { profit: -20, entryPrice: 55, exitPrice: 54 },
+    ];
+    const shape = probeStrategySourceShape({ tradesData: trades });
+    assert.equal(shape.hasTradesData, true);
+    assert.equal(shape.tradesDataCount, 2);
+  });
+
+  it('detects ordersData and equityData', () => {
+    const shape = probeStrategySourceShape({
+      ordersData: [{ type: 'buy' }],
+      equityData: { values: [100, 105, 103] },
+    });
+    assert.equal(shape.hasOrdersData, true);
+    assert.equal(shape.hasEquityData, true);
+  });
+
+  it('reports total fieldCount across all detected fields', () => {
+    const shape = probeStrategySourceShape({
+      reportData: { netProfit: 100 },
+      tradesData: [{ profit: 50 }],
+      equityData: { values: [] },
+    });
+    assert.equal(shape.fieldCount, 3);
+  });
+
+  it('handles function-wrapped values (observable pattern)', () => {
+    const shape = probeStrategySourceShape({
+      reportData: () => ({ netProfit: 100 }),
+    });
+    assert.equal(shape.hasReportData, true);
+  });
+
+  it('handles throwing function-wrapped values safely', () => {
+    const shape = probeStrategySourceShape({
+      reportData: () => { throw new Error('boom'); },
+      tradesData: [{ profit: 10 }],
+    });
+    assert.equal(shape.hasReportData, false);
+    assert.equal(shape.hasTradesData, true);
+  });
+
+  it('never throws on malformed input', () => {
+    assert.doesNotThrow(() => probeStrategySourceShape(42));
+    assert.doesNotThrow(() => probeStrategySourceShape('bad'));
+    assert.doesNotThrow(() => probeStrategySourceShape([]));
+  });
+});
+
+// ---------------------------------------------------------------------------
+// deriveMetricsFromTrades — metrics derivation from trade list
+// ---------------------------------------------------------------------------
+describe('deriveMetricsFromTrades', () => {
+  it('returns null for empty or missing trades', () => {
+    assert.equal(deriveMetricsFromTrades(null), null);
+    assert.equal(deriveMetricsFromTrades([]), null);
+    assert.equal(deriveMetricsFromTrades(undefined), null);
+  });
+
+  it('derives all 5 metrics from well-formed trade objects', () => {
+    const trades = [
+      { profit: 200, entryPrice: 100, exitPrice: 102, qty: 100 },
+      { profit: -50, entryPrice: 105, exitPrice: 104.5, qty: 100 },
+      { profit: 150, entryPrice: 98, exitPrice: 99.5, qty: 100 },
+    ];
+    const m = deriveMetricsFromTrades(trades, { initialCapital: 10000 });
+    assert.equal(m.closed_trades, 3);
+    assert.equal(typeof m.net_profit, 'number');
+    assert.equal(typeof m.percent_profitable, 'number');
+    assert.equal(typeof m.profit_factor, 'number');
+    assert.equal(typeof m.max_drawdown, 'number');
+    assert.ok(m.percent_profitable >= 0 && m.percent_profitable <= 100);
+  });
+
+  it('produces output shape compatible with normalizeMetrics', () => {
+    const trades = [
+      { profit: 100, entryPrice: 50, exitPrice: 51, qty: 100 },
+    ];
+    const m = deriveMetricsFromTrades(trades, { initialCapital: 10000 });
+    const keys = Object.keys(m);
+    assert.ok(keys.includes('net_profit'));
+    assert.ok(keys.includes('closed_trades'));
+    assert.ok(keys.includes('percent_profitable'));
+    assert.ok(keys.includes('profit_factor'));
+    assert.ok(keys.includes('max_drawdown'));
+  });
+
+  it('returns profit_factor null when no losing trades', () => {
+    const trades = [
+      { profit: 100, entryPrice: 50, exitPrice: 51, qty: 100 },
+      { profit: 200, entryPrice: 50, exitPrice: 52, qty: 100 },
+    ];
+    const m = deriveMetricsFromTrades(trades, { initialCapital: 10000 });
+    assert.equal(m.profit_factor, null);
+    assert.equal(m.percent_profitable, 100);
+  });
+
+  it('computes correct percent_profitable', () => {
+    const trades = [
+      { profit: 100, entryPrice: 50, exitPrice: 51, qty: 100 },
+      { profit: -50, entryPrice: 55, exitPrice: 54.5, qty: 100 },
+      { profit: -30, entryPrice: 60, exitPrice: 59.7, qty: 100 },
+      { profit: 200, entryPrice: 45, exitPrice: 47, qty: 100 },
+    ];
+    const m = deriveMetricsFromTrades(trades, { initialCapital: 10000 });
+    assert.equal(m.closed_trades, 4);
+    assert.equal(m.percent_profitable, 50);
+  });
+
+  it('marks derivation source as strategy_trades', () => {
+    const trades = [
+      { profit: 100, entryPrice: 50, exitPrice: 51, qty: 100 },
+    ];
+    const m = deriveMetricsFromTrades(trades, { initialCapital: 10000 });
+    assert.equal(m._derivedFrom, 'strategy_trades');
+  });
+
+  it('skips malformed trades and counts only valid ones', () => {
+    const trades = [
+      { profit: 10 },
+      { profit: 'bad' },
+      { profit: -5 },
+    ];
+    const m = deriveMetricsFromTrades(trades, { initialCapital: 10000 });
+    assert.equal(m.closed_trades, 2);
+    assert.equal(m.net_profit, 5);
+  });
+
+  it('returns null when all trades have invalid profit', () => {
+    const trades = [{ profit: 'x' }, { profit: NaN }];
+    assert.equal(deriveMetricsFromTrades(trades), null);
+  });
+
+  it('never modifies existing normalizeMetrics contract', () => {
+    const rawFromApi = {
+      performance: {
+        all: { netProfit: 1000, totalTrades: 10, percentProfitable: 0.6, profitFactor: 2.0 },
+        maxStrategyDrawDown: 200,
+      },
+    };
+    const normalized = normalizeMetrics(rawFromApi);
+    assert.equal(normalized.net_profit, 1000);
+    assert.equal(normalized.closed_trades, 10);
+    assert.equal(normalized._derivedFrom, undefined);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Alternative source safety — preset isolation
+// ---------------------------------------------------------------------------
+describe('alternative source safety', () => {
+  it('probeStrategySourceShape does not alter input object', () => {
+    const source = { reportData: { a: 1 }, tradesData: [{ profit: 10 }] };
+    const original = JSON.stringify(source);
+    probeStrategySourceShape(source);
+    assert.equal(JSON.stringify(source), original);
+  });
+
+  it('deriveMetricsFromTrades does not alter input array', () => {
+    const trades = [{ profit: 100, entryPrice: 50, exitPrice: 51, qty: 100 }];
+    const original = JSON.stringify(trades);
+    deriveMetricsFromTrades(trades, { initialCapital: 10000 });
+    assert.equal(JSON.stringify(trades), original);
+  });
+
+  it('derived metrics carry _derivedFrom tag distinguishing them from primary sources', () => {
+    const primary = normalizeMetrics({ net_profit: 500, closed_trades: 10 });
+    const derived = deriveMetricsFromTrades(
+      [{ profit: 500, entryPrice: 50, exitPrice: 55, qty: 100 }],
+      { initialCapital: 10000 },
+    );
+    assert.equal(primary._derivedFrom, undefined);
+    assert.equal(derived._derivedFrom, 'strategy_trades');
+  });
+
+  it('buildResult normalizes metrics, so _derivedFrom is not preserved — derived metrics should not be routed through buildResult', () => {
+    const r = buildResult({
+      compileSuccess: true,
+      testerAvailable: true,
+      metrics: { net_profit: 500, closed_trades: 10 },
+      symbol: 'NASDAQ:NVDA',
+    });
+    assert.equal(r.success, true);
+    assert.ok(r.metrics);
+    assert.equal(r.metrics._derivedFrom, undefined);
   });
 });
