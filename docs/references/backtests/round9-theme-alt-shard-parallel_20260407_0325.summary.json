@@ -1,0 +1,496 @@
+{
+  "generated_at": "2026-04-07T03:25:54.036Z",
+  "phase_name": "round9-alt-shard-parallel",
+  "run_count": 160,
+  "success_count": 160,
+  "tester_available_count": 82,
+  "unreadable_count": 78,
+  "apply_failed_count": 0,
+  "aggregate_elapsed_ms": 4447845,
+  "strategy_summary": [
+    {
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide",
+      "run_count": 20,
+      "tester_available_count": 1,
+      "unreadable_count": 19,
+      "avg_net_profit": 12598.81,
+      "avg_profit_factor": 2.669598900611052,
+      "avg_max_drawdown": 3482.619999999999,
+      "avg_win_rate": 45.45,
+      "avg_closed_trades": 22,
+      "best_symbol": "AAPL",
+      "best_universe": "sp500-top10-point-in-time",
+      "best_net_profit": 12598.81
+    },
+    {
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-45-hard-stop-8pct-theme-breadth-early-guarded-wide",
+      "run_count": 20,
+      "tester_available_count": 1,
+      "unreadable_count": 19,
+      "avg_net_profit": 12598.81,
+      "avg_profit_factor": 2.669598900611052,
+      "avg_max_drawdown": 3482.619999999999,
+      "avg_win_rate": 45.45,
+      "avg_closed_trades": 22,
+      "best_symbol": "AAPL",
+      "best_universe": "sp500-top10-point-in-time",
+      "best_net_profit": 12598.81
+    },
+    {
+      "strategy_id": "donchian-55-20-spy-filter-rsi14-regime-45-theme-quality-strict-relaxed",
+      "run_count": 20,
+      "tester_available_count": 19,
+      "unreadable_count": 1,
+      "avg_net_profit": 8166.241052631578,
+      "avg_profit_factor": 2.5169298485647986,
+      "avg_max_drawdown": 2983.0178947368436,
+      "avg_win_rate": 50.707368421052635,
+      "avg_closed_trades": 20.105263157894736,
+      "best_symbol": "META",
+      "best_universe": "sp500-top10-point-in-time",
+      "best_net_profit": 20183.99
+    },
+    {
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight",
+      "run_count": 20,
+      "tester_available_count": 20,
+      "unreadable_count": 0,
+      "avg_net_profit": 7588.041500000001,
+      "avg_profit_factor": 2.263810867910435,
+      "avg_max_drawdown": 3505.990999999999,
+      "avg_win_rate": 49.552,
+      "avg_closed_trades": 20.05,
+      "best_symbol": "META",
+      "best_universe": "sp500-top10-point-in-time",
+      "best_net_profit": 29187.989999999998
+    },
+    {
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict",
+      "run_count": 20,
+      "tester_available_count": 20,
+      "unreadable_count": 0,
+      "avg_net_profit": 7548.240000000001,
+      "avg_profit_factor": 2.249858504719136,
+      "avg_max_drawdown": 3500.758499999999,
+      "avg_win_rate": 49.258,
+      "avg_closed_trades": 20.05,
+      "best_symbol": "META",
+      "best_universe": "sp500-top10-point-in-time",
+      "best_net_profit": 29187.989999999998
+    },
+    {
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-6pct-theme-breadth-quality-strict",
+      "run_count": 20,
+      "tester_available_count": 20,
+      "unreadable_count": 0,
+      "avg_net_profit": 6665.890500000001,
+      "avg_profit_factor": 2.0284584770259597,
+      "avg_max_drawdown": 3116.803499999998,
+      "avg_win_rate": 47.153000000000006,
+      "avg_closed_trades": 20.9,
+      "best_symbol": "META",
+      "best_universe": "sp500-top10-point-in-time",
+      "best_net_profit": 22134.810000000012
+    },
+    {
+      "strategy_id": "donchian-55-20-spy-filter-rsi14-regime-50-hard-stop-6pct-theme-quality-strict-balanced-guarded",
+      "run_count": 20,
+      "tester_available_count": 1,
+      "unreadable_count": 19,
+      "avg_net_profit": -299.1999999999998,
+      "avg_profit_factor": 0.9472341115949161,
+      "avg_max_drawdown": 3789.110000000004,
+      "avg_win_rate": 44,
+      "avg_closed_trades": 25,
+      "best_symbol": "JNJ",
+      "best_universe": "mega-cap-ex-nvda",
+      "best_net_profit": -299.1999999999998
+    },
+    {
+      "strategy_id": "donchian-55-20-spy-filter-rsi14-regime-60-theme-quality-strict",
+      "run_count": 20,
+      "tester_available_count": 0,
+      "unreadable_count": 20,
+      "avg_net_profit": null,
+      "avg_profit_factor": null,
+      "avg_max_drawdown": null,
+      "avg_win_rate": null,
+      "avg_closed_trades": null,
+      "best_symbol": null,
+      "best_universe": null,
+      "best_net_profit": null
+    }
+  ],
+  "universe_summary": [
+    {
+      "universe": "sp500-top10-point-in-time",
+      "run_count": 80,
+      "tester_available_count": 41,
+      "unreadable_count": 39,
+      "avg_net_profit": 7697.165609756097,
+      "avg_profit_factor": 2.22442848851456,
+      "avg_max_drawdown": 3366.9826829268286,
+      "avg_win_rate": 48.8170731707317,
+      "best_combo": "donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict__META"
+    },
+    {
+      "universe": "mega-cap-ex-nvda",
+      "run_count": 80,
+      "tester_available_count": 41,
+      "unreadable_count": 39,
+      "avg_net_profit": 7329.674390243901,
+      "avg_profit_factor": 2.2865631219405307,
+      "avg_max_drawdown": 3216.011219512195,
+      "avg_win_rate": 49.17317073170731,
+      "best_combo": "donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict__META"
+    }
+  ],
+  "strategy_universe_summary": [
+    {
+      "universe": "sp500-top10-point-in-time",
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide",
+      "avg_net_profit": 12598.81,
+      "avg_profit_factor": 2.669598900611052,
+      "avg_max_drawdown": 3482.619999999999,
+      "avg_win_rate": 45.45,
+      "best_symbol": "AAPL"
+    },
+    {
+      "universe": "sp500-top10-point-in-time",
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-45-hard-stop-8pct-theme-breadth-early-guarded-wide",
+      "avg_net_profit": 12598.81,
+      "avg_profit_factor": 2.669598900611052,
+      "avg_max_drawdown": 3482.619999999999,
+      "avg_win_rate": 45.45,
+      "best_symbol": "AAPL"
+    },
+    {
+      "universe": "mega-cap-ex-nvda",
+      "strategy_id": "donchian-55-20-spy-filter-rsi14-regime-45-theme-quality-strict-relaxed",
+      "avg_net_profit": 8338.164999999999,
+      "avg_profit_factor": 2.643326067640031,
+      "avg_max_drawdown": 2867.004000000001,
+      "avg_win_rate": 50.997,
+      "best_symbol": "META"
+    },
+    {
+      "universe": "sp500-top10-point-in-time",
+      "strategy_id": "donchian-55-20-spy-filter-rsi14-regime-45-theme-quality-strict-relaxed",
+      "avg_net_profit": 7975.214444444444,
+      "avg_profit_factor": 2.3764896051478726,
+      "avg_max_drawdown": 3111.9222222222224,
+      "avg_win_rate": 50.385555555555555,
+      "best_symbol": "META"
+    },
+    {
+      "universe": "mega-cap-ex-nvda",
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight",
+      "avg_net_profit": 7600.845000000001,
+      "avg_profit_factor": 2.3119138869276785,
+      "avg_max_drawdown": 3442.2959999999994,
+      "avg_win_rate": 49.699,
+      "best_symbol": "META"
+    },
+    {
+      "universe": "sp500-top10-point-in-time",
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict",
+      "avg_net_profit": 7575.237999999999,
+      "avg_profit_factor": 2.21570784889319,
+      "avg_max_drawdown": 3569.686,
+      "avg_win_rate": 49.405,
+      "best_symbol": "META"
+    },
+    {
+      "universe": "sp500-top10-point-in-time",
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight",
+      "avg_net_profit": 7575.237999999999,
+      "avg_profit_factor": 2.21570784889319,
+      "avg_max_drawdown": 3569.686,
+      "avg_win_rate": 49.405,
+      "best_symbol": "META"
+    },
+    {
+      "universe": "mega-cap-ex-nvda",
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict",
+      "avg_net_profit": 7521.242000000001,
+      "avg_profit_factor": 2.28400916054508,
+      "avg_max_drawdown": 3431.830999999999,
+      "avg_win_rate": 49.111000000000004,
+      "best_symbol": "META"
+    },
+    {
+      "universe": "sp500-top10-point-in-time",
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-6pct-theme-breadth-quality-strict",
+      "avg_net_profit": 6710.448000000002,
+      "avg_profit_factor": 2.0159806803680227,
+      "avg_max_drawdown": 3168.0029999999983,
+      "avg_win_rate": 46.903,
+      "best_symbol": "META"
+    },
+    {
+      "universe": "mega-cap-ex-nvda",
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-6pct-theme-breadth-quality-strict",
+      "avg_net_profit": 6621.333000000001,
+      "avg_profit_factor": 2.0409362736838954,
+      "avg_max_drawdown": 3065.6039999999985,
+      "avg_win_rate": 47.403,
+      "best_symbol": "META"
+    },
+    {
+      "universe": "mega-cap-ex-nvda",
+      "strategy_id": "donchian-55-20-spy-filter-rsi14-regime-50-hard-stop-6pct-theme-quality-strict-balanced-guarded",
+      "avg_net_profit": -299.1999999999998,
+      "avg_profit_factor": 0.9472341115949161,
+      "avg_max_drawdown": 3789.110000000004,
+      "avg_win_rate": 44,
+      "best_symbol": "JNJ"
+    },
+    {
+      "universe": "sp500-top10-point-in-time",
+      "strategy_id": "donchian-55-20-spy-filter-rsi14-regime-60-theme-quality-strict",
+      "avg_net_profit": null,
+      "avg_profit_factor": null,
+      "avg_max_drawdown": null,
+      "avg_win_rate": null,
+      "best_symbol": null
+    },
+    {
+      "universe": "sp500-top10-point-in-time",
+      "strategy_id": "donchian-55-20-spy-filter-rsi14-regime-50-hard-stop-6pct-theme-quality-strict-balanced-guarded",
+      "avg_net_profit": null,
+      "avg_profit_factor": null,
+      "avg_max_drawdown": null,
+      "avg_win_rate": null,
+      "best_symbol": null
+    },
+    {
+      "universe": "mega-cap-ex-nvda",
+      "strategy_id": "donchian-55-20-spy-filter-rsi14-regime-60-theme-quality-strict",
+      "avg_net_profit": null,
+      "avg_profit_factor": null,
+      "avg_max_drawdown": null,
+      "avg_win_rate": null,
+      "best_symbol": null
+    },
+    {
+      "universe": "mega-cap-ex-nvda",
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide",
+      "avg_net_profit": null,
+      "avg_profit_factor": null,
+      "avg_max_drawdown": null,
+      "avg_win_rate": null,
+      "best_symbol": null
+    },
+    {
+      "universe": "mega-cap-ex-nvda",
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-45-hard-stop-8pct-theme-breadth-early-guarded-wide",
+      "avg_net_profit": null,
+      "avg_profit_factor": null,
+      "avg_max_drawdown": null,
+      "avg_win_rate": null,
+      "best_symbol": null
+    }
+  ],
+  "top_combos": [
+    {
+      "universe": "sp500-top10-point-in-time",
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict",
+      "symbol": "META",
+      "net_profit": 29187.989999999998,
+      "profit_factor": 6.5216492310020575,
+      "max_drawdown": 4477.169999999998,
+      "win_rate": 64.71,
+      "closed_trades": 17
+    },
+    {
+      "universe": "mega-cap-ex-nvda",
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict",
+      "symbol": "META",
+      "net_profit": 29187.989999999998,
+      "profit_factor": 6.5216492310020575,
+      "max_drawdown": 4477.169999999998,
+      "win_rate": 64.71,
+      "closed_trades": 17
+    },
+    {
+      "universe": "sp500-top10-point-in-time",
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight",
+      "symbol": "META",
+      "net_profit": 29187.989999999998,
+      "profit_factor": 6.5216492310020575,
+      "max_drawdown": 4477.169999999998,
+      "win_rate": 64.71,
+      "closed_trades": 17
+    },
+    {
+      "universe": "mega-cap-ex-nvda",
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight",
+      "symbol": "META",
+      "net_profit": 29187.989999999998,
+      "profit_factor": 6.5216492310020575,
+      "max_drawdown": 4477.169999999998,
+      "win_rate": 64.71,
+      "closed_trades": 17
+    },
+    {
+      "universe": "sp500-top10-point-in-time",
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-6pct-theme-breadth-quality-strict",
+      "symbol": "META",
+      "net_profit": 22134.810000000012,
+      "profit_factor": 4.400004300923319,
+      "max_drawdown": 3370.24,
+      "win_rate": 52.63,
+      "closed_trades": 19
+    },
+    {
+      "universe": "mega-cap-ex-nvda",
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-6pct-theme-breadth-quality-strict",
+      "symbol": "META",
+      "net_profit": 22134.810000000012,
+      "profit_factor": 4.400004300923319,
+      "max_drawdown": 3370.24,
+      "win_rate": 52.63,
+      "closed_trades": 19
+    },
+    {
+      "universe": "sp500-top10-point-in-time",
+      "strategy_id": "donchian-55-20-spy-filter-rsi14-regime-45-theme-quality-strict-relaxed",
+      "symbol": "META",
+      "net_profit": 20183.99,
+      "profit_factor": 4.413828855189583,
+      "max_drawdown": 3388.819999999996,
+      "win_rate": 57.89,
+      "closed_trades": 19
+    },
+    {
+      "universe": "mega-cap-ex-nvda",
+      "strategy_id": "donchian-55-20-spy-filter-rsi14-regime-45-theme-quality-strict-relaxed",
+      "symbol": "META",
+      "net_profit": 20183.99,
+      "profit_factor": 4.413828855189583,
+      "max_drawdown": 3388.819999999996,
+      "win_rate": 57.89,
+      "closed_trades": 19
+    },
+    {
+      "universe": "sp500-top10-point-in-time",
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-6pct-theme-breadth-quality-strict",
+      "symbol": "AAPL",
+      "net_profit": 14408.470000000001,
+      "profit_factor": 3.4018199760625993,
+      "max_drawdown": 2951.5099999999966,
+      "win_rate": 47.62,
+      "closed_trades": 21
+    },
+    {
+      "universe": "mega-cap-ex-nvda",
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-6pct-theme-breadth-quality-strict",
+      "symbol": "AAPL",
+      "net_profit": 14408.470000000001,
+      "profit_factor": 3.4018199760625993,
+      "max_drawdown": 2951.5099999999966,
+      "win_rate": 47.62,
+      "closed_trades": 21
+    },
+    {
+      "universe": "sp500-top10-point-in-time",
+      "strategy_id": "donchian-55-20-spy-filter-rsi14-regime-45-theme-quality-strict-relaxed",
+      "symbol": "MSFT",
+      "net_profit": 13123.419999999993,
+      "profit_factor": 2.9249466450557726,
+      "max_drawdown": 2259.980000000003,
+      "win_rate": 52.38,
+      "closed_trades": 21
+    },
+    {
+      "universe": "mega-cap-ex-nvda",
+      "strategy_id": "donchian-55-20-spy-filter-rsi14-regime-45-theme-quality-strict-relaxed",
+      "symbol": "MSFT",
+      "net_profit": 13123.419999999993,
+      "profit_factor": 2.9249466450557726,
+      "max_drawdown": 2259.980000000003,
+      "win_rate": 52.38,
+      "closed_trades": 21
+    },
+    {
+      "universe": "sp500-top10-point-in-time",
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict",
+      "symbol": "AAPL",
+      "net_profit": 12598.81,
+      "profit_factor": 2.669598900611052,
+      "max_drawdown": 3482.619999999999,
+      "win_rate": 45.45,
+      "closed_trades": 22
+    },
+    {
+      "universe": "mega-cap-ex-nvda",
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict",
+      "symbol": "AAPL",
+      "net_profit": 12598.81,
+      "profit_factor": 2.669598900611052,
+      "max_drawdown": 3482.619999999999,
+      "win_rate": 45.45,
+      "closed_trades": 22
+    },
+    {
+      "universe": "sp500-top10-point-in-time",
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight",
+      "symbol": "AAPL",
+      "net_profit": 12598.81,
+      "profit_factor": 2.669598900611052,
+      "max_drawdown": 3482.619999999999,
+      "win_rate": 45.45,
+      "closed_trades": 22
+    },
+    {
+      "universe": "sp500-top10-point-in-time",
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide",
+      "symbol": "AAPL",
+      "net_profit": 12598.81,
+      "profit_factor": 2.669598900611052,
+      "max_drawdown": 3482.619999999999,
+      "win_rate": 45.45,
+      "closed_trades": 22
+    },
+    {
+      "universe": "sp500-top10-point-in-time",
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-45-hard-stop-8pct-theme-breadth-early-guarded-wide",
+      "symbol": "AAPL",
+      "net_profit": 12598.81,
+      "profit_factor": 2.669598900611052,
+      "max_drawdown": 3482.619999999999,
+      "win_rate": 45.45,
+      "closed_trades": 22
+    },
+    {
+      "universe": "mega-cap-ex-nvda",
+      "strategy_id": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight",
+      "symbol": "AAPL",
+      "net_profit": 12598.81,
+      "profit_factor": 2.669598900611052,
+      "max_drawdown": 3482.619999999999,
+      "win_rate": 45.45,
+      "closed_trades": 22
+    },
+    {
+      "universe": "mega-cap-ex-nvda",
+      "strategy_id": "donchian-55-20-spy-filter-rsi14-regime-45-theme-quality-strict-relaxed",
+      "symbol": "AAPL",
+      "net_profit": 10597.980000000003,
+      "profit_factor": 2.750826431945127,
+      "max_drawdown": 2236.6099999999997,
+      "win_rate": 47.62,
+      "closed_trades": 21
+    },
+    {
+      "universe": "sp500-top10-point-in-time",
+      "strategy_id": "donchian-55-20-spy-filter-rsi14-regime-45-theme-quality-strict-relaxed",
+      "symbol": "GOOGL",
+      "net_profit": 8808.59,
+      "profit_factor": 2.8018745768189888,
+      "max_drawdown": 2809.1500000000015,
+      "win_rate": 55,
+      "closed_trades": 20
+    }
+  ]
+}

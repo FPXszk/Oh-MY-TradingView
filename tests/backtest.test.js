@@ -824,6 +824,48 @@ describe('buildResearchStrategySource', () => {
     assert.ok(source.includes('stopLossPrice = strategy.position_avg_price * (1 - 0.06)'));
   });
 
+  it('builds round9 breadth-earlier-guarded preset sources from the preset catalog', async () => {
+    const data = await loadPresets();
+    const preset = data.strategies.find(
+      (entry) => entry.id === 'donchian-55-20-rsp-filter-rsi14-regime-40-hard-stop-6pct-theme-breadth-earlier-guarded',
+    );
+
+    assert.ok(preset, 'Expected round9 breadth-earlier-guarded preset to exist');
+    const source = buildResearchStrategySource(preset, defaults);
+
+    assert.ok(source.includes('request.security("BATS:RSP", timeframe.period, close)'));
+    assert.ok(source.includes('rsiRegimeOk = rsiRegimeValue > 40'));
+    assert.ok(source.includes('stopLossPrice = strategy.position_avg_price * (1 - 0.06)'));
+  });
+
+  it('builds round9 deep-pullback-strict preset sources from the preset catalog', async () => {
+    const data = await loadPresets();
+    const preset = data.strategies.find(
+      (entry) => entry.id === 'donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict',
+    );
+
+    assert.ok(preset, 'Expected round9 deep-pullback-strict preset to exist');
+    const source = buildResearchStrategySource(preset, defaults);
+
+    assert.ok(source.includes('request.security("BATS:RSP", timeframe.period, close)'));
+    assert.ok(source.includes('rsiRegimeOk = rsiRegimeValue > 60'));
+    assert.ok(source.includes('stopLossPrice = strategy.position_avg_price * (1 - 0.08)'));
+  });
+
+  it('builds round9 quality-strict-relaxed preset sources from the preset catalog', async () => {
+    const data = await loadPresets();
+    const preset = data.strategies.find(
+      (entry) => entry.id === 'donchian-55-20-spy-filter-rsi14-regime-45-theme-quality-strict-relaxed',
+    );
+
+    assert.ok(preset, 'Expected round9 quality-strict-relaxed preset to exist');
+    const source = buildResearchStrategySource(preset, defaults);
+
+    assert.ok(source.includes('request.security("BATS:SPY", timeframe.period, close)'));
+    assert.ok(source.includes('rsiRegimeOk = rsiRegimeValue > 45'));
+    assert.ok(!source.includes('stopLossPrice = strategy.position_avg_price'));
+  });
+
   it('rejects unsupported regime filters in the generator', () => {
     assert.throws(() => buildResearchStrategySource({
       id: 'bad-regime',
