@@ -213,20 +213,33 @@ wait
   - past runtime 基準: `20.13 min / 29.93 min`
   - worker2 途中断後の recovery target: `74 run`
   だった
-- そのため、次回の暫定推奨は
-  1. **strategy 単位チャンク + runtime-aware 配分**
-  2. **30〜40 run shard + checkpoint / partial retry**
+- そのため、暫定推奨は以下の通り（小・中規模 benchmark の実測結果を反映して更新）
+  1. **shard parallel**（小・中規模ともに最速。unreadable 分散効果が runtime-aware 均等化を上回った）
+  2. **strategy-aware parallel**（理論的な runtime 均等化の利点はあるが、実測では shard に劣る）
+- checkpoint は観測・再開境界として有用
+- ただし、naive な `unreadable 1 回` 即 rollback の partial retry は非推奨
 - 長時間 batch の前提条件も、warm-up 1 回成功ではなく
   - `tester_available: true` の **3 連続**
   - `metrics_unreadable = 0`
   - `restore_policy: "skip"` 系 result shape の確認
   まで引き上げる
-- 本番中は **10 run ごと** に `status` / `json/version` を確認し、崩れたら full rerun ではなく partial retry を優先する
+- 本番中は **10 run ごと** に `status` / `json/version` を確認し、崩れたらまず当該 shard で止める
+- recovery は full rerun を避けつつ、checkpoint を使った **限定的な partial retry** を検討する
 - ただし `20 run` の小 sample benchmark では
   - strategy-aware parallel: `279,535 ms`
   - 2-run shard parallel: `265,226 ms`
   で、**shard の方が速かった**
 - つまり、`metrics_unreadable` が strategy 単位で固まる局面では、理論上の runtime 均等化より **細かい shard の分散効果** が勝つことがある
+- `32 run` の中規模 sample でも
+  - strategy-aware parallel: `447,922 ms`
+  - shard parallel: `432,416 ms`
+  - hybrid parallel: `448,916 ms`
+  で、やはり **shard が最速** だった
+- 一方、`metrics_unreadable` を 1 回検知したらその micro-shard を rollback して partial retry する current 実装は
+  - hybrid partial retry: `756,911 ms`
+  となり、**sequential より遅くなった**
+- そのため、現時点では **checkpoint は観測・再開境界として使い、`unreadable 1 回` を即 rollback trigger にしない** 方が安全
+- なお、この順位更新は `20 run` / `32 run` benchmark に基づくもので、`100+ run` の大規模 workload での追試はまだ未実施
 
 ## 9. 参照先
 

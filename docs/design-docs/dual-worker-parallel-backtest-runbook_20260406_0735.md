@@ -165,19 +165,23 @@ round8 の `204 run` workload を `worker1=Mag7 84 run` / `worker2=alt 120 run` 
 
 ### Recommended split strategy
 
-長時間の research batch では、**現時点の暫定運用指針として** 次を優先する。
+長時間の research batch では、**現時点の暫定運用指針として** 次を優先する。  
+（小規模 20 run / 中規模 32 run の両 benchmark で shard が最速だったため、2026-04-06 時点で順位を更新）
 
-1. **strategy 単位チャンク + runtime-aware 2-way balance**
-   - まず strategy ごとの chunk を作る
-   - 過去 `runtime_ms` を重みとして 2 worker の予測合計時間が近づくように割り当てる
-2. **または 30〜40 run shard + checkpoint**
-   - retry blast radius を小さくしたい場合の次善策
+1. **shard parallel**
+   - 小・中規模ともに最速。unreadable の分散効果が runtime-aware 均等化を上回った
+   - shard 粒度は workload に応じて調整し、health check と retry 境界を揃えやすい単位を優先する
+2. **strategy-aware parallel**（fallback）
+   - 理論的には runtime 均等化で均一な wall-clock を狙えるが、unreadable cluster が strategy 単位で固まる弱点がある
+   - 将来的に unreadable パターンが変化した場合に再評価する
 
 ### Why
 
 - 固定 `Mag7 / alt` 分割は retry 範囲が大きい
-- strategy chunk なら retry 単位を `27 run` 前後まで縮めやすい
-- `30〜40 run` shard なら checkpoint / partial retry が実装しやすい
+- shard parallel は unreadable を均等に分散し、結果として wall-clock が短くなった
+- strategy-aware は unreadable cluster が strategy 単位で固まるリスクがあり、実測で shard に劣った
+- checkpoint は観測・再開境界として有用だが、wall-clock 改善は期待しない
+- naive な partial retry（unreadable 1 回で即 rollback）は retry amplification で逆効果になった
 
 ### Small-sample caveat
 
@@ -187,7 +191,35 @@ round8 の `204 run` workload を `worker1=Mag7 84 run` / `worker2=alt 120 run` 
 - 2-run shard parallel: `265,226 ms`, unreadable `7`
 
 となり、**小さい workload では shard の方が速かった**。  
-したがって、長時間 workload の第一候補は引き続き strategy-aware だが、**warm-up 後も unreadable cluster が見える場合は、より細かい shard を優先してよい**。
+この時点では strategy-aware を暫定第一候補としていたが、中規模 sample で追試した結果（下記 Mid-sample update）、**shard の優位が再現したため第一候補を shard に変更した**。
+
+### Mid-sample update
+
+同日の `32 run` sample benchmark でも、
+
+- strategy-aware parallel: `447,922 ms`, unreadable `14`
+- shard parallel: `432,416 ms`, unreadable `12`
+- hybrid parallel (`4-run micro-shard checkpoint`): `448,916 ms`, unreadable `14`
+
+で、**shard の方が速い傾向が再現した**。  
+また、`metrics_unreadable` を 1 回検知した時点で micro-shard rollback + partial retry へ切り替える現在の実装は、
+
+- hybrid partial retry: `756,911 ms`
+
+となり、**wall-clock を悪化させた**。
+
+したがって現時点では、checkpoint は retry 境界として有用でも、**`unreadable 1 回` を即 rollback trigger にするのは非推奨**とみなす。
+
+### 暫定順位（2026-04-06 時点、小・中規模 benchmark に基づく）
+
+| 順位 | mode | 位置づけ |
+|---|---|---|
+| 1 | shard parallel | **第一候補**。小・中規模ともに最速 |
+| 2 | strategy-aware parallel | fallback。理論優位はあるが実測で劣る |
+| 3 | hybrid parallel | checkpoint の observability は有用だが wall-clock 改善なし |
+| — | hybrid partial retry | **非推奨**。naive trigger は retry amplification で逆効果 |
+
+> 長時間 workload（100+ run）での追試はまだ行っていない。大規模 sample で結果が変わる可能性は残る。
 
 ### Operational gates
 
@@ -201,7 +233,7 @@ round8 の `204 run` workload を `worker1=Mag7 84 run` / `worker2=alt 120 run` 
 
 - **10 run ごと**に `status` / `json/version` を確認することを、現時点の暫定 cadence とする
 - 応答なし、または readiness 崩れを検知したら当該 shard で止める
-- recovery は full rerun ではなく **partial retry** を優先する
+- recovery は full rerun を避けつつ、checkpoint を使った **限定的な partial retry** を検討する
 
 ### Restart budget
 

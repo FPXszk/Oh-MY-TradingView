@@ -1,0 +1,1377 @@
+{
+  "generated_at": "2026-04-06T15:46:43.511Z",
+  "total_runs": 32,
+  "modes": {
+    "sequential": {
+      "label": "sequential",
+      "started_at": "2026-04-06T14:43:28.994Z",
+      "finished_at": "2026-04-06T14:54:23.511Z",
+      "wall_clock_ms": 654517,
+      "aggregate_runtime_ms": 654386,
+      "run_count": 32,
+      "success_count": 32,
+      "tester_available_count": 32,
+      "unreadable_count": 0,
+      "apply_failed_count": 0,
+      "health_checks": [
+        {
+          "checked_at": "2026-04-06T14:54:23.511Z",
+          "unit_id": "sequential-all",
+          "runtime_ms": 128,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "7B0759385148F52978C0E298E8A2BB28",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:JPM",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        }
+      ],
+      "checkpoints": [],
+      "retries": [],
+      "workers": [
+        {
+          "worker": "worker1",
+          "wall_clock_ms": 654517,
+          "unit_count": 1,
+          "run_count": 32,
+          "tester_available_count": 32,
+          "unreadable_count": 0
+        }
+      ]
+    },
+    "strategy_parallel": {
+      "label": "strategy_parallel",
+      "started_at": "2026-04-06T14:58:34.208Z",
+      "finished_at": "2026-04-06T15:06:02.130Z",
+      "wall_clock_ms": 447922,
+      "aggregate_runtime_ms": 865326,
+      "run_count": 32,
+      "success_count": 32,
+      "tester_available_count": 18,
+      "unreadable_count": 14,
+      "apply_failed_count": 0,
+      "health_checks": [
+        {
+          "checked_at": "2026-04-06T15:01:48.846Z",
+          "context_id": "strategy-donchian-55-20-baseline-r5",
+          "runtime_ms": 144,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "7B0759385148F52978C0E298E8A2BB28",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:JPM",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:05:32.966Z",
+          "context_id": "strategy-ema-cross-9-21",
+          "runtime_ms": 181,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "7B0759385148F52978C0E298E8A2BB28",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:JPM",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:02:18.092Z",
+          "context_id": "strategy-keltner-breakout",
+          "runtime_ms": 143,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "8D152458CFEE4FC98201A43F7DA4D72E",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:JPM",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:06:02.130Z",
+          "context_id": "strategy-rsi-mean-reversion",
+          "runtime_ms": 138,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "8D152458CFEE4FC98201A43F7DA4D72E",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:JPM",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        }
+      ],
+      "checkpoints": [
+        {
+          "checkpoint_at": "2026-04-06T15:01:48.702Z",
+          "unit_id": "strategy-donchian-55-20-baseline-r5",
+          "runs_completed": 8,
+          "unit_wall_clock_ms": 193750
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:05:32.785Z",
+          "unit_id": "strategy-ema-cross-9-21",
+          "runs_completed": 8,
+          "unit_wall_clock_ms": 223939
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:02:17.949Z",
+          "unit_id": "strategy-keltner-breakout",
+          "runs_completed": 8,
+          "unit_wall_clock_ms": 223740
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:06:01.992Z",
+          "unit_id": "strategy-rsi-mean-reversion",
+          "runs_completed": 8,
+          "unit_wall_clock_ms": 223900
+        }
+      ],
+      "retries": [],
+      "workers": [
+        {
+          "worker": "worker1",
+          "wall_clock_ms": 418015,
+          "unit_count": 2,
+          "run_count": 16,
+          "tester_available_count": 10,
+          "unreadable_count": 6
+        },
+        {
+          "worker": "worker2",
+          "wall_clock_ms": 447922,
+          "unit_count": 2,
+          "run_count": 16,
+          "tester_available_count": 8,
+          "unreadable_count": 8
+        }
+      ]
+    },
+    "shard_parallel": {
+      "label": "shard_parallel",
+      "started_at": "2026-04-06T15:10:12.818Z",
+      "finished_at": "2026-04-06T15:17:25.234Z",
+      "wall_clock_ms": 432416,
+      "aggregate_runtime_ms": 831477,
+      "run_count": 32,
+      "success_count": 32,
+      "tester_available_count": 20,
+      "unreadable_count": 12,
+      "apply_failed_count": 0,
+      "health_checks": [
+        {
+          "checked_at": "2026-04-06T15:11:23.807Z",
+          "context_id": "shard-01",
+          "runtime_ms": 124,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "7B0759385148F52978C0E298E8A2BB28",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:AAPL",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:12:19.524Z",
+          "context_id": "shard-03",
+          "runtime_ms": 122,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "7B0759385148F52978C0E298E8A2BB28",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:AMZN",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:13:15.287Z",
+          "context_id": "shard-05",
+          "runtime_ms": 122,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "7B0759385148F52978C0E298E8A2BB28",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:GOOGL",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:13:56.017Z",
+          "context_id": "shard-07",
+          "runtime_ms": 156,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "7B0759385148F52978C0E298E8A2BB28",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:JPM",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:14:51.864Z",
+          "context_id": "shard-09",
+          "runtime_ms": 148,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "7B0759385148F52978C0E298E8A2BB28",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:META",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:15:47.843Z",
+          "context_id": "shard-11",
+          "runtime_ms": 170,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "7B0759385148F52978C0E298E8A2BB28",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:MSFT",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:16:44.011Z",
+          "context_id": "shard-13",
+          "runtime_ms": 186,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "7B0759385148F52978C0E298E8A2BB28",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:NVDA",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:17:25.234Z",
+          "context_id": "shard-15",
+          "runtime_ms": 165,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "7B0759385148F52978C0E298E8A2BB28",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:TSLA",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:10:53.535Z",
+          "context_id": "shard-02",
+          "runtime_ms": 128,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "8D152458CFEE4FC98201A43F7DA4D72E",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:AAPL",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:11:34.246Z",
+          "context_id": "shard-04",
+          "runtime_ms": 121,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "8D152458CFEE4FC98201A43F7DA4D72E",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:AMZN",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:12:30.027Z",
+          "context_id": "shard-06",
+          "runtime_ms": 127,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "8D152458CFEE4FC98201A43F7DA4D72E",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:GOOGL",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:13:25.763Z",
+          "context_id": "shard-08",
+          "runtime_ms": 136,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "8D152458CFEE4FC98201A43F7DA4D72E",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:JPM",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:14:06.458Z",
+          "context_id": "shard-10",
+          "runtime_ms": 145,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "8D152458CFEE4FC98201A43F7DA4D72E",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:META",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:15:02.333Z",
+          "context_id": "shard-12",
+          "runtime_ms": 140,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "8D152458CFEE4FC98201A43F7DA4D72E",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:MSFT",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:15:58.223Z",
+          "context_id": "shard-14",
+          "runtime_ms": 159,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "8D152458CFEE4FC98201A43F7DA4D72E",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:NVDA",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:16:54.253Z",
+          "context_id": "shard-16",
+          "runtime_ms": 158,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "8D152458CFEE4FC98201A43F7DA4D72E",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:TSLA",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        }
+      ],
+      "checkpoints": [
+        {
+          "checkpoint_at": "2026-04-06T15:11:23.682Z",
+          "unit_id": "shard-01",
+          "runs_completed": 2,
+          "unit_wall_clock_ms": 70803
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:12:19.402Z",
+          "unit_id": "shard-03",
+          "runs_completed": 2,
+          "unit_wall_clock_ms": 55595
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:13:15.165Z",
+          "unit_id": "shard-05",
+          "runs_completed": 2,
+          "unit_wall_clock_ms": 55641
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:13:55.861Z",
+          "unit_id": "shard-07",
+          "runs_completed": 2,
+          "unit_wall_clock_ms": 40574
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:14:51.716Z",
+          "unit_id": "shard-09",
+          "runs_completed": 2,
+          "unit_wall_clock_ms": 55699
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:15:47.673Z",
+          "unit_id": "shard-11",
+          "runs_completed": 2,
+          "unit_wall_clock_ms": 55809
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:16:43.825Z",
+          "unit_id": "shard-13",
+          "runs_completed": 2,
+          "unit_wall_clock_ms": 55982
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:17:25.069Z",
+          "unit_id": "shard-15",
+          "runs_completed": 2,
+          "unit_wall_clock_ms": 41057
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:10:53.407Z",
+          "unit_id": "shard-02",
+          "runs_completed": 2,
+          "unit_wall_clock_ms": 40589
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:11:34.125Z",
+          "unit_id": "shard-04",
+          "runs_completed": 2,
+          "unit_wall_clock_ms": 40590
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:12:29.900Z",
+          "unit_id": "shard-06",
+          "runs_completed": 2,
+          "unit_wall_clock_ms": 55654
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:13:25.627Z",
+          "unit_id": "shard-08",
+          "runs_completed": 2,
+          "unit_wall_clock_ms": 55600
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:14:06.313Z",
+          "unit_id": "shard-10",
+          "runs_completed": 2,
+          "unit_wall_clock_ms": 40550
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:15:02.193Z",
+          "unit_id": "shard-12",
+          "runs_completed": 2,
+          "unit_wall_clock_ms": 55735
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:15:58.064Z",
+          "unit_id": "shard-14",
+          "runs_completed": 2,
+          "unit_wall_clock_ms": 55731
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:16:54.095Z",
+          "unit_id": "shard-16",
+          "runs_completed": 2,
+          "unit_wall_clock_ms": 55872
+        }
+      ],
+      "retries": [],
+      "workers": [
+        {
+          "worker": "worker1",
+          "wall_clock_ms": 432355,
+          "unit_count": 8,
+          "run_count": 16,
+          "tester_available_count": 9,
+          "unreadable_count": 7
+        },
+        {
+          "worker": "worker2",
+          "wall_clock_ms": 401435,
+          "unit_count": 8,
+          "run_count": 16,
+          "tester_available_count": 11,
+          "unreadable_count": 5
+        }
+      ]
+    },
+    "hybrid_parallel": {
+      "label": "hybrid_parallel",
+      "started_at": "2026-04-06T15:21:48.346Z",
+      "finished_at": "2026-04-06T15:29:17.262Z",
+      "wall_clock_ms": 448916,
+      "aggregate_runtime_ms": 865540,
+      "run_count": 32,
+      "success_count": 32,
+      "tester_available_count": 18,
+      "unreadable_count": 14,
+      "apply_failed_count": 0,
+      "health_checks": [
+        {
+          "checked_at": "2026-04-06T15:23:55.661Z",
+          "context_id": "strategy-ema-cross-9-21__ms-01",
+          "runtime_ms": 263,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "7B0759385148F52978C0E298E8A2BB28",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:AMZN",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:25:47.982Z",
+          "context_id": "strategy-ema-cross-9-21__ms-02",
+          "runtime_ms": 156,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "7B0759385148F52978C0E298E8A2BB28",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:JPM",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:27:40.217Z",
+          "context_id": "strategy-keltner-breakout__ms-01",
+          "runtime_ms": 171,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "7B0759385148F52978C0E298E8A2BB28",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:AMZN",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:29:17.262Z",
+          "context_id": "strategy-keltner-breakout__ms-02",
+          "runtime_ms": 167,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "7B0759385148F52978C0E298E8A2BB28",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:JPM",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:23:26.169Z",
+          "context_id": "strategy-rsi-mean-reversion__ms-01",
+          "runtime_ms": 163,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "8D152458CFEE4FC98201A43F7DA4D72E",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:AMZN",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:25:18.132Z",
+          "context_id": "strategy-rsi-mean-reversion__ms-02",
+          "runtime_ms": 144,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "8D152458CFEE4FC98201A43F7DA4D72E",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:JPM",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:27:10.028Z",
+          "context_id": "strategy-donchian-55-20-baseline-r5__ms-01",
+          "runtime_ms": 200,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "8D152458CFEE4FC98201A43F7DA4D72E",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:AMZN",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:28:47.123Z",
+          "context_id": "strategy-donchian-55-20-baseline-r5__ms-02",
+          "runtime_ms": 179,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "8D152458CFEE4FC98201A43F7DA4D72E",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:JPM",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        }
+      ],
+      "checkpoints": [
+        {
+          "checkpoint_at": "2026-04-06T15:23:55.398Z",
+          "micro_shard_id": "strategy-ema-cross-9-21__ms-01",
+          "parent_unit_id": "strategy-ema-cross-9-21",
+          "runs_completed": 4,
+          "shard_wall_clock_ms": 127052
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:25:47.826Z",
+          "micro_shard_id": "strategy-ema-cross-9-21__ms-02",
+          "parent_unit_id": "strategy-ema-cross-9-21",
+          "runs_completed": 4,
+          "shard_wall_clock_ms": 112165
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:27:40.046Z",
+          "micro_shard_id": "strategy-keltner-breakout__ms-01",
+          "parent_unit_id": "strategy-keltner-breakout",
+          "runs_completed": 4,
+          "shard_wall_clock_ms": 112064
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:29:17.095Z",
+          "micro_shard_id": "strategy-keltner-breakout__ms-02",
+          "parent_unit_id": "strategy-keltner-breakout",
+          "runs_completed": 4,
+          "shard_wall_clock_ms": 96878
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:23:26.006Z",
+          "micro_shard_id": "strategy-rsi-mean-reversion__ms-01",
+          "parent_unit_id": "strategy-rsi-mean-reversion",
+          "runs_completed": 4,
+          "shard_wall_clock_ms": 96954
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:25:17.988Z",
+          "micro_shard_id": "strategy-rsi-mean-reversion__ms-02",
+          "parent_unit_id": "strategy-rsi-mean-reversion",
+          "runs_completed": 4,
+          "shard_wall_clock_ms": 111819
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:27:09.828Z",
+          "micro_shard_id": "strategy-donchian-55-20-baseline-r5__ms-01",
+          "parent_unit_id": "strategy-donchian-55-20-baseline-r5",
+          "runs_completed": 4,
+          "shard_wall_clock_ms": 111696
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:28:46.943Z",
+          "micro_shard_id": "strategy-donchian-55-20-baseline-r5__ms-02",
+          "parent_unit_id": "strategy-donchian-55-20-baseline-r5",
+          "runs_completed": 4,
+          "shard_wall_clock_ms": 96915
+        }
+      ],
+      "retries": [],
+      "workers": [
+        {
+          "worker": "worker1",
+          "wall_clock_ms": 448916,
+          "unit_count": 2,
+          "run_count": 16,
+          "tester_available_count": 8,
+          "unreadable_count": 8
+        },
+        {
+          "worker": "worker2",
+          "wall_clock_ms": 418072,
+          "unit_count": 2,
+          "run_count": 16,
+          "tester_available_count": 10,
+          "unreadable_count": 6
+        }
+      ]
+    },
+    "hybrid_partial_retry": {
+      "label": "hybrid_partial_retry",
+      "started_at": "2026-04-06T15:33:41.894Z",
+      "finished_at": "2026-04-06T15:46:18.805Z",
+      "wall_clock_ms": 756911,
+      "aggregate_runtime_ms": 1422136,
+      "run_count": 56,
+      "success_count": 52,
+      "tester_available_count": 28,
+      "unreadable_count": 24,
+      "apply_failed_count": 0,
+      "health_checks": [
+        {
+          "checked_at": "2026-04-06T15:34:17.671Z",
+          "context_id": "strategy-keltner-breakout__ms-01",
+          "runtime_ms": 279,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "7B0759385148F52978C0E298E8A2BB28",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:AAPL",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:34:53.466Z",
+          "context_id": "strategy-keltner-breakout__ms-02",
+          "runtime_ms": 258,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "7B0759385148F52978C0E298E8A2BB28",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:META",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:35:49.495Z",
+          "context_id": "strategy-rsi-mean-reversion__ms-01",
+          "runtime_ms": 151,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "7B0759385148F52978C0E298E8A2BB28",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:MSFT",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:36:45.682Z",
+          "context_id": "strategy-rsi-mean-reversion__ms-02",
+          "runtime_ms": 189,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "7B0759385148F52978C0E298E8A2BB28",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:NVDA",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:35:19.785Z",
+          "context_id": "strategy-donchian-55-20-baseline-r5__ms-01",
+          "runtime_ms": 142,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "8D152458CFEE4FC98201A43F7DA4D72E",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:AMZN",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:36:15.773Z",
+          "context_id": "strategy-donchian-55-20-baseline-r5__ms-02",
+          "runtime_ms": 177,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "8D152458CFEE4FC98201A43F7DA4D72E",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:NVDA",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:37:11.870Z",
+          "context_id": "strategy-ema-cross-9-21__ms-01",
+          "runtime_ms": 161,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "8D152458CFEE4FC98201A43F7DA4D72E",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:MSFT",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        },
+        {
+          "checked_at": "2026-04-06T15:38:08.116Z",
+          "context_id": "strategy-ema-cross-9-21__ms-02",
+          "runtime_ms": 179,
+          "api_available": true,
+          "success": true,
+          "result": {
+            "success": true,
+            "cdp_connected": true,
+            "target_id": "8D152458CFEE4FC98201A43F7DA4D72E",
+            "target_url": "https://jp.tradingview.com/chart/JV6Tvois/",
+            "target_title": "TradingViewのリアルタイム株価、指数、先物、FX、そしてビットコインチャート",
+            "chart_symbol": "BATS:NVDA",
+            "chart_resolution": "D",
+            "chart_type": 1,
+            "api_available": true
+          }
+        }
+      ],
+      "checkpoints": [
+        {
+          "checkpoint_at": "2026-04-06T15:34:17.392Z",
+          "micro_shard_id": "strategy-keltner-breakout__ms-01",
+          "parent_unit_id": "strategy-keltner-breakout",
+          "runs_completed": 1,
+          "rolled_back": true,
+          "shard_wall_clock_ms": 35498
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:34:53.208Z",
+          "micro_shard_id": "strategy-keltner-breakout__ms-02",
+          "parent_unit_id": "strategy-keltner-breakout",
+          "runs_completed": 1,
+          "rolled_back": true,
+          "shard_wall_clock_ms": 35537
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:35:49.344Z",
+          "micro_shard_id": "strategy-rsi-mean-reversion__ms-01",
+          "parent_unit_id": "strategy-rsi-mean-reversion",
+          "runs_completed": 2,
+          "rolled_back": true,
+          "shard_wall_clock_ms": 55878
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:36:45.493Z",
+          "micro_shard_id": "strategy-rsi-mean-reversion__ms-02",
+          "parent_unit_id": "strategy-rsi-mean-reversion",
+          "runs_completed": 2,
+          "rolled_back": true,
+          "shard_wall_clock_ms": 55998
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:35:19.643Z",
+          "micro_shard_id": "strategy-donchian-55-20-baseline-r5__ms-01",
+          "parent_unit_id": "strategy-donchian-55-20-baseline-r5",
+          "runs_completed": 4,
+          "rolled_back": true,
+          "shard_wall_clock_ms": 96744
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:36:15.595Z",
+          "micro_shard_id": "strategy-donchian-55-20-baseline-r5__ms-02",
+          "parent_unit_id": "strategy-donchian-55-20-baseline-r5",
+          "runs_completed": 2,
+          "rolled_back": true,
+          "shard_wall_clock_ms": 55810
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:37:11.709Z",
+          "micro_shard_id": "strategy-ema-cross-9-21__ms-01",
+          "parent_unit_id": "strategy-ema-cross-9-21",
+          "runs_completed": 2,
+          "rolled_back": true,
+          "shard_wall_clock_ms": 55936
+        },
+        {
+          "checkpoint_at": "2026-04-06T15:38:07.937Z",
+          "micro_shard_id": "strategy-ema-cross-9-21__ms-02",
+          "parent_unit_id": "strategy-ema-cross-9-21",
+          "runs_completed": 2,
+          "rolled_back": true,
+          "shard_wall_clock_ms": 56067
+        }
+      ],
+      "retries": [
+        {
+          "event": "micro_shard_rollback",
+          "micro_shard_id": "strategy-keltner-breakout__ms-01",
+          "triggered_by_run": "keltner-breakout__AAPL",
+          "rolled_back_count": 3,
+          "queued_count": 4,
+          "at": "2026-04-06T15:34:17.392Z"
+        },
+        {
+          "event": "micro_shard_rollback",
+          "micro_shard_id": "strategy-keltner-breakout__ms-02",
+          "triggered_by_run": "keltner-breakout__META",
+          "rolled_back_count": 3,
+          "queued_count": 4,
+          "at": "2026-04-06T15:34:53.208Z"
+        },
+        {
+          "event": "micro_shard_rollback",
+          "micro_shard_id": "strategy-rsi-mean-reversion__ms-01",
+          "triggered_by_run": "rsi-mean-reversion__MSFT",
+          "rolled_back_count": 2,
+          "queued_count": 3,
+          "at": "2026-04-06T15:35:49.344Z"
+        },
+        {
+          "event": "micro_shard_rollback",
+          "micro_shard_id": "strategy-rsi-mean-reversion__ms-02",
+          "triggered_by_run": "rsi-mean-reversion__NVDA",
+          "rolled_back_count": 2,
+          "queued_count": 3,
+          "at": "2026-04-06T15:36:45.493Z"
+        },
+        {
+          "event": "retry_round_start",
+          "round": 1,
+          "batch_size": 14,
+          "at": "2026-04-06T15:36:45.682Z"
+        },
+        {
+          "event": "retry_still_unreadable",
+          "run_id": "keltner-breakout__MSFT",
+          "retry_count": 1,
+          "at": "2026-04-06T15:37:44.819Z"
+        },
+        {
+          "event": "retry_still_unreadable",
+          "run_id": "keltner-breakout__AMZN",
+          "retry_count": 1,
+          "at": "2026-04-06T15:38:40.815Z"
+        },
+        {
+          "event": "retry_still_unreadable",
+          "run_id": "keltner-breakout__NVDA",
+          "retry_count": 1,
+          "at": "2026-04-06T15:39:36.927Z"
+        },
+        {
+          "event": "retry_still_unreadable",
+          "run_id": "keltner-breakout__JPM",
+          "retry_count": 1,
+          "at": "2026-04-06T15:40:32.695Z"
+        },
+        {
+          "event": "retry_still_unreadable",
+          "run_id": "rsi-mean-reversion__GOOGL",
+          "retry_count": 1,
+          "at": "2026-04-06T15:41:28.301Z"
+        },
+        {
+          "event": "retry_still_unreadable",
+          "run_id": "rsi-mean-reversion__NVDA",
+          "retry_count": 1,
+          "at": "2026-04-06T15:42:23.941Z"
+        },
+        {
+          "event": "retry_still_unreadable",
+          "run_id": "rsi-mean-reversion__JPM",
+          "retry_count": 1,
+          "at": "2026-04-06T15:43:19.568Z"
+        },
+        {
+          "event": "retry_round_end",
+          "round": 1,
+          "remaining_queue": 7,
+          "at": "2026-04-06T15:43:19.568Z"
+        },
+        {
+          "event": "retry_round_start",
+          "round": 2,
+          "batch_size": 7,
+          "at": "2026-04-06T15:43:19.568Z"
+        },
+        {
+          "event": "retry_still_unreadable",
+          "run_id": "keltner-breakout__AMZN",
+          "retry_count": 2,
+          "at": "2026-04-06T15:44:18.367Z"
+        },
+        {
+          "event": "retry_still_unreadable",
+          "run_id": "keltner-breakout__JPM",
+          "retry_count": 2,
+          "at": "2026-04-06T15:45:14.126Z"
+        },
+        {
+          "event": "retry_round_end",
+          "round": 2,
+          "remaining_queue": 2,
+          "at": "2026-04-06T15:46:15.797Z"
+        },
+        {
+          "event": "retry_round_start",
+          "round": 3,
+          "batch_size": 2,
+          "at": "2026-04-06T15:46:15.798Z"
+        },
+        {
+          "event": "retry_exhausted",
+          "run_id": "keltner-breakout__AMZN",
+          "retry_count": 2,
+          "at": "2026-04-06T15:46:18.800Z"
+        },
+        {
+          "event": "retry_exhausted",
+          "run_id": "keltner-breakout__JPM",
+          "retry_count": 2,
+          "at": "2026-04-06T15:46:18.805Z"
+        },
+        {
+          "event": "retry_round_end",
+          "round": 3,
+          "remaining_queue": 0,
+          "at": "2026-04-06T15:46:18.805Z"
+        },
+        {
+          "event": "micro_shard_rollback",
+          "micro_shard_id": "strategy-donchian-55-20-baseline-r5__ms-01",
+          "triggered_by_run": "donchian-55-20-baseline-r5__AMZN",
+          "rolled_back_count": 0,
+          "queued_count": 1,
+          "at": "2026-04-06T15:35:19.643Z"
+        },
+        {
+          "event": "micro_shard_rollback",
+          "micro_shard_id": "strategy-donchian-55-20-baseline-r5__ms-02",
+          "triggered_by_run": "donchian-55-20-baseline-r5__NVDA",
+          "rolled_back_count": 2,
+          "queued_count": 3,
+          "at": "2026-04-06T15:36:15.595Z"
+        },
+        {
+          "event": "micro_shard_rollback",
+          "micro_shard_id": "strategy-ema-cross-9-21__ms-01",
+          "triggered_by_run": "ema-cross-9-21__MSFT",
+          "rolled_back_count": 2,
+          "queued_count": 3,
+          "at": "2026-04-06T15:37:11.709Z"
+        },
+        {
+          "event": "micro_shard_rollback",
+          "micro_shard_id": "strategy-ema-cross-9-21__ms-02",
+          "triggered_by_run": "ema-cross-9-21__NVDA",
+          "rolled_back_count": 2,
+          "queued_count": 3,
+          "at": "2026-04-06T15:38:07.937Z"
+        },
+        {
+          "event": "retry_round_start",
+          "round": 1,
+          "batch_size": 10,
+          "at": "2026-04-06T15:38:08.116Z"
+        },
+        {
+          "event": "retry_still_unreadable",
+          "run_id": "donchian-55-20-baseline-r5__NVDA",
+          "retry_count": 1,
+          "at": "2026-04-06T15:39:07.117Z"
+        },
+        {
+          "event": "retry_still_unreadable",
+          "run_id": "donchian-55-20-baseline-r5__JPM",
+          "retry_count": 1,
+          "at": "2026-04-06T15:40:03.065Z"
+        },
+        {
+          "event": "retry_still_unreadable",
+          "run_id": "ema-cross-9-21__GOOGL",
+          "retry_count": 1,
+          "at": "2026-04-06T15:40:58.690Z"
+        },
+        {
+          "event": "retry_still_unreadable",
+          "run_id": "ema-cross-9-21__NVDA",
+          "retry_count": 1,
+          "at": "2026-04-06T15:41:54.239Z"
+        },
+        {
+          "event": "retry_still_unreadable",
+          "run_id": "ema-cross-9-21__JPM",
+          "retry_count": 1,
+          "at": "2026-04-06T15:42:49.887Z"
+        },
+        {
+          "event": "retry_round_end",
+          "round": 1,
+          "remaining_queue": 5,
+          "at": "2026-04-06T15:42:49.887Z"
+        },
+        {
+          "event": "retry_round_start",
+          "round": 2,
+          "batch_size": 5,
+          "at": "2026-04-06T15:42:49.887Z"
+        },
+        {
+          "event": "retry_still_unreadable",
+          "run_id": "donchian-55-20-baseline-r5__JPM",
+          "retry_count": 2,
+          "at": "2026-04-06T15:43:48.550Z"
+        },
+        {
+          "event": "retry_still_unreadable",
+          "run_id": "ema-cross-9-21__NVDA",
+          "retry_count": 2,
+          "at": "2026-04-06T15:44:44.340Z"
+        },
+        {
+          "event": "retry_round_end",
+          "round": 2,
+          "remaining_queue": 2,
+          "at": "2026-04-06T15:45:04.690Z"
+        },
+        {
+          "event": "retry_round_start",
+          "round": 3,
+          "batch_size": 2,
+          "at": "2026-04-06T15:45:04.691Z"
+        },
+        {
+          "event": "retry_exhausted",
+          "run_id": "donchian-55-20-baseline-r5__JPM",
+          "retry_count": 2,
+          "at": "2026-04-06T15:45:07.694Z"
+        },
+        {
+          "event": "retry_exhausted",
+          "run_id": "ema-cross-9-21__NVDA",
+          "retry_count": 2,
+          "at": "2026-04-06T15:45:07.694Z"
+        },
+        {
+          "event": "retry_round_end",
+          "round": 3,
+          "remaining_queue": 0,
+          "at": "2026-04-06T15:45:07.694Z"
+        }
+      ],
+      "workers": [
+        {
+          "worker": "worker1",
+          "wall_clock_ms": 756911,
+          "unit_count": 2,
+          "run_count": 29,
+          "tester_available_count": 14,
+          "unreadable_count": 13
+        },
+        {
+          "worker": "worker2",
+          "wall_clock_ms": 684795,
+          "unit_count": 2,
+          "run_count": 27,
+          "tester_available_count": 14,
+          "unreadable_count": 11
+        }
+      ]
+    }
+  },
+  "deltas": {
+    "strategy_parallel": {
+      "speedup_vs_sequential": 1.461,
+      "wall_clock_reduction_pct": 31.6,
+      "aggregate_speedup": 1.932
+    },
+    "shard_parallel": {
+      "speedup_vs_sequential": 1.514,
+      "wall_clock_reduction_pct": 33.9,
+      "aggregate_speedup": 1.923
+    },
+    "hybrid_parallel": {
+      "speedup_vs_sequential": 1.458,
+      "wall_clock_reduction_pct": 31.4,
+      "aggregate_speedup": 1.928
+    },
+    "hybrid_partial_retry": {
+      "speedup_vs_sequential": 0.865,
+      "wall_clock_reduction_pct": -15.6,
+      "aggregate_speedup": 1.879
+    }
+  },
+  "ranking": [
+    {
+      "label": "shard_parallel",
+      "wall_clock_ms": 432416
+    },
+    {
+      "label": "strategy_parallel",
+      "wall_clock_ms": 447922
+    },
+    {
+      "label": "hybrid_parallel",
+      "wall_clock_ms": 448916
+    },
+    {
+      "label": "sequential",
+      "wall_clock_ms": 654517
+    },
+    {
+      "label": "hybrid_partial_retry",
+      "wall_clock_ms": 756911
+    }
+  ]
+}
