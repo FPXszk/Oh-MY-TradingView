@@ -8,8 +8,10 @@ import {
   buildNvdaMaSource,
   normalizeMetrics,
   buildResult,
+  attachFallbackMetrics,
   runLocalFallbackBacktest,
   classifyTesterReadFailure,
+  shouldRetryTesterRead,
   canSafelyClearStudies,
   hasStudyLimitDialog,
   isTesterPanelStateVisible,
@@ -330,6 +332,159 @@ describe('classifyTesterReadFailure', () => {
   });
 });
 
+describe('shouldRetryTesterRead', () => {
+  it('retries briefly when tester click succeeded but the panel is not yet visible', () => {
+    const result = shouldRetryTesterRead({
+      testerState: null,
+      hasApiResult: false,
+      hasDomResult: false,
+      testerConfirmedVisible: false,
+      attemptIndex: 0,
+      panelVisibilityGraceRetries: 2,
+    });
+    assert.equal(result.retry, true);
+    assert.equal(result.failure.category, 'panel_not_visible');
+  });
+
+  it('stops retrying once panel visibility grace retries are exhausted', () => {
+    const result = shouldRetryTesterRead({
+      testerState: null,
+      hasApiResult: false,
+      hasDomResult: false,
+      testerConfirmedVisible: false,
+      attemptIndex: 2,
+      panelVisibilityGraceRetries: 2,
+    });
+    assert.equal(result.retry, false);
+    assert.equal(result.failure.category, 'panel_not_visible');
+  });
+
+  it('retries when a previously visible tester panel disappears within the visibility budget', () => {
+    const result = shouldRetryTesterRead({
+      testerState: null,
+      hasApiResult: false,
+      hasDomResult: false,
+      testerConfirmedVisible: true,
+      attemptIndex: 0,
+      panelVisibilityGraceRetries: 2,
+    });
+    assert.equal(result.retry, true);
+    assert.equal(result.failure.category, 'panel_not_visible');
+  });
+
+  it('does not retry when TradingView reports no strategy applied', () => {
+    const result = shouldRetryTesterRead({
+      testerState: { text: 'Apply a strategy to your chart', no_strategy: true, panel_visible: true },
+      hasApiResult: false,
+      hasDomResult: false,
+      testerConfirmedVisible: true,
+      attemptIndex: 0,
+      panelVisibilityGraceRetries: 2,
+    });
+    assert.equal(result.retry, false);
+    assert.equal(result.failure.category, 'no_strategy_applied');
+  });
+
+  it('retries when tester is visible but metrics are unreadable', () => {
+    const result = shouldRetryTesterRead({
+      testerState: { text: 'Net Profit', no_strategy: false, panel_visible: true },
+      hasApiResult: false,
+      hasDomResult: false,
+      testerConfirmedVisible: true,
+      attemptIndex: 0,
+      panelVisibilityGraceRetries: 2,
+    });
+    assert.equal(result.retry, true);
+    assert.equal(result.failure.category, 'metrics_unreadable');
+  });
+
+  it('returns a shorter retry delay for metrics_unreadable follow-up attempts', () => {
+    const result = shouldRetryTesterRead({
+      testerState: { text: 'Net Profit', no_strategy: false, panel_visible: true },
+      hasApiResult: false,
+      hasDomResult: false,
+      testerConfirmedVisible: true,
+      attemptIndex: 1,
+      panelVisibilityGraceRetries: 2,
+      metricsUnreadableAttempt: 1,
+      metricsUnreadableMaxRetries: 3,
+    });
+    assert.equal(result.retry, true);
+    assert.equal(result.failure.category, 'metrics_unreadable');
+    assert.equal(typeof result.delayMs, 'number');
+    assert.ok(result.delayMs > 0 && result.delayMs < 2500);
+  });
+
+  it('stops retrying once metrics_unreadable retries are exhausted', () => {
+    const result = shouldRetryTesterRead({
+      testerState: { text: 'Net Profit', no_strategy: false, panel_visible: true },
+      hasApiResult: false,
+      hasDomResult: false,
+      testerConfirmedVisible: true,
+      attemptIndex: 4,
+      panelVisibilityGraceRetries: 2,
+      metricsUnreadableAttempt: 3,
+      metricsUnreadableMaxRetries: 3,
+    });
+    assert.equal(result.retry, false);
+    assert.equal(result.failure.category, 'metrics_unreadable');
+  });
+
+  it('keeps panel_not_visible behavior unchanged with metrics retry params', () => {
+    const result = shouldRetryTesterRead({
+      testerState: null,
+      hasApiResult: false,
+      hasDomResult: false,
+      testerConfirmedVisible: false,
+      attemptIndex: 0,
+      panelVisibilityGraceRetries: 2,
+      metricsUnreadableAttempt: 0,
+      metricsUnreadableMaxRetries: 3,
+    });
+    assert.equal(result.retry, true);
+    assert.equal(result.failure.category, 'panel_not_visible');
+  });
+
+  it('does not retry when raw metrics are already available from API', () => {
+    const result = shouldRetryTesterRead({
+      testerState: { text: 'Net Profit', no_strategy: false, panel_visible: true },
+      hasApiResult: true,
+      hasDomResult: false,
+      testerConfirmedVisible: true,
+      attemptIndex: 0,
+      panelVisibilityGraceRetries: 2,
+    });
+    assert.equal(result.retry, false);
+    assert.equal(result.failure, null);
+  });
+
+  it('does not retry when raw metrics are already available from DOM', () => {
+    const result = shouldRetryTesterRead({
+      testerState: { text: 'Net Profit', no_strategy: false, panel_visible: true },
+      hasApiResult: false,
+      hasDomResult: true,
+      testerConfirmedVisible: true,
+      attemptIndex: 0,
+      panelVisibilityGraceRetries: 2,
+    });
+    assert.equal(result.retry, false);
+    assert.equal(result.failure, null);
+  });
+
+  it('remains backward compatible when metrics-specific params are omitted', () => {
+    const result = shouldRetryTesterRead({
+      testerState: { text: 'Net Profit', no_strategy: false, panel_visible: true },
+      hasApiResult: false,
+      hasDomResult: false,
+      testerConfirmedVisible: true,
+      attemptIndex: 0,
+      panelVisibilityGraceRetries: 2,
+    });
+    assert.equal(result.retry, true);
+    assert.equal(result.failure.category, 'metrics_unreadable');
+  });
+});
+
 describe('hasStudyLimitDialog', () => {
   it('detects the Japanese indicator-limit dialog text', () => {
     const result = hasStudyLimitDialog([
@@ -498,6 +653,70 @@ describe('buildResult — tester_reason_category', () => {
     assert.equal(r.apply_failed, true);
     assert.ok(r.apply_reason);
     assert.equal(r.tester_reason_category, 'no_strategy_applied');
+  });
+});
+
+describe('attachFallbackMetrics', () => {
+  it('marks metrics_unreadable with fallback as degraded and not rerun-recommended', () => {
+    const base = buildResult({
+      compileSuccess: true,
+      testerAvailable: false,
+      testerReason: 'Strategy Tester opened but metrics could not be read from internal API or DOM',
+      testerReasonCategory: 'metrics_unreadable',
+      symbol: 'NASDAQ:NVDA',
+    });
+
+    const result = attachFallbackMetrics(base, {
+      testerReasonCategory: 'metrics_unreadable',
+      fallbackSource: 'chart_bars_local',
+      fallbackMetrics: { net_profit: 100, closed_trades: 5 },
+    });
+
+    assert.equal(result.tester_reason_category, 'metrics_unreadable');
+    assert.equal(result.fallback_source, 'chart_bars_local');
+    assert.deepEqual(result.fallback_metrics, { net_profit: 100, closed_trades: 5 });
+    assert.equal(result.degraded_result, true);
+    assert.equal(result.rerun_recommended, false);
+  });
+
+  it('recommends rerun when metrics_unreadable has no fallback metrics', () => {
+    const base = buildResult({
+      compileSuccess: true,
+      testerAvailable: false,
+      testerReason: 'Strategy Tester opened but metrics could not be read from internal API or DOM',
+      testerReasonCategory: 'metrics_unreadable',
+      symbol: 'NASDAQ:NVDA',
+    });
+
+    const result = attachFallbackMetrics(base, {
+      testerReasonCategory: 'metrics_unreadable',
+    });
+
+    assert.equal(result.rerun_recommended, true);
+    assert.equal(result.degraded_result, undefined);
+    assert.equal(result.fallback_metrics, undefined);
+  });
+
+  it('attaches fallback to apply_failed results without metrics_unreadable flags', () => {
+    const base = buildResult({
+      compileSuccess: true,
+      applyFailed: true,
+      applyReason: 'Strategy not verified in chart studies after compile + retry',
+      testerAvailable: false,
+      testerReason: 'Skipped: strategy not applied',
+      symbol: 'NASDAQ:NVDA',
+    });
+
+    const result = attachFallbackMetrics(base, {
+      fallbackSource: 'chart_bars_local',
+      fallbackMetrics: { net_profit: 100, closed_trades: 5 },
+    });
+
+    assert.equal(result.apply_failed, true);
+    assert.equal(result.fallback_source, 'chart_bars_local');
+    assert.deepEqual(result.fallback_metrics, { net_profit: 100, closed_trades: 5 });
+    assert.equal(result.degraded_result, undefined);
+    assert.equal(result.rerun_recommended, undefined);
   });
 });
 

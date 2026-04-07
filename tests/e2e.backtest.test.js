@@ -85,6 +85,17 @@ describe('e2e: Backtest NVDA MA (requires TradingView Desktop)', async () => {
         if (result.fallback_metrics) {
           assert.ok(result.fallback_source, 'fallback_source should be present with fallback_metrics');
         }
+
+        if (result.tester_reason_category === 'metrics_unreadable') {
+          assert.equal(typeof result.rerun_recommended, 'boolean');
+          if (result.fallback_metrics) {
+            assert.equal(result.degraded_result, true);
+            assert.equal(result.rerun_recommended, false);
+          } else {
+            assert.equal(result.degraded_result, undefined);
+            assert.equal(result.rerun_recommended, true);
+          }
+        }
       } else {
         assert.ok(Array.isArray(result.compile_errors), 'compile_errors should be an array');
         if (result.editor_open_failed) {

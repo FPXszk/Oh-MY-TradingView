@@ -82,6 +82,8 @@ function calculateSma(values, period, index) {
   return sum / period;
 }
 
+// This fallback mirrors the built-in NVDA MA strategy only; preset strategies need
+// their own strategy-aware fallback before using degraded results.
 export function runLocalFallbackBacktest(bars, { initialCapital = 10000 } = {}) {
   if (!Array.isArray(bars) || bars.length < 21) {
     return null;
@@ -249,6 +251,47 @@ export function classifyTesterReadFailure({ testerState, hasApiResult, hasDomRes
   };
 }
 
+export function shouldRetryTesterRead({
+  testerState,
+  hasApiResult,
+  hasDomResult,
+  testerConfirmedVisible = false,
+  attemptIndex = 0,
+  panelVisibilityGraceRetries = 0,
+  metricsUnreadableAttempt = 0,
+  metricsUnreadableMaxRetries = TESTER_METRICS_UNREADABLE_MAX_RETRIES,
+}) {
+  if (hasApiResult || hasDomResult) {
+    return { retry: false, failure: null, delayMs: 0 };
+  }
+  const failure = classifyTesterReadFailure({
+    testerState,
+    hasApiResult,
+    hasDomResult,
+  });
+  if (
+    failure.category === 'panel_not_visible' &&
+    attemptIndex < panelVisibilityGraceRetries
+  ) {
+    return { retry: true, failure, delayMs: TESTER_READ_DELAY };
+  }
+  if (failure.category === 'metrics_unreadable') {
+    const retry = metricsUnreadableAttempt < metricsUnreadableMaxRetries;
+    return {
+      retry,
+      failure,
+      delayMs: retry
+        ? (TESTER_METRICS_UNREADABLE_DELAYS[metricsUnreadableAttempt] ?? TESTER_READ_DELAY)
+        : 0,
+    };
+  }
+  return {
+    retry: false,
+    failure,
+    delayMs: 0,
+  };
+}
+
 export function hasStudyLimitDialog(dialogTexts) {
   const texts = Array.isArray(dialogTexts) ? dialogTexts : [dialogTexts];
   return texts
@@ -352,6 +395,37 @@ export function buildResult({
   }
 
   return result;
+}
+
+export function attachFallbackMetrics(
+  result,
+  {
+    testerReasonCategory,
+    fallbackMetrics,
+    fallbackSource = 'chart_bars_local',
+  } = {},
+) {
+  if (!result || typeof result !== 'object' || Array.isArray(result)) {
+    return result;
+  }
+
+  const next = { ...result };
+
+  if (fallbackMetrics) {
+    next.fallback_source = fallbackSource;
+    next.fallback_metrics = fallbackMetrics;
+    if (testerReasonCategory === 'metrics_unreadable') {
+      next.degraded_result = true;
+      next.rerun_recommended = false;
+    }
+    return next;
+  }
+
+  if (testerReasonCategory === 'metrics_unreadable') {
+    next.rerun_recommended = true;
+  }
+
+  return next;
 }
 
 // ---------------------------------------------------------------------------
@@ -521,6 +595,50 @@ async function readTesterMetricsFromDom() {
   `);
 }
 
+async function readTesterMetricsWithRetries({ testerOpenState }) {
+  let rawMetrics = null;
+  let testerState = testerOpenState.confirmedVisible
+    ? { text: '', no_strategy: false, panel_visible: true }
+    : null;
+  let failure = null;
+  let metricsUnreadableAttempt = 0;
+  let nextDelayMs = TESTER_READ_DELAY;
+
+  for (let i = 0; i < TESTER_READ_RETRIES; i += 1) {
+    await new Promise((r) => setTimeout(r, nextDelayMs));
+    const apiMetrics = await readTesterMetricsFromInternalApi();
+    const domMetrics = apiMetrics ? null : await readTesterMetricsFromDom();
+    rawMetrics = apiMetrics || domMetrics;
+    testerState = await readTesterState();
+    if (rawMetrics) {
+      return { rawMetrics, testerState, failure: null };
+    }
+
+    const decision = shouldRetryTesterRead({
+      testerState,
+      hasApiResult: Boolean(apiMetrics),
+      hasDomResult: Boolean(domMetrics),
+      testerConfirmedVisible: testerOpenState.confirmedVisible,
+      attemptIndex: i,
+      panelVisibilityGraceRetries: TESTER_READ_RETRIES,
+      metricsUnreadableAttempt,
+    });
+    failure = decision.failure;
+    if (decision.failure?.category === 'metrics_unreadable' && decision.retry) {
+      metricsUnreadableAttempt += 1;
+    }
+    if (!decision.retry) {
+      break;
+    }
+    nextDelayMs = decision.delayMs || TESTER_READ_DELAY;
+    if (testerState?.panel_visible) {
+      await activateTesterMetricsTab();
+    }
+  }
+
+  return { rawMetrics: null, testerState, failure };
+}
+
 async function readTesterState() {
   return evaluate(`
     (function() {
@@ -588,6 +706,18 @@ async function readChartBars(limit = 500) {
       }
     })()
   `);
+}
+
+async function readNvdaMaFallbackMetricsPayload() {
+  const fallbackBars = await readChartBars();
+  const fallbackMetrics = runLocalFallbackBacktest(fallbackBars);
+  if (!fallbackMetrics) {
+    return null;
+  }
+  return {
+    source: 'chart_bars_local',
+    metrics: fallbackMetrics,
+  };
 }
 
 async function readVisibleDialogTexts() {
@@ -935,6 +1065,8 @@ async function performRestore({
 // ---------------------------------------------------------------------------
 const TESTER_READ_RETRIES = 5;
 const TESTER_READ_DELAY = 2500;
+const TESTER_METRICS_UNREADABLE_DELAYS = [1000, 1500, 2000];
+const TESTER_METRICS_UNREADABLE_MAX_RETRIES = TESTER_METRICS_UNREADABLE_DELAYS.length;
 const MAIN_SERIES_READY_RETRIES = 20;
 const MAIN_SERIES_READY_DELAY = 500;
 const STUDY_TEMPLATE_RESTORE_RETRIES = 4;
@@ -1035,9 +1167,8 @@ export async function runNvdaMaBacktest() {
     }
 
     if (!strategyAttached) {
-      const fallbackBars = await readChartBars();
-      const fallbackMetrics = runLocalFallbackBacktest(fallbackBars);
-      result = buildResult({
+      const fallback = await readNvdaMaFallbackMetricsPayload();
+      result = attachFallbackMetrics(buildResult({
         compileSuccess: true,
         compileDetail: compileResult,
         applyFailed: true,
@@ -1045,11 +1176,10 @@ export async function runNvdaMaBacktest() {
         testerAvailable: false,
         testerReason: 'Skipped: strategy not applied',
         symbol: chartSymbol,
+      }), {
+        fallbackMetrics: fallback?.metrics,
+        fallbackSource: fallback?.source,
       });
-      if (fallbackMetrics) {
-        result.fallback_source = 'chart_bars_local';
-        result.fallback_metrics = fallbackMetrics;
-      }
       return result;
     }
 
@@ -1069,34 +1199,19 @@ export async function runNvdaMaBacktest() {
     }
     await activateTesterMetricsTab();
 
-    let rawMetrics = null;
-    let testerState = testerOpenState.confirmedVisible
-      ? { text: '', no_strategy: false, panel_visible: true }
-      : null;
-    for (let i = 0; i < TESTER_READ_RETRIES; i++) {
-      await new Promise((r) => setTimeout(r, TESTER_READ_DELAY));
-      rawMetrics = await readTesterMetricsFromInternalApi();
-      if (!rawMetrics) {
-        rawMetrics = await readTesterMetricsFromDom();
-      }
-      testerState = await readTesterState();
-      if (rawMetrics) break;
-      if (testerState?.no_strategy) break;
-      if (testerState?.panel_visible) {
-        await activateTesterMetricsTab();
-      }
-    }
+    const { rawMetrics, testerState, failure: testerReadFailure } = await readTesterMetricsWithRetries({
+      testerOpenState,
+    });
 
     if (!rawMetrics) {
-      const failure = classifyTesterReadFailure({
+      const failure = testerReadFailure || classifyTesterReadFailure({
         testerState,
         hasApiResult: false,
         hasDomResult: false,
       });
       const noStrategyReported = failure.category === 'no_strategy_applied';
-      const fallbackBars = await readChartBars();
-      const fallbackMetrics = runLocalFallbackBacktest(fallbackBars);
-      result = buildResult({
+      const fallback = await readNvdaMaFallbackMetricsPayload();
+      result = attachFallbackMetrics(buildResult({
         compileSuccess: true,
         compileDetail: compileResult,
         applyFailed: noStrategyReported,
@@ -1107,11 +1222,11 @@ export async function runNvdaMaBacktest() {
         testerReason: failure.reason,
         testerReasonCategory: failure.category,
         symbol: chartSymbol,
+      }), {
+        testerReasonCategory: failure.category,
+        fallbackMetrics: fallback?.metrics,
+        fallbackSource: fallback?.source,
       });
-      if (fallbackMetrics) {
-        result.fallback_source = 'chart_bars_local';
-        result.fallback_metrics = fallbackMetrics;
-      }
       return result;
     }
 
@@ -1301,32 +1416,18 @@ export async function runPresetBacktest({ presetId, symbol = 'NVDA' }) {
     }
     await activateTesterMetricsTab();
 
-    let rawMetrics = null;
-    let testerState = testerOpenState.confirmedVisible
-      ? { text: '', no_strategy: false, panel_visible: true }
-      : null;
-    for (let i = 0; i < TESTER_READ_RETRIES; i++) {
-      await new Promise((r) => setTimeout(r, TESTER_READ_DELAY));
-      rawMetrics = await readTesterMetricsFromInternalApi();
-      if (!rawMetrics) {
-        rawMetrics = await readTesterMetricsFromDom();
-      }
-      testerState = await readTesterState();
-      if (rawMetrics) break;
-      if (testerState?.no_strategy) break;
-      if (testerState?.panel_visible) {
-        await activateTesterMetricsTab();
-      }
-    }
+    const { rawMetrics, testerState, failure: testerReadFailure } = await readTesterMetricsWithRetries({
+      testerOpenState,
+    });
 
     if (!rawMetrics) {
-      const failure = classifyTesterReadFailure({
+      const failure = testerReadFailure || classifyTesterReadFailure({
         testerState,
         hasApiResult: false,
         hasDomResult: false,
       });
       const noStrategyReported = failure.category === 'no_strategy_applied';
-      result = buildResult({
+      result = attachFallbackMetrics(buildResult({
         compileSuccess: true,
         compileDetail: compileResult,
         applyFailed: noStrategyReported,
@@ -1337,6 +1438,8 @@ export async function runPresetBacktest({ presetId, symbol = 'NVDA' }) {
         testerReason: failure.reason,
         testerReasonCategory: failure.category,
         symbol: chartSymbol,
+      }), {
+        testerReasonCategory: failure.category,
       });
       return result;
     }

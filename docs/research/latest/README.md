@@ -5,9 +5,18 @@
 ## 読む順番
 
 1. この `README.md`
-2. `top4-period-slicing-handoff_20260407_1641.md`
-3. `top4-period-slicing-results_20260407_1641.md`
-4. 判断経緯が必要なら `docs/working-memory/session-logs/`
+2. `backtest-reliability-handoff_20260407_1026.md`
+3. `top4-period-slicing-handoff_20260407_1641.md`
+4. `top4-period-slicing-results_20260407_1641.md`
+5. 判断経緯が必要なら `docs/working-memory/session-logs/`
+
+## 現在の要点
+
+- known-good は引き続き **dual-worker / 2 worker parallel**、`restore_policy: "skip"`、Strategy Tester `指標` タブ活性化、warm-up 後の warmed state
+- latest result の正本は recovered artifact / recovered summary を優先する
+- 直近の未解決課題は **長時間 batch での unreadable と rerun コスト**
+- 2026-04-07 の reliability pass では、repo core 側で `no_strategy_applied` を早期終了しつつ、`metrics_unreadable` 側の retry budget 短縮に着手した
+- 続く実装で、**strategy-aware fallback がある経路（現状は NVDA MA）だけ** `fallback_metrics` / `degraded_result` を返し、preset 経路の `metrics_unreadable` は `rerun_recommended: true` で扱う形に整理した
 
 ## 運用ルール
 

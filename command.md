@@ -229,6 +229,16 @@ wait
   まで引き上げる
 - 本番中は **10 run ごと** に `status` / `json/version` を確認し、崩れたらまず当該 shard で止める
 - recovery は full rerun を避けつつ、checkpoint を使った **限定的な partial retry** を検討する
+- repo core の tester read では、`panel_not_visible` は従来同等の可視化待機予算を維持しつつ、`no_strategy_applied` は早期終了し、`metrics_unreadable` のみ追加再試行対象を短縮する
+- さらに 2026-04-07 の follow-up で、`metrics_unreadable` に対する result contract を整理した
+- result に
+  - `tester_reason_category: "metrics_unreadable"`
+  - `fallback_source`
+  - `fallback_metrics`
+  - `degraded_result: true`
+  - `rerun_recommended: false`
+  が揃っている場合は、**strategy-aware fallback がある経路に限って**即 rerun より checkpoint 継続を優先する
+- preset のように strategy-aware fallback が無い経路では、`metrics_unreadable` は `rerun_recommended: true` を返すだけで、`fallback_metrics` は付けない
 - ただし `20 run` の小 sample benchmark では
   - strategy-aware parallel: `279,535 ms`
   - 2-run shard parallel: `265,226 ms`
