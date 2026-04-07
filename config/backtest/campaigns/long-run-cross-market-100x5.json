@@ -1,0 +1,36 @@
+{
+  "id": "long-run-cross-market-100x5",
+  "name": "Long-Run Cross-Market 5 strategies × 100 symbols",
+  "description": "Approved long-run campaign for 2000-to-latest backtests across US equities, JP equities, and representative index/ETF proxies.",
+  "universe": "long-run-cross-market-100",
+  "preset_ids": [
+    "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight",
+    "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early",
+    "donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide",
+    "donchian-50-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-entry-early",
+    "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight"
+  ],
+  "date_override": {
+    "from": "2000-01-01",
+    "to": "2099-12-31"
+  },
+  "phases": {
+    "smoke": {
+      "symbol_count": 10
+    },
+    "pilot": {
+      "symbol_count": 25
+    },
+    "full": {
+      "symbol_count": 100
+    }
+  },
+  "execution": {
+    "worker_ports": [9223, 9225],
+    "checkpoint_every": 10,
+    "cooldown_ms": 1000,
+    "max_consecutive_failures": 5,
+    "max_rerun_passes": 2
+  },
+  "notes": "date_override.to=2099-12-31 は TradingView 側の latest available bar までを拾うための上限。2000 年より後に上場した銘柄・ETF は earliest available から開始される。"
+}

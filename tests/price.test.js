@@ -98,6 +98,10 @@ describe('symbolMatches', () => {
     assert.equal(symbolMatches('NASDAQ:NVDA', 'NVDA'), true);
   });
 
+  it('matches daily exchange variants for the same JP ticker', () => {
+    assert.equal(symbolMatches('TSE_DLY:7203', 'TSE:7203'), true);
+  });
+
   it('does not match different symbols', () => {
     assert.equal(symbolMatches('NASDAQ:AAPL', 'NVDA'), false);
   });

@@ -7,9 +7,18 @@ function resolveDeps(deps) {
   };
 }
 
+function normalizeSymbolForMatch(value) {
+  const normalized = String(value || '').trim().toUpperCase();
+  if (!normalized.includes(':')) {
+    return normalized;
+  }
+  const [prefix, suffix] = normalized.split(':');
+  return `${prefix.replace(/_DLY$/, '')}:${suffix}`;
+}
+
 export function symbolMatches(current, requested) {
-  const normalizedCurrent = String(current || '').trim().toUpperCase();
-  const normalizedRequested = String(requested || '').trim().toUpperCase();
+  const normalizedCurrent = normalizeSymbolForMatch(current);
+  const normalizedRequested = normalizeSymbolForMatch(requested);
   if (!normalizedCurrent || !normalizedRequested) return false;
   return (
     normalizedCurrent === normalizedRequested ||

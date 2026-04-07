@@ -19,6 +19,7 @@ import {
 } from './pine.js';
 import { validatePreset } from './preset-validation.js';
 import { buildResearchStrategySource } from './research-backtest.js';
+import { mergeDateOverride, validateDateRange } from './campaign.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -1430,7 +1431,7 @@ export async function runNvdaMaBacktest() {
 // ---------------------------------------------------------------------------
 const PRESETS_PATH = join(__dirname, '..', '..', 'config', 'backtest', 'strategy-presets.json');
 
-export async function loadPreset(presetId) {
+export async function loadPreset(presetId, { dateOverride } = {}) {
   const raw = await readFile(PRESETS_PATH, 'utf8');
   const data = JSON.parse(raw);
 
@@ -1446,21 +1447,29 @@ export async function loadPreset(presetId) {
     );
   }
 
+  const effectiveDefaults = mergeDateOverride(data.common_defaults, dateOverride);
+  const dateValidation = validateDateRange(effectiveDefaults.date_range);
+  if (!dateValidation.valid) {
+    throw new Error(
+      `Preset "${presetId}" date override failed validation: ${dateValidation.errors.join('; ')}`,
+    );
+  }
+
   let source;
   try {
-    source = buildResearchStrategySource(preset, data.common_defaults);
+    source = buildResearchStrategySource(preset, effectiveDefaults);
   } catch (err) {
     throw new Error(`Preset "${presetId}" is not executable by repo CLI: ${err.message}`);
   }
 
-  return { preset, defaults: data.common_defaults, source };
+  return { preset, defaults: effectiveDefaults, source };
 }
 
 // ---------------------------------------------------------------------------
 // Preset-driven backtest orchestration
 // ---------------------------------------------------------------------------
-export async function runPresetBacktest({ presetId, symbol = 'NVDA' }) {
-  const { preset, source } = await loadPreset(presetId);
+export async function runPresetBacktest({ presetId, symbol = 'NVDA', dateOverride } = {}) {
+  const { preset, source } = await loadPreset(presetId, { dateOverride });
   const strategyTitle = preset.name;
   let originalSymbol = null;
   let originalSource = null;

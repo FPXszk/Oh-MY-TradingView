@@ -4,3 +4,20 @@ export { getCurrentPrice, setActiveSymbol, formatPriceResult, validatePriceData,
 export { buildNvdaMaSource, normalizeMetrics, buildResult, runNvdaMaBacktest, loadPreset, runPresetBacktest } from './backtest.js';
 export { validatePreset, validatePresetIds, filterPresetsByRound } from './preset-validation.js';
 export { buildResearchStrategySource } from './research-backtest.js';
+export {
+  validateDateRange,
+  mergeDateOverride,
+  filterStrategies,
+  selectPhaseSymbols,
+  partitionRuns,
+  buildRunMatrix,
+  validateCampaignConfig,
+  loadCampaign,
+  collapseCompletedRuns,
+  filterRunsToMatrix,
+  buildCampaignFingerprint,
+  buildCheckpoint,
+  summarizeResults,
+  needsRerun,
+  findPendingRuns,
+} from './campaign.js';

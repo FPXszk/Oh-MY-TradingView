@@ -125,6 +125,13 @@ TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9223 node src/cli/index.js backtest preset 
 TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9225 node src/cli/index.js backtest preset rsi-mean-reversion --symbol NVDA
 ```
 
+### 日付範囲オーバーライド付き個別実行
+
+```bash
+TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9223 \
+  node src/cli/index.js backtest preset ema-cross-9-21 --symbol NVDA --date-from 2000-01-01 --date-to 2099-12-31
+```
+
 ### 並列実行
 
 ```bash
@@ -256,7 +263,68 @@ wait
 - なお、この順位更新は `20 run` / `32 run` benchmark に基づくもので、`100+ run` の大規模 workload での追試はまだ未実施
 - 4並列は port / topology / health gate を含めて未検証であり、この文書の運用保証範囲には含めない
 
-## 9. 参照先
+## 9. キャンペーンバッチ実行
+
+### キャンペーン設定
+
+`config/backtest/campaigns/` に JSON 形式のキャンペーン定義を配置する。
+
+```json
+{
+  "id": "long-run-cross-market-100x5",
+  "universe": "long-run-cross-market-100",
+  "preset_ids": [
+    "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight",
+    "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early",
+    "donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide",
+    "donchian-50-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-entry-early",
+    "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight"
+  ],
+  "date_override": { "from": "2000-01-01", "to": "2099-12-31" },
+  "phases": {
+    "smoke": { "symbol_count": 10 },
+    "pilot": { "symbol_count": 25 },
+    "full": { "symbol_count": 100 }
+  },
+  "execution": {
+    "worker_ports": [9223, 9225],
+    "checkpoint_every": 10,
+    "cooldown_ms": 1000,
+    "max_consecutive_failures": 5,
+    "max_rerun_passes": 2
+  }
+}
+```
+
+### キャンペーン実行
+
+```bash
+# ドライラン（実行せずマトリクスを確認）
+node scripts/backtest/run-long-campaign.mjs long-run-cross-market-100x5 --phase smoke --dry-run
+
+# smoke / pilot / full
+node scripts/backtest/run-long-campaign.mjs long-run-cross-market-100x5 --phase smoke --host 172.31.144.1 --ports 9223,9225
+node scripts/backtest/run-long-campaign.mjs long-run-cross-market-100x5 --phase pilot --host 172.31.144.1 --ports 9223,9225
+node scripts/backtest/run-long-campaign.mjs long-run-cross-market-100x5 --phase full --host 172.31.144.1 --ports 9223,9225
+```
+
+### 中断からの復旧
+
+```bash
+# 最新チェックポイントから自動再開
+node scripts/backtest/recover-campaign.mjs long-run-cross-market-100x5 --phase full --host 172.31.144.1 --ports 9223,9225
+
+# 特定のチェックポイントから再開
+node scripts/backtest/run-long-campaign.mjs long-run-cross-market-100x5 \
+  --phase pilot \
+  --host 172.31.144.1 \
+  --ports 9223,9225 \
+  --resume results/campaigns/long-run-cross-market-100x5/pilot/checkpoint-50.json
+```
+
+結果は `results/campaigns/<campaign-id>/<phase>/` に保存される。チェックポイントは `execution.checkpoint_every` ごとに書き出され、resume 時は `campaign_id` / `phase` / fingerprint が一致する checkpoint だけを受け付ける。
+
+## 10. 参照先
 
 - `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
 - `docs/working-memory/session-logs/dual-worker-parallel-backtest-handoff_20260406_0735.md`
