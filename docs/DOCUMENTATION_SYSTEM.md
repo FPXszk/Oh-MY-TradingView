@@ -133,6 +133,11 @@
 - [`docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`](./design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md)
 - [`command.md`](../command.md)
 
+### 外部比較・応用可能性調査を見たいとき
+
+- [`docs/research/tradingview-external-landscape-and-applicability_20260408_1105.md`](./research/tradingview-external-landscape-and-applicability_20260408_1105.md)
+- 参照した資料の台帳は [`docs/references/design-ref-llms.md`](./references/design-ref-llms.md)
+
 ### セッションの判断経緯を追いたいとき
 
 - [`docs/working-memory/session-logs/mag7-backtest-session-summary_20260404_1106.md`](./working-memory/session-logs/mag7-backtest-session-summary_20260404_1106.md)
@@ -150,6 +155,7 @@
 - [`docs/working-memory/session-logs/dual-worker-parallel-backtest-handoff_20260406_0735.md`](./working-memory/session-logs/dual-worker-parallel-backtest-handoff_20260406_0735.md)
 - [`docs/working-memory/session-logs/tradingview-parallel-backtest-stabilization_20260406_0802.md`](./working-memory/session-logs/tradingview-parallel-backtest-stabilization_20260406_0802.md)
 - [`docs/working-memory/session-logs/top4-backtest-continuation_20260407_0529.md`](./working-memory/session-logs/top4-backtest-continuation_20260407_0529.md)
+- [`docs/working-memory/session-logs/tradingview-external-research-and-doc-governance_20260408_1115.md`](./working-memory/session-logs/tradingview-external-research-and-doc-governance_20260408_1115.md)
 
 ## 運用ルール
 
@@ -157,3 +163,5 @@
 - strategy id は backtick 付きの kebab-case で統一する
 - 新しいバックテスト snapshot を追加したら、`research/` 側の summary と `DOCUMENTATION_SYSTEM.md` の導線も一緒に更新する
 - current handoff の正本は `docs/research/latest/` に置き、`docs/working-memory/session-logs/` には経緯だけを append する
+- 外部・比較調査で参照した資料は、`docs/references/design-ref-llms.md` に URL / 理由 / 採用したもの / 採用しなかったもの付きで必ず追記する
+- 外部調査の新規 doc を追加したら、`docs/references/design-ref-llms.md` も同時に更新する
