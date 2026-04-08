@@ -13,6 +13,7 @@
 
 | file | 元の場所 | 概要 |
 |---|---|---|
+| `long-run-cross-market-campaign-handoff_20260408_0320.md` | research | market-specific deep dive 直前世代の cross-market 100x5 handoff |
 | `top4-backtest-handoff_20260407_0529.md` | latest | round10/11 top4 戦略 backtest handoff |
 | `top4-backtest-results_20260407_0529.md` | latest | round10/11 top4 戦略 backtest 結果 |
 | `top4-period-slicing-handoff_20260407_1641.md` | latest | period slicing + symbol universe 置換 handoff |

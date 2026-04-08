@@ -733,3 +733,163 @@ describe('market-specific long-run deep-dive configs', () => {
     assert.equal(jpPilot.symbols.length, 25);
   });
 });
+
+// ---------------------------------------------------------------------------
+// market-matched 100-symbol universe & campaign configs
+// ---------------------------------------------------------------------------
+describe('100-symbol universes', () => {
+  it('long-run-us-100.json has 100 US-only symbols', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'config', 'backtest', 'universes', 'long-run-us-100.json'),
+      'utf8',
+    );
+    const universe = JSON.parse(raw);
+    assert.equal(universe.id, 'long-run-us-100');
+    assert.equal(universe.symbols.length, 100);
+    assert.ok(universe.symbols.every((s) => s.market === 'US'));
+  });
+
+  it('long-run-jp-100.json has 100 JP-only symbols', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'config', 'backtest', 'universes', 'long-run-jp-100.json'),
+      'utf8',
+    );
+    const universe = JSON.parse(raw);
+    assert.equal(universe.id, 'long-run-jp-100');
+    assert.equal(universe.symbols.length, 100);
+    assert.ok(universe.symbols.every((s) => s.market === 'JP'));
+  });
+
+  it('long-run-us-100 preserves first 50 from long-run-us-50', async () => {
+    const [rawOld, rawNew] = await Promise.all([
+      readFile(join(__dirname, '..', 'config', 'backtest', 'universes', 'long-run-us-50.json'), 'utf8'),
+      readFile(join(__dirname, '..', 'config', 'backtest', 'universes', 'long-run-us-100.json'), 'utf8'),
+    ]);
+    const old50 = JSON.parse(rawOld).symbols.map((s) => s.symbol);
+    const new100 = JSON.parse(rawNew).symbols.map((s) => s.symbol);
+    assert.deepEqual(new100.slice(0, 50), old50);
+  });
+
+  it('long-run-jp-100 preserves first 50 from long-run-jp-50', async () => {
+    const [rawOld, rawNew] = await Promise.all([
+      readFile(join(__dirname, '..', 'config', 'backtest', 'universes', 'long-run-jp-50.json'), 'utf8'),
+      readFile(join(__dirname, '..', 'config', 'backtest', 'universes', 'long-run-jp-100.json'), 'utf8'),
+    ]);
+    const old50 = JSON.parse(rawOld).symbols.map((s) => s.symbol);
+    const new100 = JSON.parse(rawNew).symbols.map((s) => s.symbol);
+    assert.deepEqual(new100.slice(0, 50), old50);
+  });
+
+  it('100-symbol universes contain no duplicate symbols', async () => {
+    for (const file of ['long-run-us-100.json', 'long-run-jp-100.json']) {
+      const raw = await readFile(
+        join(__dirname, '..', 'config', 'backtest', 'universes', file),
+        'utf8',
+      );
+      const symbols = JSON.parse(raw).symbols.map((s) => s.symbol);
+      assert.equal(symbols.length, new Set(symbols).size, `duplicates in ${file}`);
+    }
+  });
+});
+
+describe('100x3 campaign configs', () => {
+  it('long-run-us-entry-sweep-100x3.json is valid JSON with correct shape', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'long-run-us-entry-sweep-100x3.json'),
+      'utf8',
+    );
+    const config = JSON.parse(raw);
+    assert.equal(config.id, 'long-run-us-entry-sweep-100x3');
+    assert.equal(config.universe, 'long-run-us-100');
+    assert.equal(config.date_override.from, '2000-01-01');
+    assert.deepEqual(config.preset_ids, [
+      'donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early',
+      'donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict',
+      'donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late',
+    ]);
+    assert.deepEqual(config.execution.worker_ports, [9223, 9225]);
+  });
+
+  it('long-run-jp-exit-sweep-100x3.json is valid JSON with correct shape', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'long-run-jp-exit-sweep-100x3.json'),
+      'utf8',
+    );
+    const config = JSON.parse(raw);
+    assert.equal(config.id, 'long-run-jp-exit-sweep-100x3');
+    assert.equal(config.universe, 'long-run-jp-100');
+    assert.equal(config.date_override.from, '2000-01-01');
+    assert.deepEqual(config.preset_ids, [
+      'donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight',
+      'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight',
+      'donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide',
+    ]);
+    assert.deepEqual(config.execution.worker_ports, [9223, 9225]);
+  });
+
+  it('100x3 campaign configs pass validateCampaignConfig', async () => {
+    for (const fileName of [
+      'long-run-us-entry-sweep-100x3.json',
+      'long-run-jp-exit-sweep-100x3.json',
+    ]) {
+      const raw = await readFile(
+        join(__dirname, '..', 'config', 'backtest', 'campaigns', fileName),
+        'utf8',
+      );
+      const config = JSON.parse(raw);
+      const result = validateCampaignConfig(config);
+      assert.equal(result.valid, true, `${fileName}: ${result.errors}`);
+      assert.deepEqual(result.errors, []);
+    }
+  });
+});
+
+describe('market-matched 100-symbol long-run campaigns', () => {
+  it('loads US 100x3 campaign with 100 US-only symbols and 3 strategies', async () => {
+    const campaign = await loadCampaign('long-run-us-entry-sweep-100x3');
+    assert.equal(campaign.symbols.length, 100);
+    assert.equal(campaign.strategies.length, 3);
+    assert.equal(campaign.matrix.length, 300);
+    assert.ok(campaign.symbols.every((entry) => entry.market === 'US'));
+    assert.deepEqual(
+      campaign.strategies.map((strategy) => strategy.id),
+      [
+        'donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early',
+        'donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict',
+        'donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late',
+      ],
+    );
+    assert.equal(campaign.defaults.date_range.from, '2000-01-01');
+    assert.equal(campaign.defaults.date_range.to, '2099-12-31');
+  });
+
+  it('loads JP 100x3 campaign with 100 JP-only symbols and 3 strategies', async () => {
+    const campaign = await loadCampaign('long-run-jp-exit-sweep-100x3');
+    assert.equal(campaign.symbols.length, 100);
+    assert.equal(campaign.strategies.length, 3);
+    assert.equal(campaign.matrix.length, 300);
+    assert.ok(campaign.symbols.every((entry) => entry.market === 'JP'));
+    assert.deepEqual(
+      campaign.strategies.map((strategy) => strategy.id),
+      [
+        'donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight',
+        'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight',
+        'donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide',
+      ],
+    );
+    assert.equal(campaign.defaults.date_range.from, '2000-01-01');
+    assert.equal(campaign.defaults.date_range.to, '2099-12-31');
+  });
+
+  it('uses 10/25/100 phase sizing for both 100x3 campaigns', async () => {
+    const usSmoke = await loadCampaign('long-run-us-entry-sweep-100x3', { phase: 'smoke' });
+    const usPilot = await loadCampaign('long-run-us-entry-sweep-100x3', { phase: 'pilot' });
+    const jpSmoke = await loadCampaign('long-run-jp-exit-sweep-100x3', { phase: 'smoke' });
+    const jpPilot = await loadCampaign('long-run-jp-exit-sweep-100x3', { phase: 'pilot' });
+
+    assert.equal(usSmoke.symbols.length, 10);
+    assert.equal(usPilot.symbols.length, 25);
+    assert.equal(jpSmoke.symbols.length, 10);
+    assert.equal(jpPilot.symbols.length, 25);
+  });
+});

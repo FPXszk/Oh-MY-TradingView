@@ -5,32 +5,32 @@
 ## 読む順番
 
 1. この `README.md`
-2. `market-specific-long-run-deep-dive-handoff_20260408_1857.md`
-3. `market-specific-long-run-deep-dive-results_20260408_1857.md`
-4. 直前世代を確認するなら `../long-run-cross-market-campaign-handoff_20260408_0320.md`
+2. `next-long-run-market-matched-200-handoff_20260409_0643.md`
+3. `next-long-run-market-matched-200-results_20260409_0643.md`
+4. 直前世代を確認するなら `../market-specific-long-run-deep-dive-handoff_20260408_1857.md`
 5. 判断経緯が必要なら `docs/working-memory/session-logs/`
 
-> 直前世代の current pointer は `docs/research/long-run-cross-market-campaign-handoff_20260408_0320.md`。
+> 直前世代の current pointer は `docs/research/market-specific-long-run-deep-dive-handoff_20260408_1857.md`。
 > 2 世代以上前は `docs/research/old/` に移動済みで、既定では読まない。
 
 ## 現在の要点
 
 - 現在の known-good は
-  - **worker1 single-worker**（2026-04-08 deep dive で smoke `60/60`、pilot `150/150`、full `300/300`）
+  - **worker1 single-worker**（2026-04-09 market-matched 200 で smoke `60/60`、pilot `150/150`、full `600/600`）
   - healthy profile が揃ったときの **dual-worker / 2 worker parallel**
   の 2 系統
 - latest result の正本は recovered artifact / recovered summary を優先する
-- 直近の主テーマは **market-specific long-run deep dive**（US 50 symbols × 3 entry sweep / JP 50 symbols × 3 exit sweep）
-- 2026-04-08 の market-specific deep dive では
-  - US full: `150/150`
-  - JP full: `150/150`
-  - combined full: `300/300`
+- 直近の主テーマは **next long-run market-matched 200**（US 100 symbols × 3 entry sweep / JP 100 symbols × 3 exit sweep）
+- 2026-04-09 の market-matched 200 では
+  - US full: `300/300`
+  - JP full: `300/300`
+  - combined full: `600/600`
   を回収できた
 - strategy signal は
   - US: avg net `50-20 strict-entry-early`, PF / wins `60-20 strict-entry-late`
-  - JP: avg net `55-20 tight`, PF / wins `55-18 tight-exit-tight`
+  - JP: avg net `55-20 tight`, PF `55-18 tight-exit-tight`
   に分かれた
-- `9225` 側 worker2 は welcome / onboarding 問題が残り、今回の deep dive 本番には投入していない
+- `9225` 側 worker2 は visible 起動と warm-up までは回復したが、distinct parallel smoke が `metrics_unreadable` で不安定なため、今回の本番には投入していない
 
 ## 世代管理ルール
 

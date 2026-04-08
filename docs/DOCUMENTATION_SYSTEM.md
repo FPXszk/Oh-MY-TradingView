@@ -35,7 +35,7 @@
 
 ### 直前世代の backtest handoff を確認したいとき
 
-- [`docs/research/long-run-cross-market-campaign-handoff_20260408_0320.md`](./research/long-run-cross-market-campaign-handoff_20260408_0320.md)
+- [`docs/research/market-specific-long-run-deep-dive-handoff_20260408_1857.md`](./research/market-specific-long-run-deep-dive-handoff_20260408_1857.md)
 
 ### Mag7 戦略候補を知りたいとき
 

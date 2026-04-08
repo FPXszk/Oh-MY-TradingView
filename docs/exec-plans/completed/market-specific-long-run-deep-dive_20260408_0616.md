@@ -18,7 +18,7 @@
 
 ## Source of truth
 
-- `docs/research/latest/long-run-cross-market-campaign-handoff_20260408_0320.md`
+- `docs/research/old/long-run-cross-market-campaign-handoff_20260408_0320.md`
 - `docs/working-memory/session-logs/long-run-cross-market-campaign_20260408_0320.md`
 - `results/campaigns/long-run-cross-market-100x5/full/recovered-summary.json`
 - `results/campaigns/long-run-cross-market-100x5/full/recovered-results.json`

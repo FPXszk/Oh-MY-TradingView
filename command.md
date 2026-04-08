@@ -347,6 +347,38 @@ node scripts/backtest/recover-campaign.mjs long-run-jp-exit-sweep-50x3 --phase f
 
 US は `50/55/60` の entry period 比較、JP は `18/20/22` の exit period 比較に固定している。どちらも `2000-01-01 -> latest` の long-run 条件を使い、既存 runner をそのまま再利用する。
 
+### market-matched 100-symbol long-run (200 total)
+
+```bash
+# US entry sweep 100x3
+node scripts/backtest/run-long-campaign.mjs long-run-us-entry-sweep-100x3 --phase smoke --dry-run
+node scripts/backtest/run-long-campaign.mjs long-run-us-entry-sweep-100x3 --phase smoke --host 172.31.144.1 --ports 9223,9225
+node scripts/backtest/run-long-campaign.mjs long-run-us-entry-sweep-100x3 --phase pilot --host 172.31.144.1 --ports 9223,9225
+node scripts/backtest/run-long-campaign.mjs long-run-us-entry-sweep-100x3 --phase full --host 172.31.144.1 --ports 9223,9225
+
+# JP exit sweep 100x3
+node scripts/backtest/run-long-campaign.mjs long-run-jp-exit-sweep-100x3 --phase smoke --dry-run
+node scripts/backtest/run-long-campaign.mjs long-run-jp-exit-sweep-100x3 --phase smoke --host 172.31.144.1 --ports 9223,9225
+node scripts/backtest/run-long-campaign.mjs long-run-jp-exit-sweep-100x3 --phase pilot --host 172.31.144.1 --ports 9223,9225
+node scripts/backtest/run-long-campaign.mjs long-run-jp-exit-sweep-100x3 --phase full --host 172.31.144.1 --ports 9223,9225
+
+# recovery
+node scripts/backtest/recover-campaign.mjs long-run-us-entry-sweep-100x3 --phase full --host 172.31.144.1 --ports 9223,9225
+node scripts/backtest/recover-campaign.mjs long-run-jp-exit-sweep-100x3 --phase full --host 172.31.144.1 --ports 9223,9225
+
+# single-worker fallback (known-good on 2026-04-09)
+node scripts/backtest/run-long-campaign.mjs long-run-us-entry-sweep-100x3 --phase smoke --host 172.31.144.1 --ports 9223
+node scripts/backtest/run-long-campaign.mjs long-run-jp-exit-sweep-100x3 --phase smoke --host 172.31.144.1 --ports 9223
+node scripts/backtest/run-long-campaign.mjs long-run-us-entry-sweep-100x3 --phase pilot --host 172.31.144.1 --ports 9223
+node scripts/backtest/run-long-campaign.mjs long-run-jp-exit-sweep-100x3 --phase pilot --host 172.31.144.1 --ports 9223
+node scripts/backtest/run-long-campaign.mjs long-run-us-entry-sweep-100x3 --phase full --host 172.31.144.1 --ports 9223
+node scripts/backtest/run-long-campaign.mjs long-run-jp-exit-sweep-100x3 --phase full --host 172.31.144.1 --ports 9223
+```
+
+50x3 と同じ strategy split だが universe を 100 symbols に拡張した構成。phases は smoke `10` / pilot `25` / full `100`。実行前に必ず dual-worker readiness と distinct parallel smoke を通すこと。
+
+2026-04-09 の実運用では worker2 を visible Session1 まで回復できたが、distinct parallel smoke が 2 回連続で `metrics_unreadable` になった。そのためユーザー承認のもと **worker1 single-worker fallback** で切り替え、recovered totals は smoke `60/60`, pilot `150/150`, full `600/600` を回収できた。
+
 ## 10. 参照先
 
 - `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
