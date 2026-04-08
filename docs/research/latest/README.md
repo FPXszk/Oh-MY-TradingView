@@ -7,9 +7,11 @@
 1. この `README.md`
 2. `market-specific-long-run-deep-dive-handoff_20260408_1857.md`
 3. `market-specific-long-run-deep-dive-results_20260408_1857.md`
-4. 判断経緯が必要なら `docs/working-memory/session-logs/`
+4. 直前世代を確認するなら `../long-run-cross-market-campaign-handoff_20260408_0320.md`
+5. 判断経緯が必要なら `docs/working-memory/session-logs/`
 
-> 直前世代の docs は `docs/research/` 直下、2 世代以上前は `docs/research/old/` に移動済み。
+> 直前世代の current pointer は `docs/research/long-run-cross-market-campaign-handoff_20260408_0320.md`。
+> 2 世代以上前は `docs/research/old/` に移動済みで、既定では読まない。
 
 ## 現在の要点
 

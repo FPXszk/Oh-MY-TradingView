@@ -33,6 +33,10 @@
 - `docs/research/latest/`
 - 補足の判断経緯は `docs/working-memory/session-logs/` を追う
 
+### 直前世代の backtest handoff を確認したいとき
+
+- [`docs/research/long-run-cross-market-campaign-handoff_20260408_0320.md`](./research/long-run-cross-market-campaign-handoff_20260408_0320.md)
+
 ### Mag7 戦略候補を知りたいとき
 
 - [`docs/research/mag7-strategy-shortlist_2015_2025.md`](./research/mag7-strategy-shortlist_2015_2025.md)
@@ -126,8 +130,7 @@
 
 - [`docs/research/theme-backtest-results-round10_2015_2025.md`](./research/theme-backtest-results-round10_2015_2025.md)
 - [`docs/research/theme-backtest-results-round10-alt_2015_2025.md`](./research/theme-backtest-results-round10-alt_2015_2025.md)
-- [`docs/research/old/top4-backtest-handoff_20260407_0529.md`](./research/old/top4-backtest-handoff_20260407_0529.md)
-- [`docs/research/old/top4-backtest-results_20260407_0529.md`](./research/old/top4-backtest-results_20260407_0529.md)
+- 過去世代の backtest handoff / results は [`docs/research/old/README.md`](./research/old/README.md) から辿る
 
 ### TradingView dual-worker の運用手順を知りたいとき
 
