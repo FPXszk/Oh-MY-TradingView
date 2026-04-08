@@ -1,6 +1,6 @@
 # 実行計画: market-specific long-run deep dive (20260408_0616)
 
-- ステータス: BLOCKED (implementation ready / waiting for TradingView startup)
+- ステータス: COMPLETED / FULL RUN COMPLETE
 - 種別: research continuation / implementation / long-run execution
 - 前提ブランチ: `main`
 
@@ -134,14 +134,18 @@
 - `docs/research/latest/market-specific-long-run-deep-dive-handoff_YYYYMMDD_HHMM.md`
 - `docs/research/latest/market-specific-long-run-deep-dive-results_YYYYMMDD_HHMM.md`
 - `docs/working-memory/session-logs/market-specific-long-run-deep-dive_YYYYMMDD_HHMM.md`
-- `docs/references/backtests/long-run-us-entry-sweep-50x3_YYYYMMDD_HHMM.json`
-- `docs/references/backtests/long-run-us-entry-sweep-50x3_YYYYMMDD_HHMM.summary.json`
-- `docs/references/backtests/long-run-us-entry-sweep-50x3-recovered_YYYYMMDD_HHMM.json`
-- `docs/references/backtests/long-run-us-entry-sweep-50x3-recovered_YYYYMMDD_HHMM.summary.json`
-- `docs/references/backtests/long-run-jp-exit-sweep-50x3_YYYYMMDD_HHMM.json`
-- `docs/references/backtests/long-run-jp-exit-sweep-50x3_YYYYMMDD_HHMM.summary.json`
-- `docs/references/backtests/long-run-jp-exit-sweep-50x3-recovered_YYYYMMDD_HHMM.json`
-- `docs/references/backtests/long-run-jp-exit-sweep-50x3-recovered_YYYYMMDD_HHMM.summary.json`
+- `docs/references/backtests/long-run-us-entry-sweep-50x3-smoke-recovered_YYYYMMDD_HHMM.json`
+- `docs/references/backtests/long-run-us-entry-sweep-50x3-smoke-recovered_YYYYMMDD_HHMM.summary.json`
+- `docs/references/backtests/long-run-us-entry-sweep-50x3-pilot-recovered_YYYYMMDD_HHMM.json`
+- `docs/references/backtests/long-run-us-entry-sweep-50x3-pilot-recovered_YYYYMMDD_HHMM.summary.json`
+- `docs/references/backtests/long-run-us-entry-sweep-50x3-full-recovered_YYYYMMDD_HHMM.json`
+- `docs/references/backtests/long-run-us-entry-sweep-50x3-full-recovered_YYYYMMDD_HHMM.summary.json`
+- `docs/references/backtests/long-run-jp-exit-sweep-50x3-smoke-recovered_YYYYMMDD_HHMM.json`
+- `docs/references/backtests/long-run-jp-exit-sweep-50x3-smoke-recovered_YYYYMMDD_HHMM.summary.json`
+- `docs/references/backtests/long-run-jp-exit-sweep-50x3-pilot-recovered_YYYYMMDD_HHMM.json`
+- `docs/references/backtests/long-run-jp-exit-sweep-50x3-pilot-recovered_YYYYMMDD_HHMM.summary.json`
+- `docs/references/backtests/long-run-jp-exit-sweep-50x3-full-recovered_YYYYMMDD_HHMM.json`
+- `docs/references/backtests/long-run-jp-exit-sweep-50x3-full-recovered_YYYYMMDD_HHMM.summary.json`
 
 ### Modify
 
@@ -160,16 +164,17 @@
 
 ## 実装ステップ
 
-- [ ] recovered results から US / JP の market-specific summary を再計算し、今回の deep dive の評価軸を固定する
-- [ ] `long-run-cross-market-100` から US 50 / JP 50 を切り出した universe config を作る
-- [ ] US entry sweep / JP exit sweep の campaign config を作る
-- [ ] config validation を先にテストで固定する
-- [ ] smoke phase を両 campaign で実行し、runner / artifact path / recovery 動線を確認する
-- [ ] pilot phase を実行し、unreadable clustering と wall-clock を観測する
-- [ ] full phase を実行し、recovered summary を正本として集計する
-- [ ] market-specific ranking と key symbols を docs 化する
-- [ ] latest handoff / results / session log / raw artifacts を整理する
-- [ ] plan を completed へ移し、commit / push する
+- [x] recovered results から US / JP の market-specific summary を再計算し、今回の deep dive の評価軸を固定する
+- [x] `long-run-cross-market-100` から US 50 / JP 50 を切り出した universe config を作る
+- [x] US entry sweep / JP exit sweep の campaign config を作る
+- [x] config validation を先にテストで固定する
+- [x] smoke phase を両 campaign で実行し、runner / artifact path / recovery 動線を確認する
+- [x] pilot phase を実行し、unreadable clustering と wall-clock を観測する
+- [x] full phase を実行し、recovered summary を正本として集計する
+- [x] market-specific ranking と key symbols を docs 化する
+- [x] latest handoff / results / session log / raw artifacts を整理する
+- [x] plan を completed へ移す
+- [ ] commit / push する
 
 ## Test strategy (RED / GREEN / REFACTOR)
 
@@ -198,12 +203,12 @@ node --test tests/campaign.test.js
 npm test
 TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9223 node src/cli/index.js status
 TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9225 node src/cli/index.js status
-node scripts/backtest/run-long-campaign.mjs long-run-us-entry-sweep-50x3 --phase smoke --host 172.31.144.1 --ports 9223,9225
-node scripts/backtest/run-long-campaign.mjs long-run-jp-exit-sweep-50x3 --phase smoke --host 172.31.144.1 --ports 9223,9225
-node scripts/backtest/run-long-campaign.mjs long-run-us-entry-sweep-50x3 --phase pilot --host 172.31.144.1 --ports 9223,9225
-node scripts/backtest/run-long-campaign.mjs long-run-jp-exit-sweep-50x3 --phase pilot --host 172.31.144.1 --ports 9223,9225
-node scripts/backtest/run-long-campaign.mjs long-run-us-entry-sweep-50x3 --phase full --host 172.31.144.1 --ports 9223,9225
-node scripts/backtest/run-long-campaign.mjs long-run-jp-exit-sweep-50x3 --phase full --host 172.31.144.1 --ports 9223,9225
+node scripts/backtest/run-long-campaign.mjs long-run-us-entry-sweep-50x3 --phase smoke --host 172.31.144.1 --ports 9223
+node scripts/backtest/run-long-campaign.mjs long-run-jp-exit-sweep-50x3 --phase smoke --host 172.31.144.1 --ports 9223
+node scripts/backtest/run-long-campaign.mjs long-run-us-entry-sweep-50x3 --phase pilot --host 172.31.144.1 --ports 9223
+node scripts/backtest/run-long-campaign.mjs long-run-jp-exit-sweep-50x3 --phase pilot --host 172.31.144.1 --ports 9223
+node scripts/backtest/run-long-campaign.mjs long-run-us-entry-sweep-50x3 --phase full --host 172.31.144.1 --ports 9223
+node scripts/backtest/run-long-campaign.mjs long-run-jp-exit-sweep-50x3 --phase full --host 172.31.144.1 --ports 9223
 ```
 
 ## Risks
@@ -219,4 +224,5 @@ node scripts/backtest/run-long-campaign.mjs long-run-jp-exit-sweep-50x3 --phase 
 - 前回結果からは、**US は preset2 family、JP は preset5 / preset1 family** に集中するのが最も説明力が高い
 - deep dive の主眼は「より強い 1 本を決める」だけでなく、**market 別に別 family を採用すべきか**を判断すること
 - 実装は config / docs / execution 中心で済む見込みで、core code 変更は原則避ける
-- 2026-04-08 この時点では CDP host `172.31.144.1:9223/9225` が WSL から到達不可で、live smoke/pilot/full は未実施
+- live execution はその後回復し、worker1 single-worker で smoke `60/60`、pilot `150/150`、full `300/300` を回収できた
+- worker2 は CDP reachable だが welcome / onboarding が残り、本 round では execution-ready に戻らなかった
