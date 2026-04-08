@@ -1,7 +1,7 @@
 # Top3 period slicing handoff
 
 - status: COMPLETED
-- anchor source: `docs/research/latest/top4-backtest-handoff_20260407_0529.md`
+- anchor source: `docs/research/old/top4-backtest-handoff_20260407_0529.md`
 - latest docs entrypoint: `docs/research/latest/README.md`
 
 ## Top3 anchors

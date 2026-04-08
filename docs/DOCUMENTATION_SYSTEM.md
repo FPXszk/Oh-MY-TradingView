@@ -17,7 +17,8 @@
 | path | role | source-of-truth |
 |---|---|---|
 | `docs/research/` | 調査結果、要約、推奨、意思決定 | 解釈の正本 |
-| `docs/research/latest/` | 現在の handoff、直近結果、次回の入口 | latest handoff の正本 |
+| `docs/research/latest/` | 最新 1 世代の handoff、直近結果、次回の入口 | latest handoff の正本 |
+| `docs/research/old/` | 2 世代以上前の backtest docs archive（既定では読まない） | archive |
 | `docs/references/` | raw artifact、参照用データ、外部資料の固定スナップショット | 生データの正本 |
 | `docs/bad-strategy/` | alt universe で負けた戦略の記録 | negative strategy log の正本 |
 | `docs/working-memory/session-logs/` | セッション要約、判断経緯、直近の作業コンテキスト | append-only |
@@ -125,8 +126,8 @@
 
 - [`docs/research/theme-backtest-results-round10_2015_2025.md`](./research/theme-backtest-results-round10_2015_2025.md)
 - [`docs/research/theme-backtest-results-round10-alt_2015_2025.md`](./research/theme-backtest-results-round10-alt_2015_2025.md)
-- [`docs/research/latest/top4-backtest-handoff_20260407_0529.md`](./research/latest/top4-backtest-handoff_20260407_0529.md)
-- [`docs/research/latest/top4-backtest-results_20260407_0529.md`](./research/latest/top4-backtest-results_20260407_0529.md)
+- [`docs/research/old/top4-backtest-handoff_20260407_0529.md`](./research/old/top4-backtest-handoff_20260407_0529.md)
+- [`docs/research/old/top4-backtest-results_20260407_0529.md`](./research/old/top4-backtest-results_20260407_0529.md)
 
 ### TradingView dual-worker の運用手順を知りたいとき
 
@@ -167,3 +168,17 @@
 - current handoff の正本は `docs/research/latest/` に置き、`docs/working-memory/session-logs/` には経緯だけを append する
 - 外部・比較調査で参照した資料は、`docs/references/design-ref-llms.md` に URL / 理由 / 採用したもの / 採用しなかったもの付きで必ず追記する
 - 外部調査の新規 doc を追加したら、`docs/references/design-ref-llms.md` も同時に更新する
+
+### 世代管理ルール（generation-based archival）
+
+- `docs/research/latest/` には **最新 1 世代** の handoff / results と `README.md` だけを残す
+- latest から外れた直前世代の docs は `docs/research/` 直下に戻す
+- 2 世代以上前の backtest docs は `docs/research/old/` へ移動する
+- `docs/research/old/` は既定では読まない archive であり、明示的に過去世代を確認するときだけ参照する
+
+### pane/tab support と parallel backtest の関係
+
+- `tv_tab_*` は top-level workspace tabs ではなく **現在 layout 内の chart slot** を操作する
+- 現在の backtest / pine / price / health フローは active-chart-only 実装
+- pane/tab support は切替短縮・比較レイアウトの補助導線として有用だが、true parallel backtest の根拠にはならない
+- true parallel backtest の正本は `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`（dual-worker ベース）

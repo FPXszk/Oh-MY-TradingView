@@ -5,7 +5,16 @@
 この runbook は、TradingView Desktop の worker1 / worker2 を使って、WSL から別々の backtest を並列実行するための既知の正常手順と、2026-04-06 時点の未解決制約をまとめる。
 
 > current handoff / latest result は `docs/research/latest/` を先頭に読む。  
+> 直前世代の docs は `docs/research/` 直下、2 世代以上前は `docs/research/old/`（既定では読まない archive）。  
 > この runbook の保証範囲は **dual-worker / 2 worker 並列** までで、4並列は未検証。
+
+## pane/tab support と parallel backtest の関係
+
+- `tv_tab_list` / `tv_tab_switch` は **現在 layout 内の chart slot** を操作するもので、top-level workspace tabs ではない
+- `tv_pane_list` / `tv_pane_focus` もチャートペインの選択であり、別プロセスでの並列実行ではない
+- 現在の backtest / pine / price / health の各フローは `window.TradingViewApi._activeChartWidgetWV.value()` 前提の **active-chart-only** 実装
+- したがって pane/tab support は **chart slot の切替短縮・比較レイアウト・事前配置** の補助導線として有用だが、true parallel backtest の根拠にはならない
+- true parallel backtest は本 runbook の dual-worker（別プロセス / 別 CDP port）ベースで実現する
 
 ## Known-good topology
 

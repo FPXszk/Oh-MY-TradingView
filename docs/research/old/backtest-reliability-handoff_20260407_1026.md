@@ -131,8 +131,8 @@ generic な chart bars fallback を preset に流用すると、**別戦略の�
 
 ## 次の入口
 
-1. `docs/research/latest/top4-period-slicing-handoff_20260407_1641.md`
-2. `docs/research/latest/top4-period-slicing-results_20260407_1641.md`
+1. `docs/research/old/top4-period-slicing-handoff_20260407_1641.md`
+2. `docs/research/old/top4-period-slicing-results_20260407_1641.md`
 3. `command.md` の長時間 workload 指針
 4. `docs/working-memory/session-logs/tradingview-parallel-backtest-stabilization_20260406_0802.md`
 

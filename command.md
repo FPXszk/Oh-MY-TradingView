@@ -3,6 +3,7 @@
 Windows 側は **PowerShell**、WSL 側は **bash** を前提にした運用メモ。
 
 > 現在の handoff と最新結果は `docs/research/latest/` を先頭に読む。  
+> 直前世代の docs は `docs/research/` 直下、2 世代以上前は `docs/research/old/`（既定では読まない archive）。  
 > この文書で known-good として扱うのは **dual-worker / 2 worker 並列** までで、4並列は未検証。
 
 ## 1. 現在の既知の正常トポロジ

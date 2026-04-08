@@ -277,6 +277,10 @@ node src/cli/index.js backtest preset ema-cross-9-21 --symbol NVDA
 > docs 上で known-good として確認できているのは **dual-worker / 2 worker 並列** までです。  
 > `shard parallel` はこの 2 worker 前提の運用方針であり、4並列は未検証です。
 
+> **pane/tab support との関係**: `tv_tab_*` / `tv_pane_*` は現在 layout 内の chart slot 操作であり、
+> 現在の backtest フローは active-chart-only です。pane/tab は切替短縮・比較レイアウトの補助導線
+> として有用ですが、true parallel backtest は上記 dual-worker ベースです。
+
 ### MCP workflow
 
 1. `tv_health_check`
