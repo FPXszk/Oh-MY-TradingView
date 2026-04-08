@@ -1,7 +1,13 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { formatPriceResult, validatePriceData, symbolMatches, getCurrentPrice } from '../src/core/price.js';
+import {
+  formatPriceResult,
+  validatePriceData,
+  symbolMatches,
+  getCurrentPrice,
+  readCurrentPriceForSymbol,
+} from '../src/core/price.js';
 
 describe('formatPriceResult', () => {
   it('returns correct JSON structure for valid data', () => {
@@ -125,5 +131,27 @@ describe('getCurrentPrice with symbol', () => {
     assert.equal(result.symbol, 'NASDAQ:NVDA');
     assert.equal(result.price, 123.45);
     assert.ok(calls.some((expression) => expression.includes('value().symbol()')));
+  });
+});
+
+describe('readCurrentPriceForSymbol', () => {
+  it('waits until the raw price symbol matches the requested symbol', async () => {
+    let attempts = 0;
+    const evaluate = async () => {
+      attempts += 1;
+      if (attempts === 1) {
+        return { symbol: 'NASDAQ:AAPL', price: 100, resolution: 'D', source: 'bars_close' };
+      }
+      return { symbol: 'NASDAQ:NVDA', price: 123.45, resolution: 'D', source: 'bars_close' };
+    };
+
+    const result = await readCurrentPriceForSymbol({
+      symbol: 'NVDA',
+      _deps: { evaluate, evaluateAsync: async () => undefined },
+    });
+
+    assert.equal(result.symbol, 'NASDAQ:NVDA');
+    assert.equal(result.price, 123.45);
+    assert.equal(attempts, 2);
   });
 });

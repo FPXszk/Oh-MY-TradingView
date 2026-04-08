@@ -131,6 +131,24 @@ async function readCurrentPriceRaw({ _deps } = {}) {
   return evaluate(PRICE_EXPRESSION);
 }
 
+export async function readCurrentPriceForSymbol({ symbol, _deps } = {}) {
+  const requestedSymbol = String(symbol || '').trim();
+  if (!requestedSymbol) {
+    throw new Error('symbol is required');
+  }
+
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    const raw = await readCurrentPriceRaw({ _deps });
+    if (!raw?.error && symbolMatches(raw.symbol, requestedSymbol)) {
+      validatePriceData(raw);
+      return formatPriceResult(raw);
+    }
+    await new Promise((resolve) => setTimeout(resolve, 300));
+  }
+
+  throw new Error(`Price retrieval failed: symbol ${requestedSymbol} did not settle before timeout`);
+}
+
 /**
  * Retrieve the current price from the active TradingView chart.
  * Tries chart API first, falls back to DOM scraping.
@@ -189,15 +207,7 @@ export async function getCurrentPrice({ symbol, _deps } = {}) {
   }
 
   if (requestedSymbol) {
-    for (let attempt = 0; attempt < 20; attempt += 1) {
-      const raw = await readCurrentPriceRaw({ _deps });
-      if (!raw?.error && symbolMatches(raw.symbol, requestedSymbol)) {
-        validatePriceData(raw);
-        return formatPriceResult(raw);
-      }
-      await new Promise((resolve) => setTimeout(resolve, 300));
-    }
-    throw new Error(`Price retrieval failed: symbol ${requestedSymbol} did not settle before timeout`);
+    return readCurrentPriceForSymbol({ symbol: requestedSymbol, _deps });
   }
 
   const raw = await readCurrentPriceRaw({ _deps });

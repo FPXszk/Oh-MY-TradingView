@@ -1,4 +1,4 @@
-import { getCurrentPrice } from './price.js';
+import { getCurrentPrice, readCurrentPriceForSymbol, setActiveSymbol } from './price.js';
 
 const DEFAULT_INTERVAL_MS = 5000;
 const DEFAULT_MAX_TICKS = 12;
@@ -19,15 +19,42 @@ export function resolveStreamParams({ intervalMs, maxTicks } = {}) {
 /**
  * Bounded price polling stream.
  * Collects up to maxTicks price snapshots at intervalMs intervals.
+ * When symbol is provided, switches once before polling — not on every tick.
  * Returns the full collected array — NOT an infinite daemon.
  */
 export async function streamPriceTicks({ symbol, intervalMs, maxTicks, _deps } = {}) {
   const params = resolveStreamParams({ intervalMs, maxTicks });
+  const requestedSymbol = String(symbol || '').trim();
   const ticks = [];
+
+  if (requestedSymbol) {
+    try {
+      await setActiveSymbol({ symbol: requestedSymbol, _deps });
+    } catch (err) {
+      ticks.push({
+        tick: 1,
+        timestamp: new Date().toISOString(),
+        error: err.message,
+      });
+      return {
+        success: false,
+        params: {
+          symbol: symbol || null,
+          intervalMs: params.intervalMs,
+          maxTicks: params.maxTicks,
+        },
+        ticks,
+        collected: ticks.length,
+        errors: 1,
+      };
+    }
+  }
 
   for (let i = 0; i < params.maxTicks; i += 1) {
     try {
-      const price = await getCurrentPrice({ symbol, _deps });
+      const price = requestedSymbol
+        ? await readCurrentPriceForSymbol({ symbol: requestedSymbol, _deps })
+        : await getCurrentPrice({ _deps });
       ticks.push({
         tick: i + 1,
         timestamp: new Date().toISOString(),

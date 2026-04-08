@@ -8,6 +8,10 @@ import {
   pickTarget,
   resolveCdpEndpoint,
   buildConnectionHint,
+  setSessionPort,
+  getSessionPort,
+  clearSessionPort,
+  sameEndpoint,
 } from '../src/connection.js';
 
 describe('safeString', () => {
@@ -151,5 +155,65 @@ describe('buildConnectionHint', () => {
   it('mentions WSL for non-localhost', () => {
     const hint = buildConnectionHint('172.20.10.1', 9222);
     assert.ok(hint.includes('WSL') || hint.includes('wsl'));
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Session port persistence
+// ---------------------------------------------------------------------------
+describe('session port persistence', () => {
+  it('getSessionPort returns null when nothing set', () => {
+    clearSessionPort();
+    assert.equal(getSessionPort(), null);
+  });
+
+  it('setSessionPort stores port and getSessionPort retrieves it', () => {
+    clearSessionPort();
+    setSessionPort(9333);
+    assert.equal(getSessionPort(), 9333);
+    clearSessionPort();
+  });
+
+  it('clearSessionPort resets stored port', () => {
+    setSessionPort(9444);
+    clearSessionPort();
+    assert.equal(getSessionPort(), null);
+  });
+
+  it('resolveCdpEndpoint uses session port when TV_CDP_PORT is absent', () => {
+    clearSessionPort();
+    setSessionPort(9555);
+    const ep = resolveCdpEndpoint({});
+    assert.equal(ep.port, 9555);
+    clearSessionPort();
+  });
+
+  it('resolveCdpEndpoint prefers TV_CDP_PORT over session port', () => {
+    clearSessionPort();
+    setSessionPort(9555);
+    const ep = resolveCdpEndpoint({ TV_CDP_PORT: '9666' });
+    assert.equal(ep.port, 9666);
+    clearSessionPort();
+  });
+
+  it('resolveCdpEndpoint falls back to 9222 when no session port and no env', () => {
+    clearSessionPort();
+    const ep = resolveCdpEndpoint({});
+    assert.equal(ep.port, 9222);
+  });
+});
+
+describe('sameEndpoint', () => {
+  it('returns true when host and port match', () => {
+    assert.equal(sameEndpoint({ host: 'localhost', port: 9222 }, { host: 'localhost', port: 9222 }), true);
+  });
+
+  it('returns false when port differs', () => {
+    assert.equal(sameEndpoint({ host: 'localhost', port: 9222 }, { host: 'localhost', port: 9333 }), false);
+  });
+
+  it('returns false when host differs or endpoint missing', () => {
+    assert.equal(sameEndpoint({ host: 'localhost', port: 9222 }, { host: '127.0.0.1', port: 9222 }), false);
+    assert.equal(sameEndpoint(null, { host: 'localhost', port: 9222 }), false);
   });
 });

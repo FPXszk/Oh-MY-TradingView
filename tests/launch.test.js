@@ -12,6 +12,11 @@ import {
   verifyExecutable,
 } from '../src/core/launch.js';
 
+import {
+  getSessionPort,
+  clearSessionPort,
+} from '../src/connection.js';
+
 // ---------------------------------------------------------------------------
 // buildLaunchCommand
 // ---------------------------------------------------------------------------
@@ -146,5 +151,25 @@ describe('launchDesktop', () => {
       () => launchDesktop({ executablePath: '/bin/true', port: 9222 }),
       /exited immediately/,
     );
+  });
+
+  it('does not set session port on dry-run launch', async () => {
+    clearSessionPort();
+    const result = await launchDesktop({
+      port: 9444,
+      executablePath: '/bin/tv',
+      dryRun: true,
+    });
+    assert.equal(result.port, 9444);
+    assert.equal(getSessionPort(), null);
+    clearSessionPort();
+  });
+
+  it('returns default port on dry-run launch without mutating session port', async () => {
+    clearSessionPort();
+    const result = await launchDesktop({ executablePath: '/bin/tv', dryRun: true });
+    assert.equal(result.port, 9222);
+    assert.equal(getSessionPort(), null);
+    clearSessionPort();
   });
 });

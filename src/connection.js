@@ -2,17 +2,45 @@ import CDP from 'chrome-remote-interface';
 
 let client = null;
 let targetInfo = null;
+let _sessionPort = null;
+let connectedEndpoint = null;
 const MAX_RETRIES = 5;
 const BASE_DELAY = 500;
 
 /**
+ * Store the CDP port used by a successful launch for later resolution.
+ */
+export function setSessionPort(port) {
+  const n = Number(port);
+  _sessionPort = Number.isFinite(n) && n > 0 ? n : null;
+}
+
+export function getSessionPort() {
+  return _sessionPort;
+}
+
+export function clearSessionPort() {
+  _sessionPort = null;
+}
+
+export function sameEndpoint(left, right) {
+  return Boolean(
+    left && right &&
+    left.host === right.host &&
+    left.port === right.port
+  );
+}
+
+/**
  * Resolve CDP endpoint from environment variables.
  * Pure function — accepts an env object for testability.
+ * Priority: explicit env var > session port (from launch) > default 9222.
  */
 export function resolveCdpEndpoint(env = process.env) {
   const host = env.TV_CDP_HOST || 'localhost';
   const parsed = Number(env.TV_CDP_PORT);
-  const port = Number.isFinite(parsed) && parsed > 0 ? parsed : 9222;
+  const envPort = Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+  const port = envPort ?? _sessionPort ?? 9222;
   return { host, port, url: `http://${host}:${port}` };
 }
 
@@ -69,6 +97,20 @@ export function pickTarget(targets) {
 }
 
 export async function getClient() {
+  const resolvedEndpoint = resolveCdpEndpoint();
+  if (client) {
+    if (!sameEndpoint(connectedEndpoint, resolvedEndpoint)) {
+      try {
+        await client.close();
+      } catch {
+        // ignore close errors while rotating cached endpoint
+      }
+      client = null;
+      targetInfo = null;
+      connectedEndpoint = null;
+    }
+  }
+
   if (client) {
     try {
       await client.Runtime.evaluate({ expression: '1', returnByValue: true });
@@ -76,13 +118,14 @@ export async function getClient() {
     } catch {
       client = null;
       targetInfo = null;
+      connectedEndpoint = null;
     }
   }
-  return connect();
+  return connect(resolvedEndpoint);
 }
 
-export async function connect() {
-  const { host, port } = resolveCdpEndpoint();
+export async function connect(endpoint = resolveCdpEndpoint()) {
+  const { host, port } = endpoint;
   let lastError;
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
     try {
@@ -94,6 +137,7 @@ export async function connect() {
       }
       targetInfo = target;
       client = await CDP({ host, port, target: target.id });
+      connectedEndpoint = { host, port };
 
       await client.Runtime.enable();
       await client.Page.enable();
@@ -102,9 +146,13 @@ export async function connect() {
       return client;
     } catch (err) {
       lastError = err;
+      connectedEndpoint = null;
       const delay = Math.min(BASE_DELAY * Math.pow(2, attempt), 30000);
       await new Promise(r => setTimeout(r, delay));
     }
+  }
+  if (_sessionPort !== null && port === _sessionPort) {
+    clearSessionPort();
   }
   const hint = buildConnectionHint(host, port);
   throw new Error(
@@ -154,5 +202,6 @@ export async function disconnect() {
     } catch { /* ignore */ }
     client = null;
     targetInfo = null;
+    connectedEndpoint = null;
   }
 }

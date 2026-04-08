@@ -16,7 +16,18 @@ export function registerStreamTools(server) {
     },
     async ({ symbol, intervalMs, maxTicks }) => {
       try {
-        return jsonResult(await streamPriceTicks({ symbol, intervalMs, maxTicks }));
+        const result = await streamPriceTicks({ symbol, intervalMs, maxTicks });
+        if (!result.success) {
+          return jsonResult(
+            {
+              ...result,
+              error: result.ticks.find((tick) => tick.error)?.error || 'Price stream failed',
+              hint: 'Ensure TradingView Desktop is running and CDP is reachable.',
+            },
+            true,
+          );
+        }
+        return jsonResult(result);
       } catch (err) {
         return jsonResult(
           {

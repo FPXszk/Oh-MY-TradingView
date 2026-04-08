@@ -128,7 +128,10 @@ describe('streamPriceTicks', () => {
 
   it('returns params in the result', async () => {
     const mockDeps = {
-      evaluate: () => ({ symbol: 'A', price: 1, resolution: 'D', source: 'mock' }),
+      evaluate: (expression) => {
+        if (expression.includes('value().symbol()')) return 'AAPL';
+        return { symbol: 'AAPL', price: 1, resolution: 'D', source: 'mock' };
+      },
       evaluateAsync: () => Promise.resolve(),
     };
 
@@ -142,5 +145,101 @@ describe('streamPriceTicks', () => {
     assert.equal(result.params.symbol, 'AAPL');
     assert.equal(result.params.maxTicks, 2);
     assert.equal(result.params.intervalMs, 1000);
+  });
+
+  it('switches symbol only once before the loop, not on every tick', async () => {
+    let setSymbolCalls = 0;
+    let rawReads = 0;
+    const mockDeps = {
+      evaluate: (expression) => {
+        if (expression.includes('value().symbol()')) return 'NASDAQ:AAPL';
+        rawReads += 1;
+        return { symbol: 'NASDAQ:AAPL', price: 150 + rawReads, resolution: 'D', source: 'mock' };
+      },
+      evaluateAsync: () => {
+        setSymbolCalls += 1;
+        return Promise.resolve();
+      },
+    };
+
+    const result = await streamPriceTicks({
+      symbol: 'AAPL',
+      maxTicks: 3,
+      intervalMs: 1000,
+      _deps: mockDeps,
+    });
+
+    assert.equal(result.success, true);
+    assert.equal(result.collected, 3);
+    assert.equal(setSymbolCalls, 1, 'setActiveSymbol should be called exactly once');
+  });
+
+  it('waits for the requested symbol on stream ticks without re-switching', async () => {
+    let setSymbolCalls = 0;
+    let rawReads = 0;
+    const mockDeps = {
+      evaluate: (expression) => {
+        if (expression.includes('value().symbol()')) return 'NASDAQ:NVDA';
+        rawReads += 1;
+        if (rawReads === 1) {
+          return { symbol: 'NASDAQ:AAPL', price: 100, resolution: 'D', source: 'mock' };
+        }
+        return { symbol: 'NASDAQ:NVDA', price: 200, resolution: 'D', source: 'mock' };
+      },
+      evaluateAsync: () => {
+        setSymbolCalls += 1;
+        return Promise.resolve();
+      },
+    };
+
+    const result = await streamPriceTicks({
+      symbol: 'NVDA',
+      maxTicks: 1,
+      intervalMs: 1000,
+      _deps: mockDeps,
+    });
+
+    assert.equal(result.success, true);
+    assert.equal(result.ticks[0].symbol, 'NASDAQ:NVDA');
+    assert.equal(setSymbolCalls, 1);
+    assert.equal(rawReads, 2);
+  });
+
+  it('does not call setActiveSymbol when no symbol provided', async () => {
+    let setSymbolCalls = 0;
+    const mockDeps = {
+      evaluate: () => ({ symbol: 'TEST', price: 100, resolution: 'D', source: 'mock' }),
+      evaluateAsync: () => {
+        setSymbolCalls += 1;
+        return Promise.resolve();
+      },
+    };
+
+    await streamPriceTicks({
+      maxTicks: 2,
+      intervalMs: 1000,
+      _deps: mockDeps,
+    });
+
+    assert.equal(setSymbolCalls, 0, 'setActiveSymbol should not be called when no symbol');
+  });
+
+  it('returns a structured error result when initial symbol switch fails', async () => {
+    const mockDeps = {
+      evaluate: () => ({ symbol: 'TEST', price: 100, resolution: 'D', source: 'mock' }),
+      evaluateAsync: () => Promise.reject(new Error('switch failed')),
+    };
+
+    const result = await streamPriceTicks({
+      symbol: 'AAPL',
+      maxTicks: 3,
+      intervalMs: 1000,
+      _deps: mockDeps,
+    });
+
+    assert.equal(result.success, false);
+    assert.equal(result.collected, 1);
+    assert.equal(result.errors, 1);
+    assert.equal(result.ticks[0].error, 'switch failed');
   });
 });

@@ -3,6 +3,7 @@ import { readdirSync } from 'node:fs';
 import { access, constants } from 'node:fs/promises';
 import { platform } from 'node:os';
 import { join } from 'node:path';
+import { setSessionPort } from '../connection.js';
 
 const DEFAULT_PORT = 9222;
 
@@ -138,6 +139,7 @@ export async function launchDesktop({ port, executablePath, dryRun } = {}) {
 
     const timeout = setTimeout(() => {
       settled = true;
+      setSessionPort(cmd.port);
       resolve({
         success: true,
         command: launchCommand,
