@@ -573,7 +573,7 @@ describe('strategy-presets.json integration', () => {
   it('round1-3 presets are unchanged', async () => {
     const data = await loadPresets();
     const round1To3 = data.strategies.filter(
-        (p) => !['round4', 'round5', 'round6', 'round7', 'round8', 'round9', 'round10', 'round11'].includes(p.implementation_stage),
+        (p) => !['round4', 'round5', 'round6', 'round7', 'round8', 'round9', 'round10', 'round11', 'preset-expansion'].includes(p.implementation_stage),
     );
     assert.equal(round1To3.length, 30, 'Expected 30 round1-3 presets to remain');
   });

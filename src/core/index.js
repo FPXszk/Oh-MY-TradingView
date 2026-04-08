@@ -4,6 +4,10 @@ export { getCurrentPrice, setActiveSymbol, formatPriceResult, validatePriceData,
 export { buildNvdaMaSource, normalizeMetrics, buildResult, runNvdaMaBacktest, loadPreset, runPresetBacktest } from './backtest.js';
 export { validatePreset, validatePresetIds, filterPresetsByRound } from './preset-validation.js';
 export { buildResearchStrategySource } from './research-backtest.js';
+export { buildLaunchCommand, verifyExecutable, launchDesktop } from './launch.js';
+export { captureScreenshot } from './capture.js';
+export { resolveStreamParams, streamPriceTicks } from './stream.js';
+export { getSymbolQuote, getSymbolFundamentals, getMarketSnapshot, getFinancialNews, runScreener } from './market-intel.js';
 export {
   validateDateRange,
   mergeDateOverride,

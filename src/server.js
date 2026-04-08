@@ -4,13 +4,17 @@ import { registerHealthTools } from './tools/health.js';
 import { registerPineTools } from './tools/pine.js';
 import { registerPriceTools } from './tools/price.js';
 import { registerBacktestTools } from './tools/backtest.js';
+import { registerLaunchTools } from './tools/launch.js';
+import { registerCaptureTools } from './tools/capture.js';
+import { registerStreamTools } from './tools/stream.js';
+import { registerMarketIntelTools } from './tools/market-intel.js';
 
 const server = new McpServer(
   {
     name: 'oh-my-tradingview',
     version: '0.1.0',
     description:
-      'AI-assisted TradingView Pine Script development via Chrome DevTools Protocol',
+      'AI-assisted TradingView Pine/backtest workflow via CDP, plus optional public market data tools',
   },
   {
     instructions: `Oh-MY-TradingView MCP — Pine Script development loop for TradingView Desktop.
@@ -33,15 +37,31 @@ Pine Script development loop:
 - pine_smart_compile → one-shot: compile + check errors + report study changes
 - pine_analyze → offline static analysis (no connection needed)
 
-Backtest:
-- tv_backtest_nvda_ma_5_20 → run fixed NVDA 5/20 SMA crossover backtest
-
 WORKFLOW:
 1. tv_health_check → confirm connection
 2. pine_set_source → inject code
 3. pine_smart_compile → compile and check
 4. pine_get_errors → if errors, read them
 5. Fix code and repeat from step 2
+
+Backtest:
+- tv_backtest_nvda_ma_5_20 → run fixed NVDA 5/20 SMA crossover backtest
+- tv_backtest_preset → run a preset-driven strategy backtest
+
+Launch & Capture:
+- tv_launch → launch TradingView Desktop with CDP debug port
+- tv_capture_screenshot → capture a screenshot of the current page
+
+Streaming:
+- tv_stream_price → bounded price polling (not an infinite daemon)
+
+Market Intelligence (no CDP needed):
+- market_quote → single symbol quote
+- market_fundamentals → PE, market cap, margins, growth
+- market_snapshot → multi-symbol quotes
+- market_news → financial news search
+- market_screener → filter symbols by price/volume
+- market_* tools fetch public Yahoo Finance endpoints over the network
 
 BACKTEST WORKFLOW:
 1. tv_backtest_nvda_ma_5_20 → switches to NVDA, applies 5/20 MA cross strategy, reads Strategy Tester
@@ -58,6 +78,10 @@ registerHealthTools(server);
 registerPineTools(server);
 registerPriceTools(server);
 registerBacktestTools(server);
+registerLaunchTools(server);
+registerCaptureTools(server);
+registerStreamTools(server);
+registerMarketIntelTools(server);
 
 process.stderr.write(
   '⚠  oh-my-tradingview  |  Unofficial tool. Not affiliated with TradingView Inc.\n'

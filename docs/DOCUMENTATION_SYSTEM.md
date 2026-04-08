@@ -156,6 +156,7 @@
 - [`docs/working-memory/session-logs/tradingview-parallel-backtest-stabilization_20260406_0802.md`](./working-memory/session-logs/tradingview-parallel-backtest-stabilization_20260406_0802.md)
 - [`docs/working-memory/session-logs/top4-backtest-continuation_20260407_0529.md`](./working-memory/session-logs/top4-backtest-continuation_20260407_0529.md)
 - [`docs/working-memory/session-logs/tradingview-external-research-and-doc-governance_20260408_1115.md`](./working-memory/session-logs/tradingview-external-research-and-doc-governance_20260408_1115.md)
+- [`docs/working-memory/session-logs/external-research-applicable-implementation_20260408_2049.md`](./working-memory/session-logs/external-research-applicable-implementation_20260408_2049.md)
 
 ## 運用ルール
 
