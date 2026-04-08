@@ -45,15 +45,14 @@ attach_or_switch() {
 
 session_is_healthy() {
   local pane_count
-
   window_name="$(tmux display-message -p -t ${SESSION_NAME}:0 '#W')"
   [[ "${window_name}" == "dev" ]] || return 1
 
   pane_count="$(tmux list-panes -t "${SESSION_NAME}:0" 2>/dev/null | wc -l | tr -d ' ')"
-  [[ "${pane_count}" -eq 3 ]] || return 1
+  [[ "${pane_count}" -eq 4 ]] || return 1
 
   titles="$(tmux list-panes -t "${SESSION_NAME}:0" -F '#{pane_title}' 2>/dev/null)"
-  for expected_title in copilot logs git; do
+  for expected_title in copilot logs git keepalive; do
     grep -qx "${expected_title}" <<<"${titles}" || return 1
   done
 }
@@ -72,32 +71,35 @@ create_layout() {
   tmux set-option -g history-limit 50000
   tmux set-option -g remain-on-exit on
 
-  # 3ペイン構成: copilot(メイン) | logs | git
+  # 4ペイン構成: copilot | logs | git | keepalive
   tmux split-window -h -t "${SESSION_NAME}:0.0" -c "${ROOT_DIR}"
   tmux split-window -v -t "${SESSION_NAME}:0.1" -c "${ROOT_DIR}"
+  tmux split-window -v -t "${SESSION_NAME}:0.2" -c "${ROOT_DIR}"
 
   tmux setw -t "${SESSION_NAME}:0" pane-border-status top
   tmux select-pane -t "${SESSION_NAME}:0.0" -T copilot
   tmux select-pane -t "${SESSION_NAME}:0.1" -T logs
   tmux select-pane -t "${SESSION_NAME}:0.2" -T git
+  tmux select-pane -t "${SESSION_NAME}:0.3" -T keepalive
 
   tmux select-pane -t "${SESSION_NAME}:0.0"
 }
 
 start_commands() {
-  local copilot_cmd logs_cmd git_cmd
+  local copilot_cmd logs_cmd git_cmd keepalive_cmd
 
   gh auth status >/dev/null 2>&1 || gh auth login --hostname github.com --git-protocol ssh --web
 
   copilot_cmd="cd $(escape "${ROOT_DIR}") && copilot --yolo --add-github-mcp-toolset all --add-dir ~/code/Oh-MY-TradingView"
   logs_cmd="cd ${ROOT_DIR} && touch $(escape "${LOG_FILE}") && tail -F $(escape "${LOG_FILE}")"
   git_cmd="cd ${ROOT_DIR} && echo 'Launching lazygit...' && lazygit"
+  keepalive_cmd="nice -n 19 bash -c 'while true; do sleep 300; done'"
 
   tmux send-keys -t "${SESSION_NAME}:0.0" "${copilot_cmd}" C-m
   tmux send-keys -t "${SESSION_NAME}:0.1" "${logs_cmd}" C-m
   tmux send-keys -t "${SESSION_NAME}:0.2" "${git_cmd}" C-m
+  tmux send-keys -t "${SESSION_NAME}:0.3" "${keepalive_cmd}" C-m
 
-  # Copilot CLI 起動を少し待ってからペインを拡大
   sleep 2
   tmux select-pane -t "${SESSION_NAME}:0.0"
   tmux resize-pane -Z -t "${SESSION_NAME}:0.0"
