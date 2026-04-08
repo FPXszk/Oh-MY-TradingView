@@ -97,8 +97,8 @@
 ## Durable outputs created
 
 - latest docs:
-  - `docs/research/latest/market-specific-long-run-deep-dive-handoff_20260408_1857.md`
-  - `docs/research/latest/market-specific-long-run-deep-dive-results_20260408_1857.md`
+  - `docs/research/market-specific-long-run-deep-dive-handoff_20260408_1857.md`
+  - `docs/research/market-specific-long-run-deep-dive-results_20260408_1857.md`
 - raw references:
   - `docs/references/backtests/long-run-us-entry-sweep-50x3-smoke-recovered_20260408_1857.json`
   - `docs/references/backtests/long-run-us-entry-sweep-50x3-pilot-recovered_20260408_1857.json`
