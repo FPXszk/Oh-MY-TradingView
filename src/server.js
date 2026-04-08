@@ -8,6 +8,8 @@ import { registerLaunchTools } from './tools/launch.js';
 import { registerCaptureTools } from './tools/capture.js';
 import { registerStreamTools } from './tools/stream.js';
 import { registerMarketIntelTools } from './tools/market-intel.js';
+import { registerWorkspaceTools } from './tools/workspace.js';
+import { registerAlertTools } from './tools/alerts.js';
 
 const server = new McpServer(
   {
@@ -55,12 +57,28 @@ Launch & Capture:
 Streaming:
 - tv_stream_price → bounded price polling (not an infinite daemon)
 
+Workspace & Alert operations (CDP needed):
+- tv_watchlist_list → list symbols in the active watchlist
+- tv_watchlist_add → add a symbol to the watchlist
+- tv_watchlist_remove → remove a symbol from the watchlist
+- tv_pane_list → list chart panes
+- tv_pane_focus → select a pane by index
+- tv_tab_list → list chart slots in the current layout
+- tv_tab_switch → switch the active chart slot in the current layout by index
+- tv_layout_list → list available chart layouts
+- tv_layout_apply → apply a layout by name or id
+- tv_alert_list → list alerts on the current chart
+- tv_alert_create_price → create a local price alert (no webhook)
+- tv_alert_delete → delete an alert by id
+
 Market Intelligence (no CDP needed):
 - market_quote → single symbol quote
 - market_fundamentals → PE, market cap, margins, growth
 - market_snapshot → multi-symbol quotes
 - market_news → financial news search
 - market_screener → filter symbols by price/volume
+- market_ta_summary → multi-symbol TA summary (price change, RSI14, SMA20/50)
+- market_ta_rank → rank symbols by TA indicator
 - market_* tools fetch public Yahoo Finance endpoints over the network
 
 BACKTEST WORKFLOW:
@@ -82,6 +100,8 @@ registerLaunchTools(server);
 registerCaptureTools(server);
 registerStreamTools(server);
 registerMarketIntelTools(server);
+registerWorkspaceTools(server);
+registerAlertTools(server);
 
 process.stderr.write(
   '⚠  oh-my-tradingview  |  Unofficial tool. Not affiliated with TradingView Inc.\n'

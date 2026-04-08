@@ -5,6 +5,8 @@ import {
   getMarketSnapshot,
   getFinancialNews,
   runScreener,
+  getMultiSymbolTaSummary,
+  rankSymbolsByTa,
 } from '../../core/market-intel.js';
 
 register('market', {
@@ -80,6 +82,38 @@ register('market', {
             maxPrice: opts['max-price'] ? Number(opts['max-price']) : undefined,
             minVolume: opts['min-volume'] ? Number(opts['min-volume']) : undefined,
           });
+        },
+      },
+    ],
+    [
+      'ta-summary',
+      {
+        description: 'Get TA summary for multiple symbols (price change, RSI14, SMA20/50)',
+        handler: (_opts, positionals) => {
+          if (!positionals || positionals.length === 0) {
+            throw new Error('Usage: tv market ta-summary AAPL MSFT GOOGL');
+          }
+          return getMultiSymbolTaSummary(positionals);
+        },
+      },
+    ],
+    [
+      'ta-rank',
+      {
+        description: 'Rank symbols by TA indicator',
+        options: {
+          'sort-by': { type: 'string', description: 'priceChange | rsi14 | sma20Deviation | sma50Deviation' },
+          order: { type: 'string', description: 'asc | desc (default: desc)' },
+        },
+        handler: (opts, positionals) => {
+          if (!positionals || positionals.length === 0) {
+            throw new Error('Usage: tv market ta-rank AAPL MSFT --sort-by rsi14');
+          }
+          return rankSymbolsByTa(
+            positionals,
+            opts['sort-by'] || 'priceChange',
+            opts.order || 'desc',
+          );
         },
       },
     ],

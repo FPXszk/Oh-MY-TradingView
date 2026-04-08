@@ -6,6 +6,8 @@ import {
   getMarketSnapshot,
   getFinancialNews,
   runScreener,
+  getMultiSymbolTaSummary,
+  rankSymbolsByTa,
 } from '../core/market-intel.js';
 
 export function registerMarketIntelTools(server) {
@@ -83,6 +85,46 @@ export function registerMarketIntelTools(server) {
     async ({ symbols, minPrice, maxPrice, minVolume }) => {
       try {
         return jsonResult(await runScreener({ symbols, minPrice, maxPrice, minVolume }));
+      } catch (err) {
+        return jsonResult({ success: false, error: err.message }, true);
+      }
+    },
+  );
+
+  server.tool(
+    'market_ta_summary',
+    'Get TA summary for multiple symbols — price change, RSI(14), SMA20/50 deviation. No CDP connection needed.',
+    {
+      symbols: z.array(z.string()).min(1).max(20)
+        .describe('Array of ticker symbols (max 20)'),
+    },
+    async ({ symbols }) => {
+      try {
+        return jsonResult(await getMultiSymbolTaSummary(symbols));
+      } catch (err) {
+        return jsonResult({ success: false, error: err.message }, true);
+      }
+    },
+  );
+
+  server.tool(
+    'market_ta_rank',
+    'Rank symbols by a TA indicator — priceChange, rsi14, sma20Deviation, or sma50Deviation. No CDP connection needed.',
+    {
+      symbols: z.array(z.string()).min(1).max(20)
+        .describe('Array of ticker symbols (max 20)'),
+      sortBy: z.enum(['priceChange', 'rsi14', 'sma20Deviation', 'sma50Deviation'])
+        .optional()
+        .default('priceChange')
+        .describe('Indicator to rank by (default: priceChange)'),
+      order: z.enum(['asc', 'desc'])
+        .optional()
+        .default('desc')
+        .describe('Sort order (default: desc)'),
+    },
+    async ({ symbols, sortBy, order }) => {
+      try {
+        return jsonResult(await rankSymbolsByTa(symbols, sortBy, order));
       } catch (err) {
         return jsonResult({ success: false, error: err.message }, true);
       }

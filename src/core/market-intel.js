@@ -35,6 +35,15 @@ function normalizeNumber(value) {
   return Number.isFinite(n) ? n : null;
 }
 
+function computePercentDelta(current, base, precision = 4) {
+  const currentValue = Number(current);
+  const baseValue = Number(base);
+  if (!Number.isFinite(currentValue) || !Number.isFinite(baseValue) || baseValue === 0) {
+    return null;
+  }
+  return Number((((currentValue - baseValue) / baseValue) * 100).toFixed(precision));
+}
+
 /**
  * Get a single symbol quote (price, change, volume, market cap basics).
  */
@@ -199,6 +208,182 @@ export async function getFinancialNews(query) {
  * Practical screener — filters symbols from a provided list by basic criteria.
  * Uses quote data to filter in-process (no dedicated screener API needed).
  */
+// ---------------------------------------------------------------------------
+// TA helpers — RSI(14), SMA(n), price change
+// ---------------------------------------------------------------------------
+
+const TA_MAX_SYMBOLS = 20;
+
+/**
+ * Fetch daily close prices for a symbol over the last ~60 trading days.
+ * Returns an array of close prices (oldest → newest).
+ */
+async function fetchDailyCloses(symbol, timeoutMs = DEFAULT_TIMEOUT_MS) {
+  const ticker = symbol.trim().toUpperCase();
+  const url = `${YAHOO_QUOTE_BASE}/${encodeURIComponent(ticker)}?range=3mo&interval=1d`;
+  const data = await fetchJson(url, timeoutMs);
+  const result = data?.chart?.result?.[0];
+  if (!result) {
+    throw new Error(`No chart data for symbol "${ticker}"`);
+  }
+  const closes = result.indicators?.quote?.[0]?.close;
+  if (!Array.isArray(closes) || closes.length === 0) {
+    throw new Error(`No close prices for symbol "${ticker}"`);
+  }
+  const filtered = closes.filter((v) => v !== null && Number.isFinite(v));
+  if (filtered.length === 0) {
+    throw new Error(`No valid close prices for symbol "${ticker}"`);
+  }
+  return filtered;
+}
+
+/**
+ * Compute RSI for the given period from an array of close prices.
+ */
+export function computeRsi(closes, period = 14) {
+  if (closes.length < period + 1) return null;
+  let gainSum = 0;
+  let lossSum = 0;
+  for (let i = 1; i <= period; i++) {
+    const delta = closes[i] - closes[i - 1];
+    if (delta >= 0) gainSum += delta;
+    else lossSum += -delta;
+  }
+  let avgGain = gainSum / period;
+  let avgLoss = lossSum / period;
+  for (let i = period + 1; i < closes.length; i++) {
+    const delta = closes[i] - closes[i - 1];
+    avgGain = (avgGain * (period - 1) + Math.max(delta, 0)) / period;
+    avgLoss = (avgLoss * (period - 1) + Math.max(-delta, 0)) / period;
+  }
+  if (avgGain === 0 && avgLoss === 0) return 50;
+  if (avgLoss === 0) return 100;
+  const rs = avgGain / avgLoss;
+  return Number((100 - 100 / (1 + rs)).toFixed(2));
+}
+
+/**
+ * Compute SMA for the given period from an array of close prices.
+ */
+export function computeSma(closes, period) {
+  if (closes.length < period) return null;
+  const slice = closes.slice(-period);
+  const sum = slice.reduce((a, b) => a + b, 0);
+  return Number((sum / period).toFixed(4));
+}
+
+/**
+ * Compute TA indicators for a single symbol.
+ */
+async function computeSymbolTa(symbol) {
+  const closes = await fetchDailyCloses(symbol);
+  const latestClose = closes[closes.length - 1];
+  const prevClose = closes.length >= 2 ? closes[closes.length - 2] : null;
+  const priceChange = computePercentDelta(latestClose, prevClose);
+  const rsi14 = computeRsi(closes, 14);
+  const sma20 = computeSma(closes, 20);
+  const sma50 = computeSma(closes, 50);
+  const sma20Deviation = computePercentDelta(latestClose, sma20);
+  const sma50Deviation = computePercentDelta(latestClose, sma50);
+
+  return {
+    symbol: symbol.trim().toUpperCase(),
+    latestClose,
+    priceChange,
+    rsi14,
+    sma20,
+    sma50,
+    sma20Deviation,
+    sma50Deviation,
+  };
+}
+
+/**
+ * Get TA summary for multiple symbols.
+ * Preserves partial-failure behaviour — individual symbol failures are reported
+ * but don't prevent other symbols from returning data.
+ */
+export async function getMultiSymbolTaSummary(symbols) {
+  if (!Array.isArray(symbols) || symbols.length === 0) {
+    throw new Error('symbols array is required and must not be empty');
+  }
+  if (symbols.length > TA_MAX_SYMBOLS) {
+    throw new Error(`symbols array must not exceed ${TA_MAX_SYMBOLS} items`);
+  }
+
+  const results = await Promise.allSettled(
+    symbols.map((s) => computeSymbolTa(s)),
+  );
+
+  const summaries = results.map((r, i) => {
+    if (r.status === 'fulfilled') return { success: true, ...r.value };
+    return {
+      success: false,
+      symbol: symbols[i]?.trim?.()?.toUpperCase?.() || symbols[i],
+      error: r.reason?.message || 'Unknown error',
+    };
+  });
+
+  const successCount = summaries.filter((s) => s.success).length;
+
+  const response = {
+    success: successCount > 0,
+    count: summaries.length,
+    successCount,
+    failureCount: summaries.length - successCount,
+    summaries,
+    retrieved_at: new Date().toISOString(),
+    source: 'yahoo_finance',
+  };
+  if (!response.success) {
+    response.error = 'All TA requests failed';
+  }
+  return response;
+}
+
+/**
+ * Rank symbols by a TA indicator.
+ * @param {string[]} symbols - Ticker symbols
+ * @param {string} sortBy - 'priceChange' | 'rsi14' | 'sma20Deviation' | 'sma50Deviation'
+ * @param {string} [order='desc'] - 'asc' | 'desc'
+ */
+export async function rankSymbolsByTa(symbols, sortBy = 'priceChange', order = 'desc') {
+  const validSortFields = ['priceChange', 'rsi14', 'sma20Deviation', 'sma50Deviation'];
+  if (!validSortFields.includes(sortBy)) {
+    throw new Error(`sortBy must be one of: ${validSortFields.join(', ')}`);
+  }
+  if (order !== 'asc' && order !== 'desc') {
+    throw new Error("order must be 'asc' or 'desc'");
+  }
+
+  const summary = await getMultiSymbolTaSummary(symbols);
+  const successful = summary.summaries.filter((s) => s.success && Number.isFinite(s[sortBy]));
+  const failed = summary.summaries.filter((s) => !s.success || !Number.isFinite(s[sortBy]));
+
+  const sorted = successful.sort((a, b) => {
+    const diff = (a[sortBy] ?? 0) - (b[sortBy] ?? 0);
+    return order === 'desc' ? -diff : diff;
+  });
+
+  const ranked = sorted.map((item, i) => ({
+    rank: i + 1,
+    ...item,
+  }));
+
+  return {
+    success: summary.success,
+    sortBy,
+    order,
+    ranked,
+    unranked: failed,
+    count: summary.count,
+    rankedCount: ranked.length,
+    ...(summary.error ? { error: summary.error } : {}),
+    retrieved_at: new Date().toISOString(),
+    source: 'yahoo_finance',
+  };
+}
+
 export async function runScreener({ symbols, minPrice, maxPrice, minVolume } = {}) {
   if (!Array.isArray(symbols) || symbols.length === 0) {
     throw new Error('symbols array is required');
