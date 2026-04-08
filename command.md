@@ -324,6 +324,28 @@ node scripts/backtest/run-long-campaign.mjs long-run-cross-market-100x5 \
 
 結果は `results/campaigns/<campaign-id>/<phase>/` に保存される。チェックポイントは `execution.checkpoint_every` ごとに書き出され、resume 時は `campaign_id` / `phase` / fingerprint が一致する checkpoint だけを受け付ける。
 
+### market-specific long-run deep dive
+
+```bash
+# US entry sweep
+node scripts/backtest/run-long-campaign.mjs long-run-us-entry-sweep-50x3 --phase smoke --dry-run
+node scripts/backtest/run-long-campaign.mjs long-run-us-entry-sweep-50x3 --phase smoke --host 172.31.144.1 --ports 9223,9225
+node scripts/backtest/run-long-campaign.mjs long-run-us-entry-sweep-50x3 --phase pilot --host 172.31.144.1 --ports 9223,9225
+node scripts/backtest/run-long-campaign.mjs long-run-us-entry-sweep-50x3 --phase full --host 172.31.144.1 --ports 9223,9225
+
+# JP exit sweep
+node scripts/backtest/run-long-campaign.mjs long-run-jp-exit-sweep-50x3 --phase smoke --dry-run
+node scripts/backtest/run-long-campaign.mjs long-run-jp-exit-sweep-50x3 --phase smoke --host 172.31.144.1 --ports 9223,9225
+node scripts/backtest/run-long-campaign.mjs long-run-jp-exit-sweep-50x3 --phase pilot --host 172.31.144.1 --ports 9223,9225
+node scripts/backtest/run-long-campaign.mjs long-run-jp-exit-sweep-50x3 --phase full --host 172.31.144.1 --ports 9223,9225
+
+# recovery
+node scripts/backtest/recover-campaign.mjs long-run-us-entry-sweep-50x3 --phase full --host 172.31.144.1 --ports 9223,9225
+node scripts/backtest/recover-campaign.mjs long-run-jp-exit-sweep-50x3 --phase full --host 172.31.144.1 --ports 9223,9225
+```
+
+US は `50/55/60` の entry period 比較、JP は `18/20/22` の exit period 比較に固定している。どちらも `2000-01-01 -> latest` の long-run 条件を使い、既存 runner をそのまま再利用する。
+
 ## 10. 参照先
 
 - `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`

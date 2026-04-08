@@ -637,4 +637,99 @@ describe('campaign config file validation', () => {
     assert.equal(result.valid, true);
     assert.deepEqual(result.errors, []);
   });
+
+  it('long-run-us-entry-sweep-50x3.json is valid JSON', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'long-run-us-entry-sweep-50x3.json'),
+      'utf8',
+    );
+    const config = JSON.parse(raw);
+    assert.equal(config.id, 'long-run-us-entry-sweep-50x3');
+    assert.equal(config.universe, 'long-run-us-50');
+    assert.equal(config.date_override.from, '2000-01-01');
+    assert.deepEqual(config.preset_ids, [
+      'donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early',
+      'donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict',
+      'donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late',
+    ]);
+  });
+
+  it('long-run-jp-exit-sweep-50x3.json is valid JSON', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'long-run-jp-exit-sweep-50x3.json'),
+      'utf8',
+    );
+    const config = JSON.parse(raw);
+    assert.equal(config.id, 'long-run-jp-exit-sweep-50x3');
+    assert.equal(config.universe, 'long-run-jp-50');
+    assert.equal(config.date_override.from, '2000-01-01');
+    assert.deepEqual(config.preset_ids, [
+      'donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight',
+      'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight',
+      'donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide',
+    ]);
+  });
+
+  it('new deep-dive campaign configs pass validateCampaignConfig', async () => {
+    for (const fileName of ['long-run-us-entry-sweep-50x3.json', 'long-run-jp-exit-sweep-50x3.json']) {
+      const raw = await readFile(
+        join(__dirname, '..', 'config', 'backtest', 'campaigns', fileName),
+        'utf8',
+      );
+      const config = JSON.parse(raw);
+      const result = validateCampaignConfig(config);
+      assert.equal(result.valid, true);
+      assert.deepEqual(result.errors, []);
+    }
+  });
+});
+
+describe('market-specific long-run deep-dive configs', () => {
+  it('loads US entry sweep campaign with US-only 50 symbol universe', async () => {
+    const campaign = await loadCampaign('long-run-us-entry-sweep-50x3');
+    assert.equal(campaign.symbols.length, 50);
+    assert.equal(campaign.strategies.length, 3);
+    assert.equal(campaign.matrix.length, 150);
+    assert.ok(campaign.symbols.every((entry) => entry.market === 'US'));
+    assert.deepEqual(
+      campaign.strategies.map((strategy) => strategy.id),
+      [
+        'donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early',
+        'donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict',
+        'donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late',
+      ],
+    );
+    assert.equal(campaign.defaults.date_range.from, '2000-01-01');
+    assert.equal(campaign.defaults.date_range.to, '2099-12-31');
+  });
+
+  it('loads JP exit sweep campaign with JP-only 50 symbol universe', async () => {
+    const campaign = await loadCampaign('long-run-jp-exit-sweep-50x3');
+    assert.equal(campaign.symbols.length, 50);
+    assert.equal(campaign.strategies.length, 3);
+    assert.equal(campaign.matrix.length, 150);
+    assert.ok(campaign.symbols.every((entry) => entry.market === 'JP'));
+    assert.deepEqual(
+      campaign.strategies.map((strategy) => strategy.id),
+      [
+        'donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight',
+        'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight',
+        'donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide',
+      ],
+    );
+    assert.equal(campaign.defaults.date_range.from, '2000-01-01');
+    assert.equal(campaign.defaults.date_range.to, '2099-12-31');
+  });
+
+  it('uses 10/25/50 phase sizing for both deep-dive campaigns', async () => {
+    const usSmoke = await loadCampaign('long-run-us-entry-sweep-50x3', { phase: 'smoke' });
+    const usPilot = await loadCampaign('long-run-us-entry-sweep-50x3', { phase: 'pilot' });
+    const jpSmoke = await loadCampaign('long-run-jp-exit-sweep-50x3', { phase: 'smoke' });
+    const jpPilot = await loadCampaign('long-run-jp-exit-sweep-50x3', { phase: 'pilot' });
+
+    assert.equal(usSmoke.symbols.length, 10);
+    assert.equal(usPilot.symbols.length, 25);
+    assert.equal(jpSmoke.symbols.length, 10);
+    assert.equal(jpPilot.symbols.length, 25);
+  });
 });

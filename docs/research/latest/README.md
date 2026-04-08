@@ -22,6 +22,7 @@
 - その次段で WebSocket `du` frame の report payload fallback を実装し、preset 経路でも **完全な report metrics を観測できた場合のみ** `websocket_report` による degraded success を許可する形へ拡張した
 - ただし **2026-04-07 の再起動後 live run では report-bearing frame を再現できず、speedup は未確認**
 - 2026-04-08 の campaign 実行では smoke `47/50`, pilot `110/125`, full `485/500` まで recovered できた
+- 次段の deep dive 用 config は `long-run-us-entry-sweep-50x3` と `long-run-jp-exit-sweep-50x3` を追加済み。2026-04-08 セッションでは dry-run まで確認できたが、live 実行は CDP host `172.31.144.1:9223/9225` 到達不可でブロックされた
 
 ## 運用ルール
 
