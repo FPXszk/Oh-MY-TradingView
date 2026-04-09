@@ -140,6 +140,8 @@
 ### 外部比較・応用可能性調査を見たいとき
 
 - [`docs/research/tradingview-external-landscape-and-applicability_20260408_1105.md`](./research/tradingview-external-landscape-and-applicability_20260408_1105.md)
+- [`docs/research/agent-reach-and-broad-web-observability-applicability_20260409_0520.md`](./research/agent-reach-and-broad-web-observability-applicability_20260409_0520.md)
+- [`docs/research/external-agent-trading-landscape-and-oh-my-tradingview-applicability_20260409_1445.md`](./research/external-agent-trading-landscape-and-oh-my-tradingview-applicability_20260409_1445.md)
 - 参照した資料の台帳は [`docs/references/design-ref-llms.md`](./references/design-ref-llms.md)
 
 ### セッションの判断経緯を追いたいとき
@@ -162,6 +164,7 @@
 - [`docs/working-memory/session-logs/tradingview-external-research-and-doc-governance_20260408_1115.md`](./working-memory/session-logs/tradingview-external-research-and-doc-governance_20260408_1115.md)
 - [`docs/working-memory/session-logs/external-research-applicable-implementation_20260408_2049.md`](./working-memory/session-logs/external-research-applicable-implementation_20260408_2049.md)
 - [`docs/working-memory/session-logs/priority-high-desktop-ops-alerts-ta_20260408_2156.md`](./working-memory/session-logs/priority-high-desktop-ops-alerts-ta_20260408_2156.md)
+- [`docs/working-memory/session-logs/external-agent-trading-research_20260409_1445.md`](./working-memory/session-logs/external-agent-trading-research_20260409_1445.md)
 
 ## 運用ルール
 

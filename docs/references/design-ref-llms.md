@@ -161,3 +161,253 @@
 - このプロジェクトにどう活かしたか: official web charting 方向は private access 前提であり、Desktop automation の public 代替ではないと整理した。
 - 採用したもの: official Charting Library は web embedding / datafeed 側の別レイヤだという理解。
 - 採用しなかったもの: これを現行の Desktop + CDP workflow の直接代替とみなすこと。
+
+---
+
+## 16：Panniantong/Agent-Reach
+
+- URL: https://github.com/Panniantong/Agent-Reach
+- 参考にした理由: AI に Twitter、掲示板、記事、動画字幕などを横断的に見せる「ネットの目」の実例として最も近かったため。
+- このプロジェクトにどう活かしたか: Oh-MY-TradingView へは core 統合ではなく、docs / research workflow / skill 補強として持ち込むのが妥当だと整理した。
+- 採用したもの: scaffolding として外部観測導線を整える発想、Twitter/Reddit/雪球/V2EX などを research input に使う観点。
+- 採用しなかったもの: Agent-Reach 全体をこの repo の必須依存や core 実装として埋め込むこと。
+
+---
+
+## 17：unclecode/crawl4ai
+
+- URL: https://github.com/unclecode/crawl4ai
+- 参考にした理由: LLM-friendly web crawl / markdown 化 / JS-heavy page 対応の代表例として、Agent-Reach の web チャネル代替候補を確認したかったため。
+- このプロジェクトにどう活かしたか: 記事・IR ページ・技術 docs の深掘りは、market news の即時取得より別 research engine として切り出す方がよいと判断した。
+- 採用したもの: 深い web crawl を separate research path として持つ発想。
+- 採用しなかったもの: Crawl4AI をこの repo の core dependency にすること。
+
+---
+
+## 18：firecrawl/firecrawl
+
+- URL: https://github.com/firecrawl/firecrawl
+- 参考にした理由: search / scrape / crawl / agent を一体化した、AI 向け web data platform の代表例として比較したかったため。
+- このプロジェクトにどう活かしたか: broad research 用の web data layer は有力だが、現 repo へ直接統合するには重いと判断した。
+- 採用したもの: AI 向け出力整形と MCP / CLI 導線を重視する姿勢。
+- 採用しなかったもの: Firecrawl を前提にした cloud / key 依存の導入。
+
+---
+
+## 19：jina-ai/reader
+
+- URL: https://github.com/jina-ai/reader
+- 参考にした理由: `r.jina.ai` / `s.jina.ai` による最軽量の read/search 導線が、Agent-Reach と非常に近い部品だったため。
+- このプロジェクトにどう活かしたか: 「まず軽い read/search で広く取り、深い crawl は別系統」というレイヤ分離の判断材料にした。
+- 採用したもの: URL / query を LLM-friendly input に変換する軽量 front door の考え方。
+- 採用しなかったもの: Reader だけで social/community 観測全体を解決できるとみなすこと。
+
+---
+
+## 20：searxng/searxng
+
+- URL: https://github.com/searxng/searxng
+- 参考にした理由: Exa 依存を避けつつ、セルフホスト可能な広域検索の代替があるか確認したかったため。
+- このプロジェクトにどう活かしたか: social/community の深読みに入る前段として、広く候補を探す検索レイヤを別管理する発想を補強した。
+- 採用したもの: メタ検索を separate layer として扱う設計観点。
+- 採用しなかったもの: SearXNG 単体で掲示板本文やコメント木の深読みに十分だとみなすこと。
+
+---
+
+## 21：nickscamara/open-deep-research
+
+- URL: https://github.com/nickscamara/open-deep-research
+- 参考にした理由: 検索→抽出→推論→レポートまで含む deep research pipeline の OSS 実例として確認したかったため。
+- このプロジェクトにどう活かしたか: social / web 観測は「取る」だけでなく、「複数ソースをまとめて判断材料にする」パイプラインが重要だと整理した。
+- 採用したもの: 収集結果を reasoning pipeline に流し込む発想。
+- 採用しなかったもの: UI / app 全体をこの repo に持ち込むこと。
+
+---
+
+## 22：browser-use/browser-use
+
+- URL: https://github.com/browser-use/browser-use
+- 参考にした理由: CLI / API / RSS で届かない認証壁や複雑 UI を、AI がブラウザ操作で越える最終手段の代表例だったため。
+- このプロジェクトにどう活かしたか: 通常経路ではなく fallback としてのみ価値があると判断した。
+- 採用したもの: どうしても必要なときだけ browser automation を使う fallback 戦略。
+- 採用しなかったもの: browser-use を通常の research workflow に据えること。
+
+---
+
+## 23：public-clis/twitter-cli
+
+- URL: https://github.com/public-clis/twitter-cli
+- 参考にした理由: Agent-Reach の Twitter チャネルを支える上流として、read/search/article/user lookup の実力と制約を確認したかったため。
+- このプロジェクトにどう活かしたか: FinTwit 観測は Agent-Reach 全体を入れなくても、twitter-cli 単体で research workflow に十分組み込めると判断した。
+- 採用したもの: YAML/JSON 出力、article 読取、user lookup、検索を research input に使う観点。
+- 採用しなかったもの: Twitter cookie 管理や anti-detection をこの repo の core に持ち込むこと。
+
+---
+
+## 24：public-clis/rdt-cli
+
+- URL: https://github.com/public-clis/rdt-cli
+- 参考にした理由: Agent-Reach の Reddit チャネル上流として、検索・投稿読取・コメント木・構造化出力の扱いやすさを確認したかったため。
+- このプロジェクトにどう活かしたか: Reddit は separate research input として価値が高く、theme / signal observation の補助線に使えると判断した。
+- 採用したもの: 構造化出力と comment tree 読取を research workflow に組み込む発想。
+- 採用しなかったもの: Reddit interaction をこの repo の本線機能にすること。
+
+---
+
+## 25：JNHFlow21/social-post-extractor-mcp
+
+- URL: https://github.com/JNHFlow21/social-post-extractor-mcp
+- 参考にした理由: Douyin / 小紅書を `script.md` + `info.json` の固定 artifact に正規化する実装が、social data の扱い方として参考になったため。
+- このプロジェクトにどう活かしたか: social observation は「取れる」だけでなく、固定スキーマ / 固定 artifact に落として初めて durable な research asset になると整理した。
+- 採用したもの: 正規化 artifact を先に決める発想。
+- 採用しなかったもの: Bailian API 前提の実装や対象プラットフォーム特化ロジックをこの repo に直接入れること。
+
+---
+
+## 26：apify/apify-mcp-server
+
+- URL: https://github.com/apify/apify-mcp-server
+- 参考にした理由: 「商用品質の web/social scraping を MCP から使う」対案として、無料 OSS 中心の Agent-Reach と比較したかったため。
+- このプロジェクトにどう活かしたか: 将来、有料でも安定性を優先する別レイヤの選択肢があると整理した。
+- 採用したもの: dynamic tool discovery と MCP で大規模 scraper 群を扱う設計観点。
+- 採用しなかったもの: Apify 依存を現 repo の標準前提にすること。
+
+---
+
+## 27：vercel-labs/agent-browser
+
+- URL: https://github.com/vercel-labs/agent-browser
+- 参考にした理由: AI 向け browser automation CLI が、TradingView 周辺の補助調査や fallback web interaction に使えるか確認したかったため。
+- このプロジェクトにどう活かしたか: accessibility tree + ref、stream、recording という観測面の設計が OMTV の将来 debug / fallback layer の参考になると整理した。
+- 採用したもの: ref ベース snapshot、runtime stream、fallback browser layer の考え方。
+- 採用しなかったもの: TradingView Desktop + CDP 主軸をこれで置き換えること。
+
+---
+
+## 28：virattt/ai-hedge-fund
+
+- URL: https://github.com/virattt/ai-hedge-fund
+- 参考にした理由: multi-agent な投資判断・risk 管理・portfolio synthesis の構造が、この repo の market-intel / reasoning layer に活かせるか確認したかったため。
+- このプロジェクトにどう活かしたか: analyst signals → risk manager → portfolio manager という分離を、将来の thesis generation / explanation layer の参考にした。
+- 採用したもの: deterministic constraints を先に計算し、LLM は synthesis に寄せる構造。
+- 採用しなかったもの: educational PoC を live trading engine として扱うこと。
+
+---
+
+## 29：rv64m/autotrade
+
+- URL: https://github.com/rv64m/autotrade
+- 参考にした理由: LLM が自律的に戦略探索を回す backtest harness の作り方が、OMTV の preset / backtest workflow に最も近かったため。
+- このプロジェクトにどう活かしたか: `program.md` による experiment contract、`results.jsonl`、keep/discard/crash、generated/trash 分離を別 exec-plan 候補として整理した。
+- 採用したもの: backtest 実験ループの型と durable な試行ログの考え方。
+- 採用しなかったもの: execution automation や live autotrading をこの repo の直近目標にすること。
+
+---
+
+## 30：hsliuping/TradingAgents-CN
+
+- URL: https://github.com/hsliuping/TradingAgents-CN
+- 参考にした理由: multi-agent 株分析系 project の中国語圏拡張版が、どこまで再利用可能かと product 化の方向性を確認したかったため。
+- このプロジェクトにどう活かしたか: report export、progress 表示、learning-first positioning などの feature inventory を把握した。
+- 採用したもの: 学習 / 研究用途を前面に出す位置づけと機能棚卸しの観点。
+- 採用しなかったもの: `app/` / `frontend/` の proprietary 部分を再利用候補とみなすこと。
+
+---
+
+## 31：vercel-labs organization
+
+- URL: https://github.com/vercel-labs
+- 参考にした理由: `vercel-labs` が公式実験 org と見なせるか、および org 全体で agent / sandbox / workflow 周辺に有用 repo があるか確認したかったため。
+- このプロジェクトにどう活かしたか: reusable core と example repo を切り分け、`agent-browser`, `agent-skills`, `skills`, `portless`, `opensrc`, `dev3000`, `openreview`, `emulate` を高シグナル候補として整理した。
+- 採用したもの: agent / sandbox / workflow 周辺の設計資産を周辺開発体験の改善材料として見る観点。
+- 採用しなかったもの: org 配下の多数の workflow example や demo repo をそのまま本 repo の依存関係にすること。
+
+---
+
+## 32：vercel-labs/agent-skills
+
+- URL: https://github.com/vercel-labs/agent-skills
+- 参考にした理由: repo 固有の skill 群を agent にどう配布・記述するかの参考として確認したかったため。
+- このプロジェクトにどう活かしたか: 本 repo の `.agents/skills/` 運用や、今後の research / review skill の設計観点として整理した。
+- 採用したもの: skill を instructions + scripts + references で束ねる考え方。
+- 採用しなかったもの: Vercel frontend 系 skill 群そのものを本 repo に流用すること。
+
+---
+
+## 33：vercel-labs/skills
+
+- URL: https://github.com/vercel-labs/skills
+- 参考にした理由: agent skills の配布・導入・更新を CLI としてどう扱うか確認したかったため。
+- このプロジェクトにどう活かしたか: skills を repo / global の両スコープで運用する考え方や、公開 ecosystem の位置づけを理解する材料にした。
+- 採用したもの: skills を installable asset として扱う観点。
+- 採用しなかったもの: external skills ecosystem をこの repo の必須ランタイムにすること。
+
+---
+
+## 34：vercel-labs/portless
+
+- URL: https://github.com/vercel-labs/portless
+- 参考にした理由: 複数の local UI / stream / debug endpoint を人間と agent の両方が扱いやすくする方法として確認したかったため。
+- このプロジェクトにどう活かしたか: 将来、TradingView 以外の補助 UI や dashboard を足すときの local URL 整理に使えると判断した。
+- 採用したもの: stable local URL と worktree-aware routing の発想。
+- 採用しなかったもの: 現時点で repo 本体へ portless を必須導入すること。
+
+---
+
+## 35：vercel-labs/opensrc
+
+- URL: https://github.com/vercel-labs/opensrc
+- 参考にした理由: 外部依存ライブラリの実装まで agent に読ませる導線が、比較調査や将来の code review に役立つか確認したかったため。
+- このプロジェクトにどう活かしたか: 外部 package の source fetch を durable asset として置く運用の参考にした。
+- 採用したもの: implementation-level context を追加で持たせる考え方。
+- 採用しなかったもの: `opensrc/` ディレクトリ運用をこの repo の標準作法として即導入すること。
+
+---
+
+## 36：vercel-labs/dev3000
+
+- URL: https://github.com/vercel-labs/dev3000
+- 参考にした理由: browser / server / network / screenshot を統合した AI 向け debug timeline の作り方が、TradingView セッション観測の参考になるため。
+- このプロジェクトにどう活かしたか: TradingView Desktop 操作時の observability layer を将来強化する発想として整理した。
+- 採用したもの: logs + console + network + screenshots を timestamped feed で束ねる観点。
+- 採用しなかったもの: web app dev server 向けの d3k をそのまま本 repo に導入すること。
+
+---
+
+## 37：vercel-labs/openreview
+
+- URL: https://github.com/vercel-labs/openreview
+- 参考にした理由: sandbox 上で AI code review を実行し、suggestion / fix / push まで行う構成が将来の review automation に使えるか確認したかったため。
+- このプロジェクトにどう活かしたか: PR review の durable workflow と custom skill loading の参考にした。
+- 採用したもの: sandboxed review と skill-based review depth の考え方。
+- 採用しなかったもの: Vercel hosted 前提の review bot を現 repo にそのまま導入すること。
+
+---
+
+## 38：vercel-labs/emulate
+
+- URL: https://github.com/vercel-labs/emulate
+- 参考にした理由: no-network sandbox や CI で外部 API を stateful に擬似化する道具が、将来のテストや demo に役立つか確認したかったため。
+- このプロジェクトにどう活かしたか: 外部サービス依存が増えたときに、network-free テスト面を別 layer で支える候補として整理した。
+- 採用したもの: production-fidelity API emulation を local/CI で持つ観点。
+- 採用しなかったもの: 現時点の docs-only task で emulator 導入まで進めること。
+
+---
+
+## 39：vercel-labs/coding-agent-template
+
+- URL: https://github.com/vercel-labs/coding-agent-template
+- 参考にした理由: hosted な coding-agent orchestration app が、別 repo / 別サービス候補として有用か確認したかったため。
+- このプロジェクトにどう活かしたか: OMTV 本体ではなく、将来の hosted sidecar や multi-user task runner を考える際の参考候補として整理した。
+- 採用したもの: sandbox lifecycle、keep-alive、branch generation、multi-agent selection の設計観点。
+- 採用しなかったもの: hosted coding app 全体をこの repo 本体の責務に取り込むこと。
+
+---
+
+## 40：MMT
+
+- URL: https://mmt.gg/ , https://mmt.gg/api
+- 参考にした理由: 「最近無料になったらしい」暗号資産 analytics terminal が、OMTV の market-intel layer を補強できるか確認したかったため。
+- このプロジェクトにどう活かしたか: crypto orderflow / heatmap / OI / liquidation の外部データ源候補として整理した。
+- 採用したもの: free tier で試せる hosted data source 候補としての位置づけ。
+- 採用しなかったもの: TradingView 代替や repo 標準依存として即採用すること。
