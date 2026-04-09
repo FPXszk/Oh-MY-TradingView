@@ -1,28 +1,41 @@
 import { getClient, getTargetInfo, evaluate } from '../connection.js';
 
+/**
+ * JS expression to collect page/chart state from TradingView.
+ * Shared between healthCheck and observability snapshot.
+ */
+export const PAGE_STATE_JS = `(function() {
+  var result = { url: window.location.href, title: document.title };
+  try {
+    var chart = window.TradingViewApi._activeChartWidgetWV.value();
+    result.symbol = chart.symbol();
+    result.resolution = chart.resolution();
+    result.chartType = chart.chartType();
+    result.apiAvailable = true;
+  } catch(e) {
+    result.symbol = 'unknown';
+    result.resolution = 'unknown';
+    result.chartType = null;
+    result.apiAvailable = false;
+    result.apiError = e.message;
+  }
+  return result;
+})()`;
+
+/**
+ * Collect page/chart state via CDP evaluation.
+ * Accepts _deps for dependency injection (testability).
+ */
+export async function collectPageState(_deps = {}) {
+  const evalFn = _deps.evaluate || evaluate;
+  return evalFn(PAGE_STATE_JS);
+}
+
 export async function healthCheck() {
   await getClient();
   const target = await getTargetInfo();
 
-  const state = await evaluate(`
-    (function() {
-      var result = { url: window.location.href, title: document.title };
-      try {
-        var chart = window.TradingViewApi._activeChartWidgetWV.value();
-        result.symbol = chart.symbol();
-        result.resolution = chart.resolution();
-        result.chartType = chart.chartType();
-        result.apiAvailable = true;
-      } catch(e) {
-        result.symbol = 'unknown';
-        result.resolution = 'unknown';
-        result.chartType = null;
-        result.apiAvailable = false;
-        result.apiError = e.message;
-      }
-      return result;
-    })()
-  `);
+  const state = await collectPageState();
 
   if (!state?.apiAvailable) {
     throw new Error(

@@ -1,4 +1,5 @@
-export { healthCheck, discover } from './health.js';
+export { healthCheck, discover, collectPageState } from './health.js';
+export { captureObservabilitySnapshot } from './observability.js';
 export { analyze, getSource, setSource, compile, getErrors, smartCompile, verifyStrategyAttached, verifyStrategyAttachmentChange, pickApplyButton, fetchChartStudies, retryApplyStrategy } from './pine.js';
 export { getCurrentPrice, setActiveSymbol, formatPriceResult, validatePriceData, symbolMatches } from './price.js';
 export { buildNvdaMaSource, normalizeMetrics, buildResult, runNvdaMaBacktest, loadPreset, runPresetBacktest } from './backtest.js';

@@ -10,6 +10,7 @@ import './commands/stream.js';
 import './commands/market-intel.js';
 import './commands/workspace.js';
 import './commands/alerts.js';
+import './commands/observe.js';
 
 import { run } from './router.js';
 await run(process.argv);

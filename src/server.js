@@ -10,6 +10,7 @@ import { registerStreamTools } from './tools/stream.js';
 import { registerMarketIntelTools } from './tools/market-intel.js';
 import { registerWorkspaceTools } from './tools/workspace.js';
 import { registerAlertTools } from './tools/alerts.js';
+import { registerObserveTools } from './tools/observe.js';
 
 const server = new McpServer(
   {
@@ -71,6 +72,9 @@ Workspace & Alert operations (CDP needed):
 - tv_alert_create_price → create a local price alert (no webhook)
 - tv_alert_delete → delete an alert by id
 
+Observability (CDP needed):
+- tv_observe_snapshot → one-shot observability snapshot (connection, page state, screenshot, runtime errors)
+
 Market Intelligence (no CDP needed):
 - market_quote → single symbol quote
 - market_fundamentals → PE, market cap, margins, growth
@@ -103,6 +107,7 @@ registerStreamTools(server);
 registerMarketIntelTools(server);
 registerWorkspaceTools(server);
 registerAlertTools(server);
+registerObserveTools(server);
 
 process.stderr.write(
   '⚠  oh-my-tradingview  |  Unofficial tool. Not affiliated with TradingView Inc.\n'
