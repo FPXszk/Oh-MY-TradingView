@@ -28,8 +28,9 @@ function printCommandHelp(name, cmd) {
   if (cmd.subcommands) {
     process.stdout.write(`Usage: tv ${name} <subcommand> [options]\n\n`);
     process.stdout.write('Subcommands:\n');
+    const maxSubLen = Math.max(...[...cmd.subcommands.keys()].map((sub) => sub.length));
     for (const [sub, subConf] of cmd.subcommands) {
-      process.stdout.write(`  ${sub.padEnd(12)}${subConf.description}\n`);
+      process.stdout.write(`  ${sub.padEnd(maxSubLen + 2)}${subConf.description}\n`);
     }
   } else {
     process.stdout.write(`Usage: tv ${name} [options]\n\n`);

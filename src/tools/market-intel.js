@@ -8,6 +8,7 @@ import {
   runScreener,
   getMultiSymbolTaSummary,
   rankSymbolsByTa,
+  rankSymbolsByConfluence,
 } from '../core/market-intel.js';
 import { getSymbolAnalysis } from '../core/market-intel-analysis.js';
 
@@ -141,6 +142,24 @@ export function registerMarketIntelTools(server) {
     async ({ symbol }) => {
       try {
         return jsonResult(await getSymbolAnalysis(symbol));
+      } catch (err) {
+        return jsonResult({ success: false, error: err.message }, true);
+      }
+    },
+  );
+
+  server.tool(
+    'market_confluence_rank',
+    'Rank symbols by deterministic confluence score derived from trend, fundamentals, and risk. No CDP connection needed.',
+    {
+      symbols: z.array(z.string()).min(1).max(20)
+        .describe('Array of ticker symbols (max 20)'),
+      limit: z.number().int().positive().optional()
+        .describe('Optional number of ranked results to return'),
+    },
+    async ({ symbols, limit }) => {
+      try {
+        return jsonResult(await rankSymbolsByConfluence(symbols, { limit }));
       } catch (err) {
         return jsonResult({ success: false, error: err.message }, true);
       }

@@ -12,6 +12,8 @@ import { registerWorkspaceTools } from './tools/workspace.js';
 import { registerAlertTools } from './tools/alerts.js';
 import { registerObserveTools } from './tools/observe.js';
 import { registerBrowserLaunchTools } from './tools/browser-launch.js';
+import { registerTwitterReadTools } from './tools/twitter-read.js';
+import { registerReachTools } from './tools/reach.js';
 
 const server = new McpServer(
   {
@@ -88,6 +90,22 @@ Market Intelligence (no CDP needed):
 - market_symbol_analysis → deterministic single-symbol trend/fundamentals/news/risk analysis
 - market_* tools fetch public Yahoo Finance endpoints over the network
 
+Twitter/X read-only (no CDP needed, requires local twitter-cli auth):
+- x_status → verify twitter-cli authentication state
+- x_whoami → show the authenticated X account
+- x_search_posts → search posts by query
+- x_user_profile → fetch a user profile
+- x_user_posts → fetch recent posts from a user
+- x_tweet_detail → fetch a single post detail
+
+Reach external observation (no CDP needed, read-only):
+- reach_status → verify web/RSS/Reddit/YouTube channel readiness
+- reach_read_web → read a public web page via Jina Reader
+- reach_read_rss → read a public RSS or Atom feed
+- reach_search_reddit → search public Reddit posts
+- reach_read_reddit_post → read a public Reddit post and top comments
+- reach_read_youtube → read YouTube metadata and optional subtitles
+
 BACKTEST WORKFLOW:
 1. tv_backtest_nvda_ma_5_20 → switches to NVDA, applies 5/20 MA cross strategy, reads Strategy Tester
 
@@ -111,6 +129,8 @@ registerWorkspaceTools(server);
 registerAlertTools(server);
 registerObserveTools(server);
 registerBrowserLaunchTools(server);
+registerTwitterReadTools(server);
+registerReachTools(server);
 
 process.stderr.write(
   '⚠  oh-my-tradingview  |  Unofficial tool. Not affiliated with TradingView Inc.\n'

@@ -9,8 +9,25 @@ export { buildLaunchCommand, verifyExecutable, launchDesktop } from './launch.js
 export { buildBrowserLaunchCommand, launchBrowserFallback, BROWSER_CANDIDATES, DEFAULT_CHART_URL } from './browser-launch.js';
 export { captureScreenshot } from './capture.js';
 export { resolveStreamParams, streamPriceTicks } from './stream.js';
-export { getSymbolQuote, getSymbolFundamentals, getMarketSnapshot, getFinancialNews, runScreener, computeRsi, computeSma, getMultiSymbolTaSummary, rankSymbolsByTa } from './market-intel.js';
+export { getSymbolQuote, getSymbolFundamentals, getMarketSnapshot, getFinancialNews, runScreener, computeRsi, computeSma, getMultiSymbolTaSummary, rankSymbolsByTa, rankSymbolsByConfluence } from './market-intel.js';
 export { getSymbolAnalysis } from './market-intel-analysis.js';
+export { computeConfluenceSummary, buildCoverageSummary } from './market-confluence.js';
+export {
+  getTwitterStatus,
+  getTwitterWhoAmI,
+  getTwitterUserProfile,
+  searchTwitterPosts,
+  getTwitterUserPosts,
+  getTwitterTweetDetail,
+} from './twitter-read.js';
+export {
+  getReachStatus,
+  readWebContent,
+  readRssFeed,
+  searchRedditPosts,
+  readRedditPost,
+  readYoutubeContent,
+} from './reach.js';
 export { listWatchlistSymbols, addWatchlistSymbol, removeWatchlistSymbol, listPanes, focusPane, listTabs, switchTab, listLayouts, applyLayout } from './workspace.js';
 export { listAlerts, createPriceAlert, deleteAlert } from './alerts.js';
 export {

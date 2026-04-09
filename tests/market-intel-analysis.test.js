@@ -499,6 +499,27 @@ describe('getSymbolAnalysis — overall_summary', () => {
       const summary = result.analysis.overall_summary;
       assert.ok(typeof summary.stance === 'string');
       assert.ok(summary.signals.length > 0, 'overall signals should aggregate');
+      assert.ok(typeof summary.confluence_score === 'number');
+      assert.ok(typeof summary.confluence_label === 'string');
+      assert.ok(summary.confluence_breakdown);
+      assert.ok(summary.coverage_summary);
+    });
+  });
+
+  it('adds a favourable confluence summary for aligned bullish inputs', async () => {
+    const mock = buildRoutedMock({
+      quote: buildQuoteResponse('AAPL'),
+      chart: buildChartResponse('AAPL', UPTREND_CLOSES),
+      fundamentals: buildFundamentalsResponse(),
+      news: buildNewsResponse(STANDARD_NEWS),
+    });
+
+    await withMockFetch(mock, async () => {
+      const result = await getSymbolAnalysis('AAPL');
+      const summary = result.analysis.overall_summary;
+      assert.equal(summary.confluence_label, 'favourable');
+      assert.ok(summary.confluence_score >= 70);
+      assert.equal(summary.coverage_summary.core_available, 3);
     });
   });
 });
@@ -621,6 +642,8 @@ describe('getSymbolAnalysis — partial data failure', () => {
       assert.ok(result.inputs.news);
       assert.ok(result.error);
       assert.equal(result.analysis.risk_analyst.stance, 'unknown');
+      assert.equal(result.analysis.overall_summary.coverage_summary.news_available, true);
+      assert.ok(!result.analysis.overall_summary.coverage_summary.missing_inputs.includes('news'));
       assert.notEqual(result.analysis.overall_summary.stance, 'leaning_positive');
     });
   });
@@ -641,6 +664,9 @@ describe('getSymbolAnalysis — partial data failure', () => {
       assert.ok(result.inputs.fundamentals);
       assert.equal(result.inputs.ta_summary, null);
       assert.equal(result.analysis.overall_summary.stance, 'mixed');
+      assert.equal(result.analysis.overall_summary.confluence_label, 'mixed');
+      assert.equal(result.analysis.overall_summary.confluence_score, 50);
+      assert.equal(result.analysis.overall_summary.coverage_summary.core_available, 1);
       assert.ok(result.analysis.overall_summary.warnings.some((warning) => /fewer than two core datasets/i.test(warning)));
     });
   });

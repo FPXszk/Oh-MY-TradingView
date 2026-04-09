@@ -9,6 +9,7 @@ const YAHOO_SEARCH_BASE = 'https://query1.finance.yahoo.com/v1/finance/search';
 const YAHOO_QUOTESUMMARY_BASE = 'https://query1.finance.yahoo.com/v10/finance/quoteSummary';
 
 const DEFAULT_TIMEOUT_MS = 10000;
+const CONFLUENCE_MAX_SYMBOLS = 20;
 
 function buildHeaders() {
   return {
@@ -382,6 +383,103 @@ export async function rankSymbolsByTa(symbols, sortBy = 'priceChange', order = '
     retrieved_at: new Date().toISOString(),
     source: 'yahoo_finance',
   };
+}
+
+export async function rankSymbolsByConfluence(symbols, { limit } = {}) {
+  if (!Array.isArray(symbols) || symbols.length === 0) {
+    throw new Error('symbols array is required and must not be empty');
+  }
+  if (symbols.length > CONFLUENCE_MAX_SYMBOLS) {
+    throw new Error(`symbols array must not exceed ${CONFLUENCE_MAX_SYMBOLS} items`);
+  }
+
+  let effectiveLimit = null;
+  if (limit !== undefined && limit !== null) {
+    effectiveLimit = Number(limit);
+    if (!Number.isInteger(effectiveLimit) || effectiveLimit <= 0) {
+      throw new Error('limit must be a positive integer');
+    }
+  }
+
+  const { getSymbolAnalysis } = await import('./market-intel-analysis.js');
+  const results = await Promise.allSettled(
+    symbols.map((symbol) => getSymbolAnalysis(symbol)),
+  );
+
+  const rankedCandidates = [];
+  const unranked = [];
+
+  results.forEach((result, index) => {
+    const symbol = symbols[index]?.trim?.()?.toUpperCase?.() || symbols[index];
+    if (result.status !== 'fulfilled') {
+      unranked.push({
+        symbol,
+        error: result.reason?.message || 'Unknown error',
+      });
+      return;
+    }
+
+    if (!result.value?.success) {
+      unranked.push({
+        symbol,
+        error: result.value?.error || 'Analysis failed',
+      });
+      return;
+    }
+
+    rankedCandidates.push(result.value);
+  });
+
+  rankedCandidates.sort((left, right) => {
+    const scoreDiff = (right.analysis?.overall_summary?.confluence_score ?? 0)
+      - (left.analysis?.overall_summary?.confluence_score ?? 0);
+    if (scoreDiff !== 0) {
+      return scoreDiff;
+    }
+    return left.symbol.localeCompare(right.symbol);
+  });
+
+  const visibleCandidates = effectiveLimit === null
+    ? rankedCandidates
+    : rankedCandidates.slice(0, effectiveLimit);
+  const omittedCandidates = effectiveLimit === null
+    ? []
+    : rankedCandidates.slice(effectiveLimit);
+
+  const rankedSymbols = visibleCandidates.map((item, index) => ({
+    rank: index + 1,
+    symbol: item.symbol,
+    confluence_score: item.analysis.overall_summary.confluence_score,
+    confluence_label: item.analysis.overall_summary.confluence_label,
+    coverage_summary: item.analysis.overall_summary.coverage_summary,
+    confluence_breakdown: item.analysis.overall_summary.confluence_breakdown,
+    warnings: item.analysis.overall_summary.warnings,
+  }));
+  const omitted = omittedCandidates.map((item) => ({
+    symbol: item.symbol,
+    confluence_score: item.analysis.overall_summary.confluence_score,
+    confluence_label: item.analysis.overall_summary.confluence_label,
+    coverage_summary: item.analysis.overall_summary.coverage_summary,
+    reason: 'limit_applied',
+  }));
+
+  const response = {
+    success: rankedSymbols.length > 0,
+    count: symbols.length,
+    successCount: rankedCandidates.length,
+    rankedCount: rankedSymbols.length,
+    failureCount: unranked.length,
+    omittedCount: omitted.length,
+    ranked_symbols: rankedSymbols,
+    omitted,
+    unranked,
+    retrieved_at: new Date().toISOString(),
+    source: 'yahoo_finance',
+  };
+  if (!response.success) {
+    response.error = 'All confluence analysis requests failed';
+  }
+  return response;
 }
 
 export async function runScreener({ symbols, minPrice, maxPrice, minVolume } = {}) {

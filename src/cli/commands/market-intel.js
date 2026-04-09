@@ -7,6 +7,7 @@ import {
   runScreener,
   getMultiSymbolTaSummary,
   rankSymbolsByTa,
+  rankSymbolsByConfluence,
 } from '../../core/market-intel.js';
 import { getSymbolAnalysis } from '../../core/market-intel-analysis.js';
 
@@ -128,6 +129,23 @@ register('market', {
         handler: (opts) => {
           if (!opts.symbol) throw new Error('Usage: tv market analysis --symbol AAPL');
           return getSymbolAnalysis(opts.symbol);
+        },
+      },
+    ],
+    [
+      'confluence-rank',
+      {
+        description: 'Rank symbols by deterministic confluence score',
+        options: {
+          limit: { type: 'string', description: 'Maximum ranked results to return' },
+        },
+        handler: (opts, positionals) => {
+          if (!positionals || positionals.length === 0) {
+            throw new Error('Usage: tv market confluence-rank AAPL MSFT NVDA --limit 5');
+          }
+          return rankSymbolsByConfluence(positionals, {
+            limit: opts.limit ? Number(opts.limit) : undefined,
+          });
         },
       },
     ],

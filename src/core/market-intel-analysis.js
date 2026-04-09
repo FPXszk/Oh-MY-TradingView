@@ -11,6 +11,7 @@ import {
   getFinancialNews,
   getMultiSymbolTaSummary,
 } from './market-intel.js';
+import { computeConfluenceSummary } from './market-confluence.js';
 
 // ---------------------------------------------------------------------------
 // Data collection — fetch all inputs with graceful degradation
@@ -405,6 +406,13 @@ function analyzeRisk(quote, ta, fundamentals) {
 function buildOverallSummary(trend, fundamentalsAnalysis, newsAnalysis, riskAnalysis, inputCoverage = {}) {
   const signals = [];
   const warnings = [];
+  const confluence = computeConfluenceSummary(
+    trend,
+    fundamentalsAnalysis,
+    newsAnalysis,
+    riskAnalysis,
+    inputCoverage,
+  );
 
   signals.push(`Trend: ${trend.stance} (${trend.confidence} confidence)`);
   signals.push(`Fundamentals: ${fundamentalsAnalysis.stance} (${fundamentalsAnalysis.confidence} confidence)`);
@@ -415,6 +423,7 @@ function buildOverallSummary(trend, fundamentalsAnalysis, newsAnalysis, riskAnal
   warnings.push(...fundamentalsAnalysis.warnings);
   warnings.push(...newsAnalysis.warnings);
   warnings.push(...riskAnalysis.warnings);
+  warnings.push(...confluence.warnings);
 
   const coreCoverageCount = [
     inputCoverage.quote,
@@ -429,6 +438,10 @@ function buildOverallSummary(trend, fundamentalsAnalysis, newsAnalysis, riskAnal
       confidence: 'low',
       signals,
       warnings,
+      confluence_score: confluence.confluence_score,
+      confluence_label: confluence.confluence_label,
+      confluence_breakdown: confluence.confluence_breakdown,
+      coverage_summary: confluence.coverage_summary,
     };
   }
 
@@ -460,7 +473,16 @@ function buildOverallSummary(trend, fundamentalsAnalysis, newsAnalysis, riskAnal
 
   const confidence = warnings.length === 0 ? 'high' : warnings.length <= 2 ? 'medium' : 'low';
 
-  return { stance, confidence, signals, warnings };
+  return {
+    stance,
+    confidence,
+    signals,
+    warnings,
+    confluence_score: confluence.confluence_score,
+    confluence_label: confluence.confluence_label,
+    confluence_breakdown: confluence.confluence_breakdown,
+    coverage_summary: confluence.coverage_summary,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -496,7 +518,7 @@ export async function getSymbolAnalysis(symbol) {
       quote: Boolean(inputs.quote),
       fundamentals: Boolean(inputs.fundamentals),
       ta: Boolean(inputs.ta),
-      news: Boolean(inputs.news?.news?.length),
+      news: Boolean(inputs.news),
     },
   );
   const hasCoreInput = Boolean(inputs.quote || inputs.fundamentals || inputs.ta);

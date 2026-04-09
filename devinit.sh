@@ -16,6 +16,39 @@ export LESS="-R"
 export EDITOR=nano
 export TERM=xterm-256color
 
+load_twitter_env() {
+  local env_file="${ROOT_DIR}/config/.env"
+  local line=""
+  local key=""
+  local value=""
+
+  [[ -f "${env_file}" ]] || return 0
+
+  while IFS= read -r line || [[ -n "${line}" ]]; do
+    line="${line%$'\r'}"
+    [[ -n "${line//[[:space:]]/}" ]] || continue
+    [[ "${line}" =~ ^[[:space:]]*# ]] && continue
+
+    if [[ "${line}" =~ ^[[:space:]]*(export[[:space:]]+)?(TWITTER_AUTH_TOKEN|TWITTER_CT0|TWITTER_BIN)[[:space:]]*=(.*)$ ]]; then
+      key="${BASH_REMATCH[2]}"
+      value="${BASH_REMATCH[3]}"
+      value="${value#"${value%%[![:space:]]*}"}"
+      value="${value%"${value##*[![:space:]]}"}"
+
+      if [[ "${value}" =~ ^\"(.*)\"$ ]]; then
+        value="${BASH_REMATCH[1]}"
+      elif [[ "${value}" =~ ^\'(.*)\'$ ]]; then
+        value="${BASH_REMATCH[1]}"
+      fi
+
+      export "${key}=${value}"
+    fi
+  done < "${env_file}"
+}
+
+# Twitter/X 認証情報を安全に読み込む
+load_twitter_env
+
 # ===== Robust SSH Agent Auto Start =====
 if ! ssh-add -l >/dev/null 2>&1; then
   echo "[devinit] starting new ssh-agent..."

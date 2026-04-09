@@ -168,8 +168,8 @@
 
 - URL: https://github.com/Panniantong/Agent-Reach
 - 参考にした理由: AI に Twitter、掲示板、記事、動画字幕などを横断的に見せる「ネットの目」の実例として最も近かったため。
-- このプロジェクトにどう活かしたか: Oh-MY-TradingView へは core 統合ではなく、docs / research workflow / skill 補強として持ち込むのが妥当だと整理した。
-- 採用したもの: scaffolding として外部観測導線を整える発想、Twitter/Reddit/雪球/V2EX などを research input に使う観点。
+- このプロジェクトにどう活かしたか: Oh-MY-TradingView では Agent-Reach 本体を入れず、`reach_*` という read-only external observation layer を別面で追加する方針に落とした。
+- 採用したもの: scaffolding として外部観測導線を整える発想、Jina Reader を front door に置く考え方、Twitter 以外を別 namespace へ分離する設計。
 - 採用しなかったもの: Agent-Reach 全体をこの repo の必須依存や core 実装として埋め込むこと。
 
 ---
@@ -198,8 +198,8 @@
 
 - URL: https://github.com/jina-ai/reader
 - 参考にした理由: `r.jina.ai` / `s.jina.ai` による最軽量の read/search 導線が、Agent-Reach と非常に近い部品だったため。
-- このプロジェクトにどう活かしたか: 「まず軽い read/search で広く取り、深い crawl は別系統」というレイヤ分離の判断材料にした。
-- 採用したもの: URL / query を LLM-friendly input に変換する軽量 front door の考え方。
+- このプロジェクトにどう活かしたか: `reach_read_web` の実装と、`reach_read_youtube` の metadata fallback 導線として実際に採用した。
+- 採用したもの: URL を LLM-friendly text に変換する軽量 front door の考え方と、複雑な crawler を持ち込まない Phase 1 の割り切り。
 - 採用しなかったもの: Reader だけで social/community 観測全体を解決できるとみなすこと。
 
 ---
@@ -248,8 +248,8 @@
 
 - URL: https://github.com/public-clis/rdt-cli
 - 参考にした理由: Agent-Reach の Reddit チャネル上流として、検索・投稿読取・コメント木・構造化出力の扱いやすさを確認したかったため。
-- このプロジェクトにどう活かしたか: Reddit は separate research input として価値が高く、theme / signal observation の補助線に使えると判断した。
-- 採用したもの: 構造化出力と comment tree 読取を research workflow に組み込む発想。
+- このプロジェクトにどう活かしたか: Reddit は separate research input として価値が高いと確認したが、Phase 1 実装では依存を増やさず public JSON route を優先した。
+- 採用したもの: 構造化出力と comment tree 読取を `reach_*` に組み込む発想。
 - 採用しなかったもの: Reddit interaction をこの repo の本線機能にすること。
 
 ---
@@ -411,3 +411,13 @@
 - このプロジェクトにどう活かしたか: crypto orderflow / heatmap / OI / liquidation の外部データ源候補として整理した。
 - 採用したもの: free tier で試せる hosted data source 候補としての位置づけ。
 - 採用しなかったもの: TradingView 代替や repo 標準依存として即採用すること。
+
+---
+
+## 41：The Math Behind Combining 50 Weak Signals Into One Winning Trade
+
+- URL: http://x.com/i/article/2037534155752583168
+- 参考にした理由: 単独では弱い signal を束ねて、より強い判断へ圧縮する考え方が `market_*` / `x_*` / `reach_*` の今後の設計方針と近かったため。
+- このプロジェクトにどう活かしたか: 第1段階では `market_symbol_analysis` に additive な `confluence_score` / `confluence_label` / `confluence_breakdown` / `coverage_summary` を追加し、`market_confluence_rank` で watchlist 候補を比較できるようにした。
+- 採用したもの: 固定重みの deterministic confluence layer、false precision を避ける coarse score、coverage を別面で明示する設計。
+- 採用しなかったもの: 記事中の大規模 multi-signal engine 全体、prediction market 向けの応用、`x_*` / `reach_*` を初回から direction に直接混ぜること。

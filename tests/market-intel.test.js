@@ -11,6 +11,7 @@ import {
   computeSma,
   getMultiSymbolTaSummary,
   rankSymbolsByTa,
+  rankSymbolsByConfluence,
 } from '../src/core/market-intel.js';
 
 async function withMockFetch(mockImpl, fn) {
@@ -616,6 +617,243 @@ describe('rankSymbolsByTa — mocked fetch', () => {
       assert.equal(result.success, false);
       assert.equal(result.error, 'All TA requests failed');
       assert.equal(result.rankedCount, 0);
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// rankSymbolsByConfluence — mocked fetch
+// ---------------------------------------------------------------------------
+
+describe('rankSymbolsByConfluence — mocked fetch', () => {
+  function buildQuoteResponse(symbol, overrides = {}) {
+    return {
+      chart: {
+        result: [{
+          meta: {
+            symbol,
+            currency: 'USD',
+            exchangeName: 'NMS',
+            regularMarketPrice: 210.5,
+            previousClose: 205.25,
+            regularMarketVolume: 50000000,
+            regularMarketDayHigh: 212,
+            regularMarketDayLow: 204,
+            fiftyTwoWeekHigh: 260,
+            fiftyTwoWeekLow: 160,
+            ...overrides,
+          },
+        }],
+      },
+    };
+  }
+
+  function buildChartResponse(symbol, closes) {
+    return {
+      chart: {
+        result: [{
+          meta: { symbol },
+          indicators: {
+            quote: [{ close: closes }],
+          },
+        }],
+      },
+    };
+  }
+
+  function buildFundamentalsResponse(overrides = {}) {
+    return {
+      quoteSummary: {
+        result: [{
+          summaryDetail: {
+            marketCap: { raw: 3000000000000 },
+            trailingPE: { raw: 28.5 },
+            forwardPE: { raw: 25.0 },
+            dividendYield: { raw: 0.005 },
+            beta: { raw: 1.0 },
+            ...overrides.summaryDetail,
+          },
+          defaultKeyStatistics: {
+            ...overrides.defaultKeyStatistics,
+          },
+          financialData: {
+            profitMargins: { raw: 0.25 },
+            revenueGrowth: { raw: 0.08 },
+            earningsGrowth: { raw: 0.12 },
+            returnOnEquity: { raw: 0.15 },
+            debtToEquity: { raw: 120 },
+            ...overrides.financialData,
+          },
+        }],
+      },
+    };
+  }
+
+  function buildNewsResponse(symbol) {
+    return {
+      news: [
+        {
+          title: `${symbol} headline`,
+          publisher: 'Reuters',
+          link: `https://example.com/${symbol}`,
+          providerPublishTime: Math.floor(Date.now() / 1000) - 3600,
+          type: 'STORY',
+        },
+      ],
+    };
+  }
+
+  function buildConfluenceMock(configBySymbol) {
+    return async (url) => {
+      const urlStr = String(url);
+      const symbol = Object.keys(configBySymbol).find((candidate) => urlStr.includes(candidate));
+      const config = symbol ? configBySymbol[symbol] : null;
+
+      if (!config || config.fail) {
+        return { ok: false, status: 503, json: async () => ({}) };
+      }
+      if (urlStr.includes('quoteSummary')) {
+        return { ok: true, json: async () => config.fundamentals };
+      }
+      if (urlStr.includes('search')) {
+        return { ok: true, json: async () => config.news };
+      }
+      if (urlStr.includes('range=3mo')) {
+        return { ok: true, json: async () => config.chart };
+      }
+      return { ok: true, json: async () => config.quote };
+    };
+  }
+
+  const UPTREND_CLOSES = Array.from({ length: 60 }, (_, i) => 150 + i * 1.5);
+  const DOWNTREND_CLOSES = Array.from({ length: 60 }, (_, i) => 250 - i * 1.5);
+
+  it('ranks symbols by confluence score descending', async () => {
+    await withMockFetch(buildConfluenceMock({
+      AAPL: {
+        quote: buildQuoteResponse('AAPL', { regularMarketPrice: 210, fiftyTwoWeekHigh: 260, fiftyTwoWeekLow: 160 }),
+        chart: buildChartResponse('AAPL', UPTREND_CLOSES),
+        fundamentals: buildFundamentalsResponse(),
+        news: buildNewsResponse('AAPL'),
+      },
+      MSFT: {
+        quote: buildQuoteResponse('MSFT', { regularMarketPrice: 175, fiftyTwoWeekHigh: 280, fiftyTwoWeekLow: 170 }),
+        chart: buildChartResponse('MSFT', DOWNTREND_CLOSES),
+        fundamentals: buildFundamentalsResponse({
+          summaryDetail: { beta: { raw: 1.7 }, forwardPE: { raw: 38 } },
+          financialData: {
+            profitMargins: { raw: 0.08 },
+            revenueGrowth: { raw: -0.04 },
+            earningsGrowth: { raw: -0.12 },
+            returnOnEquity: { raw: 0.08 },
+            debtToEquity: { raw: 240 },
+          },
+        }),
+        news: buildNewsResponse('MSFT'),
+      },
+    }), async () => {
+      const result = await rankSymbolsByConfluence(['AAPL', 'MSFT']);
+      assert.equal(result.success, true);
+      assert.equal(result.rankedCount, 2);
+      assert.equal(result.ranked_symbols[0].symbol, 'AAPL');
+      assert.ok(result.ranked_symbols[0].confluence_score > result.ranked_symbols[1].confluence_score);
+    });
+  });
+
+  it('uses symbol ordering as a stable tie-breaker', async () => {
+    await withMockFetch(buildConfluenceMock({
+      AMZN: {
+        quote: buildQuoteResponse('AMZN'),
+        chart: buildChartResponse('AMZN', UPTREND_CLOSES),
+        fundamentals: buildFundamentalsResponse(),
+        news: buildNewsResponse('AMZN'),
+      },
+      AAPL: {
+        quote: buildQuoteResponse('AAPL'),
+        chart: buildChartResponse('AAPL', UPTREND_CLOSES),
+        fundamentals: buildFundamentalsResponse(),
+        news: buildNewsResponse('AAPL'),
+      },
+    }), async () => {
+      const result = await rankSymbolsByConfluence(['AMZN', 'AAPL']);
+      assert.equal(result.success, true);
+      assert.equal(result.ranked_symbols[0].symbol, 'AAPL');
+      assert.equal(result.ranked_symbols[1].symbol, 'AMZN');
+    });
+  });
+
+  it('preserves partial success and reports unranked symbols', async () => {
+    await withMockFetch(buildConfluenceMock({
+      AAPL: {
+        quote: buildQuoteResponse('AAPL'),
+        chart: buildChartResponse('AAPL', UPTREND_CLOSES),
+        fundamentals: buildFundamentalsResponse(),
+        news: buildNewsResponse('AAPL'),
+      },
+      BAD: {
+        fail: true,
+      },
+    }), async () => {
+      const result = await rankSymbolsByConfluence(['AAPL', 'BAD'], { limit: 5 });
+      assert.equal(result.success, true);
+      assert.equal(result.rankedCount, 1);
+      assert.equal(result.failureCount, 1);
+      assert.equal(result.ranked_symbols[0].symbol, 'AAPL');
+      assert.equal(result.unranked[0].symbol, 'BAD');
+    });
+  });
+
+  it('accounts for omitted successful symbols when limit truncates the ranking', async () => {
+    await withMockFetch(buildConfluenceMock({
+      AAPL: {
+        quote: buildQuoteResponse('AAPL'),
+        chart: buildChartResponse('AAPL', UPTREND_CLOSES),
+        fundamentals: buildFundamentalsResponse(),
+        news: buildNewsResponse('AAPL'),
+      },
+      AMZN: {
+        quote: buildQuoteResponse('AMZN'),
+        chart: buildChartResponse('AMZN', UPTREND_CLOSES),
+        fundamentals: buildFundamentalsResponse(),
+        news: buildNewsResponse('AMZN'),
+      },
+      MSFT: {
+        quote: buildQuoteResponse('MSFT', { regularMarketPrice: 175, fiftyTwoWeekHigh: 280, fiftyTwoWeekLow: 170 }),
+        chart: buildChartResponse('MSFT', DOWNTREND_CLOSES),
+        fundamentals: buildFundamentalsResponse({
+          summaryDetail: { beta: { raw: 1.7 }, forwardPE: { raw: 38 } },
+          financialData: {
+            profitMargins: { raw: 0.08 },
+            revenueGrowth: { raw: -0.04 },
+            earningsGrowth: { raw: -0.12 },
+            returnOnEquity: { raw: 0.08 },
+            debtToEquity: { raw: 240 },
+          },
+        }),
+        news: buildNewsResponse('MSFT'),
+      },
+    }), async () => {
+      const result = await rankSymbolsByConfluence(['AAPL', 'AMZN', 'MSFT'], { limit: 1 });
+      assert.equal(result.count, 3);
+      assert.equal(result.rankedCount, 1);
+      assert.equal(result.failureCount, 0);
+      assert.equal(result.successCount, 3);
+      assert.equal(result.omittedCount, 2);
+      assert.equal(result.omitted.length, 2);
+      assert.equal(result.rankedCount + result.failureCount + result.omittedCount, result.count);
+    });
+  });
+
+  it('returns a top-level error when all confluence requests fail', async () => {
+    await withMockFetch(buildConfluenceMock({
+      BAD1: { fail: true },
+      BAD2: { fail: true },
+    }), async () => {
+      const result = await rankSymbolsByConfluence(['BAD1', 'BAD2']);
+      assert.equal(result.success, false);
+      assert.equal(result.error, 'All confluence analysis requests failed');
+      assert.equal(result.rankedCount, 0);
+      assert.equal(result.failureCount, 2);
     });
   });
 });
