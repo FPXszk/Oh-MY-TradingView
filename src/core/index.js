@@ -8,6 +8,7 @@ export { buildLaunchCommand, verifyExecutable, launchDesktop } from './launch.js
 export { captureScreenshot } from './capture.js';
 export { resolveStreamParams, streamPriceTicks } from './stream.js';
 export { getSymbolQuote, getSymbolFundamentals, getMarketSnapshot, getFinancialNews, runScreener, computeRsi, computeSma, getMultiSymbolTaSummary, rankSymbolsByTa } from './market-intel.js';
+export { getSymbolAnalysis } from './market-intel-analysis.js';
 export { listWatchlistSymbols, addWatchlistSymbol, removeWatchlistSymbol, listPanes, focusPane, listTabs, switchTab, listLayouts, applyLayout } from './workspace.js';
 export { listAlerts, createPriceAlert, deleteAlert } from './alerts.js';
 export {

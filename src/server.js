@@ -79,6 +79,7 @@ Market Intelligence (no CDP needed):
 - market_screener → filter symbols by price/volume
 - market_ta_summary → multi-symbol TA summary (price change, RSI14, SMA20/50)
 - market_ta_rank → rank symbols by TA indicator
+- market_symbol_analysis → deterministic single-symbol trend/fundamentals/news/risk analysis
 - market_* tools fetch public Yahoo Finance endpoints over the network
 
 BACKTEST WORKFLOW:

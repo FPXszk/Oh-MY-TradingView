@@ -9,6 +9,7 @@ import {
   getMultiSymbolTaSummary,
   rankSymbolsByTa,
 } from '../core/market-intel.js';
+import { getSymbolAnalysis } from '../core/market-intel-analysis.js';
 
 export function registerMarketIntelTools(server) {
   server.tool(
@@ -125,6 +126,21 @@ export function registerMarketIntelTools(server) {
     async ({ symbols, sortBy, order }) => {
       try {
         return jsonResult(await rankSymbolsByTa(symbols, sortBy, order));
+      } catch (err) {
+        return jsonResult({ success: false, error: err.message }, true);
+      }
+    },
+  );
+
+  server.tool(
+    'market_symbol_analysis',
+    'Deterministic multi-analyst symbol analysis — trend, fundamentals, news, and risk assessment. No CDP connection needed.',
+    {
+      symbol: z.string().describe('Ticker symbol (e.g. AAPL, MSFT, ^GSPC)'),
+    },
+    async ({ symbol }) => {
+      try {
+        return jsonResult(await getSymbolAnalysis(symbol));
       } catch (err) {
         return jsonResult({ success: false, error: err.message }, true);
       }

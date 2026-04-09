@@ -8,6 +8,7 @@ import {
   getMultiSymbolTaSummary,
   rankSymbolsByTa,
 } from '../../core/market-intel.js';
+import { getSymbolAnalysis } from '../../core/market-intel-analysis.js';
 
 register('market', {
   description: 'Market intelligence (no CDP required)',
@@ -114,6 +115,19 @@ register('market', {
             opts['sort-by'] || 'priceChange',
             opts.order || 'desc',
           );
+        },
+      },
+    ],
+    [
+      'analysis',
+      {
+        description: 'Deterministic multi-analyst symbol analysis',
+        options: {
+          symbol: { type: 'string', short: 's', description: 'Ticker symbol' },
+        },
+        handler: (opts) => {
+          if (!opts.symbol) throw new Error('Usage: tv market analysis --symbol AAPL');
+          return getSymbolAnalysis(opts.symbol);
         },
       },
     ],
