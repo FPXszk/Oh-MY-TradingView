@@ -196,6 +196,7 @@ async function main() {
       matrix: campaign.matrix,
       campaignFingerprint,
       legacyCampaignFingerprint,
+      allowLegacyFingerprint: false,
     })) {
       throw new Error('Checkpoint fingerprint mismatch; resume target does not match the current campaign config');
     }
@@ -340,6 +341,34 @@ async function main() {
   await writeFile(rawPath, `${JSON.stringify(finalPayload, null, 2)}\n`);
   await writeFile(recoveredPath, `${JSON.stringify(effectiveRuns, null, 2)}\n`);
   await writeFile(summaryPath, `${JSON.stringify(summary, null, 2)}\n`);
+
+  // --- Experiment gating (additive artifacts) ---
+  const gatingConfig = campaign.config.experiment_gating;
+  if (gatingConfig?.enabled) {
+    const { buildGatedSummary } = await import(join(PROJECT_ROOT, 'src', 'core', 'experiment-gating.js'));
+    const gatingThresholds = gatingConfig.thresholds ?? undefined;
+     const gatedSummary = buildGatedSummary({
+       campaignId,
+       phase,
+       effectiveRuns,
+       initialCapital: campaign.defaults.initial_capital,
+       ...(gatingThresholds ? { thresholds: gatingThresholds } : {}),
+     });
+
+    const gatedSummaryPath = join(outDir, 'gated-summary.json');
+    const rankedCandidatesPath = join(outDir, 'ranked-candidates.json');
+
+    await writeFile(gatedSummaryPath, `${JSON.stringify(gatedSummary, null, 2)}\n`);
+    await writeFile(rankedCandidatesPath, `${JSON.stringify(gatedSummary.ranked_candidates, null, 2)}\n`);
+
+    process.stdout.write(`\nExperiment Gating:\n`);
+    process.stdout.write(`  Promoted: ${gatedSummary.counts.promote}\n`);
+    process.stdout.write(`  Hold: ${gatedSummary.counts.hold}\n`);
+    process.stdout.write(`  Rejected: ${gatedSummary.counts.reject}\n`);
+    process.stdout.write(`  Ranked candidates: ${gatedSummary.ranked_candidates.length}\n`);
+    process.stdout.write(`  Gated summary: ${gatedSummaryPath}\n`);
+    process.stdout.write(`  Ranked candidates: ${rankedCandidatesPath}\n`);
+  }
 
   process.stdout.write('\nCampaign complete.\n');
   process.stdout.write(`  Success: ${summary.success}\n`);

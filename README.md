@@ -281,6 +281,18 @@ node src/cli/index.js backtest preset ema-cross-9-21 --symbol NVDA
 > 現在の backtest フローは active-chart-only です。pane/tab は切替短縮・比較レイアウトの補助導線
 > として有用ですが、true parallel backtest は上記 dual-worker ベースです。
 
+### Phase 1 experiment gating campaign
+
+`config/backtest/campaigns/external-phase1-priority-top.json` は、既存の campaign/backtest 出力を壊さずに
+**候補の gate 判定と順位付けだけ**を追加する Phase 1 用の campaign です。
+
+- 対象: cross-market 100 universe × 優先 5 preset
+- 追加 artifact: `results/campaigns/<campaign-id>/<phase>/gated-summary.json`
+- 追加 artifact: `results/campaigns/<campaign-id>/<phase>/ranked-candidates.json`
+- 判定: `promote` / `hold` / `reject`
+
+詳細な運用コマンドは `command.md` を参照してください。
+
 ### MCP workflow
 
 1. `tv_health_check`

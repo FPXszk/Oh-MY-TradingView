@@ -429,6 +429,57 @@ describe('buildCampaignFingerprint', () => {
     });
     assert.notEqual(aapl, msft);
   });
+
+  it('does not change when only experiment_gating config changes', () => {
+    const baseArgs = {
+      config: {
+        id: 'campaign',
+        universe: 'u1',
+        preset_ids: ['a'],
+        experiment_gating: {
+          enabled: true,
+          thresholds: {
+            promote: { min_profit_factor: 1.2 },
+          },
+        },
+      },
+      defaults: { date_range: { from: '2000-01-01', to: '2099-12-31' }, initial_capital: 10000 },
+      phase: 'full',
+      matrix: [{ presetId: 'a', symbol: 'AAPL' }],
+    };
+    const loose = buildCampaignFingerprint(baseArgs);
+    const strict = buildCampaignFingerprint({
+      ...baseArgs,
+      config: {
+        ...baseArgs.config,
+        experiment_gating: {
+          enabled: true,
+          thresholds: {
+            promote: { min_profit_factor: 2.0 },
+          },
+        },
+      },
+    });
+    assert.equal(loose, strict);
+  });
+
+  it('changes when initial capital changes', () => {
+    const baseArgs = {
+      config: { id: 'campaign', universe: 'u1', preset_ids: ['a'] },
+      defaults: { date_range: { from: '2000-01-01', to: '2099-12-31' }, initial_capital: 10000 },
+      phase: 'full',
+      matrix: [{ presetId: 'a', symbol: 'AAPL' }],
+    };
+    const lowCapital = buildCampaignFingerprint(baseArgs);
+    const highCapital = buildCampaignFingerprint({
+      ...baseArgs,
+      defaults: {
+        ...baseArgs.defaults,
+        initial_capital: 25000,
+      },
+    });
+    assert.notEqual(lowCapital, highCapital);
+  });
 });
 
 describe('checkpointMatchesCampaign', () => {
@@ -459,7 +510,7 @@ describe('checkpointMatchesCampaign', () => {
     );
   });
 
-  it('accepts legacy fingerprint only when all stored runs are within the current matrix', () => {
+  it('rejects legacy fingerprint by default even when runs match the matrix', () => {
     assert.equal(
       checkpointMatchesCampaign({
         checkpoint: {
@@ -473,6 +524,26 @@ describe('checkpointMatchesCampaign', () => {
         matrix,
         campaignFingerprint: buildCampaignFingerprint(fingerprintArgs),
         legacyCampaignFingerprint: buildLegacyCampaignFingerprint(fingerprintArgs),
+      }),
+      false,
+    );
+  });
+
+  it('accepts legacy fingerprint only when explicitly allowed and all stored runs are within the current matrix', () => {
+    assert.equal(
+      checkpointMatchesCampaign({
+        checkpoint: {
+          campaign_id: 'campaign',
+          phase: 'full',
+          campaign_fingerprint: buildLegacyCampaignFingerprint(fingerprintArgs),
+          results: [{ presetId: 'a', symbol: 'AAPL' }],
+        },
+        campaignId: 'campaign',
+        phase: 'full',
+        matrix,
+        campaignFingerprint: buildCampaignFingerprint(fingerprintArgs),
+        legacyCampaignFingerprint: buildLegacyCampaignFingerprint(fingerprintArgs),
+        allowLegacyFingerprint: true,
       }),
       true,
     );
@@ -492,6 +563,33 @@ describe('checkpointMatchesCampaign', () => {
         matrix,
         campaignFingerprint: buildCampaignFingerprint(fingerprintArgs),
         legacyCampaignFingerprint: buildLegacyCampaignFingerprint(fingerprintArgs),
+        allowLegacyFingerprint: true,
+      }),
+      false,
+    );
+  });
+
+  it('rejects legacy fingerprint when compatibility mode is disabled by initial-capital-sensitive changes', () => {
+    assert.equal(
+      checkpointMatchesCampaign({
+        checkpoint: {
+          campaign_id: 'campaign',
+          phase: 'full',
+          campaign_fingerprint: buildLegacyCampaignFingerprint(fingerprintArgs),
+          results: [{ presetId: 'a', symbol: 'AAPL' }],
+        },
+        campaignId: 'campaign',
+        phase: 'full',
+        matrix,
+        campaignFingerprint: buildCampaignFingerprint({
+          ...fingerprintArgs,
+          defaults: {
+            ...fingerprintArgs.defaults,
+            initial_capital: 25000,
+          },
+        }),
+        legacyCampaignFingerprint: buildLegacyCampaignFingerprint(fingerprintArgs),
+        allowLegacyFingerprint: false,
       }),
       false,
     );
@@ -891,5 +989,155 @@ describe('market-matched 100-symbol long-run campaigns', () => {
     assert.equal(usPilot.symbols.length, 25);
     assert.equal(jpSmoke.symbols.length, 10);
     assert.equal(jpPilot.symbols.length, 25);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// experiment_gating validation in validateCampaignConfig
+// ---------------------------------------------------------------------------
+describe('experiment_gating config validation', () => {
+  const baseConfig = {
+    id: 'test-gating',
+    universe: 'long-run-cross-market-100',
+    preset_ids: ['sma-cross-5-20'],
+  };
+
+  it('accepts config with valid experiment_gating', () => {
+    const r = validateCampaignConfig({
+      ...baseConfig,
+      experiment_gating: {
+        enabled: true,
+        thresholds: {
+          promote: { min_profit_factor: 1.5 },
+          reject: { max_profit_factor: 0.5 },
+        },
+      },
+    });
+    assert.equal(r.valid, true);
+  });
+
+  it('accepts config without experiment_gating', () => {
+    const r = validateCampaignConfig(baseConfig);
+    assert.equal(r.valid, true);
+  });
+
+  it('rejects non-boolean experiment_gating.enabled', () => {
+    const r = validateCampaignConfig({
+      ...baseConfig,
+      experiment_gating: { enabled: 'yes' },
+    });
+    assert.equal(r.valid, false);
+    assert.ok(r.errors.some((e) => /enabled/.test(e)));
+  });
+
+  it('rejects non-object experiment_gating.thresholds', () => {
+    const r = validateCampaignConfig({
+      ...baseConfig,
+      experiment_gating: { enabled: true, thresholds: 'strict' },
+    });
+    assert.equal(r.valid, false);
+    assert.ok(r.errors.some((e) => /thresholds/.test(e)));
+  });
+
+  it('rejects array-shaped threshold containers', () => {
+    const topLevel = validateCampaignConfig({
+      ...baseConfig,
+      experiment_gating: [],
+    });
+    assert.equal(topLevel.valid, false);
+
+    const nested = validateCampaignConfig({
+      ...baseConfig,
+      experiment_gating: {
+        enabled: true,
+        thresholds: {
+          promote: [],
+        },
+      },
+    });
+    assert.equal(nested.valid, false);
+    assert.ok(nested.errors.some((e) => /promote/.test(e)));
+  });
+
+  it('rejects invalid nested promote threshold values', () => {
+    const r = validateCampaignConfig({
+      ...baseConfig,
+      experiment_gating: {
+        enabled: true,
+        thresholds: {
+          promote: { min_closed_trades: 0 },
+        },
+      },
+    });
+    assert.equal(r.valid, false);
+    assert.ok(r.errors.some((e) => /min_closed_trades/.test(e)));
+  });
+
+  it('rejects invalid nested reject threshold values', () => {
+    const r = validateCampaignConfig({
+      ...baseConfig,
+      experiment_gating: {
+        enabled: true,
+        thresholds: {
+          reject: { max_drawdown_pct: -1 },
+        },
+      },
+    });
+    assert.equal(r.valid, false);
+    assert.ok(r.errors.some((e) => /max_drawdown_pct/.test(e)));
+  });
+});
+
+// ---------------------------------------------------------------------------
+// external-phase1-priority-top campaign config
+// ---------------------------------------------------------------------------
+describe('external-phase1-priority-top campaign config', () => {
+  it('is valid JSON with correct shape', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'external-phase1-priority-top.json'),
+      'utf8',
+    );
+    const config = JSON.parse(raw);
+    assert.equal(config.id, 'external-phase1-priority-top');
+    assert.equal(config.universe, 'long-run-cross-market-100');
+    assert.equal(config.date_override.from, '2000-01-01');
+    assert.equal(config.preset_ids.length, 5);
+    assert.ok(config.experiment_gating);
+    assert.equal(config.experiment_gating.enabled, true);
+    assert.ok(config.experiment_gating.thresholds);
+  });
+
+  it('passes validateCampaignConfig', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'external-phase1-priority-top.json'),
+      'utf8',
+    );
+    const config = JSON.parse(raw);
+    const result = validateCampaignConfig(config);
+    assert.equal(result.valid, true);
+    assert.deepEqual(result.errors, []);
+  });
+
+  it('loads via loadCampaign with 100 symbols and 5 strategies', async () => {
+    const campaign = await loadCampaign('external-phase1-priority-top');
+    assert.equal(campaign.symbols.length, 100);
+    assert.equal(campaign.strategies.length, 5);
+    assert.equal(campaign.matrix.length, 500);
+    assert.equal(campaign.config.experiment_gating.enabled, true);
+  });
+
+  it('selects smoke phase with 10 symbols', async () => {
+    const campaign = await loadCampaign('external-phase1-priority-top', { phase: 'smoke' });
+    assert.equal(campaign.symbols.length, 10);
+    assert.equal(campaign.matrix.length, 50);
+  });
+
+  it('uses the same 5 priority presets as cross-market-100x5', async () => {
+    const campaign = await loadCampaign('external-phase1-priority-top');
+    const crossMarket = await loadCampaign('long-run-cross-market-100x5');
+    assert.deepEqual(
+      campaign.strategies.map((s) => s.id),
+      crossMarket.strategies.map((s) => s.id),
+    );
   });
 });

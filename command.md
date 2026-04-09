@@ -325,6 +325,19 @@ node scripts/backtest/run-long-campaign.mjs long-run-cross-market-100x5 \
 
 結果は `results/campaigns/<campaign-id>/<phase>/` に保存される。チェックポイントは `execution.checkpoint_every` ごとに書き出され、resume 時は `campaign_id` / `phase` / fingerprint が一致する checkpoint だけを受け付ける。
 
+`config/backtest/campaigns/external-phase1-priority-top.json` のように
+`experiment_gating.enabled: true` を持つ campaign では、既存の
+`final-results.json` / `recovered-results.json` / `recovered-summary.json` に加えて、
+次の additive artifact も出力される。
+
+- `gated-summary.json`: gate 閾値、件数集計、全候補の判定結果、ranked candidate 一覧
+- `ranked-candidates.json`: `promote` 判定だけを stable rank 付きで抜き出した一覧
+
+```bash
+node scripts/backtest/run-long-campaign.mjs external-phase1-priority-top --phase smoke --dry-run
+node scripts/backtest/run-long-campaign.mjs external-phase1-priority-top --phase smoke --host 172.31.144.1 --ports 9223,9225
+```
+
 ### market-specific long-run deep dive
 
 ```bash

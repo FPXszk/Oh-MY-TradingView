@@ -18,6 +18,10 @@ function isPositiveInteger(value) {
   return Number.isInteger(value) && value > 0;
 }
 
+function isNonNegativeNumber(value) {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0;
+}
+
 function buildRunKey(entry) {
   return `${entry.presetId}::${entry.symbol}`;
 }
@@ -301,6 +305,55 @@ export function validateCampaignConfig(config) {
     }
   }
 
+  if (config.experiment_gating != null) {
+    const gating = config.experiment_gating;
+    if (typeof gating !== 'object' || gating === null || Array.isArray(gating)) {
+      errors.push('experiment_gating must be an object when provided');
+    } else {
+      if (gating.enabled != null && typeof gating.enabled !== 'boolean') {
+        errors.push('experiment_gating.enabled must be a boolean when provided');
+      }
+      if (gating.thresholds != null) {
+        if (typeof gating.thresholds !== 'object' || gating.thresholds === null || Array.isArray(gating.thresholds)) {
+          errors.push('experiment_gating.thresholds must be an object when provided');
+        } else {
+          const promote = gating.thresholds.promote;
+          const reject = gating.thresholds.reject;
+          if (promote != null) {
+            if (typeof promote !== 'object' || promote === null || Array.isArray(promote)) {
+              errors.push('experiment_gating.thresholds.promote must be an object when provided');
+            } else {
+              if (promote.min_profit_factor != null && !isNonNegativeNumber(promote.min_profit_factor)) {
+                errors.push('experiment_gating.thresholds.promote.min_profit_factor must be a non-negative number');
+              }
+              if (promote.min_closed_trades != null && !isPositiveInteger(promote.min_closed_trades)) {
+                errors.push('experiment_gating.thresholds.promote.min_closed_trades must be a positive integer');
+              }
+              if (promote.min_percent_profitable != null && !isNonNegativeNumber(promote.min_percent_profitable)) {
+                errors.push('experiment_gating.thresholds.promote.min_percent_profitable must be a non-negative number');
+              }
+              if (promote.min_net_profit != null && !isNonNegativeNumber(promote.min_net_profit)) {
+                errors.push('experiment_gating.thresholds.promote.min_net_profit must be a non-negative number');
+              }
+            }
+          }
+          if (reject != null) {
+            if (typeof reject !== 'object' || reject === null || Array.isArray(reject)) {
+              errors.push('experiment_gating.thresholds.reject must be an object when provided');
+            } else {
+              if (reject.max_profit_factor != null && !isNonNegativeNumber(reject.max_profit_factor)) {
+                errors.push('experiment_gating.thresholds.reject.max_profit_factor must be a non-negative number');
+              }
+              if (reject.max_drawdown_pct != null && !isNonNegativeNumber(reject.max_drawdown_pct)) {
+                errors.push('experiment_gating.thresholds.reject.max_drawdown_pct must be a non-negative number');
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   return { valid: errors.length === 0, errors };
 }
 
@@ -388,6 +441,7 @@ export function buildCampaignFingerprint({ config, defaults, phase, matrix }) {
     phase,
     preset_ids: config.preset_ids ?? null,
     date_range: defaults.date_range ?? null,
+    initial_capital: defaults.initial_capital ?? null,
     total_runs: matrix.length,
     matrix_keys_hash: matrixKeysHash,
   })).digest('hex');
@@ -400,6 +454,7 @@ export function checkpointMatchesCampaign({
   matrix,
   campaignFingerprint,
   legacyCampaignFingerprint,
+  allowLegacyFingerprint = false,
 }) {
   if (checkpoint.campaign_id && checkpoint.campaign_id !== campaignId) {
     return false;
@@ -411,6 +466,10 @@ export function checkpointMatchesCampaign({
 
   if (checkpoint.campaign_fingerprint === campaignFingerprint) {
     return true;
+  }
+
+  if (!allowLegacyFingerprint) {
+    return false;
   }
 
   if (checkpoint.campaign_fingerprint !== legacyCampaignFingerprint) {

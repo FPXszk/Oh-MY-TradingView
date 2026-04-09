@@ -27,3 +27,13 @@ export {
   needsRerun,
   findPendingRuns,
 } from './campaign.js';
+export {
+  normalizeNumericMetric,
+  normalizeRunMetrics,
+  computeMaxDrawdownPct,
+  gateDecision,
+  rankCandidates,
+  gateAllRuns,
+  buildGatedSummary,
+  DEFAULT_GATE_THRESHOLDS,
+} from './experiment-gating.js';
