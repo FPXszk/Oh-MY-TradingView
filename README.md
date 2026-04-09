@@ -371,6 +371,7 @@ src/
     price.js         # Current price retrieval (chart API + DOM fallback)
     backtest.js      # NVDA 5/20 MA cross backtest orchestration
     observability.js # One-shot observability snapshot orchestration
+    browser-launch.js # Chromium browser fallback launch (bounded, CDP debug port)
     workspace.js     # Watchlist, pane, tab, layout CDP operations
     alerts.js        # Local price alert list/create/delete via CDP
     market-intel.js  # Yahoo Finance: quotes, fundamentals, screener, TA summary/ranking
@@ -384,6 +385,7 @@ src/
     workspace.js     # MCP tool registration: tv_watchlist_*, tv_pane_*, tv_tab_*, tv_layout_*
     alerts.js        # MCP tool registration: tv_alert_*
     observe.js       # MCP tool registration: tv_observe_snapshot
+    browser-launch.js # MCP tool registration: tv_launch_browser
   cli/
     index.js         # CLI entry point
     router.js        # Command router (node:util parseArgs)
@@ -396,12 +398,15 @@ src/
       workspace.js   # CLI: workspace watchlist-*/pane-*/tab-*/layout-*
       alerts.js      # CLI: alert list/create-price/delete
       observe.js     # CLI: observe snapshot
+      browser-launch.js # CLI: launch-browser
 tests/
   connection.test.js      # Unit: safeString, requireFinite, pickTarget, resolveCdpEndpoint
   pine.analyze.test.js    # Unit: offline Pine static analysis
   price.test.js           # Unit: formatPriceResult, validatePriceData
   backtest.test.js        # Unit: buildNvdaMaSource, normalizeMetrics, buildResult
   observability.test.js   # Unit: snapshot schema, bundle paths, partial-failure handling
+  browser-launch.test.js  # Unit: browser fallback path resolution, dry-run, argument validation
+  market-intel-analysis.test.js # Unit: deterministic symbol analysis
   e2e.pine-loop.test.js   # E2E: full pine loop (skips if no CDP)
   e2e.price.test.js       # E2E: price retrieval (skips if no CDP)
   e2e.backtest.test.js    # E2E: NVDA MA backtest (skips if no CDP)

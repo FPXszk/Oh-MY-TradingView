@@ -165,6 +165,7 @@
 - [`docs/working-memory/session-logs/external-research-applicable-implementation_20260408_2049.md`](./working-memory/session-logs/external-research-applicable-implementation_20260408_2049.md)
 - [`docs/working-memory/session-logs/priority-high-desktop-ops-alerts-ta_20260408_2156.md`](./working-memory/session-logs/priority-high-desktop-ops-alerts-ta_20260408_2156.md)
 - [`docs/working-memory/session-logs/external-agent-trading-research_20260409_1445.md`](./working-memory/session-logs/external-agent-trading-research_20260409_1445.md)
+- [`docs/working-memory/session-logs/final-rollout-docs-cleanup_20260409_1925.md`](./working-memory/session-logs/final-rollout-docs-cleanup_20260409_1925.md)
 
 ## 運用ルール
 
