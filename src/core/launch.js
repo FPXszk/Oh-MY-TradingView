@@ -20,23 +20,27 @@ const KNOWN_PATHS = {
   ],
 };
 
-function expandEnvVars(str) {
-  return str.replace(/%([^%]+)%/g, (_, key) => process.env[key] || `%${key}%`);
+export function expandEnvVars(str, env = process.env) {
+  return str.replace(/%([^%]+)%/g, (_, key) => env[key] || `%${key}%`);
 }
 
-function collectWslWindowsPaths(baseDir) {
+export function collectWslWindowsAppPaths(baseDir, relativeSegments) {
   try {
     return readdirSync(baseDir, { withFileTypes: true })
       .filter((entry) => entry.isDirectory())
-      .map((entry) => join(baseDir, entry.name, 'AppData', 'Local', 'TradingView', 'TradingView.exe'));
+      .map((entry) => join(baseDir, entry.name, ...relativeSegments));
   } catch {
     return [];
   }
 }
 
+function collectWslWindowsPaths(baseDir) {
+  return collectWslWindowsAppPaths(baseDir, ['AppData', 'Local', 'TradingView', 'TradingView.exe']);
+}
+
 function resolvePlatformPaths(os, { env = process.env, wslUserBaseDir = '/mnt/c/Users' } = {}) {
   const paths = KNOWN_PATHS[os] || [];
-  const resolved = paths.map((p) => expandEnvVars(p));
+  const resolved = paths.map((p) => expandEnvVars(p, env));
   if (os === 'linux' && env.WSL_DISTRO_NAME) {
     return [...collectWslWindowsPaths(wslUserBaseDir), ...resolved];
   }
@@ -55,7 +59,7 @@ export function buildLaunchCommand({ port, executablePath, os, env, wslUserBaseD
 
   const effectiveOs = os ?? platform();
   const candidatePaths = executablePath
-    ? [expandEnvVars(executablePath)]
+    ? [expandEnvVars(executablePath, env)]
     : resolvePlatformPaths(effectiveOs, { env, wslUserBaseDir });
   if (candidatePaths.length === 0) {
     throw new Error(

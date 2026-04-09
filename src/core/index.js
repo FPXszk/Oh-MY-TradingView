@@ -6,6 +6,7 @@ export { buildNvdaMaSource, normalizeMetrics, buildResult, runNvdaMaBacktest, lo
 export { validatePreset, validatePresetIds, filterPresetsByRound } from './preset-validation.js';
 export { buildResearchStrategySource } from './research-backtest.js';
 export { buildLaunchCommand, verifyExecutable, launchDesktop } from './launch.js';
+export { buildBrowserLaunchCommand, launchBrowserFallback, BROWSER_CANDIDATES, DEFAULT_CHART_URL } from './browser-launch.js';
 export { captureScreenshot } from './capture.js';
 export { resolveStreamParams, streamPriceTicks } from './stream.js';
 export { getSymbolQuote, getSymbolFundamentals, getMarketSnapshot, getFinancialNews, runScreener, computeRsi, computeSma, getMultiSymbolTaSummary, rankSymbolsByTa } from './market-intel.js';

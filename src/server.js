@@ -11,6 +11,7 @@ import { registerMarketIntelTools } from './tools/market-intel.js';
 import { registerWorkspaceTools } from './tools/workspace.js';
 import { registerAlertTools } from './tools/alerts.js';
 import { registerObserveTools } from './tools/observe.js';
+import { registerBrowserLaunchTools } from './tools/browser-launch.js';
 
 const server = new McpServer(
   {
@@ -53,6 +54,7 @@ Backtest:
 
 Launch & Capture:
 - tv_launch → launch TradingView Desktop with CDP debug port
+- tv_launch_browser → launch Chromium-based browser with TradingView chart (bounded fallback, not desktop replacement)
 - tv_capture_screenshot → capture a screenshot of the current page
 
 Streaming:
@@ -108,6 +110,7 @@ registerMarketIntelTools(server);
 registerWorkspaceTools(server);
 registerAlertTools(server);
 registerObserveTools(server);
+registerBrowserLaunchTools(server);
 
 process.stderr.write(
   '⚠  oh-my-tradingview  |  Unofficial tool. Not affiliated with TradingView Inc.\n'
