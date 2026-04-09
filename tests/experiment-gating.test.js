@@ -492,4 +492,153 @@ describe('buildGatedSummary', () => {
     assert.deepEqual(summary.ranked_candidates, []);
     assert.deepEqual(summary.gated_results, []);
   });
+
+  it('attaches additive confluence/community/provider snapshots when supplied', () => {
+    const summary = buildGatedSummary({
+      campaignId: 'test-campaign',
+      phase: 'full',
+      effectiveRuns: runs,
+      marketSnapshots: {
+        AAPL: {
+          analysis: {
+            overall_summary: {
+              confluence_score: 72,
+              confluence_label: 'favourable',
+              confluence_breakdown: { trend: { contribution: 20 } },
+              coverage_summary: { core_available: 3 },
+              provider_coverage_summary: { available_count: 4 },
+            },
+            provider_status: {
+              quote: { status: 'ok' },
+            },
+            community_snapshot: {
+              counts: { x: 2, reddit: 1, total: 3 },
+            },
+          },
+        },
+      },
+    });
+
+    const aapl = summary.gated_results.find((entry) => entry.symbol === 'AAPL');
+    assert.deepEqual(aapl.confluence_snapshot, {
+      score: 72,
+      label: 'favourable',
+      breakdown: { trend: { contribution: 20 } },
+      coverage_summary: { core_available: 3 },
+      provider_coverage_summary: { available_count: 4 },
+    });
+    assert.deepEqual(aapl.provider_status, {
+      quote: { status: 'ok' },
+    });
+    assert.deepEqual(aapl.community_snapshot, {
+      counts: { x: 2, reddit: 1, total: 3 },
+    });
+  });
+
+  it('matches market snapshots case-insensitively by symbol', () => {
+    const summary = buildGatedSummary({
+      campaignId: 'test-campaign',
+      phase: 'full',
+      effectiveRuns: runs.map((run) => ({ ...run, symbol: run.symbol.toLowerCase() })),
+      marketSnapshots: {
+        AAPL: {
+          analysis: {
+            overall_summary: {
+              confluence_score: 72,
+              confluence_label: 'favourable',
+              confluence_breakdown: { trend: { contribution: 20 } },
+              coverage_summary: { core_available: 3 },
+              provider_coverage_summary: { available_count: 4 },
+            },
+            provider_status: {
+              quote: { status: 'ok' },
+            },
+            community_snapshot: {
+              counts: { x: 2, reddit: 1, total: 3 },
+            },
+          },
+        },
+      },
+    });
+
+    const aapl = summary.gated_results.find((entry) => entry.symbol === 'aapl');
+    assert.equal(aapl.confluence_snapshot.score, 72);
+    assert.deepEqual(aapl.provider_status, {
+      quote: { status: 'ok' },
+    });
+  });
+
+  it('matches lowercase snapshot keys to uppercase run symbols', () => {
+    const summary = buildGatedSummary({
+      campaignId: 'test-campaign',
+      phase: 'full',
+      effectiveRuns: runs,
+      marketSnapshots: {
+        aapl: {
+          analysis: {
+            overall_summary: {
+              confluence_score: 72,
+              confluence_label: 'favourable',
+              confluence_breakdown: { trend: { contribution: 20 } },
+              coverage_summary: { core_available: 3 },
+              provider_coverage_summary: { available_count: 4 },
+            },
+            provider_status: {
+              quote: { status: 'ok' },
+            },
+            community_snapshot: {
+              counts: { x: 2, reddit: 1, total: 3 },
+            },
+          },
+        },
+      },
+    });
+
+    const aapl = summary.gated_results.find((entry) => entry.symbol === 'AAPL');
+    assert.equal(aapl.confluence_snapshot.score, 72);
+    assert.deepEqual(aapl.provider_status, {
+      quote: { status: 'ok' },
+    });
+  });
+
+  it('keeps provider/community enrichment for schema-shaped failed analyses', () => {
+    const summary = buildGatedSummary({
+      campaignId: 'test-campaign',
+      phase: 'full',
+      effectiveRuns: runs,
+      marketSnapshots: {
+        AAPL: {
+          success: false,
+          symbol: 'AAPL',
+          inputs: {
+            fundamentals_missing_reason: 'fetch_failed',
+          },
+          analysis: {
+            overall_summary: {
+              confluence_score: 50,
+              confluence_label: 'mixed',
+              confluence_breakdown: { fundamentals: { contribution: 0 } },
+              coverage_summary: { core_available: 2 },
+              provider_coverage_summary: { available_count: 3 },
+            },
+            provider_status: {
+              fundamentals: { status: 'provider_error', missing_reason: 'fetch_failed' },
+            },
+            community_snapshot: {
+              counts: { x: 0, reddit: 0, total: 0 },
+            },
+          },
+        },
+      },
+    });
+
+    const aapl = summary.gated_results.find((entry) => entry.symbol === 'AAPL');
+    assert.equal(aapl.confluence_snapshot.label, 'mixed');
+    assert.deepEqual(aapl.provider_status, {
+      fundamentals: { status: 'provider_error', missing_reason: 'fetch_failed' },
+    });
+    assert.deepEqual(aapl.community_snapshot, {
+      counts: { x: 0, reddit: 0, total: 0 },
+    });
+  });
 });

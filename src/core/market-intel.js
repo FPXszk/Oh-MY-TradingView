@@ -385,6 +385,46 @@ export async function rankSymbolsByTa(symbols, sortBy = 'priceChange', order = '
   };
 }
 
+export async function getMultiSymbolAnalysis(symbols) {
+  if (!Array.isArray(symbols) || symbols.length === 0) {
+    throw new Error('symbols array is required and must not be empty');
+  }
+
+  const { getSymbolAnalysis } = await import('./market-intel-analysis.js');
+  const analyses = [];
+
+  for (let index = 0; index < symbols.length; index += CONFLUENCE_MAX_SYMBOLS) {
+    const batch = symbols.slice(index, index + CONFLUENCE_MAX_SYMBOLS);
+    const results = await Promise.allSettled(
+      batch.map((symbol) => getSymbolAnalysis(symbol)),
+    );
+
+    analyses.push(...results.map((result, batchIndex) => {
+      const symbol = batch[batchIndex]?.trim?.()?.toUpperCase?.() || batch[batchIndex];
+      if (result.status === 'fulfilled') {
+        return result.value;
+      }
+      return {
+        success: false,
+        symbol,
+        error: result.reason?.message || 'Unknown error',
+      };
+    }));
+  }
+
+  const successCount = analyses.filter((entry) => entry.success).length;
+  return {
+    success: successCount > 0,
+    count: analyses.length,
+    successCount,
+    failureCount: analyses.length - successCount,
+    analyses,
+    retrieved_at: new Date().toISOString(),
+    source: 'yahoo_finance',
+    ...(successCount > 0 ? {} : { error: 'All analysis requests failed' }),
+  };
+}
+
 export async function rankSymbolsByConfluence(symbols, { limit } = {}) {
   if (!Array.isArray(symbols) || symbols.length === 0) {
     throw new Error('symbols array is required and must not be empty');
@@ -401,33 +441,27 @@ export async function rankSymbolsByConfluence(symbols, { limit } = {}) {
     }
   }
 
-  const { getSymbolAnalysis } = await import('./market-intel-analysis.js');
-  const results = await Promise.allSettled(
-    symbols.map((symbol) => getSymbolAnalysis(symbol)),
-  );
-
+  const analysisSummary = await getMultiSymbolAnalysis(symbols);
   const rankedCandidates = [];
   const unranked = [];
 
-  results.forEach((result, index) => {
+  analysisSummary.analyses.forEach((result, index) => {
     const symbol = symbols[index]?.trim?.()?.toUpperCase?.() || symbols[index];
-    if (result.status !== 'fulfilled') {
+    if (!result?.success) {
       unranked.push({
         symbol,
-        error: result.reason?.message || 'Unknown error',
+        error: result?.error || 'Analysis failed',
+        provider_status: result?.analysis?.provider_status || null,
+        missing_reason: result?.inputs?.quote_missing_reason
+          || result?.inputs?.fundamentals_missing_reason
+          || result?.inputs?.ta_missing_reason
+          || result?.inputs?.news_missing_reason
+          || null,
       });
       return;
     }
 
-    if (!result.value?.success) {
-      unranked.push({
-        symbol,
-        error: result.value?.error || 'Analysis failed',
-      });
-      return;
-    }
-
-    rankedCandidates.push(result.value);
+    rankedCandidates.push(result);
   });
 
   rankedCandidates.sort((left, right) => {
@@ -453,6 +487,8 @@ export async function rankSymbolsByConfluence(symbols, { limit } = {}) {
     confluence_label: item.analysis.overall_summary.confluence_label,
     coverage_summary: item.analysis.overall_summary.coverage_summary,
     confluence_breakdown: item.analysis.overall_summary.confluence_breakdown,
+    provider_status: item.analysis.provider_status,
+    community_snapshot: item.analysis.community_snapshot,
     warnings: item.analysis.overall_summary.warnings,
   }));
   const omitted = omittedCandidates.map((item) => ({
@@ -460,6 +496,7 @@ export async function rankSymbolsByConfluence(symbols, { limit } = {}) {
     confluence_score: item.analysis.overall_summary.confluence_score,
     confluence_label: item.analysis.overall_summary.confluence_label,
     coverage_summary: item.analysis.overall_summary.coverage_summary,
+    provider_status: item.analysis.provider_status,
     reason: 'limit_applied',
   }));
 

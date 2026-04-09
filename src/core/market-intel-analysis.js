@@ -12,33 +12,168 @@ import {
   getMultiSymbolTaSummary,
 } from './market-intel.js';
 import { computeConfluenceSummary } from './market-confluence.js';
+import {
+  buildProviderStatusEntry,
+  classifyProviderFailure,
+  summarizeProviderCoverage,
+} from './market-provider-status.js';
+import { buildMarketCommunitySnapshot } from './market-community-snapshot.js';
 
 // ---------------------------------------------------------------------------
 // Data collection — fetch all inputs with graceful degradation
 // ---------------------------------------------------------------------------
 
+function buildInputEntry(provider, settledResult, value, { allowEmptyAvailability = false, emptyReason = 'empty_payload' } = {}) {
+  if (settledResult.status === 'rejected') {
+    const failure = classifyProviderFailure(settledResult.reason, { provider });
+    return buildProviderStatusEntry({
+      provider,
+      ...failure,
+      available: false,
+      signal_present: false,
+    });
+  }
+
+  if (value) {
+    return buildProviderStatusEntry({
+      provider,
+      status: 'ok',
+      available: true,
+      signal_present: true,
+    });
+  }
+
+  if (allowEmptyAvailability) {
+    return buildProviderStatusEntry({
+      provider,
+      status: 'no_results',
+      available: true,
+      signal_present: false,
+      missing_reason: emptyReason,
+    });
+  }
+
+  return buildProviderStatusEntry({
+    provider,
+    status: 'no_results',
+    available: false,
+    signal_present: false,
+    missing_reason: emptyReason,
+  });
+}
+
+function buildCommunityProviderStatus(communitySnapshot) {
+  const providerEntries = Object.values(communitySnapshot?.provider_status || {}).filter(Boolean);
+  const availableCount = communitySnapshot?.coverage_summary?.available_count
+    ?? providerEntries.filter((entry) => entry.available).length;
+  const allNotRequested = providerEntries.length > 0
+    && providerEntries.every((entry) => entry.missing_reason === 'not_requested');
+
+  if (allNotRequested) {
+    return buildProviderStatusEntry({
+      provider: 'community',
+      status: 'skipped',
+      available: false,
+      signal_present: false,
+      missing_reason: 'not_requested',
+    });
+  }
+
+  if (communitySnapshot?.counts?.total > 0) {
+    return buildProviderStatusEntry({
+      provider: 'community',
+      status: 'ok',
+      available: true,
+      signal_present: true,
+    });
+  }
+
+  if (availableCount > 0) {
+    return buildProviderStatusEntry({
+      provider: 'community',
+      status: 'no_results',
+      available: true,
+      signal_present: false,
+      missing_reason: 'no_recent_items',
+    });
+  }
+
+  return buildProviderStatusEntry({
+    provider: 'community',
+    status: 'degraded',
+    available: false,
+    signal_present: false,
+    missing_reason: 'fetch_failed',
+    warning: Array.isArray(communitySnapshot?.warnings) && communitySnapshot.warnings.length > 0
+      ? communitySnapshot.warnings.join('; ')
+      : null,
+  });
+}
+
 async function collectInputs(symbol) {
-  const [quoteResult, fundamentalsResult, taResult, newsResult] = await Promise.allSettled([
+  const [quoteResult, fundamentalsResult, taResult, newsResult, communityResult] = await Promise.allSettled([
     getSymbolQuote(symbol),
     getSymbolFundamentals(symbol),
     getMultiSymbolTaSummary([symbol]),
     getFinancialNews(symbol),
+    buildMarketCommunitySnapshot({ symbol }),
   ]);
 
   const quote = quoteResult.status === 'fulfilled' ? quoteResult.value : null;
   const fundamentals = fundamentalsResult.status === 'fulfilled' ? fundamentalsResult.value : null;
 
-  let ta = null;
-  if (taResult.status === 'fulfilled' && taResult.value.success) {
-    const summary = taResult.value.summaries?.[0];
-    if (summary?.success) {
-      ta = summary;
-    }
-  }
+  const taSummary = taResult.status === 'fulfilled' ? taResult.value.summaries?.[0] : null;
+  const ta = taSummary?.success ? taSummary : null;
 
   const news = newsResult.status === 'fulfilled' ? newsResult.value : null;
+  const communitySnapshot = communityResult.status === 'fulfilled'
+    ? communityResult.value
+    : {
+      success: false,
+      symbol,
+      query: symbol,
+      counts: { x: 0, reddit: 0, total: 0 },
+      latest_observed_at: null,
+      source_presence: { x: false, reddit: false },
+      provider_status: {},
+      coverage_summary: summarizeProviderCoverage([]),
+      warnings: [],
+      snapshot_at: new Date().toISOString(),
+      source: 'community-snapshot',
+    };
 
-  return { quote, fundamentals, ta, news };
+  const providerStatus = {
+    quote: buildInputEntry('quote', quoteResult, quote),
+    fundamentals: buildInputEntry('fundamentals', fundamentalsResult, fundamentals),
+    ta: taSummary && !taSummary.success
+      ? buildProviderStatusEntry({
+        provider: 'ta',
+        ...classifyProviderFailure(new Error(taSummary.error || 'TA request failed'), { provider: 'ta' }),
+        available: false,
+        signal_present: false,
+      })
+      : buildInputEntry('ta', taResult, ta),
+    news: buildInputEntry('news', newsResult, news?.count > 0 ? news : null, {
+      allowEmptyAvailability: newsResult.status === 'fulfilled' && Boolean(news),
+      emptyReason: 'no_recent_items',
+    }),
+    community: buildCommunityProviderStatus(communitySnapshot),
+  };
+
+  return {
+    quote,
+    fundamentals,
+    ta,
+    news,
+    communitySnapshot,
+    providerStatus,
+    missingReasons: {
+      quote: providerStatus.quote.missing_reason,
+      fundamentals: providerStatus.fundamentals.missing_reason,
+      ta: providerStatus.ta.missing_reason,
+      news: providerStatus.news.missing_reason,
+    },
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -403,7 +538,15 @@ function analyzeRisk(quote, ta, fundamentals) {
 // Overall summary — aggregate
 // ---------------------------------------------------------------------------
 
-function buildOverallSummary(trend, fundamentalsAnalysis, newsAnalysis, riskAnalysis, inputCoverage = {}) {
+function buildOverallSummary(
+  trend,
+  fundamentalsAnalysis,
+  newsAnalysis,
+  riskAnalysis,
+  inputCoverage = {},
+  providerStatus = {},
+  communitySnapshot = null,
+) {
   const signals = [];
   const warnings = [];
   const confluence = computeConfluenceSummary(
@@ -442,6 +585,14 @@ function buildOverallSummary(trend, fundamentalsAnalysis, newsAnalysis, riskAnal
       confluence_label: confluence.confluence_label,
       confluence_breakdown: confluence.confluence_breakdown,
       coverage_summary: confluence.coverage_summary,
+      provider_coverage_summary: summarizeProviderCoverage(Object.values(providerStatus)),
+      community_snapshot_summary: communitySnapshot
+        ? {
+          counts: communitySnapshot.counts,
+          source_presence: communitySnapshot.source_presence,
+          latest_observed_at: communitySnapshot.latest_observed_at,
+        }
+        : null,
     };
   }
 
@@ -482,6 +633,14 @@ function buildOverallSummary(trend, fundamentalsAnalysis, newsAnalysis, riskAnal
     confluence_label: confluence.confluence_label,
     confluence_breakdown: confluence.confluence_breakdown,
     coverage_summary: confluence.coverage_summary,
+    provider_coverage_summary: summarizeProviderCoverage(Object.values(providerStatus)),
+    community_snapshot_summary: communitySnapshot
+      ? {
+        counts: communitySnapshot.counts,
+        source_presence: communitySnapshot.source_presence,
+        latest_observed_at: communitySnapshot.latest_observed_at,
+      }
+      : null,
   };
 }
 
@@ -520,6 +679,8 @@ export async function getSymbolAnalysis(symbol) {
       ta: Boolean(inputs.ta),
       news: Boolean(inputs.news),
     },
+    inputs.providerStatus,
+    inputs.communitySnapshot,
   );
   const hasCoreInput = Boolean(inputs.quote || inputs.fundamentals || inputs.ta);
   const topLevelWarnings = [];
@@ -536,6 +697,7 @@ export async function getSymbolAnalysis(symbol) {
   if (!inputs.news) {
     topLevelWarnings.push('News data unavailable');
   }
+  topLevelWarnings.push(...(inputs.communitySnapshot?.warnings || []));
 
   return {
     success: hasCoreInput,
@@ -546,15 +708,21 @@ export async function getSymbolAnalysis(symbol) {
     warnings: topLevelWarnings,
     inputs: {
       quote: inputs.quote,
+      quote_missing_reason: inputs.missingReasons.quote,
       fundamentals: inputs.fundamentals,
+      fundamentals_missing_reason: inputs.missingReasons.fundamentals,
       ta_summary: inputs.ta,
+      ta_missing_reason: inputs.missingReasons.ta,
       news: inputs.news,
+      news_missing_reason: inputs.missingReasons.news,
     },
     analysis: {
       trend_analyst: trendAnalysis,
       fundamentals_analyst: fundamentalsAnalysis,
       news_analyst: newsAnalysis,
       risk_analyst: riskAnalysis,
+      provider_status: inputs.providerStatus,
+      community_snapshot: inputs.communitySnapshot,
       overall_summary: overallSummary,
     },
   };

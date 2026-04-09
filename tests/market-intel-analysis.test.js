@@ -9,11 +9,18 @@ import { getSymbolAnalysis } from '../src/core/market-intel-analysis.js';
 
 async function withMockFetch(mockImpl, fn) {
   const originalFetch = global.fetch;
+  const originalCommunityFlag = process.env.OMTV_DISABLE_COMMUNITY_SNAPSHOT;
   global.fetch = mockImpl;
+  process.env.OMTV_DISABLE_COMMUNITY_SNAPSHOT = '1';
   try {
     await fn();
   } finally {
     global.fetch = originalFetch;
+    if (originalCommunityFlag === undefined) {
+      delete process.env.OMTV_DISABLE_COMMUNITY_SNAPSHOT;
+    } else {
+      process.env.OMTV_DISABLE_COMMUNITY_SNAPSHOT = originalCommunityFlag;
+    }
   }
 }
 
@@ -207,6 +214,8 @@ describe('getSymbolAnalysis — inputs', () => {
       assert.ok(result.inputs.fundamentals, 'inputs.fundamentals missing');
       assert.ok(result.inputs.ta_summary, 'inputs.ta_summary missing');
       assert.ok(result.inputs.news, 'inputs.news missing');
+      assert.ok(result.analysis.provider_status);
+      assert.ok(result.analysis.community_snapshot);
     });
   });
 });
@@ -644,7 +653,74 @@ describe('getSymbolAnalysis — partial data failure', () => {
       assert.equal(result.analysis.risk_analyst.stance, 'unknown');
       assert.equal(result.analysis.overall_summary.coverage_summary.news_available, true);
       assert.ok(!result.analysis.overall_summary.coverage_summary.missing_inputs.includes('news'));
+      assert.equal(result.analysis.provider_status.news.status, 'no_results');
+      assert.equal(result.inputs.news_missing_reason, 'no_recent_items');
       assert.notEqual(result.analysis.overall_summary.stance, 'leaning_positive');
+    });
+  });
+
+  it('surfaces provider status and missing reason when fundamentals fail', async () => {
+    const mock = async (url) => {
+      const urlStr = String(url);
+      if (urlStr.includes('quoteSummary')) {
+        return { ok: false, status: 503, json: async () => ({}) };
+      }
+      if (urlStr.includes('search')) {
+        return { ok: true, json: async () => buildNewsResponse(STANDARD_NEWS) };
+      }
+      if (urlStr.includes('range=3mo')) {
+        return { ok: true, json: async () => buildChartResponse('AAPL', UPTREND_CLOSES) };
+      }
+      return { ok: true, json: async () => buildQuoteResponse('AAPL') };
+    };
+
+    await withMockFetch(mock, async () => {
+      const result = await getSymbolAnalysis('AAPL');
+      assert.equal(result.inputs.fundamentals_missing_reason, 'fetch_failed');
+      assert.equal(result.analysis.provider_status.fundamentals.status, 'provider_error');
+      assert.equal(result.analysis.overall_summary.provider_coverage_summary.available_count >= 2, true);
+    });
+  });
+
+  it('surfaces fetch_failed when TA summary resolves with a provider error', async () => {
+    const mock = async (url) => {
+      const urlStr = String(url);
+      if (urlStr.includes('quoteSummary')) {
+        return { ok: true, json: async () => buildFundamentalsResponse() };
+      }
+      if (urlStr.includes('search')) {
+        return { ok: true, json: async () => buildNewsResponse(STANDARD_NEWS) };
+      }
+      if (urlStr.includes('range=3mo')) {
+        return { ok: false, status: 503, json: async () => ({}) };
+      }
+      return { ok: true, json: async () => buildQuoteResponse('AAPL') };
+    };
+
+    await withMockFetch(mock, async () => {
+      const result = await getSymbolAnalysis('AAPL');
+      assert.equal(result.inputs.ta_summary, null);
+      assert.equal(result.inputs.ta_missing_reason, 'fetch_failed');
+      assert.equal(result.analysis.provider_status.ta.status, 'provider_error');
+    });
+  });
+
+  it('keeps community unavailable when snapshot collection is disabled', async () => {
+    const mock = buildRoutedMock({
+      quote: buildQuoteResponse('AAPL'),
+      chart: buildChartResponse('AAPL', UPTREND_CLOSES),
+      fundamentals: buildFundamentalsResponse(),
+      news: buildNewsResponse(STANDARD_NEWS),
+    });
+
+    await withMockFetch(mock, async () => {
+      const result = await getSymbolAnalysis('AAPL');
+      assert.equal(result.analysis.community_snapshot.coverage_summary.available_count, 0);
+      assert.equal(result.analysis.community_snapshot.coverage_summary.has_partial_failures, false);
+      assert.equal(result.analysis.provider_status.community.status, 'skipped');
+      assert.equal(result.analysis.provider_status.community.available, false);
+      assert.equal(result.analysis.provider_status.community.missing_reason, 'not_requested');
+      assert.equal(result.analysis.overall_summary.provider_coverage_summary.has_partial_failures, false);
     });
   });
 
@@ -719,6 +795,8 @@ describe('getSymbolAnalysis — determinism', () => {
       delete r2.inputs?.ta_summary?.retrieved_at;
       delete r1.inputs?.news?.retrieved_at;
       delete r2.inputs?.news?.retrieved_at;
+      delete r1.analysis?.community_snapshot?.snapshot_at;
+      delete r2.analysis?.community_snapshot?.snapshot_at;
       delete r1.generated_at;
       delete r2.generated_at;
       assert.deepEqual(r1, r2);

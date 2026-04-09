@@ -418,6 +418,6 @@
 
 - URL: http://x.com/i/article/2037534155752583168
 - 参考にした理由: 単独では弱い signal を束ねて、より強い判断へ圧縮する考え方が `market_*` / `x_*` / `reach_*` の今後の設計方針と近かったため。
-- このプロジェクトにどう活かしたか: 第1段階では `market_symbol_analysis` に additive な `confluence_score` / `confluence_label` / `confluence_breakdown` / `coverage_summary` を追加し、`market_confluence_rank` で watchlist 候補を比較できるようにした。
-- 採用したもの: 固定重みの deterministic confluence layer、false precision を避ける coarse score、coverage を別面で明示する設計。
-- 採用しなかったもの: 記事中の大規模 multi-signal engine 全体、prediction market 向けの応用、`x_*` / `reach_*` を初回から direction に直接混ぜること。
+- このプロジェクトにどう活かしたか: 第1段階では `market_symbol_analysis` に additive な `confluence_score` / `confluence_label` / `confluence_breakdown` / `coverage_summary` を追加し、`market_confluence_rank` で watchlist 候補を比較できるようにした。今回の段階ではさらに `experiment-gating` / campaign artifact へ `confluence_snapshot` を載せ、`x_*` / `reach_*` は directional sentiment ではなく community snapshot（件数 / recency / source presence）として統合した。
+- 採用したもの: 固定重みの deterministic confluence layer、false precision を避ける coarse score、coverage を別面で明示する設計、community を strength ではなく observation coverage として扱う設計。
+- 採用しなかったもの: 記事中の大規模 multi-signal engine 全体、prediction market 向けの応用、`x_*` / `reach_*` を初回から bullish / bearish direction に直接混ぜること。

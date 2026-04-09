@@ -9,9 +9,11 @@ export { buildLaunchCommand, verifyExecutable, launchDesktop } from './launch.js
 export { buildBrowserLaunchCommand, launchBrowserFallback, BROWSER_CANDIDATES, DEFAULT_CHART_URL } from './browser-launch.js';
 export { captureScreenshot } from './capture.js';
 export { resolveStreamParams, streamPriceTicks } from './stream.js';
-export { getSymbolQuote, getSymbolFundamentals, getMarketSnapshot, getFinancialNews, runScreener, computeRsi, computeSma, getMultiSymbolTaSummary, rankSymbolsByTa, rankSymbolsByConfluence } from './market-intel.js';
+export { getSymbolQuote, getSymbolFundamentals, getMarketSnapshot, getFinancialNews, runScreener, computeRsi, computeSma, getMultiSymbolTaSummary, rankSymbolsByTa, getMultiSymbolAnalysis, rankSymbolsByConfluence } from './market-intel.js';
 export { getSymbolAnalysis } from './market-intel-analysis.js';
 export { computeConfluenceSummary, buildCoverageSummary } from './market-confluence.js';
+export { classifyProviderFailure, buildProviderStatusEntry, summarizeProviderCoverage } from './market-provider-status.js';
+export { buildMarketCommunitySnapshot } from './market-community-snapshot.js';
 export {
   getTwitterStatus,
   getTwitterWhoAmI,

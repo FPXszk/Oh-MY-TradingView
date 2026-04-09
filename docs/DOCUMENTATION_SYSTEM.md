@@ -167,6 +167,7 @@
 - [`docs/working-memory/session-logs/external-agent-trading-research_20260409_1445.md`](./working-memory/session-logs/external-agent-trading-research_20260409_1445.md)
 - [`docs/working-memory/session-logs/final-rollout-docs-cleanup_20260409_1925.md`](./working-memory/session-logs/final-rollout-docs-cleanup_20260409_1925.md)
 - [`docs/working-memory/session-logs/weak-signal-confluence-rollout_20260409_2127.md`](./working-memory/session-logs/weak-signal-confluence-rollout_20260409_2127.md)
+- [`docs/working-memory/session-logs/confluence-community-observability-rollout_20260409_1334.md`](./working-memory/session-logs/confluence-community-observability-rollout_20260409_1334.md)
 
 ## 運用ルール
 

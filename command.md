@@ -332,10 +332,13 @@ node scripts/backtest/run-long-campaign.mjs long-run-cross-market-100x5 \
 
 - `gated-summary.json`: gate 閾値、件数集計、全候補の判定結果、ranked candidate 一覧
 - `ranked-candidates.json`: `promote` 判定だけを stable rank 付きで抜き出した一覧
+- `market-intel-snapshots.json`: symbol ごとの `market_symbol_analysis` snapshot。`confluence_snapshot` / `provider_status` / `community_snapshot` の元データ
 
 ```bash
 node scripts/backtest/run-long-campaign.mjs external-phase1-priority-top --phase smoke --dry-run
 node scripts/backtest/run-long-campaign.mjs external-phase1-priority-top --phase smoke --host 172.31.144.1 --ports 9223,9225
+npm run tv -- market analysis --symbol AAPL
+npm run tv -- market confluence-rank AAPL MSFT NVDA --limit 3
 ```
 
 ### market-specific long-run deep dive

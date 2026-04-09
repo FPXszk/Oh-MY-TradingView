@@ -10,17 +10,25 @@ import {
   computeRsi,
   computeSma,
   getMultiSymbolTaSummary,
+  getMultiSymbolAnalysis,
   rankSymbolsByTa,
   rankSymbolsByConfluence,
 } from '../src/core/market-intel.js';
 
 async function withMockFetch(mockImpl, fn) {
   const originalFetch = global.fetch;
+  const originalCommunityFlag = process.env.OMTV_DISABLE_COMMUNITY_SNAPSHOT;
   global.fetch = mockImpl;
+  process.env.OMTV_DISABLE_COMMUNITY_SNAPSHOT = '1';
   try {
     await fn();
   } finally {
     global.fetch = originalFetch;
+    if (originalCommunityFlag === undefined) {
+      delete process.env.OMTV_DISABLE_COMMUNITY_SNAPSHOT;
+    } else {
+      process.env.OMTV_DISABLE_COMMUNITY_SNAPSHOT = originalCommunityFlag;
+    }
   }
 }
 
@@ -803,6 +811,21 @@ describe('rankSymbolsByConfluence — mocked fetch', () => {
     });
   });
 
+  it('propagates provider and community details to ranked symbols', async () => {
+    await withMockFetch(buildConfluenceMock({
+      AAPL: {
+        quote: buildQuoteResponse('AAPL'),
+        chart: buildChartResponse('AAPL', UPTREND_CLOSES),
+        fundamentals: buildFundamentalsResponse(),
+        news: buildNewsResponse('AAPL'),
+      },
+    }), async () => {
+      const result = await rankSymbolsByConfluence(['AAPL']);
+      assert.equal(result.ranked_symbols[0].provider_status.quote.status, 'ok');
+      assert.ok(result.ranked_symbols[0].community_snapshot);
+    });
+  });
+
   it('accounts for omitted successful symbols when limit truncates the ranking', async () => {
     await withMockFetch(buildConfluenceMock({
       AAPL: {
@@ -854,6 +877,34 @@ describe('rankSymbolsByConfluence — mocked fetch', () => {
       assert.equal(result.error, 'All confluence analysis requests failed');
       assert.equal(result.rankedCount, 0);
       assert.equal(result.failureCount, 2);
+    });
+  });
+
+  it('batches multi-symbol analysis requests beyond the confluence command limit', async () => {
+    const symbols = Array.from({ length: 21 }, (_, index) => `SYM${String(index + 1).padStart(2, '0')}`);
+
+    await withMockFetch(async (url) => {
+      const urlStr = String(url);
+      const symbolMatch = urlStr.match(/quoteSummary\/([^?]+)|chart\/([^?]+)/);
+      const symbol = (symbolMatch?.[1] || symbolMatch?.[2] || 'AAPL').toUpperCase();
+
+      if (urlStr.includes('quoteSummary')) {
+        return { ok: true, json: async () => buildFundamentalsResponse() };
+      }
+      if (urlStr.includes('search')) {
+        return { ok: true, json: async () => buildNewsResponse(symbol) };
+      }
+      if (urlStr.includes('range=3mo')) {
+        return { ok: true, json: async () => buildChartResponse(symbol, UPTREND_CLOSES) };
+      }
+      return { ok: true, json: async () => buildQuoteResponse(symbol) };
+    }, async () => {
+      const result = await getMultiSymbolAnalysis(symbols);
+      assert.equal(result.success, true);
+      assert.equal(result.count, 21);
+      assert.equal(result.successCount, 21);
+      assert.equal(result.failureCount, 0);
+      assert.deepEqual(result.analyses.map((entry) => entry.symbol), symbols);
     });
   });
 });

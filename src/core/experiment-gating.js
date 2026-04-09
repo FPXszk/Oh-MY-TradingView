@@ -203,6 +203,7 @@ export function gateAllRuns(runs, { thresholds = DEFAULT_GATE_THRESHOLDS, initia
     const metrics = normalizeRunMetrics(run);
     const maxDrawdownPct = computeMaxDrawdownPct(metrics.max_drawdown, initialCapital);
     const gate = gateDecision(metrics, thresholds, { initialCapital });
+    const snapshot = run?.marketSnapshot || null;
     return {
       presetId: run.presetId,
       symbol: run.symbol,
@@ -215,6 +216,17 @@ export function gateAllRuns(runs, { thresholds = DEFAULT_GATE_THRESHOLDS, initia
       },
       decision: gate.decision,
       reasons: gate.reasons,
+      ...(snapshot ? {
+        confluence_snapshot: {
+          score: snapshot.analysis?.overall_summary?.confluence_score ?? null,
+          label: snapshot.analysis?.overall_summary?.confluence_label ?? null,
+          breakdown: snapshot.analysis?.overall_summary?.confluence_breakdown ?? null,
+          coverage_summary: snapshot.analysis?.overall_summary?.coverage_summary ?? null,
+          provider_coverage_summary: snapshot.analysis?.overall_summary?.provider_coverage_summary ?? null,
+        },
+        provider_status: snapshot.analysis?.provider_status ?? null,
+        community_snapshot: snapshot.analysis?.community_snapshot ?? null,
+      } : {}),
     };
   });
 }
@@ -228,8 +240,28 @@ export function buildGatedSummary({
   effectiveRuns,
   thresholds = DEFAULT_GATE_THRESHOLDS,
   initialCapital,
+  marketSnapshots = {},
 }) {
-  const gated = gateAllRuns(effectiveRuns, { thresholds, initialCapital });
+  const normalizedMarketSnapshots = Object.fromEntries(
+    Object.entries(marketSnapshots || {}).map(([symbol, snapshot]) => [
+      typeof symbol === 'string' ? symbol.trim().toUpperCase() : symbol,
+      snapshot,
+    ]),
+  );
+
+  function resolveMarketSnapshot(symbol) {
+    if (typeof symbol !== 'string') {
+      return normalizedMarketSnapshots?.[symbol] || marketSnapshots?.[symbol] || null;
+    }
+    const normalized = symbol.trim().toUpperCase();
+    return normalizedMarketSnapshots?.[normalized] || marketSnapshots?.[symbol] || null;
+  }
+
+  const enrichedRuns = effectiveRuns.map((run) => ({
+    ...run,
+    marketSnapshot: resolveMarketSnapshot(run.symbol),
+  }));
+  const gated = gateAllRuns(enrichedRuns, { thresholds, initialCapital });
   const ranked = rankCandidates(gated);
 
   const counts = { promote: 0, hold: 0, reject: 0 };
@@ -243,6 +275,7 @@ export function buildGatedSummary({
     generated_at: new Date().toISOString(),
     thresholds,
     counts,
+    market_snapshot_count: Object.keys(marketSnapshots || {}).length,
     ranked_candidates: ranked,
     gated_results: gated,
   };
