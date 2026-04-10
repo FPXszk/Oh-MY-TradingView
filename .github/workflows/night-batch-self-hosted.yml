@@ -8,7 +8,7 @@ on:
       config_path:
         description: JSON config path relative to the repository root
         required: true
-        default: config/night_batch/nightly.default.json
+        default: config/night_batch/bundle-detached-reuse-config.json
 
 jobs:
   start-night-batch:
@@ -47,7 +47,7 @@ jobs:
         shell: cmd
         run: |
           set "NIGHT_BATCH_CONFIG=${{ inputs.config_path }}"
-          if "%NIGHT_BATCH_CONFIG%"=="" set "NIGHT_BATCH_CONFIG=config/night_batch/nightly.default.json"
+          if "%NIGHT_BATCH_CONFIG%"=="" set "NIGHT_BATCH_CONFIG=config/night_batch/bundle-detached-reuse-config.json"
           scripts\windows\run-night-batch-self-hosted.cmd "%NIGHT_BATCH_CONFIG%"
 
       - name: Report skipped stale schedule

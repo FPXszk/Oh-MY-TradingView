@@ -355,6 +355,9 @@ TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9223 node src/cli/index.js backtest nvda-ma
 夜間自動化は **Python が WSL 側の `9223` 接続を preflight し、TradingView 操作本体は既存 Node script を subprocess 実行する** 構成を想定しています。CDP/backtest 本体を Python に再実装しません。
 
 ```bash
+# US/JP 100x10 fine-tune bundle を smoke -> detached full で再始動
+python3 python/night_batch.py smoke-prod --config config/night_batch/bundle-detached-reuse-config.json
+
 # JSON config を読んで startup check -> smoke -> detached production
 python3 python/night_batch.py smoke-prod --config config/night_batch/nightly.default.json
 
@@ -379,7 +382,9 @@ python3 python/night_batch.py report \
   --out results/night-batch/morning-report.md
 ```
 
-`config/night_batch/nightly.default.json` は strategy / launch / runtime の正本です。日中に戦略案を差し替えたいときは、この JSON の `strategies.smoke.cli` / `strategies.production.cli` を更新するか、CLI override を使います。
+`config/night_batch/bundle-detached-reuse-config.json` は、既存 `next-long-run-us-finetune-100x10` / `next-long-run-jp-finetune-100x10` campaign を再利用して **smoke から full detached へ進める本番用 config** です。strategy ID はこの JSON に複製せず、既存 campaign 定義を参照します。
+
+`config/night_batch/nightly.default.json` は single-backtest ベースのサンプルです。日中に戦略案を差し替えたいときは、この JSON の `strategies.smoke.cli` / `strategies.production.cli` を更新するか、CLI override を使います。
 
 `smoke-prod` は **Windows local `9222` の startup check** を先に行い、TradingView chart target が見つからなければ current verified shortcut `C:\TradingView\TradingView.exe - ショートカット.lnk` を使って launch します。その後に **WSL `9223` の preflight** を通し、smoke backtest を実行します。config の `detach_after_smoke: true` なら、smoke success 後に production を detached child としてローカル継続し、親プロセスは成功終了します。
 
@@ -390,12 +395,12 @@ Python スクリプトは `results/night-batch/` に run summary / log / detache
 Windows Command Prompt からは次で同じ config を使えます。
 
 ```cmd
-scripts\windows\run-night-batch-self-hosted.cmd config\night_batch\nightly.default.json
+scripts\windows\run-night-batch-self-hosted.cmd config\night_batch\bundle-detached-reuse-config.json
 ```
 
-`.github/workflows/night-batch-self-hosted.yml` は **self-hosted Windows runner** 前提です。既定の cron は **毎日 00:00 JST**（`0 15 * * *` UTC）で、job は smoke success と detached child 起動確認までを担当します。production 本体は workflow 終了後もローカル PC 上で継続します。workflow では `actions/checkout` を **`clean: false`** にして detached state を保持し、**00:00 JST の起動窓を外れた stale scheduled run は skip** します。
+`.github/workflows/night-batch-self-hosted.yml` は **self-hosted Windows runner** 前提です。既定の cron は **毎日 00:00 JST**（`0 15 * * *` UTC）で、既定 config は `config/night_batch/bundle-detached-reuse-config.json` です。job は smoke success と detached child 起動確認までを担当し、production 本体は workflow 終了後もローカル PC 上で継続します。workflow では `actions/checkout` を **`clean: false`** にして detached state を保持し、**00:00 JST の起動窓を外れた stale scheduled run は skip** します。
 
-既定 config の detached state file は `results/night-batch/nightly.default-detached-state.json` です。**この state が `running` の間は二重起動を拒否**するので、schedule と manual を同時に流さない前提を Python 側でも守れます。
+workflow 既定 config の detached state file は `results/night-batch/bundle-detached-reuse-state.json` です。**この state が `running` の間は二重起動を拒否**するので、schedule と manual を同時に流さない前提を Python 側でも守れます。
 
 preset-driven バックテスト:
 

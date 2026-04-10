@@ -149,10 +149,12 @@ def build_parser() -> argparse.ArgumentParser:
         help=argparse.SUPPRESS,
         parents=[common],
     )
-    production_child.add_argument('--production-cli', default=DEFAULT_PRODUCTION_CLI)
     production_child.add_argument('--production-timeout-sec', type=int, default=0)
     production_child.add_argument('--launch-wait-sec', type=int, default=DEFAULT_LAUNCH_WAIT_SEC)
     production_child.add_argument('--detached-state-file', default=DEFAULT_DETACHED_STATE_FILE)
+    production_child.add_argument('--production-command-json', required=True)
+    production_child.add_argument('--production-env-json', default='{}')
+    production_child.add_argument('--production-checkpoint-roots-json', default='[]')
 
     return parser
 
@@ -311,6 +313,7 @@ def load_smoke_prod_settings(args, raw_args: list[str]) -> dict:
     runtime = read_config_section(config, 'runtime')
     launch = read_config_section(config, 'launch')
     strategies = read_config_section(config, 'strategies')
+    bundle = read_config_section(config, 'bundle')
     smoke = read_config_section(strategies, 'smoke')
     production = read_config_section(strategies, 'production')
 
@@ -403,6 +406,16 @@ def load_smoke_prod_settings(args, raw_args: list[str]) -> dict:
         runtime.get('production_timeout_sec'),
         default_production_timeout,
     )
+    bundle_us_campaign = bundle.get('us_campaign')
+    bundle_jp_campaign = bundle.get('jp_campaign')
+    bundle_smoke_phases = bundle.get('smoke_phases') or 'smoke'
+    bundle_production_phases = bundle.get('production_phases') or 'full'
+    smoke_mode = 'cli'
+    production_mode = 'cli'
+    if bundle_us_campaign and bundle_jp_campaign and not smoke.get('cli') and not option_was_provided(raw_args, '--smoke-cli'):
+        smoke_mode = 'bundle'
+    if bundle_us_campaign and bundle_jp_campaign and not production.get('cli') and not option_was_provided(raw_args, '--production-cli'):
+        production_mode = 'bundle'
 
     return {
         'config_path': config_path,
@@ -420,6 +433,12 @@ def load_smoke_prod_settings(args, raw_args: list[str]) -> dict:
         'detached_state_file': detached_state_file,
         'smoke_timeout_sec': smoke_timeout_sec,
         'production_timeout_sec': production_timeout_sec,
+        'smoke_mode': smoke_mode,
+        'production_mode': production_mode,
+        'bundle_us_campaign': bundle_us_campaign,
+        'bundle_jp_campaign': bundle_jp_campaign,
+        'bundle_smoke_phases': bundle_smoke_phases,
+        'bundle_production_phases': bundle_production_phases,
         'dry_run': args.dry_run,
         'timeout': args.timeout,
     }
@@ -708,6 +727,38 @@ def build_cli_command(node_bin: str, cli_string: str) -> list[str]:
     return [node_bin, str(PROJECT_ROOT / 'src' / 'cli' / 'index.js'), *tokens]
 
 
+def build_bundle_phase_step(settings: dict, phases: str) -> dict:
+    bundle_args = argparse.Namespace(
+        command='bundle',
+        node_bin=settings['node_bin'],
+        host=settings['host'],
+        port=settings['port'],
+        phases=phases,
+        us_campaign=settings['bundle_us_campaign'],
+        jp_campaign=settings['bundle_jp_campaign'],
+        dry_run=False,
+    )
+    return build_step_specs(bundle_args)[0]
+
+
+def build_runtime_step(settings: dict, phase_name: str) -> dict:
+    if settings[f'{phase_name}_mode'] == 'bundle':
+        phases = settings[f'bundle_{phase_name}_phases']
+        step_spec = build_bundle_phase_step(settings, phases)
+        return {
+            'name': phase_name,
+            'command': step_spec['command'],
+            'checkpoint_roots': step_spec['checkpoint_roots'],
+            'env_overrides': None,
+        }
+    return {
+        'name': phase_name,
+        'command': build_cli_command(settings['node_bin'], settings[f'{phase_name}_cli']),
+        'checkpoint_roots': [],
+        'env_overrides': {'TV_CDP_HOST': settings['host'], 'TV_CDP_PORT': str(settings['port'])},
+    }
+
+
 def wait_for_visible_session(host: str, port: int, timeout_sec: int, logger: logging.Logger) -> dict:
     deadline = time.monotonic() + timeout_sec
     last_error: RuntimeError | None = None
@@ -727,7 +778,7 @@ def write_detached_state(state_path: Path, payload: dict) -> None:
     state_path.write_text(f'{json.dumps(payload, indent=2, ensure_ascii=False)}\n', encoding='utf-8')
 
 
-def build_production_child_command(settings: dict, child_run_id: str) -> list[str]:
+def build_production_child_command(settings: dict, child_run_id: str, production_step: dict) -> list[str]:
     return [
         sys.executable,
         str(Path(__file__).resolve()),
@@ -738,8 +789,12 @@ def build_production_child_command(settings: dict, child_run_id: str) -> list[st
         str(settings['port']),
         '--node-bin',
         settings['node_bin'],
-        '--production-cli',
-        settings['production_cli'],
+        '--production-command-json',
+        json.dumps(production_step['command'], ensure_ascii=False),
+        '--production-env-json',
+        json.dumps(production_step.get('env_overrides') or {}, ensure_ascii=False),
+        '--production-checkpoint-roots-json',
+        json.dumps([str(path) for path in production_step.get('checkpoint_roots', [])], ensure_ascii=False),
         '--production-timeout-sec',
         str(settings['production_timeout_sec']),
         '--launch-wait-sec',
@@ -751,11 +806,11 @@ def build_production_child_command(settings: dict, child_run_id: str) -> list[st
     ]
 
 
-def start_detached_production(settings: dict, run_id: str, logger: logging.Logger) -> tuple[dict, dict]:
+def start_detached_production(settings: dict, run_id: str, production_step: dict, logger: logging.Logger) -> tuple[dict, dict]:
     child_run_id = f'{run_id}_production'
     child_log_path = RESULTS_DIR / f'{child_run_id}.log'
     child_summary_path = RESULTS_DIR / f'{child_run_id}-summary.json'
-    child_command = build_production_child_command(settings, child_run_id)
+    child_command = build_production_child_command(settings, child_run_id, production_step)
     child_env = os.environ.copy()
     child_env['TV_CDP_HOST'] = settings['host']
     child_env['TV_CDP_PORT'] = str(settings['port'])
@@ -789,7 +844,7 @@ def start_detached_production(settings: dict, run_id: str, logger: logging.Logge
         'pid': process.pid,
         'log_path': relative_path(child_log_path),
         'summary_path': relative_path(child_summary_path),
-        'production_command': child_command,
+        'production_command': production_step['command'],
         'started_at': datetime.now(timezone.utc).isoformat(),
     }
     write_detached_state(settings['detached_state_file'], state)
@@ -815,25 +870,28 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str) -> t
         steps.append(make_step_result('startup-check', ['GET', startup_url], success=True, skipped=True))
         steps.append(make_step_result('launch', build_shortcut_launch_command(settings), success=True, skipped=True))
         steps.append(make_step_result('preflight', ['GET', preflight_url], success=True, skipped=True))
+        smoke_step = build_runtime_step(settings, 'smoke')
         smoke_result = run_process(
-            build_cli_command(settings['node_bin'], settings['smoke_cli']),
-            [],
+            smoke_step['command'],
+            smoke_step['checkpoint_roots'],
             settings['smoke_timeout_sec'],
             True,
             logger,
-            env_overrides={'TV_CDP_HOST': settings['host'], 'TV_CDP_PORT': str(settings['port'])},
+            env_overrides=smoke_step['env_overrides'],
         )
         steps.append({**smoke_result, 'name': 'smoke'})
         if settings['detach_after_smoke']:
-            steps.append(make_step_result('detach-production', build_production_child_command(settings, f'{run_id}_production'), success=True, skipped=True))
+            production_step = build_runtime_step(settings, 'production')
+            steps.append(make_step_result('detach-production', build_production_child_command(settings, f'{run_id}_production', production_step), success=True, skipped=True))
         else:
+            production_step = build_runtime_step(settings, 'production')
             production_result = run_process(
-                build_cli_command(settings['node_bin'], settings['production_cli']),
-                [],
+                production_step['command'],
+                production_step['checkpoint_roots'],
                 settings['production_timeout_sec'],
                 True,
                 logger,
-                env_overrides={'TV_CDP_HOST': settings['host'], 'TV_CDP_PORT': str(settings['port'])},
+                env_overrides=production_step['env_overrides'],
             )
             steps.append({**production_result, 'name': 'production'})
         return 0, steps
@@ -893,31 +951,32 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str) -> t
         steps.append(make_step_result('preflight', ['GET', preflight_url], success=False, exit_code=1))
         return EXIT_PREFLIGHT_FAILED, steps
 
-    env_overrides = {'TV_CDP_HOST': settings['host'], 'TV_CDP_PORT': str(settings['port'])}
+    smoke_step = build_runtime_step(settings, 'smoke')
     smoke_result = run_process(
-        build_cli_command(settings['node_bin'], settings['smoke_cli']),
-        [],
+        smoke_step['command'],
+        smoke_step['checkpoint_roots'],
         settings['smoke_timeout_sec'],
         False,
         logger,
-        env_overrides=env_overrides,
+        env_overrides=smoke_step['env_overrides'],
     )
     steps.append({**smoke_result, 'name': 'smoke'})
     if not smoke_result['success']:
         return EXIT_STEP_FAILED, steps
 
+    production_step = build_runtime_step(settings, 'production')
     if settings['detach_after_smoke']:
-        detach_result, _ = start_detached_production(settings, run_id, logger)
+        detach_result, _ = start_detached_production(settings, run_id, production_step, logger)
         steps.append(detach_result)
         return (0 if detach_result['success'] else EXIT_STEP_FAILED), steps
 
     production_result = run_process(
-        build_cli_command(settings['node_bin'], settings['production_cli']),
-        [],
+        production_step['command'],
+        production_step['checkpoint_roots'],
         settings['production_timeout_sec'],
         False,
         logger,
-        env_overrides=env_overrides,
+        env_overrides=production_step['env_overrides'],
     )
     steps.append({**production_result, 'name': 'production'})
     return 0 if production_result['success'] else EXIT_STEP_FAILED, steps
@@ -943,14 +1002,22 @@ def execute_production_child(args, logger: logging.Logger) -> tuple[int, list[di
         )
         return EXIT_PREFLIGHT_FAILED, steps
 
-    env_overrides = {'TV_CDP_HOST': args.host, 'TV_CDP_PORT': str(args.port)}
+    production_command = json.loads(args.production_command_json)
+    if not isinstance(production_command, list) or not all(isinstance(item, str) for item in production_command):
+        raise ValueError('production-child requires --production-command-json to decode to a string array')
+    production_env = json.loads(args.production_env_json)
+    if not isinstance(production_env, dict):
+        raise ValueError('production-child requires --production-env-json to decode to an object')
+    checkpoint_roots_raw = json.loads(args.production_checkpoint_roots_json)
+    if not isinstance(checkpoint_roots_raw, list) or not all(isinstance(item, str) for item in checkpoint_roots_raw):
+        raise ValueError('production-child requires --production-checkpoint-roots-json to decode to a string array')
     production_result = run_process(
-        build_cli_command(args.node_bin, args.production_cli),
-        [],
+        production_command,
+        [Path(item) for item in checkpoint_roots_raw],
         args.production_timeout_sec,
         args.dry_run,
         logger,
-        env_overrides=env_overrides,
+        env_overrides=production_env,
     )
     steps.append({**production_result, 'name': 'production'})
     state_path = resolve_project_path(args.detached_state_file) or (PROJECT_ROOT / DEFAULT_DETACHED_STATE_FILE)

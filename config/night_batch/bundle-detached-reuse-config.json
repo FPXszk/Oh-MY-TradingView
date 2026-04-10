@@ -1,0 +1,20 @@
+{
+  "runtime": {
+    "host": "172.31.144.1",
+    "port": 9223,
+    "startup_check_host": "127.0.0.1",
+    "startup_check_port": 9222,
+    "launch_wait_sec": 25,
+    "detach_after_smoke": true,
+    "detached_state_file": "results/night-batch/bundle-detached-reuse-state.json"
+  },
+  "launch": {
+    "shortcut_path": "C:\\TradingView\\TradingView.exe - ショートカット.lnk"
+  },
+  "bundle": {
+    "us_campaign": "next-long-run-us-finetune-100x10",
+    "jp_campaign": "next-long-run-jp-finetune-100x10",
+    "smoke_phases": "smoke",
+    "production_phases": "full"
+  }
+}

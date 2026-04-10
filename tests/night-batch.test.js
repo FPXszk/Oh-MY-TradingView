@@ -568,4 +568,114 @@ exit 0
     const guardStep = summary.steps.find((step) => step.name === 'active-detached-run-guard');
     assert.equal(guardStep.success, false);
   });
+
+  it('smoke-prod can reuse existing fine-tune bundle campaigns from JSON without duplicating strategy IDs', async () => {
+    const fakeNodePath = join(tempDir, 'fake-node.sh');
+    const fakeNodeLog = join(tempDir, 'fake-node.log');
+    const configPath = join(tempDir, 'bundle.json');
+    writeExecutable(
+      fakeNodePath,
+      `#!/bin/sh
+printf '%s\n' "$*" >> "${fakeNodeLog}"
+exit 0
+`,
+    );
+    writeFileSync(
+      configPath,
+      JSON.stringify({
+        runtime: {
+          host: '127.0.0.1',
+          port,
+          startup_check_host: '127.0.0.1',
+          startup_check_port: port,
+          detach_after_smoke: false,
+        },
+        bundle: {
+          us_campaign: 'next-long-run-us-finetune-100x10',
+          jp_campaign: 'next-long-run-jp-finetune-100x10',
+          smoke_phases: 'smoke',
+          production_phases: 'full',
+        },
+      }),
+      'utf8',
+    );
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--config',
+      configPath,
+      '--node-bin',
+      fakeNodePath,
+    ]);
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    const loggedCommands = readFileSync(fakeNodeLog, 'utf8').trim().split('\n');
+    assert.match(loggedCommands[0], /run-finetune-bundle\.mjs/);
+    assert.match(loggedCommands[0], /--phases smoke/);
+    assert.match(loggedCommands[0], /next-long-run-us-finetune-100x10/);
+    assert.match(loggedCommands[0], /next-long-run-jp-finetune-100x10/);
+    assert.match(loggedCommands[1], /run-finetune-bundle\.mjs/);
+    assert.match(loggedCommands[1], /--phases full/);
+  });
+
+  it('smoke-prod can detach the full bundle phase after a smoke bundle gate', async () => {
+    const fakeNodePath = join(tempDir, 'fake-node.sh');
+    const fakeNodeLog = join(tempDir, 'fake-node.log');
+    const detachedStateFile = join(tempDir, 'bundle-detached-state.json');
+    const configPath = join(tempDir, 'bundle.json');
+    writeExecutable(
+      fakeNodePath,
+      `#!/bin/sh
+printf '%s\n' "$*" >> "${fakeNodeLog}"
+case "$*" in
+  *"--phases full"*)
+    sleep 2
+    ;;
+esac
+exit 0
+`,
+    );
+    writeFileSync(
+      configPath,
+      JSON.stringify({
+        runtime: {
+          host: '127.0.0.1',
+          port,
+          startup_check_host: '127.0.0.1',
+          startup_check_port: port,
+          detach_after_smoke: true,
+          detached_state_file: detachedStateFile,
+        },
+        bundle: {
+          us_campaign: 'next-long-run-us-finetune-100x10',
+          jp_campaign: 'next-long-run-jp-finetune-100x10',
+          smoke_phases: 'smoke',
+          production_phases: 'full',
+        },
+      }),
+      'utf8',
+    );
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--config',
+      configPath,
+      '--node-bin',
+      fakeNodePath,
+    ]);
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    await waitFor(() => existsSync(detachedStateFile));
+    await waitFor(() => readFileSync(fakeNodeLog, 'utf8').includes('--phases full'));
+
+    const summary = readSummaryFromResult(result);
+    const detachStep = summary.steps.find((step) => step.name === 'detach-production');
+    assert.equal(detachStep.success, true);
+
+    const detachedState = JSON.parse(readFileSync(detachedStateFile, 'utf8'));
+    assert.match(detachedState.production_command.join(' '), /run-finetune-bundle\.mjs/);
+    assert.match(detachedState.production_command.join(' '), /--phases full/);
+  });
 });
