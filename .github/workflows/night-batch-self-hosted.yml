@@ -22,7 +22,7 @@ jobs:
 
       - name: Evaluate schedule freshness
         id: freshness
-        shell: powershell
+        shell: powershell -NoProfile -ExecutionPolicy Bypass -command ". '{0}'"
         run: |
           $shouldRun = 'true'
           if ('${{ github.event_name }}' -eq 'schedule') {
@@ -66,5 +66,5 @@ jobs:
 
       - name: Report skipped stale schedule
         if: steps.freshness.outputs.should_run != 'true'
-        shell: powershell
+        shell: powershell -NoProfile -ExecutionPolicy Bypass -command ". '{0}'"
         run: Write-Host 'Skipped stale scheduled run outside the 00:00 JST launch window.'
