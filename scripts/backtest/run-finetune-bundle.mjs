@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import { execFile } from 'node:child_process';
-import { readdir } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
@@ -79,26 +78,6 @@ async function runCampaignPhase({ campaignId, phase, host, ports, dryRun, resume
   return runNode(args);
 }
 
-async function findLatestCheckpoint(campaignId, phase) {
-  const outDir = join(PROJECT_ROOT, 'results', 'campaigns', campaignId, phase);
-  let files;
-  try {
-    files = await readdir(outDir);
-  } catch {
-    return null;
-  }
-
-  const checkpoints = files
-    .filter((file) => file.startsWith('checkpoint-') && file.endsWith('.json'))
-    .sort((left, right) => {
-      const leftNumber = Number(left.replace('checkpoint-', '').replace('.json', ''));
-      const rightNumber = Number(right.replace('checkpoint-', '').replace('.json', ''));
-      return rightNumber - leftNumber;
-    });
-
-  return checkpoints.length > 0 ? join(outDir, checkpoints[0]) : null;
-}
-
 async function main() {
   const { values } = parseArgs({
     args: process.argv.slice(2),
@@ -151,24 +130,14 @@ async function main() {
         dryRun: values['dry-run'],
       });
 
-      if (!result.success && activePorts.length > 1) {
-        process.stdout.write(`Primary run failed for ${campaignId} (${phase}); retrying with fallback port ${fallbackPort}\n`);
-        const resume = values['dry-run'] ? null : await findLatestCheckpoint(campaignId, phase);
-        result = await runCampaignPhase({
-          campaignId,
-          phase,
-          host,
-          ports: [fallbackPort],
-          dryRun: values['dry-run'],
-          ...(resume ? { resume } : {}),
-        });
-      }
-
       process.stdout.write(result.stdout);
       if (result.stderr) {
         process.stderr.write(result.stderr);
       }
       if (!result.success) {
+        if (activePorts.length > 1) {
+          throw new Error(`Campaign failed: ${campaignId} (${phase}). Rerun manually with --ports ${fallbackPort} if you need fallback execution.`);
+        }
         throw new Error(`Campaign failed: ${campaignId} (${phase})`);
       }
     }

@@ -1329,4 +1329,14 @@ describe('run-finetune-bundle default policy', () => {
     );
     assert.ok(raw.includes("'fallback-port': { type: 'string', default: '9223' }"));
   });
+
+  it('does not auto-retry with fallback after multi-port failure', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'scripts', 'backtest', 'run-finetune-bundle.mjs'),
+      'utf8',
+    );
+    assert.ok(!raw.includes('retrying with fallback port'));
+    assert.ok(!raw.includes('findLatestCheckpoint('));
+    assert.ok(raw.includes('Rerun manually with --ports'));
+  });
 });

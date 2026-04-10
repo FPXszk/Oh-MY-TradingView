@@ -402,6 +402,7 @@ node scripts/backtest/run-finetune-bundle.mjs --phases smoke --host 172.31.144.1
 node scripts/backtest/run-finetune-bundle.mjs --phases full --host 172.31.144.1
 
 # 9225 不調時の 9223 fallback（手動切替）
+# stale checkpoint の自動再利用はしないため、fallback は明示 rerun
 node scripts/backtest/run-finetune-bundle.mjs --phases smoke,full --host 172.31.144.1 --ports 9223 --fallback-port 9223
 
 # parallel opt-in（明確な必要性がある場合のみ）
@@ -412,7 +413,7 @@ node scripts/backtest/run-long-campaign.mjs next-long-run-us-finetune-100x10 --p
 node scripts/backtest/run-long-campaign.mjs next-long-run-jp-finetune-100x10 --phase smoke --dry-run
 ```
 
-fine-tune bundle は `next-long-run-us-finetune-100x10` / `next-long-run-jp-finetune-100x10` を順に流す。既定は **Session1 visible (9225) 単独 / sequential / smoke → full**。full は US `1000 runs` + JP `1000 runs` の合計 `2000 runs`。`pilot` は互換目的で残っているが、標準フローからは外れている。parallel 実行は `--ports 9223,9225` で明示的に opt-in する。
+fine-tune bundle は `next-long-run-us-finetune-100x10` / `next-long-run-jp-finetune-100x10` を順に流す。既定は **Session1 visible (9225) 単独 / sequential / smoke → full**。full は US `1000 runs` + JP `1000 runs` の合計 `2000 runs`。`pilot` は互換目的で残っているが、標準フローからは外れている。parallel 実行は `--ports 9223,9225` で明示的に opt-in するが、失敗時の `9223` fallback は **自動 resume せず手動 rerun** とする。
 
 ### latest rich result regeneration
 

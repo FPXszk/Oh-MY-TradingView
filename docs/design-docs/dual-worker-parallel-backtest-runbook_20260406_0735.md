@@ -327,7 +327,7 @@ round8 の `204 run` workload を `worker1=Mag7 84 run` / `worker2=alt 120 run` 
 | 実行モード | sequential（単一 worker） | parallel（dual-worker） |
 | 既定ポート | `9225`（Session1 visible） | `9223,9225` |
 | 既定 phases | `smoke → full` | `smoke → pilot → full` |
-| fallback | `9223`（必要時のみ手動切替） | 自動 fallback |
+| fallback | `9223`（必要時のみ手動切替、auto-resume なし） | 自動 fallback |
 | resume | 同一 phase checkpoint のみ | 同一 phase checkpoint のみ |
 
 ### Parallel opt-in
