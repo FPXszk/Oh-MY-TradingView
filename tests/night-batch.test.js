@@ -52,6 +52,17 @@ function writeExecutable(filePath, content) {
   chmodSync(filePath, 0o755);
 }
 
+async function waitFor(check, timeoutMs = 4000, intervalMs = 100) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() <= deadline) {
+    if (check()) {
+      return;
+    }
+    await new Promise((resolve) => setTimeout(resolve, intervalMs));
+  }
+  assert.fail('timed out waiting for condition');
+}
+
 describe('night_batch.py CLI', () => {
   let server = null;
   let port = null;
@@ -312,5 +323,249 @@ exit 0
     const productionStep = summary.steps.find((step) => step.name === 'production');
     assert.equal(smokeStep.success, false);
     assert.equal(productionStep, undefined);
+  });
+
+  it('smoke-prod reads smoke and production commands from a JSON config', async () => {
+    const fakeNodePath = join(tempDir, 'fake-node.sh');
+    const fakeNodeLog = join(tempDir, 'fake-node.log');
+    const configPath = join(tempDir, 'nightly.json');
+    writeExecutable(
+      fakeNodePath,
+      `#!/bin/sh
+printf '%s\n' "$*" >> "${fakeNodeLog}"
+exit 0
+`,
+    );
+    writeFileSync(
+      configPath,
+      JSON.stringify({
+        runtime: {
+          host: '127.0.0.1',
+          port,
+          startup_check_host: '127.0.0.1',
+          startup_check_port: port,
+          detach_after_smoke: false,
+        },
+        strategies: {
+          smoke: { cli: 'backtest nvda-ma' },
+          production: { cli: 'backtest preset rsi-mean-reversion --symbol NVDA' },
+        },
+      }),
+      'utf8',
+    );
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--config',
+      configPath,
+      '--node-bin',
+      fakeNodePath,
+    ]);
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    const loggedCommands = readFileSync(fakeNodeLog, 'utf8').trim().split('\n');
+    assert.match(loggedCommands[0], /backtest nvda-ma/);
+    assert.match(loggedCommands[1], /rsi-mean-reversion/);
+  });
+
+  it('smoke-prod lets CLI smoke-cli override the JSON config value', async () => {
+    const fakeNodePath = join(tempDir, 'fake-node.sh');
+    const fakeNodeLog = join(tempDir, 'fake-node.log');
+    const configPath = join(tempDir, 'nightly.json');
+    writeExecutable(
+      fakeNodePath,
+      `#!/bin/sh
+printf '%s\n' "$*" >> "${fakeNodeLog}"
+exit 0
+`,
+    );
+    writeFileSync(
+      configPath,
+      JSON.stringify({
+        runtime: {
+          host: '127.0.0.1',
+          port,
+          startup_check_host: '127.0.0.1',
+          startup_check_port: port,
+          detach_after_smoke: false,
+        },
+        strategies: {
+          smoke: { cli: 'backtest preset ema-cross-9-21 --symbol NVDA' },
+          production: { cli: 'backtest preset rsi-mean-reversion --symbol NVDA' },
+        },
+      }),
+      'utf8',
+    );
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--config',
+      configPath,
+      '--smoke-cli',
+      'backtest nvda-ma',
+      '--node-bin',
+      fakeNodePath,
+    ]);
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    const loggedCommands = readFileSync(fakeNodeLog, 'utf8').trim().split('\n');
+    assert.match(loggedCommands[0], /backtest nvda-ma/);
+    assert.doesNotMatch(loggedCommands[0], /ema-cross-9-21/);
+  });
+
+  it('smoke-prod detaches production after smoke when config enables it', async () => {
+    const fakeNodePath = join(tempDir, 'fake-node.sh');
+    const fakeNodeLog = join(tempDir, 'fake-node.log');
+    const detachedStateFile = join(tempDir, 'detached-state.json');
+    const configPath = join(tempDir, 'nightly.json');
+    writeExecutable(
+      fakeNodePath,
+      `#!/bin/sh
+printf '%s\n' "$*" >> "${fakeNodeLog}"
+case "$*" in
+  *"rsi-mean-reversion"*)
+    sleep 2
+    ;;
+esac
+exit 0
+`,
+    );
+    writeFileSync(
+      configPath,
+      JSON.stringify({
+        runtime: {
+          host: '127.0.0.1',
+          port,
+          startup_check_host: '127.0.0.1',
+          startup_check_port: port,
+          detach_after_smoke: true,
+          detached_state_file: detachedStateFile,
+        },
+        strategies: {
+          smoke: { cli: 'backtest nvda-ma' },
+          production: { cli: 'backtest preset rsi-mean-reversion --symbol NVDA' },
+        },
+      }),
+      'utf8',
+    );
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--config',
+      configPath,
+      '--node-bin',
+      fakeNodePath,
+    ]);
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    await waitFor(() => existsSync(detachedStateFile));
+    await waitFor(() => readFileSync(fakeNodeLog, 'utf8').includes('rsi-mean-reversion'));
+
+    const summary = readSummaryFromResult(result);
+    const detachStep = summary.steps.find((step) => step.name === 'detach-production');
+    const productionStep = summary.steps.find((step) => step.name === 'production');
+    assert.equal(detachStep.success, true);
+    assert.equal(productionStep, undefined);
+
+    const detachedState = JSON.parse(readFileSync(detachedStateFile, 'utf8'));
+    assert.equal(typeof detachedState.pid, 'number');
+    assert.match(detachedState.production_command.join(' '), /rsi-mean-reversion/);
+  });
+
+  it('smoke-prod accepts a Windows-style backslash config path', async () => {
+    const fakeNodePath = join(tempDir, 'fake-node.sh');
+    const configPath = join(tempDir, 'nightly.json');
+    writeExecutable(
+      fakeNodePath,
+      `#!/bin/sh
+exit 0
+`,
+    );
+    writeFileSync(
+      configPath,
+      JSON.stringify({
+        runtime: {
+          host: '127.0.0.1',
+          port,
+          startup_check_host: '127.0.0.1',
+          startup_check_port: port,
+          detach_after_smoke: false,
+        },
+        strategies: {
+          smoke: { cli: 'backtest nvda-ma' },
+          production: { cli: 'backtest preset rsi-mean-reversion --symbol NVDA' },
+        },
+      }),
+      'utf8',
+    );
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--config',
+      configPath.replaceAll('/', '\\'),
+      '--node-bin',
+      fakeNodePath,
+    ]);
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+  });
+
+  it('smoke-prod refuses to start a detached run when another detached run is still active', async () => {
+    const configPath = join(tempDir, 'nightly.json');
+    const detachedStateFile = join(tempDir, 'detached-state.json');
+    writeFileSync(
+      detachedStateFile,
+      JSON.stringify({
+        status: 'running',
+        pid: process.pid,
+      }),
+      'utf8',
+    );
+    writeFileSync(
+      configPath,
+      JSON.stringify({
+        runtime: {
+          host: '127.0.0.1',
+          port,
+          startup_check_host: '127.0.0.1',
+          startup_check_port: port,
+          detach_after_smoke: true,
+          detached_state_file: detachedStateFile,
+        },
+        strategies: {
+          smoke: { cli: 'backtest nvda-ma' },
+          production: { cli: 'backtest preset rsi-mean-reversion --symbol NVDA' },
+        },
+      }),
+      'utf8',
+    );
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--config',
+      configPath,
+      '--dry-run',
+    ]);
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+
+    const liveResult = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--config',
+      configPath,
+    ]);
+
+    assert.equal(liveResult.status, 2, liveResult.stderr || liveResult.stdout);
+    assert.match(liveResult.stdout, /Detached production already running/);
+
+    const summary = readSummaryFromResult(liveResult);
+    const guardStep = summary.steps.find((step) => step.name === 'active-detached-run-guard');
+    assert.equal(guardStep.success, false);
   });
 });

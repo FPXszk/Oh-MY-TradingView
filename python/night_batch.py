@@ -31,6 +31,7 @@ DEFAULT_US_CAMPAIGN = 'next-long-run-us-finetune-100x10'
 DEFAULT_JP_CAMPAIGN = 'next-long-run-jp-finetune-100x10'
 DEFAULT_SMOKE_CLI = 'backtest preset ema-cross-9-21 --symbol NVDA --date-from 2024-01-01 --date-to 2024-12-31'
 DEFAULT_PRODUCTION_CLI = 'backtest preset ema-cross-9-21 --symbol NVDA --date-from 2000-01-01 --date-to 2099-12-31'
+DEFAULT_DETACHED_STATE_FILE = 'results/night-batch/detached-production-state.json'
 EXIT_PREFLIGHT_FAILED = 1
 EXIT_STEP_FAILED = 2
 
@@ -41,6 +42,18 @@ def utc_run_id() -> str:
 
 def ensure_results_dir() -> None:
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def resolve_project_path(path_value: str | None) -> Path | None:
+    if path_value is None:
+        return None
+    normalized = path_value
+    if '\\' in normalized and ':' not in normalized:
+        normalized = normalized.replace('\\', '/')
+    path = Path(normalized)
+    if path.is_absolute():
+        return path
+    return PROJECT_ROOT / path
 
 
 def configure_logger(run_id: str) -> tuple[logging.Logger, Path]:
@@ -71,6 +84,7 @@ def build_parser() -> argparse.ArgumentParser:
     common.add_argument('--port', type=int, default=DEFAULT_PORT)
     common.add_argument('--timeout', type=int, default=DEFAULT_TIMEOUT)
     common.add_argument('--dry-run', action='store_true')
+    common.add_argument('--run-id', default=None, help=argparse.SUPPRESS)
 
     parser = argparse.ArgumentParser(
         description='WSL-first orchestrator for TradingView backtest night runs.',
@@ -124,6 +138,21 @@ def build_parser() -> argparse.ArgumentParser:
     smoke_prod.add_argument('--launch-wait-sec', type=int, default=DEFAULT_LAUNCH_WAIT_SEC)
     smoke_prod.add_argument('--smoke-cli', default=DEFAULT_SMOKE_CLI)
     smoke_prod.add_argument('--production-cli', default=DEFAULT_PRODUCTION_CLI)
+    smoke_prod.add_argument('--config')
+    smoke_prod.add_argument('--detach-after-smoke', action='store_true')
+    smoke_prod.add_argument('--detached-state-file', default=DEFAULT_DETACHED_STATE_FILE)
+    smoke_prod.add_argument('--smoke-timeout-sec', type=int)
+    smoke_prod.add_argument('--production-timeout-sec', type=int)
+
+    production_child = subparsers.add_parser(
+        'production-child',
+        help=argparse.SUPPRESS,
+        parents=[common],
+    )
+    production_child.add_argument('--production-cli', default=DEFAULT_PRODUCTION_CLI)
+    production_child.add_argument('--production-timeout-sec', type=int, default=0)
+    production_child.add_argument('--launch-wait-sec', type=int, default=DEFAULT_LAUNCH_WAIT_SEC)
+    production_child.add_argument('--detached-state-file', default=DEFAULT_DETACHED_STATE_FILE)
 
     return parser
 
@@ -172,6 +201,228 @@ def relative_path(path: Path) -> str:
         return str(path.relative_to(PROJECT_ROOT))
     except ValueError:
         return str(path)
+
+
+def option_was_provided(raw_args: list[str], option_name: str) -> bool:
+    prefix = f'{option_name}='
+    return option_name in raw_args or any(arg.startswith(prefix) for arg in raw_args)
+
+
+def read_json_file(path: Path) -> dict:
+    try:
+        payload = json.loads(path.read_text(encoding='utf-8'))
+    except FileNotFoundError as error:
+        raise ValueError(f'Config file not found: {path}') from error
+    except json.JSONDecodeError as error:
+        raise ValueError(f'Config file is not valid JSON: {path}: {error}') from error
+    if not isinstance(payload, dict):
+        raise ValueError(f'Config file must contain a top-level object: {path}')
+    return payload
+
+
+def read_detached_state(state_path: Path) -> dict | None:
+    if not state_path.exists():
+        return None
+    return read_json_file(state_path)
+
+
+def process_is_running(pid: int) -> bool:
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return True
+
+
+def assert_no_active_detached_run(state_path: Path) -> None:
+    state = read_detached_state(state_path)
+    if not state or state.get('status') != 'running':
+        return
+    pid = state.get('pid')
+    if not isinstance(pid, int):
+        raise RuntimeError(f'Detached state file has invalid pid: {state_path}')
+    if process_is_running(pid):
+        raise RuntimeError(
+            f'Detached production already running with pid {pid}: {state_path}'
+        )
+
+
+def read_config_section(config: dict, key: str) -> dict:
+    value = config.get(key)
+    if value is None:
+        return {}
+    if not isinstance(value, dict):
+        raise ValueError(f'Config section "{key}" must be an object')
+    return value
+
+
+def resolve_option(
+    raw_args: list[str],
+    option_name: str,
+    parsed_value,
+    config_value,
+    default_value,
+):
+    if option_was_provided(raw_args, option_name):
+        return parsed_value
+    if config_value is not None:
+        return config_value
+    return default_value
+
+
+def resolve_bool_option(
+    raw_args: list[str],
+    option_name: str,
+    parsed_value: bool,
+    config_value,
+    default_value: bool,
+) -> bool:
+    if option_was_provided(raw_args, option_name):
+        return parsed_value
+    if config_value is None:
+        return default_value
+    if not isinstance(config_value, bool):
+        raise ValueError(f'Config value for "{option_name}" must be a boolean')
+    return config_value
+
+
+def resolve_int_option(
+    raw_args: list[str],
+    option_name: str,
+    parsed_value,
+    config_value,
+    default_value: int,
+) -> int:
+    value = resolve_option(raw_args, option_name, parsed_value, config_value, default_value)
+    try:
+        return int(value)
+    except (TypeError, ValueError) as error:
+        raise ValueError(f'Config value for "{option_name}" must be an integer') from error
+
+
+def load_smoke_prod_settings(args, raw_args: list[str]) -> dict:
+    config = {}
+    config_path = resolve_project_path(getattr(args, 'config', None))
+    if config_path:
+        config = read_json_file(config_path)
+
+    runtime = read_config_section(config, 'runtime')
+    launch = read_config_section(config, 'launch')
+    strategies = read_config_section(config, 'strategies')
+    smoke = read_config_section(strategies, 'smoke')
+    production = read_config_section(strategies, 'production')
+
+    host = resolve_option(raw_args, '--host', args.host, runtime.get('host'), DEFAULT_HOST)
+    port = resolve_int_option(raw_args, '--port', args.port, runtime.get('port'), DEFAULT_PORT)
+    startup_check_host = resolve_option(
+        raw_args,
+        '--startup-check-host',
+        args.startup_check_host,
+        runtime.get('startup_check_host'),
+        DEFAULT_STARTUP_CHECK_HOST,
+    )
+    startup_check_port = resolve_int_option(
+        raw_args,
+        '--startup-check-port',
+        args.startup_check_port,
+        runtime.get('startup_check_port'),
+        DEFAULT_STARTUP_CHECK_PORT,
+    )
+    shortcut_path = resolve_option(
+        raw_args,
+        '--shortcut-path',
+        args.shortcut_path,
+        launch.get('shortcut_path'),
+        DEFAULT_SHORTCUT_PATH,
+    )
+    launch_command = resolve_option(
+        raw_args,
+        '--launch-command',
+        args.launch_command,
+        launch.get('launch_command'),
+        None,
+    )
+    launch_wait_sec = resolve_int_option(
+        raw_args,
+        '--launch-wait-sec',
+        args.launch_wait_sec,
+        runtime.get('launch_wait_sec'),
+        DEFAULT_LAUNCH_WAIT_SEC,
+    )
+    smoke_cli = resolve_option(
+        raw_args,
+        '--smoke-cli',
+        args.smoke_cli,
+        smoke.get('cli'),
+        DEFAULT_SMOKE_CLI,
+    )
+    production_cli = resolve_option(
+        raw_args,
+        '--production-cli',
+        args.production_cli,
+        production.get('cli'),
+        DEFAULT_PRODUCTION_CLI,
+    )
+    node_bin = resolve_option(
+        raw_args,
+        '--node-bin',
+        args.node_bin,
+        runtime.get('node_bin'),
+        os.environ.get('NODE_BIN', 'node'),
+    )
+    detach_after_smoke = resolve_bool_option(
+        raw_args,
+        '--detach-after-smoke',
+        args.detach_after_smoke,
+        runtime.get('detach_after_smoke'),
+        False,
+    )
+    detached_state_file = resolve_project_path(
+        resolve_option(
+            raw_args,
+            '--detached-state-file',
+            args.detached_state_file,
+            runtime.get('detached_state_file'),
+            DEFAULT_DETACHED_STATE_FILE,
+        )
+    )
+    smoke_timeout_sec = resolve_int_option(
+        raw_args,
+        '--smoke-timeout-sec',
+        args.smoke_timeout_sec,
+        runtime.get('smoke_timeout_sec'),
+        args.timeout,
+    )
+    default_production_timeout = 0 if detach_after_smoke else args.timeout
+    production_timeout_sec = resolve_int_option(
+        raw_args,
+        '--production-timeout-sec',
+        args.production_timeout_sec,
+        runtime.get('production_timeout_sec'),
+        default_production_timeout,
+    )
+
+    return {
+        'config_path': config_path,
+        'node_bin': node_bin,
+        'host': host,
+        'port': port,
+        'startup_check_host': startup_check_host,
+        'startup_check_port': startup_check_port,
+        'shortcut_path': shortcut_path,
+        'launch_command': launch_command,
+        'launch_wait_sec': launch_wait_sec,
+        'smoke_cli': smoke_cli,
+        'production_cli': production_cli,
+        'detach_after_smoke': detach_after_smoke,
+        'detached_state_file': detached_state_file,
+        'smoke_timeout_sec': smoke_timeout_sec,
+        'production_timeout_sec': production_timeout_sec,
+        'dry_run': args.dry_run,
+        'timeout': args.timeout,
+    }
 
 
 def find_latest_checkpoint(paths: list[Path]) -> Path | None:
@@ -256,7 +507,7 @@ def run_process(
     timed_out = False
 
     while process.poll() is None:
-        if time.monotonic() - started > timeout_sec:
+        if timeout_sec > 0 and time.monotonic() - started > timeout_sec:
             timed_out = True
             logger.error('Timeout exceeded (%ss). Terminating process.', timeout_sec)
             process.terminate()
@@ -437,9 +688,9 @@ def make_step_result(
 
 
 def build_shortcut_launch_command(args) -> list[str]:
-    if args.launch_command:
-        return shlex.split(args.launch_command)
-    escaped_shortcut_path = args.shortcut_path.replace("'", "''")
+    if args['launch_command']:
+        return shlex.split(args['launch_command'])
+    escaped_shortcut_path = args['shortcut_path'].replace("'", "''")
     return [
         'powershell.exe',
         '-NoProfile',
@@ -471,42 +722,151 @@ def wait_for_visible_session(host: str, port: int, timeout_sec: int, logger: log
     ) from last_error
 
 
-def execute_smoke_prod(args, logger: logging.Logger) -> tuple[int, list[dict]]:
-    steps: list[dict] = []
-    startup_url = f'http://{args.startup_check_host}:{args.startup_check_port}/json/list'
-    preflight_url = f'http://{args.host}:{args.port}/json/list'
+def write_detached_state(state_path: Path, payload: dict) -> None:
+    state_path.parent.mkdir(parents=True, exist_ok=True)
+    state_path.write_text(f'{json.dumps(payload, indent=2, ensure_ascii=False)}\n', encoding='utf-8')
 
-    if args.dry_run:
+
+def build_production_child_command(settings: dict, child_run_id: str) -> list[str]:
+    return [
+        sys.executable,
+        str(Path(__file__).resolve()),
+        'production-child',
+        '--host',
+        settings['host'],
+        '--port',
+        str(settings['port']),
+        '--node-bin',
+        settings['node_bin'],
+        '--production-cli',
+        settings['production_cli'],
+        '--production-timeout-sec',
+        str(settings['production_timeout_sec']),
+        '--launch-wait-sec',
+        str(settings['launch_wait_sec']),
+        '--detached-state-file',
+        str(settings['detached_state_file']),
+        '--run-id',
+        child_run_id,
+    ]
+
+
+def start_detached_production(settings: dict, run_id: str, logger: logging.Logger) -> tuple[dict, dict]:
+    child_run_id = f'{run_id}_production'
+    child_log_path = RESULTS_DIR / f'{child_run_id}.log'
+    child_summary_path = RESULTS_DIR / f'{child_run_id}-summary.json'
+    child_command = build_production_child_command(settings, child_run_id)
+    child_env = os.environ.copy()
+    child_env['TV_CDP_HOST'] = settings['host']
+    child_env['TV_CDP_PORT'] = str(settings['port'])
+    with child_log_path.open('a', encoding='utf-8') as child_log:
+        process = subprocess.Popen(
+            child_command,
+            cwd=PROJECT_ROOT,
+            stdout=child_log,
+            stderr=subprocess.STDOUT,
+            stdin=subprocess.DEVNULL,
+            env=child_env,
+            start_new_session=True,
+            text=True,
+        )
+    time.sleep(1)
+    if process.poll() is not None:
+        return (
+            make_step_result(
+                'detach-production',
+                child_command,
+                success=False,
+                exit_code=process.returncode or 1,
+            ),
+            {},
+        )
+
+    state = {
+        'status': 'running',
+        'parent_run_id': run_id,
+        'child_run_id': child_run_id,
+        'pid': process.pid,
+        'log_path': relative_path(child_log_path),
+        'summary_path': relative_path(child_summary_path),
+        'production_command': child_command,
+        'started_at': datetime.now(timezone.utc).isoformat(),
+    }
+    write_detached_state(settings['detached_state_file'], state)
+    logger.info('Detached production child started: pid=%s state=%s', process.pid, relative_path(settings['detached_state_file']))
+    return make_step_result('detach-production', child_command, success=True), state
+
+
+def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str) -> tuple[int, list[dict]]:
+    steps: list[dict] = []
+    startup_url = f'http://{settings["startup_check_host"]}:{settings["startup_check_port"]}/json/list'
+    preflight_url = f'http://{settings["host"]}:{settings["port"]}/json/list'
+
+    if settings['dry_run']:
+        if settings['detach_after_smoke']:
+            steps.append(
+                make_step_result(
+                    'active-detached-run-guard',
+                    ['STATE', relative_path(settings['detached_state_file'])],
+                    success=True,
+                    skipped=True,
+                )
+            )
         steps.append(make_step_result('startup-check', ['GET', startup_url], success=True, skipped=True))
-        steps.append(make_step_result('launch', build_shortcut_launch_command(args), success=True, skipped=True))
+        steps.append(make_step_result('launch', build_shortcut_launch_command(settings), success=True, skipped=True))
         steps.append(make_step_result('preflight', ['GET', preflight_url], success=True, skipped=True))
         smoke_result = run_process(
-            build_cli_command(args.node_bin, args.smoke_cli),
+            build_cli_command(settings['node_bin'], settings['smoke_cli']),
             [],
-            args.timeout,
+            settings['smoke_timeout_sec'],
             True,
             logger,
-            env_overrides={'TV_CDP_HOST': args.host, 'TV_CDP_PORT': str(args.port)},
+            env_overrides={'TV_CDP_HOST': settings['host'], 'TV_CDP_PORT': str(settings['port'])},
         )
         steps.append({**smoke_result, 'name': 'smoke'})
-        production_result = run_process(
-            build_cli_command(args.node_bin, args.production_cli),
-            [],
-            args.timeout,
-            True,
-            logger,
-            env_overrides={'TV_CDP_HOST': args.host, 'TV_CDP_PORT': str(args.port)},
-        )
-        steps.append({**production_result, 'name': 'production'})
+        if settings['detach_after_smoke']:
+            steps.append(make_step_result('detach-production', build_production_child_command(settings, f'{run_id}_production'), success=True, skipped=True))
+        else:
+            production_result = run_process(
+                build_cli_command(settings['node_bin'], settings['production_cli']),
+                [],
+                settings['production_timeout_sec'],
+                True,
+                logger,
+                env_overrides={'TV_CDP_HOST': settings['host'], 'TV_CDP_PORT': str(settings['port'])},
+            )
+            steps.append({**production_result, 'name': 'production'})
         return 0, steps
 
+    if settings['detach_after_smoke']:
+        try:
+            assert_no_active_detached_run(settings['detached_state_file'])
+            steps.append(
+                make_step_result(
+                    'active-detached-run-guard',
+                    ['STATE', relative_path(settings['detached_state_file'])],
+                    success=True,
+                )
+            )
+        except RuntimeError as error:
+            logger.error('%s', error)
+            steps.append(
+                make_step_result(
+                    'active-detached-run-guard',
+                    ['STATE', relative_path(settings['detached_state_file'])],
+                    success=False,
+                    exit_code=1,
+                )
+            )
+            return EXIT_STEP_FAILED, steps
+
     try:
-        preflight_visible_session(args.startup_check_host, args.startup_check_port, logger)
+        preflight_visible_session(settings['startup_check_host'], settings['startup_check_port'], logger)
         steps.append(make_step_result('startup-check', ['GET', startup_url], success=True))
         steps.append(
             make_step_result(
                 'launch',
-                build_shortcut_launch_command(args),
+                build_shortcut_launch_command(settings),
                 success=True,
                 skipped=True,
             )
@@ -515,9 +875,9 @@ def execute_smoke_prod(args, logger: logging.Logger) -> tuple[int, list[dict]]:
         logger.warning('Startup check did not detect a running TradingView instance: %s', startup_error)
         steps.append(make_step_result('startup-check', ['GET', startup_url], success=False, exit_code=1))
         launch_result = run_process(
-            build_shortcut_launch_command(args),
+            build_shortcut_launch_command(settings),
             [],
-            min(args.timeout, args.launch_wait_sec),
+            min(settings['timeout'], settings['launch_wait_sec']),
             False,
             logger,
         )
@@ -526,18 +886,18 @@ def execute_smoke_prod(args, logger: logging.Logger) -> tuple[int, list[dict]]:
             return EXIT_STEP_FAILED, steps
 
     try:
-        wait_for_visible_session(args.host, args.port, args.launch_wait_sec, logger)
+        wait_for_visible_session(settings['host'], settings['port'], settings['launch_wait_sec'], logger)
         steps.append(make_step_result('preflight', ['GET', preflight_url], success=True))
     except RuntimeError as error:
         logger.error('%s', error)
         steps.append(make_step_result('preflight', ['GET', preflight_url], success=False, exit_code=1))
         return EXIT_PREFLIGHT_FAILED, steps
 
-    env_overrides = {'TV_CDP_HOST': args.host, 'TV_CDP_PORT': str(args.port)}
+    env_overrides = {'TV_CDP_HOST': settings['host'], 'TV_CDP_PORT': str(settings['port'])}
     smoke_result = run_process(
-        build_cli_command(args.node_bin, args.smoke_cli),
+        build_cli_command(settings['node_bin'], settings['smoke_cli']),
         [],
-        args.timeout,
+        settings['smoke_timeout_sec'],
         False,
         logger,
         env_overrides=env_overrides,
@@ -546,16 +906,66 @@ def execute_smoke_prod(args, logger: logging.Logger) -> tuple[int, list[dict]]:
     if not smoke_result['success']:
         return EXIT_STEP_FAILED, steps
 
+    if settings['detach_after_smoke']:
+        detach_result, _ = start_detached_production(settings, run_id, logger)
+        steps.append(detach_result)
+        return (0 if detach_result['success'] else EXIT_STEP_FAILED), steps
+
     production_result = run_process(
-        build_cli_command(args.node_bin, args.production_cli),
+        build_cli_command(settings['node_bin'], settings['production_cli']),
         [],
-        args.timeout,
+        settings['production_timeout_sec'],
         False,
         logger,
         env_overrides=env_overrides,
     )
     steps.append({**production_result, 'name': 'production'})
     return 0 if production_result['success'] else EXIT_STEP_FAILED, steps
+
+
+def execute_production_child(args, logger: logging.Logger) -> tuple[int, list[dict]]:
+    steps: list[dict] = []
+    preflight_url = f'http://{args.host}:{args.port}/json/list'
+    try:
+        wait_for_visible_session(args.host, args.port, args.launch_wait_sec, logger)
+        steps.append(make_step_result('preflight', ['GET', preflight_url], success=True))
+    except RuntimeError as error:
+        logger.error('%s', error)
+        steps.append(make_step_result('preflight', ['GET', preflight_url], success=False, exit_code=1))
+        write_detached_state(
+            resolve_project_path(args.detached_state_file) or (PROJECT_ROOT / DEFAULT_DETACHED_STATE_FILE),
+            {
+                'status': 'failed',
+                'child_run_id': args.run_id,
+                'pid': os.getpid(),
+                'error': str(error),
+            },
+        )
+        return EXIT_PREFLIGHT_FAILED, steps
+
+    env_overrides = {'TV_CDP_HOST': args.host, 'TV_CDP_PORT': str(args.port)}
+    production_result = run_process(
+        build_cli_command(args.node_bin, args.production_cli),
+        [],
+        args.production_timeout_sec,
+        args.dry_run,
+        logger,
+        env_overrides=env_overrides,
+    )
+    steps.append({**production_result, 'name': 'production'})
+    state_path = resolve_project_path(args.detached_state_file) or (PROJECT_ROOT / DEFAULT_DETACHED_STATE_FILE)
+    write_detached_state(
+        state_path,
+        {
+            'status': 'completed' if production_result['success'] else 'failed',
+            'child_run_id': args.run_id,
+            'pid': os.getpid(),
+            'summary_path': relative_path(RESULTS_DIR / f'{args.run_id}-summary.json'),
+            'success': production_result['success'],
+            'finished_at': datetime.now(timezone.utc).isoformat(),
+        },
+    )
+    return (0 if production_result['success'] else EXIT_STEP_FAILED), steps
 
 
 def write_summary(run_id: str, summary: dict, logger: logging.Logger) -> tuple[Path, Path]:
@@ -604,21 +1014,23 @@ def write_summary(run_id: str, summary: dict, logger: logging.Logger) -> tuple[P
 
 def main() -> int:
     parser = build_parser()
-    args = parser.parse_args()
-    run_id = utc_run_id()
+    raw_args = sys.argv[1:]
+    args = parser.parse_args(raw_args)
+    run_id = args.run_id or utc_run_id()
     logger, log_path = configure_logger(run_id)
     logger.info('Starting %s run (log: %s)', args.command, relative_path(log_path))
 
     if args.command == 'smoke-prod':
         try:
-            exit_code, steps = execute_smoke_prod(args, logger)
+            settings = load_smoke_prod_settings(args, raw_args)
+            exit_code, steps = execute_smoke_prod(settings, logger, run_id)
         except ValueError as error:
             logger.error('%s', error)
             summary = {
                 'success': False,
                 'command': args.command,
-                'host': args.host,
-                'port': args.port,
+                'host': getattr(args, 'host', DEFAULT_HOST),
+                'port': getattr(args, 'port', DEFAULT_PORT),
                 'preflight_required': True,
                 'error': str(error),
                 'steps': [],
@@ -626,6 +1038,19 @@ def main() -> int:
             write_summary(run_id, summary, logger)
             return EXIT_STEP_FAILED
 
+        summary = {
+            'success': exit_code == 0,
+            'command': args.command,
+            'host': settings['host'],
+            'port': settings['port'],
+            'preflight_required': True,
+            'steps': steps,
+        }
+        write_summary(run_id, summary, logger)
+        return exit_code
+
+    if args.command == 'production-child':
+        exit_code, steps = execute_production_child(args, logger)
         summary = {
             'success': exit_code == 0,
             'command': args.command,

@@ -411,8 +411,16 @@ fine-tune bundle は `next-long-run-us-finetune-100x10` / `next-long-run-jp-fine
 ### Python night batch orchestration
 
 ```bash
-# startup check -> launch-if-needed -> connectivity check -> smoke 1本 -> production 1本
-python3 python/night_batch.py smoke-prod --host 172.31.144.1 --port 9223
+# JSON config を読んで startup check -> smoke -> detached production
+python3 python/night_batch.py smoke-prod --config config/night_batch/nightly.default.json
+
+# 戦略だけ一時 override したい場合
+python3 python/night_batch.py smoke-prod \
+  --config config/night_batch/nightly.default.json \
+  --smoke-cli "backtest nvda-ma"
+
+# wrapper / workflow 事前確認
+python3 python/night_batch.py smoke-prod --config config/night_batch/nightly.default.json --dry-run
 
 # fine-tune bundle の夜間実行
 python3 python/night_batch.py bundle --host 172.31.144.1 --port 9223
@@ -427,21 +435,39 @@ python3 python/night_batch.py report \
   --out results/night-batch/morning-report.md
 ```
 
+`config/night_batch/nightly.default.json` を strategy / launch / runtime の正本として使う。  
+CLI の `--smoke-cli` / `--production-cli` は config より優先されるので、昼間に案を一時差し替えて夜間実行へ流すこともできる。
+
 `smoke-prod` は次の順で動く:
 
 1. Windows local `9222` の startup check（TradingView chart target 必須）
 2. 未起動なら `C:\TradingView\TradingView.exe - ショートカット.lnk` で launch
 3. WSL `172.31.144.1:9223` の connectivity / chart preflight
 4. smoke backtest を 1 本実行
-5. production backtest を 1 本だけ実行
-6. `results/night-batch/` へ summary / log を出力
+5. `detach_after_smoke: true` のときは production を detached child として起動
+6. 親は child 起動確認後に success で終了
+7. `results/night-batch/` へ summary / log / detached state を出力
 
-既定の backtest CLI は次の 2 段:
+既定の config では backtest CLI は次の 2 段:
 
 - smoke: `backtest preset ema-cross-9-21 --symbol NVDA --date-from 2024-01-01 --date-to 2024-12-31`
 - production: `backtest preset ema-cross-9-21 --symbol NVDA --date-from 2000-01-01 --date-to 2099-12-31`
 
-Python 側の責務は **startup check / launch-if-needed / WSL 側 `9223` 接続 preflight / Node CLI subprocess 実行 / stdout/stderr と checkpoint 監視 / summary 書き出し** であり、TradingView 操作本体を再実装しない。
+Python 側の責務は **startup check / launch-if-needed / WSL 側 `9223` 接続 preflight / Node CLI subprocess 実行 / detached child 起動 / summary 書き出し** であり、TradingView 操作本体を再実装しない。
+
+### Self-hosted schedule / manual launch
+
+Windows Command Prompt からは次で同じ config を起動できる。
+
+```cmd
+scripts\windows\run-night-batch-self-hosted.cmd config\night_batch\nightly.default.json
+```
+
+workflow は `.github/workflows/night-batch-self-hosted.yml` にあり、既定 cron は **毎日 00:00 JST**（`0 15 * * *` UTC）。  
+想定 runner は **self-hosted Windows** で、workflow は smoke success と detached child 起動確認までで終わる。長時間の production 本体は local PC 側で継続する。workflow では `checkout clean: false` で detached state を残し、**00:00 JST の起動窓を外れた stale scheduled run は skip** する。
+
+既定 config の detached state file は `results/night-batch/nightly.default-detached-state.json`。  
+この state が `running` の間は新しい detached run を拒否するので、manual 実行と scheduled 実行の衝突を最低限防げる。
 
 ### latest rich result regeneration
 

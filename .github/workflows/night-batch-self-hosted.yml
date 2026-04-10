@@ -1,0 +1,56 @@
+name: Night Batch Self Hosted
+
+on:
+  schedule:
+    - cron: '0 15 * * *'
+  workflow_dispatch:
+    inputs:
+      config_path:
+        description: JSON config path relative to the repository root
+        required: true
+        default: config/night_batch/nightly.default.json
+
+jobs:
+  start-night-batch:
+    runs-on:
+      - self-hosted
+      - windows
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          clean: false
+
+      - name: Evaluate schedule freshness
+        id: freshness
+        shell: powershell
+        run: |
+          $shouldRun = 'true'
+          if ('${{ github.event_name }}' -eq 'schedule') {
+            $jst = [System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId([DateTimeOffset]::UtcNow, 'Tokyo Standard Time')
+            if ($jst.Hour -ne 0) {
+              Write-Host "Skipping stale scheduled run at $($jst.ToString('yyyy-MM-dd HH:mm:ss zzz'))"
+              $shouldRun = 'false'
+            }
+          }
+          "should_run=$shouldRun" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Install dependencies in WSL workspace
+        if: steps.freshness.outputs.should_run == 'true'
+        shell: cmd
+        run: |
+          for /f "usebackq delims=" %%I in (`wsl.exe wslpath -a "%CD%"`) do set "REPO_WSL=%%I"
+          if not defined REPO_WSL exit /b 1
+          wsl.exe bash -lc "cd \"$REPO_WSL\" && npm ci --silent"
+
+      - name: Start smoke gate and detached production
+        if: steps.freshness.outputs.should_run == 'true'
+        shell: cmd
+        run: |
+          set "NIGHT_BATCH_CONFIG=${{ inputs.config_path }}"
+          if "%NIGHT_BATCH_CONFIG%"=="" set "NIGHT_BATCH_CONFIG=config/night_batch/nightly.default.json"
+          scripts\windows\run-night-batch-self-hosted.cmd "%NIGHT_BATCH_CONFIG%"
+
+      - name: Report skipped stale schedule
+        if: steps.freshness.outputs.should_run != 'true'
+        shell: powershell
+        run: Write-Host 'Skipped stale scheduled run outside the 00:00 JST launch window.'

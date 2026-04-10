@@ -1,0 +1,22 @@
+{
+  "runtime": {
+    "host": "172.31.144.1",
+    "port": 9223,
+    "startup_check_host": "127.0.0.1",
+    "startup_check_port": 9222,
+    "launch_wait_sec": 25,
+    "detach_after_smoke": true,
+    "detached_state_file": "results/night-batch/nightly.default-detached-state.json"
+  },
+  "launch": {
+    "shortcut_path": "C:\\TradingView\\TradingView.exe - ショートカット.lnk"
+  },
+  "strategies": {
+    "smoke": {
+      "cli": "backtest preset ema-cross-9-21 --symbol NVDA --date-from 2024-01-01 --date-to 2024-12-31"
+    },
+    "production": {
+      "cli": "backtest preset ema-cross-9-21 --symbol NVDA --date-from 2000-01-01 --date-to 2099-12-31"
+    }
+  }
+}
