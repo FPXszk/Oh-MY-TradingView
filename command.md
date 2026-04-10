@@ -54,15 +54,28 @@ Stop-Process -Id <PID1>,<PID2>,<PID3>
 Stop-Process -Id <PID> -Force
 ```
 
-## 4. 安定していた起動コマンド
+## 4. 現在の verified 起動手順
 
-### worker1
+### startup-first の確認順
+
+```powershell
+Invoke-WebRequest -UseBasicParsing http://127.0.0.1:9222/json/list | Select-Object -ExpandProperty Content
+```
+
+これで **TradingView chart target** を含む payload が返れば、そのまま WSL `9223` 疎通確認へ進む。  
+返らない場合は、**現在の verified launch method** として次の shortcut を使う。
+
+```powershell
+Start-Process -FilePath 'C:\TradingView\TradingView.exe - ショートカット.lnk'
+```
+
+### worker1 direct launch fallback
 
 ```powershell
 cmd /c start "" /D C:\TradingView C:\TradingView\TradingView.exe --remote-debugging-port=9222 --in-process-gpu
 ```
 
-### worker2
+### worker2（historical dual-worker reference）
 
 ```powershell
 cmd /c start "" /D C:\TradingView C:\TradingView\TradingView.exe --remote-debugging-port=9224 --user-data-dir=C:\TradingView\profiles\worker2 --in-process-gpu
@@ -398,6 +411,9 @@ fine-tune bundle は `next-long-run-us-finetune-100x10` / `next-long-run-jp-fine
 ### Python night batch orchestration
 
 ```bash
+# startup check -> launch-if-needed -> connectivity check -> smoke 1本 -> production 1本
+python3 python/night_batch.py smoke-prod --host 172.31.144.1 --port 9223
+
 # fine-tune bundle の夜間実行
 python3 python/night_batch.py bundle --host 172.31.144.1 --port 9223
 
@@ -411,7 +427,21 @@ python3 python/night_batch.py report \
   --out results/night-batch/morning-report.md
 ```
 
-Python 側の責務は **WSL 側 `9223` 接続の preflight / Node script subprocess 実行 / stdout/stderr と checkpoint 監視 / summary 書き出し** であり、TradingView 操作本体を再実装しない。
+`smoke-prod` は次の順で動く:
+
+1. Windows local `9222` の startup check（TradingView chart target 必須）
+2. 未起動なら `C:\TradingView\TradingView.exe - ショートカット.lnk` で launch
+3. WSL `172.31.144.1:9223` の connectivity / chart preflight
+4. smoke backtest を 1 本実行
+5. production backtest を 1 本だけ実行
+6. `results/night-batch/` へ summary / log を出力
+
+既定の backtest CLI は次の 2 段:
+
+- smoke: `backtest preset ema-cross-9-21 --symbol NVDA --date-from 2024-01-01 --date-to 2024-12-31`
+- production: `backtest preset ema-cross-9-21 --symbol NVDA --date-from 2000-01-01 --date-to 2099-12-31`
+
+Python 側の責務は **startup check / launch-if-needed / WSL 側 `9223` 接続 preflight / Node CLI subprocess 実行 / stdout/stderr と checkpoint 監視 / summary 書き出し** であり、TradingView 操作本体を再実装しない。
 
 ### latest rich result regeneration
 

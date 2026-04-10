@@ -224,6 +224,24 @@ Windows（current default: `9222`）:
 "%LOCALAPPDATA%\TradingView\TradingView.exe" --remote-debugging-port=9222 --remote-debugging-address=0.0.0.0
 ```
 
+現在この環境で検証済みの startup-first 手順:
+
+1. Windows local `9222` を先に確認する
+2. 応答しなければ `C:\TradingView\TradingView.exe - ショートカット.lnk` で起動する
+3. その後に WSL から `172.31.144.1:9223` を確認する
+
+Windows local の確認:
+
+```powershell
+powershell.exe -NoProfile -Command "Invoke-WebRequest -UseBasicParsing http://127.0.0.1:9222/json/list | Select-Object -ExpandProperty Content"
+```
+
+未起動なら current verified shortcut で起動:
+
+```powershell
+powershell.exe -NoProfile -Command "Start-Process -FilePath 'C:\TradingView\TradingView.exe - ショートカット.lnk'"
+```
+
 > 現行運用は **Windows 側の `9222` 個体を起動し、WSL からは Windows host IP 経由の `9223` に接続** です。`localhost` が届かない場合があるため、WSL では通常 `172.31.144.1:9223` のような Windows host IP を使います。`9223` が応答しない場合、CLI の default は他ポートへ暗黙フォールバックしません。
 
 ### 3. WSL から Windows 側 CDP へ接続
@@ -337,6 +355,9 @@ TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9223 node src/cli/index.js backtest nvda-ma
 夜間自動化は **Python が WSL 側の `9223` 接続を preflight し、TradingView 操作本体は既存 Node script を subprocess 実行する** 構成を想定しています。CDP/backtest 本体を Python に再実装しません。
 
 ```bash
+# startup check -> launch-if-needed -> WSL preflight -> smoke 1本 -> production 1本
+python3 python/night_batch.py smoke-prod --host 172.31.144.1 --port 9223
+
 # fine-tune bundle を夜間実行
 python3 python/night_batch.py bundle --host 172.31.144.1 --port 9223
 
@@ -350,7 +371,9 @@ python3 python/night_batch.py report \
   --out results/night-batch/morning-report.md
 ```
 
-Python スクリプトは `results/night-batch/` に run summary と log を残します。`bundle` / `campaign` / `recover` / `report` / `nightly` をサポートし、CDP が必要なコマンドでは 9223 preflight が通らない限り停止します。
+`smoke-prod` は **Windows local `9222` の startup check** を先に行い、TradingView chart target が見つからなければ current verified shortcut `C:\TradingView\TradingView.exe - ショートカット.lnk` を使って launch します。その後に **WSL `9223` の preflight** を通し、smoke backtest を 1 本、production backtest を 1 本だけ順に実行します。
+
+Python スクリプトは `results/night-batch/` に run summary と log を残します。`bundle` / `campaign` / `recover` / `report` / `nightly` / `smoke-prod` をサポートし、CDP が必要なコマンドでは 9223 preflight が通らない限り停止します。
 
 preset-driven バックテスト:
 

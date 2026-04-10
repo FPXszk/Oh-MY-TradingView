@@ -21,10 +21,16 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 RESULTS_DIR = PROJECT_ROOT / 'results' / 'night-batch'
 DEFAULT_HOST = '172.31.144.1'
 DEFAULT_PORT = 9223
+DEFAULT_STARTUP_CHECK_HOST = '127.0.0.1'
+DEFAULT_STARTUP_CHECK_PORT = 9222
+DEFAULT_SHORTCUT_PATH = r'C:\TradingView\TradingView.exe - ショートカット.lnk'
+DEFAULT_LAUNCH_WAIT_SEC = 20
 DEFAULT_PHASES = 'smoke,full'
 DEFAULT_TIMEOUT = 4 * 60 * 60
 DEFAULT_US_CAMPAIGN = 'next-long-run-us-finetune-100x10'
 DEFAULT_JP_CAMPAIGN = 'next-long-run-jp-finetune-100x10'
+DEFAULT_SMOKE_CLI = 'backtest preset ema-cross-9-21 --symbol NVDA --date-from 2024-01-01 --date-to 2024-12-31'
+DEFAULT_PRODUCTION_CLI = 'backtest preset ema-cross-9-21 --symbol NVDA --date-from 2000-01-01 --date-to 2099-12-31'
 EXIT_PREFLIGHT_FAILED = 1
 EXIT_STEP_FAILED = 2
 
@@ -105,6 +111,19 @@ def build_parser() -> argparse.ArgumentParser:
     nightly.add_argument('--date-from', default='2000-01-01')
     nightly.add_argument('--date-to', default='latest')
     nightly.add_argument('--title')
+
+    smoke_prod = subparsers.add_parser(
+        'smoke-prod',
+        help='Check startup state, launch TradingView if needed, then run smoke and production backtests',
+        parents=[common],
+    )
+    smoke_prod.add_argument('--startup-check-host', default=DEFAULT_STARTUP_CHECK_HOST)
+    smoke_prod.add_argument('--startup-check-port', type=int, default=DEFAULT_STARTUP_CHECK_PORT)
+    smoke_prod.add_argument('--shortcut-path', default=DEFAULT_SHORTCUT_PATH)
+    smoke_prod.add_argument('--launch-command')
+    smoke_prod.add_argument('--launch-wait-sec', type=int, default=DEFAULT_LAUNCH_WAIT_SEC)
+    smoke_prod.add_argument('--smoke-cli', default=DEFAULT_SMOKE_CLI)
+    smoke_prod.add_argument('--production-cli', default=DEFAULT_PRODUCTION_CLI)
 
     return parser
 
@@ -190,6 +209,7 @@ def run_process(
     timeout_sec: int,
     dry_run: bool,
     logger: logging.Logger,
+    env_overrides: dict[str, str] | None = None,
 ) -> dict:
     if dry_run:
         logger.info('[dry-run] %s', shlex.join(command))
@@ -200,10 +220,14 @@ def run_process(
             'latest_checkpoint': relative_path(find_latest_checkpoint(checkpoint_roots)) if checkpoint_roots else None,
             'captured_lines': [],
             'command': command,
+            'skipped': False,
         }
 
     started = time.monotonic()
     captured_lines: list[dict] = []
+    process_env = os.environ.copy()
+    if env_overrides:
+        process_env.update(env_overrides)
     process = subprocess.Popen(
         command,
         cwd=PROJECT_ROOT,
@@ -211,7 +235,7 @@ def run_process(
         stderr=subprocess.PIPE,
         text=True,
         bufsize=1,
-        env=os.environ.copy(),
+        env=process_env,
     )
 
     stdout_thread = threading.Thread(
@@ -263,6 +287,7 @@ def run_process(
         'latest_checkpoint': relative_path(latest_checkpoint) if latest_checkpoint else None,
         'captured_lines': captured_lines,
         'command': command,
+        'skipped': False,
     }
 
 
@@ -390,6 +415,149 @@ def build_step_specs(args) -> list[dict]:
     return build_step_specs(bundle_args) + build_step_specs(report_args)
 
 
+def make_step_result(
+    name: str,
+    command: list[str],
+    *,
+    success: bool,
+    exit_code: int = 0,
+    timed_out: bool = False,
+    latest_checkpoint: str | None = None,
+    skipped: bool = False,
+) -> dict:
+    return {
+        'name': name,
+        'command': command,
+        'success': success,
+        'exit_code': exit_code,
+        'timed_out': timed_out,
+        'latest_checkpoint': latest_checkpoint,
+        'skipped': skipped,
+    }
+
+
+def build_shortcut_launch_command(args) -> list[str]:
+    if args.launch_command:
+        return shlex.split(args.launch_command)
+    escaped_shortcut_path = args.shortcut_path.replace("'", "''")
+    return [
+        'powershell.exe',
+        '-NoProfile',
+        '-Command',
+        f"Start-Process -FilePath '{escaped_shortcut_path}'",
+    ]
+
+
+def build_cli_command(node_bin: str, cli_string: str) -> list[str]:
+    tokens = shlex.split(cli_string)
+    if not tokens or tokens[0] != 'backtest':
+        raise ValueError(
+            'smoke-prod expects --smoke-cli and --production-cli to start with "backtest"'
+        )
+    return [node_bin, str(PROJECT_ROOT / 'src' / 'cli' / 'index.js'), *tokens]
+
+
+def wait_for_visible_session(host: str, port: int, timeout_sec: int, logger: logging.Logger) -> dict:
+    deadline = time.monotonic() + timeout_sec
+    last_error: RuntimeError | None = None
+    while time.monotonic() <= deadline:
+        try:
+            return preflight_visible_session(host, port, logger)
+        except RuntimeError as error:
+            last_error = error
+            time.sleep(2)
+    raise RuntimeError(
+        f'Preflight failed for CDP session {host}:{port} after waiting {timeout_sec}s: {last_error}'
+    ) from last_error
+
+
+def execute_smoke_prod(args, logger: logging.Logger) -> tuple[int, list[dict]]:
+    steps: list[dict] = []
+    startup_url = f'http://{args.startup_check_host}:{args.startup_check_port}/json/list'
+    preflight_url = f'http://{args.host}:{args.port}/json/list'
+
+    if args.dry_run:
+        steps.append(make_step_result('startup-check', ['GET', startup_url], success=True, skipped=True))
+        steps.append(make_step_result('launch', build_shortcut_launch_command(args), success=True, skipped=True))
+        steps.append(make_step_result('preflight', ['GET', preflight_url], success=True, skipped=True))
+        smoke_result = run_process(
+            build_cli_command(args.node_bin, args.smoke_cli),
+            [],
+            args.timeout,
+            True,
+            logger,
+            env_overrides={'TV_CDP_HOST': args.host, 'TV_CDP_PORT': str(args.port)},
+        )
+        steps.append({**smoke_result, 'name': 'smoke'})
+        production_result = run_process(
+            build_cli_command(args.node_bin, args.production_cli),
+            [],
+            args.timeout,
+            True,
+            logger,
+            env_overrides={'TV_CDP_HOST': args.host, 'TV_CDP_PORT': str(args.port)},
+        )
+        steps.append({**production_result, 'name': 'production'})
+        return 0, steps
+
+    try:
+        preflight_visible_session(args.startup_check_host, args.startup_check_port, logger)
+        steps.append(make_step_result('startup-check', ['GET', startup_url], success=True))
+        steps.append(
+            make_step_result(
+                'launch',
+                build_shortcut_launch_command(args),
+                success=True,
+                skipped=True,
+            )
+        )
+    except RuntimeError as startup_error:
+        logger.warning('Startup check did not detect a running TradingView instance: %s', startup_error)
+        steps.append(make_step_result('startup-check', ['GET', startup_url], success=False, exit_code=1))
+        launch_result = run_process(
+            build_shortcut_launch_command(args),
+            [],
+            min(args.timeout, args.launch_wait_sec),
+            False,
+            logger,
+        )
+        steps.append({**launch_result, 'name': 'launch'})
+        if not launch_result['success']:
+            return EXIT_STEP_FAILED, steps
+
+    try:
+        wait_for_visible_session(args.host, args.port, args.launch_wait_sec, logger)
+        steps.append(make_step_result('preflight', ['GET', preflight_url], success=True))
+    except RuntimeError as error:
+        logger.error('%s', error)
+        steps.append(make_step_result('preflight', ['GET', preflight_url], success=False, exit_code=1))
+        return EXIT_PREFLIGHT_FAILED, steps
+
+    env_overrides = {'TV_CDP_HOST': args.host, 'TV_CDP_PORT': str(args.port)}
+    smoke_result = run_process(
+        build_cli_command(args.node_bin, args.smoke_cli),
+        [],
+        args.timeout,
+        False,
+        logger,
+        env_overrides=env_overrides,
+    )
+    steps.append({**smoke_result, 'name': 'smoke'})
+    if not smoke_result['success']:
+        return EXIT_STEP_FAILED, steps
+
+    production_result = run_process(
+        build_cli_command(args.node_bin, args.production_cli),
+        [],
+        args.timeout,
+        False,
+        logger,
+        env_overrides=env_overrides,
+    )
+    steps.append({**production_result, 'name': 'production'})
+    return 0 if production_result['success'] else EXIT_STEP_FAILED, steps
+
+
 def write_summary(run_id: str, summary: dict, logger: logging.Logger) -> tuple[Path, Path]:
     ensure_results_dir()
     summary_json_path = RESULTS_DIR / f'{run_id}-summary.json'
@@ -408,13 +576,13 @@ def write_summary(run_id: str, summary: dict, logger: logging.Logger) -> tuple[P
         '',
         '## Steps',
         '',
-        '| step | success | exit_code | timed_out | latest_checkpoint |',
-        '| --- | --- | ---: | --- | --- |',
+        '| step | success | skipped | exit_code | timed_out | latest_checkpoint |',
+        '| --- | --- | --- | ---: | --- | --- |',
     ]
 
     for step in summary['steps']:
         lines.append(
-            f'| {step["name"]} | {step["success"]} | {step["exit_code"]} | {step["timed_out"]} | {step["latest_checkpoint"] or "—"} |'
+            f'| {step["name"]} | {step["success"]} | {step.get("skipped", False)} | {step["exit_code"]} | {step["timed_out"]} | {step["latest_checkpoint"] or "—"} |'
         )
 
     lines.extend([
@@ -440,6 +608,34 @@ def main() -> int:
     run_id = utc_run_id()
     logger, log_path = configure_logger(run_id)
     logger.info('Starting %s run (log: %s)', args.command, relative_path(log_path))
+
+    if args.command == 'smoke-prod':
+        try:
+            exit_code, steps = execute_smoke_prod(args, logger)
+        except ValueError as error:
+            logger.error('%s', error)
+            summary = {
+                'success': False,
+                'command': args.command,
+                'host': args.host,
+                'port': args.port,
+                'preflight_required': True,
+                'error': str(error),
+                'steps': [],
+            }
+            write_summary(run_id, summary, logger)
+            return EXIT_STEP_FAILED
+
+        summary = {
+            'success': exit_code == 0,
+            'command': args.command,
+            'host': args.host,
+            'port': args.port,
+            'preflight_required': True,
+            'steps': steps,
+        }
+        write_summary(run_id, summary, logger)
+        return exit_code
 
     preflight_required = requires_cdp_preflight(args.command)
     if preflight_required:
