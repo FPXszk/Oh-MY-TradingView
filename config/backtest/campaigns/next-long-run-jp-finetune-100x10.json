@@ -21,7 +21,7 @@
   },
   "phases": {
     "smoke": {
-      "symbol_count": 10
+      "symbol_count": 1
     },
     "pilot": {
       "symbol_count": 25

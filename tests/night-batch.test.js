@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 import {
   chmodSync,
   existsSync,
+  mkdirSync,
   mkdtempSync,
+  readdirSync,
   readFileSync,
   rmSync,
   writeFileSync,
@@ -15,14 +17,22 @@ import { spawn } from 'node:child_process';
 
 const PROJECT_ROOT = join(process.cwd());
 const SCRIPT_PATH = join(PROJECT_ROOT, 'python', 'night_batch.py');
-const RESULTS_DIR = join(PROJECT_ROOT, 'results', 'night-batch');
+let RESULTS_DIR = join(PROJECT_ROOT, 'results', 'night-batch');
 
 function runPython(args, options = {}) {
+  const effectiveArgs = [...args];
+  if (!effectiveArgs.includes('--round-mode') && effectiveArgs.length >= 2) {
+    effectiveArgs.splice(2, 0, '--round-mode', 'advance-next-round');
+  }
   return new Promise((resolve, reject) => {
-    const child = spawn('python3', args, {
+    const child = spawn('python3', effectiveArgs, {
       cwd: PROJECT_ROOT,
       stdio: ['ignore', 'pipe', 'pipe'],
-      env: { ...process.env, ...(options.env || {}) },
+      env: {
+        ...process.env,
+        NIGHT_BATCH_RESULTS_DIR: RESULTS_DIR,
+        ...(options.env || {}),
+      },
     });
 
     let stdout = '';
@@ -41,9 +51,12 @@ function runPython(args, options = {}) {
 }
 
 function readSummaryFromResult(result) {
-  const match = result.stdout.match(/Summary written: results\/night-batch\/([0-9_]+)-summary\.md/);
+  const match = result.stdout.match(/Summary written: (.+-summary\.md)/);
   assert.ok(match, `expected summary path in stdout:\n${result.stdout}`);
-  const summaryPath = join(RESULTS_DIR, `${match[1]}-summary.json`);
+  const rawSummaryPath = match[1].trim();
+  const summaryPath = rawSummaryPath.startsWith('/')
+    ? rawSummaryPath.replace(/-summary\.md$/, '-summary.json')
+    : join(PROJECT_ROOT, rawSummaryPath.replace(/-summary\.md$/, '-summary.json'));
   return JSON.parse(readFileSync(summaryPath, 'utf8'));
 }
 
@@ -67,6 +80,7 @@ describe('night_batch.py CLI', () => {
   let server = null;
   let port = null;
   let tempDir = null;
+  let resultsDir = null;
 
   beforeEach(async () => {
     server = createServer((req, res) => {
@@ -96,6 +110,9 @@ describe('night_batch.py CLI', () => {
     await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
     port = server.address().port;
     tempDir = mkdtempSync(join(tmpdir(), 'night-batch-test-'));
+    resultsDir = join(tempDir, 'night-batch-results');
+    RESULTS_DIR = resultsDir;
+    mkdirSync(resultsDir, { recursive: true });
   });
 
   afterEach(async () => {
@@ -107,6 +124,8 @@ describe('night_batch.py CLI', () => {
       rmSync(tempDir, { recursive: true, force: true });
       tempDir = null;
     }
+    RESULTS_DIR = join(PROJECT_ROOT, 'results', 'night-batch');
+    resultsDir = null;
   });
 
   it('exists in python/night_batch.py', () => {
@@ -677,5 +696,175 @@ exit 0
     const detachedState = JSON.parse(readFileSync(detachedStateFile, 'utf8'));
     assert.match(detachedState.production_command.join(' '), /run-finetune-bundle\.mjs/);
     assert.match(detachedState.production_command.join(' '), /--phases full/);
+  });
+
+  it('advance-next-round creates a round directory and writes artifacts there', async () => {
+    const fakeNodePath = join(tempDir, 'fake-node.sh');
+    const fakeNodeLog = join(tempDir, 'fake-node.log');
+    writeExecutable(
+      fakeNodePath,
+      `#!/bin/sh
+printf '%s\n' "$*" >> "${fakeNodeLog}"
+exit 0
+`,
+    );
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--host',
+      '127.0.0.1',
+      '--port',
+      String(port),
+      '--startup-check-host',
+      '127.0.0.1',
+      '--startup-check-port',
+      String(port),
+      '--node-bin',
+      fakeNodePath,
+      '--round-mode',
+      'advance-next-round',
+    ]);
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+
+    const summary = readSummaryFromResult(result);
+    assert.equal(typeof summary.round, 'number');
+    assert.ok(summary.round >= 1);
+    assert.equal(summary.round_mode, 'advance-next-round');
+
+    const roundDir = join(RESULTS_DIR, `round${summary.round}`);
+    assert.equal(existsSync(roundDir), true);
+
+    const manifestPath = join(roundDir, 'round-manifest.json');
+    assert.equal(existsSync(manifestPath), true);
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+    assert.equal(manifest.round, summary.round);
+    assert.ok(manifest.runs.length >= 1);
+
+    rmSync(roundDir, { recursive: true, force: true });
+  });
+
+  it('resume-current-round errors when no round exists', async () => {
+    const existingRounds = [];
+    try {
+      const { readdirSync } = await import('node:fs');
+      for (const entry of readdirSync(RESULTS_DIR)) {
+        if (entry.startsWith('round')) {
+          existingRounds.push(entry);
+        }
+      }
+    } catch {
+      // RESULTS_DIR may not exist
+    }
+    for (const rd of existingRounds) {
+      rmSync(join(RESULTS_DIR, rd), { recursive: true, force: true });
+    }
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--host',
+      '127.0.0.1',
+      '--port',
+      String(port),
+      '--startup-check-host',
+      '127.0.0.1',
+      '--startup-check-port',
+      String(port),
+      '--dry-run',
+      '--round-mode',
+      'resume-current-round',
+    ]);
+
+    assert.equal(result.status, 2, result.stderr || result.stdout);
+    assert.match(result.stdout, /No existing round found/);
+
+    for (const rd of existingRounds) {
+      mkdirSync(join(RESULTS_DIR, rd), { recursive: true });
+    }
+  });
+
+  it('resume-current-round skips smoke when it already completed in the round', async () => {
+    const fakeNodePath = join(tempDir, 'fake-node.sh');
+    const fakeNodeLog = join(tempDir, 'fake-node.log');
+    writeExecutable(
+      fakeNodePath,
+      `#!/bin/sh
+printf '%s\n' "$*" >> "${fakeNodeLog}"
+exit 0
+`,
+    );
+
+    const advanceResult = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--host',
+      '127.0.0.1',
+      '--port',
+      String(port),
+      '--startup-check-host',
+      '127.0.0.1',
+      '--startup-check-port',
+      String(port),
+      '--node-bin',
+      fakeNodePath,
+      '--round-mode',
+      'advance-next-round',
+    ]);
+    assert.equal(advanceResult.status, 0, advanceResult.stderr || advanceResult.stdout);
+
+    const advanceSummary = readSummaryFromResult(advanceResult);
+    const roundDir = join(RESULTS_DIR, `round${advanceSummary.round}`);
+
+    const resumeResult = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--host',
+      '127.0.0.1',
+      '--port',
+      String(port),
+      '--startup-check-host',
+      '127.0.0.1',
+      '--startup-check-port',
+      String(port),
+      '--node-bin',
+      fakeNodePath,
+      '--round-mode',
+      'resume-current-round',
+    ]);
+    assert.equal(resumeResult.status, 0, resumeResult.stderr || resumeResult.stdout);
+
+    const resumeSummary = readSummaryFromResult(resumeResult);
+    const smokeStep = resumeSummary.steps.find((step) => step.name === 'smoke');
+    assert.equal(smokeStep.skipped, true);
+    assert.equal(smokeStep.success, true);
+    assert.equal(resumeSummary.round_mode, 'resume-current-round');
+
+    rmSync(roundDir, { recursive: true, force: true });
+  });
+
+  it('bundle dry-run with --us-resume and --jp-resume passes resume args through', async () => {
+    const result = await runPython(
+      [
+        SCRIPT_PATH,
+        'bundle',
+        '--host',
+        '127.0.0.1',
+        '--port',
+        String(port),
+        '--dry-run',
+        '--us-resume',
+        'results/campaigns/us/checkpoint-10.json',
+        '--jp-resume',
+        'results/campaigns/jp/checkpoint-20.json',
+      ],
+    );
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.match(result.stdout, /--us-resume/);
+    assert.match(result.stdout, /checkpoint-10\.json/);
+    assert.match(result.stdout, /--jp-resume/);
+    assert.match(result.stdout, /checkpoint-20\.json/);
   });
 });

@@ -1059,15 +1059,15 @@ describe('next long-run finetune campaigns', () => {
     assert.equal(campaign.defaults.date_range.to, '2099-12-31');
   });
 
-  it('uses 10 or 25 or 100 phase sizing for both finetune campaigns', async () => {
+  it('uses 1 or 25 or 100 phase sizing for both finetune campaigns', async () => {
     const usSmoke = await loadCampaign('next-long-run-us-finetune-100x10', { phase: 'smoke' });
     const usPilot = await loadCampaign('next-long-run-us-finetune-100x10', { phase: 'pilot' });
     const jpSmoke = await loadCampaign('next-long-run-jp-finetune-100x10', { phase: 'smoke' });
     const jpPilot = await loadCampaign('next-long-run-jp-finetune-100x10', { phase: 'pilot' });
 
-    assert.equal(usSmoke.symbols.length, 10);
+    assert.equal(usSmoke.symbols.length, 1);
     assert.equal(usPilot.symbols.length, 25);
-    assert.equal(jpSmoke.symbols.length, 10);
+    assert.equal(jpSmoke.symbols.length, 1);
     assert.equal(jpPilot.symbols.length, 25);
   });
 });

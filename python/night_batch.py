@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
 import os
@@ -18,7 +19,18 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-RESULTS_DIR = PROJECT_ROOT / 'results' / 'night-batch'
+
+
+def resolve_results_dir() -> Path:
+    raw = os.environ.get('NIGHT_BATCH_RESULTS_DIR')
+    if not raw:
+        return PROJECT_ROOT / 'results' / 'night-batch'
+    normalized = raw.replace('\\', '/') if '\\' in raw and ':' not in raw else raw
+    path = Path(normalized)
+    return path if path.is_absolute() else PROJECT_ROOT / path
+
+
+RESULTS_DIR = resolve_results_dir()
 DEFAULT_HOST = '172.31.144.1'
 DEFAULT_PORT = 9223
 DEFAULT_STARTUP_CHECK_HOST = '127.0.0.1'
@@ -34,6 +46,7 @@ DEFAULT_PRODUCTION_CLI = 'backtest preset ema-cross-9-21 --symbol NVDA --date-fr
 DEFAULT_DETACHED_STATE_FILE = 'results/night-batch/detached-production-state.json'
 EXIT_PREFLIGHT_FAILED = 1
 EXIT_STEP_FAILED = 2
+ROUND_MANIFEST_FILE = 'round-manifest.json'
 
 
 def utc_run_id() -> str:
@@ -42,6 +55,152 @@ def utc_run_id() -> str:
 
 def ensure_results_dir() -> None:
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def ensure_output_dir(output_dir: Path) -> None:
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+
+def find_existing_rounds() -> list[int]:
+    if not RESULTS_DIR.exists():
+        return []
+    rounds = []
+    for entry in RESULTS_DIR.iterdir():
+        if entry.is_dir() and entry.name.startswith('round'):
+            try:
+                rounds.append(int(entry.name[5:]))
+            except ValueError:
+                pass
+    return sorted(rounds)
+
+
+def resolve_round_dir(mode: str) -> tuple[Path, int]:
+    rounds = find_existing_rounds()
+    if mode == 'advance-next-round':
+        next_num = (max(rounds) + 1) if rounds else 1
+        round_dir = RESULTS_DIR / f'round{next_num}'
+        round_dir.mkdir(parents=True, exist_ok=True)
+        return round_dir, next_num
+    if mode == 'resume-current-round':
+        if not rounds:
+            raise RuntimeError(
+                'No existing round found under results/night-batch/. '
+                'Use --round-mode advance-next-round to create a new round.'
+            )
+        current_num = max(rounds)
+        round_dir = RESULTS_DIR / f'round{current_num}'
+        return round_dir, current_num
+    raise ValueError(f'Unknown round mode: {mode}')
+
+
+def write_round_manifest(
+    output_dir: Path,
+    round_number: int,
+    run_id: str,
+    mode: str,
+    command: str,
+    fingerprint: str | None = None,
+) -> Path:
+    manifest_path = output_dir / ROUND_MANIFEST_FILE
+    manifest: dict = {}
+    if manifest_path.exists():
+        try:
+            manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+        except (json.JSONDecodeError, OSError):
+            manifest = {}
+    if 'round' not in manifest:
+        manifest['round'] = round_number
+        manifest['created_at'] = datetime.now(timezone.utc).isoformat()
+    manifest['mode'] = mode
+    if fingerprint:
+        manifest['strategy_set_fingerprint'] = fingerprint
+    manifest['updated_at'] = datetime.now(timezone.utc).isoformat()
+    runs = manifest.setdefault('runs', [])
+    runs.append({
+        'run_id': run_id,
+        'command': command,
+        'started_at': datetime.now(timezone.utc).isoformat(),
+    })
+    manifest_path.write_text(
+        f'{json.dumps(manifest, indent=2, ensure_ascii=False)}\n', encoding='utf-8',
+    )
+    return manifest_path
+
+
+def read_round_manifest(output_dir: Path) -> dict | None:
+    manifest_path = output_dir / ROUND_MANIFEST_FILE
+    if not manifest_path.exists():
+        return None
+    return read_json_file(manifest_path)
+
+
+def build_round_fingerprint(payload: dict) -> str:
+    encoded = json.dumps(payload, sort_keys=True, ensure_ascii=False).encode('utf-8')
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def build_smoke_prod_fingerprint(settings: dict) -> str:
+    payload = {
+        'bundle_jp_campaign': settings.get('bundle_jp_campaign'),
+        'bundle_production_phases': settings.get('bundle_production_phases'),
+        'bundle_smoke_phases': settings.get('bundle_smoke_phases'),
+        'bundle_us_campaign': settings.get('bundle_us_campaign'),
+        'production_cli': settings.get('production_cli'),
+        'production_mode': settings.get('production_mode'),
+        'smoke_cli': settings.get('smoke_cli'),
+        'smoke_mode': settings.get('smoke_mode'),
+    }
+    return build_round_fingerprint(payload)
+
+
+def build_args_fingerprint(args) -> str:
+    payload = {
+        'command': args.command,
+        'phases': getattr(args, 'phases', None),
+        'campaign_id': getattr(args, 'campaign_id', None),
+        'phase': getattr(args, 'phase', None),
+        'us_campaign': getattr(args, 'us_campaign', None),
+        'jp_campaign': getattr(args, 'jp_campaign', None),
+    }
+    return build_round_fingerprint(payload)
+
+
+def ensure_round_manifest_matches(output_dir: Path, expected_fingerprint: str) -> None:
+    manifest = read_round_manifest(output_dir)
+    if not manifest:
+        raise RuntimeError(
+            f'Latest round is missing {ROUND_MANIFEST_FILE}: {relative_path(output_dir)}'
+        )
+    actual_fingerprint = manifest.get('strategy_set_fingerprint')
+    if actual_fingerprint != expected_fingerprint:
+        raise RuntimeError(
+            'Latest round fingerprint does not match the current strategy set. '
+            'Use --round-mode advance-next-round to start a new round.'
+        )
+
+
+def resolve_round_scoped_path(output_dir: Path, path_value: Path | None, default_name: str) -> Path:
+    if path_value is None:
+        return output_dir / default_name
+    if path_value.parent == RESULTS_DIR:
+        return output_dir / path_value.name
+    return path_value
+
+
+def find_completed_step_in_round(output_dir: Path, step_name: str) -> bool:
+    if not output_dir.exists():
+        return False
+    for summary_file in sorted(output_dir.glob('*-summary.json')):
+        try:
+            data = json.loads(summary_file.read_text(encoding='utf-8'))
+            for step in data.get('steps', []):
+                if (step.get('name') == step_name
+                        and step.get('success')
+                        and not step.get('skipped')):
+                    return True
+        except (json.JSONDecodeError, KeyError, OSError):
+            pass
+    return False
 
 
 def resolve_project_path(path_value: str | None) -> Path | None:
@@ -56,9 +215,9 @@ def resolve_project_path(path_value: str | None) -> Path | None:
     return PROJECT_ROOT / path
 
 
-def configure_logger(run_id: str) -> tuple[logging.Logger, Path]:
-    ensure_results_dir()
-    log_path = RESULTS_DIR / f'{run_id}.log'
+def configure_logger(run_id: str, output_dir: Path = RESULTS_DIR) -> tuple[logging.Logger, Path]:
+    ensure_output_dir(output_dir)
+    log_path = output_dir / f'{run_id}.log'
     logger = logging.getLogger(f'night_batch.{run_id}')
     logger.setLevel(logging.INFO)
     logger.handlers.clear()
@@ -85,6 +244,12 @@ def build_parser() -> argparse.ArgumentParser:
     common.add_argument('--timeout', type=int, default=DEFAULT_TIMEOUT)
     common.add_argument('--dry-run', action='store_true')
     common.add_argument('--run-id', default=None, help=argparse.SUPPRESS)
+    common.add_argument(
+        '--round-mode',
+        choices=['advance-next-round', 'resume-current-round'],
+        default=None,
+        help='Round selection mode: advance-next-round creates a new round dir; resume-current-round reuses the latest.',
+    )
 
     parser = argparse.ArgumentParser(
         description='WSL-first orchestrator for TradingView backtest night runs.',
@@ -95,6 +260,8 @@ def build_parser() -> argparse.ArgumentParser:
     bundle.add_argument('--phases', default=DEFAULT_PHASES)
     bundle.add_argument('--us-campaign', default=DEFAULT_US_CAMPAIGN)
     bundle.add_argument('--jp-campaign', default=DEFAULT_JP_CAMPAIGN)
+    bundle.add_argument('--us-resume', default=None, help='Checkpoint path to resume the US campaign from')
+    bundle.add_argument('--jp-resume', default=None, help='Checkpoint path to resume the JP campaign from')
 
     campaign = subparsers.add_parser('campaign', help='Run a single long campaign via Node', parents=[common])
     campaign.add_argument('campaign_id')
@@ -143,6 +310,8 @@ def build_parser() -> argparse.ArgumentParser:
     smoke_prod.add_argument('--detached-state-file', default=DEFAULT_DETACHED_STATE_FILE)
     smoke_prod.add_argument('--smoke-timeout-sec', type=int)
     smoke_prod.add_argument('--production-timeout-sec', type=int)
+    smoke_prod.add_argument('--us-resume', default=None, help='Checkpoint path to resume the US campaign from')
+    smoke_prod.add_argument('--jp-resume', default=None, help='Checkpoint path to resume the JP campaign from')
 
     production_child = subparsers.add_parser(
         'production-child',
@@ -155,6 +324,7 @@ def build_parser() -> argparse.ArgumentParser:
     production_child.add_argument('--production-command-json', required=True)
     production_child.add_argument('--production-env-json', default='{}')
     production_child.add_argument('--production-checkpoint-roots-json', default='[]')
+    production_child.add_argument('--output-dir', default=str(RESULTS_DIR))
 
     return parser
 
@@ -417,6 +587,15 @@ def load_smoke_prod_settings(args, raw_args: list[str]) -> dict:
     if bundle_us_campaign and bundle_jp_campaign and not production.get('cli') and not option_was_provided(raw_args, '--production-cli'):
         production_mode = 'bundle'
 
+    us_resume = resolve_option(
+        raw_args, '--us-resume', getattr(args, 'us_resume', None),
+        bundle.get('us_resume'), None,
+    )
+    jp_resume = resolve_option(
+        raw_args, '--jp-resume', getattr(args, 'jp_resume', None),
+        bundle.get('jp_resume'), None,
+    )
+
     return {
         'config_path': config_path,
         'node_bin': node_bin,
@@ -439,6 +618,8 @@ def load_smoke_prod_settings(args, raw_args: list[str]) -> dict:
         'bundle_jp_campaign': bundle_jp_campaign,
         'bundle_smoke_phases': bundle_smoke_phases,
         'bundle_production_phases': bundle_production_phases,
+        'us_resume': us_resume,
+        'jp_resume': jp_resume,
         'dry_run': args.dry_run,
         'timeout': args.timeout,
     }
@@ -564,7 +745,8 @@ def run_process(
 def default_report_paths(args) -> tuple[str, str, str]:
     us_path = args.report_us or f'results/campaigns/{args.us_campaign}/full/recovered-results.json'
     jp_path = args.report_jp or f'results/campaigns/{args.jp_campaign}/full/recovered-results.json'
-    report_out = args.report_out or f'results/night-batch/{utc_run_id()}-rich-report.md'
+    output_dir = resolve_project_path(getattr(args, 'output_dir', None)) or RESULTS_DIR
+    report_out = args.report_out or str(output_dir / f'{utc_run_id()}-rich-report.md')
     return us_path, jp_path, report_out
 
 
@@ -590,6 +772,12 @@ def build_step_specs(args) -> list[dict]:
         ]
         if args.dry_run:
             command.append('--dry-run')
+        us_resume = getattr(args, 'us_resume', None)
+        jp_resume = getattr(args, 'jp_resume', None)
+        if us_resume:
+            command.extend(['--us-resume', us_resume])
+        if jp_resume:
+            command.extend(['--jp-resume', jp_resume])
         return [{
             'name': 'bundle',
             'command': command,
@@ -727,7 +915,7 @@ def build_cli_command(node_bin: str, cli_string: str) -> list[str]:
     return [node_bin, str(PROJECT_ROOT / 'src' / 'cli' / 'index.js'), *tokens]
 
 
-def build_bundle_phase_step(settings: dict, phases: str) -> dict:
+def build_bundle_phase_step(settings: dict, phases: str, us_resume: str | None = None, jp_resume: str | None = None) -> dict:
     bundle_args = argparse.Namespace(
         command='bundle',
         node_bin=settings['node_bin'],
@@ -736,6 +924,8 @@ def build_bundle_phase_step(settings: dict, phases: str) -> dict:
         phases=phases,
         us_campaign=settings['bundle_us_campaign'],
         jp_campaign=settings['bundle_jp_campaign'],
+        us_resume=us_resume,
+        jp_resume=jp_resume,
         dry_run=False,
     )
     return build_step_specs(bundle_args)[0]
@@ -744,7 +934,9 @@ def build_bundle_phase_step(settings: dict, phases: str) -> dict:
 def build_runtime_step(settings: dict, phase_name: str) -> dict:
     if settings[f'{phase_name}_mode'] == 'bundle':
         phases = settings[f'bundle_{phase_name}_phases']
-        step_spec = build_bundle_phase_step(settings, phases)
+        us_resume = settings.get(f'{phase_name}_us_resume') or settings.get('us_resume')
+        jp_resume = settings.get(f'{phase_name}_jp_resume') or settings.get('jp_resume')
+        step_spec = build_bundle_phase_step(settings, phases, us_resume=us_resume, jp_resume=jp_resume)
         return {
             'name': phase_name,
             'command': step_spec['command'],
@@ -778,8 +970,8 @@ def write_detached_state(state_path: Path, payload: dict) -> None:
     state_path.write_text(f'{json.dumps(payload, indent=2, ensure_ascii=False)}\n', encoding='utf-8')
 
 
-def build_production_child_command(settings: dict, child_run_id: str, production_step: dict) -> list[str]:
-    return [
+def build_production_child_command(settings: dict, child_run_id: str, production_step: dict, output_dir: Path = RESULTS_DIR) -> list[str]:
+    cmd = [
         sys.executable,
         str(Path(__file__).resolve()),
         'production-child',
@@ -803,14 +995,17 @@ def build_production_child_command(settings: dict, child_run_id: str, production
         str(settings['detached_state_file']),
         '--run-id',
         child_run_id,
+        '--output-dir',
+        str(output_dir),
     ]
+    return cmd
 
 
-def start_detached_production(settings: dict, run_id: str, production_step: dict, logger: logging.Logger) -> tuple[dict, dict]:
+def start_detached_production(settings: dict, run_id: str, production_step: dict, logger: logging.Logger, output_dir: Path = RESULTS_DIR) -> tuple[dict, dict]:
     child_run_id = f'{run_id}_production'
-    child_log_path = RESULTS_DIR / f'{child_run_id}.log'
-    child_summary_path = RESULTS_DIR / f'{child_run_id}-summary.json'
-    child_command = build_production_child_command(settings, child_run_id, production_step)
+    child_log_path = output_dir / f'{child_run_id}.log'
+    child_summary_path = output_dir / f'{child_run_id}-summary.json'
+    child_command = build_production_child_command(settings, child_run_id, production_step, output_dir=output_dir)
     child_env = os.environ.copy()
     child_env['TV_CDP_HOST'] = settings['host']
     child_env['TV_CDP_PORT'] = str(settings['port'])
@@ -852,10 +1047,12 @@ def start_detached_production(settings: dict, run_id: str, production_step: dict
     return make_step_result('detach-production', child_command, success=True), state
 
 
-def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str) -> tuple[int, list[dict]]:
+def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, output_dir: Path = RESULTS_DIR) -> tuple[int, list[dict]]:
     steps: list[dict] = []
     startup_url = f'http://{settings["startup_check_host"]}:{settings["startup_check_port"]}/json/list'
     preflight_url = f'http://{settings["host"]}:{settings["port"]}/json/list'
+    resume_smoke = settings.get('resume_smoke', False)
+    resume_production = settings.get('resume_production', False)
 
     if settings['dry_run']:
         if settings['detach_after_smoke']:
@@ -871,29 +1068,38 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str) -> t
         steps.append(make_step_result('launch', build_shortcut_launch_command(settings), success=True, skipped=True))
         steps.append(make_step_result('preflight', ['GET', preflight_url], success=True, skipped=True))
         smoke_step = build_runtime_step(settings, 'smoke')
-        smoke_result = run_process(
-            smoke_step['command'],
-            smoke_step['checkpoint_roots'],
-            settings['smoke_timeout_sec'],
-            True,
-            logger,
-            env_overrides=smoke_step['env_overrides'],
-        )
-        steps.append({**smoke_result, 'name': 'smoke'})
-        if settings['detach_after_smoke']:
-            production_step = build_runtime_step(settings, 'production')
-            steps.append(make_step_result('detach-production', build_production_child_command(settings, f'{run_id}_production', production_step), success=True, skipped=True))
+        if resume_smoke:
+            steps.append(make_step_result('smoke', smoke_step['command'], success=True, skipped=True))
         else:
-            production_step = build_runtime_step(settings, 'production')
-            production_result = run_process(
-                production_step['command'],
-                production_step['checkpoint_roots'],
-                settings['production_timeout_sec'],
+            smoke_result = run_process(
+                smoke_step['command'],
+                smoke_step['checkpoint_roots'],
+                settings['smoke_timeout_sec'],
                 True,
                 logger,
-                env_overrides=production_step['env_overrides'],
+                env_overrides=smoke_step['env_overrides'],
             )
-            steps.append({**production_result, 'name': 'production'})
+            steps.append({**smoke_result, 'name': 'smoke'})
+        if settings['detach_after_smoke']:
+            production_step = build_runtime_step(settings, 'production')
+            if resume_production:
+                steps.append(make_step_result('detach-production', build_production_child_command(settings, f'{run_id}_production', production_step, output_dir=output_dir), success=True, skipped=True))
+            else:
+                steps.append(make_step_result('detach-production', build_production_child_command(settings, f'{run_id}_production', production_step, output_dir=output_dir), success=True, skipped=True))
+        else:
+            production_step = build_runtime_step(settings, 'production')
+            if resume_production:
+                steps.append(make_step_result('production', production_step['command'], success=True, skipped=True))
+            else:
+                production_result = run_process(
+                    production_step['command'],
+                    production_step['checkpoint_roots'],
+                    settings['production_timeout_sec'],
+                    True,
+                    logger,
+                    env_overrides=production_step['env_overrides'],
+                )
+                steps.append({**production_result, 'name': 'production'})
         return 0, steps
 
     if settings['detach_after_smoke']:
@@ -952,23 +1158,36 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str) -> t
         return EXIT_PREFLIGHT_FAILED, steps
 
     smoke_step = build_runtime_step(settings, 'smoke')
-    smoke_result = run_process(
-        smoke_step['command'],
-        smoke_step['checkpoint_roots'],
-        settings['smoke_timeout_sec'],
-        False,
-        logger,
-        env_overrides=smoke_step['env_overrides'],
-    )
-    steps.append({**smoke_result, 'name': 'smoke'})
-    if not smoke_result['success']:
-        return EXIT_STEP_FAILED, steps
+    if resume_smoke:
+        logger.info('Smoke already completed in this round — skipping')
+        steps.append(make_step_result('smoke', smoke_step['command'], success=True, skipped=True))
+    else:
+        smoke_result = run_process(
+            smoke_step['command'],
+            smoke_step['checkpoint_roots'],
+            settings['smoke_timeout_sec'],
+            False,
+            logger,
+            env_overrides=smoke_step['env_overrides'],
+        )
+        steps.append({**smoke_result, 'name': 'smoke'})
+        if not smoke_result['success']:
+            return EXIT_STEP_FAILED, steps
 
     production_step = build_runtime_step(settings, 'production')
     if settings['detach_after_smoke']:
-        detach_result, _ = start_detached_production(settings, run_id, production_step, logger)
+        if resume_production:
+            logger.info('Production already completed in this round — skipping detached launch')
+            steps.append(make_step_result('detach-production', build_production_child_command(settings, f'{run_id}_production', production_step, output_dir=output_dir), success=True, skipped=True))
+            return 0, steps
+        detach_result, _ = start_detached_production(settings, run_id, production_step, logger, output_dir=output_dir)
         steps.append(detach_result)
         return (0 if detach_result['success'] else EXIT_STEP_FAILED), steps
+
+    if resume_production:
+        logger.info('Production already completed in this round — skipping')
+        steps.append(make_step_result('production', production_step['command'], success=True, skipped=True))
+        return 0, steps
 
     production_result = run_process(
         production_step['command'],
@@ -982,7 +1201,7 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str) -> t
     return 0 if production_result['success'] else EXIT_STEP_FAILED, steps
 
 
-def execute_production_child(args, logger: logging.Logger) -> tuple[int, list[dict]]:
+def execute_production_child(args, logger: logging.Logger, output_dir: Path = RESULTS_DIR) -> tuple[int, list[dict]]:
     steps: list[dict] = []
     preflight_url = f'http://{args.host}:{args.port}/json/list'
     try:
@@ -1027,7 +1246,7 @@ def execute_production_child(args, logger: logging.Logger) -> tuple[int, list[di
             'status': 'completed' if production_result['success'] else 'failed',
             'child_run_id': args.run_id,
             'pid': os.getpid(),
-            'summary_path': relative_path(RESULTS_DIR / f'{args.run_id}-summary.json'),
+            'summary_path': relative_path(output_dir / f'{args.run_id}-summary.json'),
             'success': production_result['success'],
             'finished_at': datetime.now(timezone.utc).isoformat(),
         },
@@ -1035,10 +1254,10 @@ def execute_production_child(args, logger: logging.Logger) -> tuple[int, list[di
     return (0 if production_result['success'] else EXIT_STEP_FAILED), steps
 
 
-def write_summary(run_id: str, summary: dict, logger: logging.Logger) -> tuple[Path, Path]:
-    ensure_results_dir()
-    summary_json_path = RESULTS_DIR / f'{run_id}-summary.json'
-    summary_md_path = RESULTS_DIR / f'{run_id}-summary.md'
+def write_summary(run_id: str, summary: dict, logger: logging.Logger, output_dir: Path = RESULTS_DIR) -> tuple[Path, Path]:
+    ensure_output_dir(output_dir)
+    summary_json_path = output_dir / f'{run_id}-summary.json'
+    summary_md_path = output_dir / f'{run_id}-summary.md'
 
     summary_json_path.write_text(f'{json.dumps(summary, indent=2, ensure_ascii=False)}\n', encoding='utf-8')
 
@@ -1084,13 +1303,97 @@ def main() -> int:
     raw_args = sys.argv[1:]
     args = parser.parse_args(raw_args)
     run_id = args.run_id or utc_run_id()
-    logger, log_path = configure_logger(run_id)
+
+    round_mode = getattr(args, 'round_mode', None)
+    output_dir = Path(getattr(args, 'output_dir', str(RESULTS_DIR))) if args.command == 'production-child' else RESULTS_DIR
+    round_number = None
+    round_fingerprint = None
+    smoke_settings = None
+    manifest_written = False
+    if round_mode:
+        try:
+            if args.command == 'smoke-prod':
+                smoke_settings = load_smoke_prod_settings(args, raw_args)
+                round_fingerprint = build_smoke_prod_fingerprint(smoke_settings)
+            elif args.command != 'report':
+                round_fingerprint = build_args_fingerprint(args)
+
+            output_dir, round_number = resolve_round_dir(round_mode)
+            if round_mode == 'resume-current-round' and round_fingerprint:
+                ensure_round_manifest_matches(output_dir, round_fingerprint)
+        except (RuntimeError, ValueError) as error:
+            logger_fallback, _ = configure_logger(run_id)
+            logger_fallback.error('%s', error)
+            summary = {
+                'success': False,
+                'command': args.command,
+                'host': getattr(args, 'host', DEFAULT_HOST),
+                'port': getattr(args, 'port', DEFAULT_PORT),
+                'preflight_required': False,
+                'error': str(error),
+                'steps': [],
+            }
+            write_summary(run_id, summary, logger_fallback)
+            return EXIT_STEP_FAILED
+
+    logger, log_path = configure_logger(run_id, output_dir=output_dir)
     logger.info('Starting %s run (log: %s)', args.command, relative_path(log_path))
+    setattr(args, 'output_dir', str(output_dir))
+
+    if round_number is not None:
+        logger.info('Round %d (%s) -> %s', round_number, round_mode, relative_path(output_dir))
+        write_round_manifest(
+            output_dir,
+            round_number,
+            run_id,
+            round_mode,
+            args.command,
+            fingerprint=round_fingerprint,
+        )
+        manifest_written = True
 
     if args.command == 'smoke-prod':
         try:
-            settings = load_smoke_prod_settings(args, raw_args)
-            exit_code, steps = execute_smoke_prod(settings, logger, run_id)
+            settings = smoke_settings or load_smoke_prod_settings(args, raw_args)
+            settings['detached_state_file'] = resolve_round_scoped_path(
+                output_dir,
+                settings['detached_state_file'],
+                Path(DEFAULT_DETACHED_STATE_FILE).name,
+            )
+
+            if round_mode == 'resume-current-round' and find_completed_step_in_round(output_dir, 'smoke'):
+                settings['resume_smoke'] = True
+            if round_mode == 'resume-current-round' and find_completed_step_in_round(output_dir, 'production'):
+                settings['resume_production'] = True
+            if round_mode == 'resume-current-round' and settings.get('smoke_mode') == 'bundle':
+                smoke_phase = settings['bundle_smoke_phases'].split(',')[0].strip()
+                if not settings.get('smoke_us_resume'):
+                    cp = find_latest_checkpoint([
+                        PROJECT_ROOT / 'results' / 'campaigns' / settings['bundle_us_campaign'] / smoke_phase,
+                    ])
+                    if cp:
+                        settings['smoke_us_resume'] = str(cp)
+                if not settings.get('smoke_jp_resume'):
+                    cp = find_latest_checkpoint([
+                        PROJECT_ROOT / 'results' / 'campaigns' / settings['bundle_jp_campaign'] / smoke_phase,
+                    ])
+                    if cp:
+                        settings['smoke_jp_resume'] = str(cp)
+            if round_mode == 'resume-current-round' and settings.get('production_mode') == 'bundle':
+                production_phase = settings['bundle_production_phases'].split(',')[0].strip()
+                if not settings.get('production_us_resume'):
+                    cp = find_latest_checkpoint([
+                        PROJECT_ROOT / 'results' / 'campaigns' / settings['bundle_us_campaign'] / production_phase,
+                    ])
+                    if cp:
+                        settings['production_us_resume'] = str(cp)
+                if not settings.get('production_jp_resume'):
+                    cp = find_latest_checkpoint([
+                        PROJECT_ROOT / 'results' / 'campaigns' / settings['bundle_jp_campaign'] / production_phase,
+                    ])
+                    if cp:
+                        settings['production_jp_resume'] = str(cp)
+            exit_code, steps = execute_smoke_prod(settings, logger, run_id, output_dir=output_dir)
         except ValueError as error:
             logger.error('%s', error)
             summary = {
@@ -1102,7 +1405,7 @@ def main() -> int:
                 'error': str(error),
                 'steps': [],
             }
-            write_summary(run_id, summary, logger)
+            write_summary(run_id, summary, logger, output_dir=output_dir)
             return EXIT_STEP_FAILED
 
         summary = {
@@ -1113,11 +1416,15 @@ def main() -> int:
             'preflight_required': True,
             'steps': steps,
         }
-        write_summary(run_id, summary, logger)
+        if round_number is not None:
+            summary['round'] = round_number
+            summary['round_mode'] = round_mode
+        write_summary(run_id, summary, logger, output_dir=output_dir)
         return exit_code
 
     if args.command == 'production-child':
-        exit_code, steps = execute_production_child(args, logger)
+        child_output_dir = Path(getattr(args, 'output_dir', str(RESULTS_DIR)))
+        exit_code, steps = execute_production_child(args, logger, output_dir=child_output_dir)
         summary = {
             'success': exit_code == 0,
             'command': args.command,
@@ -1126,7 +1433,7 @@ def main() -> int:
             'preflight_required': True,
             'steps': steps,
         }
-        write_summary(run_id, summary, logger)
+        write_summary(run_id, summary, logger, output_dir=child_output_dir)
         return exit_code
 
     preflight_required = requires_cdp_preflight(args.command)
@@ -1144,7 +1451,7 @@ def main() -> int:
                 'error': str(error),
                 'steps': [],
             }
-            write_summary(run_id, summary, logger)
+            write_summary(run_id, summary, logger, output_dir=output_dir)
             return EXIT_PREFLIGHT_FAILED
 
     steps = []
@@ -1178,7 +1485,10 @@ def main() -> int:
         'preflight_required': preflight_required,
         'steps': steps,
     }
-    write_summary(run_id, summary, logger)
+    if round_number is not None:
+        summary['round'] = round_number
+        summary['round_mode'] = round_mode
+    write_summary(run_id, summary, logger, output_dir=output_dir)
     return 0 if overall_success else EXIT_STEP_FAILED
 
 

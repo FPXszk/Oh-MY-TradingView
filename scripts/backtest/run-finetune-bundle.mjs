@@ -87,8 +87,12 @@ async function main() {
       phases: { type: 'string', default: 'smoke,full' },
       'us-campaign': { type: 'string', default: 'next-long-run-us-finetune-100x10' },
       'jp-campaign': { type: 'string', default: 'next-long-run-jp-finetune-100x10' },
+      'us-resume': { type: 'string' },
+      'jp-resume': { type: 'string' },
       'dry-run': { type: 'boolean', default: false },
       'skip-preflight': { type: 'boolean', default: false },
+      'us-resume': { type: 'string', default: '' },
+      'jp-resume': { type: 'string', default: '' },
     },
     allowPositionals: true,
     strict: true,
@@ -115,17 +119,24 @@ async function main() {
     activePorts = readyPorts;
   }
 
-  const campaigns = [values['us-campaign'], values['jp-campaign']];
+  const campaigns = [
+    { id: values['us-campaign'], resume: values['us-resume'] || null },
+    { id: values['jp-campaign'], resume: values['jp-resume'] || null },
+  ];
   for (const phase of phases) {
     process.stdout.write(`\n=== Phase: ${phase} ===\n`);
-    for (const campaignId of campaigns) {
-      process.stdout.write(`Running ${campaignId} on ports ${activePorts.join(',')}\n`);
+    for (const campaign of campaigns) {
+      process.stdout.write(`Running ${campaign.id} on ports ${activePorts.join(',')}\n`);
+      if (campaign.resume) {
+        process.stdout.write(`  Resume checkpoint: ${campaign.resume}\n`);
+      }
       let result = await runCampaignPhase({
-        campaignId,
+        campaignId: campaign.id,
         phase,
         host,
         ports: activePorts,
         dryRun: values['dry-run'],
+        resume: campaign.resume,
       });
 
       process.stdout.write(result.stdout);
@@ -134,7 +145,7 @@ async function main() {
       }
       if (!result.success) {
         throw new Error(
-          `Campaign failed: ${campaignId} (${phase}). ` +
+          `Campaign failed: ${campaign.id} (${phase}). ` +
           `Active ports: ${activePorts.join(',')}. No implicit fallback is performed.`,
         );
       }
