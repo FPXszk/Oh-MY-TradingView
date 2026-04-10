@@ -27,8 +27,8 @@ export function registerObserveTools(server) {
           {
             success: false,
             error: err.message,
-            hint: 'Is TradingView Desktop running with --remote-debugging-port=9225? ' +
-              'In WSL, set TV_CDP_HOST to the Windows host IP.',
+              hint: 'Is TradingView Desktop running with --remote-debugging-port=9222? ' +
+                'In WSL, use the Windows host IP on port 9223.',
           },
           true,
         );

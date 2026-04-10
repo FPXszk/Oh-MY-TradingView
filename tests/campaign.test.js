@@ -905,7 +905,7 @@ describe('100x3 campaign configs', () => {
       'donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict',
       'donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late',
     ]);
-    assert.deepEqual(config.execution.worker_ports, [9223, 9225]);
+    assert.deepEqual(config.execution.worker_ports, [9223]);
   });
 
   it('long-run-jp-exit-sweep-100x3.json is valid JSON with correct shape', async () => {
@@ -922,7 +922,7 @@ describe('100x3 campaign configs', () => {
       'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight',
       'donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide',
     ]);
-    assert.deepEqual(config.execution.worker_ports, [9223, 9225]);
+    assert.deepEqual(config.execution.worker_ports, [9223]);
   });
 
   it('100x3 campaign configs pass validateCampaignConfig', async () => {
@@ -1004,7 +1004,7 @@ describe('next finetune 100x10 campaign configs', () => {
     assert.equal(config.date_override.from, '2000-01-01');
     assert.equal(config.date_override.to, '2099-12-31');
     assert.equal(config.preset_ids.length, 10);
-    assert.deepEqual(config.execution.worker_ports, [9225]);
+    assert.deepEqual(config.execution.worker_ports, [9223]);
   });
 
   it('next-long-run-jp-finetune-100x10.json is valid JSON with expected shape', async () => {
@@ -1018,7 +1018,7 @@ describe('next finetune 100x10 campaign configs', () => {
     assert.equal(config.date_override.from, '2000-01-01');
     assert.equal(config.date_override.to, '2099-12-31');
     assert.equal(config.preset_ids.length, 10);
-    assert.deepEqual(config.execution.worker_ports, [9225]);
+    assert.deepEqual(config.execution.worker_ports, [9223]);
   });
 
   it('next finetune campaign configs pass validateCampaignConfig', async () => {
@@ -1304,12 +1304,12 @@ describe('cross-phase resume guard', () => {
 // run-finetune-bundle default policy
 // ---------------------------------------------------------------------------
 describe('run-finetune-bundle default policy', () => {
-  it('default port is 9225 (Session1 visible)', async () => {
+  it('default port is 9223 (WSL access to Windows 9222)', async () => {
     const raw = await readFile(
       join(__dirname, '..', 'scripts', 'backtest', 'run-finetune-bundle.mjs'),
       'utf8',
     );
-    assert.ok(raw.includes("'9225'"), 'default ports should be 9225');
+    assert.ok(raw.includes("'9223'"), 'default ports should be 9223');
     assert.ok(!raw.includes("'9223,9225'"), 'should not default to dual-worker 9223,9225');
   });
 

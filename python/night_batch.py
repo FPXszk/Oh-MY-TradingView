@@ -20,7 +20,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 RESULTS_DIR = PROJECT_ROOT / 'results' / 'night-batch'
 DEFAULT_HOST = '172.31.144.1'
-DEFAULT_PORT = 9225
+DEFAULT_PORT = 9223
 DEFAULT_PHASES = 'smoke,full'
 DEFAULT_TIMEOUT = 4 * 60 * 60
 DEFAULT_US_CAMPAIGN = 'next-long-run-us-finetune-100x10'
@@ -67,7 +67,7 @@ def build_parser() -> argparse.ArgumentParser:
     common.add_argument('--dry-run', action='store_true')
 
     parser = argparse.ArgumentParser(
-        description='Visible-session-first orchestrator for TradingView backtest night runs.',
+        description='WSL-first orchestrator for TradingView backtest night runs.',
     )
     subparsers = parser.add_subparsers(dest='command', required=True)
 
@@ -132,19 +132,19 @@ def preflight_visible_session(host: str, port: int, logger: logging.Logger) -> d
             payload = json.loads(response.read().decode('utf-8'))
     except (urllib.error.URLError, TimeoutError, ValueError) as error:
         raise RuntimeError(
-            f'Preflight failed for visible session {host}:{port}: {error}'
+            f'Preflight failed for CDP session {host}:{port}: {error}'
         ) from error
 
     if not isinstance(payload, list):
         raise RuntimeError(
-            f'Preflight failed for visible session {host}:{port}: unexpected non-list /json/list payload'
+            f'Preflight failed for CDP session {host}:{port}: unexpected non-list /json/list payload'
         )
     if not has_tradingview_chart_target(payload):
         raise RuntimeError(
-            f'Preflight failed for visible session {host}:{port}: no TradingView chart target found'
+            f'Preflight failed for CDP session {host}:{port}: no TradingView chart target found'
         )
 
-    logger.info('Preflight OK for visible session %s:%s (%s targets)', host, port, len(payload))
+    logger.info('Preflight OK for CDP session %s:%s (%s targets)', host, port, len(payload))
     return {'url': url, 'targets': len(payload)}
 
 

@@ -104,13 +104,13 @@ describe('resolveCdpEndpoint', () => {
   it('returns defaults when no env vars set', () => {
     const ep = resolveCdpEndpoint({});
     assert.equal(ep.host, 'localhost');
-    assert.equal(ep.port, 9225);
+    assert.equal(ep.port, 9222);
   });
 
   it('respects TV_CDP_HOST', () => {
     const ep = resolveCdpEndpoint({ TV_CDP_HOST: '172.20.10.1' });
     assert.equal(ep.host, '172.20.10.1');
-    assert.equal(ep.port, 9225);
+    assert.equal(ep.port, 9222);
   });
 
   it('respects TV_CDP_PORT', () => {
@@ -132,7 +132,7 @@ describe('resolveCdpEndpoint', () => {
 
   it('falls back to defaults for invalid port', () => {
     const ep = resolveCdpEndpoint({ TV_CDP_PORT: 'abc' });
-    assert.equal(ep.port, 9225);
+    assert.equal(ep.port, 9222);
   });
 });
 
@@ -196,10 +196,10 @@ describe('session port persistence', () => {
     clearSessionPort();
   });
 
-  it('resolveCdpEndpoint falls back to 9225 when no session port and no env', () => {
+  it('resolveCdpEndpoint falls back to 9222 when no session port and no env', () => {
     clearSessionPort();
     const ep = resolveCdpEndpoint({});
-    assert.equal(ep.port, 9225);
+    assert.equal(ep.port, 9222);
   });
 });
 

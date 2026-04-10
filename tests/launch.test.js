@@ -23,9 +23,9 @@ import {
 describe('buildLaunchCommand', () => {
   it('returns a command with default port when no options given', () => {
     const result = buildLaunchCommand({ executablePath: '/usr/bin/tradingview', os: 'linux' });
-    assert.equal(result.port, 9225);
+    assert.equal(result.port, 9222);
     assert.equal(result.command, '/usr/bin/tradingview');
-    assert.ok(result.args.includes('--remote-debugging-port=9225'));
+    assert.ok(result.args.includes('--remote-debugging-port=9222'));
   });
 
   it('uses custom port', () => {
@@ -168,7 +168,7 @@ describe('launchDesktop', () => {
   it('returns default port on dry-run launch without mutating session port', async () => {
     clearSessionPort();
     const result = await launchDesktop({ executablePath: '/bin/tv', dryRun: true });
-    assert.equal(result.port, 9225);
+    assert.equal(result.port, 9222);
     assert.equal(getSessionPort(), null);
     clearSessionPort();
   });

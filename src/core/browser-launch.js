@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process';
 import { resolve } from 'node:path';
 import { platform } from 'node:os';
-import { DEFAULT_CDP_PORT, setSessionPort } from '../connection.js';
+import { setSessionPort } from '../connection.js';
 import {
   verifyExecutable,
   pickFirstExistingPath,
@@ -9,7 +9,7 @@ import {
   collectWslWindowsAppPaths,
 } from './launch.js';
 
-export const DEFAULT_PORT = DEFAULT_CDP_PORT;
+export const DEFAULT_PORT = 9333;
 export const DEFAULT_CHART_URL = 'https://www.tradingview.com/chart/';
 
 export const BROWSER_CANDIDATES = {

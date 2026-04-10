@@ -149,7 +149,7 @@ export async function launchDesktop({ port, executablePath, dryRun } = {}) {
         port: cmd.port,
         pid: child.pid ?? null,
         hint: `TradingView Desktop launched with --remote-debugging-port=${cmd.port}. ` +
-              'Prefer attaching to an already-running visible 9225 session when possible.',
+              'Prefer the standard Windows-local 9222 session; from WSL, connect via the Windows host IP on port 9223.',
       });
     }, 1500);
 

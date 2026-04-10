@@ -169,18 +169,18 @@ describe('collectRuntimeErrors', () => {
 describe('collectConnectionInfo', () => {
   it('returns connection info with target', async () => {
     const info = await collectConnectionInfo({
-      resolveCdpEndpoint: () => ({ host: '1.2.3.4', port: 9225, url: 'http://1.2.3.4:9225' }),
+      resolveCdpEndpoint: () => ({ host: '1.2.3.4', port: 9222, url: 'http://1.2.3.4:9222' }),
       getTargetInfo: async () => ({ id: 'T1', url: 'https://tv.com/chart', title: 'Chart' }),
     });
     assert.equal(info.host, '1.2.3.4');
-    assert.equal(info.port, 9225);
+    assert.equal(info.port, 9222);
     assert.equal(info.target_id, 'T1');
     assert.equal(info.target_title, 'Chart');
   });
 
   it('returns partial info when getTargetInfo throws', async () => {
     const info = await collectConnectionInfo({
-      resolveCdpEndpoint: () => ({ host: 'localhost', port: 9225, url: 'http://localhost:9225' }),
+      resolveCdpEndpoint: () => ({ host: 'localhost', port: 9222, url: 'http://localhost:9222' }),
       getTargetInfo: async () => { throw new Error('no target'); },
     });
     assert.equal(info.host, 'localhost');
@@ -250,7 +250,7 @@ function makeMockDeps(overrides = {}) {
     }),
     mkdir: async () => {},
     writeFile: async (path, data) => { written.set(path, data); },
-    resolveCdpEndpoint: () => ({ host: 'localhost', port: 9225, url: 'http://localhost:9225' }),
+    resolveCdpEndpoint: () => ({ host: 'localhost', port: 9222, url: 'http://localhost:9222' }),
     _written: written,
     ...overrides,
   };
@@ -416,7 +416,7 @@ describe('captureObservabilitySnapshot', () => {
     try {
       const result = await captureObservabilitySnapshot({ baseDir: tempDir }, deps);
       assert.equal(result.connection.host, 'localhost');
-      assert.equal(result.connection.port, 9225);
+      assert.equal(result.connection.port, 9222);
       assert.ok(result.connection.url);
       assert.equal(result.connection.target_id, 'TGT-1');
     } finally {

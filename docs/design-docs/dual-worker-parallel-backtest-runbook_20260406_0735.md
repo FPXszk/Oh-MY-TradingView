@@ -1,6 +1,6 @@
 # Dual-worker parallel backtest runbook
 
-> **注意**: このランブックは dual-worker 並列の参照資料として残すが、**既定の運用モードは Session1 visible (9225) 単独 / sequential** に変更された。dual-worker 並列は明示的な opt-in でのみ利用可能。
+> **注意**: このランブックは dual-worker 並列の参照資料として残す。**現行の既定運用は worker1 single-worker（Windows `9222` -> WSL `9223`）/ sequential** であり、worker2 の `9224` / `9225` は履歴上の dual-worker 参照である。
 
 ## Purpose
 

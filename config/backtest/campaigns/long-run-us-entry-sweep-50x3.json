@@ -24,7 +24,7 @@
     }
   },
   "execution": {
-    "worker_ports": [9223, 9225],
+    "worker_ports": [9223],
     "checkpoint_every": 10,
     "cooldown_ms": 1000,
     "max_consecutive_failures": 5,

@@ -9,7 +9,7 @@ export function registerBrowserLaunchTools(server) {
       'Bounded fallback for observation/recovery — not a desktop replacement.',
     {
       port: z.number().int().min(1).max(65535).optional()
-        .describe('CDP debug port (default: 9225)'),
+        .describe('CDP debug port (default: 9333)'),
       executablePath: z.string().optional()
         .describe('Full path to Chromium-based browser executable (auto-detected if omitted)'),
       url: z.string().url().refine(

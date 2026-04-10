@@ -1,7 +1,7 @@
 import CDP from 'chrome-remote-interface';
 
 export const DEFAULT_CDP_HOST = 'localhost';
-export const DEFAULT_CDP_PORT = 9225;
+export const DEFAULT_CDP_PORT = 9222;
 
 let client = null;
 let targetInfo = null;
@@ -37,7 +37,7 @@ export function sameEndpoint(left, right) {
 /**
  * Resolve CDP endpoint from environment variables.
  * Pure function — accepts an env object for testability.
- * Priority: explicit env var > session port (from launch) > default 9225.
+ * Priority: explicit env var > session port (from launch) > default 9222.
  */
 export function resolveCdpEndpoint(env = process.env) {
   const host = env.TV_CDP_HOST || DEFAULT_CDP_HOST;
@@ -56,11 +56,14 @@ export function buildConnectionHint(host, port) {
     'Set TV_CDP_HOST / TV_CDP_PORT to override the endpoint.',
   ];
   if (host !== 'localhost' && host !== '127.0.0.1') {
-    lines.push(`Current TV_CDP_HOST=${host} — ensure the Windows host is reachable from WSL.`);
+    lines.push(
+      `Current TV_CDP_HOST=${host} — if you are in WSL, ` +
+      'the usual setup is Windows-local 9222 exposed on port 9223.',
+    );
   } else {
     lines.push(
-      'In WSL, localhost may not reach Windows. ' +
-      'Set TV_CDP_HOST to your Windows IP (e.g. from `ip route` or /etc/resolv.conf).'
+      'On Windows, the default endpoint is localhost:9222. ' +
+      'In WSL, localhost may not reach Windows; use your Windows host IP with port 9223.'
     );
   }
   return lines.join('\n');

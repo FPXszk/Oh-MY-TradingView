@@ -83,7 +83,7 @@ async function main() {
     args: process.argv.slice(2),
     options: {
       host: { type: 'string', default: process.env.TV_CDP_HOST || '172.31.144.1' },
-      ports: { type: 'string', default: process.env.TV_CAMPAIGN_PORTS || '9225' },
+      ports: { type: 'string', default: process.env.TV_CAMPAIGN_PORTS || '9223' },
       phases: { type: 'string', default: 'smoke,full' },
       'us-campaign': { type: 'string', default: 'next-long-run-us-finetune-100x10' },
       'jp-campaign': { type: 'string', default: 'next-long-run-jp-finetune-100x10' },
@@ -109,7 +109,7 @@ async function main() {
     if (readyPorts.length === 0) {
       throw new Error(
         `No requested worker port passed status preflight (${requestedPorts.join(',')}). ` +
-        'Ensure the visible TradingView instance is running on the requested port and reachable from WSL.',
+          'Ensure the Windows-local 9222 TradingView instance is exposed to WSL on the requested port (default 9223).',
       );
     }
     activePorts = readyPorts;
