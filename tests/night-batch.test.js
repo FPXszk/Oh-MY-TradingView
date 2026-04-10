@@ -867,4 +867,56 @@ exit 0
     assert.match(result.stdout, /--jp-resume/);
     assert.match(result.stdout, /checkpoint-20\.json/);
   });
+
+  it('smoke-prod fails fast with clear error when --config is an empty string', async () => {
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--config',
+      '',
+      '--host',
+      '127.0.0.1',
+      '--port',
+      String(port),
+      '--dry-run',
+      '--round-mode',
+      'advance-next-round',
+    ]);
+
+    assert.equal(result.status, 2, result.stderr || result.stdout);
+    const combined = result.stdout + result.stderr;
+    assert.ok(
+      !combined.includes('IsADirectoryError'),
+      'must not produce an IsADirectoryError; empty config should fail fast',
+    );
+    assert.match(combined, /--config must not be empty/);
+  });
+
+  it('smoke-prod fails fast with clear error when --config points to a directory', async () => {
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--config',
+      resultsDir,
+      '--host',
+      '127.0.0.1',
+      '--port',
+      String(port),
+      '--dry-run',
+      '--round-mode',
+      'advance-next-round',
+    ]);
+
+    assert.notEqual(result.status, 0, 'should fail for directory config');
+    const combined = result.stdout + result.stderr;
+    assert.ok(
+      !combined.includes('IsADirectoryError'),
+      'must not produce an IsADirectoryError; should fail fast with a descriptive message',
+    );
+    assert.match(
+      combined,
+      /directory|not a file/i,
+      'error message should mention that the path is a directory',
+    );
+  });
 });

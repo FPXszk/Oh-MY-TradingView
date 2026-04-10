@@ -476,8 +476,15 @@ def resolve_int_option(
 
 def load_smoke_prod_settings(args, raw_args: list[str]) -> dict:
     config = {}
-    config_path = resolve_project_path(getattr(args, 'config', None))
+    raw_config_path = getattr(args, 'config', None)
+    if isinstance(raw_config_path, str) and raw_config_path.strip() == '':
+        raise ValueError('--config must not be empty')
+    config_path = resolve_project_path(raw_config_path)
     if config_path:
+        if config_path.is_dir():
+            raise ValueError(
+                f'--config path is a directory, not a file: {config_path}'
+            )
         config = read_json_file(config_path)
 
     runtime = read_config_section(config, 'runtime')

@@ -40,15 +40,29 @@ jobs:
         run: |
           for /f "usebackq delims=" %%I in (`wsl.exe wslpath -a "%CD%"`) do set "REPO_WSL=%%I"
           if not defined REPO_WSL exit /b 1
-          wsl.exe bash -lc "cd \"$REPO_WSL\" && npm ci --silent"
+          wsl.exe bash -lc "cd \"%REPO_WSL%\" && npm ci --silent"
 
       - name: Start smoke gate and detached production
         if: steps.freshness.outputs.should_run == 'true'
         shell: cmd
         run: |
           set "NIGHT_BATCH_CONFIG=${{ inputs.config_path }}"
-          if "%NIGHT_BATCH_CONFIG%"=="" set "NIGHT_BATCH_CONFIG=config/night_batch/bundle-detached-reuse-config.json"
+          if "%NIGHT_BATCH_CONFIG%"=="" (
+            if "${{ github.event_name }}"=="workflow_dispatch" (
+              echo [diag] ERROR: workflow_dispatch requires a non-empty config_path
+              exit /b 1
+            )
+            set "NIGHT_BATCH_CONFIG=config/night_batch/bundle-detached-reuse-config.json"
+          )
+          echo [diag] config_path=%NIGHT_BATCH_CONFIG%
+          echo [diag] CD=%CD%
+          if not exist "%NIGHT_BATCH_CONFIG%" (
+            echo [diag] WARNING: config file not found at %NIGHT_BATCH_CONFIG%
+          )
           scripts\windows\run-night-batch-self-hosted.cmd "%NIGHT_BATCH_CONFIG%"
+          set "BATCH_EXIT=%ERRORLEVEL%"
+          echo [diag] wrapper exit code=%BATCH_EXIT%
+          exit /b %BATCH_EXIT%
 
       - name: Report skipped stale schedule
         if: steps.freshness.outputs.should_run != 'true'
