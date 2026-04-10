@@ -59,3 +59,10 @@ export {
   buildGatedSummary,
   DEFAULT_GATE_THRESHOLDS,
 } from './experiment-gating.js';
+export {
+  summarizeStrategyRuns,
+  summarizeSymbolRuns,
+  rankStrategySummaries,
+  summarizeMarketCampaign,
+  buildCombinedStrategyRanking,
+} from './campaign-report.js';

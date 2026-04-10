@@ -1,0 +1,37 @@
+[
+  {
+    "rank": 1,
+    "market": "JP",
+    "presetId": "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight",
+    "file": "docs/references/pine/next-long-run-market-matched-200_20260409_1525/01_donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight.pine",
+    "apply_result": null
+  },
+  {
+    "rank": 2,
+    "market": "JP",
+    "presetId": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight",
+    "file": "docs/references/pine/next-long-run-market-matched-200_20260409_1525/02_donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight.pine",
+    "apply_result": null
+  },
+  {
+    "rank": 3,
+    "market": "JP",
+    "presetId": "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide",
+    "file": "docs/references/pine/next-long-run-market-matched-200_20260409_1525/03_donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide.pine",
+    "apply_result": null
+  },
+  {
+    "rank": 4,
+    "market": "US",
+    "presetId": "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late",
+    "file": "docs/references/pine/next-long-run-market-matched-200_20260409_1525/04_donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late.pine",
+    "apply_result": null
+  },
+  {
+    "rank": 5,
+    "market": "US",
+    "presetId": "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early",
+    "file": "docs/references/pine/next-long-run-market-matched-200_20260409_1525/05_donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early.pine",
+    "apply_result": null
+  }
+]

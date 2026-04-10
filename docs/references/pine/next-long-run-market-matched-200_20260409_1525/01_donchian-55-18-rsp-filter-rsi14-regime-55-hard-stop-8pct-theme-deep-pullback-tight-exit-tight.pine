@@ -1,0 +1,29 @@
+//@version=6
+strategy("Donchian 55/18 + RSP Filter + RSI14 Regime 55 + 8% Stop", overlay=true, pyramiding=0, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission_type=strategy.commission.percent, commission_value=0, slippage=0)
+startDate = timestamp(2000, 1, 1, 0, 0)
+endDate = timestamp(2099, 12, 31, 23, 59)
+inDateRange = time >= startDate and time <= endDate
+regimeRefClose = request.security("BATS:RSP", timeframe.period, close)
+regimeRefMa = ta.sma(regimeRefClose, 200)
+regimeOk = regimeRefClose > regimeRefMa
+regimeForceExit = false
+rsiRegimeValue = ta.rsi(close, 14)
+rsiRegimeOk = rsiRegimeValue > 55
+donchianUpper = ta.highest(high, 55)[1]
+donchianLower = ta.lowest(low, 18)[1]
+plot(donchianUpper, "Donchian Upper", color=color.green)
+plot(donchianLower, "Donchian Lower", color=color.red)
+entrySignal = ta.crossover(close, donchianUpper)
+exitSignal = ta.crossunder(close, donchianLower)
+allowEntry = inDateRange and regimeOk and rsiRegimeOk
+if entrySignal and allowEntry and strategy.position_size <= 0
+    strategy.entry("Long", strategy.long)
+if exitSignal and strategy.position_size > 0
+    strategy.close("Long", comment="Base exit")
+if regimeForceExit and not regimeOk and strategy.position_size > 0
+    strategy.close("Long", comment="Regime exit")
+if not inDateRange and strategy.position_size > 0
+    strategy.close("Long", comment="Date exit")
+stopLossPrice = strategy.position_avg_price * (1 - 0.08)
+if strategy.position_size > 0 and not na(stopLossPrice)
+    strategy.exit("Stop Loss", "Long", stop=stopLossPrice)
