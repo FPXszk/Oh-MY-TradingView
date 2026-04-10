@@ -85,7 +85,6 @@ async function main() {
       host: { type: 'string', default: process.env.TV_CDP_HOST || '172.31.144.1' },
       ports: { type: 'string', default: process.env.TV_CAMPAIGN_PORTS || '9225' },
       phases: { type: 'string', default: 'smoke,full' },
-      'fallback-port': { type: 'string', default: '9223' },
       'us-campaign': { type: 'string', default: 'next-long-run-us-finetune-100x10' },
       'jp-campaign': { type: 'string', default: 'next-long-run-jp-finetune-100x10' },
       'dry-run': { type: 'boolean', default: false },
@@ -98,13 +97,9 @@ async function main() {
   const host = values.host;
   const requestedPorts = parsePortList(values.ports);
   const phases = String(values.phases).split(',').map((value) => value.trim()).filter(Boolean);
-  const fallbackPort = Number(values['fallback-port']);
 
   if (requestedPorts.length === 0) {
     throw new Error('At least one port is required');
-  }
-  if (!Number.isFinite(fallbackPort)) {
-    throw new Error(`Invalid --fallback-port: ${values['fallback-port']}`);
   }
 
   let activePorts = [...requestedPorts];
@@ -112,7 +107,10 @@ async function main() {
     const checks = await Promise.all(requestedPorts.map((port) => runStatus(host, port)));
     const readyPorts = checks.filter((entry) => entry.success).map((entry) => entry.port);
     if (readyPorts.length === 0) {
-      throw new Error('No worker port passed status preflight');
+      throw new Error(
+        `No requested worker port passed status preflight (${requestedPorts.join(',')}). ` +
+        'Ensure the visible TradingView instance is running on the requested port and reachable from WSL.',
+      );
     }
     activePorts = readyPorts;
   }
@@ -135,10 +133,10 @@ async function main() {
         process.stderr.write(result.stderr);
       }
       if (!result.success) {
-        if (activePorts.length > 1) {
-          throw new Error(`Campaign failed: ${campaignId} (${phase}). Rerun manually with --ports ${fallbackPort} if you need fallback execution.`);
-        }
-        throw new Error(`Campaign failed: ${campaignId} (${phase})`);
+        throw new Error(
+          `Campaign failed: ${campaignId} (${phase}). ` +
+          `Active ports: ${activePorts.join(',')}. No implicit fallback is performed.`,
+        );
       }
     }
   }

@@ -3,9 +3,7 @@ import { readdirSync } from 'node:fs';
 import { access, constants } from 'node:fs/promises';
 import { platform } from 'node:os';
 import { join } from 'node:path';
-import { setSessionPort } from '../connection.js';
-
-const DEFAULT_PORT = 9222;
+import { DEFAULT_CDP_PORT, setSessionPort } from '../connection.js';
 
 const KNOWN_PATHS = {
   win32: [
@@ -52,7 +50,7 @@ function resolvePlatformPaths(os, { env = process.env, wslUserBaseDir = '/mnt/c/
  * Returns { command, args, port } or throws if no executable path is available.
  */
 export function buildLaunchCommand({ port, executablePath, os, env, wslUserBaseDir } = {}) {
-  const effectivePort = port ?? DEFAULT_PORT;
+  const effectivePort = port ?? DEFAULT_CDP_PORT;
   if (!Number.isFinite(effectivePort) || effectivePort < 1 || effectivePort > 65535) {
     throw new Error(`Invalid port: ${effectivePort}. Must be 1–65535.`);
   }
@@ -151,7 +149,7 @@ export async function launchDesktop({ port, executablePath, dryRun } = {}) {
         port: cmd.port,
         pid: child.pid ?? null,
         hint: `TradingView Desktop launched with --remote-debugging-port=${cmd.port}. ` +
-              'Connect via tv_health_check to verify.',
+              'Prefer attaching to an already-running visible 9225 session when possible.',
       });
     }, 1500);
 

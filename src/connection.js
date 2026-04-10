@@ -1,5 +1,8 @@
 import CDP from 'chrome-remote-interface';
 
+export const DEFAULT_CDP_HOST = 'localhost';
+export const DEFAULT_CDP_PORT = 9225;
+
 let client = null;
 let targetInfo = null;
 let _sessionPort = null;
@@ -34,13 +37,13 @@ export function sameEndpoint(left, right) {
 /**
  * Resolve CDP endpoint from environment variables.
  * Pure function — accepts an env object for testability.
- * Priority: explicit env var > session port (from launch) > default 9222.
+ * Priority: explicit env var > session port (from launch) > default 9225.
  */
 export function resolveCdpEndpoint(env = process.env) {
-  const host = env.TV_CDP_HOST || 'localhost';
+  const host = env.TV_CDP_HOST || DEFAULT_CDP_HOST;
   const parsed = Number(env.TV_CDP_PORT);
   const envPort = Number.isFinite(parsed) && parsed > 0 ? parsed : null;
-  const port = envPort ?? _sessionPort ?? 9222;
+  const port = envPort ?? _sessionPort ?? DEFAULT_CDP_PORT;
   return { host, port, url: `http://${host}:${port}` };
 }
 

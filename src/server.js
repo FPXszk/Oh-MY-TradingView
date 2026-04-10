@@ -112,7 +112,7 @@ BACKTEST WORKFLOW:
 IMPORTANT:
 - This is an unofficial tool. Not affiliated with TradingView Inc.
 - Ensure usage complies with TradingView's Terms of Use.
-- Connects to CDP endpoint (TV_CDP_HOST:TV_CDP_PORT, default localhost:9222).
+- Connects to CDP endpoint (TV_CDP_HOST:TV_CDP_PORT, default localhost:9225).
 - In WSL, set TV_CDP_HOST to the Windows host IP.`,
   }
 );

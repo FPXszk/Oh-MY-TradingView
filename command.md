@@ -111,11 +111,10 @@ curl -sS http://172.31.144.1:9225/json/list
 ### WSL から CLI status を確認
 
 ```bash
-TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9223 node src/cli/index.js status
 TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9225 node src/cli/index.js status
 ```
 
-成功時は `success: true` と chart target 情報が返る。
+成功時は `success: true` と chart target 情報が返る。**現在の default/attach-first 運用では 9225 を正本とし、9225 が死んでいる場合は他ポートへ暗黙フォールバックしない。**
 
 ## 7. backtest 実行コマンド
 
@@ -401,10 +400,6 @@ node scripts/backtest/run-finetune-bundle.mjs --dry-run
 node scripts/backtest/run-finetune-bundle.mjs --phases smoke --host 172.31.144.1
 node scripts/backtest/run-finetune-bundle.mjs --phases full --host 172.31.144.1
 
-# 9225 不調時の 9223 fallback（手動切替）
-# stale checkpoint の自動再利用はしないため、fallback は明示 rerun
-node scripts/backtest/run-finetune-bundle.mjs --phases smoke,full --host 172.31.144.1 --ports 9223 --fallback-port 9223
-
 # parallel opt-in（明確な必要性がある場合のみ）
 node scripts/backtest/run-finetune-bundle.mjs --phases smoke,full --host 172.31.144.1 --ports 9223,9225
 
@@ -413,7 +408,25 @@ node scripts/backtest/run-long-campaign.mjs next-long-run-us-finetune-100x10 --p
 node scripts/backtest/run-long-campaign.mjs next-long-run-jp-finetune-100x10 --phase smoke --dry-run
 ```
 
-fine-tune bundle は `next-long-run-us-finetune-100x10` / `next-long-run-jp-finetune-100x10` を順に流す。既定は **Session1 visible (9225) 単独 / sequential / smoke → full**。full は US `1000 runs` + JP `1000 runs` の合計 `2000 runs`。`pilot` は互換目的で残っているが、標準フローからは外れている。parallel 実行は `--ports 9223,9225` で明示的に opt-in するが、失敗時の `9223` fallback は **自動 resume せず手動 rerun** とする。
+fine-tune bundle は `next-long-run-us-finetune-100x10` / `next-long-run-jp-finetune-100x10` を順に流す。既定は **Session1 visible (9225) 単独 / sequential / smoke → full**。full は US `1000 runs` + JP `1000 runs` の合計 `2000 runs`。`pilot` は互換目的で残っているが、標準フローからは外れている。parallel 実行は `--ports 9223,9225` で明示的に opt-in する。**9225 が不調なときは暗黙 fallback せず停止し、visible 9225 セッションを回復してから再実行する。**
+
+### Python night batch orchestration
+
+```bash
+# fine-tune bundle の夜間実行
+python3 python/night_batch.py bundle --host 172.31.144.1 --port 9225
+
+# bundle -> rich report まで一続きで実行
+python3 python/night_batch.py nightly --host 172.31.144.1 --port 9225
+
+# 既存 artifact から rich report のみ再生成
+python3 python/night_batch.py report \
+  --us results/campaigns/next-long-run-us-finetune-100x10/full/recovered-results.json \
+  --jp results/campaigns/next-long-run-jp-finetune-100x10/full/recovered-results.json \
+  --out results/night-batch/morning-report.md
+```
+
+Python 側の責務は **9225 visible セッション preflight / Node script subprocess 実行 / stdout/stderr と checkpoint 監視 / summary 書き出し** であり、TradingView 操作本体を再実装しない。
 
 ### latest rich result regeneration
 

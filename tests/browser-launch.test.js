@@ -22,9 +22,9 @@ import {
 // buildBrowserLaunchCommand — defaults & URL
 // ---------------------------------------------------------------------------
 describe('buildBrowserLaunchCommand', () => {
-  it('returns default port 9222 when no port given', () => {
+  it('returns default port 9225 when no port given', () => {
     const result = buildBrowserLaunchCommand({ executablePath: '/usr/bin/chromium' });
-    assert.equal(result.port, 9222);
+    assert.equal(result.port, 9225);
   });
 
   it('returns default TradingView chart URL when no url given', () => {
@@ -79,7 +79,7 @@ describe('buildBrowserLaunchCommand', () => {
 
   it('includes remote-debugging-port in args', () => {
     const result = buildBrowserLaunchCommand({ executablePath: '/usr/bin/chromium' });
-    assert.ok(result.args.includes('--remote-debugging-port=9222'));
+    assert.ok(result.args.includes('--remote-debugging-port=9225'));
   });
 
   it('includes no-first-run and no-default-browser-check flags', () => {
@@ -353,7 +353,7 @@ describe('launchBrowserFallback dry-run', () => {
       },
     );
     assert.equal(result.command, '/mnt/c/Users/alice/AppData/Local/Google/Chrome/Application/chrome.exe');
-    assert.equal(result.user_data_dir, 'C:\\Users\\alice\\AppData\\Local\\OhMyTradingView\\BrowserFallback\\port-9222');
+    assert.equal(result.user_data_dir, 'C:\\Users\\alice\\AppData\\Local\\OhMyTradingView\\BrowserFallback\\port-9225');
   });
 
   it('returns browser field identifying the surface', async () => {

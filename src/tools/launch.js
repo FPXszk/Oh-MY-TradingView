@@ -5,10 +5,10 @@ import { launchDesktop } from '../core/launch.js';
 export function registerLaunchTools(server) {
   server.tool(
     'tv_launch',
-    'Launch TradingView Desktop with CDP debug port enabled. Optionally specify port and executable path.',
+    'Launch TradingView Desktop with CDP debug port enabled. Prefer attaching to an already-running visible 9225 instance when possible.',
     {
       port: z.number().int().min(1).max(65535).optional()
-        .describe('CDP debug port (default: 9222)'),
+        .describe('CDP debug port (default: 9225)'),
       executablePath: z.string().optional()
         .describe('Full path to TradingView executable (auto-detected if omitted)'),
       dryRun: z.boolean().optional()

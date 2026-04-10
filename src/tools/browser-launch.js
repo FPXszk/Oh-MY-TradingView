@@ -6,10 +6,10 @@ export function registerBrowserLaunchTools(server) {
   server.tool(
     'tv_launch_browser',
     'Launch a Chromium-based browser with TradingView chart URL and CDP debug port. ' +
-    'Bounded fallback for observation/recovery — not a desktop replacement.',
+      'Bounded fallback for observation/recovery — not a desktop replacement.',
     {
       port: z.number().int().min(1).max(65535).optional()
-        .describe('CDP debug port (default: 9222)'),
+        .describe('CDP debug port (default: 9225)'),
       executablePath: z.string().optional()
         .describe('Full path to Chromium-based browser executable (auto-detected if omitted)'),
       url: z.string().url().refine(

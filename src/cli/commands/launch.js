@@ -4,7 +4,7 @@ import { launchDesktop } from '../../core/launch.js';
 register('launch', {
   description: 'Launch TradingView Desktop with CDP debug port',
   options: {
-    port: { type: 'string', short: 'p', description: 'CDP debug port (default: 9222)' },
+    port: { type: 'string', short: 'p', description: 'CDP debug port (default: 9225)' },
     path: { type: 'string', description: 'Full path to TradingView executable' },
     'dry-run': { type: 'boolean', description: 'Print command without executing' },
   },

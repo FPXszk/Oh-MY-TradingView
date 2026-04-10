@@ -1322,21 +1322,21 @@ describe('run-finetune-bundle default policy', () => {
     assert.ok(!raw.includes("'smoke,pilot,full'"), 'should not default to smoke,pilot,full');
   });
 
-  it('fallback port is 9223', async () => {
+  it('does not expose fallback-port option', async () => {
     const raw = await readFile(
       join(__dirname, '..', 'scripts', 'backtest', 'run-finetune-bundle.mjs'),
       'utf8',
     );
-    assert.ok(raw.includes("'fallback-port': { type: 'string', default: '9223' }"));
+    assert.ok(!raw.includes("'fallback-port':"));
   });
 
-  it('does not auto-retry with fallback after multi-port failure', async () => {
+  it('fails closed when campaigns fail without suggesting implicit fallback', async () => {
     const raw = await readFile(
       join(__dirname, '..', 'scripts', 'backtest', 'run-finetune-bundle.mjs'),
       'utf8',
     );
     assert.ok(!raw.includes('retrying with fallback port'));
     assert.ok(!raw.includes('findLatestCheckpoint('));
-    assert.ok(raw.includes('Rerun manually with --ports'));
+    assert.ok(!raw.includes('Rerun manually with --ports'));
   });
 });
