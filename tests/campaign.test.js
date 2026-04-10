@@ -992,6 +992,86 @@ describe('market-matched 100-symbol long-run campaigns', () => {
   });
 });
 
+describe('next finetune 100x10 campaign configs', () => {
+  it('next-long-run-us-finetune-100x10.json is valid JSON with expected shape', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'next-long-run-us-finetune-100x10.json'),
+      'utf8',
+    );
+    const config = JSON.parse(raw);
+    assert.equal(config.id, 'next-long-run-us-finetune-100x10');
+    assert.equal(config.universe, 'long-run-us-100');
+    assert.equal(config.date_override.from, '2000-01-01');
+    assert.equal(config.date_override.to, '2099-12-31');
+    assert.equal(config.preset_ids.length, 10);
+    assert.deepEqual(config.execution.worker_ports, [9225]);
+  });
+
+  it('next-long-run-jp-finetune-100x10.json is valid JSON with expected shape', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'next-long-run-jp-finetune-100x10.json'),
+      'utf8',
+    );
+    const config = JSON.parse(raw);
+    assert.equal(config.id, 'next-long-run-jp-finetune-100x10');
+    assert.equal(config.universe, 'long-run-jp-100');
+    assert.equal(config.date_override.from, '2000-01-01');
+    assert.equal(config.date_override.to, '2099-12-31');
+    assert.equal(config.preset_ids.length, 10);
+    assert.deepEqual(config.execution.worker_ports, [9225]);
+  });
+
+  it('next finetune campaign configs pass validateCampaignConfig', async () => {
+    for (const fileName of [
+      'next-long-run-us-finetune-100x10.json',
+      'next-long-run-jp-finetune-100x10.json',
+    ]) {
+      const raw = await readFile(
+        join(__dirname, '..', 'config', 'backtest', 'campaigns', fileName),
+        'utf8',
+      );
+      const config = JSON.parse(raw);
+      const result = validateCampaignConfig(config);
+      assert.equal(result.valid, true, `${fileName}: ${result.errors}`);
+      assert.deepEqual(result.errors, []);
+    }
+  });
+});
+
+describe('next long-run finetune campaigns', () => {
+  it('loads US finetune campaign with 100 US-only symbols and 10 strategies', async () => {
+    const campaign = await loadCampaign('next-long-run-us-finetune-100x10');
+    assert.equal(campaign.symbols.length, 100);
+    assert.equal(campaign.strategies.length, 10);
+    assert.equal(campaign.matrix.length, 1000);
+    assert.ok(campaign.symbols.every((entry) => entry.market === 'US'));
+    assert.equal(campaign.defaults.date_range.from, '2000-01-01');
+    assert.equal(campaign.defaults.date_range.to, '2099-12-31');
+  });
+
+  it('loads JP finetune campaign with 100 JP-only symbols and 10 strategies', async () => {
+    const campaign = await loadCampaign('next-long-run-jp-finetune-100x10');
+    assert.equal(campaign.symbols.length, 100);
+    assert.equal(campaign.strategies.length, 10);
+    assert.equal(campaign.matrix.length, 1000);
+    assert.ok(campaign.symbols.every((entry) => entry.market === 'JP'));
+    assert.equal(campaign.defaults.date_range.from, '2000-01-01');
+    assert.equal(campaign.defaults.date_range.to, '2099-12-31');
+  });
+
+  it('uses 10 or 25 or 100 phase sizing for both finetune campaigns', async () => {
+    const usSmoke = await loadCampaign('next-long-run-us-finetune-100x10', { phase: 'smoke' });
+    const usPilot = await loadCampaign('next-long-run-us-finetune-100x10', { phase: 'pilot' });
+    const jpSmoke = await loadCampaign('next-long-run-jp-finetune-100x10', { phase: 'smoke' });
+    const jpPilot = await loadCampaign('next-long-run-jp-finetune-100x10', { phase: 'pilot' });
+
+    assert.equal(usSmoke.symbols.length, 10);
+    assert.equal(usPilot.symbols.length, 25);
+    assert.equal(jpSmoke.symbols.length, 10);
+    assert.equal(jpPilot.symbols.length, 25);
+  });
+});
+
 // ---------------------------------------------------------------------------
 // experiment_gating validation in validateCampaignConfig
 // ---------------------------------------------------------------------------
@@ -1139,5 +1219,114 @@ describe('external-phase1-priority-top campaign config', () => {
       campaign.strategies.map((s) => s.id),
       crossMarket.strategies.map((s) => s.id),
     );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// cross-phase resume guard (same-phase only)
+// ---------------------------------------------------------------------------
+describe('cross-phase resume guard', () => {
+  const matrix = [{ presetId: 'a', symbol: 'AAPL' }];
+  const smokeArgs = {
+    config: { id: 'campaign', universe: 'u1', preset_ids: ['a'] },
+    defaults: { date_range: { from: '2000-01-01', to: '2099-12-31' } },
+    phase: 'smoke',
+    matrix,
+  };
+  const fullArgs = { ...smokeArgs, phase: 'full' };
+
+  it('rejects smoke checkpoint when resuming full phase', () => {
+    const smokeFingerprint = buildCampaignFingerprint(smokeArgs);
+    const fullFingerprint = buildCampaignFingerprint(fullArgs);
+    assert.notEqual(smokeFingerprint, fullFingerprint);
+    assert.equal(
+      checkpointMatchesCampaign({
+        checkpoint: {
+          campaign_id: 'campaign',
+          phase: 'smoke',
+          campaign_fingerprint: smokeFingerprint,
+          results: [{ presetId: 'a', symbol: 'AAPL' }],
+        },
+        campaignId: 'campaign',
+        phase: 'full',
+        matrix,
+        campaignFingerprint: fullFingerprint,
+        legacyCampaignFingerprint: buildLegacyCampaignFingerprint(fullArgs),
+      }),
+      false,
+    );
+  });
+
+  it('rejects pilot checkpoint when resuming full phase', () => {
+    const pilotArgs = { ...smokeArgs, phase: 'pilot' };
+    const pilotFingerprint = buildCampaignFingerprint(pilotArgs);
+    const fullFingerprint = buildCampaignFingerprint(fullArgs);
+    assert.equal(
+      checkpointMatchesCampaign({
+        checkpoint: {
+          campaign_id: 'campaign',
+          phase: 'pilot',
+          campaign_fingerprint: pilotFingerprint,
+          results: [{ presetId: 'a', symbol: 'AAPL' }],
+        },
+        campaignId: 'campaign',
+        phase: 'full',
+        matrix,
+        campaignFingerprint: fullFingerprint,
+        legacyCampaignFingerprint: buildLegacyCampaignFingerprint(fullArgs),
+      }),
+      false,
+    );
+  });
+
+  it('accepts same-phase checkpoint for resume', () => {
+    const fullFingerprint = buildCampaignFingerprint(fullArgs);
+    assert.equal(
+      checkpointMatchesCampaign({
+        checkpoint: {
+          campaign_id: 'campaign',
+          phase: 'full',
+          campaign_fingerprint: fullFingerprint,
+          results: [{ presetId: 'a', symbol: 'AAPL' }],
+        },
+        campaignId: 'campaign',
+        phase: 'full',
+        matrix,
+        campaignFingerprint: fullFingerprint,
+        legacyCampaignFingerprint: buildLegacyCampaignFingerprint(fullArgs),
+      }),
+      true,
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// run-finetune-bundle default policy
+// ---------------------------------------------------------------------------
+describe('run-finetune-bundle default policy', () => {
+  it('default port is 9225 (Session1 visible)', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'scripts', 'backtest', 'run-finetune-bundle.mjs'),
+      'utf8',
+    );
+    assert.ok(raw.includes("'9225'"), 'default ports should be 9225');
+    assert.ok(!raw.includes("'9223,9225'"), 'should not default to dual-worker 9223,9225');
+  });
+
+  it('default phases are smoke,full (no pilot)', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'scripts', 'backtest', 'run-finetune-bundle.mjs'),
+      'utf8',
+    );
+    assert.ok(raw.includes("'smoke,full'"), 'default phases should be smoke,full');
+    assert.ok(!raw.includes("'smoke,pilot,full'"), 'should not default to smoke,pilot,full');
+  });
+
+  it('fallback port is 9223', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'scripts', 'backtest', 'run-finetune-bundle.mjs'),
+      'utf8',
+    );
+    assert.ok(raw.includes("'fallback-port': { type: 'string', default: '9223' }"));
   });
 });

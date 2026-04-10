@@ -1,5 +1,7 @@
 # Dual-worker parallel backtest runbook
 
+> **注意**: このランブックは dual-worker 並列の参照資料として残すが、**既定の運用モードは Session1 visible (9225) 単独 / sequential** に変更された。dual-worker 並列は明示的な opt-in でのみ利用可能。
+
 ## Purpose
 
 この runbook は、TradingView Desktop の worker1 / worker2 を使って、WSL から別々の backtest を並列実行するための既知の正常手順と、2026-04-06 時点の未解決制約をまとめる。
@@ -314,9 +316,41 @@ round8 の `204 run` workload を `worker1=Mag7 84 run` / `worker2=alt 120 run` 
 - browser login が Desktop に戻っていない
 - `秘密鍵をコピー` を押して Desktop 側へ戻し、必要なら onboarding を進める
 
+## Current default policy (updated 2026-04-10)
+
+2026-04-09 の実運用で parallel smoke が安定しなかった経験に基づき、既定の運用ポリシーを以下に変更した。
+
+### 新標準
+
+| 項目 | 既定値 | 旧既定値 |
+|---|---|---|
+| 実行モード | sequential（単一 worker） | parallel（dual-worker） |
+| 既定ポート | `9225`（Session1 visible） | `9223,9225` |
+| 既定 phases | `smoke → full` | `smoke → pilot → full` |
+| fallback | `9223`（必要時のみ手動切替） | 自動 fallback |
+| resume | 同一 phase checkpoint のみ | 同一 phase checkpoint のみ |
+
+### Parallel opt-in
+
+並列実行は完全削除ではなく、明示的な opt-in として残っている。
+
+```bash
+# parallel: --ports で複数ポートを明示
+node scripts/backtest/run-long-campaign.mjs <campaign> --phase full --host 172.31.144.1 --ports 9223,9225
+
+# sequential (default): 単一ポート
+node scripts/backtest/run-long-campaign.mjs <campaign> --phase full --host 172.31.144.1 --ports 9225
+```
+
+### Pilot の扱い
+
+- `pilot` phase は campaign config に互換目的で残っているが、標準フロー（`smoke → full`）からは外れている
+- 既存の `pilot` checkpoint（例: `results/campaigns/next-long-run-us-finetune-100x10/pilot/checkpoint-50.json`）は historical artifact として保持し、`full` への流用は不可
+
 ## References
 
 - `command.md`
+- `docs/exec-plans/active/checkpoint-resume-sequential-visible-backtest_20260410_1052.md`
 - `docs/working-memory/session-logs/wsl-dual-worker-reachability_20260406_0305.md`
 - `docs/working-memory/session-logs/dual-worker-distinct-strategy-backtest_20260406_0423.md`
 - `docs/working-memory/session-logs/tradingview-parallel-backtest-verification_20260406_0053.md`

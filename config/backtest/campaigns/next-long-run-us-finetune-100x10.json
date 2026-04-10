@@ -1,0 +1,41 @@
+{
+  "id": "next-long-run-us-finetune-100x10",
+  "name": "Next Long-Run US Fine-Tune 10 strategies x 100 symbols",
+  "description": "US-only long-run fine-tuning bundle around deep-pullback winners, expanding entry or exit or stop variants across the existing 100-symbol universe.",
+  "universe": "long-run-us-100",
+  "preset_ids": [
+    "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-10pct-theme-deep-pullback",
+    "donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-10pct-theme-deep-pullback-earlier",
+    "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight",
+    "donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict",
+    "donchian-55-20-rsp-filter-rsi14-regime-57-hard-stop-6pct-theme-deep-pullback-tight-narrow",
+    "donchian-55-20-rsp-filter-rsi14-regime-48-hard-stop-8pct-theme-deep-pullback-tight-early",
+    "donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-6pct-theme-deep-pullback-strict-narrow",
+    "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early",
+    "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late",
+    "donchian-55-18-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-exit-tight"
+  ],
+  "date_override": {
+    "from": "2000-01-01",
+    "to": "2099-12-31"
+  },
+  "phases": {
+    "smoke": {
+      "symbol_count": 10
+    },
+    "pilot": {
+      "symbol_count": 25
+    },
+    "full": {
+      "symbol_count": 100
+    }
+  },
+  "execution": {
+    "worker_ports": [9225],
+    "checkpoint_every": 10,
+    "cooldown_ms": 1000,
+    "max_consecutive_failures": 5,
+    "max_rerun_passes": 2
+  },
+  "notes": "US fine-tune は strict winner 近傍を本線にしつつ、tight / deep-pullback controls を少数混ぜて entry or exit or stop の最適点を切り分ける。date_override.to=2099-12-31 は latest available bar までを拾うための上限。"
+}
