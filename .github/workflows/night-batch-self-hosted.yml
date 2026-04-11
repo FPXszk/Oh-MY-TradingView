@@ -8,7 +8,7 @@ on:
       config_path:
         description: JSON config path relative to the repository root
         required: true
-        default: config/night_batch/bundle-detached-reuse-config.json
+        default: config/night_batch/bundle-foreground-reuse-config.json
 
 jobs:
   start-night-batch:
@@ -42,27 +42,98 @@ jobs:
           if not defined REPO_WSL exit /b 1
           wsl.exe bash -lc "cd \"%REPO_WSL%\" && npm ci --silent"
 
-      - name: Start smoke gate and detached production
+      - name: Run smoke gate and foreground production
         if: steps.freshness.outputs.should_run == 'true'
         shell: cmd
         run: |
           set "NIGHT_BATCH_CONFIG=${{ inputs.config_path }}"
+          set "NIGHT_BATCH_RUN_ID=gha_${{ github.run_id }}_${{ github.run_attempt }}"
           if "%NIGHT_BATCH_CONFIG%"=="" (
             if "${{ github.event_name }}"=="workflow_dispatch" (
               echo [diag] ERROR: workflow_dispatch requires a non-empty config_path
               exit /b 1
             )
-            set "NIGHT_BATCH_CONFIG=config/night_batch/bundle-detached-reuse-config.json"
+            set "NIGHT_BATCH_CONFIG=config/night_batch/bundle-foreground-reuse-config.json"
           )
+          for /f "usebackq delims=" %%I in (`wsl.exe wslpath -a "%CD%"`) do set "REPO_WSL=%%I"
+          if not defined REPO_WSL exit /b 1
           echo [diag] config_path=%NIGHT_BATCH_CONFIG%
+          echo [diag] night_batch_run_id=%NIGHT_BATCH_RUN_ID%
           echo [diag] CD=%CD%
           if not exist "%NIGHT_BATCH_CONFIG%" (
             echo [diag] WARNING: config file not found at %NIGHT_BATCH_CONFIG%
+          )
+          wsl.exe bash -lc "cd \"%REPO_WSL%\" && python3 -c \"import json, sys; data = json.load(open(sys.argv[1], encoding='utf-8')); detach = data.get('runtime', {}).get('detach_after_smoke'); sys.exit(0 if detach is not True else 9)\" \"%NIGHT_BATCH_CONFIG%\""
+          set "CONFIG_CHECK_EXIT=%ERRORLEVEL%"
+          if "%CONFIG_CHECK_EXIT%"=="9" (
+            echo [diag] ERROR: workflow requires runtime.detach_after_smoke=false in %NIGHT_BATCH_CONFIG%
+            exit /b 1
+          )
+          if not "%CONFIG_CHECK_EXIT%"=="0" (
+            echo [diag] ERROR: failed to validate night batch config %NIGHT_BATCH_CONFIG%
+            exit /b %CONFIG_CHECK_EXIT%
           )
           scripts\windows\run-night-batch-self-hosted.cmd "%NIGHT_BATCH_CONFIG%"
           set "BATCH_EXIT=%ERRORLEVEL%"
           echo [diag] wrapper exit code=%BATCH_EXIT%
           exit /b %BATCH_EXIT%
+
+      - name: Locate night batch outputs
+        if: always() && steps.freshness.outputs.should_run == 'true'
+        id: night_batch_outputs
+        shell: powershell -NoProfile -ExecutionPolicy Bypass -command ". '{0}'"
+        run: |
+          $expectedRunId = 'gha_${{ github.run_id }}_${{ github.run_attempt }}'
+          $artifactDir = ''
+          $summaryJson = ''
+          $summaryMd = ''
+          if (Test-Path 'results\night-batch') {
+            $summaryJsonFile = Get-ChildItem -Path 'results\night-batch' -Recurse -File -Filter ($expectedRunId + '-summary.json') | Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1
+            if ($summaryJsonFile) {
+              $artifactDir = $summaryJsonFile.Directory.FullName
+              $summaryJson = $summaryJsonFile.FullName
+              $summaryMdCandidate = $summaryJsonFile.FullName -replace '-summary\.json$', '-summary.md'
+              if (Test-Path $summaryMdCandidate) {
+                $summaryMd = $summaryMdCandidate
+              }
+            }
+          }
+          "round_dir=$artifactDir" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "summary_json=$summaryJson" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "summary_md=$summaryMd" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Append night batch workflow summary
+        if: always() && steps.freshness.outputs.should_run == 'true'
+        shell: powershell -NoProfile -ExecutionPolicy Bypass -command ". '{0}'"
+        run: |
+          Add-Content $env:GITHUB_STEP_SUMMARY '## Night batch result'
+          Add-Content $env:GITHUB_STEP_SUMMARY ''
+          $summaryPath = '${{ steps.night_batch_outputs.outputs.summary_json }}'
+          if ($summaryPath -eq '') {
+            Add-Content $env:GITHUB_STEP_SUMMARY '- summary_json: not found'
+            exit 0
+          }
+          $summary = Get-Content -Raw $summaryPath | ConvertFrom-Json
+          Add-Content $env:GITHUB_STEP_SUMMARY ('- success: ' + $summary.success)
+          Add-Content $env:GITHUB_STEP_SUMMARY ('- termination_reason: ' + $summary.termination_reason)
+          Add-Content $env:GITHUB_STEP_SUMMARY ('- failed_step: ' + ($(if ($summary.failed_step) { $summary.failed_step } else { '—' })))
+          Add-Content $env:GITHUB_STEP_SUMMARY ('- last_checkpoint: ' + ($(if ($summary.last_checkpoint) { $summary.last_checkpoint } else { '—' })))
+          Add-Content $env:GITHUB_STEP_SUMMARY ('- summary_json: ' + $summaryPath)
+          $summaryMdPath = '${{ steps.night_batch_outputs.outputs.summary_md }}'
+          if ($summaryMdPath -ne '') {
+            Add-Content $env:GITHUB_STEP_SUMMARY ''
+            Add-Content $env:GITHUB_STEP_SUMMARY '### Summary markdown'
+            Add-Content $env:GITHUB_STEP_SUMMARY ''
+            Get-Content $summaryMdPath | Add-Content $env:GITHUB_STEP_SUMMARY
+          }
+
+      - name: Upload night batch artifacts
+        if: always() && steps.freshness.outputs.should_run == 'true' && steps.night_batch_outputs.outputs.round_dir != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: night-batch-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ steps.night_batch_outputs.outputs.round_dir }}
+          if-no-files-found: warn
 
       - name: Report skipped stale schedule
         if: steps.freshness.outputs.should_run != 'true'

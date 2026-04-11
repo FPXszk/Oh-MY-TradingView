@@ -355,7 +355,10 @@ TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9223 node src/cli/index.js backtest nvda-ma
 夜間自動化は **Python が WSL 側の `9223` 接続を preflight し、TradingView 操作本体は既存 Node script を subprocess 実行する** 構成を想定しています。CDP/backtest 本体を Python に再実装しません。
 
 ```bash
-# US/JP 100x10 fine-tune bundle を smoke -> detached full で再始動
+# US/JP 100x10 fine-tune bundle を smoke -> full foreground で監視実行
+python3 python/night_batch.py smoke-prod --config config/night_batch/bundle-foreground-reuse-config.json
+
+# ローカル都合で detached 実行したい場合はこちら
 python3 python/night_batch.py smoke-prod --config config/night_batch/bundle-detached-reuse-config.json
 
 # JSON config を読んで startup check -> smoke -> detached production
@@ -382,13 +385,14 @@ python3 python/night_batch.py report \
   --out results/night-batch/morning-report.md
 ```
 
-`config/night_batch/bundle-detached-reuse-config.json` は、既存 `next-long-run-us-finetune-100x10` / `next-long-run-jp-finetune-100x10` campaign を再利用して **smoke から full detached へ進める本番用 config** です。strategy ID はこの JSON に複製せず、既存 campaign 定義を参照します。
+`config/night_batch/bundle-foreground-reuse-config.json` は、既存 `next-long-run-us-finetune-100x10` / `next-long-run-jp-finetune-100x10` campaign を再利用して **smoke から full を foreground で完走監視する** workflow / wrapper 向け config です。  
+`config/night_batch/bundle-detached-reuse-config.json` は、ローカル都合で detached 実行を明示したいときの代替 config として残します。
 
 `config/night_batch/nightly.default.json` は single-backtest ベースのサンプルです。日中に戦略案を差し替えたいときは、この JSON の `strategies.smoke.cli` / `strategies.production.cli` を更新するか、CLI override を使います。
 
-`smoke-prod` は **Windows local `9222` の startup check** を先に行い、TradingView chart target が見つからなければ current verified shortcut `C:\TradingView\TradingView.exe - ショートカット.lnk` を使って launch します。その後に **WSL `9223` の preflight** を通し、smoke backtest を実行します。config の `detach_after_smoke: true` なら、smoke success 後に production を detached child としてローカル継続し、親プロセスは成功終了します。
+`smoke-prod` は **Windows local `9222` の startup check** を先に行い、TradingView chart target が見つからなければ current verified shortcut `C:\TradingView\TradingView.exe - ショートカット.lnk` を使って launch します。その後に **WSL `9223` の preflight** を通し、smoke backtest を実行します。config の `detach_after_smoke: false` なら production を foreground で最後まで監視し、`bundle-foreground-state.json` の `updated_at` を heartbeat として更新します。`detach_after_smoke: true` のときだけ detached child を使います。
 
-Python スクリプトは `results/night-batch/` に run summary / log / detached state を残します。`bundle` / `campaign` / `recover` / `report` / `nightly` / `smoke-prod` をサポートし、CDP が必要なコマンドでは 9223 preflight が通らない限り停止します。
+Python スクリプトは `results/night-batch/` に run summary / log / state を残します。`bundle` / `campaign` / `recover` / `report` / `nightly` / `smoke-prod` をサポートし、CDP が必要なコマンドでは 9223 preflight が通らない限り停止します。summary JSON / Markdown には `termination_reason`、`failed_step`、`last_checkpoint` が含まれます。
 
 ### Self-hosted GitHub Actions / Windows manual entrypoint
 
@@ -409,29 +413,29 @@ scripts\windows\run-self-hosted-runner-with-bootstrap.cmd C:\actions-runner
 Windows Command Prompt からは次で同じ config を使えます。
 
 ```cmd
-scripts\windows\run-night-batch-self-hosted.cmd config\night_batch\bundle-detached-reuse-config.json
+scripts\windows\run-night-batch-self-hosted.cmd config\night_batch\bundle-foreground-reuse-config.json
 ```
 
-`.github/workflows/night-batch-self-hosted.yml` は **self-hosted Windows runner** 前提です。runner が online であれば動作し、service 常駐は前提としません。既定の cron は **毎日 00:00 JST**（`0 15 * * *` UTC）で、既定 config は `config/night_batch/bundle-detached-reuse-config.json` です。job は smoke success と detached child 起動確認までを担当し、production 本体は workflow 終了後もローカル PC 上で継続します。workflow では `actions/checkout` を **`clean: false`** にして detached state を保持し、**00:00 JST の起動窓を外れた stale scheduled run は skip** します。
+`.github/workflows/night-batch-self-hosted.yml` は **self-hosted Windows runner** 前提です。runner が online であれば動作し、service 常駐は前提としません。既定の cron は **毎日 00:00 JST**（`0 15 * * *` UTC）で、既定 config は `config/night_batch/bundle-foreground-reuse-config.json` です。workflow は smoke と production を **完了まで監視**し、GitHub Actions 上の success/failure が production の完了結果と一致するようにします。workflow では `actions/checkout` を **`clean: false`** にしつつ、終了時に **`GITHUB_STEP_SUMMARY`** へ要約を追記し、`actions/upload-artifact` で最新 round の成果物を回収します。**00:00 JST の起動窓を外れた stale scheduled run は skip** します。
 
-workflow / manual wrapper の実行経路では `--round-mode` を使うため、detached state file は `results/night-batch/roundN/bundle-detached-reuse-state.json` に配置されます。**この state が `running` の間は二重起動を拒否**するので、schedule と manual を同時に流さない前提を Python 側でも守れます。
+workflow / manual wrapper の foreground 実行経路では `--round-mode` を使うため、state file は `results/night-batch/roundN/bundle-foreground-state.json` に配置されます。state の `updated_at` が heartbeat、summary JSON の `termination_reason` / `failed_step` / `last_checkpoint` が GitHub 側の切り分け根拠になります。hard reboot / power loss では最後の summary / artifact upload が完了しない可能性は残ります。
 
 #### 次 strategy 更新ポリシー（live checkout 保護）
 
-> **workflow の終了だけでは safe とはみなさない。** workflow は smoke success と detached child 起動確認で終了するが、production 本体は workflow 終了後もローカル PC 上で継続する。workflow end ≠ production complete であるため、workflow が終わっても live checkout を安全に更新できるとは限らない。
+> **foreground workflow の完了は production 完了まで追跡した結果を表す。** ただし active な workflow job / runner が live checkout を使っている間は、引き続き live checkout を編集しない。
 
-次 strategy を考えたい / 更新したいと言われたら、まず **self-hosted runner / workflow job が現在 live checkout を使っていないか** を確認する。workflow job や smoke 起動中は detached state file がまだ無いことがあるため、**runner 側の使用状況確認と detached production の完了確認は別々に行う**。
+次 strategy を考えたい / 更新したいと言われたら、まず **self-hosted runner / workflow job が現在 live checkout を使っていないか** を確認する。foreground 監視では workflow が production 完了まで待つため、workflow 終了後は **`GITHUB_STEP_SUMMARY` / artifact / `results/night-batch/roundN/bundle-foreground-state.json`** を見れば完了理由を追えます。
 
 active な self-hosted runner / detached night-batch がある間は、**live checkout を編集しない**。特に以下のファイルは mid-run 変更の影響が大きい：
 
 - `config/backtest/strategy-presets.json`
-- `config/night_batch/bundle-detached-reuse-config.json`
+- `config/night_batch/bundle-foreground-reuse-config.json`
 - `config/backtest/` 配下の strategy / backtest 入力
 
 次ラウンド向けの strategy / config を準備する場合は、**別の worktree / clone / branch で次の変更を準備し**、現在の live checkout とは分離する。
 
 1. self-hosted runner / workflow job が live checkout を使用中でないことを確認する
-2. 現在の round に対応する `results/night-batch/roundN/bundle-detached-reuse-state.json` を確認し、detached production が `running` でないことを確認する
+2. 最新 run の **`GITHUB_STEP_SUMMARY` / artifact / `results/night-batch/roundN/bundle-foreground-state.json`** を確認し、workflow が production 完了まで監視した結果を確認する
 3. live checkout に差分を反映する
 4. `advance-next-round` を明示して次 run を開始する
 

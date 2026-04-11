@@ -53,6 +53,10 @@ def utc_run_id() -> str:
     return datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')
 
 
+def utc_now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
 def ensure_results_dir() -> None:
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -668,6 +672,7 @@ def run_process(
     dry_run: bool,
     logger: logging.Logger,
     env_overrides: dict[str, str] | None = None,
+    progress_callback=None,
 ) -> dict:
     if dry_run:
         logger.info('[dry-run] %s', shlex.join(command))
@@ -712,6 +717,8 @@ def run_process(
     latest_checkpoint = find_latest_checkpoint(checkpoint_roots)
     logged_checkpoint = relative_path(latest_checkpoint) if latest_checkpoint else None
     timed_out = False
+    if progress_callback:
+        progress_callback(logged_checkpoint, True)
 
     while process.poll() is None:
         if timeout_sec > 0 and time.monotonic() - started > timeout_sec:
@@ -730,6 +737,8 @@ def run_process(
         if current_checkpoint_rel and current_checkpoint_rel != logged_checkpoint:
             logger.info('Checkpoint updated: %s', current_checkpoint_rel)
             logged_checkpoint = current_checkpoint_rel
+        if progress_callback:
+            progress_callback(current_checkpoint_rel, False)
 
         time.sleep(2)
 
@@ -738,11 +747,14 @@ def run_process(
     stderr_thread.join(timeout=1)
 
     latest_checkpoint = find_latest_checkpoint(checkpoint_roots)
+    latest_checkpoint_rel = relative_path(latest_checkpoint) if latest_checkpoint else None
+    if progress_callback:
+        progress_callback(latest_checkpoint_rel, True)
     return {
         'success': process.returncode == 0 and not timed_out,
         'exit_code': process.returncode,
         'timed_out': timed_out,
-        'latest_checkpoint': relative_path(latest_checkpoint) if latest_checkpoint else None,
+        'latest_checkpoint': latest_checkpoint_rel,
         'captured_lines': captured_lines,
         'command': command,
         'skipped': False,
@@ -977,6 +989,131 @@ def write_detached_state(state_path: Path, payload: dict) -> None:
     state_path.write_text(f'{json.dumps(payload, indent=2, ensure_ascii=False)}\n', encoding='utf-8')
 
 
+def find_failed_step(steps: list[dict]) -> str | None:
+    failed_step: str | None = None
+    for step in steps:
+        if not step.get('success') and not step.get('skipped', False):
+            failed_step = step.get('name')
+    return failed_step
+
+
+def find_last_checkpoint_from_steps(steps: list[dict]) -> str | None:
+    latest_checkpoint: str | None = None
+    for step in steps:
+        checkpoint = step.get('latest_checkpoint')
+        if checkpoint:
+            latest_checkpoint = checkpoint
+    return latest_checkpoint
+
+
+def build_termination_reason(success: bool, steps: list[dict], error: str | None = None) -> str:
+    if success:
+        return 'success'
+    failed_step = find_failed_step(steps)
+    if failed_step:
+        failed_step_info = next(
+            (step for step in reversed(steps) if step.get('name') == failed_step),
+            None,
+        )
+        if failed_step_info and failed_step_info.get('timed_out'):
+            return f'{failed_step}-timeout'
+        if failed_step == 'active-detached-run-guard':
+            return 'active-detached-run'
+        return f'{failed_step}-failed'
+    if error:
+        if 'Preflight failed' in error:
+            return 'preflight-failed'
+        return 'config-error'
+    return 'failed'
+
+
+def enrich_summary(summary: dict) -> dict:
+    normalized = {**summary}
+    steps = normalized.get('steps', [])
+    normalized['failed_step'] = find_failed_step(steps)
+    normalized['last_checkpoint'] = find_last_checkpoint_from_steps(steps)
+    normalized['termination_reason'] = build_termination_reason(
+        bool(normalized.get('success')),
+        steps,
+        normalized.get('error'),
+    )
+    return normalized
+
+
+def update_foreground_state(
+    state_path: Path,
+    run_id: str,
+    *,
+    status: str,
+    current_step: str | None = None,
+    latest_checkpoint: str | None = None,
+    summary_path: str | None = None,
+    termination_reason: str | None = None,
+    failed_step: str | None = None,
+    success: bool | None = None,
+    started_at: str | None = None,
+) -> None:
+    existing = read_detached_state(state_path) or {}
+    payload = {
+        **existing,
+        'status': status,
+        'mode': 'foreground',
+        'command': 'smoke-prod',
+        'run_id': run_id,
+        'updated_at': utc_now_iso(),
+    }
+    if status == 'running':
+        payload.pop('finished_at', None)
+        payload.pop('summary_path', None)
+        payload.pop('termination_reason', None)
+        payload.pop('failed_step', None)
+        payload.pop('success', None)
+        payload['latest_checkpoint'] = latest_checkpoint
+    elif latest_checkpoint is not None or 'latest_checkpoint' not in payload:
+        payload['latest_checkpoint'] = latest_checkpoint
+    if started_at:
+        payload['started_at'] = started_at
+    if current_step is not None:
+        payload['current_step'] = current_step
+    if summary_path is not None:
+        payload['summary_path'] = summary_path
+    if termination_reason is not None:
+        payload['termination_reason'] = termination_reason
+    if failed_step is not None or status != 'running':
+        payload['failed_step'] = failed_step
+    if success is not None:
+        payload['success'] = success
+    if status != 'running':
+        payload['finished_at'] = utc_now_iso()
+    write_detached_state(state_path, payload)
+
+
+def make_foreground_progress_callback(
+    state_path: Path,
+    run_id: str,
+    started_at: str,
+    step_name: str,
+):
+    last_write = 0.0
+
+    def callback(latest_checkpoint: str | None, force: bool = False) -> None:
+        nonlocal last_write
+        now = time.monotonic()
+        if not force and now - last_write < 15:
+            return
+        update_foreground_state(
+            state_path,
+            run_id,
+            status='running',
+            current_step=step_name,
+            latest_checkpoint=latest_checkpoint,
+            started_at=started_at,
+        )
+        last_write = now
+
+    return callback
+
+
 def build_production_child_command(settings: dict, child_run_id: str, production_step: dict, output_dir: Path = RESULTS_DIR) -> list[str]:
     cmd = [
         sys.executable,
@@ -1060,6 +1197,20 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
     preflight_url = f'http://{settings["host"]}:{settings["port"]}/json/list'
     resume_smoke = settings.get('resume_smoke', False)
     resume_production = settings.get('resume_production', False)
+    state_path = settings['detached_state_file']
+    foreground_started_at = utc_now_iso()
+
+    def make_progress(step_name: str):
+        if settings['detach_after_smoke']:
+            return None
+        callback = make_foreground_progress_callback(
+            state_path,
+            run_id,
+            foreground_started_at,
+            step_name,
+        )
+        callback(None, True)
+        return callback
 
     if settings['dry_run']:
         if settings['detach_after_smoke']:
@@ -1131,6 +1282,15 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
             )
             return EXIT_STEP_FAILED, steps
 
+    if not settings['detach_after_smoke']:
+        update_foreground_state(
+            state_path,
+            run_id,
+            status='running',
+            current_step='startup-check',
+            started_at=foreground_started_at,
+        )
+
     try:
         preflight_visible_session(settings['startup_check_host'], settings['startup_check_port'], logger)
         steps.append(make_step_result('startup-check', ['GET', startup_url], success=True))
@@ -1151,10 +1311,20 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
             min(settings['timeout'], settings['launch_wait_sec']),
             False,
             logger,
+            progress_callback=make_progress('launch'),
         )
         steps.append({**launch_result, 'name': 'launch'})
         if not launch_result['success']:
             return EXIT_STEP_FAILED, steps
+
+    if not settings['detach_after_smoke']:
+        update_foreground_state(
+            state_path,
+            run_id,
+            status='running',
+            current_step='preflight',
+            started_at=foreground_started_at,
+        )
 
     try:
         wait_for_visible_session(settings['host'], settings['port'], settings['launch_wait_sec'], logger)
@@ -1176,6 +1346,7 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
             False,
             logger,
             env_overrides=smoke_step['env_overrides'],
+            progress_callback=make_progress('smoke'),
         )
         steps.append({**smoke_result, 'name': 'smoke'})
         if not smoke_result['success']:
@@ -1203,6 +1374,7 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
         False,
         logger,
         env_overrides=production_step['env_overrides'],
+        progress_callback=make_progress('production'),
     )
     steps.append({**production_result, 'name': 'production'})
     return 0 if production_result['success'] else EXIT_STEP_FAILED, steps
@@ -1265,6 +1437,7 @@ def write_summary(run_id: str, summary: dict, logger: logging.Logger, output_dir
     ensure_output_dir(output_dir)
     summary_json_path = output_dir / f'{run_id}-summary.json'
     summary_md_path = output_dir / f'{run_id}-summary.md'
+    summary = enrich_summary(summary)
 
     summary_json_path.write_text(f'{json.dumps(summary, indent=2, ensure_ascii=False)}\n', encoding='utf-8')
 
@@ -1276,6 +1449,9 @@ def write_summary(run_id: str, summary: dict, logger: logging.Logger, output_dir
         f'- host: {summary["host"]}',
         f'- port: {summary["port"]}',
         f'- preflight_required: {summary["preflight_required"]}',
+        f'- termination_reason: {summary["termination_reason"]}',
+        f'- failed_step: {summary["failed_step"] or "—"}',
+        f'- last_checkpoint: {summary["last_checkpoint"] or "—"}',
         '',
         '## Steps',
         '',
@@ -1426,7 +1602,20 @@ def main() -> int:
         if round_number is not None:
             summary['round'] = round_number
             summary['round_mode'] = round_mode
+        summary = enrich_summary(summary)
         write_summary(run_id, summary, logger, output_dir=output_dir)
+        if not settings['detach_after_smoke']:
+            update_foreground_state(
+                settings['detached_state_file'],
+                run_id,
+                status='completed' if summary['success'] else 'failed',
+                current_step=summary['failed_step'] or 'production',
+                latest_checkpoint=summary['last_checkpoint'],
+                summary_path=relative_path(output_dir / f'{run_id}-summary.json'),
+                termination_reason=summary['termination_reason'],
+                failed_step=summary['failed_step'],
+                success=summary['success'],
+            )
         return exit_code
 
     if args.command == 'production-child':

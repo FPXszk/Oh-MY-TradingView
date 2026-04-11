@@ -4,6 +4,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 const PROJECT_ROOT = process.cwd();
+const WORKFLOW_PATH = join(PROJECT_ROOT, '.github', 'workflows', 'night-batch-self-hosted.yml');
 const WRAPPER_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'run-night-batch-self-hosted.cmd');
 const BOOTSTRAP_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'bootstrap-self-hosted-runner.cmd');
 const RUNNER_WRAPPER_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'run-self-hosted-runner-with-bootstrap.cmd');
@@ -118,6 +119,24 @@ describe('run-self-hosted-runner-with-bootstrap.cmd', () => {
   });
 });
 
+describe('night-batch-self-hosted workflow', () => {
+  it('defaults workflow_dispatch config_path to the foreground monitoring config', () => {
+    const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
+
+    assert.match(workflow, /default:\s+config\/night_batch\/bundle-foreground-reuse-config\.json/,
+      'workflow must default to the foreground monitoring config');
+  });
+
+  it('publishes GitHub summary details and uploads artifacts after the run', () => {
+    const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
+
+    assert.match(workflow, /GITHUB_STEP_SUMMARY/,
+      'workflow must append a run summary to GITHUB_STEP_SUMMARY');
+    assert.match(workflow, /actions\/upload-artifact@v4/,
+      'workflow must upload night batch artifacts');
+  });
+});
+
 describe('docs: non-service self-hosted runner policy', () => {
   it('README documents that service mode is not used', () => {
     const readme = readFileSync(README_PATH, 'utf8');
@@ -169,11 +188,11 @@ describe('docs: next strategy update policy', () => {
       'README must state that live checkout must not be edited during active run');
   });
 
-  it('README documents workflow end does not mean production end', () => {
+  it('README documents that workflow monitoring continues until production completes', () => {
     const readme = readFileSync(README_PATH, 'utf8');
 
-    assert.match(readme, /workflow.*(?:終了|end|complete).*(?:safe|安全|production.*(?:継続|続行|active))/i,
-      'README must warn that workflow completion does not imply production completion');
+    assert.match(readme, /workflow.*production.*(?:完了|complete).*(?:待つ|監視|monitor|追跡)/i,
+      'README must state that the workflow monitors production to completion');
   });
 
   it('README documents preparing next strategy in separate workspace', () => {
@@ -183,15 +202,15 @@ describe('docs: next strategy update policy', () => {
       'README must mention preparing next strategy in a separate worktree/clone/branch');
   });
 
-  it('README separates runner usage checks from detached completion checks', () => {
+  it('README documents GitHub summary, artifact, and foreground state outputs', () => {
     const readme = readFileSync(README_PATH, 'utf8');
 
-    assert.match(readme, /runner.*detached.*別々|別々.*runner.*detached/i,
-      'README must explicitly separate runner/workflow activity checks from detached completion checks');
-    assert.match(readme, /roundN\/bundle-detached-reuse-state\.json/i,
-      'README must point to the round-scoped detached state file path');
-    assert.doesNotMatch(readme, /workflow.*results\/night-batch\/bundle-detached-reuse-state\.json/i,
-      'README must not claim the workflow/manual wrapper path uses the flat detached state file');
+    assert.match(readme, /GITHUB_STEP_SUMMARY/i,
+      'README must mention the GitHub summary output');
+    assert.match(readme, /upload-artifact|artifact/i,
+      'README must mention artifact upload');
+    assert.match(readme, /roundN\/bundle-foreground-state\.json/i,
+      'README must point to the round-scoped foreground state file path');
   });
 
   it('command.md documents live checkout protection during active run', () => {
@@ -213,18 +232,18 @@ describe('docs: next strategy update policy', () => {
 
     assert.match(cmd, /advance-next-round/,
       'command.md must reference advance-next-round');
-    assert.match(cmd, /(?:detached|production).*(?:完了|終了|complete|finish).*(?:確認|verify|check)/i,
-      'command.md must instruct to confirm detached completion before updating');
+    assert.match(cmd, /workflow.*production.*(?:完了|終了|complete|finish).*(?:確認|verify|check)/i,
+      'command.md must instruct to confirm workflow-tracked production completion before updating');
   });
 
-  it('command.md requires both runner-usage and round-scoped detached checks', () => {
+  it('command.md documents GitHub summary, artifact, and foreground state outputs', () => {
     const cmd = readFileSync(COMMAND_PATH, 'utf8');
 
-    assert.match(cmd, /runner 使用中チェック/i,
-      'command.md must require a dedicated runner-usage check');
-    assert.match(cmd, /detached 完了チェック/i,
-      'command.md must require a dedicated detached completion check');
-    assert.match(cmd, /roundN\/bundle-detached-reuse-state\.json/i,
-      'command.md must point to the round-scoped detached state file path');
+    assert.match(cmd, /GITHUB_STEP_SUMMARY/i,
+      'command.md must mention the GitHub summary output');
+    assert.match(cmd, /upload-artifact|artifact/i,
+      'command.md must mention artifact upload');
+    assert.match(cmd, /roundN\/bundle-foreground-state\.json/i,
+      'command.md must point to the round-scoped foreground state file path');
   });
 });

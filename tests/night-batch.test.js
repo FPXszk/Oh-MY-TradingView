@@ -342,11 +342,15 @@ exit 0
     const productionStep = summary.steps.find((step) => step.name === 'production');
     assert.equal(smokeStep.success, false);
     assert.equal(productionStep, undefined);
+    assert.equal(summary.failed_step, 'smoke');
+    assert.equal(summary.termination_reason, 'smoke-failed');
+    assert.equal(summary.last_checkpoint, null);
   });
 
   it('smoke-prod reads smoke and production commands from a JSON config', async () => {
     const fakeNodePath = join(tempDir, 'fake-node.sh');
     const fakeNodeLog = join(tempDir, 'fake-node.log');
+    const foregroundStateFile = join(tempDir, 'foreground-state.json');
     const configPath = join(tempDir, 'nightly.json');
     writeExecutable(
       fakeNodePath,
@@ -364,6 +368,7 @@ exit 0
           startup_check_host: '127.0.0.1',
           startup_check_port: port,
           detach_after_smoke: false,
+          detached_state_file: foregroundStateFile,
         },
         strategies: {
           smoke: { cli: 'backtest nvda-ma' },
@@ -386,6 +391,18 @@ exit 0
     const loggedCommands = readFileSync(fakeNodeLog, 'utf8').trim().split('\n');
     assert.match(loggedCommands[0], /backtest nvda-ma/);
     assert.match(loggedCommands[1], /rsi-mean-reversion/);
+
+    const summary = readSummaryFromResult(result);
+    assert.equal(summary.failed_step, null);
+    assert.equal(summary.termination_reason, 'success');
+    assert.equal(summary.last_checkpoint, null);
+
+    const state = JSON.parse(readFileSync(foregroundStateFile, 'utf8'));
+    assert.equal(state.status, 'completed');
+    assert.equal(state.mode, 'foreground');
+    assert.equal(state.termination_reason, 'success');
+    assert.equal(typeof state.updated_at, 'string');
+    assert.match(state.summary_path, /-summary\.json$/);
   });
 
   it('smoke-prod lets CLI smoke-cli override the JSON config value', async () => {
