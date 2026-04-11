@@ -552,6 +552,32 @@ scripts\windows\run-self-hosted-runner-with-bootstrap.cmd C:\actions-runner
 
 **One-time hookup**: 従来の `C:\actions-runner\run.cmd` 直接実行を上記 wrapper に一度だけ置き換える。以後の prerequisite 更新は repo 側 script で追従できる。
 
+#### Runner 自動起動（Task Scheduler）
+
+reboot 後も runner を自動で online に戻す公式手順は、**service mode ではなく Task Scheduler** を使う方法。標準 trigger は **runner 用 Windows ユーザーの ONLOGON**。
+
+```cmd
+scripts\windows\register-self-hosted-runner-autostart.cmd C:\actions-runner
+```
+
+- 登録 script は `register-self-hosted-runner-autostart.cmd`
+- 実行対象は `run-self-hosted-runner-with-bootstrap.cmd`
+- trigger は **Task Scheduler / ONLOGON / 30 秒 delay**
+- 削除:
+
+```cmd
+schtasks /Delete /TN "OhMyTradingViewRunnerAutostart" /F
+```
+
+- 確認:
+
+```cmd
+schtasks /Query /TN "OhMyTradingViewRunnerAutostart" /V /FO LIST
+```
+
+> **前提:** ONLOGON trigger なので、対象 Windows ユーザーのログインが必要。  
+> 完全無人 reboot 復旧が必要なら OS 側の auto-logon を別途設定する。
+
 #### Night batch wrapper
 
 Windows Command Prompt からは次で同じ config を起動できる。

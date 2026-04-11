@@ -8,6 +8,7 @@ const WORKFLOW_PATH = join(PROJECT_ROOT, '.github', 'workflows', 'night-batch-se
 const WRAPPER_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'run-night-batch-self-hosted.cmd');
 const BOOTSTRAP_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'bootstrap-self-hosted-runner.cmd');
 const RUNNER_WRAPPER_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'run-self-hosted-runner-with-bootstrap.cmd');
+const AUTOSTART_SCRIPT_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'register-self-hosted-runner-autostart.cmd');
 const README_PATH = join(PROJECT_ROOT, 'README.md');
 const COMMAND_PATH = join(PROJECT_ROOT, 'command.md');
 
@@ -119,6 +120,26 @@ describe('run-self-hosted-runner-with-bootstrap.cmd', () => {
   });
 });
 
+describe('register-self-hosted-runner-autostart.cmd', () => {
+  it('exists as a standalone script', () => {
+    assert.ok(existsSync(AUTOSTART_SCRIPT_PATH),
+      'register-self-hosted-runner-autostart.cmd must exist');
+  });
+
+  it('registers Task Scheduler autostart without using service mode', () => {
+    const script = readFileSync(AUTOSTART_SCRIPT_PATH, 'utf8');
+
+    assert.match(script, /schtasks/i,
+      'autostart script must use schtasks');
+    assert.match(script, /ONLOGON/i,
+      'autostart script must register an ONLOGON trigger');
+    assert.match(script, /run-self-hosted-runner-with-bootstrap\.cmd/i,
+      'autostart script must launch the bootstrap runner wrapper');
+    assert.doesNotMatch(script, /runsvc|svc\.sh|runasservice/i,
+      'autostart script must not switch to service mode');
+  });
+});
+
 describe('night-batch-self-hosted workflow', () => {
   it('defaults workflow_dispatch config_path to the foreground monitoring config', () => {
     const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
@@ -161,6 +182,15 @@ describe('docs: non-service self-hosted runner policy', () => {
       'README must reference the bootstrap wrapper');
   });
 
+  it('README documents Task Scheduler based runner auto-start', () => {
+    const readme = readFileSync(README_PATH, 'utf8');
+
+    assert.match(readme, /Task Scheduler/i,
+      'README must mention Task Scheduler for runner auto-start');
+    assert.match(readme, /register-self-hosted-runner-autostart\.cmd/i,
+      'README must reference the autostart registration script');
+  });
+
   it('command.md documents the bootstrap startup procedure', () => {
     const cmd = readFileSync(COMMAND_PATH, 'utf8');
 
@@ -177,6 +207,17 @@ describe('docs: non-service self-hosted runner policy', () => {
 
     assert.match(cmd, /run\.cmd.*(?:代わり|instead|hookup|置き換え|bootstrap)/i,
       'command.md must explain using bootstrap wrapper instead of run.cmd directly');
+  });
+
+  it('command.md documents Task Scheduler based runner auto-start', () => {
+    const cmd = readFileSync(COMMAND_PATH, 'utf8');
+
+    assert.match(cmd, /Task Scheduler/i,
+      'command.md must mention Task Scheduler for runner auto-start');
+    assert.match(cmd, /register-self-hosted-runner-autostart\.cmd/i,
+      'command.md must reference the autostart registration script');
+    assert.match(cmd, /ONLOGON|logon/i,
+      'command.md must describe the ONLOGON trigger');
   });
 });
 
