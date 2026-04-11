@@ -567,6 +567,32 @@ workflow は `.github/workflows/night-batch-self-hosted.yml` にあり、既定 
 workflow 既定 config の detached state file は、`--round-mode` を付けた実行では `results/night-batch/roundN/bundle-detached-reuse-state.json` に配置される。  
 この state が `running` の間は新しい detached run を拒否するので、manual 実行と scheduled 実行の衝突を最低限防げる。
 
+#### 次 strategy 更新手順（live checkout 保護）
+
+> **workflow の終了は production の完了を意味しない。** workflow は smoke success と detached child 起動確認で終わるが、production 本体は workflow 終了後もローカル PC 上で継続する。workflow が終わっても live checkout を安全に変更できるとは限らない。
+
+次 strategy を考えたい / 更新したい場合は、**最初に self-hosted runner / workflow job が live checkout を使用中か確認する**。smoke 起動中や workflow job 実行中は detached state file がまだ無いことがあるため、**runner 使用中チェック** と **detached production 完了チェック** は分けて扱う。
+
+active な self-hosted runner / detached night-batch が動いている間は、**live checkout を編集しない**。以下は mid-run 変更禁止対象の例：
+
+| 禁止対象 | 理由 |
+|---|---|
+| `config/backtest/strategy-presets.json` | production が参照する strategy 定義 |
+| `config/night_batch/bundle-detached-reuse-config.json` | 実行中 run の config 本体 |
+| `config/backtest/` 配下 | strategy / backtest 入力全般 |
+
+##### 手順
+
+1. **runner 使用中チェック**: GitHub Actions の self-hosted workflow job や smoke 起動中が無いことを確認する。workflow job 実行中は live checkout を使っているため、この段階では触らない。
+2. **detached 完了チェック**: 現在の round に対応する `results/night-batch/roundN/bundle-detached-reuse-state.json` の state が `running` でないことを確認する。workflow 終了だけでなく、detached production の完了を確認すること。
+3. **別ワークスペースで次 strategy を準備する**: 別の worktree / clone / branch で次ラウンドの strategy / config 変更を準備し、live checkout とは分離する。
+4. **detached 完了後に live checkout を更新する**: 1 と 2 の両方を満たした後、準備した差分を live checkout に反映する。
+5. **`advance-next-round` を明示して次 run を開始する**:
+
+```cmd
+scripts\windows\run-night-batch-self-hosted.cmd config\night_batch\bundle-detached-reuse-config.json advance-next-round
+```
+
 ### latest rich result regeneration
 
 ```bash

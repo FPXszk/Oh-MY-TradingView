@@ -160,3 +160,71 @@ describe('docs: non-service self-hosted runner policy', () => {
       'command.md must explain using bootstrap wrapper instead of run.cmd directly');
   });
 });
+
+describe('docs: next strategy update policy', () => {
+  it('README documents that live checkout must not be edited during active run', () => {
+    const readme = readFileSync(README_PATH, 'utf8');
+
+    assert.match(readme, /live checkout.*(?:編集しない|変更しない|触らない|do not edit|do not modify)/i,
+      'README must state that live checkout must not be edited during active run');
+  });
+
+  it('README documents workflow end does not mean production end', () => {
+    const readme = readFileSync(README_PATH, 'utf8');
+
+    assert.match(readme, /workflow.*(?:終了|end|complete).*(?:safe|安全|production.*(?:継続|続行|active))/i,
+      'README must warn that workflow completion does not imply production completion');
+  });
+
+  it('README documents preparing next strategy in separate workspace', () => {
+    const readme = readFileSync(README_PATH, 'utf8');
+
+    assert.match(readme, /(?:worktree|clone|branch).*(?:次|next|別|separate)/i,
+      'README must mention preparing next strategy in a separate worktree/clone/branch');
+  });
+
+  it('README separates runner usage checks from detached completion checks', () => {
+    const readme = readFileSync(README_PATH, 'utf8');
+
+    assert.match(readme, /runner.*detached.*別々|別々.*runner.*detached/i,
+      'README must explicitly separate runner/workflow activity checks from detached completion checks');
+    assert.match(readme, /roundN\/bundle-detached-reuse-state\.json/i,
+      'README must point to the round-scoped detached state file path');
+    assert.doesNotMatch(readme, /workflow.*results\/night-batch\/bundle-detached-reuse-state\.json/i,
+      'README must not claim the workflow/manual wrapper path uses the flat detached state file');
+  });
+
+  it('command.md documents live checkout protection during active run', () => {
+    const cmd = readFileSync(COMMAND_PATH, 'utf8');
+
+    assert.match(cmd, /live checkout.*(?:編集しない|変更しない|触らない|do not edit|do not modify)/i,
+      'command.md must state that live checkout must not be edited during active run');
+  });
+
+  it('command.md documents strategy-presets.json as a protected live file', () => {
+    const cmd = readFileSync(COMMAND_PATH, 'utf8');
+
+    assert.match(cmd, /strategy-presets\.json/,
+      'command.md must mention strategy-presets.json as a protected file');
+  });
+
+  it('command.md documents advance-next-round for explicit next run start', () => {
+    const cmd = readFileSync(COMMAND_PATH, 'utf8');
+
+    assert.match(cmd, /advance-next-round/,
+      'command.md must reference advance-next-round');
+    assert.match(cmd, /(?:detached|production).*(?:完了|終了|complete|finish).*(?:確認|verify|check)/i,
+      'command.md must instruct to confirm detached completion before updating');
+  });
+
+  it('command.md requires both runner-usage and round-scoped detached checks', () => {
+    const cmd = readFileSync(COMMAND_PATH, 'utf8');
+
+    assert.match(cmd, /runner 使用中チェック/i,
+      'command.md must require a dedicated runner-usage check');
+    assert.match(cmd, /detached 完了チェック/i,
+      'command.md must require a dedicated detached completion check');
+    assert.match(cmd, /roundN\/bundle-detached-reuse-state\.json/i,
+      'command.md must point to the round-scoped detached state file path');
+  });
+});

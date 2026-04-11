@@ -414,7 +414,28 @@ scripts\windows\run-night-batch-self-hosted.cmd config\night_batch\bundle-detach
 
 `.github/workflows/night-batch-self-hosted.yml` は **self-hosted Windows runner** 前提です。runner が online であれば動作し、service 常駐は前提としません。既定の cron は **毎日 00:00 JST**（`0 15 * * *` UTC）で、既定 config は `config/night_batch/bundle-detached-reuse-config.json` です。job は smoke success と detached child 起動確認までを担当し、production 本体は workflow 終了後もローカル PC 上で継続します。workflow では `actions/checkout` を **`clean: false`** にして detached state を保持し、**00:00 JST の起動窓を外れた stale scheduled run は skip** します。
 
-workflow 既定 config の detached state file は `results/night-batch/bundle-detached-reuse-state.json` です。**この state が `running` の間は二重起動を拒否**するので、schedule と manual を同時に流さない前提を Python 側でも守れます。
+workflow / manual wrapper の実行経路では `--round-mode` を使うため、detached state file は `results/night-batch/roundN/bundle-detached-reuse-state.json` に配置されます。**この state が `running` の間は二重起動を拒否**するので、schedule と manual を同時に流さない前提を Python 側でも守れます。
+
+#### 次 strategy 更新ポリシー（live checkout 保護）
+
+> **workflow の終了だけでは safe とはみなさない。** workflow は smoke success と detached child 起動確認で終了するが、production 本体は workflow 終了後もローカル PC 上で継続する。workflow end ≠ production complete であるため、workflow が終わっても live checkout を安全に更新できるとは限らない。
+
+次 strategy を考えたい / 更新したいと言われたら、まず **self-hosted runner / workflow job が現在 live checkout を使っていないか** を確認する。workflow job や smoke 起動中は detached state file がまだ無いことがあるため、**runner 側の使用状況確認と detached production の完了確認は別々に行う**。
+
+active な self-hosted runner / detached night-batch がある間は、**live checkout を編集しない**。特に以下のファイルは mid-run 変更の影響が大きい：
+
+- `config/backtest/strategy-presets.json`
+- `config/night_batch/bundle-detached-reuse-config.json`
+- `config/backtest/` 配下の strategy / backtest 入力
+
+次ラウンド向けの strategy / config を準備する場合は、**別の worktree / clone / branch で次の変更を準備し**、現在の live checkout とは分離する。
+
+1. self-hosted runner / workflow job が live checkout を使用中でないことを確認する
+2. 現在の round に対応する `results/night-batch/roundN/bundle-detached-reuse-state.json` を確認し、detached production が `running` でないことを確認する
+3. live checkout に差分を反映する
+4. `advance-next-round` を明示して次 run を開始する
+
+詳細な手順は [command.md § 次 strategy 更新手順](command.md#次-strategy-更新手順live-checkout-保護) を参照。
 
 preset-driven バックテスト:
 
