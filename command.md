@@ -536,6 +536,20 @@ node scripts/backtest/recover-campaign.mjs next-long-run-us-finetune-100x10 \
 
 ### Self-hosted schedule / manual launch
 
+> **Runner は service mode を使わず、手動 `run.cmd` 起動で運用する。** 使用中の Windows OS バージョン / 実行環境では service mode 前提の運用を安定してサポートできないため。
+
+#### Runner 起動（bootstrap 付き）
+
+runner を起動する際は `run.cmd` を直接叩く代わりに、repo 管理の bootstrap wrapper を使う。bootstrap-self-hosted-runner.cmd が prerequisite fix（`git safe.directory` 等）を先に実行し、成功後に `run.cmd` へ進む。
+
+```cmd
+scripts\windows\run-self-hosted-runner-with-bootstrap.cmd C:\actions-runner
+```
+
+**One-time hookup**: 従来の `C:\actions-runner\run.cmd` 直接実行を上記 wrapper に一度だけ置き換える。以後の prerequisite 更新は repo 側 script で追従できる。
+
+#### Night batch wrapper
+
 Windows Command Prompt からは次で同じ config を起動できる。
 
 ```cmd
@@ -548,7 +562,7 @@ scripts\windows\run-night-batch-self-hosted.cmd config\night_batch\bundle-detach
 引数 2 を省略した wrapper は、`round-manifest.json` が既にあれば `resume-current-round`、無ければ `advance-next-round` を自動選択する。
 
 workflow は `.github/workflows/night-batch-self-hosted.yml` にあり、既定 cron は **毎日 00:00 JST**（`0 15 * * *` UTC）。  
-想定 runner は **self-hosted Windows** で、既定 config は `config/night_batch/bundle-detached-reuse-config.json`。workflow は smoke success と detached child 起動確認までで終わり、長時間の production 本体は local PC 側で継続する。workflow では `checkout clean: false` で detached state を残し、**00:00 JST の起動窓を外れた stale scheduled run は skip** する。
+想定 runner は **self-hosted Windows** で、既定 config は `config/night_batch/bundle-detached-reuse-config.json`。runner が online であれば動作し、service 常駐は前提としない。workflow は smoke success と detached child 起動確認までで終わり、長時間の production 本体は local PC 側で継続する。workflow では `checkout clean: false` で detached state を残し、**00:00 JST の起動窓を外れた stale scheduled run は skip** する。
 
 workflow 既定 config の detached state file は、`--round-mode` を付けた実行では `results/night-batch/roundN/bundle-detached-reuse-state.json` に配置される。  
 この state が `running` の間は新しい detached run を拒否するので、manual 実行と scheduled 実行の衝突を最低限防げる。

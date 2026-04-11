@@ -392,13 +392,27 @@ Python スクリプトは `results/night-batch/` に run summary / log / detache
 
 ### Self-hosted GitHub Actions / Windows manual entrypoint
 
+> **runner の service mode（サービスモード）は使用しない。** 現在使用している Windows OS バージョン / 実行環境では service mode 前提の運用を安定してサポートできないため、runner は手動で `run.cmd` を起動する前提で運用する。
+
+#### Runner 起動（bootstrap 付き）
+
+runner を起動する際は、`run.cmd` を直接叩く代わりに repo 管理の bootstrap wrapper を使う。bootstrap は `git safe.directory` 設定など、`actions/checkout` が失敗しないための prerequisite fix を先に実行し、成功時のみ `run.cmd` へ進む。
+
+```cmd
+scripts\windows\run-self-hosted-runner-with-bootstrap.cmd C:\actions-runner
+```
+
+初回セットアップ（one-time hookup）: 従来 `C:\actions-runner\run.cmd` を直接実行していた運用を、上記 wrapper 呼び出しに一度だけ置き換える。以後の prerequisite fix 更新は repo 側 script の更新で追従できる。
+
+#### Night batch manual launch
+
 Windows Command Prompt からは次で同じ config を使えます。
 
 ```cmd
 scripts\windows\run-night-batch-self-hosted.cmd config\night_batch\bundle-detached-reuse-config.json
 ```
 
-`.github/workflows/night-batch-self-hosted.yml` は **self-hosted Windows runner** 前提です。既定の cron は **毎日 00:00 JST**（`0 15 * * *` UTC）で、既定 config は `config/night_batch/bundle-detached-reuse-config.json` です。job は smoke success と detached child 起動確認までを担当し、production 本体は workflow 終了後もローカル PC 上で継続します。workflow では `actions/checkout` を **`clean: false`** にして detached state を保持し、**00:00 JST の起動窓を外れた stale scheduled run は skip** します。
+`.github/workflows/night-batch-self-hosted.yml` は **self-hosted Windows runner** 前提です。runner が online であれば動作し、service 常駐は前提としません。既定の cron は **毎日 00:00 JST**（`0 15 * * *` UTC）で、既定 config は `config/night_batch/bundle-detached-reuse-config.json` です。job は smoke success と detached child 起動確認までを担当し、production 本体は workflow 終了後もローカル PC 上で継続します。workflow では `actions/checkout` を **`clean: false`** にして detached state を保持し、**00:00 JST の起動窓を外れた stale scheduled run は skip** します。
 
 workflow 既定 config の detached state file は `results/night-batch/bundle-detached-reuse-state.json` です。**この state が `running` の間は二重起動を拒否**するので、schedule と manual を同時に流さない前提を Python 側でも守れます。
 
