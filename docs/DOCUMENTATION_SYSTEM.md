@@ -126,6 +126,12 @@
 - [`docs/research/theme-backtest-results-round9_2015_2025.md`](./research/theme-backtest-results-round9_2015_2025.md)
 - [`docs/research/theme-backtest-results-round9-alt_2015_2025.md`](./research/theme-backtest-results-round9-alt_2015_2025.md)
 
+### 次世代の戦略候補（Donchian 系以外）を見たいとき
+
+- [`docs/research/next-strategy-candidates-integrated_20260411_1843.md`](./research/next-strategy-candidates-integrated_20260411_1843.md)
+- MA + RSI14 再加速、MTF BB Pullback、Ren BB 連続足反発、VIX 系、グランビル③/⑧、SMC 系など 9 候補を統合整理
+- active backtest 中のため docs 登録が本線。preset / builder 拡張は別 exec-plan で実施予定
+
 ### round10 のテーマ投資メモを見たいとき
 
 - [`docs/research/theme-backtest-results-round10_2015_2025.md`](./research/theme-backtest-results-round10_2015_2025.md)
@@ -168,6 +174,7 @@
 - [`docs/working-memory/session-logs/final-rollout-docs-cleanup_20260409_1925.md`](./working-memory/session-logs/final-rollout-docs-cleanup_20260409_1925.md)
 - [`docs/working-memory/session-logs/weak-signal-confluence-rollout_20260409_2127.md`](./working-memory/session-logs/weak-signal-confluence-rollout_20260409_2127.md)
 - [`docs/working-memory/session-logs/confluence-community-observability-rollout_20260409_1334.md`](./working-memory/session-logs/confluence-community-observability-rollout_20260409_1334.md)
+- [`docs/working-memory/session-logs/next-strategy-candidates-docs-registration_20260411_1843.md`](./working-memory/session-logs/next-strategy-candidates-docs-registration_20260411_1843.md)
 
 ## 運用ルール
 

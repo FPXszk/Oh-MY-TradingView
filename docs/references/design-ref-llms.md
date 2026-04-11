@@ -421,3 +421,73 @@
 - このプロジェクトにどう活かしたか: 第1段階では `market_symbol_analysis` に additive な `confluence_score` / `confluence_label` / `confluence_breakdown` / `coverage_summary` を追加し、`market_confluence_rank` で watchlist 候補を比較できるようにした。今回の段階ではさらに `experiment-gating` / campaign artifact へ `confluence_snapshot` を載せ、`x_*` / `reach_*` は directional sentiment ではなく community snapshot（件数 / recency / source presence）として統合した。
 - 採用したもの: 固定重みの deterministic confluence layer、false precision を避ける coarse score、coverage を別面で明示する設計、community を strength ではなく observation coverage として扱う設計。
 - 採用しなかったもの: 記事中の大規模 multi-signal engine 全体、prediction market 向けの応用、`x_*` / `reach_*` を初回から bullish / bearish direction に直接混ぜること。
+
+---
+
+## 42：Granville's New Key to Stock Market Profits
+
+- URL: https://en.wikipedia.org/wiki/Granville%27s_law（概要）。原典は Joseph E. Granville "Granville's New Key to Stock Market Profits" (1963)
+- 参考にした理由: グランビルの法則 ③（押し目買い）と ⑧（戻り売り）を次戦略候補として整理する際の出典確認のため。
+- このプロジェクトにどう活かしたか: `granville-3-8` 戦略候補の定義と、MA の傾き + 価格位置関係を条件化する設計の根拠にした。
+- 採用したもの: MA に対する価格の位置関係から売買タイミングを定量化する考え方。
+- 採用しなかったもの: グランビル 8 法則すべてを一括で自動化すること。
+
+---
+
+## 43：ICT / Smart Money Concepts (SMC)
+
+- URL: https://www.youtube.com/@InnerCircleTrader（ICT 公式チャンネル）。概念解説は TradingView コミュニティの各種 educational idea を参照
+- 参考にした理由: SMC 系短期裁量仮説（Order Block、FVG、BOS/CHoCH）を次戦略候補として整理する際の出典確認のため。
+- このプロジェクトにどう活かしたか: `smc-short-term-discretionary` 候補の定義と、裁量依存度・機械化難易度の評価根拠にした。
+- 採用したもの: Order Block / FVG の部分的自動検出を research track として持つ考え方。
+- 採用しなかったもの: SMC 全体を完全自動化戦略として即 preset 化すること。
+
+---
+
+## 44：CBOE VIX White Paper
+
+- URL: https://www.cboe.com/tradable_products/vix/（CBOE 公式）。学術的背景は Whaley (2000) "The Investor Fear Gauge" 等
+- 参考にした理由: VIX を regime filter として使う戦略候補（`vix-high-only`、`vix-rsi14-confluence`）の定義と妥当性確認のため。
+- このプロジェクトにどう活かしたか: VIX 閾値ベースの regime 判定を次戦略候補に組み込み、cross-symbol 参照の設計課題を明確にした。
+- 採用したもの: VIX を恐怖指数として regime filter に使う考え方。閾値ベースの on/off 判定。
+- 採用しなかったもの: VIX デリバティブ取引や VIX term structure 分析をこの repo の直近スコープに入れること。
+
+---
+
+## 45：kazuFX10 の大会優勝者ツイート
+
+- URL: https://x.com/kazuFX10/status/2042676108437426393?s=46
+- 参考にした理由: 大会優勝者の手法をどこまで戦略候補へ抽象化できるか確認するため。
+- このプロジェクトにどう活かしたか: `smc-short-term-discretionary` 候補の直接的な観測出典として使い、competition-style high leverage を切り離して低レバ研究候補として整理した。
+- 採用したもの: SMC 系 microstructure（liquidity sweep / BOS / CHOCH / FVG / OB）という抽象化の方向。
+- 採用しなかったもの: 大会成績や短時間の高レバ return を、そのまま再現可能な期待値として扱うこと。
+
+---
+
+## 46：shibainu_fx のグランビル法則投稿
+
+- URL: https://x.com/shibainu_fx/status/2042534587767886096?s=46
+- 参考にした理由: グランビル③ / ⑧と、MA を軸にした順張り押し目 / 戻り目を、次戦略候補へどう落とすか確認するため。
+- このプロジェクトにどう活かしたか: `granville-3-8` の直接出典として使い、さらに `ma-rsi14-reacceleration` と `mtf-bb-pullback` を導く材料として使った。
+- 採用したもの: MA の向きで方向を固定し、複数時間軸で整合が揃ってから入る思想。
+- 採用しなかったもの: ケース④ / ⑤ のような難度の高い逆張りを次戦略の本線に据えること。
+
+---
+
+## 47：TradingView script `REM BB Pullback Rider`
+
+- URL: https://jp.tradingview.com/script/v9EvreQV/
+- 参考にした理由: BB pullback を機械化する際の具体的な rule set と MTF 入口の参考になるため。
+- このプロジェクトにどう活かしたか: `rem-bb-pullback-rider` の直接出典として使い、`mtf-bb-pullback` の構造整理にも使った。
+- 採用したもの: `SMA20 / SMA200` + slope filter + BB 端タッチで押し目を捉える枠組み。
+- 採用しなかったもの: `20pips` 固定 TP/SL を資産横断の universal default とみなすこと。
+
+---
+
+## 48：Ren1904fx の BB 連続足反発ツイート
+
+- URL: https://x.com/ren1904fx/status/2042849037649637526?s=46
+- 参考にした理由: 連続陽線 / 陰線と BB タッチ、ろうそく足の伸びを使う独自の逆張り候補として検討価値があったため。
+- このプロジェクトにどう活かしたか: `ren-consecutive-bb-reversal` 候補の直接出典として使い、将来 builder 化するときの formalization 論点を先に文書化した。
+- 採用したもの: one-sided move の走り切りを、連続足と BB タッチ、candle expansion で定量化する発想。
+- 採用しなかったもの: 経験則をそのまま exact rule とみなすこと。
