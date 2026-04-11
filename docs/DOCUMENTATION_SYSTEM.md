@@ -143,6 +143,13 @@
 - [`docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`](./design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md)
 - [`command.md`](../command.md)
 
+### self-hosted runner / foreground night batch の運用変更を追いたいとき
+
+- [`command.md`](../command.md)
+- [`docs/working-memory/session-logs/non-service-self-hosted-runner-bootstrap_20260411_1205.md`](./working-memory/session-logs/non-service-self-hosted-runner-bootstrap_20260411_1205.md)
+- [`docs/working-memory/session-logs/self-hosted-runner-foreground-autostart_20260412_0004.md`](./working-memory/session-logs/self-hosted-runner-foreground-autostart_20260412_0004.md)
+- foreground monitoring (`2c23e7a`) / autostart registration (`8cccb48`) / autostart hardening (`e4828d7`) の流れをまとめて追える
+
 ### 外部比較・応用可能性調査を見たいとき
 
 - [`docs/research/tradingview-external-landscape-and-applicability_20260408_1105.md`](./research/tradingview-external-landscape-and-applicability_20260408_1105.md)
@@ -175,6 +182,7 @@
 - [`docs/working-memory/session-logs/weak-signal-confluence-rollout_20260409_2127.md`](./working-memory/session-logs/weak-signal-confluence-rollout_20260409_2127.md)
 - [`docs/working-memory/session-logs/confluence-community-observability-rollout_20260409_1334.md`](./working-memory/session-logs/confluence-community-observability-rollout_20260409_1334.md)
 - [`docs/working-memory/session-logs/next-strategy-candidates-docs-registration_20260411_1843.md`](./working-memory/session-logs/next-strategy-candidates-docs-registration_20260411_1843.md)
+- [`docs/working-memory/session-logs/self-hosted-runner-foreground-autostart_20260412_0004.md`](./working-memory/session-logs/self-hosted-runner-foreground-autostart_20260412_0004.md)
 
 ## 運用ルール
 
