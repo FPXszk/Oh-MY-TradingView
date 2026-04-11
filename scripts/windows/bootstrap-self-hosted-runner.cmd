@@ -1,14 +1,13 @@
 @echo off
 setlocal
 
-REM ── bootstrap-self-hosted-runner.cmd ──────────────────────────
+REM -- bootstrap-self-hosted-runner.cmd --
 REM Prerequisite fix for self-hosted Windows runner.
 REM Run this BEFORE starting the GitHub Actions runner (run.cmd).
 REM
 REM Currently handles:
-REM   1. Git dubious ownership — adds this repository workspace to
+REM   1. Git dubious ownership - adds this repository workspace to
 REM      git safe.directory so actions/checkout does not fail.
-REM ──────────────────────────────────────────────────────────────
 
 set "RUNNER_DIR=%~1"
 if "%RUNNER_DIR%"=="" set "RUNNER_DIR=C:\actions-runner"

@@ -410,16 +410,21 @@ scripts\windows\run-self-hosted-runner-with-bootstrap.cmd C:\actions-runner
 
 #### Runner 自動起動（Task Scheduler）
 
-再起動後も runner を自動で online に戻したい場合は、**service mode ではなく Task Scheduler** を使う。標準 trigger は **runner 用 Windows ユーザーの logon 時**で、repo 管理の wrapper をそのまま呼ぶ。
+再起動後も runner を自動で online に戻したい場合は、**service mode ではなく Task Scheduler** を使う。標準 trigger は **runner 用 Windows ユーザーの logon 時**で、登録 script が **Task Scheduler 用 launcher** と **runner 配下の self-contained startup script copy** を生成する。
 
 ```cmd
 scripts\windows\register-self-hosted-runner-autostart.cmd C:\actions-runner
 ```
 
-- 登録先は `run.cmd` 直呼びではなく `run-self-hosted-runner-with-bootstrap.cmd`
+- 登録先は `run.cmd` 直呼びではなく、生成される `C:\actions-runner\_diag\runner-autostart-launch.cmd`
+- launcher の中から `C:\actions-runner\_diag\run-self-hosted-runner-with-bootstrap.cmd` を呼ぶ
+- bootstrap も `C:\actions-runner\_diag\bootstrap-self-hosted-runner.cmd` に複製して live checkout 非依存にする
 - trigger は **Task Scheduler / ONLOGON / 30 秒 delay**
+- 実行ログは `C:\actions-runner\_diag\runner-autostart.log`
 - 解除は `schtasks /Delete /TN "OhMyTradingViewRunnerAutostart" /F`
 - 確認は `schtasks /Query /TN "OhMyTradingViewRunnerAutostart" /V /FO LIST`
+
+もし `register-self-hosted-runner-autostart.cmd` 実行時に `楳笏...` のような文字化けしたコマンドエラーが出る場合は、**古い UTF-8 / 非 ASCII コメント入り script が live checkout に残っている**可能性が高い。最新 `main` に更新したうえで再実行する。
 
 > **注意:** この方式は Windows の **自動ログオン** または対象ユーザーのログインを前提とする。  
 > reboot だけで完全無人復旧するかどうかは OS 側の auto-logon 設定に依存し、repo だけでは保証しない。

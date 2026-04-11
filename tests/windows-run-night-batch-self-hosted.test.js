@@ -9,8 +9,10 @@ const WRAPPER_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'run-night-batch-s
 const BOOTSTRAP_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'bootstrap-self-hosted-runner.cmd');
 const RUNNER_WRAPPER_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'run-self-hosted-runner-with-bootstrap.cmd');
 const AUTOSTART_SCRIPT_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'register-self-hosted-runner-autostart.cmd');
+const GITATTRIBUTES_PATH = join(PROJECT_ROOT, '.gitattributes');
 const README_PATH = join(PROJECT_ROOT, 'README.md');
 const COMMAND_PATH = join(PROJECT_ROOT, 'command.md');
+const WINDOWS_RUNNER_SCRIPT_PATHS = [BOOTSTRAP_PATH, RUNNER_WRAPPER_PATH, AUTOSTART_SCRIPT_PATH];
 
 describe('run-night-batch-self-hosted.cmd', () => {
   it('passes config through cmd expansion instead of bash-side variables', () => {
@@ -73,6 +75,16 @@ describe('bootstrap-self-hosted-runner.cmd', () => {
       'bootstrap must not contain night-batch logic');
     assert.doesNotMatch(script, /smoke-prod/i,
       'bootstrap must not contain smoke-prod logic');
+  });
+
+  it('keeps runner bootstrap scripts ASCII-safe for cmd.exe', () => {
+    for (const scriptPath of WINDOWS_RUNNER_SCRIPT_PATHS) {
+      const bytes = readFileSync(scriptPath);
+      const hasNonAscii = bytes.some(byte => byte > 0x7f);
+
+      assert.equal(hasNonAscii, false,
+        `${scriptPath} must stay ASCII-only to avoid Windows cmd encoding issues`);
+    }
   });
 });
 
@@ -137,6 +149,41 @@ describe('register-self-hosted-runner-autostart.cmd', () => {
       'autostart script must launch the bootstrap runner wrapper');
     assert.doesNotMatch(script, /runsvc|svc\.sh|runasservice/i,
       'autostart script must not switch to service mode');
+  });
+
+  it('uses a generated launcher to avoid fragile schtasks quoting', () => {
+    const script = readFileSync(AUTOSTART_SCRIPT_PATH, 'utf8');
+
+    assert.match(script, /runner-autostart-launch\.cmd/i,
+      'autostart script must generate a dedicated launcher file');
+    assert.match(script, /AUTOSTART_LAUNCHER_SHORT/i,
+      'autostart script must prefer a short launcher path for schtasks');
+    assert.doesNotMatch(script, /cmd\.exe \/c/i,
+      'autostart script must avoid nested cmd.exe /c quoting in schtasks');
+  });
+
+  it('stages self-contained startup scripts under the runner directory', () => {
+    const script = readFileSync(AUTOSTART_SCRIPT_PATH, 'utf8');
+
+    assert.match(script, /BOOTSTRAP_COPY=%RUNNER_DIR%\\_diag\\bootstrap-self-hosted-runner\.cmd/i,
+      'autostart script must stage bootstrap under the runner-owned _diag directory');
+    assert.match(script, /WRAPPER_COPY=%RUNNER_DIR%\\_diag\\run-self-hosted-runner-with-bootstrap\.cmd/i,
+      'autostart script must stage the wrapper under the runner-owned _diag directory');
+    assert.match(script, /copy \/Y "%BOOTSTRAP_SOURCE%" "%BOOTSTRAP_COPY%"/i,
+      'autostart script must copy bootstrap into the runner-owned _diag directory');
+    assert.match(script, /copy \/Y "%WRAPPER_SOURCE%" "%WRAPPER_COPY%"/i,
+      'autostart script must copy the wrapper into the runner-owned _diag directory');
+  });
+});
+
+describe('.gitattributes', () => {
+  it('forces CRLF checkout for cmd scripts', () => {
+    assert.ok(existsSync(GITATTRIBUTES_PATH), '.gitattributes must exist');
+
+    const attrs = readFileSync(GITATTRIBUTES_PATH, 'utf8');
+
+    assert.match(attrs, /\*\.cmd\s+text\s+eol=crlf/i,
+      '.gitattributes must force CRLF checkout for cmd files');
   });
 });
 
