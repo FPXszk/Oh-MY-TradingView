@@ -268,6 +268,54 @@ describe('docs: non-service self-hosted runner policy', () => {
   });
 });
 
+describe('night-batch summary step PowerShell safety', () => {
+  const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
+  // Extract the "Append night batch workflow summary" step run block
+  const summaryStepMatch = workflow.match(
+    /- name: Append night batch workflow summary[\s\S]*?run: \|\n([\s\S]*?)(?=\n\s+- name:|\n\s+- uses:|\n\njobs:|\z)/
+  );
+  const summaryStepRun = summaryStepMatch ? summaryStepMatch[1] : '';
+
+  it('summary step exists in workflow', () => {
+    assert.ok(summaryStepRun.length > 0,
+      'workflow must contain the Append night batch workflow summary step');
+  });
+
+  it('summary step must not use inline subexpression-if inside Add-Content', () => {
+    // The pattern $(if ...) inside an Add-Content argument list causes
+    // parser ambiguity in Windows PowerShell when combined with string
+    // concatenation containing a leading hyphen.
+    const addContentLines = summaryStepRun.split(/\r?\n/)
+      .filter(l => l.includes('Add-Content'));
+    for (const line of addContentLines) {
+      assert.doesNotMatch(line, /\$\(if\s/,
+        `Add-Content must not contain inline $(if ...) — found: ${line.trim()}`);
+    }
+  });
+
+  it('summary step must pre-assign nullable fields before emitting them', () => {
+    // Nullable fields (failed_step, last_checkpoint) must be assigned to
+    // a variable with a fallback before being used in Add-Content.
+    assert.match(summaryStepRun, /\$failedStep\s*=/,
+      'summary step must pre-assign $failedStep');
+    assert.match(summaryStepRun, /\$lastCheckpoint\s*=/,
+      'summary step must pre-assign $lastCheckpoint');
+  });
+
+  it('summary step must still emit all required fields', () => {
+    assert.match(summaryStepRun, /success/,
+      'summary step must emit success field');
+    assert.match(summaryStepRun, /termination_reason/,
+      'summary step must emit termination_reason field');
+    assert.match(summaryStepRun, /failed_step/,
+      'summary step must emit failed_step field');
+    assert.match(summaryStepRun, /last_checkpoint/,
+      'summary step must emit last_checkpoint field');
+    assert.match(summaryStepRun, /summary_json/,
+      'summary step must emit summary_json field');
+  });
+});
+
 describe('docs: next strategy update policy', () => {
   it('README documents that live checkout must not be edited during active run', () => {
     const readme = readFileSync(README_PATH, 'utf8');

@@ -114,11 +114,13 @@ jobs:
             exit 0
           }
           $summary = Get-Content -Raw $summaryPath | ConvertFrom-Json
-          Add-Content $env:GITHUB_STEP_SUMMARY ('- success: ' + $summary.success)
-          Add-Content $env:GITHUB_STEP_SUMMARY ('- termination_reason: ' + $summary.termination_reason)
-          Add-Content $env:GITHUB_STEP_SUMMARY ('- failed_step: ' + ($(if ($summary.failed_step) { $summary.failed_step } else { '—' })))
-          Add-Content $env:GITHUB_STEP_SUMMARY ('- last_checkpoint: ' + ($(if ($summary.last_checkpoint) { $summary.last_checkpoint } else { '—' })))
-          Add-Content $env:GITHUB_STEP_SUMMARY ('- summary_json: ' + $summaryPath)
+          $failedStep = if ($summary.failed_step) { $summary.failed_step } else { 'N/A' }
+          $lastCheckpoint = if ($summary.last_checkpoint) { $summary.last_checkpoint } else { 'N/A' }
+          Add-Content $env:GITHUB_STEP_SUMMARY "- success: $($summary.success)"
+          Add-Content $env:GITHUB_STEP_SUMMARY "- termination_reason: $($summary.termination_reason)"
+          Add-Content $env:GITHUB_STEP_SUMMARY "- failed_step: $failedStep"
+          Add-Content $env:GITHUB_STEP_SUMMARY "- last_checkpoint: $lastCheckpoint"
+          Add-Content $env:GITHUB_STEP_SUMMARY "- summary_json: $summaryPath"
           $summaryMdPath = '${{ steps.night_batch_outputs.outputs.summary_md }}'
           if ($summaryMdPath -ne '') {
             Add-Content $env:GITHUB_STEP_SUMMARY ''
