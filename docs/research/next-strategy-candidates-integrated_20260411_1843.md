@@ -310,3 +310,43 @@
 - このドキュメントは **research 登録が本線** であり、preset / builder 拡張は別作業として扱う
 - 各候補の backtest 結果は、検証実施後に別ドキュメントとして `docs/research/` に追加する
 - 具体的な投稿 / script URL は [`docs/references/design-ref-llms.md`](../references/design-ref-llms.md) に記録済み
+
+---
+
+## Run 8 validated shortlist
+
+night batch **run 8** の recovered results から、実績ベースで次の backtest へ接続する shortlist を別枠で固定する。
+
+### US top 3
+
+1. `donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight`
+2. `donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-10pct-theme-deep-pullback`
+3. `donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-10pct-theme-deep-pullback-earlier`
+
+### JP top 3
+
+1. `donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight`
+2. `donchian-60-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-entry-late`
+3. `donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict`
+
+### 読み方
+
+- これは **research_only の新規アイデア群を置き換えるものではなく**、run 8 で実測済みの Donchian 系 shortlist を「次に回す operational 候補」として付設する整理である
+- `rsi14-mean-reversion` は引き続き control / baseline として残す
+- `smc-short-term-discretionary` は引き続き watchlist / exploratory として残し、今回の shortlist には混ぜない
+
+## Next backtest campaign attachment
+
+上記 shortlist は、既存の `external-phase1-priority-top` を差し替えず、**別 campaign** として attach する。
+
+- campaign id: `external-phase1-run8-us-jp-top6`
+- config: `config/backtest/campaigns/external-phase1-run8-us-jp-top6.json`
+- universe: `long-run-cross-market-100`
+- preset order: **US top 3 -> JP top 3**
+- phase sizing: `smoke=10`, `pilot=25`, `full=100`
+
+### 運用メモ
+
+- `external-phase1-priority-top` は historical baseline として維持する
+- run 8 shortlist campaign は、直近実績を cross-market gate に再投入するための追加レーンとして扱う
+- 研究候補の RSI 系 / VIX 系 / SMC 系はこの campaign に直接混ぜず、次の preset 化や別 campaign 検証へ分離する

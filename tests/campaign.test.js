@@ -1223,6 +1223,68 @@ describe('external-phase1-priority-top campaign config', () => {
 });
 
 // ---------------------------------------------------------------------------
+// external-phase1-run8-us-jp-top6 campaign config
+// ---------------------------------------------------------------------------
+describe('external-phase1-run8-us-jp-top6 campaign config', () => {
+  const expectedPresetIds = [
+    'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight',
+    'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-10pct-theme-deep-pullback',
+    'donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-10pct-theme-deep-pullback-earlier',
+    'donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight',
+    'donchian-60-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-entry-late',
+    'donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict',
+  ];
+
+  it('is valid JSON with correct shape', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'external-phase1-run8-us-jp-top6.json'),
+      'utf8',
+    );
+    const config = JSON.parse(raw);
+    assert.equal(config.id, 'external-phase1-run8-us-jp-top6');
+    assert.equal(config.universe, 'long-run-cross-market-100');
+    assert.equal(config.date_override.from, '2000-01-01');
+    assert.equal(config.preset_ids.length, 6);
+    assert.deepEqual(config.preset_ids, expectedPresetIds);
+    assert.ok(config.experiment_gating);
+    assert.equal(config.experiment_gating.enabled, true);
+  });
+
+  it('passes validateCampaignConfig', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'external-phase1-run8-us-jp-top6.json'),
+      'utf8',
+    );
+    const config = JSON.parse(raw);
+    const result = validateCampaignConfig(config);
+    assert.equal(result.valid, true);
+    assert.deepEqual(result.errors, []);
+  });
+
+  it('loads via loadCampaign with 100 symbols and 6 strategies', async () => {
+    const campaign = await loadCampaign('external-phase1-run8-us-jp-top6');
+    assert.equal(campaign.symbols.length, 100);
+    assert.equal(campaign.strategies.length, 6);
+    assert.equal(campaign.matrix.length, 600);
+    assert.equal(campaign.config.experiment_gating.enabled, true);
+    assert.deepEqual(campaign.strategies.map((s) => s.id), expectedPresetIds);
+  });
+
+  it('uses 10/25/100 phase sizing', async () => {
+    const smoke = await loadCampaign('external-phase1-run8-us-jp-top6', { phase: 'smoke' });
+    const pilot = await loadCampaign('external-phase1-run8-us-jp-top6', { phase: 'pilot' });
+    const full = await loadCampaign('external-phase1-run8-us-jp-top6', { phase: 'full' });
+
+    assert.equal(smoke.symbols.length, 10);
+    assert.equal(smoke.matrix.length, 60);
+    assert.equal(pilot.symbols.length, 25);
+    assert.equal(pilot.matrix.length, 150);
+    assert.equal(full.symbols.length, 100);
+    assert.equal(full.matrix.length, 600);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // cross-phase resume guard (same-phase only)
 // ---------------------------------------------------------------------------
 describe('cross-phase resume guard', () => {
