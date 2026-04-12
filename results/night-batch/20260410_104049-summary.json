@@ -1,0 +1,88 @@
+{
+  "success": true,
+  "command": "smoke-prod",
+  "host": "127.0.0.1",
+  "port": 35265,
+  "preflight_required": true,
+  "steps": [
+    {
+      "name": "startup-check",
+      "command": [
+        "GET",
+        "http://127.0.0.1:35265/json/list"
+      ],
+      "success": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "latest_checkpoint": null,
+      "skipped": false
+    },
+    {
+      "name": "launch",
+      "command": [
+        "/tmp/night-batch-test-7zRH5B/launch.sh"
+      ],
+      "success": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "latest_checkpoint": null,
+      "skipped": true
+    },
+    {
+      "name": "preflight",
+      "command": [
+        "GET",
+        "http://127.0.0.1:35265/json/list"
+      ],
+      "success": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "latest_checkpoint": null,
+      "skipped": false
+    },
+    {
+      "success": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "latest_checkpoint": null,
+      "captured_lines": [],
+      "command": [
+        "/tmp/night-batch-test-7zRH5B/fake-node.sh",
+        "/home/fpxszk/code/Oh-MY-TradingView/src/cli/index.js",
+        "backtest",
+        "preset",
+        "ema-cross-9-21",
+        "--symbol",
+        "NVDA",
+        "--date-from",
+        "2024-01-01",
+        "--date-to",
+        "2024-12-31"
+      ],
+      "skipped": false,
+      "name": "smoke"
+    },
+    {
+      "success": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "latest_checkpoint": null,
+      "captured_lines": [],
+      "command": [
+        "/tmp/night-batch-test-7zRH5B/fake-node.sh",
+        "/home/fpxszk/code/Oh-MY-TradingView/src/cli/index.js",
+        "backtest",
+        "preset",
+        "ema-cross-9-21",
+        "--symbol",
+        "NVDA",
+        "--date-from",
+        "2000-01-01",
+        "--date-to",
+        "2099-12-31"
+      ],
+      "skipped": false,
+      "name": "production"
+    }
+  ]
+}

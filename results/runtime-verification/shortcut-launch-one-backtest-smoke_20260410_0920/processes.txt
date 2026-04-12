@@ -1,0 +1,84 @@
+
+
+ProcessId   : 3236
+CommandLine : "C:\TradingView\TradingView.exe" --remote-debugging-port=9222
+
+ProcessId   : 21372
+CommandLine : C:\TradingView\TradingView.exe --type=crashpad-handler --user-data-dir=C:\Users\szk\AppData\Roaming\Tradi
+              ngView /prefetch:4 --no-rate-limit --monitor-self-annotation=ptype=crashpad-handler --database=C:\Users\s
+              zk\AppData\Roaming\TradingView\Crashpad --url=https://f.a.k/e --annotation=_productName=TradingView --ann
+              otation=_version=3.0.0 --annotation=plat=Win64 --annotation=prod=Electron --annotation=ver=38.2.2 --initi
+              al-client-data=0x564,0x568,0x56c,0x560,0x570,0x7ff6b5550e14,0x7ff6b5550e20,0x7ff6b5550e30
+
+ProcessId   : 9004
+CommandLine : "C:\TradingView\TradingView.exe" --type=gpu-process --user-data-dir="C:\Users\szk\AppData\Roaming\Trading
+              View" --gpu-preferences=SAAAAAAAAADgAAAIAAAAAAAAAAAAAGAAAQAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAA
+              AAAABAAAAAAAAAACAAAAAAAAAAIAAAAAAAAAA== --field-trial-handle=1876,i,14416298944729087516,1305400238462562
+              5458,262144 --enable-features=EnableTransparentHwndEnlargement,PdfUseShowSaveFilePicker --disable-feature
+              s=CalculateNativeWinOcclusion,ScreenAIOCREnabled,SpareRendererForSitePerProcess,TraceSiteInstanceGetProce
+              ssCreation,WinDelaySpellcheckServiceInit --variations-seed-version --mojo-platform-channel-handle=1860 /p
+              refetch:2
+
+ProcessId   : 11668
+CommandLine : "C:\TradingView\TradingView.exe" --type=utility --utility-sub-type=network.mojom.NetworkService --lang=ja
+               --service-sandbox-type=none --user-data-dir="C:\Users\szk\AppData\Roaming\TradingView" --field-trial-han
+              dle=1876,i,14416298944729087516,13054002384625625458,262144 --enable-features=EnableTransparentHwndEnlarg
+              ement,PdfUseShowSaveFilePicker --disable-features=CalculateNativeWinOcclusion,ScreenAIOCREnabled,SpareRen
+              dererForSitePerProcess,TraceSiteInstanceGetProcessCreation,WinDelaySpellcheckServiceInit --variations-see
+              d-version --mojo-platform-channel-handle=2340 /prefetch:11
+
+ProcessId   : 11320
+CommandLine : "C:\TradingView\TradingView.exe" --type=renderer --user-data-dir="C:\Users\szk\AppData\Roaming\TradingVie
+              w" --app-path="C:\TradingView\resources\app.asar" --no-sandbox --no-zygote --remote-debugging-port=9222 -
+              -video-capture-use-gpu-memory-buffer --lang=ja --device-scale-factor=1 --num-raster-threads=4 --enable-ma
+              in-frame-before-activation --renderer-client-id=5 --time-ticks-at-unix-epoch=-1775662355529811 --launch-t
+              ime-ticks=151553075906 --field-trial-handle=1876,i,14416298944729087516,13054002384625625458,262144 --ena
+              ble-features=EnableTransparentHwndEnlargement,PdfUseShowSaveFilePicker --disable-features=CalculateNative
+              WinOcclusion,ScreenAIOCREnabled,SpareRendererForSitePerProcess,TraceSiteInstanceGetProcessCreation,WinDel
+              aySpellcheckServiceInit --variations-seed-version --mojo-platform-channel-handle=2616 /prefetch:1
+
+ProcessId   : 17920
+CommandLine : "C:\TradingView\TradingView.exe" --type=renderer --user-data-dir="C:\Users\szk\AppData\Roaming\TradingVie
+              w" --app-path="C:\TradingView\resources\app.asar" --no-sandbox --no-zygote --remote-debugging-port=9222 -
+              -video-capture-use-gpu-memory-buffer --lang=ja --device-scale-factor=1 --num-raster-threads=4 --enable-ma
+              in-frame-before-activation --renderer-client-id=6 --time-ticks-at-unix-epoch=-1775662355529811 --launch-t
+              ime-ticks=151553088894 --field-trial-handle=1876,i,14416298944729087516,13054002384625625458,262144 --ena
+              ble-features=EnableTransparentHwndEnlargement,PdfUseShowSaveFilePicker --disable-features=CalculateNative
+              WinOcclusion,ScreenAIOCREnabled,SpareRendererForSitePerProcess,TraceSiteInstanceGetProcessCreation,WinDel
+              aySpellcheckServiceInit --variations-seed-version --mojo-platform-channel-handle=2632 /prefetch:1
+
+ProcessId   : 17964
+CommandLine : "C:\TradingView\TradingView.exe" --type=renderer --user-data-dir="C:\Users\szk\AppData\Roaming\TradingVie
+              w" --app-user-model-id=electron.app.TradingView --app-path="C:\TradingView\resources\app.asar" --no-sandb
+              ox --no-zygote --remote-debugging-port=9222 --video-capture-use-gpu-memory-buffer --lang=ja --device-scal
+              e-factor=1 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=10 --time-ti
+              cks-at-unix-epoch=-1775662355529811 --launch-time-ticks=151553692559 --field-trial-handle=1876,i,14416298
+              944729087516,13054002384625625458,262144 --enable-features=EnableTransparentHwndEnlargement,PdfUseShowSav
+              eFilePicker --disable-features=CalculateNativeWinOcclusion,ScreenAIOCREnabled,SpareRendererForSitePerProc
+              ess,TraceSiteInstanceGetProcessCreation,WinDelaySpellcheckServiceInit --variations-seed-version --mojo-pl
+              atform-channel-handle=3980 /prefetch:1
+
+ProcessId   : 22352
+CommandLine : "C:\TradingView\TradingView.exe" --type=renderer --user-data-dir="C:\Users\szk\AppData\Roaming\TradingVie
+              w" --app-user-model-id=electron.app.TradingView --app-path="C:\TradingView\resources\app.asar" --no-sandb
+              ox --no-zygote --remote-debugging-port=9222 --video-capture-use-gpu-memory-buffer --lang=ja --device-scal
+              e-factor=1 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=8 --time-tic
+              ks-at-unix-epoch=-1775662355529811 --launch-time-ticks=151553701003 --field-trial-handle=1876,i,144162989
+              44729087516,13054002384625625458,262144 --enable-features=EnableTransparentHwndEnlargement,PdfUseShowSave
+              FilePicker --disable-features=CalculateNativeWinOcclusion,ScreenAIOCREnabled,SpareRendererForSitePerProce
+              ss,TraceSiteInstanceGetProcessCreation,WinDelaySpellcheckServiceInit --variations-seed-version --mojo-pla
+              tform-channel-handle=3984 /prefetch:1
+
+ProcessId   : 9608
+CommandLine : "C:\TradingView\TradingView.exe" --type=renderer --user-data-dir="C:\Users\szk\AppData\Roaming\TradingVie
+              w" --app-user-model-id=electron.app.TradingView --app-path="C:\TradingView\resources\app.asar" --enable-s
+              andbox --remote-debugging-port=9222 --video-capture-use-gpu-memory-buffer --lang=ja --device-scale-factor
+              =1 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=12 --time-ticks-at-u
+              nix-epoch=-1775662355529811 --launch-time-ticks=151554258229 --field-trial-handle=1876,i,1441629894472908
+              7516,13054002384625625458,262144 --enable-features=EnableTransparentHwndEnlargement,PdfUseShowSaveFilePic
+              ker --disable-features=CalculateNativeWinOcclusion,ScreenAIOCREnabled,SpareRendererForSitePerProcess,Trac
+              eSiteInstanceGetProcessCreation,WinDelaySpellcheckServiceInit --variations-seed-version --mojo-platform-c
+              hannel-handle=3356 /prefetch:1
+
+
+

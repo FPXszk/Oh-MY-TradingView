@@ -9,9 +9,12 @@ const WRAPPER_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'run-night-batch-s
 const BOOTSTRAP_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'bootstrap-self-hosted-runner.cmd');
 const RUNNER_WRAPPER_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'run-self-hosted-runner-with-bootstrap.cmd');
 const AUTOSTART_SCRIPT_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'register-self-hosted-runner-autostart.cmd');
+const FIND_OUTPUTS_SCRIPT_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'github-actions', 'find-night-batch-outputs.ps1');
+const APPEND_SUMMARY_SCRIPT_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'github-actions', 'append-night-batch-workflow-summary.ps1');
 const GITATTRIBUTES_PATH = join(PROJECT_ROOT, '.gitattributes');
 const README_PATH = join(PROJECT_ROOT, 'README.md');
 const COMMAND_PATH = join(PROJECT_ROOT, 'command.md');
+const RUN8_REPORT_PATH = join(PROJECT_ROOT, 'docs', 'reports', 'night-batch-self-hosted-run8.md');
 const WINDOWS_RUNNER_SCRIPT_PATHS = [BOOTSTRAP_PATH, RUNNER_WRAPPER_PATH, AUTOSTART_SCRIPT_PATH];
 
 describe('run-night-batch-self-hosted.cmd', () => {
@@ -198,8 +201,8 @@ describe('night-batch-self-hosted workflow', () => {
   it('publishes GitHub summary details and uploads artifacts after the run', () => {
     const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
 
-    assert.match(workflow, /GITHUB_STEP_SUMMARY/,
-      'workflow must append a run summary to GITHUB_STEP_SUMMARY');
+    assert.match(workflow, /append-night-batch-workflow-summary\.ps1/,
+      'workflow must call the summary script that writes to GITHUB_STEP_SUMMARY');
     assert.match(workflow, /actions\/upload-artifact@v4/,
       'workflow must upload night batch artifacts');
   });
@@ -269,23 +272,16 @@ describe('docs: non-service self-hosted runner policy', () => {
 });
 
 describe('night-batch summary step PowerShell safety', () => {
-  const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
-  // Extract the "Append night batch workflow summary" step run block
-  const summaryStepMatch = workflow.match(
-    /- name: Append night batch workflow summary[\s\S]*?run: \|\n([\s\S]*?)(?=\n\s+- name:|\n\s+- uses:|\n\njobs:|\z)/
-  );
-  const summaryStepRun = summaryStepMatch ? summaryStepMatch[1] : '';
+  const findScript = readFileSync(FIND_OUTPUTS_SCRIPT_PATH, 'utf8');
+  const summaryScript = readFileSync(APPEND_SUMMARY_SCRIPT_PATH, 'utf8');
 
-  it('summary step exists in workflow', () => {
-    assert.ok(summaryStepRun.length > 0,
-      'workflow must contain the Append night batch workflow summary step');
+  it('summary script exists and is non-empty', () => {
+    assert.ok(summaryScript.length > 0,
+      'append-night-batch-workflow-summary.ps1 must exist and be non-empty');
   });
 
-  it('summary step must not use inline subexpression-if inside Add-Content', () => {
-    // The pattern $(if ...) inside an Add-Content argument list causes
-    // parser ambiguity in Windows PowerShell when combined with string
-    // concatenation containing a leading hyphen.
-    const addContentLines = summaryStepRun.split(/\r?\n/)
+  it('summary script must not use inline subexpression-if inside Add-Content', () => {
+    const addContentLines = summaryScript.split(/\r?\n/)
       .filter(l => l.includes('Add-Content'));
     for (const line of addContentLines) {
       assert.doesNotMatch(line, /\$\(if\s/,
@@ -293,26 +289,156 @@ describe('night-batch summary step PowerShell safety', () => {
     }
   });
 
-  it('summary step must pre-assign nullable fields before emitting them', () => {
-    // Nullable fields (failed_step, last_checkpoint) must be assigned to
-    // a variable with a fallback before being used in Add-Content.
-    assert.match(summaryStepRun, /\$failedStep\s*=/,
-      'summary step must pre-assign $failedStep');
-    assert.match(summaryStepRun, /\$lastCheckpoint\s*=/,
-      'summary step must pre-assign $lastCheckpoint');
+  it('summary script must pre-assign nullable fields before emitting them', () => {
+    assert.match(summaryScript, /\$failedStep\s*=/,
+      'summary script must pre-assign $failedStep');
+    assert.match(summaryScript, /\$lastCheckpoint\s*=/,
+      'summary script must pre-assign $lastCheckpoint');
   });
 
-  it('summary step must still emit all required fields', () => {
-    assert.match(summaryStepRun, /success/,
-      'summary step must emit success field');
-    assert.match(summaryStepRun, /termination_reason/,
-      'summary step must emit termination_reason field');
-    assert.match(summaryStepRun, /failed_step/,
-      'summary step must emit failed_step field');
-    assert.match(summaryStepRun, /last_checkpoint/,
-      'summary step must emit last_checkpoint field');
-    assert.match(summaryStepRun, /summary_json/,
-      'summary step must emit summary_json field');
+  it('summary script must still emit all required fields', () => {
+    assert.match(summaryScript, /success/,
+      'summary script must emit success field');
+    assert.match(summaryScript, /termination_reason/,
+      'summary script must emit termination_reason field');
+    assert.match(summaryScript, /failed_step/,
+      'summary script must emit failed_step field');
+    assert.match(summaryScript, /last_checkpoint/,
+      'summary script must emit last_checkpoint field');
+    assert.match(summaryScript, /summary_json/,
+      'summary script must emit summary_json field');
+  });
+});
+
+describe('external PowerShell scripts for workflow summary', () => {
+  it('find-night-batch-outputs.ps1 exists', () => {
+    assert.ok(existsSync(FIND_OUTPUTS_SCRIPT_PATH),
+      'scripts/windows/github-actions/find-night-batch-outputs.ps1 must exist');
+  });
+
+  it('append-night-batch-workflow-summary.ps1 exists', () => {
+    assert.ok(existsSync(APPEND_SUMMARY_SCRIPT_PATH),
+      'scripts/windows/github-actions/append-night-batch-workflow-summary.ps1 must exist');
+  });
+
+  it('find-night-batch-outputs.ps1 outputs round_dir, summary_json, summary_md', () => {
+    const script = readFileSync(FIND_OUTPUTS_SCRIPT_PATH, 'utf8');
+
+    assert.match(script, /round_dir=/,
+      'find script must output round_dir');
+    assert.match(script, /summary_json=/,
+      'find script must output summary_json');
+    assert.match(script, /summary_md=/,
+      'find script must output summary_md');
+  });
+
+  it('append-night-batch-workflow-summary.ps1 safely handles nullable fields', () => {
+    const script = readFileSync(APPEND_SUMMARY_SCRIPT_PATH, 'utf8');
+
+    assert.match(script, /\$failedStep/,
+      'summary script must pre-assign $failedStep');
+    assert.match(script, /\$lastCheckpoint/,
+      'summary script must pre-assign $lastCheckpoint');
+    assert.doesNotMatch(script, /\$\(if\s/,
+      'summary script must not use inline $(if ...) pattern');
+  });
+
+  it('append-night-batch-workflow-summary.ps1 emits all required fields', () => {
+    const script = readFileSync(APPEND_SUMMARY_SCRIPT_PATH, 'utf8');
+
+    assert.match(script, /success/, 'summary script must emit success');
+    assert.match(script, /termination_reason/, 'summary script must emit termination_reason');
+    assert.match(script, /failed_step/, 'summary script must emit failed_step');
+    assert.match(script, /last_checkpoint/, 'summary script must emit last_checkpoint');
+    assert.match(script, /summary_json/, 'summary script must emit summary_json');
+  });
+
+  it('find-night-batch-outputs.ps1 accepts ExpectedRunId parameter', () => {
+    const script = readFileSync(FIND_OUTPUTS_SCRIPT_PATH, 'utf8');
+
+    assert.match(script, /param\s*\(/i,
+      'find script must declare parameters via param()');
+    assert.match(script, /ExpectedRunId/,
+      'find script must accept ExpectedRunId parameter');
+  });
+
+  it('append-night-batch-workflow-summary.ps1 accepts SummaryJsonPath parameter', () => {
+    const script = readFileSync(APPEND_SUMMARY_SCRIPT_PATH, 'utf8');
+
+    assert.match(script, /param\s*\(/i,
+      'summary script must declare parameters via param()');
+    assert.match(script, /SummaryJsonPath/,
+      'summary script must accept SummaryJsonPath parameter');
+  });
+});
+
+describe('workflow delegates to external PowerShell scripts', () => {
+  const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
+
+  it('Locate step calls find-night-batch-outputs.ps1', () => {
+    assert.match(workflow, /find-night-batch-outputs\.ps1/,
+      'workflow must call find-night-batch-outputs.ps1');
+  });
+
+  it('Append step calls append-night-batch-workflow-summary.ps1', () => {
+    assert.match(workflow, /append-night-batch-workflow-summary\.ps1/,
+      'workflow must call append-night-batch-workflow-summary.ps1');
+  });
+
+  it('workflow Locate step has no large inline PowerShell logic', () => {
+    const locateMatch = workflow.match(
+      /- name: Locate night batch outputs[\s\S]*?run: \|\n([\s\S]*?)(?=\n\s+- name:|\n\s+- uses:|\z)/
+    );
+    const locateRun = locateMatch ? locateMatch[1] : '';
+    const nonEmptyLines = locateRun.split(/\r?\n/).filter(l => l.trim().length > 0);
+    assert.ok(nonEmptyLines.length <= 5,
+      `Locate step inline body must be thin (<=5 non-empty lines), got ${nonEmptyLines.length}`);
+  });
+
+  it('workflow Append step has no large inline PowerShell logic', () => {
+    const appendMatch = workflow.match(
+      /- name: Append night batch workflow summary[\s\S]*?run: \|\n([\s\S]*?)(?=\n\s+- name:|\n\s+- uses:|\z)/
+    );
+    const appendRun = appendMatch ? appendMatch[1] : '';
+    const nonEmptyLines = appendRun.split(/\r?\n/).filter(l => l.trim().length > 0);
+    assert.ok(nonEmptyLines.length <= 5,
+      `Append step inline body must be thin (<=5 non-empty lines), got ${nonEmptyLines.length}`);
+  });
+});
+
+describe('docs: run 8 report', () => {
+  it('run 8 report exists', () => {
+    assert.ok(existsSync(RUN8_REPORT_PATH),
+      'docs/reports/night-batch-self-hosted-run8.md must exist');
+  });
+
+  it('run 8 report contains essential information', () => {
+    const report = readFileSync(RUN8_REPORT_PATH, 'utf8');
+
+    assert.match(report, /run_number.*8|run 8/i,
+      'report must mention run_number 8');
+    assert.match(report, /24282322391/,
+      'report must mention run_id 24282322391');
+    assert.match(report, /success.*true|success: true/i,
+      'report must note that backtest result was success');
+    assert.match(report, /termination_reason.*success/i,
+      'report must note termination_reason');
+    assert.match(report, /PowerShell/i,
+      'report must mention PowerShell as root cause');
+  });
+
+  it('README references run 8 report', () => {
+    const readme = readFileSync(README_PATH, 'utf8');
+
+    assert.match(readme, /night-batch-self-hosted-run8\.md/,
+      'README must link to run 8 report');
+  });
+
+  it('command.md references run 8 report', () => {
+    const cmd = readFileSync(COMMAND_PATH, 'utf8');
+
+    assert.match(cmd, /night-batch-self-hosted-run8\.md/,
+      'command.md must link to run 8 report');
   });
 });
 

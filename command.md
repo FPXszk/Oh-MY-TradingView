@@ -602,6 +602,8 @@ workflow は `.github/workflows/night-batch-self-hosted.yml` にあり、既定 
 workflow 既定 config の state file は、`--round-mode` を付けた実行では `results/night-batch/roundN/bundle-foreground-state.json` に配置される。  
 この state の `updated_at` が heartbeat、summary の `termination_reason` / `failed_step` / `last_checkpoint` が GitHub 側の切り分け材料になる。hard reboot / power loss では最後の summary / artifact upload が完了しない可能性は残る。
 
+workflow の summary / artifact 周りの PowerShell ロジックは `scripts/windows/github-actions/` 配下の外部スクリプトに分離している。inline PowerShell の構文エラーで workflow が failure になった事例と対策は [run 8 レポート](docs/reports/night-batch-self-hosted-run8.md) を参照。
+
 detached 方式から foreground monitoring へ切り替えた直接理由は、**workflow success != production complete** だったため。旧方式では smoke 完了後に detached child を起動して job が success になり得たが、その後に runner cleanup / reboot / stale state が起きると production 完走を GitHub Actions 上で保証できなかった。現在は foreground workflow 完了を production 完了に揃えている。
 
 autostart hardening では、Windows `cmd.exe` で UTF-8 非 ASCII コメントが壊れる問題と、`schtasks /Create /TR` の quoting 崩れを避けるため、**ASCII-only `.cmd` + `*.cmd eol=crlf` + `_diag` 配下の self-contained launcher / wrapper / bootstrap copy** に統一した。

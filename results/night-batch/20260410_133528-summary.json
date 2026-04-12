@@ -1,0 +1,69 @@
+{
+  "success": false,
+  "command": "smoke-prod",
+  "host": "127.0.0.1",
+  "port": 46847,
+  "preflight_required": true,
+  "steps": [
+    {
+      "name": "startup-check",
+      "command": [
+        "GET",
+        "http://127.0.0.1:46847/json/list"
+      ],
+      "success": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "latest_checkpoint": null,
+      "skipped": false
+    },
+    {
+      "name": "launch",
+      "command": [
+        "powershell.exe",
+        "-NoProfile",
+        "-Command",
+        "Start-Process -FilePath 'C:\\TradingView\\TradingView.exe - ショートカット.lnk'"
+      ],
+      "success": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "latest_checkpoint": null,
+      "skipped": true
+    },
+    {
+      "name": "preflight",
+      "command": [
+        "GET",
+        "http://127.0.0.1:46847/json/list"
+      ],
+      "success": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "latest_checkpoint": null,
+      "skipped": false
+    },
+    {
+      "success": false,
+      "exit_code": 1,
+      "timed_out": false,
+      "latest_checkpoint": null,
+      "captured_lines": [],
+      "command": [
+        "/tmp/night-batch-test-7VqqTl/fake-node.sh",
+        "/home/fpxszk/code/Oh-MY-TradingView/src/cli/index.js",
+        "backtest",
+        "preset",
+        "ema-cross-9-21",
+        "--symbol",
+        "NVDA",
+        "--date-from",
+        "2024-01-01",
+        "--date-to",
+        "2024-12-31"
+      ],
+      "skipped": false,
+      "name": "smoke"
+    }
+  ]
+}

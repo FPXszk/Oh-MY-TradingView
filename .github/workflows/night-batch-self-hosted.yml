@@ -83,51 +83,13 @@ jobs:
         id: night_batch_outputs
         shell: powershell -NoProfile -ExecutionPolicy Bypass -command ". '{0}'"
         run: |
-          $expectedRunId = 'gha_${{ github.run_id }}_${{ github.run_attempt }}'
-          $artifactDir = ''
-          $summaryJson = ''
-          $summaryMd = ''
-          if (Test-Path 'results\night-batch') {
-            $summaryJsonFile = Get-ChildItem -Path 'results\night-batch' -Recurse -File -Filter ($expectedRunId + '-summary.json') | Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1
-            if ($summaryJsonFile) {
-              $artifactDir = $summaryJsonFile.Directory.FullName
-              $summaryJson = $summaryJsonFile.FullName
-              $summaryMdCandidate = $summaryJsonFile.FullName -replace '-summary\.json$', '-summary.md'
-              if (Test-Path $summaryMdCandidate) {
-                $summaryMd = $summaryMdCandidate
-              }
-            }
-          }
-          "round_dir=$artifactDir" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-          "summary_json=$summaryJson" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-          "summary_md=$summaryMd" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          & scripts/windows/github-actions/find-night-batch-outputs.ps1 -ExpectedRunId 'gha_${{ github.run_id }}_${{ github.run_attempt }}'
 
       - name: Append night batch workflow summary
         if: always() && steps.freshness.outputs.should_run == 'true'
         shell: powershell -NoProfile -ExecutionPolicy Bypass -command ". '{0}'"
         run: |
-          Add-Content $env:GITHUB_STEP_SUMMARY '## Night batch result'
-          Add-Content $env:GITHUB_STEP_SUMMARY ''
-          $summaryPath = '${{ steps.night_batch_outputs.outputs.summary_json }}'
-          if ($summaryPath -eq '') {
-            Add-Content $env:GITHUB_STEP_SUMMARY '- summary_json: not found'
-            exit 0
-          }
-          $summary = Get-Content -Raw $summaryPath | ConvertFrom-Json
-          $failedStep = if ($summary.failed_step) { $summary.failed_step } else { 'N/A' }
-          $lastCheckpoint = if ($summary.last_checkpoint) { $summary.last_checkpoint } else { 'N/A' }
-          Add-Content $env:GITHUB_STEP_SUMMARY "- success: $($summary.success)"
-          Add-Content $env:GITHUB_STEP_SUMMARY "- termination_reason: $($summary.termination_reason)"
-          Add-Content $env:GITHUB_STEP_SUMMARY "- failed_step: $failedStep"
-          Add-Content $env:GITHUB_STEP_SUMMARY "- last_checkpoint: $lastCheckpoint"
-          Add-Content $env:GITHUB_STEP_SUMMARY "- summary_json: $summaryPath"
-          $summaryMdPath = '${{ steps.night_batch_outputs.outputs.summary_md }}'
-          if ($summaryMdPath -ne '') {
-            Add-Content $env:GITHUB_STEP_SUMMARY ''
-            Add-Content $env:GITHUB_STEP_SUMMARY '### Summary markdown'
-            Add-Content $env:GITHUB_STEP_SUMMARY ''
-            Get-Content $summaryMdPath | Add-Content $env:GITHUB_STEP_SUMMARY
-          }
+          & scripts/windows/github-actions/append-night-batch-workflow-summary.ps1 -SummaryJsonPath '${{ steps.night_batch_outputs.outputs.summary_json }}' -SummaryMdPath '${{ steps.night_batch_outputs.outputs.summary_md }}'
 
       - name: Upload night batch artifacts
         if: always() && steps.freshness.outputs.should_run == 'true' && steps.night_batch_outputs.outputs.round_dir != ''

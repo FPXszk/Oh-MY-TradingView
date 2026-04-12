@@ -441,6 +441,8 @@ scripts\windows\run-night-batch-self-hosted.cmd config\night_batch\bundle-foregr
 
 workflow / manual wrapper の foreground 実行経路では `--round-mode` を使うため、state file は `results/night-batch/roundN/bundle-foreground-state.json` に配置されます。state の `updated_at` が heartbeat、summary JSON の `termination_reason` / `failed_step` / `last_checkpoint` が GitHub 側の切り分け根拠になります。hard reboot / power loss では最後の summary / artifact upload が完了しない可能性は残ります。
 
+workflow の summary / artifact 周りの PowerShell ロジックは `scripts/windows/github-actions/` 配下の外部スクリプトに分離しています。inline PowerShell の構文エラーで workflow が failure になった事例と対策は [run 8 レポート](docs/reports/night-batch-self-hosted-run8.md) を参照してください。
+
 foreground monitoring へ切り替えた理由は、旧 detached 方式では **workflow success と production 完了が一致せず、runner cleanup / reboot 後に stale state が残り得た**ためです。現在は workflow の完了を production 完了結果に合わせ、Task Scheduler autostart も `C:\actions-runner\_diag\` 配下の launcher / wrapper copy / bootstrap copy を使うことで live checkout 非依存にしています。
 
 Windows runner script は `cmd.exe` の文字コード解釈差を避けるため **ASCII-only の `.cmd`** に統一し、checkout 時も `.gitattributes` の `*.cmd text eol=crlf` で CRLF を強制しています。`楳笏...` のような文字化けや `schtasks` の quoting 崩れが出た場合は、まず最新 `main` を pull してから autostart 登録をやり直します。

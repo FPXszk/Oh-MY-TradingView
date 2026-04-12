@@ -1,0 +1,80 @@
+{
+  "success": true,
+  "command": "smoke-prod",
+  "host": "127.0.0.1",
+  "port": 48599,
+  "preflight_required": true,
+  "steps": [
+    {
+      "name": "startup-check",
+      "command": [
+        "GET",
+        "http://127.0.0.1:48599/json/list"
+      ],
+      "success": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "latest_checkpoint": null,
+      "skipped": true
+    },
+    {
+      "name": "launch",
+      "command": [
+        "powershell.exe",
+        "-NoProfile",
+        "-Command",
+        "Start-Process -FilePath 'C:\\TradingView\\TradingView.exe - ショートカット.lnk'"
+      ],
+      "success": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "latest_checkpoint": null,
+      "skipped": true
+    },
+    {
+      "name": "preflight",
+      "command": [
+        "GET",
+        "http://127.0.0.1:48599/json/list"
+      ],
+      "success": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "latest_checkpoint": null,
+      "skipped": true
+    },
+    {
+      "success": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "latest_checkpoint": null,
+      "captured_lines": [],
+      "command": [
+        "node",
+        "/home/fpxszk/code/Oh-MY-TradingView/src/cli/index.js",
+        "backtest",
+        "foo"
+      ],
+      "skipped": false,
+      "name": "smoke"
+    },
+    {
+      "success": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "latest_checkpoint": null,
+      "captured_lines": [],
+      "command": [
+        "node",
+        "/home/fpxszk/code/Oh-MY-TradingView/src/cli/index.js",
+        "backtest",
+        "bar"
+      ],
+      "skipped": false,
+      "name": "production"
+    }
+  ],
+  "failed_step": null,
+  "last_checkpoint": null,
+  "termination_reason": "success"
+}
