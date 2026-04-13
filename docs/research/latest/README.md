@@ -2,43 +2,37 @@
 
 このディレクトリは、**最新 1 世代** の backtest handoff と結果要約の入口です。
 
-> ⚠️ **暫定世代**: 現在の latest は fine-tune backtest の**中断時点の partial report** です。
-> 最終結論には使えません。確定した結論が必要な場合は直前世代 `docs/research/next-long-run-market-matched-200-*_20260409_0643.md` を参照してください。
+> ✅ **complete results 世代**: 現在の latest は fine-tune backtest の**完走結果**です。
+> ただし最新 workflow success のうち `24353498557` は stale schedule による skip success なので、結果本体は `24341576697` を参照してください。
 
 ## 読む順番
 
 1. この `README.md`
-2. `next-long-run-finetune-partial-handoff_20260410_1503.md`（中断引き継ぎ）
-3. `next-long-run-finetune-partial-results_20260410_1503.md`（暫定結果）
-4. 直前世代（確定済み）を確認するなら `../next-long-run-market-matched-200-handoff_20260409_0643.md`
-5. 2 世代前を確認するなら `../market-specific-long-run-deep-dive-handoff_20260408_1857.md`
-6. 判断経緯が必要なら `docs/working-memory/session-logs/`
+2. `next-long-run-finetune-complete-handoff_20260413_1623.md`（latest 引き継ぎ）
+3. `next-long-run-finetune-complete-results_20260413_1623.md`（完了結果）
+4. `../../references/backtests/next-long-run-finetune-complete_20260413.summary.json`（集計正本）
+5. 直前の partial 世代を確認するなら `../next-long-run-finetune-partial-handoff_20260410_1503.md`
+6. 判断経緯が必要なら `../../working-memory/session-logs/`
 
-> 直前世代の current pointer は `docs/research/next-long-run-market-matched-200-handoff_20260409_0643.md`。
-> 2 世代以上前は原則 `docs/research/old/` へ移動するが、移行途中の文書が `docs/research/` に残る場合がある。
+> 直前世代の current pointer は `docs/research/next-long-run-finetune-partial-handoff_20260410_1503.md`。
+> market-matched 200 世代は `docs/research/next-long-run-market-matched-200-handoff_20260409_0643.md` を参照。
 
 ## 現在の要点
 
-- **今回の latest は暫定世代**であり、fine-tune backtest が途中停止した時点の checkpoint から作成している
-- 確定した戦略判断が必要な場合は、直前世代（market-matched 200）の結論を引き続き使用すること
-- 現在の known-good は
-  - **worker1 single-worker**（2026-04-09 market-matched 200 で smoke `60/60`、pilot `150/150`、full `600/600`）
-  - healthy profile が揃ったときの **dual-worker / 2 worker parallel**
-  の 2 系統
-- latest result の正本は recovered artifact / recovered summary / checkpoint を優先する
-- 直近の主テーマは **next long-run fine-tune**（US 100 symbols × 10 presets / JP 100 symbols × 10 presets）
-- fine-tune の進捗:
-  - US smoke: `100/100` ✅
-  - JP smoke: `100/100` ✅
-  - US pilot: `50/250` ⚠️ 中断
-  - US full: `490/1000` ⚠️ 中断（5/10 preset 処理済み）
-  - JP pilot / full: latest artifact 上は未着手扱い
-- **未検証問題**: US full の先頭 2 preset で全 100 symbols の metrics が完全一致しており、原因未調査
-- 直前世代 strategy signal は引き続き有効:
-  - US: avg net `50-20 strict-entry-early`, PF / wins `60-20 strict-entry-late`
-  - JP: avg net `55-20 tight`, PF `55-18 tight-exit-tight`
-- top 5 Pine source export は `docs/references/pine/next-long-run-market-matched-200_20260409_1525/` を参照（fine-tune 完走前のため未更新）
-- worker2 は distinct parallel smoke 安定化まで本線に戻さない方針を継続
+- latest executed run は `24341576697` で、**US full / JP full とも `1000/1000` success**
+- latest workflow success `24353498557` は **stale schedule skip**
+- latest 成績の repo 内正本は `docs/references/backtests/next-long-run-finetune-complete_20260413.summary.json`
+- US winners:
+  - avg net: `50-20 strict-entry-early`
+  - PF: `60-20 strict-entry-late`
+  - lowest avg drawdown: `55-20 tight-narrow`
+- JP winners:
+  - avg net: `55-20 strict`
+  - PF: `55-18 tight-exit-tight`
+  - lowest avg drawdown: `55-20 tight-narrow`
+- local smoke (`external-phase1-run8-us-jp-top6`) は `60/60` success、gating は `promote 37 / hold 10 / reject 13`
+- JP full は `profit_factor` / `win_rate` 欠損が 40 run あるため、品質指標の平均は利用可能値のみで集計
+- 直前の partial 世代は `docs/research/next-long-run-finetune-partial-*_20260410_1503.md` へ退避する
 
 ## 世代管理ルール
 
