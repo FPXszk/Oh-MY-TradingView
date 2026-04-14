@@ -331,6 +331,7 @@ def build_parser() -> argparse.ArgumentParser:
     report.add_argument('--jp', required=True)
     report.add_argument('--out', required=True)
     report.add_argument('--ranking-out')
+    report.add_argument('--diff-out')
     report.add_argument('--date-from', default='2000-01-01')
     report.add_argument('--date-to', default='latest')
     report.add_argument('--title')
@@ -343,6 +344,7 @@ def build_parser() -> argparse.ArgumentParser:
     nightly.add_argument('--report-jp')
     nightly.add_argument('--report-out')
     nightly.add_argument('--ranking-out')
+    nightly.add_argument('--diff-out')
     nightly.add_argument('--date-from', default='2000-01-01')
     nightly.add_argument('--date-to', default='latest')
     nightly.add_argument('--title')
@@ -883,6 +885,14 @@ def default_ranking_out(args, output_dir: Path | None = None) -> str:
     return str(effective_dir / f'{utc_run_id()}-combined-ranking.json')
 
 
+def default_diff_out(args, output_dir: Path | None = None) -> str:
+    explicit = getattr(args, 'diff_out', None)
+    if explicit:
+        return explicit
+    effective_dir = output_dir or resolve_project_path(getattr(args, 'output_dir', None)) or RESULTS_DIR
+    return str(effective_dir / f'{utc_run_id()}-live-retired-diff.json')
+
+
 def build_step_specs(args) -> list[dict]:
     node_bin = args.node_bin
     host = getattr(args, 'host', DEFAULT_HOST)
@@ -963,6 +973,8 @@ def build_step_specs(args) -> list[dict]:
     if args.command == 'report':
         ranking = default_ranking_out(args)
         args.ranking_out = ranking
+        diff = default_diff_out(args)
+        args.diff_out = diff
         command = [
             node_bin,
             str(PROJECT_ROOT / 'scripts' / 'backtest' / 'generate-rich-report.mjs'),
@@ -978,6 +990,8 @@ def build_step_specs(args) -> list[dict]:
             args.date_to,
             '--ranking-out',
             ranking,
+            '--diff-out',
+            diff,
         ]
         if args.title:
             command.extend(['--title', args.title])
@@ -990,6 +1004,8 @@ def build_step_specs(args) -> list[dict]:
     us_path, jp_path, report_out = default_report_paths(args)
     ranking = default_ranking_out(args)
     args.ranking_out = ranking
+    diff = default_diff_out(args)
+    args.diff_out = diff
     bundle_args = argparse.Namespace(
         **{**vars(args), 'command': 'bundle', 'dry_run': args.dry_run},
     )
@@ -1003,6 +1019,7 @@ def build_step_specs(args) -> list[dict]:
         jp=jp_path,
         out=report_out,
         ranking_out=ranking,
+        diff_out=diff,
         date_from=args.date_from,
         date_to=args.date_to,
         title=args.title,

@@ -18,15 +18,21 @@ export function computeFamilyDiff(catalog) {
   const familyMap = new Map();
 
   for (const strategy of catalog.strategies) {
-    const familyId = deriveFamilyId(strategy);
+    const isRetired = strategy.lifecycle.status === 'retired';
+    const replacementFamilyId = isRetired
+      && strategy.lifecycle.replacement_family
+      && strategy.lifecycle.replacement_family.family_id;
+    const familyId = isRetired && replacementFamilyId
+      ? replacementFamilyId
+      : deriveFamilyId(strategy);
     if (!familyMap.has(familyId)) {
       familyMap.set(familyId, { family_id: familyId, live_count: 0, retired_count: 0 });
     }
     const entry = familyMap.get(familyId);
-    if (strategy.lifecycle.status === 'live') {
-      entry.live_count += 1;
-    } else {
+    if (isRetired) {
       entry.retired_count += 1;
+    } else {
+      entry.live_count += 1;
     }
   }
 

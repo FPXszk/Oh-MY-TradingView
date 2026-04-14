@@ -39,15 +39,24 @@ describe('computeFamilyDiff', () => {
     const catalog = {
       strategies: [
         { id: 'a', builder: 'donchian_breakout', theme_axis: 'tight', tags: [], lifecycle: { status: 'live' } },
-        { id: 'b', builder: 'donchian_breakout', theme_axis: 'tight', tags: [], lifecycle: { status: 'retired' } },
-        { id: 'c', builder: 'ma_cross', tags: ['baseline'], lifecycle: { status: 'retired' } },
+        { id: 'b', builder: 'donchian_breakout', theme_axis: 'old-theme', tags: [], lifecycle: { status: 'retired', replacement_family: { family_id: 'tight' } } },
+        { id: 'c', builder: 'ma_cross', tags: ['baseline'], lifecycle: { status: 'retired', replacement_family: { family_id: 'tight' } } },
       ],
     };
     const families = computeFamilyDiff(catalog);
     const tight = families.find((f) => f.family_id === 'tight');
     assert.ok(tight);
     assert.equal(tight.live_count, 1);
-    assert.equal(tight.retired_count, 1);
+    assert.equal(tight.retired_count, 2, 'retired strategies should aggregate into replacement family');
+  });
+
+  it('aggregates retired strategies by replacement_family.family_id', async () => {
+    const catalog = await loadCatalog();
+    const families = computeFamilyDiff(catalog);
+    const liveFamilies = families.filter((f) => f.live_count > 0);
+    assert.ok(liveFamilies.length > 0, 'should have families with live strategies');
+    const retiredInLiveFamilies = liveFamilies.reduce((sum, f) => sum + f.retired_count, 0);
+    assert.ok(retiredInLiveFamilies > 0, 'retired strategies should appear in live family buckets via replacement_family');
   });
 });
 
