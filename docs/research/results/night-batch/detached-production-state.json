@@ -2,14 +2,14 @@
   "status": "completed",
   "mode": "foreground",
   "command": "smoke-prod",
-  "run_id": "20260414_060359",
-  "updated_at": "2026-04-14T06:03:59.772582+00:00",
+  "run_id": "20260414_071644",
+  "updated_at": "2026-04-14T07:16:44.314820+00:00",
   "latest_checkpoint": null,
-  "started_at": "2026-04-14T06:03:59.769378+00:00",
+  "started_at": "2026-04-14T07:16:44.311701+00:00",
   "current_step": "production",
-  "summary_path": "/tmp/night-batch-test-GMmNI9/night-batch-results/round1/20260414_060359-summary.json",
+  "summary_path": "/tmp/night-batch-test-AxlcHv/night-batch-results/round1/20260414_071644-summary.json",
   "termination_reason": "success",
   "failed_step": null,
   "success": true,
-  "finished_at": "2026-04-14T06:03:59.772589+00:00"
+  "finished_at": "2026-04-14T07:16:44.314827+00:00"
 }
