@@ -1326,4 +1326,213 @@ exit 0
       'error message should mention that the path is a directory',
     );
   });
+
+  it('baseline + bundle config hash mismatch blocks production', async () => {
+    const { createHash } = await import('node:crypto');
+    const bundleConfigPath = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
+    const strategyPresetsPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-presets.json');
+    const usCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-us-12x10.json');
+    const jpCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-jp-12x10.json');
+
+    const strategyHash = createHash('sha256').update(readFileSync(strategyPresetsPath)).digest('hex');
+    const usHash = createHash('sha256').update(readFileSync(usCampaignPath)).digest('hex');
+    const jpHash = createHash('sha256').update(readFileSync(jpCampaignPath)).digest('hex');
+
+    const baselinePath = join(tempDir, 'baseline.json');
+    writeFileSync(baselinePath, JSON.stringify({
+      run_id: 'test_baseline',
+      run_attempt: '1',
+      algorithm: 'sha256',
+      bundle_config_path: bundleConfigPath,
+      resolved_campaigns: [],
+      files: [
+        { path: bundleConfigPath, role: 'bundle_config', sha256: 'wrong_hash_to_trigger_block' },
+        { path: strategyPresetsPath, role: 'strategy_presets', sha256: strategyHash },
+        { path: usCampaignPath, role: 'campaign_latest', sha256: usHash },
+        { path: jpCampaignPath, role: 'campaign_latest', sha256: jpHash },
+      ],
+      aggregate_fingerprint: 'dummy',
+    }), 'utf8');
+
+    const fakeNodePath = join(tempDir, 'fake-node-guard.sh');
+    writeExecutable(fakeNodePath, '#!/bin/sh\nexit 0\n');
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--config', bundleConfigPath,
+      '--host', '127.0.0.1',
+      '--port', String(port),
+      '--startup-check-host', '127.0.0.1',
+      '--startup-check-port', String(port),
+      '--node-bin', fakeNodePath,
+    ], {
+      env: { NIGHT_BATCH_LIVE_CHECKOUT_BASELINE_PATH: baselinePath },
+    });
+
+    assert.equal(result.status, 2, result.stderr || result.stdout);
+    const summary = readSummaryFromResult(result);
+    const guardStep = summary.steps.find((s) => s.name === 'live-checkout-guard');
+    assert.ok(guardStep, 'must have live-checkout-guard step');
+    assert.equal(guardStep.success, false);
+    assert.equal(summary.termination_reason, 'live-checkout-blocked');
+  });
+
+  it('baseline + strategy-presets hash mismatch produces warning but run succeeds', async () => {
+    const { createHash } = await import('node:crypto');
+    const bundleConfigPath = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
+    const strategyPresetsPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-presets.json');
+    const usCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-us-12x10.json');
+    const jpCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-jp-12x10.json');
+
+    const bundleHash = createHash('sha256').update(readFileSync(bundleConfigPath)).digest('hex');
+    const usHash = createHash('sha256').update(readFileSync(usCampaignPath)).digest('hex');
+    const jpHash = createHash('sha256').update(readFileSync(jpCampaignPath)).digest('hex');
+
+    const baselinePath = join(tempDir, 'baseline-warn.json');
+    writeFileSync(baselinePath, JSON.stringify({
+      run_id: 'test_baseline_warn',
+      run_attempt: '1',
+      algorithm: 'sha256',
+      bundle_config_path: bundleConfigPath,
+      resolved_campaigns: [],
+      files: [
+        { path: bundleConfigPath, role: 'bundle_config', sha256: bundleHash },
+        { path: strategyPresetsPath, role: 'strategy_presets', sha256: 'wrong_hash_for_warning' },
+        { path: usCampaignPath, role: 'campaign_latest', sha256: usHash },
+        { path: jpCampaignPath, role: 'campaign_latest', sha256: jpHash },
+      ],
+      aggregate_fingerprint: 'dummy',
+    }), 'utf8');
+
+    const fakeNodePath = join(tempDir, 'fake-node-warn.sh');
+    writeExecutable(fakeNodePath, '#!/bin/sh\nexit 0\n');
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--config', bundleConfigPath,
+      '--host', '127.0.0.1',
+      '--port', String(port),
+      '--startup-check-host', '127.0.0.1',
+      '--startup-check-port', String(port),
+      '--node-bin', fakeNodePath,
+    ], {
+      env: { NIGHT_BATCH_LIVE_CHECKOUT_BASELINE_PATH: baselinePath },
+    });
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    const summary = readSummaryFromResult(result);
+    const guardStep = summary.steps.find((s) => s.name === 'live-checkout-guard');
+    assert.ok(guardStep, 'must have live-checkout-guard step');
+    assert.equal(guardStep.success, true);
+    assert.ok(summary.live_checkout_protection, 'summary must contain live_checkout_protection');
+    assert.equal(summary.live_checkout_protection.status, 'warning');
+    assert.ok(summary.live_checkout_protection.warning_files.length >= 1,
+      'must have at least one warning file');
+  });
+
+  it('baseline + campaign latest hash mismatch produces warning but run succeeds', async () => {
+    const { createHash } = await import('node:crypto');
+    const bundleConfigPath = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
+    const strategyPresetsPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-presets.json');
+    const usCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-us-12x10.json');
+    const jpCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-jp-12x10.json');
+
+    const bundleHash = createHash('sha256').update(readFileSync(bundleConfigPath)).digest('hex');
+    const strategyHash = createHash('sha256').update(readFileSync(strategyPresetsPath)).digest('hex');
+    const jpHash = createHash('sha256').update(readFileSync(jpCampaignPath)).digest('hex');
+
+    const baselinePath = join(tempDir, 'baseline-campaign.json');
+    writeFileSync(baselinePath, JSON.stringify({
+      run_id: 'test_baseline_campaign',
+      run_attempt: '1',
+      algorithm: 'sha256',
+      bundle_config_path: bundleConfigPath,
+      resolved_campaigns: [],
+      files: [
+        { path: bundleConfigPath, role: 'bundle_config', sha256: bundleHash },
+        { path: strategyPresetsPath, role: 'strategy_presets', sha256: strategyHash },
+        { path: usCampaignPath, role: 'campaign_latest', sha256: 'wrong_campaign_hash' },
+        { path: jpCampaignPath, role: 'campaign_latest', sha256: jpHash },
+      ],
+      aggregate_fingerprint: 'dummy',
+    }), 'utf8');
+
+    const fakeNodePath = join(tempDir, 'fake-node-campaign.sh');
+    writeExecutable(fakeNodePath, '#!/bin/sh\nexit 0\n');
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--config', bundleConfigPath,
+      '--host', '127.0.0.1',
+      '--port', String(port),
+      '--startup-check-host', '127.0.0.1',
+      '--startup-check-port', String(port),
+      '--node-bin', fakeNodePath,
+    ], {
+      env: { NIGHT_BATCH_LIVE_CHECKOUT_BASELINE_PATH: baselinePath },
+    });
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    const summary = readSummaryFromResult(result);
+    const guardStep = summary.steps.find((s) => s.name === 'live-checkout-guard');
+    assert.ok(guardStep, 'must have live-checkout-guard step');
+    assert.equal(guardStep.success, true);
+    assert.ok(summary.live_checkout_protection, 'summary must contain live_checkout_protection');
+    assert.equal(summary.live_checkout_protection.status, 'warning');
+    assert.ok(summary.live_checkout_protection.warning_files.some(
+      (f) => f.role === 'campaign_latest'),
+      'must have campaign_latest warning');
+  });
+
+  it('missing baseline file blocks production when env var is set', async () => {
+    const fakeNodePath = join(tempDir, 'fake-node-missing.sh');
+    writeExecutable(fakeNodePath, '#!/bin/sh\nexit 0\n');
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--config',
+      join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json'),
+      '--host', '127.0.0.1',
+      '--port', String(port),
+      '--startup-check-host', '127.0.0.1',
+      '--startup-check-port', String(port),
+      '--node-bin', fakeNodePath,
+    ], {
+      env: {
+        NIGHT_BATCH_LIVE_CHECKOUT_BASELINE_PATH: join(tempDir, 'nonexistent-baseline.json'),
+      },
+    });
+
+    assert.equal(result.status, 2, result.stderr || result.stdout);
+    const summary = readSummaryFromResult(result);
+    const guardStep = summary.steps.find((s) => s.name === 'live-checkout-guard');
+    assert.ok(guardStep, 'must have live-checkout-guard step');
+    assert.equal(guardStep.success, false);
+  });
+
+  it('no baseline env var means guard is skipped', async () => {
+    const fakeNodePath = join(tempDir, 'fake-node-nobaseline.sh');
+    writeExecutable(fakeNodePath, '#!/bin/sh\nexit 0\n');
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--config',
+      join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json'),
+      '--host', '127.0.0.1',
+      '--port', String(port),
+      '--startup-check-host', '127.0.0.1',
+      '--startup-check-port', String(port),
+      '--node-bin', fakeNodePath,
+    ]);
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    const summary = readSummaryFromResult(result);
+    const guardStep = summary.steps.find((s) => s.name === 'live-checkout-guard');
+    assert.equal(guardStep, undefined, 'no live-checkout-guard step when env var is not set');
+  });
 });

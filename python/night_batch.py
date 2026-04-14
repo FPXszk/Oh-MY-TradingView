@@ -1128,6 +1128,8 @@ def build_termination_reason(success: bool, steps: list[dict], error: str | None
             return f'{failed_step}-timeout'
         if failed_step == 'active-detached-run-guard':
             return 'active-detached-run'
+        if failed_step == 'live-checkout-guard':
+            return 'live-checkout-blocked'
         return f'{failed_step}-failed'
     if error:
         if 'Preflight failed' in error:
@@ -1309,7 +1311,141 @@ def start_detached_production(settings: dict, run_id: str, production_step: dict
     return make_step_result('detach-production', child_command, success=True), state
 
 
-def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, output_dir: Path = RESULTS_DIR) -> tuple[int, list[dict]]:
+def resolve_live_checkout_protection_targets(settings: dict) -> list[dict]:
+    config_path = settings.get('config_path')
+    if not config_path:
+        return []
+    config = read_json_file(config_path)
+    bundle = read_config_section(config, 'bundle')
+    us_campaign = bundle.get('us_campaign')
+    jp_campaign = bundle.get('jp_campaign')
+
+    targets = [
+        {'path': str(config_path), 'role': 'bundle_config'},
+        {'path': str(PROJECT_ROOT / 'config' / 'backtest' / 'strategy-presets.json'), 'role': 'strategy_presets'},
+    ]
+    if us_campaign:
+        targets.append({
+            'path': str(PROJECT_ROOT / 'config' / 'backtest' / 'campaigns' / 'latest' / f'{us_campaign}.json'),
+            'role': 'campaign_latest',
+        })
+    if jp_campaign:
+        targets.append({
+            'path': str(PROJECT_ROOT / 'config' / 'backtest' / 'campaigns' / 'latest' / f'{jp_campaign}.json'),
+            'role': 'campaign_latest',
+        })
+    return targets
+
+
+def hash_file_sha256(path: str) -> str | None:
+    try:
+        return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    except (OSError, FileNotFoundError):
+        return None
+
+
+def hash_live_checkout_targets(targets: list[dict]) -> list[dict]:
+    result = []
+    for target in targets:
+        sha256 = hash_file_sha256(target['path'])
+        result.append({**target, 'sha256': sha256})
+    return result
+
+
+def compute_aggregate_fingerprint(hashed_targets: list[dict]) -> str:
+    parts = []
+    for t in sorted(hashed_targets, key=lambda x: x['path']):
+        parts.append(t.get('sha256') or 'missing')
+    return hashlib.sha256(':'.join(parts).encode('utf-8')).hexdigest()
+
+
+def load_live_checkout_baseline(baseline_path: str | None) -> dict | None:
+    if not baseline_path:
+        return None
+    path = Path(baseline_path)
+    if not path.is_absolute():
+        path = PROJECT_ROOT / baseline_path
+    if not path.exists():
+        return None
+    try:
+        data = json.loads(path.read_text(encoding='utf-8'))
+        if not isinstance(data, dict):
+            return None
+        return data
+    except (json.JSONDecodeError, OSError):
+        return None
+
+
+def evaluate_live_checkout_protection(baseline: dict, current_hashes: list[dict]) -> dict:
+    baseline_files = {f['path']: f for f in baseline.get('files', [])}
+    blocked_files = []
+    warning_files = []
+
+    for current in current_hashes:
+        path = current['path']
+        role = current.get('role', '')
+        baseline_entry = baseline_files.get(path)
+
+        if not baseline_entry:
+            if role == 'bundle_config':
+                blocked_files.append({'path': path, 'role': role, 'reason': 'not_in_baseline'})
+            else:
+                warning_files.append({'path': path, 'role': role, 'reason': 'not_in_baseline'})
+            continue
+
+        if current.get('sha256') is None:
+            if role == 'bundle_config':
+                blocked_files.append({'path': path, 'role': role, 'reason': 'file_unreadable'})
+            else:
+                warning_files.append({'path': path, 'role': role, 'reason': 'file_unreadable'})
+            continue
+
+        if baseline_entry.get('sha256') != current.get('sha256'):
+            if role == 'bundle_config':
+                blocked_files.append({
+                    'path': path,
+                    'role': role,
+                    'reason': 'hash_mismatch',
+                    'baseline_sha256': baseline_entry.get('sha256'),
+                    'current_sha256': current.get('sha256'),
+                })
+            else:
+                warning_files.append({
+                    'path': path,
+                    'role': role,
+                    'reason': 'hash_mismatch',
+                    'baseline_sha256': baseline_entry.get('sha256'),
+                    'current_sha256': current.get('sha256'),
+                })
+
+    if blocked_files:
+        status = 'blocked'
+    elif warning_files:
+        status = 'warning'
+    else:
+        status = 'passed'
+
+    return {
+        'status': status,
+        'baseline_path': None,
+        'report_path': None,
+        'aggregate_fingerprint_before': baseline.get('aggregate_fingerprint'),
+        'aggregate_fingerprint_current': compute_aggregate_fingerprint(current_hashes),
+        'blocked_files': blocked_files,
+        'warning_files': warning_files,
+    }
+
+
+def write_live_checkout_protection_report(output_dir: Path, run_id: str, report: dict) -> Path:
+    ensure_output_dir(output_dir)
+    report_path = output_dir / f'{run_id}-live-checkout-protection.json'
+    report_path.write_text(
+        f'{json.dumps(report, indent=2, ensure_ascii=False)}\n', encoding='utf-8',
+    )
+    return report_path
+
+
+def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, output_dir: Path = RESULTS_DIR) -> tuple[int, list[dict], dict | None]:
     steps: list[dict] = []
     startup_url = f'http://{settings["startup_check_host"]}:{settings["startup_check_port"]}/json/list'
     preflight_url = f'http://{settings["host"]}:{settings["port"]}/json/list'
@@ -1376,7 +1512,7 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
                     env_overrides=production_step['env_overrides'],
                 )
                 steps.append({**production_result, 'name': 'production'})
-        return 0, steps
+        return 0, steps, None
 
     if settings['detach_after_smoke']:
         try:
@@ -1398,7 +1534,7 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
                     exit_code=1,
                 )
             )
-            return EXIT_STEP_FAILED, steps
+            return EXIT_STEP_FAILED, steps, None
 
     if not settings['detach_after_smoke']:
         update_foreground_state(
@@ -1433,7 +1569,7 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
         )
         steps.append({**launch_result, 'name': 'launch'})
         if not launch_result['success']:
-            return EXIT_STEP_FAILED, steps
+            return EXIT_STEP_FAILED, steps, None
 
     if not settings['detach_after_smoke']:
         update_foreground_state(
@@ -1450,7 +1586,7 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
     except RuntimeError as error:
         logger.error('%s', error)
         steps.append(make_step_result('preflight', ['GET', preflight_url], success=False, exit_code=1))
-        return EXIT_PREFLIGHT_FAILED, steps
+        return EXIT_PREFLIGHT_FAILED, steps, None
 
     smoke_step = build_runtime_step(settings, 'smoke')
     if resume_smoke:
@@ -1468,22 +1604,71 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
         )
         steps.append({**smoke_result, 'name': 'smoke'})
         if not smoke_result['success']:
-            return EXIT_STEP_FAILED, steps
+            return EXIT_STEP_FAILED, steps, None
+
+    # --- live-checkout-guard: check for mid-run protected file changes ---
+    baseline_env_path = os.environ.get('NIGHT_BATCH_LIVE_CHECKOUT_BASELINE_PATH')
+    baseline = load_live_checkout_baseline(baseline_env_path)
+    live_checkout_protection = None
+    if baseline is not None:
+        targets = resolve_live_checkout_protection_targets(settings)
+        current_hashes = hash_live_checkout_targets(targets)
+        protection_report = evaluate_live_checkout_protection(baseline, current_hashes)
+        protection_report['baseline_path'] = baseline_env_path
+        report_path = write_live_checkout_protection_report(output_dir, run_id, protection_report)
+        protection_report['report_path'] = relative_path(report_path)
+        live_checkout_protection = protection_report
+
+        baseline_source = Path(baseline_env_path)
+        if not baseline_source.is_absolute():
+            baseline_source = PROJECT_ROOT / baseline_env_path
+        if baseline_source.exists():
+            baseline_dest = output_dir / f'{run_id}-live-checkout-baseline.json'
+            shutil.copy2(str(baseline_source), str(baseline_dest))
+
+        if protection_report['status'] == 'blocked':
+            logger.error('Live checkout guard BLOCKED: %s', json.dumps(protection_report['blocked_files'], ensure_ascii=False))
+            steps.append(make_step_result(
+                'live-checkout-guard',
+                ['GUARD', baseline_env_path or ''],
+                success=False,
+                exit_code=1,
+            ))
+            return EXIT_STEP_FAILED, steps, live_checkout_protection
+
+        if protection_report['status'] == 'warning':
+            logger.warning('Live checkout guard WARNING: %s', json.dumps(protection_report['warning_files'], ensure_ascii=False))
+
+        steps.append(make_step_result(
+            'live-checkout-guard',
+            ['GUARD', baseline_env_path or ''],
+            success=True,
+        ))
+        logger.info('Live checkout guard passed (status=%s)', protection_report['status'])
+    elif baseline_env_path is not None:
+        logger.error('Live checkout guard BLOCKED: baseline not found or corrupted at %s', baseline_env_path)
+        steps.append(make_step_result(
+            'live-checkout-guard',
+            ['GUARD', baseline_env_path],
+            success=False,
+            exit_code=1,
+        ))
+        return EXIT_STEP_FAILED, steps, None
 
     production_step = build_runtime_step(settings, 'production')
     if settings['detach_after_smoke']:
         if resume_production:
             logger.info('Production already completed in this round — skipping detached launch')
             steps.append(make_step_result('detach-production', build_production_child_command(settings, f'{run_id}_production', production_step, output_dir=output_dir), success=True, skipped=True))
-            return 0, steps
+            return 0, steps, live_checkout_protection
         detach_result, _ = start_detached_production(settings, run_id, production_step, logger, output_dir=output_dir)
         steps.append(detach_result)
-        return (0 if detach_result['success'] else EXIT_STEP_FAILED), steps
+        return (0 if detach_result['success'] else EXIT_STEP_FAILED), steps, live_checkout_protection
 
     if resume_production:
         logger.info('Production already completed in this round — skipping')
         steps.append(make_step_result('production', production_step['command'], success=True, skipped=True))
-        return 0, steps
+        return 0, steps, live_checkout_protection
 
     production_result = run_process(
         production_step['command'],
@@ -1495,7 +1680,7 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
         progress_callback=make_progress('production'),
     )
     steps.append({**production_result, 'name': 'production'})
-    return 0 if production_result['success'] else EXIT_STEP_FAILED, steps
+    return 0 if production_result['success'] else EXIT_STEP_FAILED, steps, live_checkout_protection
 
 
 def execute_production_child(args, logger: logging.Logger, output_dir: Path = RESULTS_DIR) -> tuple[int, list[dict]]:
@@ -1593,6 +1778,27 @@ def write_summary(run_id: str, summary: dict, logger: logging.Logger, output_dir
         lines.append('')
         lines.append(f'`{shlex.join(step["command"])}`')
         lines.append('')
+
+    protection = summary.get('live_checkout_protection')
+    if protection:
+        lines.extend([
+            '',
+            '## Live checkout protection',
+            '',
+            f'- status: {protection["status"]}',
+            f'- baseline_path: {protection.get("baseline_path") or "—"}',
+            f'- report_path: {protection.get("report_path") or "—"}',
+            f'- aggregate_fingerprint_before: {protection.get("aggregate_fingerprint_before") or "—"}',
+            f'- aggregate_fingerprint_current: {protection.get("aggregate_fingerprint_current") or "—"}',
+        ])
+        if protection.get('blocked_files'):
+            lines.append(f'- blocked_files: {len(protection["blocked_files"])}')
+            for bf in protection['blocked_files']:
+                lines.append(f'  - {bf["path"]} ({bf["role"]}): {bf["reason"]}')
+        if protection.get('warning_files'):
+            lines.append(f'- warning_files: {len(protection["warning_files"])}')
+            for wf in protection['warning_files']:
+                lines.append(f'  - {wf["path"]} ({wf["role"]}): {wf["reason"]}')
 
     summary_md_path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
     logger.info('Summary written: %s', relative_path(summary_md_path))
@@ -2025,7 +2231,7 @@ def main() -> int:
                     ])
                     if cp:
                         settings['production_jp_resume'] = str(cp)
-            exit_code, steps = execute_smoke_prod(settings, logger, run_id, output_dir=output_dir)
+            exit_code, steps, live_checkout_protection = execute_smoke_prod(settings, logger, run_id, output_dir=output_dir)
         except ValueError as error:
             logger.error('%s', error)
             summary = {
@@ -2051,6 +2257,8 @@ def main() -> int:
         if round_number is not None:
             summary['round'] = round_number
             summary['round_mode'] = round_mode
+        if live_checkout_protection is not None:
+            summary['live_checkout_protection'] = live_checkout_protection
         summary = enrich_summary(summary)
         write_summary(run_id, summary, logger, output_dir=output_dir)
         maybe_write_latest_backtest_summary_from_settings(run_id, summary, settings, logger)

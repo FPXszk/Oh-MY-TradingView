@@ -42,12 +42,21 @@ jobs:
           if not defined REPO_WSL exit /b 1
           wsl.exe bash -lc "cd \"%REPO_WSL%\" && npm ci --silent"
 
+      - name: Record live checkout baseline
+        if: steps.freshness.outputs.should_run == 'true'
+        shell: powershell -NoProfile -ExecutionPolicy Bypass -command ". '{0}'"
+        run: |
+          & scripts/windows/github-actions/write-night-batch-live-checkout-baseline.ps1 -RunId 'gha_${{ github.run_id }}_${{ github.run_attempt }}' -RunAttempt '${{ github.run_attempt }}'
+
       - name: Run smoke gate and foreground production
         if: steps.freshness.outputs.should_run == 'true'
         shell: cmd
         run: |
           set "NIGHT_BATCH_CONFIG=${{ inputs.config_path }}"
           set "NIGHT_BATCH_RUN_ID=gha_${{ github.run_id }}_${{ github.run_attempt }}"
+          if defined NIGHT_BATCH_LIVE_CHECKOUT_BASELINE_PATH (
+            echo [diag] live_checkout_baseline=%NIGHT_BATCH_LIVE_CHECKOUT_BASELINE_PATH%
+          )
           if "%NIGHT_BATCH_CONFIG%"=="" (
             if "${{ github.event_name }}"=="workflow_dispatch" (
               echo [diag] ERROR: workflow_dispatch requires a non-empty config_path
@@ -89,7 +98,7 @@ jobs:
         if: always() && steps.freshness.outputs.should_run == 'true'
         shell: powershell -NoProfile -ExecutionPolicy Bypass -command ". '{0}'"
         run: |
-          & scripts/windows/github-actions/append-night-batch-workflow-summary.ps1 -SummaryJsonPath '${{ steps.night_batch_outputs.outputs.summary_json }}' -SummaryMdPath '${{ steps.night_batch_outputs.outputs.summary_md }}' -RichReportPath '${{ steps.night_batch_outputs.outputs.rich_report }}' -RankingArtifactPath '${{ steps.night_batch_outputs.outputs.ranking_artifact }}'
+          & scripts/windows/github-actions/append-night-batch-workflow-summary.ps1 -SummaryJsonPath '${{ steps.night_batch_outputs.outputs.summary_json }}' -SummaryMdPath '${{ steps.night_batch_outputs.outputs.summary_md }}' -RichReportPath '${{ steps.night_batch_outputs.outputs.rich_report }}' -RankingArtifactPath '${{ steps.night_batch_outputs.outputs.ranking_artifact }}' -ProtectionReportPath '${{ steps.night_batch_outputs.outputs.protection_report }}'
 
       - name: Upload night batch artifacts
         if: always() && steps.freshness.outputs.should_run == 'true' && steps.night_batch_outputs.outputs.round_dir != ''

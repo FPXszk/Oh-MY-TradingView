@@ -18,7 +18,10 @@ param(
     [string]$RichReportPath = '',
 
     [Parameter(Mandatory = $false)]
-    [string]$RankingArtifactPath = ''
+    [string]$RankingArtifactPath = '',
+
+    [Parameter(Mandatory = $false)]
+    [string]$ProtectionReportPath = ''
 )
 
 Add-Content $env:GITHUB_STEP_SUMMARY '## Night batch result'
@@ -52,4 +55,19 @@ if ($SummaryMdPath -ne '') {
     Add-Content $env:GITHUB_STEP_SUMMARY '### Summary markdown'
     Add-Content $env:GITHUB_STEP_SUMMARY ''
     Get-Content $SummaryMdPath | Add-Content $env:GITHUB_STEP_SUMMARY
+}
+
+if ($ProtectionReportPath -ne '' -and (Test-Path $ProtectionReportPath)) {
+    $protection = Get-Content -Raw $ProtectionReportPath | ConvertFrom-Json
+    Add-Content $env:GITHUB_STEP_SUMMARY ''
+    Add-Content $env:GITHUB_STEP_SUMMARY '## Live checkout protection'
+    Add-Content $env:GITHUB_STEP_SUMMARY ''
+    $protStatus = if ($protection.status) { $protection.status } else { 'unknown' }
+    Add-Content $env:GITHUB_STEP_SUMMARY "- status: $protStatus"
+    $blockedCount = if ($protection.blocked_files) { $protection.blocked_files.Count } else { 0 }
+    $warningCount = if ($protection.warning_files) { $protection.warning_files.Count } else { 0 }
+    Add-Content $env:GITHUB_STEP_SUMMARY "- blocked_files: $blockedCount"
+    Add-Content $env:GITHUB_STEP_SUMMARY "- warning_files: $warningCount"
+    Add-Content $env:GITHUB_STEP_SUMMARY "- baseline_path: $($protection.baseline_path)"
+    Add-Content $env:GITHUB_STEP_SUMMARY "- report_path: $ProtectionReportPath"
 }

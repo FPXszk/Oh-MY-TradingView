@@ -16,6 +16,7 @@ const README_PATH = join(PROJECT_ROOT, 'README.md');
 const COMMAND_PATH = join(PROJECT_ROOT, 'docs/command.md');
 const RUN8_REPORT_PATH = join(PROJECT_ROOT, 'docs', 'reports', 'night-batch-self-hosted-run8.md');
 const BUNDLE_FG_CONFIG_PATH = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
+const BASELINE_WRITER_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'github-actions', 'write-night-batch-live-checkout-baseline.ps1');
 const WINDOWS_RUNNER_SCRIPT_PATHS = [BOOTSTRAP_PATH, RUNNER_WRAPPER_PATH, AUTOSTART_SCRIPT_PATH];
 
 describe('run-night-batch-self-hosted.cmd', () => {
@@ -585,5 +586,48 @@ describe('docs: next strategy update policy', () => {
       'docs/command.md must point to the round-scoped foreground state file path');
     assert.match(cmd, /archive\/roundN/i,
       'docs/command.md must mention archived round output path');
+  });
+
+  it('write-night-batch-live-checkout-baseline.ps1 exists', () => {
+    assert.ok(existsSync(BASELINE_WRITER_PATH),
+      'scripts/windows/github-actions/write-night-batch-live-checkout-baseline.ps1 must exist');
+  });
+
+  it('workflow has a baseline writer step', () => {
+    const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
+    assert.match(workflow, /write-night-batch-live-checkout-baseline\.ps1/,
+      'workflow must call write-night-batch-live-checkout-baseline.ps1');
+  });
+
+  it('baseline step appears before the smoke gate run step', () => {
+    const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
+    const baselineIdx = workflow.indexOf('write-night-batch-live-checkout-baseline');
+    const runIdx = workflow.indexOf('Run smoke gate and foreground production');
+    assert.ok(baselineIdx > 0, 'baseline step must exist');
+    assert.ok(baselineIdx < runIdx, 'baseline step must appear before the run step');
+  });
+
+  it('workflow passes NIGHT_BATCH_LIVE_CHECKOUT_BASELINE_PATH to runtime', () => {
+    const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
+    assert.match(workflow, /NIGHT_BATCH_LIVE_CHECKOUT_BASELINE_PATH/,
+      'workflow must reference NIGHT_BATCH_LIVE_CHECKOUT_BASELINE_PATH');
+  });
+
+  it('find-night-batch-outputs.ps1 outputs protection_report', () => {
+    const script = readFileSync(FIND_OUTPUTS_SCRIPT_PATH, 'utf8');
+    assert.match(script, /protection_report=/,
+      'find script must output protection_report');
+  });
+
+  it('append-night-batch-workflow-summary.ps1 accepts ProtectionReportPath parameter', () => {
+    const script = readFileSync(APPEND_SUMMARY_SCRIPT_PATH, 'utf8');
+    assert.match(script, /ProtectionReportPath/,
+      'summary script must accept ProtectionReportPath parameter');
+  });
+
+  it('append-night-batch-workflow-summary.ps1 emits Live checkout protection section', () => {
+    const script = readFileSync(APPEND_SUMMARY_SCRIPT_PATH, 'utf8');
+    assert.match(script, /Live checkout protection/,
+      'summary script must emit Live checkout protection section');
   });
 });

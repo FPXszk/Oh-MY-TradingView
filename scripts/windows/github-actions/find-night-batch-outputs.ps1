@@ -15,6 +15,7 @@ $summaryJson = ''
 $summaryMd = ''
 $richReport = ''
 $rankingArtifact = ''
+$protectionReport = ''
 
 if (Test-Path 'results\night-batch') {
     $summaryJsonFile = Get-ChildItem -Path 'results\night-batch' -Recurse -File `
@@ -41,6 +42,12 @@ if (Test-Path 'results\night-batch') {
         if ($rankingFile) {
             $rankingArtifact = $rankingFile.FullName
         }
+        $protectionReportFile = Get-ChildItem -Path $artifactDir -File -Filter '*-live-checkout-protection.json' |
+            Sort-Object LastWriteTimeUtc -Descending |
+            Select-Object -First 1
+        if ($protectionReportFile) {
+            $protectionReport = $protectionReportFile.FullName
+        }
     }
 }
 
@@ -49,3 +56,4 @@ if (Test-Path 'results\night-batch') {
 "summary_md=$summaryMd"              | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 "rich_report=$richReport"            | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 "ranking_artifact=$rankingArtifact"  | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+"protection_report=$protectionReport" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
