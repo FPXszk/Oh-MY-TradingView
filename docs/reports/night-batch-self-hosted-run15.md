@@ -25,7 +25,7 @@
 | `success` | `true` | バックテスト本体は正常完了 |
 | `termination_reason` | `success` | `night_batch.py` が正常終了で完走 |
 | `failed_step` | `startup-check` | artifact contract 上の値。workflow 全体の失敗ではない |
-| `last_checkpoint` | `results/campaigns/next-long-run-jp-12x10/full/checkpoint-120.json` | 最終チェックポイント |
+| `last_checkpoint` | `docs/research/results/campaigns/next-long-run-jp-12x10/full/checkpoint-120.json` | 最終チェックポイント |
 | `command` | `smoke-prod` | 実行コマンド |
 | `host` | `172.31.144.1` | 実行ホスト |
 | `port` | `9223` | 対象ポート |
@@ -37,8 +37,8 @@
 | startup-check | False | False | 1 | False | — |
 | launch | True | False | 0 | False | — |
 | preflight | True | False | 0 | False | — |
-| smoke | True | False | 0 | False | `results/campaigns/next-long-run-jp-12x10/smoke/checkpoint-30.json` |
-| production | True | False | 0 | False | `results/campaigns/next-long-run-jp-12x10/full/checkpoint-120.json` |
+| smoke | True | False | 0 | False | `docs/research/results/campaigns/next-long-run-jp-12x10/smoke/checkpoint-30.json` |
+| production | True | False | 0 | False | `docs/research/results/campaigns/next-long-run-jp-12x10/full/checkpoint-120.json` |
 
 ### 補足
 

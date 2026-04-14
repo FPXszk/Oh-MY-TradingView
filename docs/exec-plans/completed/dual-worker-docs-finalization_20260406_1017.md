@@ -30,8 +30,8 @@ TradingView dual-worker parallel backtest stabilization は実測上ほぼ収束
 ### Modify
 
 - `README.md`
-- `command.md`
-- `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
+- `docs/command.md`
+- `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`
 - `docs/working-memory/session-logs/tradingview-parallel-backtest-stabilization_20260406_0802.md`
 - 必要に応じて:
   - `docs/working-memory/session-logs/dual-worker-parallel-backtest-handoff_20260406_0735.md`
@@ -94,7 +94,7 @@ TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9223 node src/cli/index.js status
 TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9225 node src/cli/index.js status
 TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9223 node src/cli/index.js backtest preset ema-cross-9-21 --symbol NVDA
 TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9225 node src/cli/index.js backtest preset rsi-mean-reversion --symbol NVDA
-git --no-pager diff -- README.md command.md docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md docs/working-memory/session-logs/ docs/exec-plans/
+git --no-pager diff -- README.md docs/command.md docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md docs/working-memory/session-logs/ docs/exec-plans/
 git --no-pager status
 ```
 
@@ -109,7 +109,7 @@ git --no-pager status
 
 - [ ] 既存 docs を横断して矛盾箇所を洗い出す
 - [ ] runbook に known-good topology / stable condition / known limitation を最終反映する
-- [ ] `command.md` を current known-good operation に更新する
+- [ ] `docs/command.md` を current known-good operation に更新する
 - [ ] `README.md` に dual-worker 安定運用の要約と参照先を最小追記する
 - [ ] stabilization session log を最終化し、必要なら finalization 専用 session log を追加する
 - [ ] docs 間のリンクと参照先を整理する

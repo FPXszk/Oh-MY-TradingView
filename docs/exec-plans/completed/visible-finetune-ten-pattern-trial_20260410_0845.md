@@ -13,20 +13,20 @@
 - `docs/exec-plans/active/` は現時点で競合中の active plan なし
 - 既存コマンド / 既存スクリプトのみを使用する
 - source 配下の編集は想定しない
-- artifact は `results/` 配下に限定して残してよい
+- artifact は `docs/research/results/` 配下に限定して残してよい
 
 ## 対象ファイル
 
 ### 作成
 
 - `docs/exec-plans/active/visible-finetune-ten-pattern-trial_20260410_0845.md`
-- `results/runtime-verification/visible-finetune-ten-pattern-trial_20260410_0845/run.log`
-- `results/runtime-verification/visible-finetune-ten-pattern-trial_20260410_0845/summary.md`
+- `docs/research/results/runtime-verification/visible-finetune-ten-pattern-trial_20260410_0845/run.log`
+- `docs/research/results/runtime-verification/visible-finetune-ten-pattern-trial_20260410_0845/summary.md`
 
 ### 変更
 
 - なし（source edit は行わない）
-- 実行結果として既存 `results/` 配下に追加出力が出る可能性あり
+- 実行結果として既存 `docs/research/results/` 配下に追加出力が出る可能性あり
 - `/home/fpxszk/.copilot/session-state/4f84407c-148b-41f6-9407-bf4fea3dc382/plan.md`
 
 ### 削除
@@ -40,7 +40,7 @@
 - 修正済み前提の明示: **Windows `9222` / WSL `9223` (`172.31.144.1:9223`)**
 - 既存 fine-tune bundle のうち、`next-long-run-us-finetune-100x10.json` の `preset_ids` 先頭 10 件を対象にする
 - 既存 CLI コマンド `node src/cli/index.js backtest preset ...` を使って、可視の TradingView が実際に動くことを確認する
-- 実行ログと簡易サマリを `results/` に残す
+- 実行ログと簡易サマリを `docs/research/results/` に残す
 - 実行前 preflight と実行後の結果確認を行う
 
 ### 対象 10 パターン
@@ -87,7 +87,7 @@ TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9223 node src/cli/index.js status
 node scripts/backtest/run-finetune-bundle.mjs --dry-run --host 172.31.144.1 --ports 9223
 
 # 4. artifact 置き場
-mkdir -p results/runtime-verification/visible-finetune-ten-pattern-trial_20260410_0845
+mkdir -p docs/research/results/runtime-verification/visible-finetune-ten-pattern-trial_20260410_0845
 ```
 
 ```bash
@@ -107,7 +107,7 @@ TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9223 node src/cli/index.js backtest preset 
 ```bash
 # 6. 実行後確認
 TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9223 node src/cli/index.js status
-test -s results/runtime-verification/visible-finetune-ten-pattern-trial_20260410_0845/run.log
+test -s docs/research/results/runtime-verification/visible-finetune-ten-pattern-trial_20260410_0845/run.log
 ```
 
 ## 完了条件
@@ -116,7 +116,7 @@ test -s results/runtime-verification/visible-finetune-ten-pattern-trial_20260410
 - `node src/cli/index.js status` が成功する
 - 先頭 10 preset を順次実行できる
 - ユーザーが visible app の操作遷移を観測できる
-- `results/runtime-verification/visible-finetune-ten-pattern-trial_20260410_0845/` にログ / サマリが残る
+- `docs/research/results/runtime-verification/visible-finetune-ten-pattern-trial_20260410_0845/` にログ / サマリが残る
 - 問題があれば「現象」「再現コマンド」「切り分け要否」をまとめる
 - **コード issue は別 plan に分離**される
 
@@ -135,7 +135,7 @@ test -s results/runtime-verification/visible-finetune-ten-pattern-trial_20260410
 - [ ] `curl` で `9223` preflight を確認する
 - [ ] `TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9223 node src/cli/index.js status` を実行する
 - [ ] `node scripts/backtest/run-finetune-bundle.mjs --dry-run --host 172.31.144.1 --ports 9223` で bundle 定義を再確認する
-- [ ] `results/runtime-verification/visible-finetune-ten-pattern-trial_20260410_0845/` を作成する
+- [ ] `docs/research/results/runtime-verification/visible-finetune-ten-pattern-trial_20260410_0845/` を作成する
 - [ ] 対象 10 preset を `NVDA` 固定で順次実行する
 - [ ] 各実行の stdout / stderr と観測メモを `run.log` / `summary.md` に残す
 - [ ] visible app が実際に遷移・反応したかを記録する

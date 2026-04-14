@@ -114,7 +114,7 @@
 - `src/core/*` の preset builder / runtime ロジック変更
 - 新しい strategy ロジック実装
 - 実 backtest の実行、結果集計、artifact 生成
-- nightly workflow / self-hosted runner / `command.md` / `README.md` の運用変更
+- nightly workflow / self-hosted runner / `docs/command.md` / `README.md` の運用変更
 - 既存 `next-long-run-us-finetune-100x10` / `next-long-run-jp-finetune-100x10` を新 campaign に差し替えること
 - 4並列化などの execution policy 変更
 
@@ -178,7 +178,7 @@
 - [ ] docs 上で、10 戦略の選定理由 / US・JP 各 12 銘柄 / 3カテゴリ構成 / 2000-現在の期間を明記する
 - [ ] `git --no-pager diff --check` と対象テストを通し、構文崩れがないことを確認する
 - [ ] `npm test` を実行し、既存回帰がないことを確認する
-- [ ] 差分を見直し、unrelated な `results/` artifact や運用ファイルが混ざっていないことを確認する
+- [ ] 差分を見直し、unrelated な `docs/research/results/` artifact や運用ファイルが混ざっていないことを確認する
 - [ ] review 後に exec-plan を `docs/exec-plans/completed/` へ移動する
 - [ ] conventional commit を作成する
 - [ ] SSH リモートへ push する

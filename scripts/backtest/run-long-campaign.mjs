@@ -5,6 +5,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
+import { RESEARCH_RESULTS_DIR } from '../../src/core/repo-paths.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -149,7 +150,7 @@ async function main() {
   const cooldownMs = execution.cooldown_ms ?? 0;
   const maxConsecutiveFailures = execution.max_consecutive_failures ?? 5;
   const maxRerunPasses = execution.max_rerun_passes ?? 1;
-  const outDir = join(PROJECT_ROOT, 'results', 'campaigns', campaignId, phase);
+  const outDir = join(RESEARCH_RESULTS_DIR, 'campaigns', campaignId, phase);
   const campaignFingerprint = buildCampaignFingerprint({
     config: campaign.config,
     defaults: campaign.defaults,

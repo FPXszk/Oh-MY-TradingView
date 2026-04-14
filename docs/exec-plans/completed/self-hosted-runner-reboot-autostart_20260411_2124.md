@@ -23,7 +23,7 @@ service mode は採用しない方針を維持しつつ、**reboot 後に bootst
 
 ### 更新
 - `README.md`
-- `command.md`
+- `docs/command.md`
 - `tests/windows-run-night-batch-self-hosted.test.js`
 
 ### 条件付き更新
@@ -40,7 +40,7 @@ service mode は採用しない方針を維持しつつ、**reboot 後に bootst
 ### 実装内容
 - Task Scheduler 登録用 script を追加する
 - 既存 bootstrap wrapper を scheduler 経由でも使える前提を docs に明記する
-- 再起動後 auto-start の公式手順を README / command.md に追加する
+- 再起動後 auto-start の公式手順を README / docs/command.md に追加する
 - tests に「service mode 非採用のまま、Task Scheduler ベースで auto-start する」前提を追加する
 
 ### 影響範囲
@@ -77,7 +77,7 @@ service mode は採用しない方針を維持しつつ、**reboot 後に bootst
 ### RED
 - `tests/windows-run-night-batch-self-hosted.test.js` に、
   - Task Scheduler 登録 script の存在
-  - README / command.md が auto-start を Task Scheduler ベースで説明していること
+  - README / docs/command.md が auto-start を Task Scheduler ベースで説明していること
   - service mode を使わないこと
   を期待するテストを追加して失敗させる
 
@@ -106,6 +106,6 @@ service mode は採用しない方針を維持しつつ、**reboot 後に bootst
 - [ ] `scripts/windows/register-self-hosted-runner-autostart.cmd` を追加する
 - [ ] 必要なら runner wrapper / bootstrap の scheduler 起動向け補助を追加する
 - [ ] `README.md` に reboot 後 auto-start の公式手順を追加する
-- [ ] `command.md` に Task Scheduler 登録 / 確認 / 解除手順を追加する
+- [ ] `docs/command.md` に Task Scheduler 登録 / 確認 / 解除手順を追加する
 - [ ] `node --test tests/windows-run-night-batch-self-hosted.test.js` を通す
 - [ ] `npm test` で既存回帰を確認する

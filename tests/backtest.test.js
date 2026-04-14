@@ -38,11 +38,22 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 async function loadPresets() {
-  const raw = await readFile(
-    join(__dirname, '..', 'config', 'backtest', 'strategy-presets.json'),
-    'utf8',
-  );
-  return JSON.parse(raw);
+  const [liveRaw, retiredRaw] = await Promise.all([
+    readFile(
+      join(__dirname, '..', 'config', 'backtest', 'strategy-presets.json'),
+      'utf8',
+    ),
+    readFile(
+      join(__dirname, '..', 'docs', 'bad-strategy', 'retired-strategy-presets.json'),
+      'utf8',
+    ),
+  ]);
+  const live = JSON.parse(liveRaw);
+  const retired = JSON.parse(retiredRaw);
+  return {
+    ...live,
+    strategies: [...live.strategies, ...retired.strategies],
+  };
 }
 
 // ---------------------------------------------------------------------------

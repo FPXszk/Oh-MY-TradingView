@@ -5,8 +5,8 @@
 - 前提:
   - 直前の小規模 benchmark 結果は `docs/research/small-parallel-benchmark-analysis_20260406_2306.md`
   - 小 sample (`20 run`) では `shard parallel` が最速だった
-  - 長時間 workload 指針は `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md` の Long-running research workload guidance に従う
-  - `command.md` 7c に small-sample caveat が追記済み
+  - 長時間 workload 指針は `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md` の Long-running research workload guidance に従う
+  - `docs/command.md` 7c に small-sample caveat が追記済み
   - round8 optimization analysis では `checkpoint + partial retry` と `metrics_unreadable early abort` が次の改善候補
   - 直前 benchmark は repo 本体ではなく session artifact runner で実施し、repo には結果 JSON / docs のみ残した
   - 現在の active plan は `docs/exec-plans/active/wsl-dual-worker-reachability_20260406_0305.md` のみであり、本 plan は benchmark 実験系で非競合
@@ -50,8 +50,8 @@
 ### 参照
 
 - `docs/research/small-parallel-benchmark-analysis_20260406_2306.md`
-- `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
-- `command.md`
+- `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`
+- `docs/command.md`
 - `docs/exec-plans/active/wsl-dual-worker-reachability_20260406_0305.md`
 - `docs/references/backtests/small-parallel-benchmark-comparison_20260406_2229.json`
 - `docs/research/round8-parallel-optimization-analysis_20260406_1307.md`
@@ -65,8 +65,8 @@
 
 ### 更新候補（必要時のみ）
 
-- `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
-- `command.md`
+- `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`
+- `docs/command.md`
 - `tests/backtest.test.js`
 - `tests/e2e.backtest.test.js`
 
@@ -210,7 +210,7 @@ TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9225 node src/cli/index.js status
 - [ ] 結果を comparison JSON に集約する
 - [ ] research doc に結論・限界・次の推奨方針をまとめる
 - [ ] session log に実験条件、run 中判断、失敗・retry 経路を残す
-- [ ] durable な運用差分がある場合のみ runbook / command.md を最小更新する
+- [ ] durable な運用差分がある場合のみ runbook / docs/command.md を最小更新する
 
 ## 8. 最終成果物
 

@@ -56,9 +56,9 @@
 
 ### 変更候補
 
-- `command.md`
+- `docs/command.md`
 - `README.md`
-- `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
+- `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`
 - `src/core/backtest.js`
 - `src/cli/commands/backtest.js`
 - `tests/backtest.test.js`
@@ -66,12 +66,12 @@
 
 ### 参照のみ
 
-- `command.md`
+- `docs/command.md`
 - `README.md`
 - `src/connection.js`
 - `src/core/backtest.js`
 - `tests/e2e.backtest.test.js`
-- `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
+- `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`
 - `docs/working-memory/session-logs/tradingview-parallel-backtest-stabilization_20260406_0802.md`
 
 ## 実装・検証内容と影響範囲
@@ -91,7 +91,7 @@
 ### 実装（必要時のみ）
 
 - 既存 result だけで比較不能なら、`src/core/backtest.js` に **opt-in の診断情報**を最小追加
-- 既存 CLI だけで再現手順が曖昧なら、`command.md` / runbook を更新
+- 既存 CLI だけで再現手順が曖昧なら、`docs/command.md` / runbook を更新
 - default 挙動は変えず、single-worker / current stable dual-worker を壊さない
 
 ### 影響範囲
@@ -191,7 +191,7 @@ curl.exe http://127.0.0.1:9224/json/version
 - [ ] 既存 result だけで比較不能な場合のみ、`src/core/backtest.js` / CLI に opt-in diagnostic を追加する RED を作る
 - [ ] 必要な最小コード変更を実装し、`tests/backtest.test.js` / `tests/e2e.backtest.test.js` を更新する
 - [ ] `npm test` と必要な E2E を通し、single-worker / current stable dual-worker に退行がないことを確認する
-- [ ] 採用結論を `command.md` と `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md` に最小反映する
+- [ ] 採用結論を `docs/command.md` と `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md` に最小反映する
 - [ ] session log に候補比較表、失敗理由、最終推奨構成を記録する
 
 ## Expected deliverable

@@ -1,0 +1,35 @@
+{
+  "success": true,
+  "command": "bundle",
+  "host": "127.0.0.1",
+  "port": 45157,
+  "preflight_required": true,
+  "steps": [
+    {
+      "name": "bundle",
+      "command": [
+        "node",
+        "/home/fpxszk/code/Oh-MY-TradingView/scripts/backtest/run-finetune-bundle.mjs",
+        "--host",
+        "127.0.0.1",
+        "--ports",
+        "45157",
+        "--phases",
+        "smoke,full",
+        "--us-campaign",
+        "next-long-run-us-finetune-100x10",
+        "--jp-campaign",
+        "next-long-run-jp-finetune-100x10",
+        "--dry-run",
+        "--us-resume",
+        "docs/research/results/campaigns/us/checkpoint-10.json",
+        "--jp-resume",
+        "docs/research/results/campaigns/jp/checkpoint-20.json"
+      ],
+      "success": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "latest_checkpoint": "docs/research/results/campaigns/next-long-run-us-finetune-100x10/full/checkpoint-40.json"
+    }
+  ]
+}

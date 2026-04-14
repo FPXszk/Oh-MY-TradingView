@@ -13,7 +13,7 @@
 1. **docs governance を整理する**
    - `docs/research/latest/` には **最新 1 世代** の backtest handoff / results と `README.md` だけを残す
    - latest から外れた docs は、まず通常保管先の `docs/research/` に戻す
-   - そのうち **最新から 2 世代以上前** の backtest docs は `docs/research/old/` に移し、既定では読まない archive 扱いにする
+   - そのうち **最新から 2 世代以上前** の backtest docs は `docs/research/archive/` に移し、既定では読まない archive 扱いにする
 2. **pane/tab と parallel backtest の関係を正本 docs に明記する**
    - `tv_tab_*` は top-level app tabs ではなく **current layout 内の chart slot** 操作
    - 現在の backtest stack は `window.TradingViewApi._activeChartWidgetWV.value()` 前提の active-chart-only
@@ -30,22 +30,22 @@
 - `src/core/pine.js`
 - `src/core/price.js`
 - `src/core/health.js`
-- `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
+- `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`
 - `README.md`
 - `docs/DOCUMENTATION_SYSTEM.md`
-- `command.md`
+- `docs/command.md`
 
 ## Goal
 
 1. latest の役割を「最新 1 世代の backtest handoff / results の入口」に戻す
-2. `docs/research/` / `docs/research/old/` の役割を明確化する
+2. `docs/research/` / `docs/research/archive/` の役割を明確化する
 3. pane/tab support と parallel backtest を混同しない説明を docs に残す
 4. いま何をしていたかを、session log と latest README から最短で復元できる状態を維持する
 
 ## In scope
 
 - `docs/research/latest/` の backtest docs 棚卸しと再配置
-- `docs/research/old/` の新設と README 追加
+- `docs/research/archive/` の新設と README 追加
 - README / DOCUMENTATION_SYSTEM / command / runbook の routing 更新
 - pane/tab vs parallel backtest の結論追記
 
@@ -61,15 +61,15 @@
 
 ### Create
 
-- `docs/research/old/README.md`
+- `docs/research/archive/README.md`
 
 ### Modify
 
 - `README.md`
 - `docs/DOCUMENTATION_SYSTEM.md`
 - `docs/research/latest/README.md`
-- `command.md`
-- `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
+- `docs/command.md`
+- `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`
 
 ### Move: latest -> research
 
@@ -101,7 +101,7 @@
 
 ```bash
 find docs/research -maxdepth 2 -type f | sort
-rg -n "docs/research/latest|docs/research/old|dual-worker|tv_tab|parallel" README.md docs/DOCUMENTATION_SYSTEM.md command.md docs/research/latest/README.md docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md docs/research/old/README.md
+rg -n "docs/research/latest|docs/research/archive|dual-worker|tv_tab|parallel" README.md docs/DOCUMENTATION_SYSTEM.md docs/command.md docs/research/latest/README.md docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md docs/research/archive/README.md
 git --no-pager diff --check
 git --no-pager diff --stat
 ```
@@ -116,7 +116,7 @@ git --no-pager diff --stat
 ### GREEN
 
 - latest が最新 1 世代だけになる
-- 直前世代は `docs/research/`、2 世代以上前は `docs/research/old/` に整理される
+- 直前世代は `docs/research/`、2 世代以上前は `docs/research/archive/` に整理される
 - routing docs から同じ結論へたどれる
 
 ### REFACTOR
@@ -129,13 +129,13 @@ git --no-pager diff --stat
 - [ ] `docs/research/latest/` 配下を latest / previous / old に世代分類する
 - [ ] latest に残す対象を `market-specific-long-run-deep-dive-*` + `README.md` に固定する
 - [ ] `long-run-cross-market-campaign-handoff_20260408_0320.md` を `docs/research/` へ移動する
-- [ ] 2 世代以上前の backtest docs を `docs/research/old/` へ移動する
-- [ ] `docs/research/old/README.md` を作成し、既定では old を読まないルールと参照条件を書く
+- [ ] 2 世代以上前の backtest docs を `docs/research/archive/` へ移動する
+- [ ] `docs/research/archive/README.md` を作成し、既定では old を読まないルールと参照条件を書く
 - [ ] `docs/research/latest/README.md` を更新し、読む順番を最新 1 世代へ絞る
 - [ ] `docs/research/latest/README.md` に pane/tab support は parallel backtest の根拠ではない旨を追記する
 - [ ] `docs/DOCUMENTATION_SYSTEM.md` を更新し、latest / research / old の役割と generation-based archival rule を明文化する
-- [ ] `README.md` と `command.md` の docs 導線を整理する
-- [ ] `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md` に、pane/tab support は true parallel backtest ではない旨を補強する
+- [ ] `README.md` と `docs/command.md` の docs 導線を整理する
+- [ ] `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md` に、pane/tab support は true parallel backtest ではない旨を補強する
 - [ ] 文書リンクと配置ポリシーを validation commands で確認する
 - [ ] 実装完了後、この plan を `docs/exec-plans/completed/` へ移動する
 

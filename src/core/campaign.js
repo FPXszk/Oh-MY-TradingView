@@ -1,14 +1,13 @@
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+import {
+  BACKTEST_CAMPAIGN_SEARCH_DIRS,
+  BACKTEST_PRESETS_PATH,
+  BACKTEST_UNIVERSE_SEARCH_DIRS,
+  resolveNamedJsonPath,
+} from './repo-paths.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const CAMPAIGNS_DIR = join(__dirname, '..', '..', 'config', 'backtest', 'campaigns');
-const UNIVERSES_DIR = join(__dirname, '..', '..', 'config', 'backtest', 'universes');
-const PRESETS_PATH = join(__dirname, '..', '..', 'config', 'backtest', 'strategy-presets.json');
+const RETIRED_PRESETS_PATH = new URL('../../docs/bad-strategy/retired-strategy-presets.json', import.meta.url);
 
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const DEFAULT_FROM = '2015-01-01';
@@ -361,7 +360,7 @@ export function validateCampaignConfig(config) {
 // Campaign loader (file I/O — integration testable)
 // ---------------------------------------------------------------------------
 export async function loadCampaign(campaignId, { phase = 'full' } = {}) {
-  const configPath = join(CAMPAIGNS_DIR, `${campaignId}.json`);
+  const configPath = await resolveNamedJsonPath(BACKTEST_CAMPAIGN_SEARCH_DIRS, campaignId, 'Campaign');
   const raw = await readFile(configPath, 'utf8');
   const config = JSON.parse(raw);
 
@@ -374,7 +373,7 @@ export async function loadCampaign(campaignId, { phase = 'full' } = {}) {
     throw new Error(`Campaign "${campaignId}" does not define phase "${phase}"`);
   }
 
-  const universePath = join(UNIVERSES_DIR, `${config.universe}.json`);
+  const universePath = await resolveNamedJsonPath(BACKTEST_UNIVERSE_SEARCH_DIRS, config.universe, 'Universe');
   const universeRaw = await readFile(universePath, 'utf8');
   const universe = JSON.parse(universeRaw);
   let symbols = selectPhaseSymbols(normalizeUniverseSymbols(universe), phase, config.phases);
@@ -382,9 +381,16 @@ export async function loadCampaign(campaignId, { phase = 'full' } = {}) {
     symbols = symbols.slice(0, config.symbol_limit);
   }
 
-  const presetsRaw = await readFile(PRESETS_PATH, 'utf8');
+  const [presetsRaw, retiredPresetsRaw] = await Promise.all([
+    readFile(BACKTEST_PRESETS_PATH, 'utf8'),
+    readFile(RETIRED_PRESETS_PATH, 'utf8'),
+  ]);
   const presetsData = JSON.parse(presetsRaw);
-  let strategies = resolveStrategies(presetsData.strategies, config);
+  const retiredPresetsData = JSON.parse(retiredPresetsRaw);
+  let strategies = resolveStrategies(
+    [...presetsData.strategies, ...retiredPresetsData.strategies],
+    config,
+  );
   if (strategies.length === 0) {
     throw new Error(`Campaign "${campaignId}" resolved zero executable strategies`);
   }

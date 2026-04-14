@@ -2,7 +2,7 @@
 
 ## Problem
 
-現在の既定運用は **Session1 visible / port 9225 / single-worker sequential** であり、`command.md`・runbook・campaign 設定・最新 handoff でもこの前提が揃っている。  
+現在の既定運用は **Session1 visible / port 9225 / single-worker sequential** であり、`docs/command.md`・runbook・campaign 設定・最新 handoff でもこの前提が揃っている。  
 一方で、実運用では「ユーザーが開いた visible 側ではセッション切断警告が出るのに、別プロセス側で backtest が進んでいたように見える」という観測があり、**visible-first のつもりが実際には background/hidden 側へ寄っている可能性**を振り返る必要がある。
 
 あわせて、現在 CLI/サブエージェント経由で行っている単純な反復処理（Pine 反映 → backtest → 結果取得）について、将来的に **GitHub Actions ではなくローカル Python の夜間バッチへ外出し**できるかを検討したい。  
@@ -12,8 +12,8 @@
 
 - `docs/exec-plans/active/` は現時点で空であり、**重複する active plan は存在しない**
 - 既存 completed plan / runbook は参照対象であり、特に以下を前提証拠として扱う
-  - `command.md`
-  - `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
+  - `docs/command.md`
+  - `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`
   - `docs/exec-plans/completed/dual-worker-both-visible-feasibility_20260406_1106.md`
   - `docs/research/latest/next-long-run-finetune-partial-handoff_20260410_1503.md`
 - 2026-04-10 の `5ffac30 feat: sequential/visible-first default for backtest orchestration` は、visible-first default 化が**比較的新しい変更**であることを示すため、回帰点の候補として確認対象に含める
@@ -39,12 +39,12 @@
 
 - `docs/exec-plans/active/visible-first-backtest-automation-review_20260410_1614.md`（本計画）
 - `docs/research/latest/visible-first-backtest-automation-review_20260410_1614.md`（調査結果のまとめ）
-- 必要なら `docs/design-docs/local-python-backtest-automation_20260410_1614.md`（将来実装案の設計メモ）
+- 必要なら `docs/research/archive/local-python-backtest-automation_20260410_1614.md`（将来実装案の設計メモ）
 
 ### 変更候補（調査結果次第）
 
-- `command.md`
-- `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
+- `docs/command.md`
+- `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`
 - `README.md`
 - `src/core/launch.js`
 - `src/connection.js`
@@ -174,7 +174,7 @@ curl -sS http://127.0.0.1:9225/json/list
 ## Implementation steps
 
 - [ ] `docs/exec-plans/active/` が空であることを前提に、本計画を active plan として確定する
-- [ ] `command.md`・runbook・latest handoff・completed plan を読み、現行の canonical 運用を整理する
+- [ ] `docs/command.md`・runbook・latest handoff・completed plan を読み、現行の canonical 運用を整理する
 - [ ] `src/core/launch.js`・`src/connection.js`・関連 script/config を確認し、visible-first default と実際の接続/起動経路のズレ候補を列挙する
 - [ ] `5ffac30 feat: sequential/visible-first default for backtest orchestration` の差分と、その前後で変わった前提を調べる
 - [ ] 「visible 側では切断警告、別側で backtest 継続」の現象を、session・port・profile・account 制約の観点で仮説分解する

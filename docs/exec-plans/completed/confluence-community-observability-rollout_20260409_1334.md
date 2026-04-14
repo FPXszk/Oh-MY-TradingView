@@ -96,7 +96,7 @@
   - confluence/community/provider visibility の見え方、campaign artifact 追加項目、CLI 確認例を追記
 - `docs/DOCUMENTATION_SYSTEM.md`
   - 新しい session log と campaign artifact 導線を必要最小限更新
-- `command.md`
+- `docs/command.md`
   - campaign dry-run / artifact 確認 / market analysis smoke の運用コマンドを追記
 - `docs/references/design-ref-llms.md`
   - 今回 actually 採用した external design ideas（community snapshot を directional にしない等）を追記
@@ -155,13 +155,13 @@
 - `warnings` / `failureCount` / `omittedCount` の意味を明確化
 
 ### campaign artifacts
-- `results/campaigns/<campaign>/<phase>/gated-summary.json`
+- `docs/research/results/campaigns/<campaign>/<phase>/gated-summary.json`
   - `gated_results[].confluence_snapshot`
   - `gated_results[].community_snapshot`
   - `gated_results[].provider_status`
-- `results/campaigns/<campaign>/<phase>/ranked-candidates.json`
+- `docs/research/results/campaigns/<campaign>/<phase>/ranked-candidates.json`
   - 各 candidate に同等の additive fields
-- `results/campaigns/<campaign>/<phase>/market-intel-snapshots.json`
+- `docs/research/results/campaigns/<campaign>/<phase>/market-intel-snapshots.json`
   - symbol 単位の取得結果と warning 群を保存（必要な場合のみ追加）
 
 ---
@@ -258,9 +258,9 @@
 
 ### artifact smoke（実装後、必要なら実環境で）
 - `node scripts/backtest/run-long-campaign.mjs external-phase1-priority-top --phase smoke`
-  - `results/campaigns/external-phase1-priority-top/smoke/gated-summary.json`
-  - `results/campaigns/external-phase1-priority-top/smoke/ranked-candidates.json`
-  - `results/campaigns/external-phase1-priority-top/smoke/market-intel-snapshots.json`（追加した場合）
+  - `docs/research/results/campaigns/external-phase1-priority-top/smoke/gated-summary.json`
+  - `docs/research/results/campaigns/external-phase1-priority-top/smoke/ranked-candidates.json`
+  - `docs/research/results/campaigns/external-phase1-priority-top/smoke/market-intel-snapshots.json`（追加した場合）
   を確認する
 
 ---
@@ -290,7 +290,7 @@
 - [ ] **RED:** `tests/market-confluence.test.js` に weight 安定性と community 非方向性の失敗テストを追加する
 - [ ] **GREEN:** 必要な場合に限り `src/core/market-confluence.js` の fixed weight を軽微調整する
 - [ ] `package.json` に新規 test file を反映する
-- [ ] `README.md` / `docs/DOCUMENTATION_SYSTEM.md` / `command.md` / `docs/references/design-ref-llms.md` を更新する
+- [ ] `README.md` / `docs/DOCUMENTATION_SYSTEM.md` / `docs/command.md` / `docs/references/design-ref-llms.md` を更新する
 - [ ] `npm test` → `npm run test:e2e` → `npm run test:all` → targeted smoke を実行して GREEN を確認する
 - [ ] session log を `docs/working-memory/session-logs/confluence-community-observability-rollout_20260409_1334.md` に残す
 - [ ] plan を `docs/exec-plans/completed/` へ移動する

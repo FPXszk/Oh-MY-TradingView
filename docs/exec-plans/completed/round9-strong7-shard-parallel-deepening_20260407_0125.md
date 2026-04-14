@@ -22,8 +22,8 @@
 ### Phase A: current docs guidance closeout
 
 - `parallel-backtest-guidance-integration-review_20260407_0035.md` の対象だった未コミット変更をレビューし、必要最小限の整合性調整を行う
-- durable source of truth を `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md` に固定する
-- `command.md` を quick reference として同期する
+- durable source of truth を `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md` に固定する
+- `docs/command.md` を quick reference として同期する
 - 直前 task の active plan を `completed/` へ移し、docs guidance の変更だけを独立コミットして push する
 
 ### Phase B: round9 strong7 shard-parallel deepening
@@ -48,11 +48,11 @@
 
 ### durable guidance
 
-- `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
+- `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`
 
 ### quick reference
 
-- `command.md`
+- `docs/command.md`
 
 ### round8 evidence
 
@@ -127,8 +127,8 @@
 
 ### Phase A で変更・移動
 
-- `command.md`
-- `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
+- `docs/command.md`
+- `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`
 - `docs/exec-plans/active/parallel-backtest-guidance-integration-review_20260407_0035.md`
 - `docs/exec-plans/completed/parallel-backtest-guidance-integration-review_20260407_0035.md`
 - `docs/exec-plans/completed/mid-parallel-benchmark-hybrid-partial-retry_20260406_2330.md`
@@ -209,7 +209,7 @@
 
 ### 実行原則
 
-- durable guidance は `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
+- durable guidance は `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`
 - 第一候補は **shard parallel**
 - `Mag7 / alt` の固定 2 分割には戻さない
 - `unreadable 1回` 即 rollback の naive partial retry は使わない
@@ -244,7 +244,7 @@
 
 ```bash
 git --no-pager status --short
-git --no-pager diff -- command.md docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md
+git --no-pager diff -- docs/command.md docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md
 npm test
 ```
 
@@ -295,7 +295,7 @@ TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9225 node src/cli/index.js backtest preset 
 
 ### Phase A: current docs guidance closeout
 
-- [ ] 未コミットの docs guidance 変更を再確認し、`runbook` を durable source of truth、`command.md` を quick reference として整列する
+- [ ] 未コミットの docs guidance 変更を再確認し、`runbook` を durable source of truth、`docs/command.md` を quick reference として整列する
 - [ ] `parallel-backtest-guidance-integration-review_20260407_0035.md` の対象範囲が完了していることを確認する
 - [ ] `docs/exec-plans/active/parallel-backtest-guidance-integration-review_20260407_0035.md` を `completed/` へ移動する
 - [ ] `npm test` で既存整合性を確認する
@@ -351,8 +351,8 @@ docs: close parallel guidance integration review
 
 含めるもの:
 
-- `command.md`
-- `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
+- `docs/command.md`
+- `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`
 - `docs/research/mid-parallel-benchmark-analysis_20260406_2330.md`
 - `docs/references/backtests/mid-parallel-benchmark-comparison_20260406_2330.json`
 - `docs/working-memory/session-logs/mid-parallel-benchmark-hybrid-partial-retry_20260406_2330.md`

@@ -52,8 +52,8 @@
 - `config/backtest/campaigns/next-long-run-us-finetune-100x10.json`
 - `config/backtest/campaigns/next-long-run-jp-finetune-100x10.json`
 - `tests/campaign.test.js`
-- `command.md`
-- `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
+- `docs/command.md`
+- `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`
 
 ### 作成対象
 
@@ -90,7 +90,7 @@
    - `pilot` は互換目的で残すとしても、default / docs / examples から外す
 
 5. **ドキュメントと運用ルール更新**
-   - `command.md` を visible sequential standard に更新する
+   - `docs/command.md` を visible sequential standard に更新する
    - dual-worker parallel runbook を「利用可能だが非既定」の位置づけへ落とし、新標準を `9225 visible / sequential / smoke->full` に書き換える
 
 ## Out of scope
@@ -108,7 +108,7 @@
 
 対象:
 
-- `results/campaigns/next-long-run-us-finetune-100x10/pilot/checkpoint-50.json`
+- `docs/research/results/campaigns/next-long-run-us-finetune-100x10/pilot/checkpoint-50.json`
 
 判断理由:
 
@@ -151,8 +151,8 @@
 - `scripts/backtest/run-finetune-bundle.mjs` の default
 - `scripts/backtest/run-long-campaign.mjs` の default worker selection / resume guidance
 - fine-tune campaign config の `execution.worker_ports` など既定設定
-- `command.md` の手順とコマンド例
-- `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md` の運用ルール
+- `docs/command.md` の手順とコマンド例
+- `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md` の運用ルール
 
 ### 3. pilot の除去レベル
 
@@ -232,7 +232,7 @@
 - [ ] minimum flow を `smoke -> full` に変更し、`pilot` を default / docs / examples から外す
 - [ ] fine-tune campaign config の `worker_ports` / phase 定義を新ルールに合わせて更新する
 - [ ] 旧 `pilot` checkpoint を historical artifact として扱う文言とガードを入れる
-- [ ] `command.md` を `9225 default / 9223 fallback / smoke->full` に更新する
+- [ ] `docs/command.md` を `9225 default / 9223 fallback / smoke->full` に更新する
 - [ ] dual-worker parallel runbook を sequential visible default 前提に更新する
 - [ ] dry-run と既存 test コマンドで新ルールの既定値を検証する
 - [ ] 実装後の最終 resume 手順を docs に明記する

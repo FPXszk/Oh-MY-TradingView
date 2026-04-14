@@ -5,6 +5,7 @@ import { readdir, stat } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
+import { RESEARCH_RESULTS_DIR } from '../../src/core/repo-paths.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -24,7 +25,7 @@ async function main() {
 
   const campaignId = positionals[0] || 'long-run-cross-market-100x5';
   const phase = values.phase || 'full';
-  const outDir = join(PROJECT_ROOT, 'results', 'campaigns', campaignId, phase);
+  const outDir = join(RESEARCH_RESULTS_DIR, 'campaigns', campaignId, phase);
 
   let files;
   try {

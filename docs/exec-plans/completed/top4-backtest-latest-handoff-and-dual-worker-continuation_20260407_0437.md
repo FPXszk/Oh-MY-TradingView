@@ -33,8 +33,8 @@
 
 ### 並列運用
 
-- `command.md`
-- `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
+- `docs/command.md`
+- `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`
 - `docs/working-memory/session-logs/tradingview-parallel-backtest-stabilization_20260406_0802.md`
 - `docs/research/round8-parallel-optimization-analysis_20260406_1307.md`
 
@@ -84,13 +84,13 @@
 ### 確認対象
 
 - `docs/tmp/round9-answer_20260407_0431.md`
-- `command.md`
+- `docs/command.md`
 - `docs/DOCUMENTATION_SYSTEM.md`
 - `README.md`
 - `docs/research/theme-strategy-shortlist-round9_2015_2025.md`
 - `docs/research/theme-backtest-results-round9_2015_2025.md`
 - `docs/research/theme-backtest-results-round9-alt_2015_2025.md`
-- `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
+- `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`
 - `docs/working-memory/session-logs/dual-worker-parallel-backtest-handoff_20260406_0735.md`
 - `docs/working-memory/session-logs/tradingview-parallel-backtest-stabilization_20260406_0802.md`
 - `config/backtest/strategy-presets.json`
@@ -107,8 +107,8 @@
 - `tests/backtest.test.js`
 - `docs/DOCUMENTATION_SYSTEM.md`
 - `README.md`（必要時のみ）
-- `command.md`（不足注記がある場合のみ）
-- `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`（4並列が未検証である明示が不足する場合のみ）
+- `docs/command.md`（不足注記がある場合のみ）
+- `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`（4並列が未検証である明示が不足する場合のみ）
 
 ### 新規作成
 
@@ -158,7 +158,7 @@ CLI / core の新規サブコマンド追加は原則行わず、既存 `tv back
 
 - `docs/DOCUMENTATION_SYSTEM.md` に `docs/research/latest/` 導線を追加
 - round9 / latest / session log の参照順を補強
-- 必要時のみ `README.md`、`command.md`、runbook に不足注記を最小追加
+- 必要時のみ `README.md`、`docs/command.md`、runbook に不足注記を最小追加
 
 ### 5. 完了物
 
@@ -239,7 +239,7 @@ TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9225 node src/cli/index.js backtest preset 
 ### docs 整合確認
 
 ```bash
-git --no-pager diff -- docs/DOCUMENTATION_SYSTEM.md README.md command.md docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md
+git --no-pager diff -- docs/DOCUMENTATION_SYSTEM.md README.md docs/command.md docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md
 git --no-pager diff -- docs/research/latest docs/research docs/working-memory/session-logs
 git --no-pager status --short
 ```
@@ -258,7 +258,7 @@ git --no-pager status --short
 ### Phase 0: 文脈復元と境界固定
 
 - [ ] `docs/tmp/round9-answer_20260407_0431.md`、round9 research docs、session logs を読み、上位4戦略と現行 policy を再確認する
-- [ ] `command.md` と runbook を読み、stable topology が dual-worker / 2並列であることを固定する
+- [ ] `docs/command.md` と runbook を読み、stable topology が dual-worker / 2並列であることを固定する
 - [ ] backtest 実行経路（`src/cli/commands/backtest.js`, `src/core/backtest.js`, `src/core/research-backtest.js`）を確認する
 - [ ] active exec-plan 非競合を確認する
 
@@ -303,7 +303,7 @@ git --no-pager status --short
 - [ ] `docs/research/latest/top4-backtest-results_YYYYMMDD_HHMM.md` を作成する
 - [ ] raw / summary artifact を `docs/references/backtests/` に保存する
 - [ ] `docs/DOCUMENTATION_SYSTEM.md` を更新する
-- [ ] 必要時のみ `README.md`、`command.md`、runbook を最小更新する
+- [ ] 必要時のみ `README.md`、`docs/command.md`、runbook を最小更新する
 
 ### Phase 6: session log と完了処理
 

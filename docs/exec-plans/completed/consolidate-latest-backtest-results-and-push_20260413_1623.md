@@ -27,15 +27,15 @@
   -> `docs/research/next-long-run-finetune-partial-handoff_20260410_1503.md`
 
 ### 参照のみ
-- `results/gh-run-24341576697/night-batch-24341576697-1/gha_24341576697_1-summary.md`
-- `results/gh-run-24341576697/night-batch-24341576697-1/gha_24341576697_1.log`
-- `results/gh-run-24341576697/night-batch-24341576697-1/round-manifest.json`
-- `results/campaigns/external-phase1-run8-us-jp-top6/smoke-session.log`
-- `results/campaigns/external-phase1-run8-us-jp-top6/smoke/recovered-summary.json`
-- `/mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/results/campaigns/next-long-run-us-finetune-100x10/full/recovered-results.json`
-- `/mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/results/campaigns/next-long-run-us-finetune-100x10/full/recovered-summary.json`
-- `/mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/results/campaigns/next-long-run-jp-finetune-100x10/full/recovered-results.json`
-- `/mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/results/campaigns/next-long-run-jp-finetune-100x10/full/recovered-summary.json`
+- `docs/research/results/gh-run-24341576697/night-batch-24341576697-1/gha_24341576697_1-summary.md`
+- `docs/research/results/gh-run-24341576697/night-batch-24341576697-1/gha_24341576697_1.log`
+- `docs/research/results/gh-run-24341576697/night-batch-24341576697-1/round-manifest.json`
+- `docs/research/results/campaigns/external-phase1-run8-us-jp-top6/smoke-session.log`
+- `docs/research/results/campaigns/external-phase1-run8-us-jp-top6/smoke/recovered-summary.json`
+- `/mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/docs/research/results/campaigns/next-long-run-us-finetune-100x10/full/recovered-results.json`
+- `/mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/docs/research/results/campaigns/next-long-run-us-finetune-100x10/full/recovered-summary.json`
+- `/mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/docs/research/results/campaigns/next-long-run-jp-finetune-100x10/full/recovered-results.json`
+- `/mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/docs/research/results/campaigns/next-long-run-jp-finetune-100x10/full/recovered-summary.json`
 - `.github/workflows/night-batch-self-hosted.yml`
 
 ### 削除
@@ -71,9 +71,9 @@
 
 ### Out of Scope
 - backtest の再実行・再開
-- workflow / runner script / command.md の修正
+- workflow / runner script / docs/command.md の修正
 - 生の `recovered-results.json` 全量を repo に取り込むこと
-- unrelated な `results/` 差分の commit
+- unrelated な `docs/research/results/` 差分の commit
 - 既存 active plan が扱う self-hosted runner 運用メモの再編
 
 ## 5) active plan との重複確認
@@ -85,7 +85,7 @@
 - `docs/exec-plans/active/run-night-batch-self-hosted-workflow-dispatch_20260411_0025.md`
 
 今回の plan は **結果報告 docs / latest 世代更新 / commit-push** が主目的であり、runner 運用や workflow 実行手順の変更には踏み込まない。  
-そのため直接衝突は低いが、night-batch 実行結果を題材にするため、`command.md` や runner 手順書には触れない方針で進める。
+そのため直接衝突は低いが、night-batch 実行結果を題材にするため、`docs/command.md` や runner 手順書には触れない方針で進める。
 
 ## 6) TDD / Test Strategy
 
@@ -139,7 +139,7 @@ docs-only / data-summary 変更のため、コードや workflow に変更が入
 - latest full-run の成績正本は `/mnt/c/actions-runner/...` 側にあり、repo から直接追えないため、必要な指標は summary JSON と文書に十分スナップショット化する必要がある
 - `recovered-results.json` 全量は約 1.2 MB × 2 本あり、丸ごと commit すると docs/report 目的に対して重い
 - latest success と latest executed run を混同すると誤解を生むため、`24353498557` は skip success と明記する必要がある
-- 現在 worktree には `results/night-batch/detached-production-state.json` と `results/...` の未追跡差分があるため、今回の commit に unrelated artifact を混ぜないよう注意する
+- 現在 worktree には `docs/research/results/night-batch/detached-production-state.json` と `docs/research/results/...` の未追跡差分があるため、今回の commit に unrelated artifact を混ぜないよう注意する
 - 現時点で未 push commit はないため、「末コミットのものを push」は今回作る commit を push する解釈で進める
 
 ## 10) 補足

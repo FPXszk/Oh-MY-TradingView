@@ -1,0 +1,23 @@
+{
+  "status": "running",
+  "parent_run_id": "20260410_112937",
+  "child_run_id": "20260410_112937_production",
+  "pid": 114593,
+  "log_path": "docs/research/results/night-batch/20260410_112937_production.log",
+  "summary_path": "docs/research/results/night-batch/20260410_112937_production-summary.json",
+  "production_command": [
+    "node",
+    "/home/fpxszk/code/Oh-MY-TradingView/scripts/backtest/run-finetune-bundle.mjs",
+    "--host",
+    "172.31.144.1",
+    "--ports",
+    "9223",
+    "--phases",
+    "full",
+    "--us-campaign",
+    "next-long-run-us-finetune-100x10",
+    "--jp-campaign",
+    "next-long-run-jp-finetune-100x10"
+  ],
+  "started_at": "2026-04-10T12:06:52.168828+00:00"
+}

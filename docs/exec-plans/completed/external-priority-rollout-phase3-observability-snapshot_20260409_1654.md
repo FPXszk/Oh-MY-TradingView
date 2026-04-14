@@ -8,7 +8,7 @@ The next approved direction is the agent-browser-inspired browser fallback / obs
 The repo already has most of the primitives needed for that slice:
 
 - `src/core/health.js` returns active page/chart state
-- `src/core/capture.js` captures screenshots safely into `results/screenshots/`
+- `src/core/capture.js` captures screenshots safely into `docs/research/results/screenshots/`
 - `src/core/backtest.js` already contains diagnostic/probe-oriented helpers
 - `src/core/stream.js` demonstrates the repo preference for bounded, non-daemon collection
 - `src/server.js` and `README.md` already expose additive MCP / CLI surfaces cleanly
@@ -35,7 +35,7 @@ This phase should add:
 - one core snapshot orchestrator
 - one MCP tool
 - one CLI command
-- one deterministic artifact bundle under `results/observability/`
+- one deterministic artifact bundle under `docs/research/results/observability/`
 - structured metadata such as:
   - resolved CDP endpoint / target info
   - current page URL / title
@@ -94,10 +94,10 @@ Recommended response shape:
 
 Prefer saving artifacts to:
 
-- `results/observability/<snapshot-id>/manifest.json`
-- `results/observability/<snapshot-id>/page-state.json`
-- `results/observability/<snapshot-id>/runtime-errors.json`
-- `results/observability/<snapshot-id>/page.png`
+- `docs/research/results/observability/<snapshot-id>/manifest.json`
+- `docs/research/results/observability/<snapshot-id>/page-state.json`
+- `docs/research/results/observability/<snapshot-id>/runtime-errors.json`
+- `docs/research/results/observability/<snapshot-id>/page.png`
 
 ## Files
 
@@ -166,7 +166,7 @@ If reusing a `backtest` diagnostic helper would drag in backtest-specific assump
 
 - [ ] Confirm final public naming for the core API, MCP tool, and CLI command
 - [ ] Confirm the exact snapshot schema and which fields are required versus best-effort
-- [ ] Define the bounded artifact layout under `results/observability/`
+- [ ] Define the bounded artifact layout under `docs/research/results/observability/`
 - [ ] Decide whether screenshots default to saved artifact mode, inline mode, or both with an option gate
 - [ ] Define the minimal set of runtime probes that are cheap, deterministic, and read-only
 - [ ] Define the minimal error collection window (for example, a short one-shot listener window or immediate best-effort pull only)

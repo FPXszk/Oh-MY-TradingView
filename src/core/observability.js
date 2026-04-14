@@ -3,8 +3,7 @@ import { join, resolve, relative } from 'node:path';
 import { resolveCdpEndpoint, getClient, getTargetInfo, evaluateAsync } from '../connection.js';
 import { collectPageState } from './health.js';
 import { captureScreenshot } from './capture.js';
-
-const OBSERVABILITY_OUTPUT_DIR = resolve(process.cwd(), 'results', 'observability');
+import { OBSERVABILITY_OUTPUT_DIR } from './repo-paths.js';
 const MAX_RUNTIME_ERRORS = 20;
 const DEFAULT_RUNTIME_ERROR_WAIT_MS = 250;
 

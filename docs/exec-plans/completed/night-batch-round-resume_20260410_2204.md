@@ -2,7 +2,7 @@
 
 ## 目的
 
-`results/night-batch/` を `round1/`, `round2/` のようなラウンド単位で整理し、**同一戦略セットの再実行は current round を明示的に resume**、**次の改善イテレーションに進むときだけ next round を自動採番**する運用へ揃える。  
+`docs/research/results/night-batch/` を `round1/`, `round2/` のようなラウンド単位で整理し、**同一戦略セットの再実行は current round を明示的に resume**、**次の改善イテレーションに進むときだけ next round を自動採番**する運用へ揃える。  
 あわせて、途中中断時の checkpoint / 完了結果の再利用、WSL 向け手動コマンド整備、fine-tune smoke の 1 strategy × 1 symbol 化までを同一変更で完了させる。
 
 ---
@@ -11,7 +11,7 @@
 
 ### 1. round の進め方は「自動採番」だが、起動モードは明示にする
 
-ユーザー要件どおり **round 番号そのものは `results/night-batch` の既存 round を見て自動決定**する。  
+ユーザー要件どおり **round 番号そのものは `docs/research/results/night-batch` の既存 round を見て自動決定**する。  
 ただし、`resume-current-round` と `advance-next-round` を曖昧に自動判定すると再実行時に round が勝手に進むため、**コマンド側で round mode を明示指定する**。
 
 想定 CLI:
@@ -28,7 +28,7 @@
 
 ### 2. round 配下に manifest を置いて current round の正当性を判定する
 
-`results/night-batch/roundN/round-manifest.json` を追加し、少なくとも以下を保持する。
+`docs/research/results/night-batch/roundN/round-manifest.json` を追加し、少なくとも以下を保持する。
 
 - `round`
 - `strategy_set_fingerprint`
@@ -57,7 +57,7 @@ checkpoint 自体は既存 `scripts/backtest/run-long-campaign.mjs --resume` を
 - detached state
 - round manifest
 
-`results/campaigns/...` の保存構造は既存のまま使い、round からは参照するだけに留める。  
+`docs/research/results/campaigns/...` の保存構造は既存のまま使い、round からは参照するだけに留める。  
 これにより変更範囲を夜間 orchestration と docs / tests に限定する。
 
 ---
@@ -81,7 +81,7 @@ checkpoint 自体は既存 `scripts/backtest/run-long-campaign.mjs --resume` を
   - `phases.smoke.symbol_count: 10 -> 1`
 - `config/backtest/campaigns/next-long-run-jp-finetune-100x10.json`
   - `phases.smoke.symbol_count: 10 -> 1`
-- `command.md`
+- `docs/command.md`
   - WSL 向け `advance-next-round` / `resume-current-round` / dry-run / manual recovery 手順追記
 
 ### 新規作成
@@ -98,24 +98,24 @@ checkpoint 自体は既存 `scripts/backtest/run-long-campaign.mjs --resume` を
 
 ## In Scope
 
-- `results/night-batch/roundN/` 構造の導入
+- `docs/research/results/night-batch/roundN/` 構造の導入
 - latest round からの next round 自動採番
 - `resume-current-round` / `advance-next-round` の明示モード導入
 - interrupted rerun での checkpoint 再利用
 - `run-finetune-bundle.mjs` への resume 引数配線
 - fine-tune US/JP smoke を各 1 symbol に縮小
-- `command.md` の WSL 手動コマンド整備
+- `docs/command.md` の WSL 手動コマンド整備
 - 実装後の docs 更新、session log 追加、push
 
 ## Out of Scope
 
-- `results/campaigns/` 全体の保存レイアウト変更
+- `docs/research/results/campaigns/` 全体の保存レイアウト変更
 - `run-long-campaign.mjs` の checkpoint 仕様変更
 - detached production モデルの全面再設計
 - round をまたいだ集計・ランキング仕様の新設
 - unrelated dirty files / 既存 results の整理や巻き戻し
 - README の全面更新  
-  今回の doc 変更はまず `command.md` と session log に限定する
+  今回の doc 変更はまず `docs/command.md` と session log に限定する
 
 ---
 
@@ -159,7 +159,7 @@ checkpoint 自体は既存 `scripts/backtest/run-long-campaign.mjs --resume` を
   - JP: 10 strategies × 1 symbol = 10 runs
   - 合計 20 runs
 
-### `command.md`
+### `docs/command.md`
 
 - 既存 Python night batch 節を更新
 - WSL からの実行例を追加
@@ -189,7 +189,7 @@ checkpoint 自体は既存 `scripts/backtest/run-long-campaign.mjs --resume` を
 必要に応じて既存 matcher も修正する。
 
 - `readSummaryFromResult()` の summary path 抽出を round 配下対応に変える
-- `results/night-batch/<run-id>-summary.*` 前提の assertion を round 配下へ更新する
+- `docs/research/results/night-batch/<run-id>-summary.*` 前提の assertion を round 配下へ更新する
 
 ### GREEN
 
@@ -253,12 +253,12 @@ python3 python/night_batch.py smoke-prod --config config/night_batch/bundle-deta
 
 ## 完了条件
 
-- `results/night-batch/roundN/` に nightly 成果物が整理される
+- `docs/research/results/night-batch/roundN/` に nightly 成果物が整理される
 - round の next 番号は既存 folder を見て自動採番される
 - rerun は `resume-current-round` で current round を再利用できる
 - 途中中断後の再実行で completed work が再実行されない
 - smoke が US 10 runs + JP 10 runs の合計 20 runs になる
-- `command.md` が WSL 手動運用に合わせて更新される
+- `docs/command.md` が WSL 手動運用に合わせて更新される
 - session log が追加される
 - テストと dry-run 検証が通る
 - 変更が push される
@@ -276,7 +276,7 @@ python3 python/night_batch.py smoke-prod --config config/night_batch/bundle-deta
 - [ ] `config/backtest/campaigns/next-long-run-us-finetune-100x10.json` の `phases.smoke.symbol_count` を `1` に変更する
 - [ ] `config/backtest/campaigns/next-long-run-jp-finetune-100x10.json` の `phases.smoke.symbol_count` を `1` に変更する
 - [ ] `tests/night-batch.test.js` の path matcher / helper を round-aware に整える
-- [ ] `command.md` に WSL 向け `advance-next-round` / `resume-current-round` / dry-run / manual recovery コマンドを追記する
+- [ ] `docs/command.md` に WSL 向け `advance-next-round` / `resume-current-round` / dry-run / manual recovery コマンドを追記する
 - [ ] `node --test tests/night-batch.test.js` を実行して通す
 - [ ] `npm test` を実行して既存回帰がないことを確認する
 - [ ] `python3 python/night_batch.py ... --dry-run` で round mode の挙動を確認する

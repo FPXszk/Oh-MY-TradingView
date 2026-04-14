@@ -18,7 +18,7 @@ Night Batch Self Hosted workflow を、GitHub Actions 上で **smoke から prod
 - `tests/night-batch.test.js`
 - `tests/windows-run-night-batch-self-hosted.test.js`
 - `README.md`
-- `command.md`
+- `docs/command.md`
 
 ### 条件付き更新
 - `scripts/windows/run-night-batch-self-hosted.cmd`
@@ -38,7 +38,7 @@ Night Batch Self Hosted workflow を、GitHub Actions 上で **smoke から prod
 
 ### 影響範囲
 - self-hosted Windows runner 上の Night Batch workflow
-- `results/night-batch/roundN/` 配下の state / summary 出力
+- `docs/research/results/night-batch/roundN/` 配下の state / summary 出力
 - workflow 失敗時の運用手順とログ読解手順
 - 既存の detached 前提テストとドキュメント
 
@@ -105,5 +105,5 @@ Night Batch Self Hosted workflow を、GitHub Actions 上で **smoke から prod
 - [ ] `tests/windows-run-night-batch-self-hosted.test.js` に RED テストを追加する
 - [ ] 最小実装で targeted tests を通す
 - [ ] `npm test` で既存回帰を確認する
-- [ ] `README.md` と `command.md` を新運用に更新する
+- [ ] `README.md` と `docs/command.md` を新運用に更新する
 - [ ] `workflow_dispatch` で手動実行し、Actions 上で foreground 監視できることを確認する

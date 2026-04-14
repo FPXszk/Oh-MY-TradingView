@@ -1430,12 +1430,17 @@ export async function runNvdaMaBacktest() {
 // Preset loader (pure — unit testable)
 // ---------------------------------------------------------------------------
 const PRESETS_PATH = join(__dirname, '..', '..', 'config', 'backtest', 'strategy-presets.json');
+const RETIRED_PRESETS_PATH = join(__dirname, '..', '..', 'docs', 'bad-strategy', 'retired-strategy-presets.json');
 
 export async function loadPreset(presetId, { dateOverride } = {}) {
   const raw = await readFile(PRESETS_PATH, 'utf8');
   const data = JSON.parse(raw);
-
-  const preset = data.strategies.find((s) => s.id === presetId);
+  let preset = data.strategies.find((s) => s.id === presetId);
+  if (!preset) {
+    const retiredRaw = await readFile(RETIRED_PRESETS_PATH, 'utf8');
+    const retired = JSON.parse(retiredRaw);
+    preset = retired.strategies.find((s) => s.id === presetId);
+  }
   if (!preset) {
     throw new Error(`Preset "${presetId}" not found in strategy-presets.json`);
   }

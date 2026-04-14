@@ -19,8 +19,8 @@
 
 ## 参照・前提
 
-- `command.md` 7c
-- `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
+- `docs/command.md` 7c
+- `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`
 - `docs/research/round8-parallel-optimization-analysis_20260406_1307.md`
 - `docs/exec-plans/active/wsl-dual-worker-reachability_20260406_0305.md`
 
@@ -42,8 +42,8 @@
 - `src/core/research-backtest.js`
 - `tests/backtest.test.js`
 - `tests/e2e.backtest.test.js`
-- `command.md`
-- `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
+- `docs/command.md`
+- `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`
 
 ## スコープ
 

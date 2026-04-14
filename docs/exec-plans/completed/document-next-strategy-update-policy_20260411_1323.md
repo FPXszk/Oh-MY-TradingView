@@ -2,7 +2,7 @@
 
 ## 背景 / 目的
 
-`README.md` の self-hosted runner 運用説明（`README.md:393-417` 付近）と `command.md` の manual launch 手順（`command.md:537-568` 付近）には、すでに **service mode は使わず、runner は手動 `run.cmd` 系で起動する** 方針が明記されている。  
+`README.md` の self-hosted runner 運用説明（`README.md:393-417` 付近）と `docs/command.md` の manual launch 手順（`docs/command.md:537-568` 付近）には、すでに **service mode は使わず、runner は手動 `run.cmd` 系で起動する** 方針が明記されている。  
 また、`.github/workflows/night-batch-self-hosted.yml` は **detached child の起動確認で workflow 自体は終了しうる** 一方、production 本体は Windows ローカルで継続するため、**workflow が終わった＝live checkout を安全に更新できる** とは限らない。
 
 このため、次ラウンド向けの strategy / config を更新したくても、**self-hosted runner または detached night-batch がまだ active な間は、現在の live checkout を直接編集しない** という運用ポリシーを文書化する。  
@@ -17,7 +17,7 @@
 
 ### 更新候補
 - `README.md`
-- `command.md`
+- `docs/command.md`
 - `docs/DOCUMENTATION_SYSTEM.md`  
   - 入口文書から運用ポリシーへ辿れるようにする場合のみ
 - `docs/working-memory/session-logs/round-aware-night-batch-layout_20260410_1332.md` または新規 session log  
@@ -98,7 +98,7 @@
 
 ## TDD / テスト戦略（RED → GREEN → REFACTOR）
 
-本件は docs 主体だが、既存の `tests/windows-run-night-batch-self-hosted.test.js` に README / command.md の docs assertion があるため、必要に応じてそれを活用する。
+本件は docs 主体だが、既存の `tests/windows-run-night-batch-self-hosted.test.js` に README / docs/command.md の docs assertion があるため、必要に応じてそれを活用する。
 
 ### RED
 - 現状 docs では「service mode は使わない」「manual run.cmd 起動」「detached child 後もローカル継続」は説明済みだが、  
@@ -106,7 +106,7 @@
 - docs assertion を追加する場合は、まず不足文言を検出する failing test を先に置く。
 
 ### GREEN
-- README / command.md / 必要なら `docs/DOCUMENTATION_SYSTEM.md` に最小限の追記を行い、上記ポリシーを通しで読める状態にする。
+- README / docs/command.md / 必要なら `docs/DOCUMENTATION_SYSTEM.md` に最小限の追記を行い、上記ポリシーを通しで読める状態にする。
 - docs assertion を追加した場合は、その test を通す。
 
 ### REFACTOR
@@ -138,7 +138,7 @@ npm test
 
 - 「runner が active」と「detached child が active」が別概念なので、文言が曖昧だと誤運用を招く
 - worktree / clone / branch のどれを標準とするかを強く固定しすぎると、既存運用との差分が大きくなる
-- README と command.md の両方を更新する場合、説明重複や表現差異が生じやすい
+- README と docs/command.md の両方を更新する場合、説明重複や表現差異が生じやすい
 - `config/backtest/strategy-presets.json` 以外の live strategy 関連ファイル範囲が広いため、禁止対象の例示が不足すると危険
 - active plan が複数あるため、本 plan が調査・運用実行へ広がると重複作業になる
 - docs assertion を追加しない場合、将来 drift を自動検知できない可能性がある
@@ -148,12 +148,12 @@ npm test
 ## チェックボックス形式のタスクリスト
 
 - [ ] 既存 active plan 3 本と本 plan の境界を固定し、本件を documentation policy に限定する
-- [ ] `README.md` と `command.md` の既存記述から、manual runner / detached 継続実行 / `advance-next-round` の事実を再確認する
+- [ ] `README.md` と `docs/command.md` の既存記述から、manual runner / detached 継続実行 / `advance-next-round` の事実を再確認する
 - [ ] 「workflow 終了後も production がローカル継続しうるため、live checkout を即編集してはいけない」方針文を起案する
 - [ ] `config/backtest/strategy-presets.json` を含む live strategy 関連ファイルが mid-run 変更高リスクであることを docs に落とし込む
 - [ ] active run 中は **live checkout を編集せず、別 worktree / clone / branch で次 strategy を準備する** 手順を整理する
 - [ ] detached 完了後に live checkout を更新し、`advance-next-round` を明示して次 run を開始する流れを整理する
-- [ ] README と command.md の責務分担を決め、必要な追記箇所を確定する
+- [ ] README と docs/command.md の責務分担を決め、必要な追記箇所を確定する
 - [ ] discoverability が不足する場合のみ `docs/DOCUMENTATION_SYSTEM.md` 更新要否を判断する
 - [ ] documentation governance / 履歴が必要な場合のみ `docs/working-memory/session-logs/` 追記要否を判断する
 - [ ] 既存 `tests/windows-run-night-batch-self-hosted.test.js` を流用した docs assertion 追加可否を判断する

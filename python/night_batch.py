@@ -21,12 +21,17 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+RESEARCH_DOCS_DIR = PROJECT_ROOT / 'docs' / 'research'
+RESEARCH_RESULTS_DIR = RESEARCH_DOCS_DIR / 'results'
+CAMPAIGN_RESULTS_DIR = RESEARCH_RESULTS_DIR / 'campaigns'
+LATEST_RESEARCH_DIR = RESEARCH_DOCS_DIR / 'latest'
+DEFAULT_LATEST_SUMMARY_PATH = LATEST_RESEARCH_DIR / 'main-backtest-latest-summary.md'
 
 
 def resolve_results_dir() -> Path:
     raw = os.environ.get('NIGHT_BATCH_RESULTS_DIR')
     if not raw:
-        return PROJECT_ROOT / 'results' / 'night-batch'
+        return RESEARCH_RESULTS_DIR / 'night-batch'
     normalized = raw.replace('\\', '/') if '\\' in raw and ':' not in raw else raw
     path = Path(normalized)
     return path if path.is_absolute() else PROJECT_ROOT / path
@@ -41,11 +46,11 @@ DEFAULT_SHORTCUT_PATH = r'C:\TradingView\TradingView.exe - ショートカット
 DEFAULT_LAUNCH_WAIT_SEC = 20
 DEFAULT_PHASES = 'smoke,full'
 DEFAULT_TIMEOUT = 4 * 60 * 60
-DEFAULT_US_CAMPAIGN = 'next-long-run-us-finetune-100x10'
-DEFAULT_JP_CAMPAIGN = 'next-long-run-jp-finetune-100x10'
+DEFAULT_US_CAMPAIGN = 'next-long-run-us-12x10'
+DEFAULT_JP_CAMPAIGN = 'next-long-run-jp-12x10'
 DEFAULT_SMOKE_CLI = 'backtest preset ema-cross-9-21 --symbol NVDA --date-from 2024-01-01 --date-to 2024-12-31'
 DEFAULT_PRODUCTION_CLI = 'backtest preset ema-cross-9-21 --symbol NVDA --date-from 2000-01-01 --date-to 2099-12-31'
-DEFAULT_DETACHED_STATE_FILE = 'results/night-batch/detached-production-state.json'
+DEFAULT_DETACHED_STATE_FILE = 'docs/research/results/night-batch/detached-production-state.json'
 EXIT_PREFLIGHT_FAILED = 1
 EXIT_STEP_FAILED = 2
 ROUND_MANIFEST_FILE = 'round-manifest.json'
@@ -111,7 +116,7 @@ def resolve_round_dir(mode: str) -> tuple[Path, int]:
         rounds = find_existing_rounds()
         if not rounds:
             raise RuntimeError(
-                'No existing round found under results/night-batch/. '
+                'No existing round found under docs/research/results/night-batch/. '
                 'Use --round-mode advance-next-round to create a new round.'
             )
         current_num = max(rounds)
@@ -365,10 +370,13 @@ def build_parser() -> argparse.ArgumentParser:
     production_child.add_argument('--production-env-json', default='{}')
     production_child.add_argument('--production-checkpoint-roots-json', default='[]')
     production_child.add_argument('--output-dir', default=str(RESULTS_DIR))
+    production_child.add_argument('--bundle-us-campaign')
+    production_child.add_argument('--bundle-jp-campaign')
+    production_child.add_argument('--bundle-production-phases', default='full')
 
     archive_rounds = subparsers.add_parser(
         'archive-rounds',
-        help='Move completed round directories under results/night-batch/archive',
+        help='Move completed round directories under docs/research/results/night-batch/archive',
     )
     archive_rounds.add_argument('--dry-run', action='store_true')
 
@@ -419,6 +427,13 @@ def relative_path(path: Path) -> str:
         return str(path.relative_to(PROJECT_ROOT))
     except ValueError:
         return str(path)
+
+
+def resolve_latest_summary_path() -> Path:
+    raw = os.environ.get('NIGHT_BATCH_LATEST_SUMMARY_PATH')
+    if raw:
+        return resolve_project_path(raw) or (PROJECT_ROOT / raw)
+    return DEFAULT_LATEST_SUMMARY_PATH
 
 
 def option_was_provided(raw_args: list[str], option_name: str) -> bool:
@@ -844,10 +859,10 @@ def run_process(
 
 
 def default_report_paths(args) -> tuple[str, str, str]:
-    us_path = args.report_us or f'results/campaigns/{args.us_campaign}/full/recovered-results.json'
-    jp_path = args.report_jp or f'results/campaigns/{args.jp_campaign}/full/recovered-results.json'
+    us_path = getattr(args, 'report_us', None) or f'docs/research/results/campaigns/{args.us_campaign}/full/recovered-results.json'
+    jp_path = getattr(args, 'report_jp', None) or f'docs/research/results/campaigns/{args.jp_campaign}/full/recovered-results.json'
     output_dir = resolve_project_path(getattr(args, 'output_dir', None)) or RESULTS_DIR
-    report_out = args.report_out or str(output_dir / f'{utc_run_id()}-rich-report.md')
+    report_out = getattr(args, 'report_out', None) or str(output_dir / f'{utc_run_id()}-rich-report.md')
     return us_path, jp_path, report_out
 
 
@@ -883,8 +898,8 @@ def build_step_specs(args) -> list[dict]:
             'name': 'bundle',
             'command': command,
             'checkpoint_roots': [
-                PROJECT_ROOT / 'results' / 'campaigns' / args.us_campaign,
-                PROJECT_ROOT / 'results' / 'campaigns' / args.jp_campaign,
+                CAMPAIGN_RESULTS_DIR / args.us_campaign,
+                CAMPAIGN_RESULTS_DIR / args.jp_campaign,
             ],
         }]
 
@@ -907,7 +922,7 @@ def build_step_specs(args) -> list[dict]:
         return [{
             'name': 'campaign',
             'command': command,
-            'checkpoint_roots': [PROJECT_ROOT / 'results' / 'campaigns' / args.campaign_id / args.phase],
+            'checkpoint_roots': [CAMPAIGN_RESULTS_DIR / args.campaign_id / args.phase],
         }]
 
     if args.command == 'recover':
@@ -925,7 +940,7 @@ def build_step_specs(args) -> list[dict]:
         return [{
             'name': 'recover',
             'command': command,
-            'checkpoint_roots': [PROJECT_ROOT / 'results' / 'campaigns' / args.campaign_id / args.phase],
+            'checkpoint_roots': [CAMPAIGN_RESULTS_DIR / args.campaign_id / args.phase],
         }]
 
     if args.command == 'report':
@@ -1224,6 +1239,15 @@ def build_production_child_command(settings: dict, child_run_id: str, production
         '--output-dir',
         str(output_dir),
     ]
+    if settings.get('production_mode') == 'bundle':
+        cmd.extend([
+            '--bundle-us-campaign',
+            settings['bundle_us_campaign'],
+            '--bundle-jp-campaign',
+            settings['bundle_jp_campaign'],
+            '--bundle-production-phases',
+            settings['bundle_production_phases'],
+        ])
     return cmd
 
 
@@ -1563,6 +1587,319 @@ def write_summary(run_id: str, summary: dict, logger: logging.Logger, output_dir
     return summary_json_path, summary_md_path
 
 
+def resolve_existing_json_path(raw_path: str | None) -> Path | None:
+    if not raw_path:
+        return None
+    path = Path(raw_path)
+    if not path.is_absolute():
+        path = PROJECT_ROOT / raw_path
+    return path if path.exists() else None
+
+
+def mean_or_none(values: list[float]) -> float | None:
+    return (sum(values) / len(values)) if values else None
+
+
+def round_metric(value: float | None, digits: int = 2) -> float | None:
+    return round(value, digits) if value is not None else None
+
+
+def format_metric(value: float | None, digits: int = 2) -> str:
+    if value is None:
+        return '—'
+    return f'{value:.{digits}f}'
+
+
+def format_rank_rows(rows: list[dict], limit: int = 5) -> list[str]:
+    lines = [
+        '| rank | presetId | avg_net_profit | avg_profit_factor | avg_max_drawdown | avg_win_rate |',
+        '| ---: | --- | ---: | ---: | ---: | ---: |',
+    ]
+    for index, row in enumerate(rows[:limit], start=1):
+        lines.append(
+            f'| {index} | `{row["presetId"]}` | {format_metric(row.get("avg_net_profit"))} | '
+            f'{format_metric(row.get("avg_profit_factor"), 3)} | {format_metric(row.get("avg_max_drawdown"))} | '
+            f'{format_metric(row.get("avg_win_rate"))} |'
+        )
+    return lines
+
+
+def summarize_recovered_results(results_path: Path) -> dict | None:
+    try:
+        payload = json.loads(results_path.read_text(encoding='utf-8'))
+    except (OSError, json.JSONDecodeError):
+        return None
+
+    if not isinstance(payload, list):
+        return None
+
+    preset_map: dict[str, dict[str, list[float] | str]] = {}
+    market = None
+
+    for item in payload:
+        if not isinstance(item, dict):
+            continue
+        preset_id = item.get('presetId')
+        result = item.get('result')
+        if not preset_id or not isinstance(result, dict):
+            continue
+        if not result.get('success') or not result.get('tester_available'):
+            continue
+        metrics = result.get('metrics')
+        if not isinstance(metrics, dict):
+            continue
+        if market is None:
+            market = item.get('market') or 'Unknown'
+
+        record = preset_map.setdefault(preset_id, {
+            'presetId': preset_id,
+            'net_profit_values': [],
+            'profit_factor_values': [],
+            'max_drawdown_values': [],
+            'win_rate_values': [],
+            'closed_trades_values': [],
+        })
+
+        for key, bucket in (
+            ('net_profit', 'net_profit_values'),
+            ('profit_factor', 'profit_factor_values'),
+            ('max_drawdown', 'max_drawdown_values'),
+            ('percent_profitable', 'win_rate_values'),
+            ('closed_trades', 'closed_trades_values'),
+        ):
+            value = metrics.get(key)
+            if isinstance(value, (int, float)):
+                record[bucket].append(float(value))
+
+    rows = []
+    for record in preset_map.values():
+        rows.append({
+            'presetId': record['presetId'],
+            'avg_net_profit': round_metric(mean_or_none(record['net_profit_values'])),
+            'avg_profit_factor': round_metric(mean_or_none(record['profit_factor_values']), 3),
+            'avg_max_drawdown': round_metric(mean_or_none(record['max_drawdown_values'])),
+            'avg_win_rate': round_metric(mean_or_none(record['win_rate_values'])),
+            'avg_closed_trades': round_metric(mean_or_none(record['closed_trades_values'])),
+            'run_count': len(record['net_profit_values']),
+        })
+
+    rows.sort(
+        key=lambda row: (
+            -(row['avg_net_profit'] or float('-inf')),
+            -(row['avg_profit_factor'] or float('-inf')),
+            row['avg_max_drawdown'] or float('inf'),
+            row['presetId'],
+        )
+    )
+    return {
+        'market': market or 'Unknown',
+        'rows': rows,
+        'source_path': results_path,
+    }
+
+
+def build_combined_market_ranking(market_summaries: list[dict]) -> list[dict]:
+    combined: dict[str, dict] = {}
+
+    for summary in market_summaries:
+        rows = summary['rows']
+        net_rank = {row['presetId']: index for index, row in enumerate(sorted(rows, key=lambda row: (-(row['avg_net_profit'] or float('-inf')), row['presetId'])), start=1)}
+        pf_rank = {row['presetId']: index for index, row in enumerate(sorted(rows, key=lambda row: (-(row['avg_profit_factor'] or float('-inf')), row['presetId'])), start=1)}
+        dd_rank = {row['presetId']: index for index, row in enumerate(sorted(rows, key=lambda row: ((row['avg_max_drawdown'] or float('inf')), row['presetId'])), start=1)}
+
+        for row in rows:
+            record = combined.setdefault(row['presetId'], {
+                'presetId': row['presetId'],
+                'avg_net_profit_values': [],
+                'avg_profit_factor_values': [],
+                'avg_max_drawdown_values': [],
+                'avg_win_rate_values': [],
+                'score': 0,
+                'markets': [],
+            })
+            if row['avg_net_profit'] is not None:
+                record['avg_net_profit_values'].append(row['avg_net_profit'])
+            if row['avg_profit_factor'] is not None:
+                record['avg_profit_factor_values'].append(row['avg_profit_factor'])
+            if row['avg_max_drawdown'] is not None:
+                record['avg_max_drawdown_values'].append(row['avg_max_drawdown'])
+            if row['avg_win_rate'] is not None:
+                record['avg_win_rate_values'].append(row['avg_win_rate'])
+            record['score'] += net_rank[row['presetId']] + pf_rank[row['presetId']] + dd_rank[row['presetId']]
+            record['markets'].append(summary['market'])
+
+    ranked = []
+    for record in combined.values():
+        ranked.append({
+            'presetId': record['presetId'],
+            'composite_score': record['score'],
+            'markets': ', '.join(record['markets']),
+            'avg_net_profit': round_metric(mean_or_none(record['avg_net_profit_values'])),
+            'avg_profit_factor': round_metric(mean_or_none(record['avg_profit_factor_values']), 3),
+            'avg_max_drawdown': round_metric(mean_or_none(record['avg_max_drawdown_values'])),
+            'avg_win_rate': round_metric(mean_or_none(record['avg_win_rate_values'])),
+        })
+
+    ranked.sort(
+        key=lambda row: (
+            row['composite_score'],
+            -(row['avg_net_profit'] or float('-inf')),
+            -(row['avg_profit_factor'] or float('-inf')),
+            row['avg_max_drawdown'] or float('inf'),
+            row['presetId'],
+        )
+    )
+    return ranked
+
+
+def write_latest_backtest_summary(
+    *,
+    run_id: str,
+    summary: dict,
+    logger: logging.Logger,
+    us_results_path: Path | None,
+    jp_results_path: Path | None,
+    rich_report_path: Path | None = None,
+) -> None:
+    if not us_results_path or not jp_results_path:
+        return
+    if not us_results_path.exists() or not jp_results_path.exists():
+        return
+
+    us_summary = summarize_recovered_results(us_results_path)
+    jp_summary = summarize_recovered_results(jp_results_path)
+    if not us_summary or not jp_summary:
+        return
+
+    latest_summary_path = resolve_latest_summary_path()
+    latest_summary_path.parent.mkdir(parents=True, exist_ok=True)
+    combined_rows = build_combined_market_ranking([us_summary, jp_summary])
+
+    lines = [
+        '# Latest main backtest summary',
+        '',
+        'このファイルは `python/night_batch.py` が backtest 完了後に deterministic に再生成する latest 要約です。',
+        '',
+        f'- run_id: `{run_id}`',
+        f'- status: `{"SUCCESS" if summary["success"] else "FAILED"}`',
+        f'- termination_reason: `{summary["termination_reason"]}`',
+        f'- failed_step: `{summary["failed_step"] or "—"}`',
+        f'- last_checkpoint: `{summary["last_checkpoint"] or "—"}`',
+        f'- us_results: `{relative_path(us_results_path)}`',
+        f'- jp_results: `{relative_path(jp_results_path)}`',
+    ]
+    if rich_report_path and rich_report_path.exists():
+        lines.append(f'- rich_report: `{relative_path(rich_report_path)}`')
+
+    lines.extend([
+        '',
+        '## Combined top 10',
+        '',
+        '合成順位は **avg_net_profit 降順 / avg_profit_factor 降順 / avg_max_drawdown 昇順** の市場別順位を合算した deterministic score です。',
+        '',
+        '| rank | presetId | composite_score | avg_net_profit | avg_profit_factor | avg_max_drawdown | avg_win_rate | markets |',
+        '| ---: | --- | ---: | ---: | ---: | ---: | ---: | --- |',
+    ])
+
+    for index, row in enumerate(combined_rows[:10], start=1):
+        lines.append(
+            f'| {index} | `{row["presetId"]}` | {row["composite_score"]} | {format_metric(row["avg_net_profit"])} | '
+            f'{format_metric(row["avg_profit_factor"], 3)} | {format_metric(row["avg_max_drawdown"])} | '
+            f'{format_metric(row["avg_win_rate"])} | {row["markets"]} |'
+        )
+
+    for market_summary in (us_summary, jp_summary):
+        lines.extend([
+            '',
+            f'## {market_summary["market"]} top 5 by avg_net_profit',
+            '',
+            *format_rank_rows(market_summary['rows'], limit=5),
+        ])
+
+    latest_summary_path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
+    logger.info('Latest backtest summary written: %s', relative_path(latest_summary_path))
+
+
+def maybe_write_latest_backtest_summary_from_args(
+    run_id: str,
+    summary: dict,
+    args,
+    logger: logging.Logger,
+) -> None:
+    if not summary.get('success'):
+        return
+    us_path: Path | None = None
+    jp_path: Path | None = None
+    rich_report_path: Path | None = None
+
+    if args.command == 'report':
+        us_path = resolve_existing_json_path(getattr(args, 'us', None))
+        jp_path = resolve_existing_json_path(getattr(args, 'jp', None))
+        rich_report_path = resolve_existing_json_path(getattr(args, 'out', None))
+    elif args.command in {'bundle', 'nightly'}:
+        us_raw, jp_raw, report_raw = default_report_paths(args)
+        us_path = resolve_existing_json_path(us_raw)
+        jp_path = resolve_existing_json_path(jp_raw)
+        rich_report_path = resolve_existing_json_path(report_raw)
+
+    write_latest_backtest_summary(
+        run_id=run_id,
+        summary=summary,
+        logger=logger,
+        us_results_path=us_path,
+        jp_results_path=jp_path,
+        rich_report_path=rich_report_path,
+    )
+
+
+def maybe_write_latest_backtest_summary_from_settings(
+    run_id: str,
+    summary: dict,
+    settings: dict,
+    logger: logging.Logger,
+) -> None:
+    if not summary.get('success'):
+        return
+    if settings.get('detach_after_smoke'):
+        return
+    if settings.get('production_mode') != 'bundle':
+        return
+
+    phase = (settings.get('bundle_production_phases') or 'full').split(',')[0].strip() or 'full'
+    us_path = CAMPAIGN_RESULTS_DIR / settings['bundle_us_campaign'] / phase / 'recovered-results.json'
+    jp_path = CAMPAIGN_RESULTS_DIR / settings['bundle_jp_campaign'] / phase / 'recovered-results.json'
+    write_latest_backtest_summary(
+        run_id=run_id,
+        summary=summary,
+        logger=logger,
+        us_results_path=us_path,
+        jp_results_path=jp_path,
+    )
+
+
+def maybe_write_latest_backtest_summary_from_child_args(
+    run_id: str,
+    summary: dict,
+    args,
+    logger: logging.Logger,
+) -> None:
+    if not summary.get('success'):
+        return
+    if not getattr(args, 'bundle_us_campaign', None) or not getattr(args, 'bundle_jp_campaign', None):
+        return
+
+    phase = (getattr(args, 'bundle_production_phases', 'full') or 'full').split(',')[0].strip() or 'full'
+    us_path = CAMPAIGN_RESULTS_DIR / args.bundle_us_campaign / phase / 'recovered-results.json'
+    jp_path = CAMPAIGN_RESULTS_DIR / args.bundle_jp_campaign / phase / 'recovered-results.json'
+    write_latest_backtest_summary(
+        run_id=run_id,
+        summary=summary,
+        logger=logger,
+        us_results_path=us_path,
+        jp_results_path=jp_path,
+    )
+
+
 def main() -> int:
     parser = build_parser()
     raw_args = sys.argv[1:]
@@ -1645,13 +1982,13 @@ def main() -> int:
                 smoke_phase = settings['bundle_smoke_phases'].split(',')[0].strip()
                 if not settings.get('smoke_us_resume'):
                     cp = find_latest_checkpoint([
-                        PROJECT_ROOT / 'results' / 'campaigns' / settings['bundle_us_campaign'] / smoke_phase,
+                        CAMPAIGN_RESULTS_DIR / settings['bundle_us_campaign'] / smoke_phase,
                     ])
                     if cp:
                         settings['smoke_us_resume'] = str(cp)
                 if not settings.get('smoke_jp_resume'):
                     cp = find_latest_checkpoint([
-                        PROJECT_ROOT / 'results' / 'campaigns' / settings['bundle_jp_campaign'] / smoke_phase,
+                        CAMPAIGN_RESULTS_DIR / settings['bundle_jp_campaign'] / smoke_phase,
                     ])
                     if cp:
                         settings['smoke_jp_resume'] = str(cp)
@@ -1659,13 +1996,13 @@ def main() -> int:
                 production_phase = settings['bundle_production_phases'].split(',')[0].strip()
                 if not settings.get('production_us_resume'):
                     cp = find_latest_checkpoint([
-                        PROJECT_ROOT / 'results' / 'campaigns' / settings['bundle_us_campaign'] / production_phase,
+                        CAMPAIGN_RESULTS_DIR / settings['bundle_us_campaign'] / production_phase,
                     ])
                     if cp:
                         settings['production_us_resume'] = str(cp)
                 if not settings.get('production_jp_resume'):
                     cp = find_latest_checkpoint([
-                        PROJECT_ROOT / 'results' / 'campaigns' / settings['bundle_jp_campaign'] / production_phase,
+                        CAMPAIGN_RESULTS_DIR / settings['bundle_jp_campaign'] / production_phase,
                     ])
                     if cp:
                         settings['production_jp_resume'] = str(cp)
@@ -1697,6 +2034,7 @@ def main() -> int:
             summary['round_mode'] = round_mode
         summary = enrich_summary(summary)
         write_summary(run_id, summary, logger, output_dir=output_dir)
+        maybe_write_latest_backtest_summary_from_settings(run_id, summary, settings, logger)
         if not settings['detach_after_smoke']:
             update_foreground_state(
                 settings['detached_state_file'],
@@ -1722,7 +2060,9 @@ def main() -> int:
             'preflight_required': True,
             'steps': steps,
         }
+        summary = enrich_summary(summary)
         write_summary(run_id, summary, logger, output_dir=child_output_dir)
+        maybe_write_latest_backtest_summary_from_child_args(run_id, summary, args, logger)
         return exit_code
 
     preflight_required = requires_cdp_preflight(args.command)
@@ -1778,6 +2118,7 @@ def main() -> int:
         summary['round'] = round_number
         summary['round_mode'] = round_mode
     write_summary(run_id, summary, logger, output_dir=output_dir)
+    maybe_write_latest_backtest_summary_from_args(run_id, enrich_summary(summary), args, logger)
     return 0 if overall_success else EXIT_STEP_FAILED
 
 

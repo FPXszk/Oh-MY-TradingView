@@ -54,7 +54,7 @@ This phase should **not** add:
 - `tests/backtest.test.js` (only if needed for metrics-shape regression coverage)
 - `README.md`
 - `docs/DOCUMENTATION_SYSTEM.md`
-- `command.md` (if campaign operation guidance needs updating)
+- `docs/command.md` (if campaign operation guidance needs updating)
 
 ### Delete
 

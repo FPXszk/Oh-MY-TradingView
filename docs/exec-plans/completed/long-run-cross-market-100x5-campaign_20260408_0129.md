@@ -113,7 +113,7 @@
 
 ### Modify
 
-- `command.md`
+- `docs/command.md`
 - `src/cli/commands/backtest.js`
 - `src/core/backtest.js`
 - `docs/research/latest/README.md`

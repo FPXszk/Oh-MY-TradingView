@@ -6,7 +6,7 @@
     "startup_check_port": 9222,
     "launch_wait_sec": 25,
     "detach_after_smoke": true,
-    "detached_state_file": "results/night-batch/nightly.default-detached-state.json"
+    "detached_state_file": "docs/research/results/night-batch/nightly.default-detached-state.json"
   },
   "launch": {
     "shortcut_path": "C:\\TradingView\\TradingView.exe - ショートカット.lnk"

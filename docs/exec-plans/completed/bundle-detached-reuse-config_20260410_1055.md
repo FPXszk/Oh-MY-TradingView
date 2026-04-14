@@ -84,7 +84,7 @@
 - `.github/workflows/night-batch-self-hosted.yml`（必要な場合のみ）
 - `scripts/windows/run-night-batch-self-hosted.cmd`（必要な場合のみ）
 - `README.md`
-- `command.md`
+- `docs/command.md`
 
 ### 原則として変更しない
 
@@ -109,7 +109,7 @@
 - smoke gate + detached full continuation
 - existing campaign 再利用 config の追加
 - 必要最小限の workflow / wrapper 更新
-- README / `command.md` 更新
+- README / `docs/command.md` 更新
 - session log 作成
 - feasible な範囲で実 run 開始確認
 
@@ -190,7 +190,7 @@ scripts\windows\run-night-batch-self-hosted.cmd config\night_batch\bundle-detach
 - [ ] `python/night_batch.py` に bundle 指向 config 解決を実装する
 - [ ] `config/night_batch/bundle-detached-reuse-config.json` を作成する
 - [ ] 必要なら workflow / wrapper の既定 config path や説明を更新する
-- [ ] `README.md` と `command.md` に new config、smoke gate、detached full、resume 不使用を追記する
+- [ ] `README.md` と `docs/command.md` に new config、smoke gate、detached full、resume 不使用を追記する
 - [ ] `docs/working-memory/session-logs/bundle-detached-reuse-config_20260410_1055.md` を作成する
 - [ ] focused validation を実施する
 - [ ] feasible なら実 run を開始し、結果または制約を session log に残す

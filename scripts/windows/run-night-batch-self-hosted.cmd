@@ -24,9 +24,9 @@ set "ROUND_MODE=%~2"
 
 if "%ROUND_MODE%"=="" (
   if "%NIGHT_BATCH_RUN_ID%"=="" (
-    wsl.exe bash -lc "cd \"%REPO_WSL%\" && if ls results/night-batch/round*/round-manifest.json >/dev/null 2>&1; then python3 python/night_batch.py smoke-prod --config \"%CONFIG_PATH%\" --round-mode resume-current-round; else python3 python/night_batch.py smoke-prod --config \"%CONFIG_PATH%\" --round-mode advance-next-round; fi"
+    wsl.exe bash -lc "cd \"%REPO_WSL%\" && if ls docs/research/results/night-batch/round*/round-manifest.json >/dev/null 2>&1; then python3 python/night_batch.py smoke-prod --config \"%CONFIG_PATH%\" --round-mode resume-current-round; else python3 python/night_batch.py smoke-prod --config \"%CONFIG_PATH%\" --round-mode advance-next-round; fi"
   ) else (
-    wsl.exe bash -lc "cd \"%REPO_WSL%\" && if ls results/night-batch/round*/round-manifest.json >/dev/null 2>&1; then python3 python/night_batch.py smoke-prod --config \"%CONFIG_PATH%\" --round-mode resume-current-round --run-id \"%NIGHT_BATCH_RUN_ID%\"; else python3 python/night_batch.py smoke-prod --config \"%CONFIG_PATH%\" --round-mode advance-next-round --run-id \"%NIGHT_BATCH_RUN_ID%\"; fi"
+    wsl.exe bash -lc "cd \"%REPO_WSL%\" && if ls docs/research/results/night-batch/round*/round-manifest.json >/dev/null 2>&1; then python3 python/night_batch.py smoke-prod --config \"%CONFIG_PATH%\" --round-mode resume-current-round --run-id \"%NIGHT_BATCH_RUN_ID%\"; else python3 python/night_batch.py smoke-prod --config \"%CONFIG_PATH%\" --round-mode advance-next-round --run-id \"%NIGHT_BATCH_RUN_ID%\"; fi"
   )
 ) else (
   if "%NIGHT_BATCH_RUN_ID%"=="" (

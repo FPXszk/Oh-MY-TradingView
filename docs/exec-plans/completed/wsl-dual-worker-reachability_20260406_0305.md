@@ -9,7 +9,7 @@
 - 両 TradingView worker は最終的に Windows localhost の `9222` / `9224` で `json/version` 成功
 - `9223` / `9225` の portproxy 経由は Windows / WSL の両方で `connection reset`
 - `src/connection.js` は `TV_CDP_HOST` / `TV_CDP_PORT` の単一 endpoint を参照するだけで、proxy 障害の直接原因ではなさそう
-- `command.md` には worker2 起動・portproxy 確認手順がある
+- `docs/command.md` には worker2 起動・portproxy 確認手順がある
 
 ### これから検証する仮説
 
@@ -35,7 +35,7 @@
    - IP Helper 再起動相当の確認
    - listen / connect address の見直し
 3. それでも portproxy 固有問題が残る場合は、WSL から利用できる代替 forwarding 手段を比較し、最小運用案を決める
-4. 変更が必要な場合のみ `command.md` や関連 docs を最小更新する
+4. 変更が必要な場合のみ `docs/command.md` や関連 docs を最小更新する
 
 ## Relationship to existing active plans
 
@@ -50,11 +50,11 @@
 
 - `docs/exec-plans/active/wsl-dual-worker-reachability_20260406_0305.md`
 - `docs/working-memory/session-logs/wsl-dual-worker-reachability_20260406_0305.md`
-- `command.md`
+- `docs/command.md`
 
 ### 条件付きで更新候補
 
-- `command.md`
+- `docs/command.md`
 - `README.md`
 - `docs/working-memory/session-logs/wsl-dual-worker-reachability_20260406_0305.md`
 
@@ -75,7 +75,7 @@
 - `9223` / `9225` の reset 発生条件の再現と観測
 - 最小回復アクションの検討と実施
 - portproxy が解けない場合の代替 forwarding 手段の比較
-- 必要最小限の `command.md` / `README.md` 更新案作成
+- 必要最小限の `docs/command.md` / `README.md` 更新案作成
 
 ## Out of scope
 
@@ -104,7 +104,7 @@
 
 ### REFACTOR
 
-- 再発防止のため、必要最小限の確認順序を `command.md` に整理する
+- 再発防止のため、必要最小限の確認順序を `docs/command.md` に整理する
 - 恒久運用案が portproxy 以外になる場合、その採用理由と実行手順を最小限で文書化する
 
 ## Validation commands
@@ -187,5 +187,5 @@ netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=9225 conne
 - [ ] portproxy 固有問題が解けない場合、WSL から使える代替 forwarding 手段を比較する
 - [ ] 代替案を「導入コスト」「再起動耐性」「手順の短さ」「repo 運用との相性」で比較する
 - [ ] 最小運用案を 1 つに絞る
-- [ ] 必要な場合のみ `command.md` または `README.md` を最小更新する
+- [ ] 必要な場合のみ `docs/command.md` または `README.md` を最小更新する
 - [ ] 実施結果と採用理由を session log に追記する

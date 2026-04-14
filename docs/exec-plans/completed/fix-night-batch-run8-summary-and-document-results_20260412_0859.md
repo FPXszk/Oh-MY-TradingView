@@ -32,7 +32,7 @@
 - バックテスト戦略ロジック自体の改善
 - night batch の実行条件、runner 常駐方式、自動起動方式の見直し
 - artifact 形式そのものの再設計
-- README / `command.md` の広範な運用手順更新
+- README / `docs/command.md` の広範な運用手順更新
 - 他の active plan のテーマ（queued 調査、workflow dispatch 実行、foreground autostart 文書化）の解消
 
 ## 変更対象ファイル

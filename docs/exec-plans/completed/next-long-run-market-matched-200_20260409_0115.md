@@ -30,8 +30,8 @@
 
 1. `docs/research/market-specific-long-run-deep-dive-results_20260408_1857.md`
 2. `docs/research/market-specific-long-run-deep-dive-handoff_20260408_1857.md`
-3. `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
-4. `command.md`
+3. `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`
+4. `docs/command.md`
 5. `config/backtest/campaigns/long-run-us-entry-sweep-50x3.json`
 6. `config/backtest/campaigns/long-run-jp-exit-sweep-50x3.json`
 7. `config/backtest/universes/long-run-us-50.json`
@@ -112,7 +112,7 @@
 ### Modify
 
 - `tests/campaign.test.js`
-- `command.md`
+- `docs/command.md`
 
 ### Move during COMMIT step
 

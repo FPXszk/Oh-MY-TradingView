@@ -1,8 +1,7 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, isAbsolute, relative, resolve, sep, win32 } from 'node:path';
 import { getClient } from '../connection.js';
-
-const SCREENSHOT_OUTPUT_DIR = resolve(process.cwd(), 'results', 'screenshots');
+import { SCREENSHOT_OUTPUT_DIR } from './repo-paths.js';
 
 export function resolveCaptureOutputPath(outputPath, baseDir = SCREENSHOT_OUTPUT_DIR) {
   if (!outputPath || typeof outputPath !== 'string' || outputPath.trim() === '') {
@@ -10,12 +9,12 @@ export function resolveCaptureOutputPath(outputPath, baseDir = SCREENSHOT_OUTPUT
   }
 
   if (isAbsolute(outputPath) || win32.isAbsolute(outputPath)) {
-    throw new Error('outputPath must be a relative path under results/screenshots');
+    throw new Error('outputPath must be a relative path under docs/research/results/screenshots');
   }
 
   const normalized = outputPath.replace(/\\/g, '/');
   if (normalized.split('/').includes('..')) {
-    throw new Error('outputPath must stay within results/screenshots');
+    throw new Error('outputPath must stay within docs/research/results/screenshots');
   }
 
   const resolvedBaseDir = resolve(baseDir);
@@ -24,7 +23,7 @@ export function resolveCaptureOutputPath(outputPath, baseDir = SCREENSHOT_OUTPUT
     resolvedTargetPath !== resolvedBaseDir &&
     !resolvedTargetPath.startsWith(`${resolvedBaseDir}${sep}`)
   ) {
-    throw new Error('outputPath must stay within results/screenshots');
+    throw new Error('outputPath must stay within docs/research/results/screenshots');
   }
 
   return resolvedTargetPath;

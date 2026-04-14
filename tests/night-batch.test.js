@@ -174,17 +174,134 @@ describe('night_batch.py CLI', () => {
         SCRIPT_PATH,
         'report',
         '--us',
-        'results/us.json',
+        'docs/research/results/us.json',
         '--jp',
-        'results/jp.json',
+        'docs/research/results/jp.json',
         '--out',
-        'results/report.md',
+        'docs/research/results/report.md',
         '--dry-run',
       ],
     );
 
     assert.equal(result.status, 0, result.stderr || result.stdout);
     assert.match(result.stdout, /generate-rich-report\.mjs/);
+  });
+
+  it('report writes a deterministic latest backtest summary when recovered results exist', async () => {
+    const fakeNodePath = join(tempDir, 'fake-report-node.sh');
+    const usPath = join(tempDir, 'us-recovered-results.json');
+    const jpPath = join(tempDir, 'jp-recovered-results.json');
+    const reportPath = join(tempDir, 'rich-report.md');
+    const latestSummaryPath = join(tempDir, 'main-backtest-latest-summary.md');
+
+    writeExecutable(
+      fakeNodePath,
+      `#!/bin/sh
+out=""
+while [ "$#" -gt 0 ]; do
+  if [ "$1" = "--out" ]; then
+    out="$2"
+    shift 2
+    continue
+  fi
+  shift
+done
+printf '# fake rich report\\n' > "$out"
+exit 0
+`,
+    );
+
+    writeFileSync(usPath, JSON.stringify([
+      {
+        presetId: 'preset-a',
+        market: 'US',
+        result: {
+          success: true,
+          tester_available: true,
+          metrics: {
+            net_profit: 100,
+            profit_factor: 1.5,
+            max_drawdown: 50,
+            percent_profitable: 45,
+            closed_trades: 10,
+          },
+        },
+      },
+      {
+        presetId: 'preset-b',
+        market: 'US',
+        result: {
+          success: true,
+          tester_available: true,
+          metrics: {
+            net_profit: 80,
+            profit_factor: 1.4,
+            max_drawdown: 60,
+            percent_profitable: 40,
+            closed_trades: 11,
+          },
+        },
+      },
+    ], null, 2), 'utf8');
+    writeFileSync(jpPath, JSON.stringify([
+      {
+        presetId: 'preset-a',
+        market: 'JP',
+        result: {
+          success: true,
+          tester_available: true,
+          metrics: {
+            net_profit: 90,
+            profit_factor: 1.6,
+            max_drawdown: 40,
+            percent_profitable: 48,
+            closed_trades: 9,
+          },
+        },
+      },
+      {
+        presetId: 'preset-b',
+        market: 'JP',
+        result: {
+          success: true,
+          tester_available: true,
+          metrics: {
+            net_profit: 70,
+            profit_factor: 1.3,
+            max_drawdown: 55,
+            percent_profitable: 42,
+            closed_trades: 12,
+          },
+        },
+      },
+    ], null, 2), 'utf8');
+
+    const result = await runPython(
+      [
+        SCRIPT_PATH,
+        'report',
+        '--node-bin',
+        fakeNodePath,
+        '--us',
+        usPath,
+        '--jp',
+        jpPath,
+        '--out',
+        reportPath,
+      ],
+      {
+        env: {
+          NIGHT_BATCH_LATEST_SUMMARY_PATH: latestSummaryPath,
+        },
+      },
+    );
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.equal(existsSync(latestSummaryPath), true);
+    const latestSummary = readFileSync(latestSummaryPath, 'utf8');
+    assert.match(latestSummary, /Latest main backtest summary/);
+    assert.match(latestSummary, /`preset-a`/);
+    assert.match(latestSummary, /Combined top 10/);
   });
 
   it('nightly dry-run includes both bundle and report commands', async () => {
@@ -763,6 +880,106 @@ exit 0
     assert.match(detachedState.production_command.join(' '), /--phases full/);
   });
 
+  it('production-child writes the latest backtest summary for detached bundle runs', async () => {
+    const fakeNodePath = join(tempDir, 'fake-bundle-node.sh');
+    const detachedStateFile = join(tempDir, 'bundle-detached-state.json');
+    const latestSummaryPath = join(tempDir, 'main-backtest-latest-summary.md');
+    const outputDir = join(tempDir, 'night-batch-output');
+    const suffix = tempDir.split('/').pop();
+    const usCampaign = `test-detached-us-${suffix}`;
+    const jpCampaign = `test-detached-jp-${suffix}`;
+    const usResultsDir = join(PROJECT_ROOT, 'docs', 'research', 'results', 'campaigns', usCampaign, 'full');
+    const jpResultsDir = join(PROJECT_ROOT, 'docs', 'research', 'results', 'campaigns', jpCampaign, 'full');
+    const usResultsPath = join(usResultsDir, 'recovered-results.json');
+    const jpResultsPath = join(jpResultsDir, 'recovered-results.json');
+
+    mkdirSync(usResultsDir, { recursive: true });
+    mkdirSync(jpResultsDir, { recursive: true });
+    writeExecutable(
+      fakeNodePath,
+      `#!/bin/sh
+mkdir -p "${usResultsDir}" "${jpResultsDir}"
+cat <<'EOF' > "${usResultsPath}"
+[
+  {
+    "presetId": "preset-a",
+    "market": "US",
+    "result": {
+      "success": true,
+      "tester_available": true,
+      "metrics": {
+        "net_profit": 120,
+        "profit_factor": 1.8,
+        "max_drawdown": 45,
+        "percent_profitable": 50,
+        "closed_trades": 12
+      }
+    }
+  }
+]
+EOF
+cat <<'EOF' > "${jpResultsPath}"
+[
+  {
+    "presetId": "preset-a",
+    "market": "JP",
+    "result": {
+      "success": true,
+      "tester_available": true,
+      "metrics": {
+        "net_profit": 90,
+        "profit_factor": 1.6,
+        "max_drawdown": 40,
+        "percent_profitable": 48,
+        "closed_trades": 10
+      }
+    }
+  }
+]
+EOF
+exit 0
+`,
+    );
+
+    try {
+      const result = await runPython([
+        SCRIPT_PATH,
+        'production-child',
+        '--host',
+        '127.0.0.1',
+        '--port',
+        String(port),
+        '--production-command-json',
+        JSON.stringify([fakeNodePath]),
+        '--production-checkpoint-roots-json',
+        '[]',
+        '--detached-state-file',
+        detachedStateFile,
+        '--output-dir',
+        outputDir,
+        '--bundle-us-campaign',
+        usCampaign,
+        '--bundle-jp-campaign',
+        jpCampaign,
+        '--bundle-production-phases',
+        'full',
+      ], {
+        env: {
+          NIGHT_BATCH_LATEST_SUMMARY_PATH: latestSummaryPath,
+        },
+      });
+
+      assert.equal(result.status, 0, result.stderr || result.stdout);
+      assert.equal(existsSync(latestSummaryPath), true);
+      const latestSummary = readFileSync(latestSummaryPath, 'utf8');
+      assert.match(latestSummary, /Latest main backtest summary/);
+      assert.match(latestSummary, /preset-a/);
+    } finally {
+      rmSync(join(PROJECT_ROOT, 'docs', 'research', 'results', 'campaigns', usCampaign), { recursive: true, force: true });
+      rmSync(join(PROJECT_ROOT, 'docs', 'research', 'results', 'campaigns', jpCampaign), { recursive: true, force: true });
+    }
+  });
+
   it('advance-next-round creates a round directory and writes artifacts there', async () => {
     const fakeNodePath = join(tempDir, 'fake-node.sh');
     const fakeNodeLog = join(tempDir, 'fake-node.log');
@@ -1000,9 +1217,9 @@ exit 0
         String(port),
         '--dry-run',
         '--us-resume',
-        'results/campaigns/us/checkpoint-10.json',
+        'docs/research/results/campaigns/us/checkpoint-10.json',
         '--jp-resume',
-        'results/campaigns/jp/checkpoint-20.json',
+        'docs/research/results/campaigns/jp/checkpoint-20.json',
       ],
     );
 

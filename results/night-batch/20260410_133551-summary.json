@@ -1,9 +1,0 @@
-{
-  "success": false,
-  "command": "smoke-prod",
-  "host": "127.0.0.1",
-  "port": 33147,
-  "preflight_required": false,
-  "error": "No existing round found under results/night-batch/. Use --round-mode advance-next-round to create a new round.",
-  "steps": []
-}

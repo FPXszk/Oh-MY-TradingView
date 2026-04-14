@@ -38,9 +38,9 @@ TDD は RED -> GREEN -> REFACTOR で進め、restore policy と metrics unreadab
 - `tests/backtest.test.js`
 - `tests/e2e.backtest.test.js`
 - `docs/working-memory/session-logs/tradingview-parallel-backtest-stabilization_20260406_0802.md`
-- `command.md`（安定条件が更新できた場合のみ）
+- `docs/command.md`（安定条件が更新できた場合のみ）
 - `src/cli/index.js`（restore policy を CLI 指定可能にする場合のみ）
-- `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`（結論更新が必要な場合のみ）
+- `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`（結論更新が必要な場合のみ）
 
 ### Secondary scope only if regression reappears
 

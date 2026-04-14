@@ -18,14 +18,14 @@
 
 ## Source of truth
 
-- `docs/research/old/long-run-cross-market-campaign-handoff_20260408_0320.md`
+- `docs/research/archive/long-run-cross-market-campaign-handoff_20260408_0320.md`
 - `docs/working-memory/session-logs/long-run-cross-market-campaign_20260408_0320.md`
-- `results/campaigns/long-run-cross-market-100x5/full/recovered-summary.json`
-- `results/campaigns/long-run-cross-market-100x5/full/recovered-results.json`
+- `docs/research/results/campaigns/long-run-cross-market-100x5/full/recovered-summary.json`
+- `docs/research/results/campaigns/long-run-cross-market-100x5/full/recovered-results.json`
 - `config/backtest/campaigns/long-run-cross-market-100x5.json`
 - `config/backtest/universes/long-run-cross-market-100.json`
 - `config/backtest/strategy-presets.json`
-- `command.md`
+- `docs/command.md`
 
 ## Current findings that motivate the next round
 
@@ -150,7 +150,7 @@
 ### Modify
 
 - `docs/research/latest/README.md`
-- `command.md`
+- `docs/command.md`
 - `tests/campaign.test.js`
 
 ### Move during COMMIT step

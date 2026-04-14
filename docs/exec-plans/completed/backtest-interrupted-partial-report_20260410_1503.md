@@ -14,10 +14,10 @@
 1. active exec-plan は空で、**競合する進行中 plan はない**
 2. 直前の known-good latest は `next-long-run-market-matched-200` generation
 3. 今回の停止痕跡として以下を確認済み
-   - `results/campaigns/next-long-run-us-finetune-100x10/smoke/recovered-summary.json`: `100/100`
-   - `results/campaigns/next-long-run-us-finetune-100x10/pilot/checkpoint-50.json`: `50/250`
-   - `results/campaigns/next-long-run-us-finetune-100x10/full/checkpoint-490.json`: `490/1000`
-   - `results/campaigns/next-long-run-jp-finetune-100x10/smoke/recovered-summary.json`: smoke 完了
+   - `docs/research/results/campaigns/next-long-run-us-finetune-100x10/smoke/recovered-summary.json`: `100/100`
+   - `docs/research/results/campaigns/next-long-run-us-finetune-100x10/pilot/checkpoint-50.json`: `50/250`
+   - `docs/research/results/campaigns/next-long-run-us-finetune-100x10/full/checkpoint-490.json`: `490/1000`
+   - `docs/research/results/campaigns/next-long-run-jp-finetune-100x10/smoke/recovered-summary.json`: smoke 完了
 4. US full partial は preset coverage が
    - 4 preset 完走 `100/100`
    - 1 preset 途中 `90/100`
@@ -50,10 +50,10 @@
 
 - `config/backtest/campaigns/next-long-run-us-finetune-100x10.json`
 - `config/backtest/campaigns/next-long-run-jp-finetune-100x10.json`
-- `results/campaigns/next-long-run-us-finetune-100x10/smoke/recovered-summary.json`
-- `results/campaigns/next-long-run-us-finetune-100x10/pilot/checkpoint-50.json`
-- `results/campaigns/next-long-run-us-finetune-100x10/full/checkpoint-490.json`
-- `results/campaigns/next-long-run-jp-finetune-100x10/smoke/recovered-summary.json`
+- `docs/research/results/campaigns/next-long-run-us-finetune-100x10/smoke/recovered-summary.json`
+- `docs/research/results/campaigns/next-long-run-us-finetune-100x10/pilot/checkpoint-50.json`
+- `docs/research/results/campaigns/next-long-run-us-finetune-100x10/full/checkpoint-490.json`
+- `docs/research/results/campaigns/next-long-run-jp-finetune-100x10/smoke/recovered-summary.json`
 - `docs/research/latest/README.md`
 - `docs/research/latest/next-long-run-market-matched-200-handoff_20260409_0643.md`
 - `docs/research/latest/next-long-run-market-matched-200-results_20260409_0643.md`

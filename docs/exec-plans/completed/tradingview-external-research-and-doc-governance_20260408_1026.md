@@ -33,7 +33,7 @@
 ### 作成
 
 - `docs/exec-plans/active/tradingview-external-research-and-doc-governance_20260408_1026.md`
-- `docs/research/<research-summary-name>_YYYYMMDD_HHMM.md` または `docs/design-docs/<comparison-doc-name>_YYYYMMDD_HHMM.md`
+- `docs/research/<research-summary-name>_YYYYMMDD_HHMM.md` または `docs/research/archive/<comparison-doc-name>_YYYYMMDD_HHMM.md`
 - `docs/working-memory/session-logs/<session-log-name>_YYYYMMDD_HHMM.md`
 
 ### 更新
@@ -53,7 +53,7 @@
 - [ ] ローカル repo を横断確認し、現行アプローチ（Desktop + CDP + period backtesting）の前提、制約、強みを整理する
 - [ ] 外部調査結果と現行方式を比較し、CDP 非依存バックテスト、financial / fundamental info 取得、MCP 化 / CLI 化 / Webhook 化 / Pine 資産活用の持ち込み余地を整理する
 - [ ] 採用候補、不採用候補、要追加調査項目を明文化する
-- [ ] 調査結果の本体ドキュメントを `docs/research/` もしくは `docs/design-docs/` に保存する
+- [ ] 調査結果の本体ドキュメントを `docs/research/` もしくは `docs/research/archive/` に保存する
 - [ ] 調査で参照した全外部資料を `docs/references/design-ref-llms.md` に理由、採用 / 不採用判断付きで追記する
 - [ ] `docs/DOCUMENTATION_SYSTEM.md` と必要なら `README.md` に参照資料記録ルールを明示する
 - [ ] ドキュメント相互導線を更新する

@@ -6,14 +6,14 @@
 
 ## Approach
 
-- `command.md` 末尾に貼られた運用ログはそのまま保持し、本文側に「今回何を変えたか」「何が原因だったか」「今どう確認できたか」を追記する
+- `docs/command.md` 末尾に貼られた運用ログはそのまま保持し、本文側に「今回何を変えたか」「何が原因だったか」「今どう確認できたか」を追記する
 - 詳細な経緯と commit / run / runner 状態は `docs/working-memory/session-logs/` に新規 session log として残す
 - 必要なら `README.md` / `docs/DOCUMENTATION_SYSTEM.md` の導線も更新し、後続作業で参照しやすくする
 
 ## Files in scope
 
 - `README.md`
-- `command.md`
+- `docs/command.md`
 - `docs/DOCUMENTATION_SYSTEM.md`
 - `docs/working-memory/session-logs/self-hosted-runner-foreground-autostart_20260412_0004.md`
 - `docs/exec-plans/active/document-self-hosted-runner-foreground-autostart_20260412_0004.md`
@@ -26,7 +26,7 @@
 
 ## Risks
 
-- `command.md` 末尾の pasted logs を壊すと運用証跡が失われる
+- `docs/command.md` 末尾の pasted logs を壊すと運用証跡が失われる
 - 実行中 workflow / runner 状態は変化中なので、記録時点のタイムスタンプを明示しないと誤読されやすい
 - docs 更新で既存 doc test の期待文言を崩す可能性がある
 
@@ -45,8 +45,8 @@
 
 ## Steps
 
-- [ ] `command.md` 末尾の最新 pasted logs を読み、Task Scheduler / autostart / runner online 成功の観測事実を整理する
-- [ ] `README.md` と `command.md` に今回の foreground monitoring / autostart hardening / 現在の確認方法を追記する
+- [ ] `docs/command.md` 末尾の最新 pasted logs を読み、Task Scheduler / autostart / runner online 成功の観測事実を整理する
+- [ ] `README.md` と `docs/command.md` に今回の foreground monitoring / autostart hardening / 現在の確認方法を追記する
 - [ ] `docs/working-memory/session-logs/` に今回の会話全体を要約した session log を追加する
 - [ ] 必要なら `docs/DOCUMENTATION_SYSTEM.md` に導線を追加する
 - [ ] 既存 test と GitHub status 確認を通し、exec-plan を completed に移して commit / push する

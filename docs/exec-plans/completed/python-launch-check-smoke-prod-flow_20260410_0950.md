@@ -52,7 +52,7 @@
 ### 変更
 
 - `README.md`
-- `command.md`
+- `docs/command.md`
 - `python/night_batch.py`
 - `tests/night-batch.test.js`
 
@@ -68,14 +68,14 @@
 ### 備考
 
 - `package.json` は **既存の test script で十分なら変更しない**
-- 実行ログ / 結果は既存の `results/night-batch/` 配下運用を優先する
+- 実行ログ / 結果は既存の `docs/research/results/night-batch/` 配下運用を優先する
 
 ## 実装方針
 
 ### ドキュメント
 
 - README に「まず起動確認、未起動なら shortcut launch、次に `9223` 疎通確認」という運用順を追加
-- `command.md` に現時点の verified launch method と startup-first の手順を追加
+- `docs/command.md` に現時点の verified launch method と startup-first の手順を追加
 - smoke のあとに production backtest を **1 回だけ**走らせる方針を明記
 - 「production backtest」は bundle / campaign full-run ではないことを明記
 
@@ -115,7 +115,7 @@
 
 - stage ごとの責務を関数分割し、`night_batch.py` の見通しを改善する
 - result shape / logging / timeout handling を整理する
-- ドキュメントの重複記述を最小化し、README と `command.md` の責務を揃える
+- ドキュメントの重複記述を最小化し、README と `docs/command.md` の責務を揃える
 
 ## Validation commands
 
@@ -175,7 +175,7 @@ python3 python/night_batch.py <new-flow-subcommand>
 
 - [ ] `shortcut-launch-one-backtest-smoke_20260410_0920.md` の完了内容を前提として反映点を洗い出す
 - [ ] `README.md` に verified launch method と startup-first 運用を追記する
-- [ ] `command.md` に shortcut launch / startup check / connectivity check / smoke→production 1 回の手順を追記する
+- [ ] `docs/command.md` に shortcut launch / startup check / connectivity check / smoke→production 1 回の手順を追記する
 - [ ] `tests/night-batch.test.js` に新フローの RED テストを追加する
 - [ ] `python/night_batch.py` に startup check 関数を追加する
 - [ ] `python/night_batch.py` に未起動時 shortcut launch 処理を追加する

@@ -23,7 +23,7 @@
 | `success` | `true` | バックテスト本体は正常完了 |
 | `termination_reason` | `success` | Python night_batch.py が正常終了で完走 |
 | `failed_step` | `startup-check` | artifact contract 上の値。workflow failure の原因ではない |
-| `last_checkpoint` | `results/campaigns/next-long-run-jp-finetune-100x10/full/checkpoint-1006.json` | 最終チェックポイント |
+| `last_checkpoint` | `docs/research/results/campaigns/next-long-run-jp-finetune-100x10/full/checkpoint-1006.json` | 最終チェックポイント |
 
 ### `failed_step` と `termination_reason` の読み方
 

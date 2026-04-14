@@ -51,7 +51,7 @@
 - smoke success 後に production を detached child として継続させる
 - self-hosted runner の scheduled / workflow_dispatch workflow を追加する
 - Windows CMD から config 指定で起動できる `.cmd` を追加する
-- README / `command.md` を現行運用に合わせて更新する
+- README / `docs/command.md` を現行運用に合わせて更新する
 - 既存 Node test 体系の中で TDD を追加する
 
 ### Out of Scope
@@ -134,7 +134,7 @@ scripts\windows\run-night-batch-self-hosted.cmd config\night_batch\nightly.defau
 - `python/night_batch.py`
 - `tests/night-batch.test.js`
 - `README.md`
-- `command.md`
+- `docs/command.md`
 
 ### 変更候補
 
@@ -225,7 +225,7 @@ Workflow 確認:
 - [ ] parent success 条件を `smoke success + child 起動確認 + pid/log 確認` にする
 - [ ] `scripts/windows/run-night-batch-self-hosted.cmd` を追加する
 - [ ] `.github/workflows/night-batch-self-hosted.yml` を追加する
-- [ ] README / `command.md` に config / runner / manual 起動手順を追記する
+- [ ] README / `docs/command.md` に config / runner / manual 起動手順を追記する
 - [ ] `node --test tests/night-batch.test.js` を通す
 - [ ] `npm test` を通す
 - [ ] `smoke-prod --config ... --dry-run` を確認する

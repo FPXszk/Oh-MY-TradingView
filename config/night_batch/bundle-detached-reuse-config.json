@@ -6,14 +6,14 @@
     "startup_check_port": 9222,
     "launch_wait_sec": 25,
     "detach_after_smoke": true,
-    "detached_state_file": "results/night-batch/bundle-detached-reuse-state.json"
+    "detached_state_file": "docs/research/results/night-batch/bundle-detached-reuse-state.json"
   },
   "launch": {
     "shortcut_path": "C:\\TradingView\\TradingView.exe - ショートカット.lnk"
   },
   "bundle": {
-    "us_campaign": "next-long-run-us-finetune-100x10",
-    "jp_campaign": "next-long-run-jp-finetune-100x10",
+    "us_campaign": "next-long-run-us-12x10",
+    "jp_campaign": "next-long-run-jp-12x10",
     "smoke_phases": "smoke",
     "production_phases": "full"
   }

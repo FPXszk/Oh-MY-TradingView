@@ -18,7 +18,7 @@
    - JP: `55-18 tight-exit-tight`（risk-adjusted） / `55-20 tight`（avg net）
 3. fine-tune 用の config / runner / report/export script / tests はワークツリーに存在する
 4. top 5 Pine export と current combined ranking は生成済み
-5. `results/campaigns/next-long-run-*` には fine-tune 実行成果物がまだ見当たらない
+5. `docs/research/results/campaigns/next-long-run-*` には fine-tune 実行成果物がまだ見当たらない
 6. worker2 は status / warm-up が不安定で、distinct parallel smoke 失敗履歴がある
 
 ## Goal
@@ -60,12 +60,12 @@
 - `tests/campaign-report.test.js`
 - `tests/campaign.test.js`
 - `package.json`
-- `command.md`
+- `docs/command.md`
 
 ### Runtime outputs to create
 
-- `results/campaigns/next-long-run-us-finetune-100x10/{smoke,pilot,full}/...`
-- `results/campaigns/next-long-run-jp-finetune-100x10/{smoke,pilot,full}/...`
+- `docs/research/results/campaigns/next-long-run-us-finetune-100x10/{smoke,pilot,full}/...`
+- `docs/research/results/campaigns/next-long-run-jp-finetune-100x10/{smoke,pilot,full}/...`
 - `docs/references/backtests/<next-generation-combined-ranking>_YYYYMMDD_HHMM.json`
 - `docs/research/latest/<next-generation-results>_YYYYMMDD_HHMM.md`
 - `docs/research/latest/<next-generation-handoff>_YYYYMMDD_HHMM.md`
@@ -198,7 +198,7 @@
 
 - smoke は US / JP ともに worker1-only fallback で `100/100`
 - dual-worker smoke は不安定で、本線から除外
-- US pilot は `results/campaigns/next-long-run-us-finetune-100x10/pilot/checkpoint-50.json` まで到達した状態で停止
+- US pilot は `docs/research/results/campaigns/next-long-run-us-finetune-100x10/pilot/checkpoint-50.json` まで到達した状態で停止
 - JP pilot / full は未着手
 
 ## Approval-time confirmation item

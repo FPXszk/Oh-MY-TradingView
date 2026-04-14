@@ -667,7 +667,7 @@ describe('loadCampaign', () => {
   it('rejects unknown campaign id', async () => {
     await assert.rejects(
       () => loadCampaign('nonexistent-campaign'),
-      /ENOENT|no such file/i,
+      /not found under/i,
     );
   });
 });
@@ -714,7 +714,7 @@ describe('loadPreset with dateOverride', () => {
 describe('campaign config file validation', () => {
   it('long-run-cross-market-100x5.json is valid JSON', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'long-run-cross-market-100x5.json'),
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'archive', 'long-run-cross-market-100x5.json'),
       'utf8',
     );
     const config = JSON.parse(raw);
@@ -727,7 +727,7 @@ describe('campaign config file validation', () => {
 
   it('campaign config passes validateCampaignConfig', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'long-run-cross-market-100x5.json'),
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'archive', 'long-run-cross-market-100x5.json'),
       'utf8',
     );
     const config = JSON.parse(raw);
@@ -738,7 +738,7 @@ describe('campaign config file validation', () => {
 
   it('long-run-us-entry-sweep-50x3.json is valid JSON', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'long-run-us-entry-sweep-50x3.json'),
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'archive', 'long-run-us-entry-sweep-50x3.json'),
       'utf8',
     );
     const config = JSON.parse(raw);
@@ -754,7 +754,7 @@ describe('campaign config file validation', () => {
 
   it('long-run-jp-exit-sweep-50x3.json is valid JSON', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'long-run-jp-exit-sweep-50x3.json'),
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'archive', 'long-run-jp-exit-sweep-50x3.json'),
       'utf8',
     );
     const config = JSON.parse(raw);
@@ -771,7 +771,7 @@ describe('campaign config file validation', () => {
   it('new deep-dive campaign configs pass validateCampaignConfig', async () => {
     for (const fileName of ['long-run-us-entry-sweep-50x3.json', 'long-run-jp-exit-sweep-50x3.json']) {
       const raw = await readFile(
-        join(__dirname, '..', 'config', 'backtest', 'campaigns', fileName),
+        join(__dirname, '..', 'config', 'backtest', 'campaigns', 'archive', fileName),
         'utf8',
       );
       const config = JSON.parse(raw);
@@ -838,7 +838,7 @@ describe('market-specific long-run deep-dive configs', () => {
 describe('100-symbol universes', () => {
   it('long-run-us-100.json has 100 US-only symbols', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'universes', 'long-run-us-100.json'),
+      join(__dirname, '..', 'config', 'backtest', 'universes', 'archive', 'long-run-us-100.json'),
       'utf8',
     );
     const universe = JSON.parse(raw);
@@ -849,7 +849,7 @@ describe('100-symbol universes', () => {
 
   it('long-run-jp-100.json has 100 JP-only symbols', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'universes', 'long-run-jp-100.json'),
+      join(__dirname, '..', 'config', 'backtest', 'universes', 'archive', 'long-run-jp-100.json'),
       'utf8',
     );
     const universe = JSON.parse(raw);
@@ -860,8 +860,8 @@ describe('100-symbol universes', () => {
 
   it('long-run-us-100 preserves first 50 from long-run-us-50', async () => {
     const [rawOld, rawNew] = await Promise.all([
-      readFile(join(__dirname, '..', 'config', 'backtest', 'universes', 'long-run-us-50.json'), 'utf8'),
-      readFile(join(__dirname, '..', 'config', 'backtest', 'universes', 'long-run-us-100.json'), 'utf8'),
+      readFile(join(__dirname, '..', 'config', 'backtest', 'universes', 'archive', 'long-run-us-50.json'), 'utf8'),
+      readFile(join(__dirname, '..', 'config', 'backtest', 'universes', 'archive', 'long-run-us-100.json'), 'utf8'),
     ]);
     const old50 = JSON.parse(rawOld).symbols.map((s) => s.symbol);
     const new100 = JSON.parse(rawNew).symbols.map((s) => s.symbol);
@@ -870,8 +870,8 @@ describe('100-symbol universes', () => {
 
   it('long-run-jp-100 preserves first 50 from long-run-jp-50', async () => {
     const [rawOld, rawNew] = await Promise.all([
-      readFile(join(__dirname, '..', 'config', 'backtest', 'universes', 'long-run-jp-50.json'), 'utf8'),
-      readFile(join(__dirname, '..', 'config', 'backtest', 'universes', 'long-run-jp-100.json'), 'utf8'),
+      readFile(join(__dirname, '..', 'config', 'backtest', 'universes', 'archive', 'long-run-jp-50.json'), 'utf8'),
+      readFile(join(__dirname, '..', 'config', 'backtest', 'universes', 'archive', 'long-run-jp-100.json'), 'utf8'),
     ]);
     const old50 = JSON.parse(rawOld).symbols.map((s) => s.symbol);
     const new100 = JSON.parse(rawNew).symbols.map((s) => s.symbol);
@@ -881,7 +881,7 @@ describe('100-symbol universes', () => {
   it('100-symbol universes contain no duplicate symbols', async () => {
     for (const file of ['long-run-us-100.json', 'long-run-jp-100.json']) {
       const raw = await readFile(
-        join(__dirname, '..', 'config', 'backtest', 'universes', file),
+        join(__dirname, '..', 'config', 'backtest', 'universes', 'archive', file),
         'utf8',
       );
       const symbols = JSON.parse(raw).symbols.map((s) => s.symbol);
@@ -893,7 +893,7 @@ describe('100-symbol universes', () => {
 describe('100x3 campaign configs', () => {
   it('long-run-us-entry-sweep-100x3.json is valid JSON with correct shape', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'long-run-us-entry-sweep-100x3.json'),
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'archive', 'long-run-us-entry-sweep-100x3.json'),
       'utf8',
     );
     const config = JSON.parse(raw);
@@ -910,7 +910,7 @@ describe('100x3 campaign configs', () => {
 
   it('long-run-jp-exit-sweep-100x3.json is valid JSON with correct shape', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'long-run-jp-exit-sweep-100x3.json'),
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'archive', 'long-run-jp-exit-sweep-100x3.json'),
       'utf8',
     );
     const config = JSON.parse(raw);
@@ -931,7 +931,7 @@ describe('100x3 campaign configs', () => {
       'long-run-jp-exit-sweep-100x3.json',
     ]) {
       const raw = await readFile(
-        join(__dirname, '..', 'config', 'backtest', 'campaigns', fileName),
+        join(__dirname, '..', 'config', 'backtest', 'campaigns', 'archive', fileName),
         'utf8',
       );
       const config = JSON.parse(raw);
@@ -995,7 +995,7 @@ describe('market-matched 100-symbol long-run campaigns', () => {
 describe('next finetune 100x10 campaign configs', () => {
   it('next-long-run-us-finetune-100x10.json is valid JSON with expected shape', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'next-long-run-us-finetune-100x10.json'),
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'archive', 'next-long-run-us-finetune-100x10.json'),
       'utf8',
     );
     const config = JSON.parse(raw);
@@ -1009,7 +1009,7 @@ describe('next finetune 100x10 campaign configs', () => {
 
   it('next-long-run-jp-finetune-100x10.json is valid JSON with expected shape', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'next-long-run-jp-finetune-100x10.json'),
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'archive', 'next-long-run-jp-finetune-100x10.json'),
       'utf8',
     );
     const config = JSON.parse(raw);
@@ -1027,7 +1027,7 @@ describe('next finetune 100x10 campaign configs', () => {
       'next-long-run-jp-finetune-100x10.json',
     ]) {
       const raw = await readFile(
-        join(__dirname, '..', 'config', 'backtest', 'campaigns', fileName),
+        join(__dirname, '..', 'config', 'backtest', 'campaigns', 'archive', fileName),
         'utf8',
       );
       const config = JSON.parse(raw);
@@ -1174,7 +1174,7 @@ describe('experiment_gating config validation', () => {
 describe('external-phase1-priority-top campaign config', () => {
   it('is valid JSON with correct shape', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'external-phase1-priority-top.json'),
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'archive', 'external-phase1-priority-top.json'),
       'utf8',
     );
     const config = JSON.parse(raw);
@@ -1189,7 +1189,7 @@ describe('external-phase1-priority-top campaign config', () => {
 
   it('passes validateCampaignConfig', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'external-phase1-priority-top.json'),
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'archive', 'external-phase1-priority-top.json'),
       'utf8',
     );
     const config = JSON.parse(raw);
@@ -1237,7 +1237,7 @@ describe('external-phase1-run8-us-jp-top6 campaign config', () => {
 
   it('is valid JSON with correct shape', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'external-phase1-run8-us-jp-top6.json'),
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'archive', 'external-phase1-run8-us-jp-top6.json'),
       'utf8',
     );
     const config = JSON.parse(raw);
@@ -1252,7 +1252,7 @@ describe('external-phase1-run8-us-jp-top6 campaign config', () => {
 
   it('passes validateCampaignConfig', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'external-phase1-run8-us-jp-top6.json'),
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'archive', 'external-phase1-run8-us-jp-top6.json'),
       'utf8',
     );
     const config = JSON.parse(raw);
@@ -1421,7 +1421,7 @@ describe('next-long-run 12-symbol universes', () => {
 
   it('next-long-run-us-12.json has 12 US-only symbols', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'universes', 'next-long-run-us-12.json'),
+      join(__dirname, '..', 'config', 'backtest', 'universes', 'latest', 'next-long-run-us-12.json'),
       'utf8',
     );
     const universe = JSON.parse(raw);
@@ -1433,7 +1433,7 @@ describe('next-long-run 12-symbol universes', () => {
 
   it('next-long-run-jp-12.json has 12 JP-only symbols', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'universes', 'next-long-run-jp-12.json'),
+      join(__dirname, '..', 'config', 'backtest', 'universes', 'latest', 'next-long-run-jp-12.json'),
       'utf8',
     );
     const universe = JSON.parse(raw);
@@ -1446,7 +1446,7 @@ describe('next-long-run 12-symbol universes', () => {
   it('12-symbol universes contain no duplicate symbols', async () => {
     for (const file of ['next-long-run-us-12.json', 'next-long-run-jp-12.json']) {
       const raw = await readFile(
-        join(__dirname, '..', 'config', 'backtest', 'universes', file),
+        join(__dirname, '..', 'config', 'backtest', 'universes', 'latest', file),
         'utf8',
       );
       const symbols = JSON.parse(raw).symbols.map((s) => s.symbol);
@@ -1456,7 +1456,7 @@ describe('next-long-run 12-symbol universes', () => {
 
   it('US 12-symbol universe has 3 categories x 4 symbols each', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'universes', 'next-long-run-us-12.json'),
+      join(__dirname, '..', 'config', 'backtest', 'universes', 'latest', 'next-long-run-us-12.json'),
       'utf8',
     );
     const universe = JSON.parse(raw);
@@ -1472,7 +1472,7 @@ describe('next-long-run 12-symbol universes', () => {
 
   it('JP 12-symbol universe has 3 categories x 4 symbols each', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'universes', 'next-long-run-jp-12.json'),
+      join(__dirname, '..', 'config', 'backtest', 'universes', 'latest', 'next-long-run-jp-12.json'),
       'utf8',
     );
     const universe = JSON.parse(raw);
@@ -1506,7 +1506,7 @@ describe('next-long-run 12x10 campaign config validation', () => {
 
   it('next-long-run-us-12x10.json is valid JSON with expected shape', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'next-long-run-us-12x10.json'),
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-us-12x10.json'),
       'utf8',
     );
     const config = JSON.parse(raw);
@@ -1521,7 +1521,7 @@ describe('next-long-run 12x10 campaign config validation', () => {
 
   it('next-long-run-jp-12x10.json is valid JSON with expected shape', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'next-long-run-jp-12x10.json'),
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-jp-12x10.json'),
       'utf8',
     );
     const config = JSON.parse(raw);
@@ -1540,7 +1540,7 @@ describe('next-long-run 12x10 campaign config validation', () => {
       'next-long-run-jp-12x10.json',
     ]) {
       const raw = await readFile(
-        join(__dirname, '..', 'config', 'backtest', 'campaigns', fileName),
+        join(__dirname, '..', 'config', 'backtest', 'campaigns', 'latest', fileName),
         'utf8',
       );
       const config = JSON.parse(raw);

@@ -2,207 +2,70 @@
 
 ## この文書の役割
 
-- この文書は、この repo で「どの順番で文書を読むか」「どの文書が何の正本か」「どう鮮度を維持するか」を定義する入口です。
-- まずはここに従って必要な文書へ進みます。
+この repo の文書導線と、`latest / archive` の扱いを定義する。
 
 ## 最初に読む順番
 
 1. `.github/copilot-instructions.md`
 2. `README.md`
-3. `docs/DOCUMENTATION_SYSTEM.md`
-4. 必要な個別文書
+3. `docs/explain-forhuman.md`
+4. `docs/command.md`
+5. `docs/research/latest/README.md`
 
-## docs ディレクトリの役割分担
+## 現在の docs 構成
 
-| path | role | source-of-truth |
-|---|---|---|
-| `docs/research/` | 調査結果、要約、推奨、意思決定 | 解釈の正本 |
-| `docs/research/latest/` | 最新 1 世代の handoff、直近結果、次回の入口 | latest handoff の正本 |
-| `docs/research/old/` | 2 世代以上前の backtest docs archive（既定では読まない） | archive |
-| `docs/references/` | raw artifact、参照用データ、外部資料の固定スナップショット | 生データの正本 |
-| `docs/bad-strategy/` | alt universe で負けた戦略の記録 | negative strategy log の正本 |
-| `docs/working-memory/session-logs/` | セッション要約、判断経緯、直近の作業コンテキスト | append-only |
-| `docs/design-docs/` | 設計検討、構造説明 | 設計の正本 |
-| `docs/exec-plans/` | 実装計画。`active/` でレビューし、完了後は `completed/` へ移す | 計画の正本 |
+| path | role | rule |
+| --- | --- | --- |
+| `docs/research/latest/` | 最新 1 世代の handoff / 要約 / 次の入口 | stale な世代は置かない |
+| `docs/research/archive/` | latest から外れた研究 docs | 既定では読まない |
+| `docs/research/results/` | 実行 artifact・night batch 出力・campaign result | committed doc ではなく成果物置き場 |
+| `docs/references/` | raw data / 参照 JSON / 外部資料固定スナップショット | 数値の正本 |
+| `docs/bad-strategy/` | live set から外した strategy preset の退避先 | `retired-strategy-presets.json` を維持 |
+| `docs/working-memory/session-logs/` | 最新 1 件の session log | それ以外は `archive/` へ退避 |
+| `docs/exec-plans/active/` | 承認待ち・進行中 plan | 完了後は `completed/` へ移す |
+| `docs/exec-plans/completed/` | 完了済み plan | 履歴として保持 |
 
-## バックテスト関連 docs の導線
+## latest / archive ルール
 
-### いま何をしていたかを最短で思い出したいとき
+- `docs/research/latest/` は **README + 現在の latest 世代 docs** だけを置く
+- latest から外れた research doc は `docs/research/archive/` へ移す
+- `docs/working-memory/session-logs/` は **top-level に最新 1 件だけ** 残し、過去分は `archive/` へ移す
+- `config/backtest/campaigns/` と `config/backtest/universes/` は `latest/` と `archive/` に分ける
+- `config/backtest/strategy-presets.json` は live で使う strongest set のみを残し、残りは `docs/bad-strategy/retired-strategy-presets.json` へ退避する
+- `docs/research/results/night-batch/archive/roundN/` は完了 round の退避先とする
 
+## どこを見るか
+
+### 今の運用と最新結果を知りたい
+
+- `docs/explain-forhuman.md`
+- `docs/command.md`
 - `docs/research/latest/README.md`
-- `docs/research/latest/`
-- 補足の判断経緯は `docs/working-memory/session-logs/` を追う
+- `docs/research/latest/main-backtest-latest-summary.md`
 
-### 直前世代の backtest handoff を確認したいとき
+### 過去の研究や旧世代 handoff を見たい
 
-- [`docs/research/market-specific-long-run-deep-dive-handoff_20260408_1857.md`](./research/market-specific-long-run-deep-dive-handoff_20260408_1857.md)
+- `docs/research/archive/README.md`
+- `docs/research/archive/`
 
-### Mag7 戦略候補を知りたいとき
+### 実測 artifact を見たい
 
-- [`docs/research/mag7-strategy-shortlist_2015_2025.md`](./research/mag7-strategy-shortlist_2015_2025.md)
-- [`docs/research/mag7-strategy-shortlist-round2_2015_2025.md`](./research/mag7-strategy-shortlist-round2_2015_2025.md)
+- `docs/research/results/`
+- `docs/references/backtests/`
 
-### 実測結果の要約を知りたいとき
+### なぜ外した戦略かを見たい
 
-- [`docs/research/mag7-backtest-results_2015_2025.md`](./research/mag7-backtest-results_2015_2025.md)
-- [`docs/research/mag7-backtest-results-round2_2015_2025.md`](./research/mag7-backtest-results-round2_2015_2025.md)
-- [`docs/research/multi-universe-backtest-results-round3_2015_2025.md`](./research/multi-universe-backtest-results-round3_2015_2025.md)
-- [`docs/research/mag7-backtest-results-round4_2015_2025.md`](./research/mag7-backtest-results-round4_2015_2025.md)
-- [`docs/research/multi-universe-backtest-results-round4_2015_2025.md`](./research/multi-universe-backtest-results-round4_2015_2025.md)
-- [`docs/research/mag7-backtest-results-round5_2015_2025.md`](./research/mag7-backtest-results-round5_2015_2025.md)
-- [`docs/research/multi-universe-backtest-results-round5_2015_2025.md`](./research/multi-universe-backtest-results-round5_2015_2025.md)
-- [`docs/research/theme-backtest-results-round6_2015_2025.md`](./research/theme-backtest-results-round6_2015_2025.md)
-- [`docs/research/theme-backtest-results-round6-alt_2015_2025.md`](./research/theme-backtest-results-round6-alt_2015_2025.md)
-- [`docs/bad-strategy/round5-negative-alt-strategies_2015_2025.md`](./bad-strategy/round5-negative-alt-strategies_2015_2025.md)
+- `docs/bad-strategy/README.md`
+- `docs/bad-strategy/retired-strategy-presets.json`
 
-### 生データを確認したいとき
+### 直近の判断経緯を見たい
 
-- [`docs/references/backtests/mag7-backtest-results_20260404.json`](./references/backtests/mag7-backtest-results_20260404.json)
-- [`docs/references/backtests/mag7-backtest-results_round2_20260404.json`](./references/backtests/mag7-backtest-results_round2_20260404.json)
-- [`docs/references/backtests/multi-universe-backtest-results_round3_20260404.json`](./references/backtests/multi-universe-backtest-results_round3_20260404.json)
-- [`docs/references/backtests/multi-universe-backtest-results_round3_20260404.summary.json`](./references/backtests/multi-universe-backtest-results_round3_20260404.summary.json)
-- [`docs/references/backtests/breakout-deep-dive-round4_20260405.json`](./references/backtests/breakout-deep-dive-round4_20260405.json)
-- [`docs/references/backtests/breakout-deep-dive-round4_20260405.summary.json`](./references/backtests/breakout-deep-dive-round4_20260405.summary.json)
-- [`docs/references/backtests/breakout-deep-dive-round4-alt_20260405.json`](./references/backtests/breakout-deep-dive-round4-alt_20260405.json)
-- [`docs/references/backtests/breakout-deep-dive-round4-alt_20260405.summary.json`](./references/backtests/breakout-deep-dive-round4-alt_20260405.summary.json)
-- [`docs/references/backtests/breakout-rsi-round5_20260405.json`](./references/backtests/breakout-rsi-round5_20260405.json)
-- [`docs/references/backtests/breakout-rsi-round5_20260405.summary.json`](./references/backtests/breakout-rsi-round5_20260405.summary.json)
-- [`docs/references/backtests/breakout-rsi-round5-alt_20260405.json`](./references/backtests/breakout-rsi-round5-alt_20260405.json)
-- [`docs/references/backtests/breakout-rsi-round5-alt_20260405.summary.json`](./references/backtests/breakout-rsi-round5-alt_20260405.summary.json)
-- [`docs/references/backtests/round6-theme-mag7_20260405.json`](./references/backtests/round6-theme-mag7_20260405.json)
-- [`docs/references/backtests/round6-theme-mag7_20260405.summary.json`](./references/backtests/round6-theme-mag7_20260405.summary.json)
-- [`docs/references/backtests/round6-theme-alt_20260405.json`](./references/backtests/round6-theme-alt_20260405.json)
-- [`docs/references/backtests/round6-theme-alt_20260405.summary.json`](./references/backtests/round6-theme-alt_20260405.summary.json)
-- [`docs/references/backtests/round6-theme-alt-extension_20260405.json`](./references/backtests/round6-theme-alt-extension_20260405.json)
-- [`docs/references/backtests/round6-theme-alt-extension_20260405.summary.json`](./references/backtests/round6-theme-alt-extension_20260405.summary.json)
-- [`docs/references/backtests/round7-theme-mag7_20260405.json`](./references/backtests/round7-theme-mag7_20260405.json)
-- [`docs/references/backtests/round7-theme-mag7_20260405.summary.json`](./references/backtests/round7-theme-mag7_20260405.summary.json)
-- [`docs/references/backtests/round7-theme-alt_20260405.json`](./references/backtests/round7-theme-alt_20260405.json)
-- [`docs/references/backtests/round7-theme-alt_20260405.summary.json`](./references/backtests/round7-theme-alt_20260405.summary.json)
-- [`docs/references/backtests/round8-theme-mag7_20260405.json`](./references/backtests/round8-theme-mag7_20260405.json)
-- [`docs/references/backtests/round8-theme-mag7_20260405.summary.json`](./references/backtests/round8-theme-mag7_20260405.summary.json)
-- [`docs/references/backtests/round8-theme-alt_20260405.json`](./references/backtests/round8-theme-alt_20260405.json)
-- [`docs/references/backtests/round8-theme-alt_20260405.summary.json`](./references/backtests/round8-theme-alt_20260405.summary.json)
+- `docs/working-memory/session-logs/`
+- 必要なら `docs/working-memory/session-logs/archive/`
 
-### 研究用 / session batch input を確認したいとき
+## 更新時の必須ルール
 
-- [`config/backtest/strategy-presets.json`](../config/backtest/strategy-presets.json)
-- [`config/backtest/universes/mag7.json`](../config/backtest/universes/mag7.json)
-- [`config/backtest/universes/sp500-top10-point-in-time.json`](../config/backtest/universes/sp500-top10-point-in-time.json)
-- [`config/backtest/universes/mega-cap-ex-nvda.json`](../config/backtest/universes/mega-cap-ex-nvda.json)
-- これらは各 research round の session batch input であり、現時点の repo CLI / MCP の公開実装は `nvda-ma` 固定
-
-### round3 の調査メモを見たいとき
-
-- [`docs/research/market-regime-candidates-round3_2015_2025.md`](./research/market-regime-candidates-round3_2015_2025.md)
-- [`docs/research/universe-selection-candidates-round3_2015_2025.md`](./research/universe-selection-candidates-round3_2015_2025.md)
-- [`docs/research/multi-universe-strategy-shortlist-round3_2015_2025.md`](./research/multi-universe-strategy-shortlist-round3_2015_2025.md)
-
-### round6 のテーマ投資メモを見たいとき
-
-- [`docs/research/theme-signal-observation-round6_2015_2025.md`](./research/theme-signal-observation-round6_2015_2025.md)
-- [`docs/research/theme-strategy-shortlist-round6_2015_2025.md`](./research/theme-strategy-shortlist-round6_2015_2025.md)
-- [`docs/research/theme-backtest-results-round6_2015_2025.md`](./research/theme-backtest-results-round6_2015_2025.md)
-- [`docs/research/theme-backtest-results-round6-alt_2015_2025.md`](./research/theme-backtest-results-round6-alt_2015_2025.md)
-
-### round7 のテーマ投資メモを見たいとき
-
-- [`docs/research/theme-signal-observation-round7_2015_2025.md`](./research/theme-signal-observation-round7_2015_2025.md)
-- [`docs/research/theme-strategy-shortlist-round7_2015_2025.md`](./research/theme-strategy-shortlist-round7_2015_2025.md)
-- [`docs/research/theme-backtest-results-round7_2015_2025.md`](./research/theme-backtest-results-round7_2015_2025.md)
-- [`docs/research/theme-backtest-results-round7-alt_2015_2025.md`](./research/theme-backtest-results-round7-alt_2015_2025.md)
-
-### round8 のテーマ投資メモを見たいとき
-
-- [`docs/research/theme-signal-observation-round8_2015_2025.md`](./research/theme-signal-observation-round8_2015_2025.md)
-- [`docs/research/theme-strategy-shortlist-round8_2015_2025.md`](./research/theme-strategy-shortlist-round8_2015_2025.md)
-- [`docs/research/theme-backtest-results-round8_2015_2025.md`](./research/theme-backtest-results-round8_2015_2025.md)
-- [`docs/research/theme-backtest-results-round8-alt_2015_2025.md`](./research/theme-backtest-results-round8-alt_2015_2025.md)
-
-### round9 のテーマ投資メモを見たいとき
-
-- [`docs/research/theme-signal-observation-round9_2015_2025.md`](./research/theme-signal-observation-round9_2015_2025.md)
-- [`docs/research/theme-strategy-shortlist-round9_2015_2025.md`](./research/theme-strategy-shortlist-round9_2015_2025.md)
-- [`docs/research/theme-backtest-results-round9_2015_2025.md`](./research/theme-backtest-results-round9_2015_2025.md)
-- [`docs/research/theme-backtest-results-round9-alt_2015_2025.md`](./research/theme-backtest-results-round9-alt_2015_2025.md)
-
-### 次世代の戦略候補（Donchian 系以外）を見たいとき
-
-- [`docs/research/next-strategy-candidates-integrated_20260411_1843.md`](./research/next-strategy-candidates-integrated_20260411_1843.md)
-- MA + RSI14 再加速、MTF BB Pullback、Ren BB 連続足反発、VIX 系、グランビル③/⑧、SMC 系など 9 候補を統合整理
-- active backtest 中のため docs 登録が本線。preset / builder 拡張は別 exec-plan で実施予定
-
-### round10 のテーマ投資メモを見たいとき
-
-- [`docs/research/theme-backtest-results-round10_2015_2025.md`](./research/theme-backtest-results-round10_2015_2025.md)
-- [`docs/research/theme-backtest-results-round10-alt_2015_2025.md`](./research/theme-backtest-results-round10-alt_2015_2025.md)
-- 過去世代の backtest handoff / results は [`docs/research/old/README.md`](./research/old/README.md) から辿る
-
-### TradingView dual-worker の運用手順を知りたいとき
-
-- [`docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`](./design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md)
-- [`command.md`](../command.md)
-
-### self-hosted runner / foreground night batch の運用変更を追いたいとき
-
-- [`command.md`](../command.md)
-- [`docs/working-memory/session-logs/non-service-self-hosted-runner-bootstrap_20260411_1205.md`](./working-memory/session-logs/non-service-self-hosted-runner-bootstrap_20260411_1205.md)
-- [`docs/working-memory/session-logs/self-hosted-runner-foreground-autostart_20260412_0004.md`](./working-memory/session-logs/self-hosted-runner-foreground-autostart_20260412_0004.md)
-- foreground monitoring (`2c23e7a`) / autostart registration (`8cccb48`) / autostart hardening (`e4828d7`) の流れをまとめて追える
-
-### 外部比較・応用可能性調査を見たいとき
-
-- [`docs/research/tradingview-external-landscape-and-applicability_20260408_1105.md`](./research/tradingview-external-landscape-and-applicability_20260408_1105.md)
-- [`docs/research/agent-reach-and-broad-web-observability-applicability_20260409_0520.md`](./research/agent-reach-and-broad-web-observability-applicability_20260409_0520.md)
-- [`docs/research/external-agent-trading-landscape-and-oh-my-tradingview-applicability_20260409_1445.md`](./research/external-agent-trading-landscape-and-oh-my-tradingview-applicability_20260409_1445.md)
-- 参照した資料の台帳は [`docs/references/design-ref-llms.md`](./references/design-ref-llms.md)
-
-### セッションの判断経緯を追いたいとき
-
-- [`docs/working-memory/session-logs/mag7-backtest-session-summary_20260404_1106.md`](./working-memory/session-logs/mag7-backtest-session-summary_20260404_1106.md)
-- [`docs/working-memory/session-logs/mag7-backtest-session-summary_20260404_1252.md`](./working-memory/session-logs/mag7-backtest-session-summary_20260404_1252.md)
-- [`docs/working-memory/session-logs/multi-universe-backtest-session-summary_20260404_1345.md`](./working-memory/session-logs/multi-universe-backtest-session-summary_20260404_1345.md)
-- [`docs/working-memory/session-logs/breakout-deep-dive-round4_20260405_0027.md`](./working-memory/session-logs/breakout-deep-dive-round4_20260405_0027.md)
-- [`docs/working-memory/session-logs/round5-breakout-rsi_20260405_1201.md`](./working-memory/session-logs/round5-breakout-rsi_20260405_1201.md)
-- [`docs/working-memory/session-logs/round6-theme-trend_20260405_0603.md`](./working-memory/session-logs/round6-theme-trend_20260405_0603.md)
-- [`docs/working-memory/session-logs/round7-theme-trend_20260405_0815.md`](./working-memory/session-logs/round7-theme-trend_20260405_0815.md)
-- [`docs/working-memory/session-logs/round8-theme-trend_20260405_2219.md`](./working-memory/session-logs/round8-theme-trend_20260405_2219.md)
-- [`docs/working-memory/session-logs/tradingview-worker2-handoff_20260405_1514.md`](./working-memory/session-logs/tradingview-worker2-handoff_20260405_1514.md)
-- [`docs/working-memory/session-logs/wsl-dual-worker-reachability_20260406_0305.md`](./working-memory/session-logs/wsl-dual-worker-reachability_20260406_0305.md)
-- [`docs/working-memory/session-logs/dual-worker-distinct-strategy-backtest_20260406_0423.md`](./working-memory/session-logs/dual-worker-distinct-strategy-backtest_20260406_0423.md)
-- [`docs/working-memory/session-logs/tradingview-parallel-backtest-verification_20260406_0053.md`](./working-memory/session-logs/tradingview-parallel-backtest-verification_20260406_0053.md)
-- [`docs/working-memory/session-logs/dual-worker-parallel-backtest-handoff_20260406_0735.md`](./working-memory/session-logs/dual-worker-parallel-backtest-handoff_20260406_0735.md)
-- [`docs/working-memory/session-logs/tradingview-parallel-backtest-stabilization_20260406_0802.md`](./working-memory/session-logs/tradingview-parallel-backtest-stabilization_20260406_0802.md)
-- [`docs/working-memory/session-logs/top4-backtest-continuation_20260407_0529.md`](./working-memory/session-logs/top4-backtest-continuation_20260407_0529.md)
-- [`docs/working-memory/session-logs/tradingview-external-research-and-doc-governance_20260408_1115.md`](./working-memory/session-logs/tradingview-external-research-and-doc-governance_20260408_1115.md)
-- [`docs/working-memory/session-logs/external-research-applicable-implementation_20260408_2049.md`](./working-memory/session-logs/external-research-applicable-implementation_20260408_2049.md)
-- [`docs/working-memory/session-logs/priority-high-desktop-ops-alerts-ta_20260408_2156.md`](./working-memory/session-logs/priority-high-desktop-ops-alerts-ta_20260408_2156.md)
-- [`docs/working-memory/session-logs/external-agent-trading-research_20260409_1445.md`](./working-memory/session-logs/external-agent-trading-research_20260409_1445.md)
-- [`docs/working-memory/session-logs/final-rollout-docs-cleanup_20260409_1925.md`](./working-memory/session-logs/final-rollout-docs-cleanup_20260409_1925.md)
-- [`docs/working-memory/session-logs/weak-signal-confluence-rollout_20260409_2127.md`](./working-memory/session-logs/weak-signal-confluence-rollout_20260409_2127.md)
-- [`docs/working-memory/session-logs/confluence-community-observability-rollout_20260409_1334.md`](./working-memory/session-logs/confluence-community-observability-rollout_20260409_1334.md)
-- [`docs/working-memory/session-logs/next-strategy-candidates-docs-registration_20260411_1843.md`](./working-memory/session-logs/next-strategy-candidates-docs-registration_20260411_1843.md)
-- [`docs/working-memory/session-logs/self-hosted-runner-foreground-autostart_20260412_0004.md`](./working-memory/session-logs/self-hosted-runner-foreground-autostart_20260412_0004.md)
-
-## 運用ルール
-
-- 数値の正本は raw artifact に置き、summary doc には必要な集計だけを書く
-- strategy id は backtick 付きの kebab-case で統一する
-- 新しいバックテスト snapshot を追加したら、`research/` 側の summary と `DOCUMENTATION_SYSTEM.md` の導線も一緒に更新する
-- current handoff の正本は `docs/research/latest/` に置き、`docs/working-memory/session-logs/` には経緯だけを append する
-- 外部・比較調査で参照した資料は、`docs/references/design-ref-llms.md` に URL / 理由 / 採用したもの / 採用しなかったもの付きで必ず追記する
-- 外部調査の新規 doc を追加したら、`docs/references/design-ref-llms.md` も同時に更新する
-
-### 世代管理ルール（generation-based archival）
-
-- `docs/research/latest/` には **最新 1 世代** の handoff / results と `README.md` だけを残す
-- latest から外れた直前世代の docs は `docs/research/` 直下に戻す
-- 2 世代以上前の backtest docs は `docs/research/old/` へ移動する
-- `docs/research/old/` は既定では読まない archive であり、明示的に過去世代を確認するときだけ参照する
-
-### pane/tab support と parallel backtest の関係
-
-- `tv_tab_*` は top-level workspace tabs ではなく **現在 layout 内の chart slot** を操作する
-- 現在の backtest / pine / price / health フローは active-chart-only 実装
-- pane/tab support は切替短縮・比較レイアウトの補助導線として有用だが、true parallel backtest の根拠にはならない
-- true parallel backtest の正本は `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`（dual-worker ベース）
+- 新しい latest doc を置いたら、古い latest doc は `docs/research/archive/` へ移す
+- session log を追加したら、前の top-level log は `archive/` へ移す
+- path を変えたら `README.md`、`docs/command.md`、関連テストを同時に直す
+- 数値の根拠は `docs/references/backtests/` か `docs/research/results/` に残す

@@ -75,7 +75,7 @@
 - `tests/backtest.test.js`
 - `tests/e2e.backtest.test.js`
 - `package.json`
-- `command.md`
+- `docs/command.md`
 
 ## 既存 active plan との関係
 
@@ -127,7 +127,7 @@
 - `docs/working-memory/session-logs/tradingview-parallel-backtest-stabilization_20260406_0802.md`
 - `docs/exec-plans/completed/top4-backtest-latest-handoff-and-dual-worker-continuation_20260407_0437.md`
 - `docs/exec-plans/completed/round8-parallel-optimization-followup_20260406_2209.md`
-- `command.md`
+- `docs/command.md`
 - `src/core/backtest.js`
 - `tests/backtest.test.js`
 - `tests/e2e.backtest.test.js`
@@ -137,7 +137,7 @@
 
 - `docs/research/latest/README.md`
 - `docs/research/latest/backtest-reliability-handoff_20260407_1026.md`
-- `command.md`
+- `docs/command.md`
 - `src/core/backtest.js`
 - `tests/backtest.test.js`
 - `tests/e2e.backtest.test.js`
@@ -345,7 +345,7 @@ wait
 
 ### Phase 4: checkpoint / 再開方針の durable 化
 
-- [x] `command.md` と latest handoff に checkpoint の役割を `観測・再開境界` として明記する
+- [x] `docs/command.md` と latest handoff に checkpoint の役割を `観測・再開境界` として明記する
 - [x] naive rollback 非推奨を維持しつつ、限定再実行の判断条件を整理する
 
 ### Phase 5: 総合検証

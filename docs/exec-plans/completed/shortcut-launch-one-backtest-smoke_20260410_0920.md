@@ -42,7 +42,7 @@ TradingView をいったんユーザーが終了した前提で、Windows ショ
 ### 作成
 
 - `docs/exec-plans/active/shortcut-launch-one-backtest-smoke_20260410_0920.md`
-- `results/runtime-verification/shortcut-launch-one-backtest-smoke_20260410_0920/` 配下の実行ログとメモ
+- `docs/research/results/runtime-verification/shortcut-launch-one-backtest-smoke_20260410_0920/` 配下の実行ログとメモ
 
 ### 変更
 

@@ -4,7 +4,7 @@
 
 現在の dual-worker 運用は、到達性回復・worker2 初期化・saved chart 復旧までは進んでいる一方で、以下が未整理です。
 
-- `command.md` に高シグナルな runbook と不要な生ログが混在している
+- `docs/command.md` に高シグナルな runbook と不要な生ログが混在している
 - worker1 / worker2 で **並列バックテストを本当に実行できるか** の最終確認が未完了
 - 手動ログインが必要だった箇所と、CLI 単独で処理できた範囲が分散しており、次回セッションへ引き継ぎにくい
 - 成功した状態（worker2 が saved chart を開き、`status success / api_available true / chart_symbol BATS:AAPL`）を durable な文書として残せていない
@@ -24,21 +24,21 @@
 - 入力として以下を参照する
   - `docs/working-memory/session-logs/wsl-dual-worker-reachability_20260406_0305.md`
   - `docs/working-memory/session-logs/dual-worker-distinct-strategy-backtest_20260406_0423.md`
-  - `command.md`
+  - `docs/command.md`
   - `docs/DOCUMENTATION_SYSTEM.md`
 
 ## Files to create / modify / move
 
 ### Create
 
-- `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
+- `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`
   - dual-worker の起動前提、疎通確認、parallel 実行手順、手動ログイン要否、成功条件を整理した runbook
 - `docs/working-memory/session-logs/dual-worker-parallel-backtest-handoff_20260406_0735.md`
   - 今回までの全手順、判断経緯、失敗→回復→成功の時系列、引き継ぎ事項を残す session log
 
 ### Modify
 
-- `command.md`
+- `docs/command.md`
   - 生ログを削ぎ落とし、運用で再利用するコマンド群を高シグナルなメモとして整理
 - `docs/DOCUMENTATION_SYSTEM.md`
   - 新規 runbook / session log への導線を追加し、どれが正本かを明確化
@@ -59,7 +59,7 @@
 
 ### 1. Documentation normalization
 
-- `command.md` を「再実行に必要な最小コマンド集」に整理
+- `docs/command.md` を「再実行に必要な最小コマンド集」に整理
 - runbook には以下を明示
   - worker1: Session0 `9222` / WSL proxy `9223`
   - worker2: visible Session1 `9224` / WSL proxy `9225`
@@ -117,7 +117,7 @@
 
 ### REFACTOR
 
-- `command.md` のノイズを削減
+- `docs/command.md` のノイズを削減
 - runbook と session log の責務を分離
 - 次回セッションで迷わない導線へ整える
 
@@ -174,14 +174,14 @@ TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9225 node src/cli/index.js backtest nvda-ma
 - worker2 のログイン状態や onboarding 状態が再度崩れる可能性がある
 - saved chart URL や profile 状態がセッション依存で変化する可能性がある
 - 並列実行時に TradingView UI 側のモーダル / study attach 競合が再発する可能性がある
-- `command.md` の整理で有用な生ログを消しすぎるリスクがあるため、raw な経緯は session log 側へ退避して保持する
+- `docs/command.md` の整理で有用な生ログを消しすぎるリスクがあるため、raw な経緯は session log 側へ退避して保持する
 - docs は成功時点の snapshot なので、IP / port / login 状態が将来変わる可能性がある
 
 ## Steps
 
 - [ ] 既存関連文書を読み、runbook に残すべき内容と session log に残すべき内容を仕分ける
-- [ ] `command.md` の不要な生ログを洗い出し、再利用価値のあるコマンドだけを抽出する
-- [ ] `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md` を新規作成する
+- [ ] `docs/command.md` の不要な生ログを洗い出し、再利用価値のあるコマンドだけを抽出する
+- [ ] `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md` を新規作成する
 - [ ] runbook に前提ポート、worker 状態、手動ログイン要否、CLI で処理できる範囲、正常系チェック手順を記載する
 - [ ] `docs/working-memory/session-logs/dual-worker-parallel-backtest-handoff_20260406_0735.md` を新規作成する
 - [ ] handoff log に、attach failure → visible-session 起動 → browser login → clipboard token handoff → onboarding → saved chart 復旧 → 現在成功状態、の経緯を時系列で残す

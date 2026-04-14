@@ -13,7 +13,7 @@ const FIND_OUTPUTS_SCRIPT_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'githu
 const APPEND_SUMMARY_SCRIPT_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'github-actions', 'append-night-batch-workflow-summary.ps1');
 const GITATTRIBUTES_PATH = join(PROJECT_ROOT, '.gitattributes');
 const README_PATH = join(PROJECT_ROOT, 'README.md');
-const COMMAND_PATH = join(PROJECT_ROOT, 'command.md');
+const COMMAND_PATH = join(PROJECT_ROOT, 'docs/command.md');
 const RUN8_REPORT_PATH = join(PROJECT_ROOT, 'docs', 'reports', 'night-batch-self-hosted-run8.md');
 const BUNDLE_FG_CONFIG_PATH = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
 const WINDOWS_RUNNER_SCRIPT_PATHS = [BOOTSTRAP_PATH, RUNNER_WRAPPER_PATH, AUTOSTART_SCRIPT_PATH];
@@ -275,33 +275,33 @@ describe('docs: non-service self-hosted runner policy', () => {
       'README must reference the autostart registration script');
   });
 
-  it('command.md documents the bootstrap startup procedure', () => {
+  it('docs/command.md documents the bootstrap startup procedure', () => {
     const cmd = readFileSync(COMMAND_PATH, 'utf8');
 
     assert.match(cmd, /bootstrap-self-hosted-runner\.cmd/,
-      'command.md must reference bootstrap script');
+      'docs/command.md must reference bootstrap script');
     assert.match(cmd, /run-self-hosted-runner-with-bootstrap\.cmd/,
-      'command.md must reference the bootstrap wrapper');
+      'docs/command.md must reference the bootstrap wrapper');
     assert.match(cmd, /service mode.*使わず/i,
-      'command.md must preserve the non-service policy');
+      'docs/command.md must preserve the non-service policy');
   });
 
-  it('command.md documents manual hookup step', () => {
+  it('docs/command.md documents manual hookup step', () => {
     const cmd = readFileSync(COMMAND_PATH, 'utf8');
 
     assert.match(cmd, /run\.cmd.*(?:代わり|instead|hookup|置き換え|bootstrap)/i,
-      'command.md must explain using bootstrap wrapper instead of run.cmd directly');
+      'docs/command.md must explain using bootstrap wrapper instead of run.cmd directly');
   });
 
-  it('command.md documents Task Scheduler based runner auto-start', () => {
+  it('docs/command.md documents Task Scheduler based runner auto-start', () => {
     const cmd = readFileSync(COMMAND_PATH, 'utf8');
 
     assert.match(cmd, /Task Scheduler/i,
-      'command.md must mention Task Scheduler for runner auto-start');
+      'docs/command.md must mention Task Scheduler for runner auto-start');
     assert.match(cmd, /register-self-hosted-runner-autostart\.cmd/i,
-      'command.md must reference the autostart registration script');
+      'docs/command.md must reference the autostart registration script');
     assert.match(cmd, /ONLOGON|logon/i,
-      'command.md must describe the ONLOGON trigger');
+      'docs/command.md must describe the ONLOGON trigger');
   });
 });
 
@@ -468,11 +468,11 @@ describe('docs: run 8 report', () => {
       'README must link to run 8 report');
   });
 
-  it('command.md references run 8 report', () => {
+  it('docs/command.md references run 8 report', () => {
     const cmd = readFileSync(COMMAND_PATH, 'utf8');
 
     assert.match(cmd, /night-batch-self-hosted-run8\.md/,
-      'command.md must link to run 8 report');
+      'docs/command.md must link to run 8 report');
   });
 });
 
@@ -511,41 +511,41 @@ describe('docs: next strategy update policy', () => {
       'README must mention archived round output path');
   });
 
-  it('command.md documents live checkout protection during active run', () => {
+  it('docs/command.md documents live checkout protection during active run', () => {
     const cmd = readFileSync(COMMAND_PATH, 'utf8');
 
     assert.match(cmd, /live checkout.*(?:編集しない|変更しない|触らない|do not edit|do not modify)/i,
-      'command.md must state that live checkout must not be edited during active run');
+      'docs/command.md must state that live checkout must not be edited during active run');
   });
 
-  it('command.md documents strategy-presets.json as a protected live file', () => {
+  it('docs/command.md documents strategy-presets.json as a protected live file', () => {
     const cmd = readFileSync(COMMAND_PATH, 'utf8');
 
     assert.match(cmd, /strategy-presets\.json/,
-      'command.md must mention strategy-presets.json as a protected file');
+      'docs/command.md must mention strategy-presets.json as a protected file');
   });
 
-  it('command.md documents advance-next-round for explicit next run start', () => {
+  it('docs/command.md documents advance-next-round for explicit next run start', () => {
     const cmd = readFileSync(COMMAND_PATH, 'utf8');
 
     assert.match(cmd, /advance-next-round/,
-      'command.md must reference advance-next-round');
+      'docs/command.md must reference advance-next-round');
     assert.match(cmd, /workflow.*production.*(?:完了|終了|complete|finish).*(?:確認|verify|check)/i,
-      'command.md must instruct to confirm workflow-tracked production completion before updating');
+      'docs/command.md must instruct to confirm workflow-tracked production completion before updating');
     assert.match(cmd, /archive\/roundN/i,
-      'command.md must mention archived round output path');
+      'docs/command.md must mention archived round output path');
   });
 
-  it('command.md documents GitHub summary, artifact, and foreground state outputs', () => {
+  it('docs/command.md documents GitHub summary, artifact, and foreground state outputs', () => {
     const cmd = readFileSync(COMMAND_PATH, 'utf8');
 
     assert.match(cmd, /GITHUB_STEP_SUMMARY/i,
-      'command.md must mention the GitHub summary output');
+      'docs/command.md must mention the GitHub summary output');
     assert.match(cmd, /upload-artifact|artifact/i,
-      'command.md must mention artifact upload');
+      'docs/command.md must mention artifact upload');
     assert.match(cmd, /roundN\/bundle-foreground-state\.json/i,
-      'command.md must point to the round-scoped foreground state file path');
+      'docs/command.md must point to the round-scoped foreground state file path');
     assert.match(cmd, /archive\/roundN/i,
-      'command.md must mention archived round output path');
+      'docs/command.md must mention archived round output path');
   });
 });

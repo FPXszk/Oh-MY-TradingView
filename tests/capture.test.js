@@ -32,14 +32,14 @@ describe('captureScreenshot', () => {
   it('rejects absolute output paths', () => {
     assert.throws(
       () => resolveCaptureOutputPath('/tmp/chart.png'),
-      /relative path under results\/screenshots/,
+      /relative path under docs\/research\/results\/screenshots/,
     );
   });
 
   it('rejects parent traversal in output paths', () => {
     assert.throws(
       () => resolveCaptureOutputPath('../chart.png'),
-      /must stay within results\/screenshots/,
+      /must stay within docs\/research\/results\/screenshots/,
     );
   });
 

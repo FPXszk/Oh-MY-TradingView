@@ -70,8 +70,8 @@
 
 - `docs/working-memory/session-logs/round8-parallel-validation_20260406_1252.md`
 - `docs/references/backtests/round8-parallel-speed-comparison_20260406_1145.json`
-- `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
-- `command.md`
+- `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`
+- `docs/command.md`
 - `docs/exec-plans/active/round8-parallel-validation-speedup_20260406_2048.md`
 - `docs/exec-plans/active/wsl-dual-worker-reachability_20260406_0305.md`
 - `docs/references/backtests/round8-theme-mag7_20260405.json`
@@ -81,9 +81,9 @@
 
 ### 更新候補
 
-- `docs/design-docs/dual-worker-parallel-backtest-runbook_20260406_0735.md`
+- `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`
   - shard 設計 / 長時間安定化 / readiness 条件として durable 化すべき内容がある場合のみ
-- `command.md`
+- `docs/command.md`
   - operator 向けの恒久的な手順差分がある場合のみ
 - `docs/research/theme-backtest-results-round8_2015_2025.md`
   - round8 実行条件メモとして speed / stability 補足を入れる価値がある場合のみ
@@ -227,7 +227,7 @@
 ### REFACTOR
 
 - 重複する観測を runbook / research doc / session log の役割で整理する
-- durable に残すべき事項だけを runbook / command.md に寄せ、セッション限定の判断は session log に閉じる
+- durable に残すべき事項だけを runbook / docs/command.md に寄せ、セッション限定の判断は session log に閉じる
 - 分析補助スクリプトを使った場合は repo に残さず session workspace のみに留める
 
 ### 既存コマンドの使い方
@@ -305,7 +305,7 @@ node ~/.copilot/session-state/round8-parallel-analysis_YYYYMMDD_HHMM.mjs
 - 速度改善候補について、追加で実測すべきものと設計で先に決められるものが分かれている
 - `docs/research/round8-parallel-optimization-analysis_YYYYMMDD_HHMM.md` に調査結果が記載されている
 - `docs/working-memory/session-logs/round8-parallel-optimization-followup_YYYYMMDD_HHMM.md` に今回セッションの記録が残っている
-- 必要なら runbook / command.md に durable な差分だけが最小反映されている
+- 必要なら runbook / docs/command.md に durable な差分だけが最小反映されている
 
 ## 10. チェックボックス形式の実装ステップ
 
@@ -321,7 +321,7 @@ node ~/.copilot/session-state/round8-parallel-analysis_YYYYMMDD_HHMM.mjs
 - [ ] 必要なら `status` と単発 warm-up で worker readiness をスポット確認する
 - [ ] durable doc `docs/research/round8-parallel-optimization-analysis_YYYYMMDD_HHMM.md` を作成する
 - [ ] session log `docs/working-memory/session-logs/round8-parallel-optimization-followup_YYYYMMDD_HHMM.md` を作成する
-- [ ] durable に残す価値がある手順差分だけを runbook / command.md の更新候補として切り出す
+- [ ] durable に残す価値がある手順差分だけを runbook / docs/command.md の更新候補として切り出す
 - [ ] 次回の実装 / 再実測で試す第一候補案を 1〜2 件に絞って明記する
 
 ## 11. pre-implementation completeness checklist

@@ -6,7 +6,7 @@ export function registerObserveTools(server) {
     'tv_observe_snapshot',
     'Capture a one-shot observability snapshot of the active TradingView page/session. ' +
       'Returns structured CDP connection info, page/chart state, runtime errors, and ' +
-      'a deterministic artifact bundle under results/observability/.',
+      'a deterministic artifact bundle under docs/research/results/observability/.',
     {},
     async () => {
       try {
