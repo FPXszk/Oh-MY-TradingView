@@ -67,3 +67,8 @@ live の `config/backtest/strategy-presets.json` は 15 戦略まで圧縮した
 2. `docs/references/backtests/` に **combined ranking の正規 artifact** を毎回残し、15 本目の判断を手作業にしない
 3. `python/night_batch.py` の自動 latest summary を使い、night batch 完了後に `main-backtest-latest-summary.md` を deterministic に更新する
 4. `scripts/docs/archive-stale-latest.mjs` を generation 更新時に実行し、latest/archive の stale doc を溜めない
+
+## Live / Retired diff
+
+- live_count: 15
+- retired_count: 116

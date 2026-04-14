@@ -1272,6 +1272,15 @@ describe('loadPreset', () => {
       /not executable by repo CLI: Unsupported builder/,
     );
   });
+
+  it('resolves a live preset from catalog when available', async () => {
+    const { preset } = await loadPreset(
+      'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight',
+    );
+    assert.ok(preset);
+    assert.equal(preset.id, 'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight');
+    assert.equal(preset.lifecycle, undefined, 'lifecycle must be stripped from loaded preset');
+  });
 });
 
 // ---------------------------------------------------------------------------

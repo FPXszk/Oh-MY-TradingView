@@ -351,6 +351,8 @@ exit 0
     assert.match(latestSummary, /Combined top 10/);
     assert.match(latestSummary, /ranking_artifact/,
       'latest summary must include ranking_artifact path when ranking JSON is produced');
+    assert.match(latestSummary, /Live \/ Retired diff/,
+      'latest summary must include Live / Retired diff section');
   });
 
   it('nightly dry-run includes both bundle and report commands', async () => {

@@ -108,6 +108,19 @@ describe('repository layout policy', () => {
     );
   });
 
+  it('strategy-catalog.json exists and has 131 strategies', () => {
+    const catalogPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-catalog.json');
+    assert.equal(existsSync(catalogPath), true, 'strategy-catalog.json must exist');
+    const catalog = JSON.parse(readFileSync(catalogPath, 'utf8'));
+    assert.equal(catalog.strategies.length, 131, `expected 131 strategies in catalog, got ${catalog.strategies.length}`);
+  });
+
+  it('bad-strategy/README.md mentions catalog as source of truth', () => {
+    const readme = readFileSync(join(PROJECT_ROOT, 'docs', 'bad-strategy', 'README.md'), 'utf8');
+    assert.ok(readme.includes('strategy-catalog.json'), 'README.md must mention strategy-catalog.json');
+    assert.ok(readme.includes('source of truth'), 'README.md must mention source of truth');
+  });
+
   it('latest campaigns and archive campaigns do not overlap', () => {
     const latestCampaigns = new Set(
       readdirSync(CAMPAIGNS_LATEST_DIR).filter((name) => name.endsWith('.json')),

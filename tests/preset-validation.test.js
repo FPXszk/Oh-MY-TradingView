@@ -535,6 +535,15 @@ describe('strategy-presets.json integration', () => {
       assert.equal(liveIds.has(id), false, 'Retired preset "' + id + '" must not remain live');
     }
   });
+
+  it('live and retired IDs have zero overlap', async () => {
+    const live = await loadPresets();
+    const retired = await loadRetiredPresets();
+    const liveIds = new Set(live.strategies.map((s) => s.id));
+    for (const s of retired.strategies) {
+      assert.equal(liveIds.has(s.id), false, 'overlap: "' + s.id + '" in both live and retired');
+    }
+  });
 });
 
 // ---------------------------------------------------------------------------

@@ -136,6 +136,7 @@ async function main() {
       jp: { type: 'string' },
       out: { type: 'string' },
       'ranking-out': { type: 'string' },
+      'diff-out': { type: 'string' },
       'date-from': { type: 'string', default: '2000-01-01' },
       'date-to': { type: 'string', default: 'latest' },
       title: { type: 'string', default: 'Next long-run market-matched 200 results' },
@@ -187,6 +188,15 @@ async function main() {
 
   if (values['ranking-out']) {
     await writeFile(values['ranking-out'], `${JSON.stringify(combinedRanking, null, 2)}\n`);
+  }
+
+  if (values['diff-out']) {
+    const { loadCatalog } = await import(join(PROJECT_ROOT, 'src', 'core', 'strategy-catalog.js'));
+    const { buildDiffArtifact } = await import(join(PROJECT_ROOT, 'src', 'core', 'strategy-live-retired-diff.js'));
+    const catalog = await loadCatalog();
+    const diffArtifact = buildDiffArtifact(catalog);
+    await writeFile(values['diff-out'], `${JSON.stringify(diffArtifact, null, 2)}\n`);
+    process.stdout.write(`Wrote diff artifact: ${values['diff-out']}\n`);
   }
 
   const content = [

@@ -2061,6 +2061,23 @@ def write_latest_backtest_summary(
             *format_rank_rows(market_summary['rows'], limit=5),
         ])
 
+    catalog_path = PROJECT_ROOT / 'config' / 'backtest' / 'strategy-catalog.json'
+    try:
+        catalog = json.loads(catalog_path.read_text(encoding='utf-8'))
+        strategies = catalog.get('strategies', [])
+        live_count = sum(1 for s in strategies if s.get('lifecycle', {}).get('status') == 'live')
+        retired_count = sum(1 for s in strategies if s.get('lifecycle', {}).get('status') == 'retired')
+        lines.extend([
+            '',
+            '## Live / Retired diff',
+            '',
+            f'- live_count: {live_count}',
+            f'- retired_count: {retired_count}',
+            '',
+        ])
+    except (FileNotFoundError, json.JSONDecodeError):
+        pass
+
     latest_summary_path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
     logger.info('Latest backtest summary written: %s', relative_path(latest_summary_path))
 

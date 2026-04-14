@@ -1431,15 +1431,30 @@ export async function runNvdaMaBacktest() {
 // ---------------------------------------------------------------------------
 const PRESETS_PATH = join(__dirname, '..', '..', 'config', 'backtest', 'strategy-presets.json');
 const RETIRED_PRESETS_PATH = join(__dirname, '..', '..', 'docs', 'bad-strategy', 'retired-strategy-presets.json');
+const CATALOG_PATH = join(__dirname, '..', '..', 'config', 'backtest', 'strategy-catalog.json');
 
 export async function loadPreset(presetId, { dateOverride } = {}) {
-  const raw = await readFile(PRESETS_PATH, 'utf8');
-  const data = JSON.parse(raw);
-  let preset = data.strategies.find((s) => s.id === presetId);
-  if (!preset) {
-    const retiredRaw = await readFile(RETIRED_PRESETS_PATH, 'utf8');
-    const retired = JSON.parse(retiredRaw);
-    preset = retired.strategies.find((s) => s.id === presetId);
+  let preset;
+  let data;
+  try {
+    const catalogRaw = await readFile(CATALOG_PATH, 'utf8');
+    const catalog = JSON.parse(catalogRaw);
+    const entry = catalog.strategies.find((s) => s.id === presetId);
+    if (entry) {
+      const { lifecycle, ...presetFields } = entry;
+      preset = presetFields;
+    }
+    const liveRaw = await readFile(PRESETS_PATH, 'utf8');
+    data = JSON.parse(liveRaw);
+  } catch {
+    const raw = await readFile(PRESETS_PATH, 'utf8');
+    data = JSON.parse(raw);
+    preset = data.strategies.find((s) => s.id === presetId);
+    if (!preset) {
+      const retiredRaw = await readFile(RETIRED_PRESETS_PATH, 'utf8');
+      const retired = JSON.parse(retiredRaw);
+      preset = retired.strategies.find((s) => s.id === presetId);
+    }
   }
   if (!preset) {
     throw new Error(`Preset "${presetId}" not found in strategy-presets.json`);
