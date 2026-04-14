@@ -15,13 +15,13 @@
 
 | artifact | path | status |
 | --- | --- | --- |
-| machine-readable summary | `../../references/backtests/next-long-run-finetune-complete_20260413.summary.json` | この文書の集計正本 |
-| latest run summary markdown | `results/gh-run-24341576697/night-batch-24341576697-1/gha_24341576697_1-summary.md` | 実行状態の正本 |
-| latest run log | `results/gh-run-24341576697/night-batch-24341576697-1/gha_24341576697_1.log` | 件数・checkpoint の正本 |
+| machine-readable summary | `../references/backtests/next-long-run-finetune-complete_20260413.summary.json` | この文書の集計正本 |
+| latest run summary markdown | `../../results/gh-run-24341576697/night-batch-24341576697-1/gha_24341576697_1-summary.md` | 実行状態の正本 |
+| latest run log | `../../results/gh-run-24341576697/night-batch-24341576697-1/gha_24341576697_1.log` | 件数・checkpoint の正本 |
 | US full recovered results | `/mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/results/campaigns/next-long-run-us-finetune-100x10/full/recovered-results.json` | 成績元データ |
 | JP full recovered results | `/mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/results/campaigns/next-long-run-jp-finetune-100x10/full/recovered-results.json` | 成績元データ |
-| local smoke log | `results/campaigns/external-phase1-run8-us-jp-top6/smoke-session.log` | gating 件数の正本 |
-| local smoke summary | `results/campaigns/external-phase1-run8-us-jp-top6/smoke/recovered-summary.json` | `60/60` 成功 |
+| local smoke log | `../../results/campaigns/external-phase1-run8-us-jp-top6/smoke-session.log` | gating 件数の正本 |
+| local smoke summary | `../../results/campaigns/external-phase1-run8-us-jp-top6/smoke/recovered-summary.json` | `60/60` 成功 |
 
 ---
 

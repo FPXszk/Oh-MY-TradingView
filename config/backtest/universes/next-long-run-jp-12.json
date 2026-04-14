@@ -1,0 +1,18 @@
+{
+  "id": "next-long-run-jp-12",
+  "name": "Next Long-Run JP 12",
+  "symbols": [
+    { "symbol": "TSE:7203", "label": "Toyota Motor", "market": "JP", "bucket": "winners" },
+    { "symbol": "TSE:8002", "label": "Marubeni", "market": "JP", "bucket": "winners" },
+    { "symbol": "TSE:5802", "label": "Sumitomo Electric Industries", "market": "JP", "bucket": "winners" },
+    { "symbol": "TSE:8058", "label": "Mitsubishi Corp.", "market": "JP", "bucket": "winners" },
+    { "symbol": "TSE:9984", "label": "SoftBank Group", "market": "JP", "bucket": "mature-range" },
+    { "symbol": "TSE:6857", "label": "Advantest", "market": "JP", "bucket": "mature-range" },
+    { "symbol": "TSE:9107", "label": "Kawasaki Kisen Kaisha", "market": "JP", "bucket": "mature-range" },
+    { "symbol": "TSE:6506", "label": "Yaskawa Electric", "market": "JP", "bucket": "mature-range" },
+    { "symbol": "TSE:7201", "label": "Nissan Motor", "market": "JP", "bucket": "defense-test" },
+    { "symbol": "TSE:4503", "label": "Astellas Pharma", "market": "JP", "bucket": "defense-test" },
+    { "symbol": "TSE:9432", "label": "NTT", "market": "JP", "bucket": "defense-test" },
+    { "symbol": "TSE:7751", "label": "Canon", "market": "JP", "bucket": "defense-test" }
+  ]
+}

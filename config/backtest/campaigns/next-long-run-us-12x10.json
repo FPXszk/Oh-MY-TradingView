@@ -1,0 +1,43 @@
+{
+  "id": "next-long-run-us-12x10",
+  "name": "Next Long-Run US 12 symbols × 10 strategies",
+  "description": "US 12-symbol focused campaign with top 10 deep-pullback strategies. 3 categories (winners / mature-range / defense-test) × 4 symbols each, validated against 2000–present.",
+  "universe": "next-long-run-us-12",
+  "preset_ids": [
+    "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight",
+    "donchian-55-20-rsp-filter-rsi14-regime-48-hard-stop-8pct-theme-deep-pullback-tight-early",
+    "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-10pct-theme-deep-pullback",
+    "donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-10pct-theme-deep-pullback-earlier",
+    "donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict",
+    "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early",
+    "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late",
+    "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight",
+    "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide",
+    "donchian-55-20-rsp-filter-rsi14-regime-57-hard-stop-6pct-theme-deep-pullback-tight-narrow"
+  ],
+  "date_override": {
+    "from": "2000-01-01",
+    "to": "2099-12-31"
+  },
+  "phases": {
+    "smoke": {
+      "symbol_count": 3,
+      "symbols": ["NVDA", "DIS", "INTC"]
+    },
+    "pilot": {
+      "symbol_count": 6,
+      "symbols": ["NVDA", "AAPL", "DIS", "QCOM", "INTC", "VZ"]
+    },
+    "full": {
+      "symbol_count": 12
+    }
+  },
+  "execution": {
+    "worker_ports": [9223],
+    "checkpoint_every": 10,
+    "cooldown_ms": 1000,
+    "max_consecutive_failures": 5,
+    "max_rerun_passes": 2
+  },
+  "notes": "US 12-symbol campaign は fine-tune 100x10 の完走結果から上位 10 戦略を選定し、3 カテゴリ × 4 銘柄の代表 12 銘柄で高速検証する。smoke / pilot では各カテゴリから少なくとも 1 銘柄を含め、偏りを排除する。date_override.to=2099-12-31 は latest available bar までを拾うための上限。"
+}

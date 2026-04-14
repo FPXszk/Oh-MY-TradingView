@@ -18,10 +18,10 @@
 
 ## Read this first
 
-1. [`README.md`](./README.md)
+1. [`latest/README.md`](./latest/README.md)
 2. [`next-long-run-finetune-complete-results_20260413_1623.md`](./next-long-run-finetune-complete-results_20260413_1623.md)
-3. `../../references/backtests/next-long-run-finetune-complete_20260413.summary.json`
-4. 直前の partial 世代を見返すなら `../next-long-run-finetune-partial-results_20260410_1503.md`
+3. `../references/backtests/next-long-run-finetune-complete_20260413.summary.json`
+4. 直前の partial 世代を見返すなら `./next-long-run-finetune-partial-results_20260410_1503.md`
 
 ---
 
@@ -29,12 +29,12 @@
 
 | topic | source |
 | --- | --- |
-| latest executed run の状態 | `results/gh-run-24341576697/night-batch-24341576697-1/gha_24341576697_1-summary.md` |
-| latest executed run の件数 | `results/gh-run-24341576697/night-batch-24341576697-1/gha_24341576697_1.log` |
+| latest executed run の状態 | `../../results/gh-run-24341576697/night-batch-24341576697-1/gha_24341576697_1-summary.md` |
+| latest executed run の件数 | `../../results/gh-run-24341576697/night-batch-24341576697-1/gha_24341576697_1.log` |
 | US full metrics | `/mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/results/campaigns/next-long-run-us-finetune-100x10/full/recovered-results.json` |
 | JP full metrics | `/mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/results/campaigns/next-long-run-jp-finetune-100x10/full/recovered-results.json` |
-| repo 内の固定サマリ | `docs/references/backtests/next-long-run-finetune-complete_20260413.summary.json` |
-| local smoke gating | `results/campaigns/external-phase1-run8-us-jp-top6/smoke/gated-summary.json` |
+| repo 内の固定サマリ | `../references/backtests/next-long-run-finetune-complete_20260413.summary.json` |
+| local smoke gating | `../../results/campaigns/external-phase1-run8-us-jp-top6/smoke/gated-summary.json` |
 
 ---
 
@@ -80,4 +80,3 @@
 1. latest 世代を基準に、US winner と JP winner を次の candidate shortlist に残すか判断する
 2. local smoke で promote された 37 candidate を full-run winner とどう統合するか決める
 3. nightly monitoring では、skip success を latest result に数えない運用ルールを維持する
-

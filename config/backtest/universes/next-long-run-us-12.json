@@ -1,0 +1,18 @@
+{
+  "id": "next-long-run-us-12",
+  "name": "Next Long-Run US 12",
+  "symbols": [
+    { "symbol": "NVDA", "label": "NVIDIA", "market": "US", "bucket": "winners" },
+    { "symbol": "AAPL", "label": "Apple", "market": "US", "bucket": "winners" },
+    { "symbol": "META", "label": "Meta Platforms", "market": "US", "bucket": "winners" },
+    { "symbol": "MSFT", "label": "Microsoft", "market": "US", "bucket": "winners" },
+    { "symbol": "DIS", "label": "Walt Disney", "market": "US", "bucket": "mature-range" },
+    { "symbol": "QCOM", "label": "Qualcomm", "market": "US", "bucket": "mature-range" },
+    { "symbol": "CAT", "label": "Caterpillar", "market": "US", "bucket": "mature-range" },
+    { "symbol": "XOM", "label": "Exxon Mobil", "market": "US", "bucket": "mature-range" },
+    { "symbol": "INTC", "label": "Intel", "market": "US", "bucket": "defense-test" },
+    { "symbol": "VZ", "label": "Verizon", "market": "US", "bucket": "defense-test" },
+    { "symbol": "PFE", "label": "Pfizer", "market": "US", "bucket": "defense-test" },
+    { "symbol": "T", "label": "AT&T", "market": "US", "bucket": "defense-test" }
+  ]
+}

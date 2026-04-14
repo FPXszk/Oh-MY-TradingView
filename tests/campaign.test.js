@@ -1402,3 +1402,218 @@ describe('run-finetune-bundle default policy', () => {
     assert.ok(!raw.includes('Rerun manually with --ports'));
   });
 });
+
+// ---------------------------------------------------------------------------
+// next-long-run 12-symbol universe configs
+// ---------------------------------------------------------------------------
+describe('next-long-run 12-symbol universes', () => {
+  const expectedUsSymbols = [
+    'NVDA', 'AAPL', 'META', 'MSFT',
+    'DIS', 'QCOM', 'CAT', 'XOM',
+    'INTC', 'VZ', 'PFE', 'T',
+  ];
+
+  const expectedJpSymbols = [
+    'TSE:7203', 'TSE:8002', 'TSE:5802', 'TSE:8058',
+    'TSE:9984', 'TSE:6857', 'TSE:9107', 'TSE:6506',
+    'TSE:7201', 'TSE:4503', 'TSE:9432', 'TSE:7751',
+  ];
+
+  it('next-long-run-us-12.json has 12 US-only symbols', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'config', 'backtest', 'universes', 'next-long-run-us-12.json'),
+      'utf8',
+    );
+    const universe = JSON.parse(raw);
+    assert.equal(universe.id, 'next-long-run-us-12');
+    assert.equal(universe.symbols.length, 12);
+    assert.ok(universe.symbols.every((s) => s.market === 'US'));
+    assert.deepEqual(universe.symbols.map((s) => s.symbol), expectedUsSymbols);
+  });
+
+  it('next-long-run-jp-12.json has 12 JP-only symbols', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'config', 'backtest', 'universes', 'next-long-run-jp-12.json'),
+      'utf8',
+    );
+    const universe = JSON.parse(raw);
+    assert.equal(universe.id, 'next-long-run-jp-12');
+    assert.equal(universe.symbols.length, 12);
+    assert.ok(universe.symbols.every((s) => s.market === 'JP'));
+    assert.deepEqual(universe.symbols.map((s) => s.symbol), expectedJpSymbols);
+  });
+
+  it('12-symbol universes contain no duplicate symbols', async () => {
+    for (const file of ['next-long-run-us-12.json', 'next-long-run-jp-12.json']) {
+      const raw = await readFile(
+        join(__dirname, '..', 'config', 'backtest', 'universes', file),
+        'utf8',
+      );
+      const symbols = JSON.parse(raw).symbols.map((s) => s.symbol);
+      assert.equal(symbols.length, new Set(symbols).size, `duplicates in ${file}`);
+    }
+  });
+
+  it('US 12-symbol universe has 3 categories x 4 symbols each', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'config', 'backtest', 'universes', 'next-long-run-us-12.json'),
+      'utf8',
+    );
+    const universe = JSON.parse(raw);
+    const buckets = {};
+    for (const s of universe.symbols) {
+      buckets[s.bucket] = (buckets[s.bucket] || 0) + 1;
+    }
+    assert.equal(Object.keys(buckets).length, 3, 'expect 3 category buckets');
+    for (const [bucket, count] of Object.entries(buckets)) {
+      assert.equal(count, 4, `bucket ${bucket} should have 4 symbols`);
+    }
+  });
+
+  it('JP 12-symbol universe has 3 categories x 4 symbols each', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'config', 'backtest', 'universes', 'next-long-run-jp-12.json'),
+      'utf8',
+    );
+    const universe = JSON.parse(raw);
+    const buckets = {};
+    for (const s of universe.symbols) {
+      buckets[s.bucket] = (buckets[s.bucket] || 0) + 1;
+    }
+    assert.equal(Object.keys(buckets).length, 3, 'expect 3 category buckets');
+    for (const [bucket, count] of Object.entries(buckets)) {
+      assert.equal(count, 4, `bucket ${bucket} should have 4 symbols`);
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// next-long-run 12x10 campaign config file validation
+// ---------------------------------------------------------------------------
+describe('next-long-run 12x10 campaign config validation', () => {
+  const expectedPresetIds = [
+    'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight',
+    'donchian-55-20-rsp-filter-rsi14-regime-48-hard-stop-8pct-theme-deep-pullback-tight-early',
+    'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-10pct-theme-deep-pullback',
+    'donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-10pct-theme-deep-pullback-earlier',
+    'donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict',
+    'donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early',
+    'donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late',
+    'donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight',
+    'donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide',
+    'donchian-55-20-rsp-filter-rsi14-regime-57-hard-stop-6pct-theme-deep-pullback-tight-narrow',
+  ];
+
+  it('next-long-run-us-12x10.json is valid JSON with expected shape', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'next-long-run-us-12x10.json'),
+      'utf8',
+    );
+    const config = JSON.parse(raw);
+    assert.equal(config.id, 'next-long-run-us-12x10');
+    assert.equal(config.universe, 'next-long-run-us-12');
+    assert.equal(config.date_override.from, '2000-01-01');
+    assert.equal(config.date_override.to, '2099-12-31');
+    assert.equal(config.preset_ids.length, 10);
+    assert.deepEqual(config.preset_ids, expectedPresetIds);
+    assert.deepEqual(config.execution.worker_ports, [9223]);
+  });
+
+  it('next-long-run-jp-12x10.json is valid JSON with expected shape', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'next-long-run-jp-12x10.json'),
+      'utf8',
+    );
+    const config = JSON.parse(raw);
+    assert.equal(config.id, 'next-long-run-jp-12x10');
+    assert.equal(config.universe, 'next-long-run-jp-12');
+    assert.equal(config.date_override.from, '2000-01-01');
+    assert.equal(config.date_override.to, '2099-12-31');
+    assert.equal(config.preset_ids.length, 10);
+    assert.deepEqual(config.preset_ids, expectedPresetIds);
+    assert.deepEqual(config.execution.worker_ports, [9223]);
+  });
+
+  it('next-long-run 12x10 campaign configs pass validateCampaignConfig', async () => {
+    for (const fileName of [
+      'next-long-run-us-12x10.json',
+      'next-long-run-jp-12x10.json',
+    ]) {
+      const raw = await readFile(
+        join(__dirname, '..', 'config', 'backtest', 'campaigns', fileName),
+        'utf8',
+      );
+      const config = JSON.parse(raw);
+      const result = validateCampaignConfig(config);
+      assert.equal(result.valid, true, `${fileName}: ${result.errors}`);
+      assert.deepEqual(result.errors, []);
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// next-long-run 12x10 campaigns — loadCampaign integration
+// ---------------------------------------------------------------------------
+describe('next-long-run 12x10 campaigns', () => {
+  it('loads US 12x10 campaign with 12 US-only symbols and 10 strategies', async () => {
+    const campaign = await loadCampaign('next-long-run-us-12x10');
+    assert.equal(campaign.symbols.length, 12);
+    assert.equal(campaign.strategies.length, 10);
+    assert.equal(campaign.matrix.length, 120);
+    assert.ok(campaign.symbols.every((entry) => entry.market === 'US'));
+    assert.equal(campaign.defaults.date_range.from, '2000-01-01');
+    assert.equal(campaign.defaults.date_range.to, '2099-12-31');
+  });
+
+  it('loads JP 12x10 campaign with 12 JP-only symbols and 10 strategies', async () => {
+    const campaign = await loadCampaign('next-long-run-jp-12x10');
+    assert.equal(campaign.symbols.length, 12);
+    assert.equal(campaign.strategies.length, 10);
+    assert.equal(campaign.matrix.length, 120);
+    assert.ok(campaign.symbols.every((entry) => entry.market === 'JP'));
+    assert.equal(campaign.defaults.date_range.from, '2000-01-01');
+    assert.equal(campaign.defaults.date_range.to, '2099-12-31');
+  });
+
+  it('smoke phase covers all 3 categories for both campaigns', async () => {
+    const usSmoke = await loadCampaign('next-long-run-us-12x10', { phase: 'smoke' });
+    const jpSmoke = await loadCampaign('next-long-run-jp-12x10', { phase: 'smoke' });
+
+    const usBuckets = new Set(usSmoke.symbols.map((s) => s.bucket));
+    const jpBuckets = new Set(jpSmoke.symbols.map((s) => s.bucket));
+    assert.equal(usBuckets.size, 3, 'US smoke should cover all 3 categories');
+    assert.equal(jpBuckets.size, 3, 'JP smoke should cover all 3 categories');
+  });
+
+  it('pilot phase covers all 3 categories for both campaigns', async () => {
+    const usPilot = await loadCampaign('next-long-run-us-12x10', { phase: 'pilot' });
+    const jpPilot = await loadCampaign('next-long-run-jp-12x10', { phase: 'pilot' });
+
+    const usBuckets = new Set(usPilot.symbols.map((s) => s.bucket));
+    const jpBuckets = new Set(jpPilot.symbols.map((s) => s.bucket));
+    assert.equal(usBuckets.size, 3, 'US pilot should cover all 3 categories');
+    assert.equal(jpBuckets.size, 3, 'JP pilot should cover all 3 categories');
+  });
+
+  it('uses phase sizing with smoke=3/pilot=6/full=12 for both 12x10 campaigns', async () => {
+    const usSmoke = await loadCampaign('next-long-run-us-12x10', { phase: 'smoke' });
+    const usPilot = await loadCampaign('next-long-run-us-12x10', { phase: 'pilot' });
+    const usFull = await loadCampaign('next-long-run-us-12x10', { phase: 'full' });
+    const jpSmoke = await loadCampaign('next-long-run-jp-12x10', { phase: 'smoke' });
+    const jpPilot = await loadCampaign('next-long-run-jp-12x10', { phase: 'pilot' });
+    const jpFull = await loadCampaign('next-long-run-jp-12x10', { phase: 'full' });
+
+    assert.equal(usSmoke.symbols.length, 3);
+    assert.equal(usSmoke.matrix.length, 30);
+    assert.equal(usPilot.symbols.length, 6);
+    assert.equal(usPilot.matrix.length, 60);
+    assert.equal(usFull.symbols.length, 12);
+    assert.equal(usFull.matrix.length, 120);
+    assert.equal(jpSmoke.symbols.length, 3);
+    assert.equal(jpSmoke.matrix.length, 30);
+    assert.equal(jpPilot.symbols.length, 6);
+    assert.equal(jpPilot.matrix.length, 60);
+    assert.equal(jpFull.symbols.length, 12);
+    assert.equal(jpFull.matrix.length, 120);
+  });
+});
