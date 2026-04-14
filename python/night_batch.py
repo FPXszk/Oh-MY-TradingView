@@ -676,11 +676,12 @@ def run_process(
 ) -> dict:
     if dry_run:
         logger.info('[dry-run] %s', shlex.join(command))
+        latest_checkpoint = find_latest_checkpoint(checkpoint_roots) if checkpoint_roots else None
         return {
             'success': True,
             'exit_code': 0,
             'timed_out': False,
-            'latest_checkpoint': relative_path(find_latest_checkpoint(checkpoint_roots)) if checkpoint_roots else None,
+            'latest_checkpoint': relative_path(latest_checkpoint) if latest_checkpoint else None,
             'captured_lines': [],
             'command': command,
             'skipped': False,

@@ -15,6 +15,7 @@ const GITATTRIBUTES_PATH = join(PROJECT_ROOT, '.gitattributes');
 const README_PATH = join(PROJECT_ROOT, 'README.md');
 const COMMAND_PATH = join(PROJECT_ROOT, 'command.md');
 const RUN8_REPORT_PATH = join(PROJECT_ROOT, 'docs', 'reports', 'night-batch-self-hosted-run8.md');
+const BUNDLE_FG_CONFIG_PATH = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
 const WINDOWS_RUNNER_SCRIPT_PATHS = [BOOTSTRAP_PATH, RUNNER_WRAPPER_PATH, AUTOSTART_SCRIPT_PATH];
 
 describe('run-night-batch-self-hosted.cmd', () => {
@@ -187,6 +188,25 @@ describe('.gitattributes', () => {
 
     assert.match(attrs, /\*\.cmd\s+text\s+eol=crlf/i,
       '.gitattributes must force CRLF checkout for cmd files');
+  });
+});
+
+describe('foreground bundle config default campaign', () => {
+  const config = JSON.parse(readFileSync(BUNDLE_FG_CONFIG_PATH, 'utf8'));
+
+  it('us_campaign defaults to 12x10', () => {
+    assert.equal(config.bundle.us_campaign, 'next-long-run-us-12x10',
+      'bundle-foreground-reuse-config.json must default us_campaign to 12x10');
+  });
+
+  it('jp_campaign defaults to 12x10', () => {
+    assert.equal(config.bundle.jp_campaign, 'next-long-run-jp-12x10',
+      'bundle-foreground-reuse-config.json must default jp_campaign to 12x10');
+  });
+
+  it('config path must not change', () => {
+    assert.ok(existsSync(BUNDLE_FG_CONFIG_PATH),
+      'config/night_batch/bundle-foreground-reuse-config.json must exist at the canonical path');
   });
 });
 

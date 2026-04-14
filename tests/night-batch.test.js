@@ -405,6 +405,29 @@ exit 0
     assert.match(state.summary_path, /-summary\.json$/);
   });
 
+  it('smoke-prod dry-run with foreground bundle config succeeds even when no checkpoints exist yet', async () => {
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--config',
+      join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json'),
+      '--host',
+      '127.0.0.1',
+      '--port',
+      String(port),
+      '--startup-check-host',
+      '127.0.0.1',
+      '--startup-check-port',
+      String(port),
+      '--dry-run',
+    ]);
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.match(result.stdout, /next-long-run-us-12x10/);
+    assert.match(result.stdout, /next-long-run-jp-12x10/);
+    assert.doesNotMatch(result.stderr, /NoneType/);
+  });
+
   it('smoke-prod lets CLI smoke-cli override the JSON config value', async () => {
     const fakeNodePath = join(tempDir, 'fake-node.sh');
     const fakeNodeLog = join(tempDir, 'fake-node.log');

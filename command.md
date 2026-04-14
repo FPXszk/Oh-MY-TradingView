@@ -411,7 +411,7 @@ fine-tune bundle は `next-long-run-us-finetune-100x10` / `next-long-run-jp-fine
 ### Python night batch orchestration
 
 ```bash
-# US/JP 100x10 fine-tune bundle を smoke -> full foreground で監視実行
+# US/JP 12x10 bundle を smoke -> full foreground で監視実行
 python3 python/night_batch.py smoke-prod --config config/night_batch/bundle-foreground-reuse-config.json
 
 # ローカル都合で detached 実行したい場合はこちら
@@ -441,7 +441,7 @@ python3 python/night_batch.py report \
   --out results/night-batch/morning-report.md
 ```
 
-`config/night_batch/bundle-foreground-reuse-config.json` は、既存 `next-long-run-us-finetune-100x10` / `next-long-run-jp-finetune-100x10` を参照して **smoke -> full foreground** を GitHub Actions で完走監視するための config。  
+`config/night_batch/bundle-foreground-reuse-config.json` は、`next-long-run-us-12x10` / `next-long-run-jp-12x10` を参照して **smoke -> full foreground** を GitHub Actions で完走監視するための config（旧既定は `finetune-100x10`）。  
 `config/night_batch/bundle-detached-reuse-config.json` は、ローカル都合で detached 実行を明示したい場合の代替 config。  
 
 `config/night_batch/nightly.default.json` は single-backtest ベースのサンプルとして残す。  

@@ -355,7 +355,7 @@ TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9223 node src/cli/index.js backtest nvda-ma
 夜間自動化は **Python が WSL 側の `9223` 接続を preflight し、TradingView 操作本体は既存 Node script を subprocess 実行する** 構成を想定しています。CDP/backtest 本体を Python に再実装しません。
 
 ```bash
-# US/JP 100x10 fine-tune bundle を smoke -> full foreground で監視実行
+# US/JP 12x10 bundle を smoke -> full foreground で監視実行
 python3 python/night_batch.py smoke-prod --config config/night_batch/bundle-foreground-reuse-config.json
 
 # ローカル都合で detached 実行したい場合はこちら
@@ -385,7 +385,7 @@ python3 python/night_batch.py report \
   --out results/night-batch/morning-report.md
 ```
 
-`config/night_batch/bundle-foreground-reuse-config.json` は、既存 `next-long-run-us-finetune-100x10` / `next-long-run-jp-finetune-100x10` campaign を再利用して **smoke から full を foreground で完走監視する** workflow / wrapper 向け config です。  
+`config/night_batch/bundle-foreground-reuse-config.json` は、`next-long-run-us-12x10` / `next-long-run-jp-12x10` campaign を参照して **smoke から full を foreground で完走監視する** workflow / wrapper 向け config です（旧既定は `finetune-100x10`）。  
 `config/night_batch/bundle-detached-reuse-config.json` は、ローカル都合で detached 実行を明示したいときの代替 config として残します。
 
 `config/night_batch/nightly.default.json` は single-backtest ベースのサンプルです。日中に戦略案を差し替えたいときは、この JSON の `strategies.smoke.cli` / `strategies.production.cli` を更新するか、CLI override を使います。
