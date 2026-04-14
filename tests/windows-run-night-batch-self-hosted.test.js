@@ -25,6 +25,14 @@ describe('run-night-batch-self-hosted.cmd', () => {
     assert.match(script, /--config \\"%CONFIG_PATH%\\" --round-mode resume-current-round/);
     assert.match(script, /--config \\"%CONFIG_PATH%\\" --round-mode advance-next-round/);
     assert.match(script, /--config \\"%CONFIG_PATH%\\" --round-mode \\"%ROUND_MODE%\\"/);
+    assert.match(script, /archive-rounds/,
+      'wrapper must archive completed rounds before and after manual runs');
+    assert.match(script, /GITHUB_ACTIONS/,
+      'wrapper must skip post-run archive cleanup inside GitHub Actions');
+    assert.ok(
+      script.indexOf('archive-rounds') < script.indexOf('ROUND_MODE'),
+      'wrapper must clean completed rounds before selecting the round mode',
+    );
     assert.doesNotMatch(script, /--config \\"\$CONFIG_PATH\\"/);
     assert.doesNotMatch(script, /--round-mode \\"\$ROUND_MODE\\"/);
   });
@@ -225,6 +233,12 @@ describe('night-batch-self-hosted workflow', () => {
       'workflow must call the summary script that writes to GITHUB_STEP_SUMMARY');
     assert.match(workflow, /actions\/upload-artifact@v4/,
       'workflow must upload night batch artifacts');
+    assert.match(workflow, /Archive completed night batch rounds/,
+      'workflow must archive completed rounds after artifact upload');
+    assert.ok(
+      workflow.indexOf('Archive completed night batch rounds') > workflow.indexOf('actions/upload-artifact@v4'),
+      'workflow must archive rounds after the upload step',
+    );
   });
 });
 
@@ -493,6 +507,8 @@ describe('docs: next strategy update policy', () => {
       'README must mention artifact upload');
     assert.match(readme, /roundN\/bundle-foreground-state\.json/i,
       'README must point to the round-scoped foreground state file path');
+    assert.match(readme, /archive\/roundN/i,
+      'README must mention archived round output path');
   });
 
   it('command.md documents live checkout protection during active run', () => {
@@ -516,6 +532,8 @@ describe('docs: next strategy update policy', () => {
       'command.md must reference advance-next-round');
     assert.match(cmd, /workflow.*production.*(?:完了|終了|complete|finish).*(?:確認|verify|check)/i,
       'command.md must instruct to confirm workflow-tracked production completion before updating');
+    assert.match(cmd, /archive\/roundN/i,
+      'command.md must mention archived round output path');
   });
 
   it('command.md documents GitHub summary, artifact, and foreground state outputs', () => {
@@ -527,5 +545,7 @@ describe('docs: next strategy update policy', () => {
       'command.md must mention artifact upload');
     assert.match(cmd, /roundN\/bundle-foreground-state\.json/i,
       'command.md must point to the round-scoped foreground state file path');
+    assert.match(cmd, /archive\/roundN/i,
+      'command.md must mention archived round output path');
   });
 });

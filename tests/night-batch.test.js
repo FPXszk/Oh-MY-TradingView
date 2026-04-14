@@ -18,10 +18,13 @@ import { spawn } from 'node:child_process';
 const PROJECT_ROOT = join(process.cwd());
 const SCRIPT_PATH = join(PROJECT_ROOT, 'python', 'night_batch.py');
 let RESULTS_DIR = join(PROJECT_ROOT, 'results', 'night-batch');
+const ROUND_MODE_COMMANDS = new Set(['bundle', 'campaign', 'recover', 'nightly', 'smoke-prod']);
 
 function runPython(args, options = {}) {
   const effectiveArgs = [...args];
-  if (!effectiveArgs.includes('--round-mode') && effectiveArgs.length >= 2) {
+  if (!effectiveArgs.includes('--round-mode')
+      && effectiveArgs.length >= 2
+      && ROUND_MODE_COMMANDS.has(effectiveArgs[1])) {
     effectiveArgs.splice(2, 0, '--round-mode', 'advance-next-round');
   }
   return new Promise((resolve, reject) => {
@@ -48,6 +51,28 @@ function runPython(args, options = {}) {
       resolve({ status: code, stdout, stderr });
     });
   });
+}
+
+function writeRoundFixture(roundNumber, { completed = false } = {}) {
+  const roundDir = join(RESULTS_DIR, `round${roundNumber}`);
+  mkdirSync(roundDir, { recursive: true });
+  writeFileSync(join(roundDir, 'round-manifest.json'), JSON.stringify({
+    round: roundNumber,
+    mode: 'advance-next-round',
+    runs: [{
+      run_id: `fixture-${roundNumber}`,
+      command: 'smoke-prod',
+      started_at: '2026-04-10T00:00:00.000Z',
+    }],
+  }, null, 2), 'utf8');
+  if (completed) {
+    writeFileSync(join(roundDir, `20260410_${String(roundNumber).padStart(6, '0')}-summary.json`), JSON.stringify({
+      success: true,
+      command: 'smoke-prod',
+      steps: [],
+    }, null, 2), 'utf8');
+  }
+  return roundDir;
 }
 
 function readSummaryFromResult(result) {
@@ -823,6 +848,86 @@ exit 0
     for (const rd of existingRounds) {
       mkdirSync(join(RESULTS_DIR, rd), { recursive: true });
     }
+  });
+
+  it('archive-rounds moves completed rounds into the archive directory', async () => {
+    const activeRound = writeRoundFixture(1);
+    const completedRound = writeRoundFixture(2, { completed: true });
+
+    const result = await runPython([SCRIPT_PATH, 'archive-rounds']);
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.equal(existsSync(activeRound), true);
+    assert.equal(existsSync(completedRound), false);
+    assert.equal(existsSync(join(RESULTS_DIR, 'archive', 'round2')), true);
+    assert.equal(existsSync(join(RESULTS_DIR, 'archive', 'round1')), false);
+  });
+
+  it('resume-current-round ignores archived rounds', async () => {
+    writeRoundFixture(2, { completed: true });
+    const archiveResult = await runPython([SCRIPT_PATH, 'archive-rounds']);
+    assert.equal(archiveResult.status, 0, archiveResult.stderr || archiveResult.stdout);
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--host',
+      '127.0.0.1',
+      '--port',
+      String(port),
+      '--startup-check-host',
+      '127.0.0.1',
+      '--startup-check-port',
+      String(port),
+      '--dry-run',
+      '--round-mode',
+      'resume-current-round',
+    ]);
+
+    assert.equal(result.status, 2, result.stderr || result.stdout);
+    assert.match(result.stdout, /No existing round found/);
+  });
+
+  it('advance-next-round counts archived rounds when selecting the next round', async () => {
+    writeRoundFixture(1);
+    writeRoundFixture(2, { completed: true });
+    const archiveResult = await runPython([SCRIPT_PATH, 'archive-rounds']);
+    assert.equal(archiveResult.status, 0, archiveResult.stderr || archiveResult.stdout);
+
+    const fakeNodePath = join(tempDir, 'fake-node.sh');
+    const fakeNodeLog = join(tempDir, 'fake-node.log');
+    writeExecutable(
+      fakeNodePath,
+      `#!/bin/sh
+printf '%s\n' "$*" >> "${fakeNodeLog}"
+exit 0
+`,
+    );
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--host',
+      '127.0.0.1',
+      '--port',
+      String(port),
+      '--startup-check-host',
+      '127.0.0.1',
+      '--startup-check-port',
+      String(port),
+      '--node-bin',
+      fakeNodePath,
+      '--round-mode',
+      'advance-next-round',
+    ]);
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+
+    const summary = readSummaryFromResult(result);
+    assert.equal(summary.round, 3);
+    assert.equal(summary.round_mode, 'advance-next-round');
+    assert.equal(existsSync(join(RESULTS_DIR, 'round3')), true);
+    assert.equal(existsSync(join(RESULTS_DIR, 'archive', 'round2')), true);
   });
 
   it('resume-current-round skips smoke when it already completed in the round', async () => {

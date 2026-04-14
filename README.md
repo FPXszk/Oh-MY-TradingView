@@ -437,9 +437,9 @@ Windows Command Prompt からは次で同じ config を使えます。
 scripts\windows\run-night-batch-self-hosted.cmd config\night_batch\bundle-foreground-reuse-config.json
 ```
 
-`.github/workflows/night-batch-self-hosted.yml` は **self-hosted Windows runner** 前提です。runner が online であれば動作し、service 常駐は前提としません。既定の cron は **毎日 00:00 JST**（`0 15 * * *` UTC）で、既定 config は `config/night_batch/bundle-foreground-reuse-config.json` です。workflow は smoke と production を **完了まで監視**し、GitHub Actions 上の success/failure が production の完了結果と一致するようにします。workflow では `actions/checkout` を **`clean: false`** にしつつ、終了時に **`GITHUB_STEP_SUMMARY`** へ要約を追記し、`actions/upload-artifact` で最新 round の成果物を回収します。**00:00 JST の起動窓を外れた stale scheduled run は skip** します。
+`.github/workflows/night-batch-self-hosted.yml` は **self-hosted Windows runner** 前提です。runner が online であれば動作し、service 常駐は前提としません。既定の cron は **毎日 00:00 JST**（`0 15 * * *` UTC）で、既定 config は `config/night_batch/bundle-foreground-reuse-config.json` です。workflow は smoke と production を **完了まで監視**し、GitHub Actions 上の success/failure が production の完了結果と一致するようにします。workflow では `actions/checkout` を **`clean: false`** にしつつ、終了時に **`GITHUB_STEP_SUMMARY`** へ要約を追記し、`actions/upload-artifact` で最新 round の成果物を回収し、完了後に `results/night-batch/archive/roundN/` へ退避します。**00:00 JST の起動窓を外れた stale scheduled run は skip** します。
 
-workflow / manual wrapper の foreground 実行経路では `--round-mode` を使うため、state file は `results/night-batch/roundN/bundle-foreground-state.json` に配置されます。state の `updated_at` が heartbeat、summary JSON の `termination_reason` / `failed_step` / `last_checkpoint` が GitHub 側の切り分け根拠になります。hard reboot / power loss では最後の summary / artifact upload が完了しない可能性は残ります。
+workflow / manual wrapper の foreground 実行経路では `--round-mode` を使うため、state file は `results/night-batch/roundN/bundle-foreground-state.json` に配置され、完了後に `results/night-batch/archive/roundN/` へ退避されます。state の `updated_at` が heartbeat、summary JSON の `termination_reason` / `failed_step` / `last_checkpoint` が GitHub 側の切り分け根拠になります。hard reboot / power loss では最後の summary / artifact upload が完了しない可能性は残ります。
 
 workflow の summary / artifact 周りの PowerShell ロジックは `scripts/windows/github-actions/` 配下の外部スクリプトに分離しています。inline PowerShell の構文エラーで workflow が failure になった事例と対策は [run 8 レポート](docs/reports/night-batch-self-hosted-run8.md) を参照してください。
 

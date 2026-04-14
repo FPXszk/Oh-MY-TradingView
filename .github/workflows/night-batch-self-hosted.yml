@@ -99,6 +99,14 @@ jobs:
           path: ${{ steps.night_batch_outputs.outputs.round_dir }}
           if-no-files-found: warn
 
+      - name: Archive completed night batch rounds
+        if: always() && steps.freshness.outputs.should_run == 'true'
+        shell: cmd
+        run: |
+          for /f "usebackq delims=" %%I in (`wsl.exe wslpath -a "%CD%"`) do set "REPO_WSL=%%I"
+          if not defined REPO_WSL exit /b 1
+          wsl.exe bash -lc "cd \"%REPO_WSL%\" && python3 python/night_batch.py archive-rounds"
+
       - name: Report skipped stale schedule
         if: steps.freshness.outputs.should_run != 'true'
         shell: powershell -NoProfile -ExecutionPolicy Bypass -command ". '{0}'"

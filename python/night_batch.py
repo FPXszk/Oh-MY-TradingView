@@ -8,6 +8,8 @@ import json
 import logging
 import os
 import shlex
+import re
+import shutil
 import subprocess
 import sys
 import threading
@@ -47,6 +49,8 @@ DEFAULT_DETACHED_STATE_FILE = 'results/night-batch/detached-production-state.jso
 EXIT_PREFLIGHT_FAILED = 1
 EXIT_STEP_FAILED = 2
 ROUND_MANIFEST_FILE = 'round-manifest.json'
+ARCHIVE_DIR_NAME = 'archive'
+ROUND_DIR_PATTERN = re.compile(r'^round(\d+)$')
 
 
 def utc_run_id() -> str:
@@ -65,27 +69,46 @@ def ensure_output_dir(output_dir: Path) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
 
-def find_existing_rounds() -> list[int]:
-    if not RESULTS_DIR.exists():
-        return []
+def parse_round_number(name: str) -> int | None:
+    match = ROUND_DIR_PATTERN.match(name)
+    if not match:
+        return None
+    return int(match.group(1))
+
+
+def list_round_dirs(results_dir: Path, include_archive: bool = False) -> list[Path]:
+    round_dirs: list[Path] = []
+    if results_dir.exists():
+        for entry in results_dir.iterdir():
+            if entry.is_dir() and parse_round_number(entry.name) is not None:
+                round_dirs.append(entry)
+    if include_archive:
+        archive_dir = results_dir / ARCHIVE_DIR_NAME
+        if archive_dir.exists():
+            for entry in archive_dir.iterdir():
+                if entry.is_dir() and parse_round_number(entry.name) is not None:
+                    round_dirs.append(entry)
+    return sorted(round_dirs, key=lambda path: parse_round_number(path.name) or 0)
+
+
+def find_existing_rounds(include_archive: bool = False) -> list[int]:
     rounds = []
-    for entry in RESULTS_DIR.iterdir():
-        if entry.is_dir() and entry.name.startswith('round'):
-            try:
-                rounds.append(int(entry.name[5:]))
-            except ValueError:
-                pass
-    return sorted(rounds)
+    for entry in list_round_dirs(RESULTS_DIR, include_archive=include_archive):
+        round_number = parse_round_number(entry.name)
+        if round_number is not None:
+            rounds.append(round_number)
+    return sorted(set(rounds))
 
 
 def resolve_round_dir(mode: str) -> tuple[Path, int]:
-    rounds = find_existing_rounds()
     if mode == 'advance-next-round':
+        rounds = find_existing_rounds(include_archive=True)
         next_num = (max(rounds) + 1) if rounds else 1
         round_dir = RESULTS_DIR / f'round{next_num}'
         round_dir.mkdir(parents=True, exist_ok=True)
         return round_dir, next_num
     if mode == 'resume-current-round':
+        rounds = find_existing_rounds()
         if not rounds:
             raise RuntimeError(
                 'No existing round found under results/night-batch/. '
@@ -219,6 +242,19 @@ def resolve_project_path(path_value: str | None) -> Path | None:
     return PROJECT_ROOT / path
 
 
+def configure_console_logger(name: str) -> logging.Logger:
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.INFO)
+    logger.handlers.clear()
+    logger.propagate = False
+
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+    logger.addHandler(handler)
+
+    return logger
+
+
 def configure_logger(run_id: str, output_dir: Path = RESULTS_DIR) -> tuple[logging.Logger, Path]:
     ensure_output_dir(output_dir)
     log_path = output_dir / f'{run_id}.log'
@@ -330,6 +366,12 @@ def build_parser() -> argparse.ArgumentParser:
     production_child.add_argument('--production-checkpoint-roots-json', default='[]')
     production_child.add_argument('--output-dir', default=str(RESULTS_DIR))
 
+    archive_rounds = subparsers.add_parser(
+        'archive-rounds',
+        help='Move completed round directories under results/night-batch/archive',
+    )
+    archive_rounds.add_argument('--dry-run', action='store_true')
+
     return parser
 
 
@@ -432,6 +474,45 @@ def read_config_section(config: dict, key: str) -> dict:
     if not isinstance(value, dict):
         raise ValueError(f'Config section "{key}" must be an object')
     return value
+
+
+def round_dir_has_summary(round_dir: Path) -> bool:
+    return any(round_dir.glob('*-summary.json'))
+
+
+def archive_completed_rounds(
+    results_dir: Path = RESULTS_DIR,
+    logger: logging.Logger | None = None,
+    dry_run: bool = False,
+) -> list[tuple[Path, Path]]:
+    archived: list[tuple[Path, Path]] = []
+    if not results_dir.exists():
+        return archived
+
+    archive_root = results_dir / ARCHIVE_DIR_NAME
+    for round_dir in list_round_dirs(results_dir):
+        if not round_dir_has_summary(round_dir):
+            continue
+        target_dir = archive_root / round_dir.name
+        if logger:
+            logger.info(
+                '%s completed round %s -> %s',
+                '[dry-run] Archive' if dry_run else 'Archive',
+                relative_path(round_dir),
+                relative_path(target_dir),
+            )
+        if dry_run:
+            archived.append((round_dir, target_dir))
+            continue
+        archive_root.mkdir(parents=True, exist_ok=True)
+        if target_dir.exists():
+            raise RuntimeError(
+                f'Archive target already exists: {relative_path(target_dir)}'
+            )
+        shutil.move(str(round_dir), str(target_dir))
+        archived.append((round_dir, target_dir))
+
+    return archived
 
 
 def resolve_option(
@@ -1486,7 +1567,18 @@ def main() -> int:
     parser = build_parser()
     raw_args = sys.argv[1:]
     args = parser.parse_args(raw_args)
-    run_id = args.run_id or utc_run_id()
+    run_id = getattr(args, 'run_id', None) or utc_run_id()
+
+    if args.command == 'archive-rounds':
+        logger = configure_console_logger('night_batch.archive')
+        try:
+            archived = archive_completed_rounds(RESULTS_DIR, logger=logger, dry_run=args.dry_run)
+        except (RuntimeError, OSError) as error:
+            logger.error('%s', error)
+            return EXIT_STEP_FAILED
+        if not archived:
+            logger.info('No completed rounds to archive.')
+        return 0
 
     round_mode = getattr(args, 'round_mode', None)
     output_dir = Path(getattr(args, 'output_dir', str(RESULTS_DIR))) if args.command == 'production-child' else RESULTS_DIR
@@ -1505,7 +1597,7 @@ def main() -> int:
             output_dir, round_number = resolve_round_dir(round_mode)
             if round_mode == 'resume-current-round' and round_fingerprint:
                 ensure_round_manifest_matches(output_dir, round_fingerprint)
-        except (RuntimeError, ValueError) as error:
+        except (RuntimeError, ValueError, OSError) as error:
             logger_fallback, _ = configure_logger(run_id)
             logger_fallback.error('%s', error)
             summary = {
