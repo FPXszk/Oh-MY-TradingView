@@ -6,8 +6,7 @@ import {
   BACKTEST_UNIVERSE_SEARCH_DIRS,
   resolveNamedJsonPath,
 } from './repo-paths.js';
-
-const RETIRED_PRESETS_PATH = new URL('../../docs/bad-strategy/retired-strategy-presets.json', import.meta.url);
+import { loadCatalog } from './strategy-catalog.js';
 
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const DEFAULT_FROM = '2015-01-01';
@@ -381,14 +380,13 @@ export async function loadCampaign(campaignId, { phase = 'full' } = {}) {
     symbols = symbols.slice(0, config.symbol_limit);
   }
 
-  const [presetsRaw, retiredPresetsRaw] = await Promise.all([
+  const [presetsRaw, catalog] = await Promise.all([
     readFile(BACKTEST_PRESETS_PATH, 'utf8'),
-    readFile(RETIRED_PRESETS_PATH, 'utf8'),
+    loadCatalog(),
   ]);
   const presetsData = JSON.parse(presetsRaw);
-  const retiredPresetsData = JSON.parse(retiredPresetsRaw);
   let strategies = resolveStrategies(
-    [...presetsData.strategies, ...retiredPresetsData.strategies],
+    catalog.strategies.map(({ lifecycle, ...strategy }) => strategy),
     config,
   );
   if (strategies.length === 0) {

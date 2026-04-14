@@ -9,12 +9,12 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const CATALOG_PATH = join(__dirname, '..', '..', 'config', 'backtest', 'strategy-catalog.json');
+export const CATALOG_PATH = join(__dirname, '..', '..', 'config', 'backtest', 'strategy-catalog.json');
 
 const VALID_STATUSES = new Set(['live', 'retired']);
 
-export async function loadCatalog() {
-  const raw = await readFile(CATALOG_PATH, 'utf8');
+export async function loadCatalog(catalogPath = CATALOG_PATH) {
+  const raw = await readFile(catalogPath, 'utf8');
   return JSON.parse(raw);
 }
 

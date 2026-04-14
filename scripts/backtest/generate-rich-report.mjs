@@ -137,6 +137,8 @@ async function main() {
       out: { type: 'string' },
       'ranking-out': { type: 'string' },
       'diff-out': { type: 'string' },
+      'catalog-path': { type: 'string' },
+      'catalog-out': { type: 'string' },
       'date-from': { type: 'string', default: '2000-01-01' },
       'date-to': { type: 'string', default: 'latest' },
       title: { type: 'string', default: 'Next long-run market-matched 200 results' },
@@ -190,13 +192,21 @@ async function main() {
     await writeFile(values['ranking-out'], `${JSON.stringify(combinedRanking, null, 2)}\n`);
   }
 
-  if (values['diff-out']) {
+  const catalogPath = values['catalog-path'] || join(PROJECT_ROOT, 'config', 'backtest', 'strategy-catalog.json');
+  if (values['diff-out'] || values['catalog-out']) {
     const { loadCatalog } = await import(join(PROJECT_ROOT, 'src', 'core', 'strategy-catalog.js'));
     const { buildDiffArtifact } = await import(join(PROJECT_ROOT, 'src', 'core', 'strategy-live-retired-diff.js'));
-    const catalog = await loadCatalog();
-    const diffArtifact = buildDiffArtifact(catalog);
-    await writeFile(values['diff-out'], `${JSON.stringify(diffArtifact, null, 2)}\n`);
-    process.stdout.write(`Wrote diff artifact: ${values['diff-out']}\n`);
+    const catalog = await loadCatalog(catalogPath);
+    if (values['catalog-out']) {
+      await writeFile(values['catalog-out'], `${JSON.stringify(catalog, null, 2)}\n`);
+      process.stdout.write(`Wrote catalog snapshot: ${values['catalog-out']}\n`);
+    }
+    if (values['diff-out']) {
+      const diffArtifact = buildDiffArtifact(catalog);
+      diffArtifact.catalog_path = values['catalog-out'] || values['catalog-path'] || 'config/backtest/strategy-catalog.json';
+      await writeFile(values['diff-out'], `${JSON.stringify(diffArtifact, null, 2)}\n`);
+      process.stdout.write(`Wrote diff artifact: ${values['diff-out']}\n`);
+    }
   }
 
   const content = [
@@ -211,6 +221,7 @@ async function main() {
     `- US recovered full: \`${values.us}\``,
     `- JP recovered full: \`${values.jp}\``,
     ...(values['ranking-out'] ? [`- combined ranking: \`${values['ranking-out']}\``] : []),
+    ...(values['catalog-out'] ? [`- strategy catalog snapshot: \`${values['catalog-out']}\``] : []),
     '',
     '## Coverage summary',
     '',

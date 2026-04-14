@@ -211,6 +211,10 @@ describe('night_batch.py CLI', () => {
       'report must always include --ranking-out in the command');
     assert.match(result.stdout, /combined-ranking\.json/,
       'auto-computed ranking-out must end with combined-ranking.json');
+    assert.match(result.stdout, /--catalog-out/,
+      'report must always include --catalog-out in the command');
+    assert.match(result.stdout, /strategy-catalog\.snapshot\.json/,
+      'auto-computed catalog-out must end with strategy-catalog.snapshot.json');
   });
 
   it('nightly dry-run auto-computes ranking-out when not explicitly provided', async () => {
@@ -223,6 +227,10 @@ describe('night_batch.py CLI', () => {
       'nightly must always include --ranking-out in the command');
     assert.match(result.stdout, /combined-ranking\.json/,
       'auto-computed ranking-out must end with combined-ranking.json');
+    assert.match(result.stdout, /--catalog-out/,
+      'nightly must always include --catalog-out in the command');
+    assert.match(result.stdout, /strategy-catalog\.snapshot\.json/,
+      'auto-computed catalog-out must end with strategy-catalog.snapshot.json');
   });
 
   it('report writes a deterministic latest backtest summary when recovered results exist', async () => {
@@ -237,6 +245,7 @@ describe('night_batch.py CLI', () => {
       `#!/bin/sh
 out=""
 rankout=""
+catalogout=""
 while [ "$#" -gt 0 ]; do
   if [ "$1" = "--out" ]; then
     out="$2"
@@ -248,11 +257,19 @@ while [ "$#" -gt 0 ]; do
     shift 2
     continue
   fi
+  if [ "$1" = "--catalog-out" ]; then
+    catalogout="$2"
+    shift 2
+    continue
+  fi
   shift
 done
 printf '# fake rich report\\n' > "$out"
 if [ -n "$rankout" ]; then
   printf '[{"presetId":"preset-a","composite_score":2}]\\n' > "$rankout"
+fi
+if [ -n "$catalogout" ]; then
+  printf '{"strategies":[{"id":"preset-a","lifecycle":{"status":"live"}}]}\\n' > "$catalogout"
 fi
 exit 0
 `,
@@ -351,6 +368,8 @@ exit 0
     assert.match(latestSummary, /Combined top 10/);
     assert.match(latestSummary, /ranking_artifact/,
       'latest summary must include ranking_artifact path when ranking JSON is produced');
+    assert.match(latestSummary, /strategy_catalog_snapshot/,
+      'latest summary must include strategy_catalog_snapshot path when catalog snapshot is produced');
     assert.match(latestSummary, /Live \/ Retired diff/,
       'latest summary must include Live / Retired diff section');
   });
@@ -1337,10 +1356,12 @@ exit 0
     const { createHash } = await import('node:crypto');
     const bundleConfigPath = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
     const strategyPresetsPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-presets.json');
+    const strategyCatalogPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-catalog.json');
     const usCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-us-12x10.json');
     const jpCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-jp-12x10.json');
 
     const strategyHash = createHash('sha256').update(readFileSync(strategyPresetsPath)).digest('hex');
+    const catalogHash = createHash('sha256').update(readFileSync(strategyCatalogPath)).digest('hex');
     const usHash = createHash('sha256').update(readFileSync(usCampaignPath)).digest('hex');
     const jpHash = createHash('sha256').update(readFileSync(jpCampaignPath)).digest('hex');
 
@@ -1354,6 +1375,7 @@ exit 0
       files: [
         { path: toRepoRelativePath(bundleConfigPath), role: 'bundle_config', sha256: 'wrong_hash_to_trigger_block' },
         { path: toRepoRelativePath(strategyPresetsPath), role: 'strategy_presets', sha256: strategyHash },
+        { path: toRepoRelativePath(strategyCatalogPath), role: 'strategy_catalog', sha256: catalogHash },
         { path: toRepoRelativePath(usCampaignPath), role: 'campaign_latest', sha256: usHash },
         { path: toRepoRelativePath(jpCampaignPath), role: 'campaign_latest', sha256: jpHash },
       ],
@@ -1388,10 +1410,12 @@ exit 0
     const { createHash } = await import('node:crypto');
     const bundleConfigPath = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
     const strategyPresetsPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-presets.json');
+    const strategyCatalogPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-catalog.json');
     const usCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-us-12x10.json');
     const jpCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-jp-12x10.json');
 
     const bundleHash = createHash('sha256').update(readFileSync(bundleConfigPath)).digest('hex');
+    const catalogHash = createHash('sha256').update(readFileSync(strategyCatalogPath)).digest('hex');
     const usHash = createHash('sha256').update(readFileSync(usCampaignPath)).digest('hex');
     const jpHash = createHash('sha256').update(readFileSync(jpCampaignPath)).digest('hex');
 
@@ -1405,6 +1429,7 @@ exit 0
       files: [
         { path: toRepoRelativePath(bundleConfigPath), role: 'bundle_config', sha256: bundleHash },
         { path: toRepoRelativePath(strategyPresetsPath), role: 'strategy_presets', sha256: 'wrong_hash_for_warning' },
+        { path: toRepoRelativePath(strategyCatalogPath), role: 'strategy_catalog', sha256: catalogHash },
         { path: toRepoRelativePath(usCampaignPath), role: 'campaign_latest', sha256: usHash },
         { path: toRepoRelativePath(jpCampaignPath), role: 'campaign_latest', sha256: jpHash },
       ],
@@ -1442,11 +1467,13 @@ exit 0
     const { createHash } = await import('node:crypto');
     const bundleConfigPath = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
     const strategyPresetsPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-presets.json');
+    const strategyCatalogPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-catalog.json');
     const usCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-us-12x10.json');
     const jpCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-jp-12x10.json');
 
     const bundleHash = createHash('sha256').update(readFileSync(bundleConfigPath)).digest('hex');
     const strategyHash = createHash('sha256').update(readFileSync(strategyPresetsPath)).digest('hex');
+    const catalogHash = createHash('sha256').update(readFileSync(strategyCatalogPath)).digest('hex');
     const jpHash = createHash('sha256').update(readFileSync(jpCampaignPath)).digest('hex');
 
     const baselinePath = join(tempDir, 'baseline-campaign.json');
@@ -1459,6 +1486,7 @@ exit 0
       files: [
         { path: toRepoRelativePath(bundleConfigPath), role: 'bundle_config', sha256: bundleHash },
         { path: toRepoRelativePath(strategyPresetsPath), role: 'strategy_presets', sha256: strategyHash },
+        { path: toRepoRelativePath(strategyCatalogPath), role: 'strategy_catalog', sha256: catalogHash },
         { path: toRepoRelativePath(usCampaignPath), role: 'campaign_latest', sha256: 'wrong_campaign_hash' },
         { path: toRepoRelativePath(jpCampaignPath), role: 'campaign_latest', sha256: jpHash },
       ],
@@ -1491,6 +1519,60 @@ exit 0
     assert.ok(summary.live_checkout_protection.warning_files.some(
       (f) => f.role === 'campaign_latest'),
       'must have campaign_latest warning');
+  });
+
+  it('baseline + strategy-catalog hash mismatch produces warning but run succeeds', async () => {
+    const { createHash } = await import('node:crypto');
+    const bundleConfigPath = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
+    const strategyPresetsPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-presets.json');
+    const strategyCatalogPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-catalog.json');
+    const usCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-us-12x10.json');
+    const jpCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-jp-12x10.json');
+
+    const bundleHash = createHash('sha256').update(readFileSync(bundleConfigPath)).digest('hex');
+    const strategyHash = createHash('sha256').update(readFileSync(strategyPresetsPath)).digest('hex');
+    const usHash = createHash('sha256').update(readFileSync(usCampaignPath)).digest('hex');
+    const jpHash = createHash('sha256').update(readFileSync(jpCampaignPath)).digest('hex');
+
+    const baselinePath = join(tempDir, 'baseline-catalog.json');
+    writeFileSync(baselinePath, JSON.stringify({
+      run_id: 'test_baseline_catalog',
+      run_attempt: '1',
+      algorithm: 'sha256',
+      bundle_config_path: toRepoRelativePath(bundleConfigPath),
+      resolved_campaigns: [],
+      files: [
+        { path: toRepoRelativePath(bundleConfigPath), role: 'bundle_config', sha256: bundleHash },
+        { path: toRepoRelativePath(strategyPresetsPath), role: 'strategy_presets', sha256: strategyHash },
+        { path: toRepoRelativePath(strategyCatalogPath), role: 'strategy_catalog', sha256: 'wrong_catalog_hash' },
+        { path: toRepoRelativePath(usCampaignPath), role: 'campaign_latest', sha256: usHash },
+        { path: toRepoRelativePath(jpCampaignPath), role: 'campaign_latest', sha256: jpHash },
+      ],
+      aggregate_fingerprint: 'dummy',
+    }), 'utf8');
+
+    const fakeNodePath = join(tempDir, 'fake-node-catalog.sh');
+    writeExecutable(fakeNodePath, '#!/bin/sh\nexit 0\n');
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--config', bundleConfigPath,
+      '--host', '127.0.0.1',
+      '--port', String(port),
+      '--startup-check-host', '127.0.0.1',
+      '--startup-check-port', String(port),
+      '--node-bin', fakeNodePath,
+    ], {
+      env: { NIGHT_BATCH_LIVE_CHECKOUT_BASELINE_PATH: baselinePath },
+    });
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    const summary = readSummaryFromResult(result);
+    assert.equal(summary.live_checkout_protection.status, 'warning');
+    assert.ok(summary.live_checkout_protection.warning_files.some(
+      (f) => f.role === 'strategy_catalog'),
+      'must have strategy_catalog warning');
   });
 
   it('missing baseline file blocks production when env var is set', async () => {

@@ -1,5 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 import {
   loadCatalog,
@@ -8,6 +10,8 @@ import {
   findStrategyById,
   validateCatalogIntegrity,
 } from '../src/core/strategy-catalog.js';
+
+const PROJECT_ROOT = process.cwd();
 
 const expectedLiveIds = [
   'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight',
@@ -126,6 +130,16 @@ describe('getLiveStrategies / getRetiredStrategies', () => {
     const catalog = await loadCatalog();
     const ids = catalog.strategies.map((s) => s.id);
     assert.equal(new Set(ids).size, ids.length);
+  });
+
+  it('live and retired projection files stay aligned with the catalog', async () => {
+    const catalog = await loadCatalog();
+    const liveIds = getLiveStrategies(catalog).map((s) => s.id);
+    const retiredIds = getRetiredStrategies(catalog).map((s) => s.id);
+    const liveFile = JSON.parse(readFileSync(join(PROJECT_ROOT, 'config', 'backtest', 'strategy-presets.json'), 'utf8'));
+    const retiredFile = JSON.parse(readFileSync(join(PROJECT_ROOT, 'docs', 'bad-strategy', 'retired-strategy-presets.json'), 'utf8'));
+    assert.deepEqual(liveFile.strategies.map((s) => s.id), liveIds);
+    assert.deepEqual(retiredFile.strategies.map((s) => s.id), retiredIds);
   });
 });
 

@@ -42,6 +42,7 @@ $usCampaign = $bundle.us_campaign
 $jpCampaign = $bundle.jp_campaign
 
 $strategyPresetsPath = 'config/backtest/strategy-presets.json'
+$strategyCatalogPath = 'config/backtest/strategy-catalog.json'
 
 $resolvedCampaigns = @()
 $files = @()
@@ -51,6 +52,9 @@ $files += @{ path = $BundleConfigPath; role = 'bundle_config'; sha256 = $bundleC
 
 $strategyPresetsHash = Get-FileSha256 $strategyPresetsPath
 $files += @{ path = $strategyPresetsPath; role = 'strategy_presets'; sha256 = $strategyPresetsHash }
+
+$strategyCatalogHash = Get-FileSha256 $strategyCatalogPath
+$files += @{ path = $strategyCatalogPath; role = 'strategy_catalog'; sha256 = $strategyCatalogHash }
 
 if ($usCampaign) {
     $usCampaignPath = Normalize-RepoPath "config/backtest/campaigns/latest/$usCampaign.json"

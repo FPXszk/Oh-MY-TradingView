@@ -332,6 +332,8 @@ def build_parser() -> argparse.ArgumentParser:
     report.add_argument('--out', required=True)
     report.add_argument('--ranking-out')
     report.add_argument('--diff-out')
+    report.add_argument('--catalog-path')
+    report.add_argument('--catalog-out')
     report.add_argument('--date-from', default='2000-01-01')
     report.add_argument('--date-to', default='latest')
     report.add_argument('--title')
@@ -345,6 +347,8 @@ def build_parser() -> argparse.ArgumentParser:
     nightly.add_argument('--report-out')
     nightly.add_argument('--ranking-out')
     nightly.add_argument('--diff-out')
+    nightly.add_argument('--catalog-path')
+    nightly.add_argument('--catalog-out')
     nightly.add_argument('--date-from', default='2000-01-01')
     nightly.add_argument('--date-to', default='latest')
     nightly.add_argument('--title')
@@ -893,6 +897,23 @@ def default_diff_out(args, output_dir: Path | None = None) -> str:
     return str(effective_dir / f'{utc_run_id()}-live-retired-diff.json')
 
 
+def default_catalog_out(args, report_out: str | None = None, output_dir: Path | None = None) -> str:
+    explicit = getattr(args, 'catalog_out', None)
+    if explicit:
+        return explicit
+    if report_out:
+        report_path = resolve_project_path(report_out)
+        if report_path is not None:
+            name = report_path.name
+            if name.endswith('-rich-report.md'):
+                snapshot_name = name.replace('-rich-report.md', '-strategy-catalog.snapshot.json')
+            else:
+                snapshot_name = f'{report_path.stem}-strategy-catalog.snapshot.json'
+            return str(report_path.with_name(snapshot_name))
+    effective_dir = output_dir or resolve_project_path(getattr(args, 'output_dir', None)) or RESULTS_DIR
+    return str(effective_dir / f'{utc_run_id()}-strategy-catalog.snapshot.json')
+
+
 def build_step_specs(args) -> list[dict]:
     node_bin = args.node_bin
     host = getattr(args, 'host', DEFAULT_HOST)
@@ -975,6 +996,8 @@ def build_step_specs(args) -> list[dict]:
         args.ranking_out = ranking
         diff = default_diff_out(args)
         args.diff_out = diff
+        catalog_out = default_catalog_out(args, args.out)
+        args.catalog_out = catalog_out
         command = [
             node_bin,
             str(PROJECT_ROOT / 'scripts' / 'backtest' / 'generate-rich-report.mjs'),
@@ -992,6 +1015,10 @@ def build_step_specs(args) -> list[dict]:
             ranking,
             '--diff-out',
             diff,
+            '--catalog-path',
+            getattr(args, 'catalog_path', None) or str(PROJECT_ROOT / 'config' / 'backtest' / 'strategy-catalog.json'),
+            '--catalog-out',
+            catalog_out,
         ]
         if args.title:
             command.extend(['--title', args.title])
@@ -1006,6 +1033,8 @@ def build_step_specs(args) -> list[dict]:
     args.ranking_out = ranking
     diff = default_diff_out(args)
     args.diff_out = diff
+    catalog_out = default_catalog_out(args, report_out)
+    args.catalog_out = catalog_out
     bundle_args = argparse.Namespace(
         **{**vars(args), 'command': 'bundle', 'dry_run': args.dry_run},
     )
@@ -1020,6 +1049,8 @@ def build_step_specs(args) -> list[dict]:
         out=report_out,
         ranking_out=ranking,
         diff_out=diff,
+        catalog_path=getattr(args, 'catalog_path', None),
+        catalog_out=catalog_out,
         date_from=args.date_from,
         date_to=args.date_to,
         title=args.title,
@@ -1352,6 +1383,7 @@ def resolve_live_checkout_protection_targets(settings: dict) -> list[dict]:
     targets = [
         {'path': canonical_repo_path(resolved_config_path), 'role': 'bundle_config'},
         {'path': canonical_repo_path(PROJECT_ROOT / 'config' / 'backtest' / 'strategy-presets.json'), 'role': 'strategy_presets'},
+        {'path': canonical_repo_path(PROJECT_ROOT / 'config' / 'backtest' / 'strategy-catalog.json'), 'role': 'strategy_catalog'},
     ]
     if us_campaign:
         targets.append({
@@ -2020,6 +2052,7 @@ def write_latest_backtest_summary(
     jp_results_path: Path | None,
     rich_report_path: Path | None = None,
     ranking_artifact_path: Path | None = None,
+    catalog_snapshot_path: Path | None = None,
 ) -> None:
     if not us_results_path or not jp_results_path:
         return
@@ -2052,6 +2085,8 @@ def write_latest_backtest_summary(
         lines.append(f'- rich_report: `{relative_path(rich_report_path)}`')
     if ranking_artifact_path and ranking_artifact_path.exists():
         lines.append(f'- ranking_artifact: `{relative_path(ranking_artifact_path)}`')
+    if catalog_snapshot_path and catalog_snapshot_path.exists():
+        lines.append(f'- strategy_catalog_snapshot: `{relative_path(catalog_snapshot_path)}`')
 
     lines.extend([
         '',
@@ -2078,7 +2113,11 @@ def write_latest_backtest_summary(
             *format_rank_rows(market_summary['rows'], limit=5),
         ])
 
-    catalog_path = PROJECT_ROOT / 'config' / 'backtest' / 'strategy-catalog.json'
+    catalog_path = (
+        catalog_snapshot_path
+        if catalog_snapshot_path and catalog_snapshot_path.exists()
+        else PROJECT_ROOT / 'config' / 'backtest' / 'strategy-catalog.json'
+    )
     try:
         catalog = json.loads(catalog_path.read_text(encoding='utf-8'))
         strategies = catalog.get('strategies', [])
@@ -2111,18 +2150,21 @@ def maybe_write_latest_backtest_summary_from_args(
     jp_path: Path | None = None
     rich_report_path: Path | None = None
     ranking_artifact_path: Path | None = None
+    catalog_snapshot_path: Path | None = None
 
     if args.command == 'report':
         us_path = resolve_existing_json_path(getattr(args, 'us', None))
         jp_path = resolve_existing_json_path(getattr(args, 'jp', None))
         rich_report_path = resolve_existing_json_path(getattr(args, 'out', None))
         ranking_artifact_path = resolve_existing_json_path(getattr(args, 'ranking_out', None))
+        catalog_snapshot_path = resolve_existing_json_path(getattr(args, 'catalog_out', None))
     elif args.command in {'bundle', 'nightly'}:
         us_raw, jp_raw, report_raw = default_report_paths(args)
         us_path = resolve_existing_json_path(us_raw)
         jp_path = resolve_existing_json_path(jp_raw)
         rich_report_path = resolve_existing_json_path(report_raw)
         ranking_artifact_path = resolve_existing_json_path(getattr(args, 'ranking_out', None))
+        catalog_snapshot_path = resolve_existing_json_path(getattr(args, 'catalog_out', None))
 
     write_latest_backtest_summary(
         run_id=run_id,
@@ -2132,6 +2174,7 @@ def maybe_write_latest_backtest_summary_from_args(
         jp_results_path=jp_path,
         rich_report_path=rich_report_path,
         ranking_artifact_path=ranking_artifact_path,
+        catalog_snapshot_path=catalog_snapshot_path,
     )
 
 
