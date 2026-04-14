@@ -46,7 +46,7 @@ jobs:
         if: steps.freshness.outputs.should_run == 'true'
         shell: powershell -NoProfile -ExecutionPolicy Bypass -command ". '{0}'"
         run: |
-          & scripts/windows/github-actions/write-night-batch-live-checkout-baseline.ps1 -RunId 'gha_${{ github.run_id }}_${{ github.run_attempt }}' -RunAttempt '${{ github.run_attempt }}'
+          & scripts/windows/github-actions/write-night-batch-live-checkout-baseline.ps1 -RunId 'gha_${{ github.run_id }}_${{ github.run_attempt }}' -RunAttempt '${{ github.run_attempt }}' -BundleConfigPath '${{ inputs.config_path }}'
 
       - name: Run smoke gate and foreground production
         if: steps.freshness.outputs.should_run == 'true'

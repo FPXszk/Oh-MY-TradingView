@@ -17,12 +17,24 @@ param(
     [string]$BundleConfigPath = 'config/night_batch/bundle-foreground-reuse-config.json'
 )
 
+if (-not $BundleConfigPath) {
+    $BundleConfigPath = 'config/night_batch/bundle-foreground-reuse-config.json'
+}
+
+function Normalize-RepoPath {
+    param([string]$Value)
+    if (-not $Value) { return $Value }
+    return $Value.Replace('\', '/')
+}
+
 function Get-FileSha256 {
     param([string]$FilePath)
     if (-not (Test-Path $FilePath)) { return $null }
     $hash = Get-FileHash -Path $FilePath -Algorithm SHA256
     return $hash.Hash.ToLower()
 }
+
+$BundleConfigPath = Normalize-RepoPath $BundleConfigPath
 
 $bundleConfig = Get-Content -Raw $BundleConfigPath | ConvertFrom-Json
 $bundle = $bundleConfig.bundle
@@ -41,14 +53,14 @@ $strategyPresetsHash = Get-FileSha256 $strategyPresetsPath
 $files += @{ path = $strategyPresetsPath; role = 'strategy_presets'; sha256 = $strategyPresetsHash }
 
 if ($usCampaign) {
-    $usCampaignPath = "config/backtest/campaigns/latest/$usCampaign.json"
+    $usCampaignPath = Normalize-RepoPath "config/backtest/campaigns/latest/$usCampaign.json"
     $resolvedCampaigns += @{ id = $usCampaign; path = $usCampaignPath }
     $usCampaignHash = Get-FileSha256 $usCampaignPath
     $files += @{ path = $usCampaignPath; role = 'campaign_latest'; sha256 = $usCampaignHash }
 }
 
 if ($jpCampaign) {
-    $jpCampaignPath = "config/backtest/campaigns/latest/$jpCampaign.json"
+    $jpCampaignPath = Normalize-RepoPath "config/backtest/campaigns/latest/$jpCampaign.json"
     $resolvedCampaigns += @{ id = $jpCampaign; path = $jpCampaignPath }
     $jpCampaignHash = Get-FileSha256 $jpCampaignPath
     $files += @{ path = $jpCampaignPath; role = 'campaign_latest'; sha256 = $jpCampaignHash }
@@ -81,7 +93,7 @@ if (-not (Test-Path $outputDir)) {
     New-Item -ItemType Directory -Path $outputDir -Force | Out-Null
 }
 
-$baselinePath = Join-Path $outputDir "$RunId-live-checkout-baseline.json"
+$baselinePath = Normalize-RepoPath (Join-Path $outputDir "$RunId-live-checkout-baseline.json")
 $baseline | ConvertTo-Json -Depth 10 | Out-File -FilePath $baselinePath -Encoding utf8
 
 Write-Host "[diag] live_checkout_baseline written to $baselinePath"

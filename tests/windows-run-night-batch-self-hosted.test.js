@@ -597,6 +597,8 @@ describe('docs: next strategy update policy', () => {
     const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
     assert.match(workflow, /write-night-batch-live-checkout-baseline\.ps1/,
       'workflow must call write-night-batch-live-checkout-baseline.ps1');
+    assert.match(workflow, /-BundleConfigPath '\$\{\{ inputs\.config_path \}\}'/,
+      'workflow must pass workflow_dispatch config_path into the baseline writer');
   });
 
   it('baseline step appears before the smoke gate run step', () => {

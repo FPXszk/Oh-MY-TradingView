@@ -247,6 +247,15 @@ def resolve_project_path(path_value: str | None) -> Path | None:
     return PROJECT_ROOT / path
 
 
+def canonical_repo_path(path_value: str | Path | None) -> str | None:
+    if path_value is None:
+        return None
+    resolved = resolve_project_path(str(path_value))
+    if resolved is None:
+        return None
+    return relative_path(resolved)
+
+
 def configure_console_logger(name: str) -> logging.Logger:
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
@@ -1315,23 +1324,26 @@ def resolve_live_checkout_protection_targets(settings: dict) -> list[dict]:
     config_path = settings.get('config_path')
     if not config_path:
         return []
-    config = read_json_file(config_path)
+    resolved_config_path = resolve_project_path(str(config_path))
+    if resolved_config_path is None:
+        return []
+    config = read_json_file(resolved_config_path)
     bundle = read_config_section(config, 'bundle')
     us_campaign = bundle.get('us_campaign')
     jp_campaign = bundle.get('jp_campaign')
 
     targets = [
-        {'path': str(config_path), 'role': 'bundle_config'},
-        {'path': str(PROJECT_ROOT / 'config' / 'backtest' / 'strategy-presets.json'), 'role': 'strategy_presets'},
+        {'path': canonical_repo_path(resolved_config_path), 'role': 'bundle_config'},
+        {'path': canonical_repo_path(PROJECT_ROOT / 'config' / 'backtest' / 'strategy-presets.json'), 'role': 'strategy_presets'},
     ]
     if us_campaign:
         targets.append({
-            'path': str(PROJECT_ROOT / 'config' / 'backtest' / 'campaigns' / 'latest' / f'{us_campaign}.json'),
+            'path': canonical_repo_path(PROJECT_ROOT / 'config' / 'backtest' / 'campaigns' / 'latest' / f'{us_campaign}.json'),
             'role': 'campaign_latest',
         })
     if jp_campaign:
         targets.append({
-            'path': str(PROJECT_ROOT / 'config' / 'backtest' / 'campaigns' / 'latest' / f'{jp_campaign}.json'),
+            'path': canonical_repo_path(PROJECT_ROOT / 'config' / 'backtest' / 'campaigns' / 'latest' / f'{jp_campaign}.json'),
             'role': 'campaign_latest',
         })
     return targets
@@ -1339,7 +1351,10 @@ def resolve_live_checkout_protection_targets(settings: dict) -> list[dict]:
 
 def hash_file_sha256(path: str) -> str | None:
     try:
-        return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+        resolved_path = resolve_project_path(path)
+        if resolved_path is None:
+            return None
+        return hashlib.sha256(resolved_path.read_bytes()).hexdigest()
     except (OSError, FileNotFoundError):
         return None
 
@@ -1362,15 +1377,24 @@ def compute_aggregate_fingerprint(hashed_targets: list[dict]) -> str:
 def load_live_checkout_baseline(baseline_path: str | None) -> dict | None:
     if not baseline_path:
         return None
-    path = Path(baseline_path)
-    if not path.is_absolute():
-        path = PROJECT_ROOT / baseline_path
+    path = resolve_project_path(baseline_path)
+    if path is None:
+        return None
     if not path.exists():
         return None
     try:
         data = json.loads(path.read_text(encoding='utf-8'))
         if not isinstance(data, dict):
             return None
+        normalized_files = []
+        for entry in data.get('files', []):
+            if not isinstance(entry, dict):
+                continue
+            normalized_path = canonical_repo_path(entry.get('path'))
+            if not normalized_path:
+                continue
+            normalized_files.append({**entry, 'path': normalized_path})
+        data['files'] = normalized_files
         return data
     except (json.JSONDecodeError, OSError):
         return None

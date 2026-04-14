@@ -12,13 +12,17 @@ import {
 } from 'node:fs';
 import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, relative } from 'node:path';
 import { spawn } from 'node:child_process';
 
 const PROJECT_ROOT = join(process.cwd());
 const SCRIPT_PATH = join(PROJECT_ROOT, 'python', 'night_batch.py');
 let RESULTS_DIR = join(PROJECT_ROOT, 'results', 'night-batch');
 const ROUND_MODE_COMMANDS = new Set(['bundle', 'campaign', 'recover', 'nightly', 'smoke-prod']);
+
+function toRepoRelativePath(path) {
+  return relative(PROJECT_ROOT, path).replaceAll('\\', '/');
+}
 
 function runPython(args, options = {}) {
   const effectiveArgs = [...args];
@@ -1343,13 +1347,13 @@ exit 0
       run_id: 'test_baseline',
       run_attempt: '1',
       algorithm: 'sha256',
-      bundle_config_path: bundleConfigPath,
+      bundle_config_path: toRepoRelativePath(bundleConfigPath),
       resolved_campaigns: [],
       files: [
-        { path: bundleConfigPath, role: 'bundle_config', sha256: 'wrong_hash_to_trigger_block' },
-        { path: strategyPresetsPath, role: 'strategy_presets', sha256: strategyHash },
-        { path: usCampaignPath, role: 'campaign_latest', sha256: usHash },
-        { path: jpCampaignPath, role: 'campaign_latest', sha256: jpHash },
+        { path: toRepoRelativePath(bundleConfigPath), role: 'bundle_config', sha256: 'wrong_hash_to_trigger_block' },
+        { path: toRepoRelativePath(strategyPresetsPath), role: 'strategy_presets', sha256: strategyHash },
+        { path: toRepoRelativePath(usCampaignPath), role: 'campaign_latest', sha256: usHash },
+        { path: toRepoRelativePath(jpCampaignPath), role: 'campaign_latest', sha256: jpHash },
       ],
       aggregate_fingerprint: 'dummy',
     }), 'utf8');
@@ -1367,7 +1371,7 @@ exit 0
       '--startup-check-port', String(port),
       '--node-bin', fakeNodePath,
     ], {
-      env: { NIGHT_BATCH_LIVE_CHECKOUT_BASELINE_PATH: baselinePath },
+      env: { NIGHT_BATCH_LIVE_CHECKOUT_BASELINE_PATH: baselinePath.replaceAll('/', '\\') },
     });
 
     assert.equal(result.status, 2, result.stderr || result.stdout);
@@ -1394,13 +1398,13 @@ exit 0
       run_id: 'test_baseline_warn',
       run_attempt: '1',
       algorithm: 'sha256',
-      bundle_config_path: bundleConfigPath,
+      bundle_config_path: toRepoRelativePath(bundleConfigPath),
       resolved_campaigns: [],
       files: [
-        { path: bundleConfigPath, role: 'bundle_config', sha256: bundleHash },
-        { path: strategyPresetsPath, role: 'strategy_presets', sha256: 'wrong_hash_for_warning' },
-        { path: usCampaignPath, role: 'campaign_latest', sha256: usHash },
-        { path: jpCampaignPath, role: 'campaign_latest', sha256: jpHash },
+        { path: toRepoRelativePath(bundleConfigPath), role: 'bundle_config', sha256: bundleHash },
+        { path: toRepoRelativePath(strategyPresetsPath), role: 'strategy_presets', sha256: 'wrong_hash_for_warning' },
+        { path: toRepoRelativePath(usCampaignPath), role: 'campaign_latest', sha256: usHash },
+        { path: toRepoRelativePath(jpCampaignPath), role: 'campaign_latest', sha256: jpHash },
       ],
       aggregate_fingerprint: 'dummy',
     }), 'utf8');
@@ -1448,13 +1452,13 @@ exit 0
       run_id: 'test_baseline_campaign',
       run_attempt: '1',
       algorithm: 'sha256',
-      bundle_config_path: bundleConfigPath,
+      bundle_config_path: toRepoRelativePath(bundleConfigPath),
       resolved_campaigns: [],
       files: [
-        { path: bundleConfigPath, role: 'bundle_config', sha256: bundleHash },
-        { path: strategyPresetsPath, role: 'strategy_presets', sha256: strategyHash },
-        { path: usCampaignPath, role: 'campaign_latest', sha256: 'wrong_campaign_hash' },
-        { path: jpCampaignPath, role: 'campaign_latest', sha256: jpHash },
+        { path: toRepoRelativePath(bundleConfigPath), role: 'bundle_config', sha256: bundleHash },
+        { path: toRepoRelativePath(strategyPresetsPath), role: 'strategy_presets', sha256: strategyHash },
+        { path: toRepoRelativePath(usCampaignPath), role: 'campaign_latest', sha256: 'wrong_campaign_hash' },
+        { path: toRepoRelativePath(jpCampaignPath), role: 'campaign_latest', sha256: jpHash },
       ],
       aggregate_fingerprint: 'dummy',
     }), 'utf8');
