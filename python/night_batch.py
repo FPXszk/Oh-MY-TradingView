@@ -866,6 +866,14 @@ def default_report_paths(args) -> tuple[str, str, str]:
     return us_path, jp_path, report_out
 
 
+def default_ranking_out(args, output_dir: Path | None = None) -> str:
+    explicit = getattr(args, 'ranking_out', None)
+    if explicit:
+        return explicit
+    effective_dir = output_dir or resolve_project_path(getattr(args, 'output_dir', None)) or RESULTS_DIR
+    return str(effective_dir / f'{utc_run_id()}-combined-ranking.json')
+
+
 def build_step_specs(args) -> list[dict]:
     node_bin = args.node_bin
     host = getattr(args, 'host', DEFAULT_HOST)
@@ -944,6 +952,8 @@ def build_step_specs(args) -> list[dict]:
         }]
 
     if args.command == 'report':
+        ranking = default_ranking_out(args)
+        args.ranking_out = ranking
         command = [
             node_bin,
             str(PROJECT_ROOT / 'scripts' / 'backtest' / 'generate-rich-report.mjs'),
@@ -957,9 +967,9 @@ def build_step_specs(args) -> list[dict]:
             args.date_from,
             '--date-to',
             args.date_to,
+            '--ranking-out',
+            ranking,
         ]
-        if args.ranking_out:
-            command.extend(['--ranking-out', args.ranking_out])
         if args.title:
             command.extend(['--title', args.title])
         return [{
@@ -969,6 +979,8 @@ def build_step_specs(args) -> list[dict]:
         }]
 
     us_path, jp_path, report_out = default_report_paths(args)
+    ranking = default_ranking_out(args)
+    args.ranking_out = ranking
     bundle_args = argparse.Namespace(
         **{**vars(args), 'command': 'bundle', 'dry_run': args.dry_run},
     )
@@ -981,7 +993,7 @@ def build_step_specs(args) -> list[dict]:
         us=us_path,
         jp=jp_path,
         out=report_out,
-        ranking_out=args.ranking_out,
+        ranking_out=ranking,
         date_from=args.date_from,
         date_to=args.date_to,
         title=args.title,
@@ -1760,6 +1772,7 @@ def write_latest_backtest_summary(
     us_results_path: Path | None,
     jp_results_path: Path | None,
     rich_report_path: Path | None = None,
+    ranking_artifact_path: Path | None = None,
 ) -> None:
     if not us_results_path or not jp_results_path:
         return
@@ -1790,6 +1803,8 @@ def write_latest_backtest_summary(
     ]
     if rich_report_path and rich_report_path.exists():
         lines.append(f'- rich_report: `{relative_path(rich_report_path)}`')
+    if ranking_artifact_path and ranking_artifact_path.exists():
+        lines.append(f'- ranking_artifact: `{relative_path(ranking_artifact_path)}`')
 
     lines.extend([
         '',
@@ -1831,16 +1846,19 @@ def maybe_write_latest_backtest_summary_from_args(
     us_path: Path | None = None
     jp_path: Path | None = None
     rich_report_path: Path | None = None
+    ranking_artifact_path: Path | None = None
 
     if args.command == 'report':
         us_path = resolve_existing_json_path(getattr(args, 'us', None))
         jp_path = resolve_existing_json_path(getattr(args, 'jp', None))
         rich_report_path = resolve_existing_json_path(getattr(args, 'out', None))
+        ranking_artifact_path = resolve_existing_json_path(getattr(args, 'ranking_out', None))
     elif args.command in {'bundle', 'nightly'}:
         us_raw, jp_raw, report_raw = default_report_paths(args)
         us_path = resolve_existing_json_path(us_raw)
         jp_path = resolve_existing_json_path(jp_raw)
         rich_report_path = resolve_existing_json_path(report_raw)
+        ranking_artifact_path = resolve_existing_json_path(getattr(args, 'ranking_out', None))
 
     write_latest_backtest_summary(
         run_id=run_id,
@@ -1849,6 +1867,7 @@ def maybe_write_latest_backtest_summary_from_args(
         us_results_path=us_path,
         jp_results_path=jp_path,
         rich_report_path=rich_report_path,
+        ranking_artifact_path=ranking_artifact_path,
     )
 
 

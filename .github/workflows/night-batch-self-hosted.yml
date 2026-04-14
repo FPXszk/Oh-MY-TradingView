@@ -89,7 +89,7 @@ jobs:
         if: always() && steps.freshness.outputs.should_run == 'true'
         shell: powershell -NoProfile -ExecutionPolicy Bypass -command ". '{0}'"
         run: |
-          & scripts/windows/github-actions/append-night-batch-workflow-summary.ps1 -SummaryJsonPath '${{ steps.night_batch_outputs.outputs.summary_json }}' -SummaryMdPath '${{ steps.night_batch_outputs.outputs.summary_md }}'
+          & scripts/windows/github-actions/append-night-batch-workflow-summary.ps1 -SummaryJsonPath '${{ steps.night_batch_outputs.outputs.summary_json }}' -SummaryMdPath '${{ steps.night_batch_outputs.outputs.summary_md }}' -RichReportPath '${{ steps.night_batch_outputs.outputs.rich_report }}' -RankingArtifactPath '${{ steps.night_batch_outputs.outputs.ranking_artifact }}'
 
       - name: Upload night batch artifacts
         if: always() && steps.freshness.outputs.should_run == 'true' && steps.night_batch_outputs.outputs.round_dir != ''

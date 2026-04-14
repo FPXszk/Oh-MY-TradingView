@@ -187,6 +187,40 @@ describe('night_batch.py CLI', () => {
     assert.match(result.stdout, /generate-rich-report\.mjs/);
   });
 
+  it('report dry-run auto-computes ranking-out when not explicitly provided', async () => {
+    const result = await runPython(
+      [
+        SCRIPT_PATH,
+        'report',
+        '--us',
+        'docs/research/results/us.json',
+        '--jp',
+        'docs/research/results/jp.json',
+        '--out',
+        'docs/research/results/report.md',
+        '--dry-run',
+      ],
+    );
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.match(result.stdout, /--ranking-out/,
+      'report must always include --ranking-out in the command');
+    assert.match(result.stdout, /combined-ranking\.json/,
+      'auto-computed ranking-out must end with combined-ranking.json');
+  });
+
+  it('nightly dry-run auto-computes ranking-out when not explicitly provided', async () => {
+    const result = await runPython(
+      [SCRIPT_PATH, 'nightly', '--host', '127.0.0.1', '--port', String(port), '--dry-run'],
+    );
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.match(result.stdout, /--ranking-out/,
+      'nightly must always include --ranking-out in the command');
+    assert.match(result.stdout, /combined-ranking\.json/,
+      'auto-computed ranking-out must end with combined-ranking.json');
+  });
+
   it('report writes a deterministic latest backtest summary when recovered results exist', async () => {
     const fakeNodePath = join(tempDir, 'fake-report-node.sh');
     const usPath = join(tempDir, 'us-recovered-results.json');
@@ -198,15 +232,24 @@ describe('night_batch.py CLI', () => {
       fakeNodePath,
       `#!/bin/sh
 out=""
+rankout=""
 while [ "$#" -gt 0 ]; do
   if [ "$1" = "--out" ]; then
     out="$2"
     shift 2
     continue
   fi
+  if [ "$1" = "--ranking-out" ]; then
+    rankout="$2"
+    shift 2
+    continue
+  fi
   shift
 done
 printf '# fake rich report\\n' > "$out"
+if [ -n "$rankout" ]; then
+  printf '[{"presetId":"preset-a","composite_score":2}]\\n' > "$rankout"
+fi
 exit 0
 `,
     );
@@ -302,6 +345,8 @@ exit 0
     assert.match(latestSummary, /Latest main backtest summary/);
     assert.match(latestSummary, /`preset-a`/);
     assert.match(latestSummary, /Combined top 10/);
+    assert.match(latestSummary, /ranking_artifact/,
+      'latest summary must include ranking_artifact path when ranking JSON is produced');
   });
 
   it('nightly dry-run includes both bundle and report commands', async () => {

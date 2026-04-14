@@ -1,5 +1,5 @@
 # find-night-batch-outputs.ps1
-# Locate night batch output files (summary JSON / MD / artifact dir)
+# Locate night batch output files (summary JSON / MD / artifact dir / rich report / ranking)
 # and write their paths to GITHUB_OUTPUT.
 #
 # Usage (GitHub Actions step):
@@ -13,6 +13,8 @@ param(
 $artifactDir = ''
 $summaryJson = ''
 $summaryMd = ''
+$richReport = ''
+$rankingArtifact = ''
 
 if (Test-Path 'results\night-batch') {
     $summaryJsonFile = Get-ChildItem -Path 'results\night-batch' -Recurse -File `
@@ -27,9 +29,23 @@ if (Test-Path 'results\night-batch') {
         if (Test-Path $summaryMdCandidate) {
             $summaryMd = $summaryMdCandidate
         }
+        $richReportFile = Get-ChildItem -Path $artifactDir -File -Filter '*-rich-report.md' |
+            Sort-Object LastWriteTimeUtc -Descending |
+            Select-Object -First 1
+        if ($richReportFile) {
+            $richReport = $richReportFile.FullName
+        }
+        $rankingFile = Get-ChildItem -Path $artifactDir -File -Filter '*-combined-ranking.json' |
+            Sort-Object LastWriteTimeUtc -Descending |
+            Select-Object -First 1
+        if ($rankingFile) {
+            $rankingArtifact = $rankingFile.FullName
+        }
     }
 }
 
-"round_dir=$artifactDir"  | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-"summary_json=$summaryJson" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-"summary_md=$summaryMd"    | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+"round_dir=$artifactDir"            | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+"summary_json=$summaryJson"          | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+"summary_md=$summaryMd"              | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+"rich_report=$richReport"            | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+"ranking_artifact=$rankingArtifact"  | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append

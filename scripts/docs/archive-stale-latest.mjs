@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { mkdir, readdir, rename, stat } from 'node:fs/promises';
+import { mkdir, readdir, readFile, rename, stat } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 
@@ -16,7 +16,25 @@ const researchLatestDir = join(root, 'docs', 'research', 'latest');
 const researchArchiveDir = join(root, 'docs', 'research', 'archive');
 const sessionLogsDir = join(root, 'docs', 'working-memory', 'session-logs');
 const sessionLogsArchiveDir = join(sessionLogsDir, 'archive');
-const researchKeep = new Set(['README.md', ...(values['research-keep'] ?? [])]);
+
+async function loadManifestKeep(latestDir) {
+  const manifestPath = join(latestDir, 'manifest.json');
+  try {
+    const raw = await readFile(manifestPath, 'utf8');
+    const manifest = JSON.parse(raw);
+    return Array.isArray(manifest.keep) ? manifest.keep : [];
+  } catch {
+    return [];
+  }
+}
+
+const manifestKeep = await loadManifestKeep(researchLatestDir);
+const researchKeep = new Set([
+  'README.md',
+  'manifest.json',
+  ...(values['research-keep'] ?? []),
+  ...manifestKeep,
+]);
 
 async function listMarkdownFiles(dir) {
   const entries = await readdir(dir, { withFileTypes: true });

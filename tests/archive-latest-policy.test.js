@@ -76,4 +76,66 @@ describe('archive-stale-latest.mjs', () => {
     assert.equal(existsSync(join(sessionLogsArchiveDir, 'session-a_20260410_1200.md')), true);
     assert.equal(existsSync(join(sessionLogsDir, 'session-b_20260414_1735.md')), true);
   });
+
+  it('keeps files listed in manifest.json and archives unlisted ones', () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), 'archive-manifest-keep-'));
+    const researchLatestDir = join(tempRoot, 'docs', 'research', 'latest');
+    const researchArchiveDir = join(tempRoot, 'docs', 'research', 'archive');
+    const sessionLogsDir = join(tempRoot, 'docs', 'working-memory', 'session-logs');
+    const sessionLogsArchiveDir = join(sessionLogsDir, 'archive');
+
+    mkdirSync(researchLatestDir, { recursive: true });
+    mkdirSync(researchArchiveDir, { recursive: true });
+    mkdirSync(sessionLogsArchiveDir, { recursive: true });
+
+    writeFileSync(join(researchLatestDir, 'manifest.json'), JSON.stringify({
+      keep: ['README.md', 'important.md'],
+    }), 'utf8');
+    writeFileSync(join(researchLatestDir, 'README.md'), '# readme\n', 'utf8');
+    writeFileSync(join(researchLatestDir, 'important.md'), '# keep me\n', 'utf8');
+    writeFileSync(join(researchLatestDir, 'stale.md'), '# archive me\n', 'utf8');
+
+    const result = spawnSync('node', [SCRIPT_PATH, '--root', tempRoot], {
+      cwd: PROJECT_ROOT,
+      encoding: 'utf8',
+    });
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.equal(existsSync(join(researchLatestDir, 'README.md')), true, 'README.md kept');
+    assert.equal(existsSync(join(researchLatestDir, 'important.md')), true, 'manifest-listed file kept');
+    assert.equal(existsSync(join(researchLatestDir, 'stale.md')), false, 'unlisted file archived');
+    assert.equal(existsSync(join(researchArchiveDir, 'stale.md')), true, 'unlisted file moved to archive');
+    assert.equal(existsSync(join(researchLatestDir, 'manifest.json')), true, 'manifest.json itself is kept');
+  });
+
+  it('manifest keep merges with --research-keep CLI flag', () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), 'archive-manifest-merge-'));
+    const researchLatestDir = join(tempRoot, 'docs', 'research', 'latest');
+    const researchArchiveDir = join(tempRoot, 'docs', 'research', 'archive');
+    const sessionLogsDir = join(tempRoot, 'docs', 'working-memory', 'session-logs');
+    const sessionLogsArchiveDir = join(sessionLogsDir, 'archive');
+
+    mkdirSync(researchLatestDir, { recursive: true });
+    mkdirSync(researchArchiveDir, { recursive: true });
+    mkdirSync(sessionLogsArchiveDir, { recursive: true });
+
+    writeFileSync(join(researchLatestDir, 'manifest.json'), JSON.stringify({
+      keep: ['from-manifest.md'],
+    }), 'utf8');
+    writeFileSync(join(researchLatestDir, 'README.md'), '# readme\n', 'utf8');
+    writeFileSync(join(researchLatestDir, 'from-manifest.md'), '# manifest\n', 'utf8');
+    writeFileSync(join(researchLatestDir, 'from-cli.md'), '# cli\n', 'utf8');
+    writeFileSync(join(researchLatestDir, 'stale.md'), '# stale\n', 'utf8');
+
+    const result = spawnSync('node', [SCRIPT_PATH, '--root', tempRoot, '--research-keep', 'from-cli.md'], {
+      cwd: PROJECT_ROOT,
+      encoding: 'utf8',
+    });
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.equal(existsSync(join(researchLatestDir, 'from-manifest.md')), true, 'manifest keep preserved');
+    assert.equal(existsSync(join(researchLatestDir, 'from-cli.md')), true, 'CLI keep preserved');
+    assert.equal(existsSync(join(researchLatestDir, 'stale.md')), false, 'unlisted file archived');
+    assert.equal(existsSync(join(researchArchiveDir, 'stale.md')), true, 'unlisted file moved to archive');
+  });
 });

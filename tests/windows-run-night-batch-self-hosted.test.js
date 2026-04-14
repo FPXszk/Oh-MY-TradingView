@@ -366,6 +366,15 @@ describe('external PowerShell scripts for workflow summary', () => {
       'find script must output summary_md');
   });
 
+  it('find-night-batch-outputs.ps1 outputs rich_report and ranking_artifact', () => {
+    const script = readFileSync(FIND_OUTPUTS_SCRIPT_PATH, 'utf8');
+
+    assert.match(script, /rich_report=/,
+      'find script must output rich_report');
+    assert.match(script, /ranking_artifact=/,
+      'find script must output ranking_artifact');
+  });
+
   it('append-night-batch-workflow-summary.ps1 safely handles nullable fields', () => {
     const script = readFileSync(APPEND_SUMMARY_SCRIPT_PATH, 'utf8');
 
@@ -404,6 +413,24 @@ describe('external PowerShell scripts for workflow summary', () => {
     assert.match(script, /SummaryJsonPath/,
       'summary script must accept SummaryJsonPath parameter');
   });
+
+  it('append-night-batch-workflow-summary.ps1 accepts RichReportPath and RankingArtifactPath parameters', () => {
+    const script = readFileSync(APPEND_SUMMARY_SCRIPT_PATH, 'utf8');
+
+    assert.match(script, /RichReportPath/,
+      'summary script must accept RichReportPath parameter');
+    assert.match(script, /RankingArtifactPath/,
+      'summary script must accept RankingArtifactPath parameter');
+  });
+
+  it('append-night-batch-workflow-summary.ps1 emits rich_report and ranking_artifact when provided', () => {
+    const script = readFileSync(APPEND_SUMMARY_SCRIPT_PATH, 'utf8');
+
+    assert.match(script, /rich_report/,
+      'summary script must emit rich_report field');
+    assert.match(script, /ranking_artifact/,
+      'summary script must emit ranking_artifact field');
+  });
 });
 
 describe('workflow delegates to external PowerShell scripts', () => {
@@ -417,6 +444,17 @@ describe('workflow delegates to external PowerShell scripts', () => {
   it('Append step calls append-night-batch-workflow-summary.ps1', () => {
     assert.match(workflow, /append-night-batch-workflow-summary\.ps1/,
       'workflow must call append-night-batch-workflow-summary.ps1');
+  });
+
+  it('Append step passes rich_report and ranking_artifact outputs', () => {
+    assert.match(workflow, /RichReportPath/,
+      'workflow Append step must pass RichReportPath');
+    assert.match(workflow, /RankingArtifactPath/,
+      'workflow Append step must pass RankingArtifactPath');
+    assert.match(workflow, /rich_report/,
+      'workflow must reference rich_report output');
+    assert.match(workflow, /ranking_artifact/,
+      'workflow must reference ranking_artifact output');
   });
 
   it('workflow Locate step has no large inline PowerShell logic', () => {

@@ -107,4 +107,75 @@ describe('repository layout policy', () => {
       'docs/bad-strategy must contain at least one retirement ledger',
     );
   });
+
+  it('latest campaigns and archive campaigns do not overlap', () => {
+    const latestCampaigns = new Set(
+      readdirSync(CAMPAIGNS_LATEST_DIR).filter((name) => name.endsWith('.json')),
+    );
+    const archiveCampaigns = new Set(
+      readdirSync(CAMPAIGNS_ARCHIVE_DIR).filter((name) => name.endsWith('.json')),
+    );
+    for (const name of latestCampaigns) {
+      assert.equal(archiveCampaigns.has(name), false,
+        `campaign ${name} must not exist in both latest/ and archive/`);
+    }
+  });
+
+  it('latest universes and archive universes do not overlap', () => {
+    const latestUniverses = new Set(
+      readdirSync(UNIVERSES_LATEST_DIR).filter((name) => name.endsWith('.json')),
+    );
+    const archiveUniverses = new Set(
+      readdirSync(UNIVERSES_ARCHIVE_DIR).filter((name) => name.endsWith('.json')),
+    );
+    for (const name of latestUniverses) {
+      assert.equal(archiveUniverses.has(name), false,
+        `universe ${name} must not exist in both latest/ and archive/`);
+    }
+  });
+
+  it('latest campaigns reference universes that exist under universes/latest', () => {
+    const latestUniverseIds = new Set(
+      readdirSync(UNIVERSES_LATEST_DIR)
+        .filter((name) => name.endsWith('.json'))
+        .map((name) => {
+          const content = JSON.parse(readFileSync(join(UNIVERSES_LATEST_DIR, name), 'utf8'));
+          return content.id;
+        }),
+    );
+    const campaignFiles = readdirSync(CAMPAIGNS_LATEST_DIR).filter((name) => name.endsWith('.json'));
+    for (const file of campaignFiles) {
+      const campaign = JSON.parse(readFileSync(join(CAMPAIGNS_LATEST_DIR, file), 'utf8'));
+      assert.ok(latestUniverseIds.has(campaign.universe),
+        `campaign ${file} references universe "${campaign.universe}" which must exist in universes/latest/`);
+    }
+  });
+
+  it('latest campaign preset_ids are a subset of live strategy-presets.json', () => {
+    const presets = JSON.parse(
+      readFileSync(join(PROJECT_ROOT, 'config', 'backtest', 'strategy-presets.json'), 'utf8'),
+    );
+    const livePresetIds = new Set(presets.strategies.map((s) => s.id));
+    const campaignFiles = readdirSync(CAMPAIGNS_LATEST_DIR).filter((name) => name.endsWith('.json'));
+    for (const file of campaignFiles) {
+      const campaign = JSON.parse(readFileSync(join(CAMPAIGNS_LATEST_DIR, file), 'utf8'));
+      for (const presetId of campaign.preset_ids) {
+        assert.ok(livePresetIds.has(presetId),
+          `campaign ${file} uses preset "${presetId}" not in live strategy-presets.json`);
+      }
+    }
+  });
+
+  it('docs/research/latest/manifest.json lists only files that actually exist', () => {
+    const manifestPath = join(PROJECT_ROOT, 'docs', 'research', 'latest', 'manifest.json');
+    assert.ok(existsSync(manifestPath), 'manifest.json must exist');
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+    assert.ok(Array.isArray(manifest.keep), 'manifest.keep must be an array');
+    for (const name of manifest.keep) {
+      assert.ok(
+        existsSync(join(PROJECT_ROOT, 'docs', 'research', 'latest', name)),
+        `manifest.json lists "${name}" which does not exist in docs/research/latest/`,
+      );
+    }
+  });
 });

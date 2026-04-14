@@ -4,7 +4,7 @@
 # PowerShell parser ambiguity on Windows.
 #
 # Usage (GitHub Actions step):
-#   powershell -NoProfile -ExecutionPolicy Bypass -File scripts/windows/github-actions/append-night-batch-workflow-summary.ps1 -SummaryJsonPath "<path>" [-SummaryMdPath "<path>"]
+#   powershell -NoProfile -ExecutionPolicy Bypass -File scripts/windows/github-actions/append-night-batch-workflow-summary.ps1 -SummaryJsonPath "<path>" [-SummaryMdPath "<path>"] [-RichReportPath "<path>"] [-RankingArtifactPath "<path>"]
 
 param(
     [Parameter(Mandatory = $true)]
@@ -12,7 +12,13 @@ param(
     [string]$SummaryJsonPath,
 
     [Parameter(Mandatory = $false)]
-    [string]$SummaryMdPath = ''
+    [string]$SummaryMdPath = '',
+
+    [Parameter(Mandatory = $false)]
+    [string]$RichReportPath = '',
+
+    [Parameter(Mandatory = $false)]
+    [string]$RankingArtifactPath = ''
 )
 
 Add-Content $env:GITHUB_STEP_SUMMARY '## Night batch result'
@@ -33,6 +39,13 @@ Add-Content $env:GITHUB_STEP_SUMMARY "- termination_reason: $($summary.terminati
 Add-Content $env:GITHUB_STEP_SUMMARY "- failed_step: $failedStep"
 Add-Content $env:GITHUB_STEP_SUMMARY "- last_checkpoint: $lastCheckpoint"
 Add-Content $env:GITHUB_STEP_SUMMARY "- summary_json: $SummaryJsonPath"
+
+if ($RichReportPath -ne '') {
+    Add-Content $env:GITHUB_STEP_SUMMARY "- rich_report: $RichReportPath"
+}
+if ($RankingArtifactPath -ne '') {
+    Add-Content $env:GITHUB_STEP_SUMMARY "- ranking_artifact: $RankingArtifactPath"
+}
 
 if ($SummaryMdPath -ne '') {
     Add-Content $env:GITHUB_STEP_SUMMARY ''

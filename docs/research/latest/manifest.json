@@ -1,0 +1,10 @@
+{
+  "$schema_note": "latest research docs の keep-set を機械可読化する manifest。archive-stale-latest.mjs が参照する。",
+  "keep": [
+    "README.md",
+    "main-backtest-latest-summary.md",
+    "next-long-run-us-jp-12x10-handoff_20260414_0009.md",
+    "next-long-run-us-jp-12x10-details_20260414_0009.md",
+    "project-improvement-review.md"
+  ]
+}

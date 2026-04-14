@@ -21,7 +21,8 @@
 
 ## 運用ルール
 
-- ここには **README + 現在の latest 世代 docs** だけを置く
-- stale な latest doc は `../archive/` に移す
+- ここには **README + manifest.json に記載された latest 世代 docs** だけを置く
+- `manifest.json` の `keep` 配列が latest に残すファイルの正本定義
+- `scripts/docs/archive-stale-latest.mjs` が manifest を読み、keep 外の .md を `../archive/` に移す
 - 数値の正本は `../../references/backtests/` と `../results/` を参照する
 - dual-worker の historical runbook は `../archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`
