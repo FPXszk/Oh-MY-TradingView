@@ -244,6 +244,10 @@ describe('night-batch-self-hosted workflow', () => {
       'workflow must upload night batch artifacts');
     assert.match(workflow, /Archive completed night batch rounds/,
       'workflow must archive completed rounds after artifact upload');
+    assert.match(workflow, /Archive stale latest research docs/,
+      'workflow must automatically archive stale latest research docs');
+    assert.match(workflow, /archive-stale-latest\.mjs/,
+      'workflow must invoke the latest-doc cleanup script');
     assert.ok(
       workflow.indexOf('Ensure TradingView is running') < workflow.indexOf('Run smoke gate and foreground production'),
       'workflow must launch TradingView before the WSL smoke run',
@@ -251,6 +255,10 @@ describe('night-batch-self-hosted workflow', () => {
     assert.ok(
       workflow.indexOf('Archive completed night batch rounds') > workflow.indexOf('actions/upload-artifact@v4'),
       'workflow must archive rounds after the upload step',
+    );
+    assert.ok(
+      workflow.indexOf('Archive stale latest research docs') > workflow.indexOf('Archive completed night batch rounds'),
+      'workflow must archive stale latest docs after completed rounds are archived',
     );
   });
 });

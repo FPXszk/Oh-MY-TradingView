@@ -167,6 +167,14 @@ jobs:
           if not defined REPO_WSL exit /b 1
           wsl.exe bash -lc "cd \"%REPO_WSL%\" && python3 python/night_batch.py archive-rounds"
 
+      - name: Archive stale latest research docs
+        if: always() && steps.freshness.outputs.should_run == 'true'
+        shell: cmd
+        run: |
+          for /f "usebackq delims=" %%I in (`wsl.exe wslpath -a "%CD%"`) do set "REPO_WSL=%%I"
+          if not defined REPO_WSL exit /b 1
+          wsl.exe bash -lc "cd \"%REPO_WSL%\" && node scripts/docs/archive-stale-latest.mjs"
+
       - name: Report skipped stale schedule
         if: steps.freshness.outputs.should_run != 'true'
         shell: powershell -NoProfile -ExecutionPolicy Bypass -command ". '{0}'"

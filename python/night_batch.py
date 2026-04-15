@@ -26,6 +26,8 @@ RESEARCH_RESULTS_DIR = RESEARCH_DOCS_DIR / 'results'
 CAMPAIGN_RESULTS_DIR = RESEARCH_RESULTS_DIR / 'campaigns'
 LATEST_RESEARCH_DIR = RESEARCH_DOCS_DIR / 'latest'
 DEFAULT_LATEST_SUMMARY_PATH = LATEST_RESEARCH_DIR / 'main-backtest-latest-summary.md'
+BACKTEST_REFERENCES_DIR = PROJECT_ROOT / 'docs' / 'references' / 'backtests'
+DEFAULT_LATEST_RANKING_ARTIFACT_PATH = BACKTEST_REFERENCES_DIR / 'main-backtest-latest-combined-ranking.json'
 
 
 def resolve_results_dir() -> Path:
@@ -449,6 +451,13 @@ def resolve_latest_summary_path() -> Path:
     if raw:
         return resolve_project_path(raw) or (PROJECT_ROOT / raw)
     return DEFAULT_LATEST_SUMMARY_PATH
+
+
+def resolve_latest_ranking_artifact_path() -> Path:
+    raw = os.environ.get('NIGHT_BATCH_LATEST_RANKING_PATH')
+    if raw:
+        return resolve_project_path(raw) or (PROJECT_ROOT / raw)
+    return DEFAULT_LATEST_RANKING_ARTIFACT_PATH
 
 
 def option_was_provided(raw_args: list[str], option_name: str) -> bool:
@@ -2081,7 +2090,13 @@ def write_latest_backtest_summary(
 
     latest_summary_path = resolve_latest_summary_path()
     latest_summary_path.parent.mkdir(parents=True, exist_ok=True)
+    latest_ranking_artifact_path = resolve_latest_ranking_artifact_path()
+    latest_ranking_artifact_path.parent.mkdir(parents=True, exist_ok=True)
     combined_rows = build_combined_market_ranking([us_summary, jp_summary])
+    latest_ranking_artifact_path.write_text(
+        f'{json.dumps(combined_rows, indent=2, ensure_ascii=False)}\n',
+        encoding='utf-8',
+    )
 
     lines = [
         '# Latest main backtest summary',
@@ -2098,8 +2113,7 @@ def write_latest_backtest_summary(
     ]
     if rich_report_path and rich_report_path.exists():
         lines.append(f'- rich_report: `{relative_path(rich_report_path)}`')
-    if ranking_artifact_path and ranking_artifact_path.exists():
-        lines.append(f'- ranking_artifact: `{relative_path(ranking_artifact_path)}`')
+    lines.append(f'- ranking_artifact: `{relative_path(latest_ranking_artifact_path)}`')
     if catalog_snapshot_path and catalog_snapshot_path.exists():
         lines.append(f'- strategy_catalog_snapshot: `{relative_path(catalog_snapshot_path)}`')
 

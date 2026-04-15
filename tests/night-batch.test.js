@@ -239,6 +239,7 @@ describe('night_batch.py CLI', () => {
     const jpPath = join(tempDir, 'jp-recovered-results.json');
     const reportPath = join(tempDir, 'rich-report.md');
     const latestSummaryPath = join(tempDir, 'main-backtest-latest-summary.md');
+    const latestRankingPath = join(tempDir, 'main-backtest-latest-combined-ranking.json');
 
     writeExecutable(
       fakeNodePath,
@@ -356,18 +357,25 @@ exit 0
       {
         env: {
           NIGHT_BATCH_LATEST_SUMMARY_PATH: latestSummaryPath,
+          NIGHT_BATCH_LATEST_RANKING_PATH: latestRankingPath,
         },
       },
     );
 
     assert.equal(result.status, 0, result.stderr || result.stdout);
     assert.equal(existsSync(latestSummaryPath), true);
+    assert.equal(existsSync(latestRankingPath), true);
+    const latestRanking = JSON.parse(readFileSync(latestRankingPath, 'utf8'));
+    assert.equal(Array.isArray(latestRanking), true);
+    assert.equal(latestRanking[0].presetId, 'preset-a');
     const latestSummary = readFileSync(latestSummaryPath, 'utf8');
     assert.match(latestSummary, /Latest main backtest summary/);
     assert.match(latestSummary, /`preset-a`/);
     assert.match(latestSummary, /Combined top 10/);
     assert.match(latestSummary, /ranking_artifact/,
       'latest summary must include ranking_artifact path when ranking JSON is produced');
+    assert.match(latestSummary, /main-backtest-latest-combined-ranking\.json/,
+      'latest summary must point at the canonical ranking artifact');
     assert.match(latestSummary, /strategy_catalog_snapshot/,
       'latest summary must include strategy_catalog_snapshot path when catalog snapshot is produced');
     assert.match(latestSummary, /Live \/ Retired diff/,
@@ -954,6 +962,7 @@ exit 0
     const fakeNodePath = join(tempDir, 'fake-bundle-node.sh');
     const detachedStateFile = join(tempDir, 'bundle-detached-state.json');
     const latestSummaryPath = join(tempDir, 'main-backtest-latest-summary.md');
+    const latestRankingPath = join(tempDir, 'main-backtest-latest-combined-ranking.json');
     const outputDir = join(tempDir, 'night-batch-output');
     const suffix = tempDir.split('/').pop();
     const usCampaign = `test-detached-us-${suffix}`;
@@ -1036,6 +1045,7 @@ exit 0
       ], {
         env: {
           NIGHT_BATCH_LATEST_SUMMARY_PATH: latestSummaryPath,
+          NIGHT_BATCH_LATEST_RANKING_PATH: latestRankingPath,
         },
       });
 
