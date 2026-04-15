@@ -236,8 +236,10 @@ describe('night-batch-self-hosted workflow', () => {
       'workflow must ensure TradingView is running before invoking the WSL smoke run');
     assert.match(workflow, /ConvertFrom-Json/,
       'workflow must inspect the config path before starting TradingView');
-    assert.match(workflow, /Start-Process -FilePath \$launch\.shortcut_path/,
-      'workflow must start TradingView from the configured shortcut when needed');
+    assert.match(workflow, /Join-Path \$env:LOCALAPPDATA 'TradingView\\TradingView\.exe'/,
+      'workflow must prefer the TradingView executable when starting the app');
+    assert.match(workflow, /Start-Process -FilePath \$launcher/,
+      'workflow must launch the resolved TradingView path when needed');
     assert.match(workflow, /actions\/upload-artifact@v4/,
       'workflow must upload night batch artifacts');
     assert.match(workflow, /Archive completed night batch rounds/,
