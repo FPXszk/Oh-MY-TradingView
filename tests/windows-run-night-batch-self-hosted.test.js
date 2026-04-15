@@ -232,10 +232,20 @@ describe('night-batch-self-hosted workflow', () => {
 
     assert.match(workflow, /append-night-batch-workflow-summary\.ps1/,
       'workflow must call the summary script that writes to GITHUB_STEP_SUMMARY');
+    assert.match(workflow, /Ensure TradingView is running/,
+      'workflow must ensure TradingView is running before invoking the WSL smoke run');
+    assert.match(workflow, /ConvertFrom-Json/,
+      'workflow must inspect the config path before starting TradingView');
+    assert.match(workflow, /Start-Process -FilePath \$launch\.shortcut_path/,
+      'workflow must start TradingView from the configured shortcut when needed');
     assert.match(workflow, /actions\/upload-artifact@v4/,
       'workflow must upload night batch artifacts');
     assert.match(workflow, /Archive completed night batch rounds/,
       'workflow must archive completed rounds after artifact upload');
+    assert.ok(
+      workflow.indexOf('Ensure TradingView is running') < workflow.indexOf('Run smoke gate and foreground production'),
+      'workflow must launch TradingView before the WSL smoke run',
+    );
     assert.ok(
       workflow.indexOf('Archive completed night batch rounds') > workflow.indexOf('actions/upload-artifact@v4'),
       'workflow must archive rounds after the upload step',

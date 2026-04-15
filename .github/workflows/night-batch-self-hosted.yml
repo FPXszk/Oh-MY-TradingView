@@ -48,6 +48,35 @@ jobs:
         run: |
           & scripts/windows/github-actions/write-night-batch-live-checkout-baseline.ps1 -RunId 'gha_${{ github.run_id }}_${{ github.run_attempt }}' -RunAttempt '${{ github.run_attempt }}' -BundleConfigPath '${{ inputs.config_path }}'
 
+      - name: Ensure TradingView is running
+        if: steps.freshness.outputs.should_run == 'true'
+        shell: powershell -NoProfile -ExecutionPolicy Bypass -command ". '{0}'"
+        run: |
+          $configPath = Join-Path $PWD '${{ inputs.config_path }}'
+          $config = Get-Content -Raw -Path $configPath | ConvertFrom-Json
+          $runtime = $config.runtime
+          $launch = $config.launch
+          if (-not $runtime -or -not $launch) {
+            throw "Config is missing runtime or launch sections: $configPath"
+          }
+
+          $startupUrl = "http://$($runtime.startup_check_host):$($runtime.startup_check_port)/json/list"
+          $alreadyRunning = $false
+          try {
+            $response = Invoke-WebRequest -UseBasicParsing -Uri $startupUrl -TimeoutSec 3
+            if ($response.Content -match 'tradingview' -and $response.Content -match '/chart') {
+              $alreadyRunning = $true
+              Write-Host "[diag] TradingView already reachable at $startupUrl"
+            }
+          } catch {
+            Write-Host "[diag] TradingView not reachable at $startupUrl; launching shortcut"
+          }
+
+          if (-not $alreadyRunning) {
+            Start-Process -FilePath $launch.shortcut_path
+            Start-Sleep -Seconds $runtime.launch_wait_sec
+          }
+
       - name: Run smoke gate and foreground production
         if: steps.freshness.outputs.should_run == 'true'
         shell: cmd
