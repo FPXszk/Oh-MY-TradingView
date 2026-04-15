@@ -25,6 +25,7 @@ import {
 
 import { loadPreset } from '../src/core/backtest.js';
 import { buildResearchStrategySource } from '../src/core/research-backtest.js';
+import { buildExpansionLiveIds } from './strategy-expansion-fixtures.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -1491,18 +1492,7 @@ describe('next-long-run 12-symbol universes', () => {
 // next-long-run 12x10 campaign config file validation
 // ---------------------------------------------------------------------------
 describe('next-long-run 12x10 campaign config validation', () => {
-  const expectedPresetIds = [
-    'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight',
-    'donchian-55-20-rsp-filter-rsi14-regime-48-hard-stop-8pct-theme-deep-pullback-tight-early',
-    'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-10pct-theme-deep-pullback',
-    'donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-10pct-theme-deep-pullback-earlier',
-    'donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict',
-    'donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early',
-    'donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late',
-    'donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight',
-    'donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide',
-    'donchian-55-20-rsp-filter-rsi14-regime-57-hard-stop-6pct-theme-deep-pullback-tight-narrow',
-  ];
+  const expectedPresetIds = buildExpansionLiveIds();
 
   it('next-long-run-us-12x10.json is valid JSON with expected shape', async () => {
     const raw = await readFile(
@@ -1514,7 +1504,7 @@ describe('next-long-run 12x10 campaign config validation', () => {
     assert.equal(config.universe, 'next-long-run-us-12');
     assert.equal(config.date_override.from, '2000-01-01');
     assert.equal(config.date_override.to, '2099-12-31');
-    assert.equal(config.preset_ids.length, 10);
+    assert.equal(config.preset_ids.length, 25);
     assert.deepEqual(config.preset_ids, expectedPresetIds);
     assert.deepEqual(config.execution.worker_ports, [9223]);
   });
@@ -1529,7 +1519,7 @@ describe('next-long-run 12x10 campaign config validation', () => {
     assert.equal(config.universe, 'next-long-run-jp-12');
     assert.equal(config.date_override.from, '2000-01-01');
     assert.equal(config.date_override.to, '2099-12-31');
-    assert.equal(config.preset_ids.length, 10);
+    assert.equal(config.preset_ids.length, 25);
     assert.deepEqual(config.preset_ids, expectedPresetIds);
     assert.deepEqual(config.execution.worker_ports, [9223]);
   });
@@ -1555,21 +1545,21 @@ describe('next-long-run 12x10 campaign config validation', () => {
 // next-long-run 12x10 campaigns — loadCampaign integration
 // ---------------------------------------------------------------------------
 describe('next-long-run 12x10 campaigns', () => {
-  it('loads US 12x10 campaign with 12 US-only symbols and 10 strategies', async () => {
+  it('loads US 12x10 campaign with 12 US-only symbols and 25 strategies', async () => {
     const campaign = await loadCampaign('next-long-run-us-12x10');
     assert.equal(campaign.symbols.length, 12);
-    assert.equal(campaign.strategies.length, 10);
-    assert.equal(campaign.matrix.length, 120);
+    assert.equal(campaign.strategies.length, 25);
+    assert.equal(campaign.matrix.length, 300);
     assert.ok(campaign.symbols.every((entry) => entry.market === 'US'));
     assert.equal(campaign.defaults.date_range.from, '2000-01-01');
     assert.equal(campaign.defaults.date_range.to, '2099-12-31');
   });
 
-  it('loads JP 12x10 campaign with 12 JP-only symbols and 10 strategies', async () => {
+  it('loads JP 12x10 campaign with 12 JP-only symbols and 25 strategies', async () => {
     const campaign = await loadCampaign('next-long-run-jp-12x10');
     assert.equal(campaign.symbols.length, 12);
-    assert.equal(campaign.strategies.length, 10);
-    assert.equal(campaign.matrix.length, 120);
+    assert.equal(campaign.strategies.length, 25);
+    assert.equal(campaign.matrix.length, 300);
     assert.ok(campaign.symbols.every((entry) => entry.market === 'JP'));
     assert.equal(campaign.defaults.date_range.from, '2000-01-01');
     assert.equal(campaign.defaults.date_range.to, '2099-12-31');
@@ -1604,16 +1594,16 @@ describe('next-long-run 12x10 campaigns', () => {
     const jpFull = await loadCampaign('next-long-run-jp-12x10', { phase: 'full' });
 
     assert.equal(usSmoke.symbols.length, 3);
-    assert.equal(usSmoke.matrix.length, 30);
+    assert.equal(usSmoke.matrix.length, 75);
     assert.equal(usPilot.symbols.length, 6);
-    assert.equal(usPilot.matrix.length, 60);
+    assert.equal(usPilot.matrix.length, 150);
     assert.equal(usFull.symbols.length, 12);
-    assert.equal(usFull.matrix.length, 120);
+    assert.equal(usFull.matrix.length, 300);
     assert.equal(jpSmoke.symbols.length, 3);
-    assert.equal(jpSmoke.matrix.length, 30);
+    assert.equal(jpSmoke.matrix.length, 75);
     assert.equal(jpPilot.symbols.length, 6);
-    assert.equal(jpPilot.matrix.length, 60);
+    assert.equal(jpPilot.matrix.length, 150);
     assert.equal(jpFull.symbols.length, 12);
-    assert.equal(jpFull.matrix.length, 120);
+    assert.equal(jpFull.matrix.length, 300);
   });
 });

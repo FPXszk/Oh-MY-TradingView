@@ -39,18 +39,14 @@
 | 4 | `donchian-50-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-entry-early` | 8340.70 | 1.578 | 6598.93 |
 | 5 | `donchian-60-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-entry-late` | 8313.72 | 1.769 | 6309.89 |
 
-## strongest 15 の扱い
+## strongest 25 の扱い
 
-live の `config/backtest/strategy-presets.json` は 15 戦略まで圧縮した。
+live の `config/backtest/strategy-presets.json` は 25 戦略まで圧縮した。
 
-- 中核 10 本は `config/backtest/campaigns/latest/next-long-run-{us,jp}-12x10.json` の採用戦略
-- 追加 4 本は、直前世代でも強かった strict / tight の sibling
-  - `donchian-50-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-entry-early`
-  - `donchian-60-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-entry-late`
-  - `donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-6pct-theme-deep-pullback-strict-narrow`
-  - `donchian-55-18-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-exit-tight`
-- 15 本目は `donchian-55-22-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-exit-wide`
-  - latest + previous の自然な候補だけでは 14 本で止まったため、同 family の deterministic sibling として残留
+- ベース 5 本は current top 5 combined-ranking strategies
+- 追加 10 本は profit-protection variants
+- 追加 10 本は entry-adjusted variants
+- 25 本目以降の拡張は今回の再編では採用していない
 
 退役した preset は `docs/bad-strategy/retired-strategy-presets.json` に退避している。
 
@@ -59,16 +55,16 @@ live の `config/backtest/strategy-presets.json` は 15 戦略まで圧縮した
 1. **US は entry timing 差分が効く。** strict-entry-early と 10pct pullback 系が上位を占め、NVDA / AAPL が平均利益を押し上げている。
 2. **JP は strict / tight family の再現性が高い。** `strict`、`tight`、`tight-exit-tight` が上位で、`TSE:8002` が突出して強い。
 3. **entry / exit / narrow の sibling を潰し切るのはまだ早い。** 同じ deep-pullback family 内でも市場ごとに勝ち方が分かれている。
-4. **15 本を超えて live set を広げる根拠はまだ薄い。** 直近 2 世代で明確に強い family は deep-pullback 周辺へ収束している。
+4. **25 本まで広げた後は拡張効果の再測定が必要。** 直近 2 世代の deep-pullback 優勢は維持しつつ、付加した profit-protection / entry-adjusted 変種の残り方を次回確認する。
 
 ## 次回改善するなら
 
-1. `12x10` の次は **`12x15` の full 比較**で live 15 本を同条件で再検証する
-2. `docs/references/backtests/` に **combined ranking の正規 artifact** を毎回残し、15 本目の判断を手作業にしない
+1. `25` 本セットの次は **同一条件での full 比較**で追加変種の残り方を再検証する
+2. `docs/references/backtests/` に **combined ranking の正規 artifact** を毎回残し、追加変種の判断を手作業にしない
 3. `python/night_batch.py` の自動 latest summary を使い、night batch 完了後に `main-backtest-latest-summary.md` を deterministic に更新する
 4. `scripts/docs/archive-stale-latest.mjs` を generation 更新時に実行し、latest/archive の stale doc を溜めない
 
 ## Live / Retired diff
 
-- live_count: 15
-- retired_count: 116
+- live_count: 25
+- retired_count: 126

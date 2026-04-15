@@ -10,26 +10,10 @@ import {
   findStrategyById,
   validateCatalogIntegrity,
 } from '../src/core/strategy-catalog.js';
+import { buildExpansionLiveIds } from './strategy-expansion-fixtures.js';
 
 const PROJECT_ROOT = process.cwd();
-
-const expectedLiveIds = [
-  'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight',
-  'donchian-55-20-rsp-filter-rsi14-regime-48-hard-stop-8pct-theme-deep-pullback-tight-early',
-  'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-10pct-theme-deep-pullback',
-  'donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-10pct-theme-deep-pullback-earlier',
-  'donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict',
-  'donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early',
-  'donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late',
-  'donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight',
-  'donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide',
-  'donchian-55-20-rsp-filter-rsi14-regime-57-hard-stop-6pct-theme-deep-pullback-tight-narrow',
-  'donchian-50-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-entry-early',
-  'donchian-60-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-entry-late',
-  'donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-6pct-theme-deep-pullback-strict-narrow',
-  'donchian-55-18-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-exit-tight',
-  'donchian-55-22-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-exit-wide',
-];
+const expectedLiveIds = buildExpansionLiveIds();
 
 // ---------------------------------------------------------------------------
 // loadCatalog
@@ -99,16 +83,16 @@ describe('validateCatalogIntegrity', () => {
 // getLiveStrategies / getRetiredStrategies
 // ---------------------------------------------------------------------------
 describe('getLiveStrategies / getRetiredStrategies', () => {
-  it('live count is 15', async () => {
+  it('live count is 25', async () => {
     const catalog = await loadCatalog();
     const live = getLiveStrategies(catalog);
-    assert.equal(live.length, 15);
+    assert.equal(live.length, 25);
   });
 
-  it('retired count is 116', async () => {
+  it('retired count is 126', async () => {
     const catalog = await loadCatalog();
     const retired = getRetiredStrategies(catalog);
-    assert.equal(retired.length, 116);
+    assert.equal(retired.length, 126);
   });
 
   it('live IDs match expected list', async () => {

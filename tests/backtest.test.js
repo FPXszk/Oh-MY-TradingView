@@ -33,6 +33,7 @@ import {
   selectLatestWsReportCandidate,
   REQUIRED_PERFORMANCE_KEYS,
 } from '../src/core/backtest-report-websocket.js';
+import { buildMarketFollowThroughFilter } from './strategy-expansion-fixtures.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -982,6 +983,26 @@ describe('buildResearchStrategySource', () => {
     assert.ok(source.includes('rsiRegimeValue = ta.rsi(close, 14)'));
     assert.ok(source.includes('stopLossPrice = strategy.position_avg_price * (1 - 0.06)'));
     assert.ok(source.includes('allowEntry = inDateRange and regimeOk and rsiRegimeOk'));
+  });
+
+  it('adds market follow-through confirmation guards when requested', () => {
+    const source = buildResearchStrategySource({
+      id: 'donchian-55-20-market-follow-through',
+      name: 'Donchian 55/20 + Market Follow-Through',
+      builder: 'donchian_breakout',
+      parameters: {
+        entry_period: 55,
+        exit_period: 20,
+      },
+      entry_confirmation_filter: buildMarketFollowThroughFilter(),
+    }, defaults);
+
+    assert.ok(source.includes('entryConfirmspyClose = request.security("BATS:SPY", timeframe.period, close)'));
+    assert.ok(source.includes('entryConfirmqqqClose = request.security("NASDAQ:QQQ", timeframe.period, close)'));
+    assert.ok(source.includes('entryConfirmdiaClose = request.security("NYSEARCA:DIA", timeframe.period, close)'));
+    assert.ok(source.includes('entryConfirmvixClose = request.security("CBOE:VIX", timeframe.period, close)'));
+    assert.ok(source.includes('entryConfirmOk = entryConfirmspyOk and entryConfirmqqqOk and entryConfirmdiaOk and entryConfirmvixOk'));
+    assert.ok(source.includes('allowEntry = inDateRange and regimeOk and rsiRegimeOk and entryConfirmOk'));
   });
 
   it('supports round6 dip-reclaim RSI presets with breadth filters', () => {

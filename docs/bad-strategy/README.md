@@ -1,6 +1,6 @@
 # bad-strategy archive
 
-`config/backtest/strategy-presets.json` には、直近の main 系バックテストで継続採用する 15 戦略だけを残す。
+`config/backtest/strategy-presets.json` には、直近の main 系バックテストで継続採用する 25 戦略だけを残す。
 
 それ以外の retired preset は `docs/bad-strategy/retired-strategy-presets.json` に退避し、なぜ外したか・いつ外したかをこの配下で追跡する。
 

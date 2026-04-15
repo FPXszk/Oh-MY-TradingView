@@ -18,10 +18,15 @@ const VALID_REGIME_FILTER_TYPES = [
   'spy_above_sma200',
   'rsp_above_sma200',
 ];
+const VALID_ENTRY_CONFIRMATION_TYPES = ['market_follow_through'];
 
 const VALID_MA_TYPES = ['sma', 'ema'];
 const VALID_REGIME_ACTIONS = ['no_new_entry', 'exit_all'];
 const VALID_RSI_REGIME_DIRECTIONS = ['above'];
+
+function isNonEmptyTrimmedString(value) {
+  return typeof value === 'string' && value.trim().length > 0;
+}
 
 const BUILDER_PARAMETER_RULES = {
   price_vs_ma: [
@@ -188,6 +193,50 @@ export function validatePreset(preset) {
       errors.push(
         `rsi_regime_filter.direction must be one of: ${VALID_RSI_REGIME_DIRECTIONS.join(', ')}`,
       );
+    }
+  }
+
+  if (preset.entry_confirmation_filter) {
+    if (!preset.entry_confirmation_filter.type) {
+      errors.push('entry_confirmation_filter.type is required when entry_confirmation_filter is present');
+    } else if (!VALID_ENTRY_CONFIRMATION_TYPES.includes(preset.entry_confirmation_filter.type)) {
+      errors.push(
+        `entry_confirmation_filter.type must be one of: ${VALID_ENTRY_CONFIRMATION_TYPES.join(', ')}`,
+      );
+    }
+    if (!Array.isArray(preset.entry_confirmation_filter.symbols) || preset.entry_confirmation_filter.symbols.length === 0) {
+      errors.push('entry_confirmation_filter.symbols is required and must be a non-empty array');
+    } else if (preset.entry_confirmation_filter.symbols.some((symbol) => !isNonEmptyTrimmedString(symbol))) {
+      errors.push('entry_confirmation_filter.symbols must contain only non-empty strings');
+    } else {
+      const normalizedSymbols = preset.entry_confirmation_filter.symbols.map((symbol) => symbol.trim());
+      if (new Set(normalizedSymbols).size !== normalizedSymbols.length) {
+        errors.push('entry_confirmation_filter.symbols must not contain duplicates');
+      }
+    }
+    if (!VALID_MA_TYPES.includes(preset.entry_confirmation_filter.price_ma_type)) {
+      errors.push(
+        `entry_confirmation_filter.price_ma_type must be one of: ${VALID_MA_TYPES.join(', ')}`,
+      );
+    }
+    if (typeof preset.entry_confirmation_filter.price_ma_period !== 'number') {
+      errors.push('entry_confirmation_filter.price_ma_period is required and must be a number');
+    }
+    if (!isNonEmptyTrimmedString(preset.entry_confirmation_filter.vix_symbol)) {
+      errors.push('entry_confirmation_filter.vix_symbol is required and must be a non-empty string');
+    } else if (
+      Array.isArray(preset.entry_confirmation_filter.symbols) &&
+      preset.entry_confirmation_filter.symbols.some((symbol) => isNonEmptyTrimmedString(symbol) && symbol.trim() === preset.entry_confirmation_filter.vix_symbol.trim())
+    ) {
+      errors.push('entry_confirmation_filter.vix_symbol must not duplicate a tracked symbol');
+    }
+    if (!VALID_MA_TYPES.includes(preset.entry_confirmation_filter.vix_ma_type)) {
+      errors.push(
+        `entry_confirmation_filter.vix_ma_type must be one of: ${VALID_MA_TYPES.join(', ')}`,
+      );
+    }
+    if (typeof preset.entry_confirmation_filter.vix_ma_period !== 'number') {
+      errors.push('entry_confirmation_filter.vix_ma_period is required and must be a number');
     }
   }
 

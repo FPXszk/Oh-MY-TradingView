@@ -1,7 +1,18 @@
 const REFERENCE_SYMBOL_MAP = {
   SPY: 'BATS:SPY',
   RSP: 'BATS:RSP',
+  QQQ: 'NASDAQ:QQQ',
+  DIA: 'NYSEARCA:DIA',
+  VIX: 'CBOE:VIX',
 };
+
+function resolveReferenceSymbol(symbol) {
+  return REFERENCE_SYMBOL_MAP[symbol] || symbol;
+}
+
+function buildSignalName(symbol, suffix) {
+  return `entryConfirm${String(symbol).toLowerCase().replace(/[^a-z0-9]+/g, '')}${suffix}`;
+}
 
 function escapePineString(value) {
   return String(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
@@ -42,7 +53,7 @@ function buildRegimeBlock(regimeFilter) {
     throw new Error(`Unsupported regime filter: ${regimeFilter.type}`);
   }
 
-  const refSymbol = REFERENCE_SYMBOL_MAP[regimeFilter.reference_symbol] || regimeFilter.reference_symbol;
+  const refSymbol = resolveReferenceSymbol(regimeFilter.reference_symbol);
   const maFunc = regimeFilter.reference_ma_type === 'ema' ? 'ta.ema' : 'ta.sma';
 
   return [
@@ -51,6 +62,49 @@ function buildRegimeBlock(regimeFilter) {
     'regimeOk = regimeRefClose > regimeRefMa',
     `regimeForceExit = ${regimeFilter.action_when_false === 'exit_all' ? 'true' : 'false'}`,
   ];
+}
+
+function buildEntryConfirmationBlock(entryConfirmationFilter) {
+  if (!entryConfirmationFilter) {
+    return ['entryConfirmOk = true'];
+  }
+
+  if (entryConfirmationFilter.type !== 'market_follow_through') {
+    throw new Error(`Unsupported entry confirmation filter: ${entryConfirmationFilter.type}`);
+  }
+
+  const priceSymbols = entryConfirmationFilter.symbols || [];
+  const priceMaFunc = entryConfirmationFilter.price_ma_type === 'ema' ? 'ta.ema' : 'ta.sma';
+  const vixMaFunc = entryConfirmationFilter.vix_ma_type === 'ema' ? 'ta.ema' : 'ta.sma';
+  const lines = [];
+  const conditions = [];
+
+  for (const symbol of priceSymbols) {
+    const normalizedSymbol = symbol.trim();
+    const pineSymbol = resolveReferenceSymbol(normalizedSymbol);
+    const closeName = buildSignalName(normalizedSymbol, 'Close');
+    const maName = buildSignalName(normalizedSymbol, 'Ma');
+    const okName = buildSignalName(normalizedSymbol, 'Ok');
+    lines.push(`${closeName} = request.security("${pineSymbol}", timeframe.period, close)`);
+    lines.push(`${maName} = ${priceMaFunc}(${closeName}, ${entryConfirmationFilter.price_ma_period})`);
+    lines.push(`${okName} = ${closeName} > ${maName}`);
+    conditions.push(okName);
+  }
+
+  const normalizedVixSymbol = entryConfirmationFilter.vix_symbol.trim();
+  const vixSymbol = resolveReferenceSymbol(normalizedVixSymbol);
+  const vixCloseName = buildSignalName(normalizedVixSymbol, 'Close');
+  const vixMaName = buildSignalName(normalizedVixSymbol, 'Ma');
+  const vixOkName = buildSignalName(normalizedVixSymbol, 'Ok');
+  lines.push(`${vixCloseName} = request.security("${vixSymbol}", timeframe.period, close)`);
+  lines.push(
+    `${vixMaName} = ${vixMaFunc}(${vixCloseName}, ${entryConfirmationFilter.vix_ma_period})`,
+  );
+  lines.push(`${vixOkName} = ${vixCloseName} < ${vixMaName}`);
+  conditions.push(vixOkName);
+  lines.push(`entryConfirmOk = ${conditions.join(' and ')}`);
+
+  return lines;
 }
 
 function buildRsiRegimeBlock(rsiRegimeFilter) {
@@ -210,12 +264,13 @@ function buildStopLossBlock(stopLoss) {
 }
 
 export function buildResearchStrategySource(preset, defaults = {}) {
-  const entryGuards = ['inDateRange', 'regimeOk', 'rsiRegimeOk'];
+  const entryGuards = ['inDateRange', 'regimeOk', 'rsiRegimeOk', 'entryConfirmOk'];
   const title = preset.name || preset.id;
   const lines = [
     ...buildHeader(title, defaults),
     ...buildRegimeBlock(preset.regime_filter),
     ...buildRsiRegimeBlock(preset.rsi_regime_filter),
+    ...buildEntryConfirmationBlock(preset.entry_confirmation_filter),
     ...buildBaseBlock(preset),
     `allowEntry = ${entryGuards.join(' and ')}`,
     'if entrySignal and allowEntry and strategy.position_size <= 0',

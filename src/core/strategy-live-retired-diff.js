@@ -14,16 +14,36 @@ function deriveFamilyId(strategy) {
   return `${strategy.builder}-${firstTag}`;
 }
 
+function deriveReplacementFamilyId(strategy, liveFamilyIds, liveStrategiesById) {
+  const replacementFamily = strategy.lifecycle?.replacement_family;
+  const replacementFamilyId = replacementFamily?.family_id;
+
+  if (replacementFamilyId && liveFamilyIds.has(replacementFamilyId)) {
+    return replacementFamilyId;
+  }
+
+  if (Array.isArray(replacementFamily?.replacement_live_ids)) {
+    for (const liveId of replacementFamily.replacement_live_ids) {
+      const liveStrategy = liveStrategiesById.get(liveId);
+      if (liveStrategy) {
+        return deriveFamilyId(liveStrategy);
+      }
+    }
+  }
+
+  return replacementFamilyId || deriveFamilyId(strategy);
+}
+
 export function computeFamilyDiff(catalog) {
   const familyMap = new Map();
+  const liveStrategies = getLiveStrategies(catalog);
+  const liveFamilyIds = new Set(liveStrategies.map((strategy) => deriveFamilyId(strategy)));
+  const liveStrategiesById = new Map(liveStrategies.map((strategy) => [strategy.id, strategy]));
 
   for (const strategy of catalog.strategies) {
     const isRetired = strategy.lifecycle.status === 'retired';
-    const replacementFamilyId = isRetired
-      && strategy.lifecycle.replacement_family
-      && strategy.lifecycle.replacement_family.family_id;
-    const familyId = isRetired && replacementFamilyId
-      ? replacementFamilyId
+    const familyId = isRetired
+      ? deriveReplacementFamilyId(strategy, liveFamilyIds, liveStrategiesById)
       : deriveFamilyId(strategy);
     if (!familyMap.has(familyId)) {
       familyMap.set(familyId, { family_id: familyId, live_count: 0, retired_count: 0 });

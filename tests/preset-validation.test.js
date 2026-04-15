@@ -11,6 +11,7 @@ import {
 } from '../src/core/preset-validation.js';
 
 import { buildNvdaMaSource } from '../src/core/backtest.js';
+import { buildExpansionLiveIds } from './strategy-expansion-fixtures.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -416,6 +417,72 @@ describe('validatePreset — rsi_regime_filter', () => {
 });
 
 // ---------------------------------------------------------------------------
+// validatePreset — entry_confirmation_filter
+// ---------------------------------------------------------------------------
+describe('validatePreset — entry_confirmation_filter', () => {
+  it('accepts market_follow_through entry confirmation filters', () => {
+    const result = validatePreset({
+      id: 'market-follow-through-valid',
+      name: 'Market Follow Through Valid',
+      category: 'breakout',
+      builder: 'donchian_breakout',
+      parameters: { entry_period: 55, exit_period: 20 },
+      entry_confirmation_filter: {
+        type: 'market_follow_through',
+        symbols: ['SPY', 'QQQ', 'DIA'],
+        price_ma_type: 'sma',
+        price_ma_period: 20,
+        vix_symbol: 'VIX',
+        vix_ma_type: 'sma',
+        vix_ma_period: 20,
+      },
+    });
+    assert.equal(result.valid, true);
+  });
+
+  it('rejects entry confirmation filters without symbols', () => {
+    const result = validatePreset({
+      id: 'market-follow-through-no-symbols',
+      name: 'Market Follow Through No Symbols',
+      category: 'breakout',
+      builder: 'donchian_breakout',
+      parameters: { entry_period: 55, exit_period: 20 },
+      entry_confirmation_filter: {
+        type: 'market_follow_through',
+        price_ma_type: 'sma',
+        price_ma_period: 20,
+        vix_symbol: 'VIX',
+        vix_ma_type: 'sma',
+        vix_ma_period: 20,
+      },
+    });
+    assert.equal(result.valid, false);
+    assert.ok(result.errors.some((e) => /symbols/.test(e)));
+  });
+
+  it('rejects blank entry confirmation symbols and vix symbol', () => {
+    const result = validatePreset({
+      id: 'market-follow-through-blank-symbols',
+      name: 'Market Follow Through Blank Symbols',
+      category: 'breakout',
+      builder: 'donchian_breakout',
+      parameters: { entry_period: 55, exit_period: 20 },
+      entry_confirmation_filter: {
+        type: 'market_follow_through',
+        symbols: ['SPY', ''],
+        price_ma_type: 'sma',
+        price_ma_period: 20,
+        vix_symbol: ' ',
+        vix_ma_type: 'sma',
+        vix_ma_period: 20,
+      },
+    });
+    assert.equal(result.valid, false);
+    assert.ok(result.errors.some((e) => /non-empty strings/.test(e) || /non-empty string/.test(e)));
+  });
+});
+
+// ---------------------------------------------------------------------------
 // validatePresetIds
 // ---------------------------------------------------------------------------
 describe('validatePresetIds', () => {
@@ -465,23 +532,7 @@ describe('filterPresetsByRound', () => {
 // Integration: live/retired preset policy
 // ---------------------------------------------------------------------------
 describe('strategy-presets.json integration', () => {
-  const expectedLiveIds = [
-    'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight',
-    'donchian-55-20-rsp-filter-rsi14-regime-48-hard-stop-8pct-theme-deep-pullback-tight-early',
-    'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-10pct-theme-deep-pullback',
-    'donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-10pct-theme-deep-pullback-earlier',
-    'donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict',
-    'donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early',
-    'donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late',
-    'donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight',
-    'donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide',
-    'donchian-55-20-rsp-filter-rsi14-regime-57-hard-stop-6pct-theme-deep-pullback-tight-narrow',
-    'donchian-50-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-entry-early',
-    'donchian-60-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-entry-late',
-    'donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-6pct-theme-deep-pullback-strict-narrow',
-    'donchian-55-18-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-exit-tight',
-    'donchian-55-22-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-exit-wide',
-  ];
+  const expectedLiveIds = buildExpansionLiveIds();
 
   it('all live presets pass validation', async () => {
     const data = await loadPresets();
@@ -505,9 +556,9 @@ describe('strategy-presets.json integration', () => {
     );
   });
 
-  it('keeps exactly the strongest 15 live presets in deterministic order', async () => {
+  it('keeps exactly the strongest 25 live presets in deterministic order', async () => {
     const data = await loadPresets();
-    assert.equal(data.strategies.length, 15);
+    assert.equal(data.strategies.length, 25);
     assert.deepEqual(data.strategies.map((preset) => preset.id), expectedLiveIds);
   });
 
@@ -526,7 +577,7 @@ describe('strategy-presets.json integration', () => {
   it('retires every non-live preset to docs/bad-strategy', async () => {
     const live = await loadPresets();
     const retired = await loadRetiredPresets();
-    assert.equal(retired.strategies.length, 116);
+    assert.equal(retired.strategies.length, 126);
 
     const liveIds = new Set(live.strategies.map((preset) => preset.id));
     const retiredIds = retired.strategies.map((preset) => preset.id);
