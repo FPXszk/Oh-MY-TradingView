@@ -238,6 +238,8 @@ describe('night-batch-self-hosted workflow', () => {
       'workflow must inspect the config path before starting TradingView');
     assert.match(workflow, /Start-Process -FilePath \$launch\.shortcut_path/,
       'workflow must start TradingView from the configured shortcut when needed');
+    assert.match(workflow, /Get-ChildItem -Path \$shortcutDir -Filter '\*\.lnk' -File/,
+      'workflow must fall back to searching the TradingView folder for a shortcut');
     assert.match(workflow, /actions\/upload-artifact@v4/,
       'workflow must upload night batch artifacts');
     assert.match(workflow, /Archive completed night batch rounds/,

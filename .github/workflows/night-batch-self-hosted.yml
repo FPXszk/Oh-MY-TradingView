@@ -76,9 +76,23 @@ jobs:
             if ($launch.shortcut_path -and (Test-Path $launch.shortcut_path)) {
               Start-Process -FilePath $launch.shortcut_path
             } else {
+              $shortcut = $null
+              $shortcutDir = Split-Path -Parent $launch.shortcut_path
+              if ($shortcutDir -and (Test-Path $shortcutDir)) {
+                $shortcut = Get-ChildItem -Path $shortcutDir -Filter '*.lnk' -File |
+                  Where-Object { $_.Name -match 'TradingView' } |
+                  Select-Object -First 1 -ExpandProperty FullName
+              }
+
+              if ($shortcut) {
+                Start-Process -FilePath $shortcut
+                Start-Sleep -Seconds $runtime.launch_wait_sec
+                return
+              }
+
               $launcher = Join-Path $env:LOCALAPPDATA 'TradingView\TradingView.exe'
               if (-not (Test-Path $launcher)) {
-                throw "No TradingView launcher found at $launcher or $($launch.shortcut_path)"
+                throw "No TradingView launcher found at $launcher, $($launch.shortcut_path), or any TradingView shortcut in $shortcutDir"
               }
               Start-Process -FilePath $launcher -ArgumentList "--remote-debugging-port=$($runtime.startup_check_port)"
             }
