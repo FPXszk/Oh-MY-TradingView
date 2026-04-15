@@ -1,0 +1,2423 @@
+{
+  "generated_at": "2026-04-15T12:13:30.530Z",
+  "live_count": 30,
+  "retired_count": 121,
+  "total_count": 151,
+  "family_diff": [
+    {
+      "family_id": "deep-pullback-tight",
+      "live_count": 1,
+      "retired_count": 111
+    },
+    {
+      "family_id": "deep-pullback-tight-exit-tight",
+      "live_count": 1,
+      "retired_count": 10
+    },
+    {
+      "family_id": "deep-pullback-tight-exit-wide",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "deep-pullback-strict-entry-late",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "deep-pullback-strict-entry-early",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "deep-pullback-tight-exit-tight-profit-protect-chandelier",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "deep-pullback-tight-exit-tight-profit-protect-atr-trailing",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "deep-pullback-tight-exit-tight-ftd-entry-early",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "deep-pullback-tight-exit-tight-ftd-entry-late",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "deep-pullback-tight-profit-protect-chandelier",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "deep-pullback-tight-profit-protect-atr-trailing",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "deep-pullback-tight-ftd-entry-early",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "deep-pullback-tight-ftd-entry-late",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "deep-pullback-tight-exit-wide-profit-protect-chandelier",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "deep-pullback-tight-exit-wide-profit-protect-atr-trailing",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "deep-pullback-tight-exit-wide-ftd-entry-early",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "deep-pullback-tight-exit-wide-ftd-entry-late",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "deep-pullback-strict-entry-late-profit-protect-chandelier",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "deep-pullback-strict-entry-late-profit-protect-atr-trailing",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "deep-pullback-strict-entry-late-ftd-entry-early",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "deep-pullback-strict-entry-late-ftd-entry-late",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "deep-pullback-strict-entry-early-profit-protect-chandelier",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "deep-pullback-strict-entry-early-profit-protect-atr-trailing",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "deep-pullback-strict-entry-early-ftd-entry-early",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "deep-pullback-strict-entry-early-ftd-entry-late",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "breadth-quality-balanced-wide",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "breadth-quality-balanced-wide-entry-early",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "breadth-quality-balanced-wide-entry-late",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "breadth-quality-balanced-wide-exit-tight",
+      "live_count": 1,
+      "retired_count": 0
+    },
+    {
+      "family_id": "breadth-quality-balanced-wide-exit-wide",
+      "live_count": 1,
+      "retired_count": 0
+    }
+  ],
+  "retired_ledger": [
+    {
+      "presetId": "donchian-55-20-rsp-filter-rsi14-regime-48-hard-stop-8pct-theme-deep-pullback-tight-early",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "deep-pullback expansion introduced stronger follow-through and profit-protection variants"
+      },
+      "last_strong_generation": "next-long-run-finetune-complete_20260413",
+      "replacement_family": {
+        "family_id": "deep-pullback-expansion",
+        "summary": "base deep-pullback strategies and their expansion variants replace this sibling seed",
+        "replacement_live_ids": [
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-chandelier",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-atr-trailing",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-ftd-entry-early",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-ftd-entry-late",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-chandelier",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-atr-trailing",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-ftd-entry-early",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-ftd-entry-late",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-chandelier",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-atr-trailing",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-ftd-entry-early",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-ftd-entry-late",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-profit-protect-chandelier",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-profit-protect-atr-trailing",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-ftd-entry-early",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-ftd-entry-late",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-profit-protect-chandelier",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-profit-protect-atr-trailing",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-ftd-entry-early",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-ftd-entry-late"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-10pct-theme-deep-pullback",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "deep-pullback expansion introduced stronger follow-through and profit-protection variants"
+      },
+      "last_strong_generation": "next-long-run-finetune-complete_20260413",
+      "replacement_family": {
+        "family_id": "deep-pullback-expansion",
+        "summary": "base deep-pullback strategies and their expansion variants replace this sibling seed",
+        "replacement_live_ids": [
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-chandelier",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-atr-trailing",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-ftd-entry-early",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-ftd-entry-late",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-chandelier",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-atr-trailing",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-ftd-entry-early",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-ftd-entry-late",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-chandelier",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-atr-trailing",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-ftd-entry-early",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-ftd-entry-late",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-profit-protect-chandelier",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-profit-protect-atr-trailing",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-ftd-entry-early",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-ftd-entry-late",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-profit-protect-chandelier",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-profit-protect-atr-trailing",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-ftd-entry-early",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-ftd-entry-late"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-10pct-theme-deep-pullback-earlier",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "deep-pullback expansion introduced stronger follow-through and profit-protection variants"
+      },
+      "last_strong_generation": "next-long-run-finetune-complete_20260413",
+      "replacement_family": {
+        "family_id": "deep-pullback-expansion",
+        "summary": "base deep-pullback strategies and their expansion variants replace this sibling seed",
+        "replacement_live_ids": [
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-chandelier",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-atr-trailing",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-ftd-entry-early",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-ftd-entry-late",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-chandelier",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-atr-trailing",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-ftd-entry-early",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-ftd-entry-late",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-chandelier",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-atr-trailing",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-ftd-entry-early",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-ftd-entry-late",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-profit-protect-chandelier",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-profit-protect-atr-trailing",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-ftd-entry-early",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-ftd-entry-late",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-profit-protect-chandelier",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-profit-protect-atr-trailing",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-ftd-entry-early",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-ftd-entry-late"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "deep-pullback expansion introduced stronger follow-through and profit-protection variants"
+      },
+      "last_strong_generation": "next-long-run-finetune-complete_20260413",
+      "replacement_family": {
+        "family_id": "deep-pullback-expansion",
+        "summary": "base deep-pullback strategies and their expansion variants replace this sibling seed",
+        "replacement_live_ids": [
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-chandelier",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-atr-trailing",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-ftd-entry-early",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-ftd-entry-late",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-chandelier",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-atr-trailing",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-ftd-entry-early",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-ftd-entry-late",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-chandelier",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-atr-trailing",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-ftd-entry-early",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-ftd-entry-late",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-profit-protect-chandelier",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-profit-protect-atr-trailing",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-ftd-entry-early",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-ftd-entry-late",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-profit-protect-chandelier",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-profit-protect-atr-trailing",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-ftd-entry-early",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-ftd-entry-late"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-rsp-filter-rsi14-regime-57-hard-stop-6pct-theme-deep-pullback-tight-narrow",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "deep-pullback expansion introduced stronger follow-through and profit-protection variants"
+      },
+      "last_strong_generation": "next-long-run-finetune-complete_20260413",
+      "replacement_family": {
+        "family_id": "deep-pullback-expansion",
+        "summary": "base deep-pullback strategies and their expansion variants replace this sibling seed",
+        "replacement_live_ids": [
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-chandelier",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-atr-trailing",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-ftd-entry-early",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-ftd-entry-late",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-chandelier",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-atr-trailing",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-ftd-entry-early",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-ftd-entry-late",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-chandelier",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-atr-trailing",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-ftd-entry-early",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-ftd-entry-late",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-profit-protect-chandelier",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-profit-protect-atr-trailing",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-ftd-entry-early",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-ftd-entry-late",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-profit-protect-chandelier",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-profit-protect-atr-trailing",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-ftd-entry-early",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-ftd-entry-late"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-50-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-entry-early",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "deep-pullback expansion introduced stronger follow-through and profit-protection variants"
+      },
+      "last_strong_generation": "next-long-run-finetune-complete_20260413",
+      "replacement_family": {
+        "family_id": "deep-pullback-expansion",
+        "summary": "base deep-pullback strategies and their expansion variants replace this sibling seed",
+        "replacement_live_ids": [
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-chandelier",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-atr-trailing",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-ftd-entry-early",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-ftd-entry-late",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-chandelier",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-atr-trailing",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-ftd-entry-early",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-ftd-entry-late",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-chandelier",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-atr-trailing",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-ftd-entry-early",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-ftd-entry-late",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-profit-protect-chandelier",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-profit-protect-atr-trailing",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-ftd-entry-early",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-ftd-entry-late",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-profit-protect-chandelier",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-profit-protect-atr-trailing",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-ftd-entry-early",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-ftd-entry-late"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-60-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-entry-late",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "deep-pullback expansion introduced stronger follow-through and profit-protection variants"
+      },
+      "last_strong_generation": "next-long-run-finetune-complete_20260413",
+      "replacement_family": {
+        "family_id": "deep-pullback-expansion",
+        "summary": "base deep-pullback strategies and their expansion variants replace this sibling seed",
+        "replacement_live_ids": [
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-chandelier",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-atr-trailing",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-ftd-entry-early",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-ftd-entry-late",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-chandelier",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-atr-trailing",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-ftd-entry-early",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-ftd-entry-late",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-chandelier",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-atr-trailing",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-ftd-entry-early",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-ftd-entry-late",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-profit-protect-chandelier",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-profit-protect-atr-trailing",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-ftd-entry-early",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-ftd-entry-late",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-profit-protect-chandelier",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-profit-protect-atr-trailing",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-ftd-entry-early",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-ftd-entry-late"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-6pct-theme-deep-pullback-strict-narrow",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "deep-pullback expansion introduced stronger follow-through and profit-protection variants"
+      },
+      "last_strong_generation": "next-long-run-finetune-complete_20260413",
+      "replacement_family": {
+        "family_id": "deep-pullback-expansion",
+        "summary": "base deep-pullback strategies and their expansion variants replace this sibling seed",
+        "replacement_live_ids": [
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-chandelier",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-atr-trailing",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-ftd-entry-early",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-ftd-entry-late",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-chandelier",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-atr-trailing",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-ftd-entry-early",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-ftd-entry-late",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-chandelier",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-atr-trailing",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-ftd-entry-early",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-ftd-entry-late",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-profit-protect-chandelier",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-profit-protect-atr-trailing",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-ftd-entry-early",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-ftd-entry-late",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-profit-protect-chandelier",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-profit-protect-atr-trailing",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-ftd-entry-early",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-ftd-entry-late"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-18-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-exit-tight",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "deep-pullback expansion introduced stronger follow-through and profit-protection variants"
+      },
+      "last_strong_generation": "next-long-run-finetune-complete_20260413",
+      "replacement_family": {
+        "family_id": "deep-pullback-expansion",
+        "summary": "base deep-pullback strategies and their expansion variants replace this sibling seed",
+        "replacement_live_ids": [
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-chandelier",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-atr-trailing",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-ftd-entry-early",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-ftd-entry-late",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-chandelier",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-atr-trailing",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-ftd-entry-early",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-ftd-entry-late",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-chandelier",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-atr-trailing",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-ftd-entry-early",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-ftd-entry-late",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-profit-protect-chandelier",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-profit-protect-atr-trailing",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-ftd-entry-early",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-ftd-entry-late",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-profit-protect-chandelier",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-profit-protect-atr-trailing",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-ftd-entry-early",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-ftd-entry-late"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-22-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-exit-wide",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "deep-pullback expansion introduced stronger follow-through and profit-protection variants"
+      },
+      "last_strong_generation": "next-long-run-finetune-complete_20260413",
+      "replacement_family": {
+        "family_id": "deep-pullback-expansion",
+        "summary": "base deep-pullback strategies and their expansion variants replace this sibling seed",
+        "replacement_live_ids": [
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-chandelier",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-atr-trailing",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-ftd-entry-early",
+          "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-ftd-entry-late",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-chandelier",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-atr-trailing",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-ftd-entry-early",
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-ftd-entry-late",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-chandelier",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-atr-trailing",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-ftd-entry-early",
+          "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-ftd-entry-late",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-profit-protect-chandelier",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-profit-protect-atr-trailing",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-ftd-entry-early",
+          "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-ftd-entry-late",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-profit-protect-chandelier",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-profit-protect-atr-trailing",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-ftd-entry-early",
+          "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-ftd-entry-late"
+        ]
+      }
+    },
+    {
+      "presetId": "sma-cross-5-20",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "sma-200-trend-filter",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "ema-cross-9-21",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "macd-signal",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "rsi-mean-reversion",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "connors-rsi-pullback",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "bb-mean-revert",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-breakout",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "supertrend-atr",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "adx-ema-filter",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "sma-cross-10-50",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "ema-cross-12-26",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "ema-50-trend-filter",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-breakout-55-20",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "supertrend-atr-14-2",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "bb-tight-squeeze",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "stochastic-oversold",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "psar-trend-flip",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "keltner-breakout",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "roc-momentum-cross",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "sma-200-trend-filter-atr-stop",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "sma-200-trend-filter-chandelier",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "sma-cross-10-50-baseline",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "sma-cross-10-50-spy-filter",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "ema-50-trend-filter-baseline",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "ema-50-trend-filter-rsp-filter",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-breakout-55-20-baseline",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-breakout-55-20-spy-filter",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "keltner-breakout-atr-trail",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "connors-rsi-pullback-bull-only",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-baseline",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-spy-filter",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-rsp-filter",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-atr-trail",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-hard-stop-8pct",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-hard-stop-atr2",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-2sigma-exit",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-no-avg-down",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-20-10-baseline",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-20-10-hard-stop-8pct",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-20-10-atr-trail",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-20-10-2sigma-exit",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "keltner-breakout-baseline-r4",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "keltner-atr-trail-r4",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "keltner-breakout-hard-stop-atr2",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "keltner-breakout-2sigma-exit",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-spy-filter-hard-stop",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-rsp-filter-atr-trail",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "keltner-breakout-spy-filter",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "breakout-bollinger-2sigma-exit",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-20-10-hard-stop-6pct",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-20-10-hard-stop-7pct",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-20-10-hard-stop-8pct-r5",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-20-10-hard-stop-10pct",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-20-10-atr-stop-2",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-20-10-spy-filter-hard-stop-8pct",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-20-10-rsp-filter-hard-stop-8pct",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-20-10-rsi14-regime-55-hard-stop-8pct",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-baseline-r5",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-spy-filter-r5",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-rsp-filter-r5",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-spy-filter-hard-stop-8pct-r5",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-rsp-filter-hard-stop-8pct-r5",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-rsi14-regime-55-hard-stop-8pct",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-20-10-rsi14-regime-50-hard-stop-8pct",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-rsi14-regime-50-spy-filter",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "rsi2-buy-10-sell-65-long-only",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "rsi2-buy-10-sell-70-spy-filter-long-only",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "rsi3-buy-15-sell-65-long-only",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "rsi5-buy-25-sell-55-long-only",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-spy-filter-rsi14-regime-55",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-rsp-filter-rsi14-regime-50",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-spy-filter-rsi14-regime-50-hard-stop-8pct",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-20-10-spy-filter-rsi14-regime-50-hard-stop-10pct",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-20-10-rsp-filter-rsi14-regime-50-hard-stop-10pct",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-20-10-spy-filter-rsi14-regime-55-hard-stop-6pct",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-20-10-rsp-filter-rsi14-regime-55-hard-stop-6pct",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "rsi2-buy-10-sell-65-rsp-filter-long-only",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "rsi3-buy-15-sell-65-spy-filter-long-only",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-rsp-filter-rsi14-regime-45-theme-breadth-early",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-6pct-theme-breadth-quality",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-spy-filter-rsi14-regime-60-theme-quality-strict",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-spy-filter-rsi14-regime-55-hard-stop-6pct-theme-quality-strict",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-20-10-spy-filter-rsi14-regime-45-hard-stop-10pct-theme-acceleration-reentry",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-20-10-spy-filter-rsi14-regime-50-hard-stop-8pct-theme-acceleration-balanced",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-20-10-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-acceleration",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "rsi2-buy-10-sell-70-rsp-filter-long-only-theme-shallow-dip",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "rsi3-buy-20-sell-70-spy-filter-long-only-theme-deep-dip",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-rsp-filter-rsi14-regime-40-theme-breadth-earlier",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-rsp-filter-rsi14-regime-50-theme-breadth-balanced",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-rsp-filter-rsi14-regime-45-hard-stop-6pct-theme-breadth-early-guarded",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-rsp-filter-rsi14-regime-45-hard-stop-6pct-theme-breadth-quality-early",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-6pct-theme-breadth-quality-strict",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-spy-filter-rsi14-regime-55-theme-quality-strict-balanced",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-spy-filter-rsi14-regime-60-hard-stop-6pct-theme-quality-strict-guarded",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-spy-filter-rsi14-regime-55-hard-stop-8pct-theme-quality-strict-stop-wide",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-20-10-spy-filter-rsi14-regime-55-hard-stop-8pct-theme-acceleration-balanced-strict",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-20-10-spy-filter-rsi14-regime-45-hard-stop-8pct-theme-acceleration-reentry-tight",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-rsp-filter-rsi14-regime-40-hard-stop-6pct-theme-breadth-earlier-guarded",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-spy-filter-rsi14-regime-50-hard-stop-6pct-theme-quality-strict-balanced-guarded",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-spy-filter-rsi14-regime-60-hard-stop-8pct-theme-quality-strict-guarded-wide",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-rsp-filter-rsi14-regime-45-hard-stop-8pct-theme-breadth-early-guarded-wide",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-spy-filter-rsi14-regime-45-theme-quality-strict-relaxed",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-spy-filter-rsi14-regime-45-hard-stop-8pct-theme-quality-strict-relaxed-guarded",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-spy-filter-rsi14-regime-45-hard-stop-6pct-theme-quality-strict-relaxed-tight",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-55-20-rsp-filter-rsi14-regime-52-hard-stop-8pct-theme-breadth-quality-balanced-mid",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "sma-cross-20-50",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "ema-cross-5-13",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "rsi-mean-reversion-7-25-75",
+      "retire_reason": {
+        "code": "superseded_by_family",
+        "summary": "donchian deep-pullback family に性能で劣り、代替された"
+      },
+      "last_strong_generation": null,
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian deep-pullback-tight family が全体で最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    },
+    {
+      "presetId": "donchian-breakout-10-5",
+      "retire_reason": {
+        "code": "fell_below_live_cutline",
+        "summary": "donchian breakout の non-deep-pullback 系は latest + previous の strongest 15 に入らなかった"
+      },
+      "last_strong_generation": {
+        "generation_id": "next-long-run-market-matched-200_20260409",
+        "artifact_path": "docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json"
+      },
+      "replacement_family": {
+        "family_id": "deep-pullback-tight",
+        "summary": "donchian breakout の中で deep-pullback-tight family が最強のため代替先とする",
+        "replacement_live_ids": [
+          "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight"
+        ]
+      }
+    }
+  ],
+  "catalog_path": "/home/fpxszk/code/Oh-MY-TradingView/docs/research/results/night-batch/main-backtest-latest-strategy-catalog.snapshot.json"
+}

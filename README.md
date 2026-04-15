@@ -3,8 +3,15 @@
 TradingView Desktop を **Copilot CLI 前提** で扱う最小 MCP / CLI ブリッジです。  
 現在の対象は **Windows + WSL** を主軸にした **CDP 接続 / 現在価格取得 / Pine ループ** です。
 
-- docs の入口: `docs/DOCUMENTATION_SYSTEM.md`
-- 現在の研究 handoff / 最新結果: `docs/research/latest/`
+- **この README が repo の一次入口**
+- docs 全体の地図: `docs/DOCUMENTATION_SYSTEM.md`
+- 人間向けの補助説明: `docs/explain-forhuman.md`
+- 現在の handoff 世代: `docs/research/latest/`
+- 最新の main backtest 要約: `docs/research/latest/main-backtest-latest-summary.md`
+- 戦略と銘柄の人間向けリファレンス: `docs/research/strategy/README.md`
+- incident / postmortem archive: `docs/reports/README.md`
+- raw backtest artifact の説明: `docs/references/backtests/README.md`
+- Pine snapshot の説明: `docs/references/pine/README.md`
 - 外部・比較調査の参照資料台帳: `docs/references/design-ref-llms.md`
 - **外部資料を参照したら `docs/references/design-ref-llms.md` に必ず記録してください**
 
@@ -441,7 +448,7 @@ scripts\windows\run-night-batch-self-hosted.cmd config\night_batch\bundle-foregr
 
 workflow / manual wrapper の foreground 実行経路では `--round-mode` を使うため、state file は `docs/research/results/night-batch/roundN/bundle-foreground-state.json` に配置され、完了後に `docs/research/results/night-batch/archive/roundN/` へ退避されます。state の `updated_at` が heartbeat、summary JSON の `termination_reason` / `failed_step` / `last_checkpoint` が GitHub 側の切り分け根拠になります。hard reboot / power loss では最後の summary / artifact upload が完了しない可能性は残ります。
 
-workflow の summary / artifact 周りの PowerShell ロジックは `scripts/windows/github-actions/` 配下の外部スクリプトに分離しています。inline PowerShell の構文エラーで workflow が failure になった事例と対策は [run 8 レポート](docs/reports/night-batch-self-hosted-run8.md) を参照してください。
+workflow の summary / artifact 周りの PowerShell ロジックは `scripts/windows/github-actions/` 配下の外部スクリプトに分離しています。過去に inline PowerShell の構文エラーで workflow summary だけが壊れたため、現在は incident の教訓を README 本文へ吸収し、個別レポートは `docs/reports/README.md` 配下の archive として扱います。
 
 foreground monitoring へ切り替えた理由は、旧 detached 方式では **workflow success と production 完了が一致せず、runner cleanup / reboot 後に stale state が残り得た**ためです。現在は workflow の完了を production 完了結果に合わせ、Task Scheduler autostart も `C:\actions-runner\_diag\` 配下の launcher / wrapper copy / bootstrap copy を使うことで live checkout 非依存にしています。
 
@@ -466,7 +473,7 @@ active な self-hosted runner / detached night-batch がある間は、**live ch
 3. live checkout に差分を反映する
 4. `advance-next-round` を明示して次 run を開始する
 
-詳細な手順は [docs/command.md § 次 strategy 更新手順](docs/command.md#次-strategy-更新手順live-checkout-保護) を参照。
+上の 1-4 が現行の正本手順です。補足の判断経緯や incident 履歴が必要な場合だけ `docs/reports/README.md` と `docs/research/archive/` を参照してください。
 
 preset-driven バックテスト:
 
@@ -491,7 +498,7 @@ node src/cli/index.js backtest preset ema-cross-9-21 --symbol NVDA
 - `restore_policy: "skip"` を前提に、backtest-applied strategy をチャート上に残す
 - Strategy Tester の `指標` タブを明示活性化できる構成で動かす
 
-運用コマンドは `docs/command.md`、known-good 条件と制約は
+known-good 条件と制約は
 `docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`
 を参照してください。
 
@@ -514,7 +521,7 @@ node src/cli/index.js backtest preset ema-cross-9-21 --symbol NVDA
 - 判定: `promote` / `hold` / `reject`
 - `gated-summary.json` / `ranked-candidates.json` の各 candidate には additive に `confluence_snapshot` / `provider_status` / `community_snapshot` が付きます。
 
-詳細な運用コマンドは `docs/command.md` を参照してください。
+運用の正本はこの `README.md`、raw 数値の正本は `docs/references/backtests/README.md`、戦略説明の入口は `docs/research/strategy/README.md` です。
 
 ### MCP workflow
 
