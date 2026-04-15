@@ -1,6 +1,6 @@
 # Latest main backtest summary
 
-この要約は、現時点では `docs/references/backtests/next-long-run-finetune-complete_20260413.summary.json` と `docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json` を基に整理した latest summary。
+この要約は、latest 12x10 世代の戦略結果を整理した latest summary。
 
 ## 結論
 
@@ -68,27 +68,3 @@ live の `config/backtest/strategy-presets.json` は 25 戦略まで圧縮した
 
 - live_count: 25
 - retired_count: 126
-
-## Night Batch Self Hosted run 23
-
-- workflow_run: `24438491147`
-- head_sha: `87677aaae173f0235f7ca375e36faaa4439e63bc`
-- status: `completed / success`
-- run window: `2026-04-15T05:43:23Z` → `2026-04-15T06:31:12Z`
-
-### Step result
-
-| step | result |
-| --- | --- |
-| Ensure TradingView is running | success |
-| Run smoke gate and foreground production | success |
-| Locate night batch outputs | success |
-| Append night batch workflow summary | success |
-| Upload night batch artifacts | skipped |
-| Archive completed night batch rounds | success |
-
-### Result summary
-
-- TradingView launch recovery succeeded after the shortcut lookup fix.
-- Smoke gate and foreground production completed successfully.
-- The workflow summary step finished successfully and the round archive step completed.
