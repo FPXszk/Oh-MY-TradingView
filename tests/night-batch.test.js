@@ -1150,6 +1150,21 @@ exit 0
     assert.equal(existsSync(join(RESULTS_DIR, 'archive', 'round1')), false);
   });
 
+  it('archive-rounds preserves an existing archive target by moving it aside first', async () => {
+    writeRoundFixture(2, { completed: true });
+    const archiveTarget = join(RESULTS_DIR, 'archive', 'round2');
+    mkdirSync(archiveTarget, { recursive: true });
+    writeFileSync(join(archiveTarget, 'legacy.txt'), 'legacy archive\n', 'utf8');
+
+    const result = await runPython([SCRIPT_PATH, 'archive-rounds']);
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.equal(existsSync(join(RESULTS_DIR, 'archive', 'round2')), true);
+    assert.equal(existsSync(join(RESULTS_DIR, 'archive', 'round2.previous')), true);
+    assert.equal(existsSync(join(RESULTS_DIR, 'archive', 'round2.previous', 'legacy.txt')), true);
+    assert.equal(existsSync(join(RESULTS_DIR, 'archive', 'round2', 'round-manifest.json')), true);
+  });
+
   it('resume-current-round ignores archived rounds', async () => {
     writeRoundFixture(2, { completed: true });
     const archiveResult = await runPython([SCRIPT_PATH, 'archive-rounds']);

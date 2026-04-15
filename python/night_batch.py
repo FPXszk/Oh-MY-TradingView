@@ -474,6 +474,16 @@ def read_detached_state(state_path: Path) -> dict | None:
     return read_json_file(state_path)
 
 
+def next_archive_backup_target(target_dir: Path) -> Path:
+    suffix = '.previous'
+    candidate = target_dir.with_name(f'{target_dir.name}{suffix}')
+    index = 1
+    while candidate.exists():
+        candidate = target_dir.with_name(f'{target_dir.name}{suffix}-{index}')
+        index += 1
+    return candidate
+
+
 def process_is_running(pid: int) -> bool:
     try:
         os.kill(pid, 0)
@@ -536,9 +546,14 @@ def archive_completed_rounds(
             continue
         archive_root.mkdir(parents=True, exist_ok=True)
         if target_dir.exists():
-            raise RuntimeError(
-                f'Archive target already exists: {relative_path(target_dir)}'
-            )
+            previous_target = next_archive_backup_target(target_dir)
+            if logger:
+                logger.info(
+                    'Move existing archive target %s -> %s',
+                    relative_path(target_dir),
+                    relative_path(previous_target),
+                )
+            shutil.move(str(target_dir), str(previous_target))
         shutil.move(str(round_dir), str(target_dir))
         archived.append((round_dir, target_dir))
 
