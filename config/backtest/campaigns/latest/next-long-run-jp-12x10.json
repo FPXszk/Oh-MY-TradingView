@@ -1,7 +1,7 @@
 {
   "id": "next-long-run-jp-12x10",
-  "name": "Next Long-Run JP 12 symbols × 25 strategies",
-  "description": "JP 12-symbol focused campaign with top 25 deep-pullback strategies. 3 categories (winners / mature-range / defense-test) × 4 symbols each, validated against 2000–present.",
+  "name": "Next Long-Run JP 12 symbols × 30 strategies",
+  "description": "JP 12-symbol focused campaign with top 30 strategies. 3 categories (winners / mature-range / defense-test) × 4 symbols each, validated against 2000–present.",
   "universe": "next-long-run-jp-12",
   "preset_ids": [
     "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight",
@@ -28,7 +28,12 @@
     "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-profit-protect-chandelier",
     "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-profit-protect-atr-trailing",
     "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-ftd-entry-early",
-    "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-ftd-entry-late"
+    "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-ftd-entry-late",
+    "donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide",
+    "donchian-50-20-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide-entry-early",
+    "donchian-60-20-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide-entry-late",
+    "donchian-55-18-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide-exit-tight",
+    "donchian-55-22-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide-exit-wide"
   ],
   "date_override": {
     "from": "2000-01-01",
@@ -67,5 +72,5 @@
     "max_consecutive_failures": 5,
     "max_rerun_passes": 2
   },
-  "notes": "JP 12-symbol campaign は fine-tune 100x10 の完走結果から上位 25 戦略を選定し、3 カテゴリ × 4 銘柄の代表 12 銘柄で高速検証する。smoke / pilot では各カテゴリから少なくとも 1 銘柄を含め、偏りを排除する。date_override.to=2099-12-31 は latest available bar までを拾うための上限。"
+  "notes": "JP 12-symbol campaign は fine-tune 100x10 の完走結果から上位 30 戦略を選定し、3 カテゴリ × 4 銘柄の代表 12 銘柄で高速検証する。smoke / pilot では各カテゴリから少なくとも 1 銘柄を含め、偏りを排除する。date_override.to=2099-12-31 は latest available bar までを拾うための上限。"
 }

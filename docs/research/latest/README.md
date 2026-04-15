@@ -16,7 +16,7 @@
 - latest generation は **12x10 registration 世代**
 - campaign ID: `next-long-run-us-12x10` / `next-long-run-jp-12x10`
 - universe ID: `next-long-run-us-12` / `next-long-run-jp-12`
-- strongest set は `config/backtest/strategy-presets.json` の 25 戦略に圧縮済み
+- strongest set は `config/backtest/strategy-presets.json` の 30 戦略に圧縮済み
 - 過去世代の docs は `../archive/` を参照する
 
 ## 運用ルール

@@ -556,28 +556,34 @@ describe('strategy-presets.json integration', () => {
     );
   });
 
-  it('keeps exactly the strongest 25 live presets in deterministic order', async () => {
+  it('keeps exactly the strongest 30 live presets in deterministic order', async () => {
     const data = await loadPresets();
-    assert.equal(data.strategies.length, 25);
+    assert.equal(data.strategies.length, 30);
     assert.deepEqual(data.strategies.map((preset) => preset.id), expectedLiveIds);
   });
 
-  it('keeps only deep-pullback donchian breakout variants in the live preset file', async () => {
+  it('keeps only approved donchian breakout families in the live preset file', async () => {
     const data = await loadPresets();
     for (const preset of data.strategies) {
       assert.equal(preset.category, 'breakout');
       assert.equal(preset.builder, 'donchian_breakout');
       assert.ok(Array.isArray(preset.tags));
-      assert.ok(preset.tags.includes('theme-deep-pullback'), 'Preset "' + preset.id + '" must keep theme-deep-pullback tag');
       assert.ok(preset.tags.includes('rsi-regime'), 'Preset "' + preset.id + '" must keep rsi-regime tag');
-      assert.match(preset.id, /theme-deep-pullback/);
+      if (preset.id.includes('theme-breadth-quality-balanced-wide')) {
+        assert.ok(preset.tags.includes('theme-breadth'), 'Preset "' + preset.id + '" must keep theme-breadth tag');
+        assert.ok(preset.tags.includes('theme-quality'), 'Preset "' + preset.id + '" must keep theme-quality tag');
+        assert.match(preset.id, /theme-breadth-quality-balanced-wide/);
+      } else {
+        assert.ok(preset.tags.includes('theme-deep-pullback'), 'Preset "' + preset.id + '" must keep theme-deep-pullback tag');
+        assert.match(preset.id, /theme-deep-pullback/);
+      }
     }
   });
 
   it('retires every non-live preset to docs/bad-strategy', async () => {
     const live = await loadPresets();
     const retired = await loadRetiredPresets();
-    assert.equal(retired.strategies.length, 126);
+    assert.equal(retired.strategies.length, 121);
 
     const liveIds = new Set(live.strategies.map((preset) => preset.id));
     const retiredIds = retired.strategies.map((preset) => preset.id);

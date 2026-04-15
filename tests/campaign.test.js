@@ -1504,7 +1504,7 @@ describe('next-long-run 12x10 campaign config validation', () => {
     assert.equal(config.universe, 'next-long-run-us-12');
     assert.equal(config.date_override.from, '2000-01-01');
     assert.equal(config.date_override.to, '2099-12-31');
-    assert.equal(config.preset_ids.length, 25);
+    assert.equal(config.preset_ids.length, 30);
     assert.deepEqual(config.preset_ids, expectedPresetIds);
     assert.deepEqual(config.execution.worker_ports, [9223]);
   });
@@ -1519,7 +1519,7 @@ describe('next-long-run 12x10 campaign config validation', () => {
     assert.equal(config.universe, 'next-long-run-jp-12');
     assert.equal(config.date_override.from, '2000-01-01');
     assert.equal(config.date_override.to, '2099-12-31');
-    assert.equal(config.preset_ids.length, 25);
+    assert.equal(config.preset_ids.length, 30);
     assert.deepEqual(config.preset_ids, expectedPresetIds);
     assert.deepEqual(config.execution.worker_ports, [9223]);
   });
@@ -1545,21 +1545,21 @@ describe('next-long-run 12x10 campaign config validation', () => {
 // next-long-run 12x10 campaigns — loadCampaign integration
 // ---------------------------------------------------------------------------
 describe('next-long-run 12x10 campaigns', () => {
-  it('loads US 12x10 campaign with 12 US-only symbols and 25 strategies', async () => {
+  it('loads US 12x10 campaign with 12 US-only symbols and 30 strategies', async () => {
     const campaign = await loadCampaign('next-long-run-us-12x10');
     assert.equal(campaign.symbols.length, 12);
-    assert.equal(campaign.strategies.length, 25);
-    assert.equal(campaign.matrix.length, 300);
+    assert.equal(campaign.strategies.length, 30);
+    assert.equal(campaign.matrix.length, 360);
     assert.ok(campaign.symbols.every((entry) => entry.market === 'US'));
     assert.equal(campaign.defaults.date_range.from, '2000-01-01');
     assert.equal(campaign.defaults.date_range.to, '2099-12-31');
   });
 
-  it('loads JP 12x10 campaign with 12 JP-only symbols and 25 strategies', async () => {
+  it('loads JP 12x10 campaign with 12 JP-only symbols and 30 strategies', async () => {
     const campaign = await loadCampaign('next-long-run-jp-12x10');
     assert.equal(campaign.symbols.length, 12);
-    assert.equal(campaign.strategies.length, 25);
-    assert.equal(campaign.matrix.length, 300);
+    assert.equal(campaign.strategies.length, 30);
+    assert.equal(campaign.matrix.length, 360);
     assert.ok(campaign.symbols.every((entry) => entry.market === 'JP'));
     assert.equal(campaign.defaults.date_range.from, '2000-01-01');
     assert.equal(campaign.defaults.date_range.to, '2099-12-31');
@@ -1594,16 +1594,16 @@ describe('next-long-run 12x10 campaigns', () => {
     const jpFull = await loadCampaign('next-long-run-jp-12x10', { phase: 'full' });
 
     assert.equal(usSmoke.symbols.length, 3);
-    assert.equal(usSmoke.matrix.length, 75);
+    assert.equal(usSmoke.matrix.length, 90);
     assert.equal(usPilot.symbols.length, 6);
-    assert.equal(usPilot.matrix.length, 150);
+    assert.equal(usPilot.matrix.length, 180);
     assert.equal(usFull.symbols.length, 12);
-    assert.equal(usFull.matrix.length, 300);
+    assert.equal(usFull.matrix.length, 360);
     assert.equal(jpSmoke.symbols.length, 3);
-    assert.equal(jpSmoke.matrix.length, 75);
+    assert.equal(jpSmoke.matrix.length, 90);
     assert.equal(jpPilot.symbols.length, 6);
-    assert.equal(jpPilot.matrix.length, 150);
+    assert.equal(jpPilot.matrix.length, 180);
     assert.equal(jpFull.symbols.length, 12);
-    assert.equal(jpFull.matrix.length, 300);
+    assert.equal(jpFull.matrix.length, 360);
   });
 });

@@ -83,16 +83,16 @@ describe('validateCatalogIntegrity', () => {
 // getLiveStrategies / getRetiredStrategies
 // ---------------------------------------------------------------------------
 describe('getLiveStrategies / getRetiredStrategies', () => {
-  it('live count is 25', async () => {
+  it('live count is 30', async () => {
     const catalog = await loadCatalog();
     const live = getLiveStrategies(catalog);
-    assert.equal(live.length, 25);
+    assert.equal(live.length, 30);
   });
 
-  it('retired count is 126', async () => {
+  it('retired count is 121', async () => {
     const catalog = await loadCatalog();
     const retired = getRetiredStrategies(catalog);
-    assert.equal(retired.length, 126);
+    assert.equal(retired.length, 121);
   });
 
   it('live IDs match expected list', async () => {

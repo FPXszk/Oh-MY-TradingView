@@ -90,11 +90,11 @@ describe('repository layout policy', () => {
     }
   });
 
-  it('prunes strategy-presets.json to the strongest 25 and records retired strategies', () => {
+  it('prunes strategy-presets.json to the strongest 30 and records retired strategies', () => {
     const presets = JSON.parse(
       readFileSync(join(PROJECT_ROOT, 'config', 'backtest', 'strategy-presets.json'), 'utf8'),
     );
-    assert.equal(presets.strategies.length, 25, `expected 25 strategies, got ${presets.strategies.length}`);
+    assert.equal(presets.strategies.length, 30, `expected 30 strategies, got ${presets.strategies.length}`);
     assert.equal(
       existsSync(join(PROJECT_ROOT, 'docs', 'bad-strategy', 'README.md')),
       true,
