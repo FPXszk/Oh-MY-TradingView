@@ -73,19 +73,14 @@ jobs:
           }
 
           if (-not $alreadyRunning) {
-            $launcherCandidates = @(
-              (Join-Path $env:LOCALAPPDATA 'TradingView\TradingView.exe'),
-              $launch.shortcut_path
-            ) | Where-Object { $_ -and (Test-Path $_) }
-            if ($launcherCandidates.Count -eq 0) {
-              throw "No TradingView launcher found at $($env:LOCALAPPDATA)\TradingView\TradingView.exe or $($launch.shortcut_path)"
-            }
-
-            $launcher = $launcherCandidates[0]
-            if ($launcher -like '*.exe') {
-              Start-Process -FilePath $launcher -ArgumentList "--remote-debugging-port=$($runtime.startup_check_port)"
+            if ($launch.shortcut_path -and (Test-Path $launch.shortcut_path)) {
+              Start-Process -FilePath $launch.shortcut_path
             } else {
-              Start-Process -FilePath $launcher
+              $launcher = Join-Path $env:LOCALAPPDATA 'TradingView\TradingView.exe'
+              if (-not (Test-Path $launcher)) {
+                throw "No TradingView launcher found at $launcher or $($launch.shortcut_path)"
+              }
+              Start-Process -FilePath $launcher -ArgumentList "--remote-debugging-port=$($runtime.startup_check_port)"
             }
             Start-Sleep -Seconds $runtime.launch_wait_sec
           }
