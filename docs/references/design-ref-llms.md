@@ -491,3 +491,33 @@
 - このプロジェクトにどう活かしたか: `ren-consecutive-bb-reversal` 候補の直接出典として使い、将来 builder 化するときの formalization 論点を先に文書化した。
 - 採用したもの: one-sided move の走り切りを、連続足と BB タッチ、candle expansion で定量化する発想。
 - 採用しなかったもの: 経験則をそのまま exact rule とみなすこと。
+
+---
+
+## 49：NousResearch/hermes-agent
+
+- URL: https://github.com/NousResearch/hermes-agent
+- 参考にした理由: 汎用 agent platform の設計パターン（registry/toolset 分離、skills、SQLite+FTS5 state、bounded observability）を Oh-MY-TradingView に適用可能か調査するため。
+- このプロジェクトにどう活かしたか: skills の概念を `.agents/skills/` 配下の TradingView 運用向け playbook / runbook に適用し、bounded observability の思想を observe snapshot の compact 化に活用した。
+- 採用したもの: registry/toolset 分離の設計観点、skills、bounded observability の考え方。
+- 採用しなかったもの: 汎用 agent loop、multi-channel gateway、plugin 全面開放、SQLite+FTS5 state の直接移植。
+
+---
+
+## 50：rtk-ai/rtk
+
+- URL: https://github.com/rtk-ai/rtk
+- 参考にした理由: CLI 出力の deterministic compaction と compact mode の設計を調査するため。
+- このプロジェクトにどう活かしたか: `market_*` / `reach_*` / `x_*` / `observe` の selected surface に opt-in compact mode を追加する `src/core/output-compaction.js` の設計根拠とした。
+- 採用したもの: deterministic output compaction、opt-in compact mode、tee-and-hint の考え方。
+- 採用しなかったもの: shell hook rewrite、settings patch、telemetry 運用。
+
+---
+
+## 51：garrytan/gbrain
+
+- URL: https://github.com/garrytan/gbrain
+- 参考にした理由: thin harness + fat skills、resolver grouping、recipe-runbook、conformance test の設計パターンを調査するため。
+- このプロジェクトにどう活かしたか: `.agents/skills/` に recipe-runbook スタイルの TradingView 向け skill を追加し、`tests/agent-skills-conformance.test.js` で frontmatter / 必須 section を固定する設計の根拠とした。
+- 採用したもの: thin harness + fat skills、recipe-runbook style、conformance test、compiled-truth/timeline の発想。
+- 採用しなかったもの: personal brain、Bun/PGLite/Postgres 依存、常時 sync/autopilot、DB migration。

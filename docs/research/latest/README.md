@@ -9,9 +9,10 @@
 3. `next-long-run-us-jp-12x10-handoff_20260414_0009.md`
 4. `next-long-run-us-jp-12x10-details_20260414_0009.md`
 5. `project-improvement-review.md`
-6. `../strategy/README.md`
-7. 別系列の最新 main summary として `main-backtest-latest-summary.md`
-8. 判断経緯が必要なら `../../working-memory/session-logs/archive/next-long-run-us-jp-12x10-registration_20260414_0009.md`
+6. `external-agent-pattern-comparison.md`
+7. `../strategy/README.md`
+8. 別系列の最新 main summary として `main-backtest-latest-summary.md`
+9. 判断経緯が必要なら `../../working-memory/session-logs/archive/next-long-run-us-jp-12x10-registration_20260414_0009.md`
 
 ## `latest` の意味
 

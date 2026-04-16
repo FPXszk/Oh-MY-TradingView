@@ -3,6 +3,7 @@ import { jsonResult } from './_format.js';
 import {
   getSymbolQuote,
   getSymbolFundamentals,
+  getTradingViewFinancialsBatch,
   getMarketSnapshot,
   getFinancialNews,
   runScreener,
@@ -11,6 +12,7 @@ import {
   rankSymbolsByConfluence,
 } from '../core/market-intel.js';
 import { getSymbolAnalysis } from '../core/market-intel-analysis.js';
+import { applyCompaction, renderCompactPayload } from '../core/output-compaction.js';
 
 export function registerMarketIntelTools(server) {
   server.tool(
@@ -94,6 +96,22 @@ export function registerMarketIntelTools(server) {
   );
 
   server.tool(
+    'market_financials',
+    'Get TradingView-backed financial summaries for multiple symbols (max 20). No CDP connection needed.',
+    {
+      symbols: z.array(z.string()).min(1).max(20)
+        .describe('Candidate ticker symbols to inspect'),
+    },
+    async ({ symbols }) => {
+      try {
+        return jsonResult(await getTradingViewFinancialsBatch(symbols));
+      } catch (err) {
+        return jsonResult({ success: false, error: err.message }, true);
+      }
+    },
+  );
+
+  server.tool(
     'market_ta_summary',
     'Get TA summary for multiple symbols — price change, RSI(14), SMA20/50 deviation. No CDP connection needed.',
     {
@@ -138,10 +156,16 @@ export function registerMarketIntelTools(server) {
     'Deterministic multi-analyst symbol analysis — trend, fundamentals, news, and risk assessment. No CDP connection needed.',
     {
       symbol: z.string().describe('Ticker symbol (e.g. AAPL, MSFT, ^GSPC)'),
+      compact: z.boolean().optional().default(false)
+        .describe('Return a compact summary instead of the full result'),
     },
-    async ({ symbol }) => {
+    async ({ symbol, compact }) => {
       try {
-        return jsonResult(await getSymbolAnalysis(symbol));
+        const result = await getSymbolAnalysis(symbol);
+        const payload = compact
+          ? renderCompactPayload(applyCompaction('market_symbol_analysis', result))
+          : result;
+        return jsonResult(payload);
       } catch (err) {
         return jsonResult({ success: false, error: err.message }, true);
       }
@@ -156,10 +180,16 @@ export function registerMarketIntelTools(server) {
         .describe('Array of ticker symbols (max 20)'),
       limit: z.number().int().positive().optional()
         .describe('Optional number of ranked results to return'),
+      compact: z.boolean().optional().default(false)
+        .describe('Return a compact summary instead of the full result'),
     },
-    async ({ symbols, limit }) => {
+    async ({ symbols, limit, compact }) => {
       try {
-        return jsonResult(await rankSymbolsByConfluence(symbols, { limit }));
+        const result = await rankSymbolsByConfluence(symbols, { limit });
+        const payload = compact
+          ? renderCompactPayload(applyCompaction('market_confluence_rank', result))
+          : result;
+        return jsonResult(payload);
       } catch (err) {
         return jsonResult({ success: false, error: err.message }, true);
       }

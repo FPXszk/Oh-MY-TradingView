@@ -1,5 +1,7 @@
+import { z } from 'zod';
 import { jsonResult } from './_format.js';
 import { captureObservabilitySnapshot } from '../core/observability.js';
+import { applyCompaction, renderCompactPayload } from '../core/output-compaction.js';
 
 export function registerObserveTools(server) {
   server.tool(
@@ -7,21 +9,30 @@ export function registerObserveTools(server) {
     'Capture a one-shot observability snapshot of the active TradingView page/session. ' +
       'Returns structured CDP connection info, page/chart state, runtime errors, and ' +
       'a deterministic artifact bundle under docs/research/results/observability/.',
-    {},
-    async () => {
+    {
+      compact: z.boolean().optional().default(false)
+        .describe('Return a compact summary instead of the full result'),
+    },
+    async ({ compact = false }) => {
       try {
         const result = await captureObservabilitySnapshot();
         if (!result.success) {
+          const failure = {
+            ...result,
+            error: result.error || 'Observability snapshot failed',
+            hint: 'Ensure TradingView Desktop is running with CDP enabled.',
+          };
           return jsonResult(
-            {
-              ...result,
-              error: result.error || 'Observability snapshot failed',
-              hint: 'Ensure TradingView Desktop is running with CDP enabled.',
-            },
+            compact
+              ? renderCompactPayload(applyCompaction('tv_observe_snapshot', failure))
+              : failure,
             true,
           );
         }
-        return jsonResult(result);
+        const payload = compact
+          ? renderCompactPayload(applyCompaction('tv_observe_snapshot', result))
+          : result;
+        return jsonResult(payload);
       } catch (err) {
         return jsonResult(
           {

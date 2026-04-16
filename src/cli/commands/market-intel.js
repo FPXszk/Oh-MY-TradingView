@@ -2,6 +2,7 @@ import { register } from '../router.js';
 import {
   getSymbolQuote,
   getSymbolFundamentals,
+  getTradingViewFinancialsBatch,
   getMarketSnapshot,
   getFinancialNews,
   runScreener,
@@ -10,6 +11,7 @@ import {
   rankSymbolsByConfluence,
 } from '../../core/market-intel.js';
 import { getSymbolAnalysis } from '../../core/market-intel-analysis.js';
+import { applyCompaction, renderCompactPayload } from '../../core/output-compaction.js';
 
 register('market', {
   description: 'Market intelligence (no CDP required)',
@@ -37,6 +39,18 @@ register('market', {
         handler: (opts) => {
           if (!opts.symbol) throw new Error('Usage: tv market fundamentals --symbol AAPL');
           return getSymbolFundamentals(opts.symbol);
+        },
+      },
+    ],
+    [
+      'financials',
+      {
+        description: 'Get TradingView-backed financial summaries for multiple symbols',
+        handler: (_opts, positionals) => {
+          if (!positionals || positionals.length === 0) {
+            throw new Error('Usage: tv market financials C AMZN');
+          }
+          return getTradingViewFinancialsBatch(positionals);
         },
       },
     ],
@@ -125,10 +139,15 @@ register('market', {
         description: 'Deterministic multi-analyst symbol analysis',
         options: {
           symbol: { type: 'string', short: 's', description: 'Ticker symbol' },
+          compact: { type: 'boolean', short: 'c', description: 'Emit compact summary output' },
         },
         handler: (opts) => {
           if (!opts.symbol) throw new Error('Usage: tv market analysis --symbol AAPL');
-          return getSymbolAnalysis(opts.symbol);
+          return getSymbolAnalysis(opts.symbol).then((result) => (
+            opts.compact
+              ? renderCompactPayload(applyCompaction('market_symbol_analysis', result))
+              : result
+          ));
         },
       },
     ],
@@ -138,6 +157,7 @@ register('market', {
         description: 'Rank symbols by deterministic confluence score',
         options: {
           limit: { type: 'string', description: 'Maximum ranked results to return' },
+          compact: { type: 'boolean', short: 'c', description: 'Emit compact summary output' },
         },
         handler: (opts, positionals) => {
           if (!positionals || positionals.length === 0) {
@@ -145,7 +165,11 @@ register('market', {
           }
           return rankSymbolsByConfluence(positionals, {
             limit: opts.limit ? Number(opts.limit) : undefined,
-          });
+          }).then((result) => (
+            opts.compact
+              ? renderCompactPayload(applyCompaction('market_confluence_rank', result))
+              : result
+          ));
         },
       },
     ],
