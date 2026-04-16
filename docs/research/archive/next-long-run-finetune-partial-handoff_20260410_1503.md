@@ -42,8 +42,8 @@
 
 | artifact | path |
 | --- | --- |
-| US pilot checkpoint | `docs/research/results/campaigns/next-long-run-us-finetune-100x10/pilot/checkpoint-50.json` |
-| US full checkpoint | `docs/research/results/campaigns/next-long-run-us-finetune-100x10/full/checkpoint-490.json` |
+| US pilot checkpoint | `artifacts/campaigns/next-long-run-us-finetune-100x10/pilot/checkpoint-50.json` |
+| US full checkpoint | `artifacts/campaigns/next-long-run-us-finetune-100x10/full/checkpoint-490.json` |
 
 - US full の最終処理: preset `donchian-55-20-rsp-filter-rsi14-regime-57-hard-stop-6pct-theme-deep-pullback-tight-narrow` / symbol `EFA`
 - US full 開始: `2026-04-10T02:57:57.610Z`

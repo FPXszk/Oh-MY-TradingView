@@ -4,10 +4,10 @@
 - 実行方式: shard parallel -> exact unreadable rerun -> recovered summary
 - universe: Mag7（AAPL, AMZN, GOOGL, META, MSFT, NVDA, TSLA）
 - artifacts:
-  - raw: `docs/references/backtests/round11-period-slicing-mag7-shard-parallel_20260407_1641.json`
-  - raw summary: `docs/references/backtests/round11-period-slicing-mag7-shard-parallel_20260407_1641.summary.json`
-  - recovered: `docs/references/backtests/round11-period-slicing-mag7-shard-parallel-recovered_20260407_1641.json`
-  - recovered summary: `docs/references/backtests/round11-period-slicing-mag7-shard-parallel-recovered_20260407_1641.summary.json`
+  - raw: `references/backtests/round11-period-slicing-mag7-shard-parallel_20260407_1641.json`
+  - raw summary: `references/backtests/round11-period-slicing-mag7-shard-parallel_20260407_1641.summary.json`
+  - recovered: `references/backtests/round11-period-slicing-mag7-shard-parallel-recovered_20260407_1641.json`
+  - recovered summary: `references/backtests/round11-period-slicing-mag7-shard-parallel-recovered_20260407_1641.summary.json`
 - coverage:
   - raw: `105 runs / 53 readable / 52 unreadable`
   - recovered: `105 runs / 81 readable / 24 unreadable / 28 recovered`

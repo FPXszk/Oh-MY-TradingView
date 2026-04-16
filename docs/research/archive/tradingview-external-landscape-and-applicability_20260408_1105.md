@@ -251,7 +251,7 @@ Pine Script 関連の curated list。
 ### 優先度中
 
 1. **result viewer を別 UI として持つ**
-   - `lightweight-charts` を使い、`docs/references/backtests/*.json` を描画する小さな viewer を作る
+   - `lightweight-charts` を使い、`references/backtests/*.json` を描画する小さな viewer を作る
    - Desktop 依存の結果確認を少し減らせる
 
 2. **webhook receiver を opt-in で追加する**

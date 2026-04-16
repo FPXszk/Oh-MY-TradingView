@@ -2,7 +2,7 @@
 
 - status: COMPLETED
 - anchor source: `docs/research/archive/top4-backtest-handoff_20260407_0529.md`
-- latest docs entrypoint: `docs/research/latest/README.md`
+- latest docs entrypoint: `docs/research/current/README.md`
 
 ## Top3 anchors
 
@@ -49,29 +49,29 @@
 ### Mag7
 
 - raw:
-  - `docs/references/backtests/round11-period-slicing-mag7-shard-parallel_20260407_1641.json`
-  - `docs/references/backtests/round11-period-slicing-mag7-shard-parallel_20260407_1641.summary.json`
+  - `references/backtests/round11-period-slicing-mag7-shard-parallel_20260407_1641.json`
+  - `references/backtests/round11-period-slicing-mag7-shard-parallel_20260407_1641.summary.json`
 - recovered:
-  - `docs/references/backtests/round11-period-slicing-mag7-shard-parallel-recovered_20260407_1641.json`
-  - `docs/references/backtests/round11-period-slicing-mag7-shard-parallel-recovered_20260407_1641.summary.json`
+  - `references/backtests/round11-period-slicing-mag7-shard-parallel-recovered_20260407_1641.json`
+  - `references/backtests/round11-period-slicing-mag7-shard-parallel-recovered_20260407_1641.summary.json`
 
 ### Alt
 
 - raw:
-  - `docs/references/backtests/round11-period-slicing-alt-shard-parallel_20260407_1641.json`
-  - `docs/references/backtests/round11-period-slicing-alt-shard-parallel_20260407_1641.summary.json`
+  - `references/backtests/round11-period-slicing-alt-shard-parallel_20260407_1641.json`
+  - `references/backtests/round11-period-slicing-alt-shard-parallel_20260407_1641.summary.json`
 - recovered:
-  - `docs/references/backtests/round11-period-slicing-alt-shard-parallel-recovered_20260407_1641.json`
-  - `docs/references/backtests/round11-period-slicing-alt-shard-parallel-recovered_20260407_1641.summary.json`
+  - `references/backtests/round11-period-slicing-alt-shard-parallel-recovered_20260407_1641.json`
+  - `references/backtests/round11-period-slicing-alt-shard-parallel-recovered_20260407_1641.summary.json`
 
 ### Phase B shortlist subset
 
 - raw:
-  - `docs/references/backtests/round11-universe-substitution-shard-parallel_20260407_1641.json`
-  - `docs/references/backtests/round11-universe-substitution-shard-parallel_20260407_1641.summary.json`
+  - `references/backtests/round11-universe-substitution-shard-parallel_20260407_1641.json`
+  - `references/backtests/round11-universe-substitution-shard-parallel_20260407_1641.summary.json`
 - recovered:
-  - `docs/references/backtests/round11-universe-substitution-shard-parallel-recovered_20260407_1641.json`
-  - `docs/references/backtests/round11-universe-substitution-shard-parallel-recovered_20260407_1641.summary.json`
+  - `references/backtests/round11-universe-substitution-shard-parallel-recovered_20260407_1641.json`
+  - `references/backtests/round11-universe-substitution-shard-parallel-recovered_20260407_1641.summary.json`
 
 ## Final shortlist
 

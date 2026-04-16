@@ -6,9 +6,9 @@
 
 ## Source artifacts
 
-- US recovered full: `docs/references/backtests/long-run-us-entry-sweep-100x3-full-recovered_20260409_0643.json`
-- JP recovered full: `docs/references/backtests/long-run-jp-exit-sweep-100x3-full-recovered_20260409_0643.json`
-- combined ranking: `docs/references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json`
+- US recovered full: `references/backtests/long-run-us-entry-sweep-100x3-full-recovered_20260409_0643.json`
+- JP recovered full: `references/backtests/long-run-jp-exit-sweep-100x3-full-recovered_20260409_0643.json`
+- combined ranking: `references/backtests/next-long-run-market-matched-200-combined-ranking_20260409_1525.json`
 
 ## Coverage summary
 

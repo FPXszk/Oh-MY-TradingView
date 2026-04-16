@@ -28,7 +28,7 @@
 
 比較 JSON:
 
-- `docs/references/backtests/small-parallel-benchmark-comparison_20260406_2229.json`
+- `references/backtests/small-parallel-benchmark-comparison_20260406_2229.json`
 
 ## なぜ shard の方が速かったか
 

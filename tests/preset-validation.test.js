@@ -26,7 +26,7 @@ async function loadPresets() {
 
 async function loadRetiredPresets() {
   const raw = await readFile(
-    join(__dirname, '..', 'docs', 'bad-strategy', 'retired-strategy-presets.json'),
+    join(__dirname, '..', 'docs', 'research', 'strategy', 'retired', 'retired-strategy-presets.json'),
     'utf8',
   );
   return JSON.parse(raw);
@@ -580,7 +580,7 @@ describe('strategy-presets.json integration', () => {
     }
   });
 
-  it('retires every non-live preset to docs/bad-strategy', async () => {
+  it('retires every non-live preset to docs/research/strategy/retired', async () => {
     const live = await loadPresets();
     const retired = await loadRetiredPresets();
     assert.equal(retired.strategies.length, 121);

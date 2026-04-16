@@ -247,7 +247,7 @@
 | 接続点 | 理由 |
 |---|---|
 | `docs/research/` | 既に signal observation / external research を蓄積する場所として使っている |
-| `docs/references/design-ref-llms.md` | 外部比較調査の正規台帳ルールが既にある |
+| `references/external/design-ref-llms.md` | 外部比較調査の正規台帳ルールが既にある |
 | `.agents/skills/` | 既に `twitter-cli` skill などが入り、agent router 文化がある |
 | `market_*` の外側 | non-CDP intelligence layer を増やす余地はあるが、本線は壊したくない |
 

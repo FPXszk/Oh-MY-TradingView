@@ -70,7 +70,7 @@ function buildStrategyIndex(catalog, combinedRanking, sourcePaths) {
   const retiredCount = catalog.strategies.filter((strategy) => strategy.lifecycle?.status === 'retired').length;
 
   const lines = [
-    '# Latest strategy reference',
+    '# Current strategy reference',
     '',
     'このファイルは **戦略カタログの人間向け入口** です。初見でも「どの戦略があり、どの market / 期間 / 条件で見ているか」を追えるように整理しています。',
     '',
@@ -82,13 +82,13 @@ function buildStrategyIndex(catalog, combinedRanking, sourcePaths) {
     '',
     '## 読み方',
     '',
-    '- `latest score` は利用可能な最新 backtest artifact から合成した順位です。未計測の戦略は `—` です。',
+    '- `current score` は利用可能な最新 backtest artifact から合成した順位です。未計測の戦略は `—` です。',
     '- `lifecycle` は live / retired を表します。',
     '- `theme notes` / `mag7 notes` は、この repo でその戦略をどう見ていたかの人間向け説明です。',
     '',
     '## 全戦略一覧',
     '',
-    '| lifecycle | strategy | name | latest score | markets | parameters | regime | stop | theme axis | theme notes |',
+    '| lifecycle | strategy | name | current score | markets | parameters | regime | stop | theme axis | theme notes |',
     '| --- | --- | --- | ---: | --- | --- | --- | --- | --- | --- |',
   ];
 
@@ -131,21 +131,21 @@ function buildSymbolIndex({ usUniverse, jpUniverse, usCampaign, jpCampaign, usSu
   ].join('\n');
 
   return [
-    '# Latest symbol reference',
+    '# Current symbol reference',
     '',
-    'このファイルは **銘柄側から戦略を見るための入口** です。latest config 上の campaign / universe と、上記 artifact で観測できた best strategy をまとめます。',
+    'このファイルは **銘柄側から戦略を見るための入口** です。current config 上の campaign / universe と、上記 artifact で観測できた best strategy をまとめます。',
     '',
     `- US campaign: \`${usCampaign.id}\` / universe: \`${usUniverse.id}\``,
     `- JP campaign: \`${jpCampaign.id}\` / universe: \`${jpUniverse.id}\``,
     `- score artifact (US): \`${toDisplayPath(sourcePaths.us)}\``,
     `- score artifact (JP): \`${toDisplayPath(sourcePaths.jp)}\``,
-    '- note: campaign / universe は latest config、score 列は上記 artifact に含まれる銘柄だけ埋まります。',
+    '- note: campaign / universe は current config、score 列は上記 artifact に含まれる銘柄だけ埋まります。',
     '',
-    '## US latest universe',
+    '## US current universe',
     '',
     renderUniverseTable(usUniverse, usCampaign),
     '',
-    '## JP latest universe',
+    '## JP current universe',
     '',
     renderUniverseTable(jpUniverse, jpCampaign),
     '',
@@ -158,13 +158,13 @@ async function main() {
     options: {
       us: { type: 'string' },
       jp: { type: 'string' },
-      'strategy-out': { type: 'string', default: 'docs/research/strategy/latest-strategy-reference.md' },
-      'symbol-out': { type: 'string', default: 'docs/research/strategy/latest-symbol-reference.md' },
+      'strategy-out': { type: 'string', default: 'docs/research/strategy/current-strategy-reference.md' },
+      'symbol-out': { type: 'string', default: 'docs/research/strategy/current-symbol-reference.md' },
       'catalog-path': { type: 'string', default: join(PROJECT_ROOT, 'config', 'backtest', 'strategy-catalog.json') },
-      'us-campaign-path': { type: 'string', default: join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-us-12x10.json') },
-      'jp-campaign-path': { type: 'string', default: join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-jp-12x10.json') },
-      'us-universe-path': { type: 'string', default: join(PROJECT_ROOT, 'config', 'backtest', 'universes', 'latest', 'next-long-run-us-12.json') },
-      'jp-universe-path': { type: 'string', default: join(PROJECT_ROOT, 'config', 'backtest', 'universes', 'latest', 'next-long-run-jp-12.json') },
+      'us-campaign-path': { type: 'string', default: join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'current', 'next-long-run-us-12x10.json') },
+      'jp-campaign-path': { type: 'string', default: join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'current', 'next-long-run-jp-12x10.json') },
+      'us-universe-path': { type: 'string', default: join(PROJECT_ROOT, 'config', 'backtest', 'universes', 'current', 'next-long-run-us-12.json') },
+      'jp-universe-path': { type: 'string', default: join(PROJECT_ROOT, 'config', 'backtest', 'universes', 'current', 'next-long-run-jp-12.json') },
     },
     strict: true,
   });

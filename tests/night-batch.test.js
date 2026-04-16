@@ -178,11 +178,11 @@ describe('night_batch.py CLI', () => {
         SCRIPT_PATH,
         'report',
         '--us',
-        'docs/research/results/us.json',
+        'artifacts/us.json',
         '--jp',
-        'docs/research/results/jp.json',
+        'artifacts/jp.json',
         '--out',
-        'docs/research/results/report.md',
+        'artifacts/report.md',
         '--dry-run',
       ],
     );
@@ -197,11 +197,11 @@ describe('night_batch.py CLI', () => {
         SCRIPT_PATH,
         'report',
         '--us',
-        'docs/research/results/us.json',
+        'artifacts/us.json',
         '--jp',
-        'docs/research/results/jp.json',
+        'artifacts/jp.json',
         '--out',
-        'docs/research/results/report.md',
+        'artifacts/report.md',
         '--dry-run',
       ],
     );
@@ -239,8 +239,8 @@ describe('night_batch.py CLI', () => {
     const usPath = join(tempDir, 'us-recovered-results.json');
     const jpPath = join(tempDir, 'jp-recovered-results.json');
     const reportPath = join(tempDir, 'rich-report.md');
-    const latestSummaryPath = join(tempDir, 'main-backtest-latest-summary.md');
-    const latestRankingPath = join(tempDir, 'main-backtest-latest-combined-ranking.json');
+    const latestSummaryPath = join(tempDir, 'main-backtest-current-summary.md');
+    const latestRankingPath = join(tempDir, 'main-backtest-current-combined-ranking.json');
 
     writeExecutable(
       fakeNodePath,
@@ -379,8 +379,8 @@ exit 0
       ],
       {
         env: {
-          NIGHT_BATCH_LATEST_SUMMARY_PATH: latestSummaryPath,
-          NIGHT_BATCH_LATEST_RANKING_PATH: latestRankingPath,
+          NIGHT_BATCH_CURRENT_SUMMARY_PATH: latestSummaryPath,
+          NIGHT_BATCH_CURRENT_RANKING_PATH: latestRankingPath,
         },
       },
     );
@@ -392,15 +392,15 @@ exit 0
     assert.equal(Array.isArray(latestRanking), true);
     assert.equal(latestRanking[0].presetId, 'preset-a');
     const latestSummary = readFileSync(latestSummaryPath, 'utf8');
-    assert.match(latestSummary, /Latest main backtest summary/);
+    assert.match(latestSummary, /Current main backtest summary/);
     assert.match(latestSummary, /## 結論/);
     assert.match(latestSummary, /## 全戦略スコア一覧/);
     assert.match(latestSummary, /## Top 5 戦略の銘柄別成績/);
     assert.match(latestSummary, /## 改善点と次回バックテスト確認事項/);
     assert.match(latestSummary, /ranking_artifact/,
       'latest summary must include ranking_artifact path when ranking JSON is produced');
-    assert.match(latestSummary, /main-backtest-latest-combined-ranking\.json/,
-      'latest summary must point at the canonical ranking artifact');
+    assert.match(latestSummary, /main-backtest-current-combined-ranking\.json/,
+      'current summary must point at the canonical ranking artifact');
     assert.match(latestSummary, /strategy_catalog_snapshot/,
       'latest summary must include strategy_catalog_snapshot path when catalog snapshot is produced');
     assert.match(latestSummary, /Live \/ Retired diff/,
@@ -993,16 +993,16 @@ exit 0
   it('production-child writes the latest backtest summary for detached bundle runs', async () => {
     const fakeNodePath = join(tempDir, 'fake-bundle-node.sh');
     const detachedStateFile = join(tempDir, 'bundle-detached-state.json');
-    const latestSummaryPath = join(tempDir, 'main-backtest-latest-summary.md');
-    const latestRankingPath = join(tempDir, 'main-backtest-latest-combined-ranking.json');
-    const missingStrategyReferencePath = join(tempDir, 'missing-strategy-reference.md');
-    const missingSymbolReferencePath = join(tempDir, 'missing-symbol-reference.md');
+    const latestSummaryPath = join(tempDir, 'main-backtest-current-summary.md');
+    const latestRankingPath = join(tempDir, 'main-backtest-current-combined-ranking.json');
+    const missingStrategyReferencePath = join(tempDir, 'missing-current-strategy-reference.md');
+    const missingSymbolReferencePath = join(tempDir, 'missing-current-symbol-reference.md');
     const outputDir = join(tempDir, 'night-batch-output');
     const suffix = tempDir.split('/').pop();
     const usCampaign = `test-detached-us-${suffix}`;
     const jpCampaign = `test-detached-jp-${suffix}`;
-    const usResultsDir = join(PROJECT_ROOT, 'docs', 'research', 'results', 'campaigns', usCampaign, 'full');
-    const jpResultsDir = join(PROJECT_ROOT, 'docs', 'research', 'results', 'campaigns', jpCampaign, 'full');
+    const usResultsDir = join(PROJECT_ROOT, 'artifacts', 'campaigns', usCampaign, 'full');
+    const jpResultsDir = join(PROJECT_ROOT, 'artifacts', 'campaigns', jpCampaign, 'full');
     const usResultsPath = join(usResultsDir, 'recovered-results.json');
     const jpResultsPath = join(jpResultsDir, 'recovered-results.json');
 
@@ -1078,8 +1078,8 @@ exit 0
         'full',
       ], {
         env: {
-          NIGHT_BATCH_LATEST_SUMMARY_PATH: latestSummaryPath,
-          NIGHT_BATCH_LATEST_RANKING_PATH: latestRankingPath,
+          NIGHT_BATCH_CURRENT_SUMMARY_PATH: latestSummaryPath,
+          NIGHT_BATCH_CURRENT_RANKING_PATH: latestRankingPath,
           NIGHT_BATCH_STRATEGY_REFERENCE_PATH: missingStrategyReferencePath,
           NIGHT_BATCH_SYMBOL_REFERENCE_PATH: missingSymbolReferencePath,
         },
@@ -1088,15 +1088,15 @@ exit 0
       assert.equal(result.status, 0, result.stderr || result.stdout);
       assert.equal(existsSync(latestSummaryPath), true);
       const latestSummary = readFileSync(latestSummaryPath, 'utf8');
-      assert.match(latestSummary, /Latest main backtest summary/);
+      assert.match(latestSummary, /Current main backtest summary/);
       assert.match(latestSummary, /## 結論/);
       assert.doesNotMatch(latestSummary, /strategy_reference/,
         'latest summary must not point at strategy docs that were not generated in this run');
       assert.doesNotMatch(latestSummary, /symbol_reference/,
         'latest summary must not point at symbol docs that were not generated in this run');
     } finally {
-      rmSync(join(PROJECT_ROOT, 'docs', 'research', 'results', 'campaigns', usCampaign), { recursive: true, force: true });
-      rmSync(join(PROJECT_ROOT, 'docs', 'research', 'results', 'campaigns', jpCampaign), { recursive: true, force: true });
+      rmSync(join(PROJECT_ROOT, 'artifacts', 'campaigns', usCampaign), { recursive: true, force: true });
+      rmSync(join(PROJECT_ROOT, 'artifacts', 'campaigns', jpCampaign), { recursive: true, force: true });
     }
   });
 
@@ -1352,9 +1352,9 @@ exit 0
         String(port),
         '--dry-run',
         '--us-resume',
-        'docs/research/results/campaigns/us/checkpoint-10.json',
+        'artifacts/campaigns/us/checkpoint-10.json',
         '--jp-resume',
-        'docs/research/results/campaigns/jp/checkpoint-20.json',
+        'artifacts/campaigns/jp/checkpoint-20.json',
       ],
     );
 
@@ -1422,8 +1422,8 @@ exit 0
     const bundleConfigPath = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
     const strategyPresetsPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-presets.json');
     const strategyCatalogPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-catalog.json');
-    const usCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-us-12x10.json');
-    const jpCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-jp-12x10.json');
+    const usCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'current', 'next-long-run-us-12x10.json');
+    const jpCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'current', 'next-long-run-jp-12x10.json');
 
     const strategyHash = createHash('sha256').update(readFileSync(strategyPresetsPath)).digest('hex');
     const catalogHash = createHash('sha256').update(readFileSync(strategyCatalogPath)).digest('hex');
@@ -1441,8 +1441,8 @@ exit 0
         { path: toRepoRelativePath(bundleConfigPath), role: 'bundle_config', sha256: 'wrong_hash_to_trigger_block' },
         { path: toRepoRelativePath(strategyPresetsPath), role: 'strategy_presets', sha256: strategyHash },
         { path: toRepoRelativePath(strategyCatalogPath), role: 'strategy_catalog', sha256: catalogHash },
-        { path: toRepoRelativePath(usCampaignPath), role: 'campaign_latest', sha256: usHash },
-        { path: toRepoRelativePath(jpCampaignPath), role: 'campaign_latest', sha256: jpHash },
+        { path: toRepoRelativePath(usCampaignPath), role: 'campaign_current', sha256: usHash },
+        { path: toRepoRelativePath(jpCampaignPath), role: 'campaign_current', sha256: jpHash },
       ],
       aggregate_fingerprint: 'dummy',
     }), 'utf8');
@@ -1476,8 +1476,8 @@ exit 0
     const bundleConfigPath = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
     const strategyPresetsPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-presets.json');
     const strategyCatalogPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-catalog.json');
-    const usCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-us-12x10.json');
-    const jpCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-jp-12x10.json');
+    const usCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'current', 'next-long-run-us-12x10.json');
+    const jpCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'current', 'next-long-run-jp-12x10.json');
 
     const bundleHash = createHash('sha256').update(readFileSync(bundleConfigPath)).digest('hex');
     const catalogHash = createHash('sha256').update(readFileSync(strategyCatalogPath)).digest('hex');
@@ -1495,8 +1495,8 @@ exit 0
         { path: toRepoRelativePath(bundleConfigPath), role: 'bundle_config', sha256: bundleHash },
         { path: toRepoRelativePath(strategyPresetsPath), role: 'strategy_presets', sha256: 'wrong_hash_for_warning' },
         { path: toRepoRelativePath(strategyCatalogPath), role: 'strategy_catalog', sha256: catalogHash },
-        { path: toRepoRelativePath(usCampaignPath), role: 'campaign_latest', sha256: usHash },
-        { path: toRepoRelativePath(jpCampaignPath), role: 'campaign_latest', sha256: jpHash },
+        { path: toRepoRelativePath(usCampaignPath), role: 'campaign_current', sha256: usHash },
+        { path: toRepoRelativePath(jpCampaignPath), role: 'campaign_current', sha256: jpHash },
       ],
       aggregate_fingerprint: 'dummy',
     }), 'utf8');
@@ -1533,8 +1533,8 @@ exit 0
     const bundleConfigPath = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
     const strategyPresetsPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-presets.json');
     const strategyCatalogPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-catalog.json');
-    const usCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-us-12x10.json');
-    const jpCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-jp-12x10.json');
+    const usCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'current', 'next-long-run-us-12x10.json');
+    const jpCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'current', 'next-long-run-jp-12x10.json');
 
     const bundleHash = createHash('sha256').update(readFileSync(bundleConfigPath)).digest('hex');
     const strategyHash = createHash('sha256').update(readFileSync(strategyPresetsPath)).digest('hex');
@@ -1552,8 +1552,8 @@ exit 0
         { path: toRepoRelativePath(bundleConfigPath), role: 'bundle_config', sha256: bundleHash },
         { path: toRepoRelativePath(strategyPresetsPath), role: 'strategy_presets', sha256: strategyHash },
         { path: toRepoRelativePath(strategyCatalogPath), role: 'strategy_catalog', sha256: catalogHash },
-        { path: toRepoRelativePath(usCampaignPath), role: 'campaign_latest', sha256: 'wrong_campaign_hash' },
-        { path: toRepoRelativePath(jpCampaignPath), role: 'campaign_latest', sha256: jpHash },
+        { path: toRepoRelativePath(usCampaignPath), role: 'campaign_current', sha256: 'wrong_campaign_hash' },
+        { path: toRepoRelativePath(jpCampaignPath), role: 'campaign_current', sha256: jpHash },
       ],
       aggregate_fingerprint: 'dummy',
     }), 'utf8');
@@ -1582,8 +1582,8 @@ exit 0
     assert.ok(summary.live_checkout_protection, 'summary must contain live_checkout_protection');
     assert.equal(summary.live_checkout_protection.status, 'warning');
     assert.ok(summary.live_checkout_protection.warning_files.some(
-      (f) => f.role === 'campaign_latest'),
-      'must have campaign_latest warning');
+      (f) => f.role === 'campaign_current'),
+      'must have campaign_current warning');
   });
 
   it('baseline + strategy-catalog hash mismatch produces warning but run succeeds', async () => {
@@ -1591,8 +1591,8 @@ exit 0
     const bundleConfigPath = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
     const strategyPresetsPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-presets.json');
     const strategyCatalogPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-catalog.json');
-    const usCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-us-12x10.json');
-    const jpCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-jp-12x10.json');
+    const usCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'current', 'next-long-run-us-12x10.json');
+    const jpCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'current', 'next-long-run-jp-12x10.json');
 
     const bundleHash = createHash('sha256').update(readFileSync(bundleConfigPath)).digest('hex');
     const strategyHash = createHash('sha256').update(readFileSync(strategyPresetsPath)).digest('hex');
@@ -1610,8 +1610,8 @@ exit 0
         { path: toRepoRelativePath(bundleConfigPath), role: 'bundle_config', sha256: bundleHash },
         { path: toRepoRelativePath(strategyPresetsPath), role: 'strategy_presets', sha256: strategyHash },
         { path: toRepoRelativePath(strategyCatalogPath), role: 'strategy_catalog', sha256: 'wrong_catalog_hash' },
-        { path: toRepoRelativePath(usCampaignPath), role: 'campaign_latest', sha256: usHash },
-        { path: toRepoRelativePath(jpCampaignPath), role: 'campaign_latest', sha256: jpHash },
+        { path: toRepoRelativePath(usCampaignPath), role: 'campaign_current', sha256: usHash },
+        { path: toRepoRelativePath(jpCampaignPath), role: 'campaign_current', sha256: jpHash },
       ],
       aggregate_fingerprint: 'dummy',
     }), 'utf8');

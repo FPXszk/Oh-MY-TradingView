@@ -9,12 +9,12 @@ export function resolveCaptureOutputPath(outputPath, baseDir = SCREENSHOT_OUTPUT
   }
 
   if (isAbsolute(outputPath) || win32.isAbsolute(outputPath)) {
-    throw new Error('outputPath must be a relative path under docs/research/results/screenshots');
+    throw new Error('outputPath must be a relative path under artifacts/screenshots');
   }
 
   const normalized = outputPath.replace(/\\/g, '/');
   if (normalized.split('/').includes('..')) {
-    throw new Error('outputPath must stay within docs/research/results/screenshots');
+    throw new Error('outputPath must stay within artifacts/screenshots');
   }
 
   const resolvedBaseDir = resolve(baseDir);
@@ -23,7 +23,7 @@ export function resolveCaptureOutputPath(outputPath, baseDir = SCREENSHOT_OUTPUT
     resolvedTargetPath !== resolvedBaseDir &&
     !resolvedTargetPath.startsWith(`${resolvedBaseDir}${sep}`)
   ) {
-    throw new Error('outputPath must stay within docs/research/results/screenshots');
+    throw new Error('outputPath must stay within artifacts/screenshots');
   }
 
   return resolvedTargetPath;

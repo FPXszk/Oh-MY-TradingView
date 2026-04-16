@@ -57,17 +57,17 @@ $strategyCatalogHash = Get-FileSha256 $strategyCatalogPath
 $files += @{ path = $strategyCatalogPath; role = 'strategy_catalog'; sha256 = $strategyCatalogHash }
 
 if ($usCampaign) {
-    $usCampaignPath = Normalize-RepoPath "config/backtest/campaigns/latest/$usCampaign.json"
+    $usCampaignPath = Normalize-RepoPath "config/backtest/campaigns/current/$usCampaign.json"
     $resolvedCampaigns += @{ id = $usCampaign; path = $usCampaignPath }
     $usCampaignHash = Get-FileSha256 $usCampaignPath
-    $files += @{ path = $usCampaignPath; role = 'campaign_latest'; sha256 = $usCampaignHash }
+    $files += @{ path = $usCampaignPath; role = 'campaign_current'; sha256 = $usCampaignHash }
 }
 
 if ($jpCampaign) {
-    $jpCampaignPath = Normalize-RepoPath "config/backtest/campaigns/latest/$jpCampaign.json"
+    $jpCampaignPath = Normalize-RepoPath "config/backtest/campaigns/current/$jpCampaign.json"
     $resolvedCampaigns += @{ id = $jpCampaign; path = $jpCampaignPath }
     $jpCampaignHash = Get-FileSha256 $jpCampaignPath
-    $files += @{ path = $jpCampaignPath; role = 'campaign_latest'; sha256 = $jpCampaignHash }
+    $files += @{ path = $jpCampaignPath; role = 'campaign_current'; sha256 = $jpCampaignHash }
 }
 
 $sortedFiles = $files | Sort-Object { $_.path }
@@ -92,7 +92,7 @@ $baseline = [ordered]@{
     created_at            = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
 }
 
-$outputDir = 'docs/research/results/night-batch/_workflow'
+$outputDir = 'artifacts/night-batch/_workflow'
 if (-not (Test-Path $outputDir)) {
     New-Item -ItemType Directory -Path $outputDir -Force | Out-Null
 }

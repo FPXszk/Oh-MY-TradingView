@@ -12,9 +12,9 @@ const { values } = parseArgs({
 });
 
 const root = resolve(values.root ?? process.cwd());
-const researchLatestDir = join(root, 'docs', 'research', 'latest');
+const researchLatestDir = join(root, 'docs', 'research', 'current');
 const researchArchiveDir = join(root, 'docs', 'research', 'archive');
-const sessionLogsDir = join(root, 'docs', 'working-memory', 'session-logs');
+const sessionLogsDir = join(root, 'logs', 'sessions');
 const sessionLogsArchiveDir = join(sessionLogsDir, 'archive');
 
 async function loadManifestKeep(latestDir) {
@@ -92,7 +92,7 @@ const [archivedResearch, archivedSessionLogs] = await Promise.all([
 ]);
 
 if (archivedResearch.length > 0) {
-  console.log(`Archived latest research docs: ${archivedResearch.join(', ')}`);
+  console.log(`Archived current research docs: ${archivedResearch.join(', ')}`);
 }
 if (archivedSessionLogs.length > 0) {
   console.log(`Archived session logs: ${archivedSessionLogs.join(', ')}`);

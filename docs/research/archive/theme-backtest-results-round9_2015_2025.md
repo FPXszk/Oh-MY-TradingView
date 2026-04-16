@@ -4,10 +4,10 @@
 - 実行方式: shard parallel -> exact unreadable rerun -> recovered summary
 - universe: Mag7（AAPL, AMZN, GOOG, META, MSFT, NVDA, TSLA）
 - artifacts:
-  - raw: `docs/references/backtests/round9-theme-mag7-shard-parallel_20260407_1132.json`
-  - raw summary: `docs/references/backtests/round9-theme-mag7-shard-parallel_20260407_1132.summary.json`
-  - recovered: `docs/references/backtests/round9-theme-mag7-shard-parallel-recovered_20260407_1145.json`
-  - recovered summary: `docs/references/backtests/round9-theme-mag7-shard-parallel-recovered_20260407_1145.summary.json`
+  - raw: `references/backtests/round9-theme-mag7-shard-parallel_20260407_1132.json`
+  - raw summary: `references/backtests/round9-theme-mag7-shard-parallel_20260407_1132.summary.json`
+  - recovered: `references/backtests/round9-theme-mag7-shard-parallel-recovered_20260407_1145.json`
+  - recovered summary: `references/backtests/round9-theme-mag7-shard-parallel-recovered_20260407_1145.summary.json`
 - coverage:
   - raw: `98 runs / 54 readable / 44 unreadable`
   - recovered: `98 runs / 81 readable / 17 unreadable / 27 recovered`

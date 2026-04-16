@@ -7,9 +7,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export const PROJECT_ROOT = join(__dirname, '..', '..');
-export const RESEARCH_RESULTS_DIR = join(PROJECT_ROOT, 'docs', 'research', 'results');
-export const SCREENSHOT_OUTPUT_DIR = join(RESEARCH_RESULTS_DIR, 'screenshots');
-export const OBSERVABILITY_OUTPUT_DIR = join(RESEARCH_RESULTS_DIR, 'observability');
+export const ARTIFACTS_DIR = join(PROJECT_ROOT, 'artifacts');
+export const RESEARCH_RESULTS_DIR = ARTIFACTS_DIR;
+export const SCREENSHOT_OUTPUT_DIR = join(ARTIFACTS_DIR, 'screenshots');
+export const OBSERVABILITY_OUTPUT_DIR = join(ARTIFACTS_DIR, 'observability');
 
 export const BACKTEST_CAMPAIGNS_DIR = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns');
 export const BACKTEST_UNIVERSES_DIR = join(PROJECT_ROOT, 'config', 'backtest', 'universes');
@@ -17,7 +18,7 @@ export const BACKTEST_PRESETS_PATH = join(PROJECT_ROOT, 'config', 'backtest', 's
 
 function buildSearchDirs(baseDir) {
   return [
-    join(baseDir, 'latest'),
+    join(baseDir, 'current'),
     baseDir,
     join(baseDir, 'archive'),
   ];

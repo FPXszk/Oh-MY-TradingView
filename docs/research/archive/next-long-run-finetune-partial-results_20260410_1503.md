@@ -17,10 +17,10 @@
 | --- | --- | --- |
 | US campaign config | `config/backtest/campaigns/next-long-run-us-finetune-100x10.json` | 確定 |
 | JP campaign config | `config/backtest/campaigns/next-long-run-jp-finetune-100x10.json` | 確定 |
-| US smoke recovered | `docs/research/results/campaigns/next-long-run-us-finetune-100x10/smoke/recovered-summary.json` | 確定 `100/100` |
-| JP smoke recovered | `docs/research/results/campaigns/next-long-run-jp-finetune-100x10/smoke/recovered-summary.json` | 確定 `100/100` |
-| US pilot checkpoint | `docs/research/results/campaigns/next-long-run-us-finetune-100x10/pilot/checkpoint-50.json` | 確定 `50/250` |
-| US full checkpoint | `docs/research/results/campaigns/next-long-run-us-finetune-100x10/full/checkpoint-490.json` | 確定 `490/1000` |
+| US smoke recovered | `artifacts/campaigns/next-long-run-us-finetune-100x10/smoke/recovered-summary.json` | 確定 `100/100` |
+| JP smoke recovered | `artifacts/campaigns/next-long-run-jp-finetune-100x10/smoke/recovered-summary.json` | 確定 `100/100` |
+| US pilot checkpoint | `artifacts/campaigns/next-long-run-us-finetune-100x10/pilot/checkpoint-50.json` | 確定 `50/250` |
+| US full checkpoint | `artifacts/campaigns/next-long-run-us-finetune-100x10/full/checkpoint-490.json` | 確定 `490/1000` |
 
 ---
 

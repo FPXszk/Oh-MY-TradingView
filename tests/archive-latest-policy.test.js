@@ -9,11 +9,11 @@ const PROJECT_ROOT = process.cwd();
 const SCRIPT_PATH = join(PROJECT_ROOT, 'scripts', 'docs', 'archive-stale-latest.mjs');
 
 describe('archive-stale-latest.mjs', () => {
-  it('moves stale latest research docs and leaves only the newest session log at top level', () => {
+  it('moves stale current research docs and leaves only the newest session log at top level', () => {
     const tempRoot = mkdtempSync(join(tmpdir(), 'archive-latest-policy-'));
-    const researchLatestDir = join(tempRoot, 'docs', 'research', 'latest');
+    const researchLatestDir = join(tempRoot, 'docs', 'research', 'current');
     const researchArchiveDir = join(tempRoot, 'docs', 'research', 'archive');
-    const sessionLogsDir = join(tempRoot, 'docs', 'working-memory', 'session-logs');
+    const sessionLogsDir = join(tempRoot, 'logs', 'sessions');
     const sessionLogsArchiveDir = join(sessionLogsDir, 'archive');
 
     mkdirSync(researchLatestDir, { recursive: true });
@@ -49,9 +49,9 @@ describe('archive-stale-latest.mjs', () => {
 
   it('prefers the newest timestamped session log when mtimes are tied', () => {
     const tempRoot = mkdtempSync(join(tmpdir(), 'archive-latest-policy-tied-'));
-    const researchLatestDir = join(tempRoot, 'docs', 'research', 'latest');
+    const researchLatestDir = join(tempRoot, 'docs', 'research', 'current');
     const researchArchiveDir = join(tempRoot, 'docs', 'research', 'archive');
-    const sessionLogsDir = join(tempRoot, 'docs', 'working-memory', 'session-logs');
+    const sessionLogsDir = join(tempRoot, 'logs', 'sessions');
     const sessionLogsArchiveDir = join(sessionLogsDir, 'archive');
 
     mkdirSync(researchLatestDir, { recursive: true });
@@ -79,9 +79,9 @@ describe('archive-stale-latest.mjs', () => {
 
   it('keeps files listed in manifest.json and archives unlisted ones', () => {
     const tempRoot = mkdtempSync(join(tmpdir(), 'archive-manifest-keep-'));
-    const researchLatestDir = join(tempRoot, 'docs', 'research', 'latest');
+    const researchLatestDir = join(tempRoot, 'docs', 'research', 'current');
     const researchArchiveDir = join(tempRoot, 'docs', 'research', 'archive');
-    const sessionLogsDir = join(tempRoot, 'docs', 'working-memory', 'session-logs');
+    const sessionLogsDir = join(tempRoot, 'logs', 'sessions');
     const sessionLogsArchiveDir = join(sessionLogsDir, 'archive');
 
     mkdirSync(researchLatestDir, { recursive: true });
@@ -110,9 +110,9 @@ describe('archive-stale-latest.mjs', () => {
 
   it('manifest keep merges with --research-keep CLI flag', () => {
     const tempRoot = mkdtempSync(join(tmpdir(), 'archive-manifest-merge-'));
-    const researchLatestDir = join(tempRoot, 'docs', 'research', 'latest');
+    const researchLatestDir = join(tempRoot, 'docs', 'research', 'current');
     const researchArchiveDir = join(tempRoot, 'docs', 'research', 'archive');
-    const sessionLogsDir = join(tempRoot, 'docs', 'working-memory', 'session-logs');
+    const sessionLogsDir = join(tempRoot, 'logs', 'sessions');
     const sessionLogsArchiveDir = join(sessionLogsDir, 'archive');
 
     mkdirSync(researchLatestDir, { recursive: true });

@@ -45,7 +45,7 @@ async function loadPresets() {
       'utf8',
     ),
     readFile(
-      join(__dirname, '..', 'docs', 'bad-strategy', 'retired-strategy-presets.json'),
+      join(__dirname, '..', 'docs', 'research', 'strategy', 'retired', 'retired-strategy-presets.json'),
       'utf8',
     ),
   ]);

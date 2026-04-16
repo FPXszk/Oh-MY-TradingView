@@ -77,7 +77,7 @@
 
 ## Operational notes
 
-- 正本は raw stdout ではなく `docs/research/results/campaigns/<campaign-id>/<phase>/recovered-summary.json`
+- 正本は raw stdout ではなく `artifacts/campaigns/<campaign-id>/<phase>/recovered-summary.json`
 - checkpoint shell stdout は長時間実行だと読みにくくなるため、進捗確認は checkpoint JSON 直読みに寄せる
 - JP symbol は live で `TSE_DLY` へ settle することがあり、その normalize なしでは false-negative が出る
 - resume は `campaign_id`, `phase`, fingerprint を検証し、foreign checkpoint 混入を避ける

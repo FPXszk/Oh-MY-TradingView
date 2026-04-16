@@ -4,7 +4,7 @@
 
 ## 運用ルール
 
-- **既定では読まない**。最新の研究状況は `docs/research/latest/` を先頭に読む
+- **既定では読まない**。最新の研究状況は `docs/research/current/` を先頭に読む
 - 明示的に過去世代の経緯を確認したいときだけ参照する
 - ここにある docs は routing docs（README / DOCUMENTATION_SYSTEM 等）の主導線からは外す
 - 新しい世代が latest に入った際、2 世代以上前の docs はここへ移動する
@@ -23,7 +23,7 @@
 
 ## 参照先
 
-- 最新世代: `docs/research/latest/`
-- 数値の正本: `docs/references/backtests/`
-- 実行 artifact: `docs/research/results/`
-- 判断経緯: `docs/working-memory/session-logs/`
+- 最新世代: `docs/research/current/`
+- 数値の正本: `references/backtests/`
+- 実行 artifact: `artifacts/`
+- 判断経緯: `logs/sessions/`

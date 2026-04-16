@@ -6,10 +6,10 @@
   - `sp500-top10-point-in-time`
   - `mega-cap-ex-nvda`
 - artifacts:
-  - raw: `docs/references/backtests/round10-top4-alt-shard-parallel_20260407_0620.json`
-  - raw summary: `docs/references/backtests/round10-top4-alt-shard-parallel_20260407_0620.summary.json`
-  - recovered: `docs/references/backtests/round10-top4-alt-shard-parallel-recovered_20260407_0620.json`
-  - recovered summary: `docs/references/backtests/round10-top4-alt-shard-parallel-recovered_20260407_0620.summary.json`
+  - raw: `references/backtests/round10-top4-alt-shard-parallel_20260407_0620.json`
+  - raw summary: `references/backtests/round10-top4-alt-shard-parallel_20260407_0620.summary.json`
+  - recovered: `references/backtests/round10-top4-alt-shard-parallel-recovered_20260407_0620.json`
+  - recovered summary: `references/backtests/round10-top4-alt-shard-parallel-recovered_20260407_0620.summary.json`
 - coverage:
   - raw: `200 runs / 106 readable / 94 unreadable`
   - recovered: `200 runs / 158 readable / 42 unreadable / 52 recovered`

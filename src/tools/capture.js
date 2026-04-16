@@ -5,10 +5,10 @@ import { captureScreenshot } from '../core/capture.js';
 export function registerCaptureTools(server) {
   server.tool(
     'tv_capture_screenshot',
-    'Capture a screenshot of the current TradingView Desktop page via CDP. If outputPath is provided, save under docs/research/results/screenshots without overwriting.',
+    'Capture a screenshot of the current TradingView Desktop page via CDP. If outputPath is provided, save under artifacts/screenshots without overwriting.',
     {
       outputPath: z.string().optional()
-        .describe('Relative file path under docs/research/results/screenshots (returns base64 if omitted)'),
+        .describe('Relative file path under artifacts/screenshots (returns base64 if omitted)'),
       format: z.enum(['png', 'jpeg']).optional()
         .describe('Image format (default: png)'),
       quality: z.number().int().min(0).max(100).optional()

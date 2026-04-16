@@ -13,17 +13,17 @@
 
 ### Mag7
 
-- raw: `docs/references/backtests/round10-top4-mag7-shard-parallel_20260407_0524.json`
-- raw summary: `docs/references/backtests/round10-top4-mag7-shard-parallel_20260407_0524.summary.json`
-- recovered: `docs/references/backtests/round10-top4-mag7-shard-parallel-recovered_20260407_0524.json`
-- recovered summary: `docs/references/backtests/round10-top4-mag7-shard-parallel-recovered_20260407_0524.summary.json`
+- raw: `references/backtests/round10-top4-mag7-shard-parallel_20260407_0524.json`
+- raw summary: `references/backtests/round10-top4-mag7-shard-parallel_20260407_0524.summary.json`
+- recovered: `references/backtests/round10-top4-mag7-shard-parallel-recovered_20260407_0524.json`
+- recovered summary: `references/backtests/round10-top4-mag7-shard-parallel-recovered_20260407_0524.summary.json`
 
 ### Alt
 
-- raw: `docs/references/backtests/round10-top4-alt-shard-parallel_20260407_0620.json`
-- raw summary: `docs/references/backtests/round10-top4-alt-shard-parallel_20260407_0620.summary.json`
-- recovered: `docs/references/backtests/round10-top4-alt-shard-parallel-recovered_20260407_0620.json`
-- recovered summary: `docs/references/backtests/round10-top4-alt-shard-parallel-recovered_20260407_0620.summary.json`
+- raw: `references/backtests/round10-top4-alt-shard-parallel_20260407_0620.json`
+- raw summary: `references/backtests/round10-top4-alt-shard-parallel_20260407_0620.summary.json`
+- recovered: `references/backtests/round10-top4-alt-shard-parallel-recovered_20260407_0620.json`
+- recovered summary: `references/backtests/round10-top4-alt-shard-parallel-recovered_20260407_0620.summary.json`
 
 ## Result summary
 

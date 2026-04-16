@@ -6,7 +6,7 @@
 
 この runbook は、TradingView Desktop の worker1 / worker2 を使って、WSL から別々の backtest を並列実行するための既知の正常手順と、2026-04-06 時点の未解決制約をまとめる。
 
-> current handoff / latest result は `docs/research/latest/` を先頭に読む。  
+> current handoff / latest result は `docs/research/current/` を先頭に読む。  
 > 直前世代の docs は `docs/research/` 直下、2 世代以上前は `docs/research/archive/`（既定では読まない archive）。  
 > この runbook の保証範囲は **dual-worker / 2 worker 並列** までで、4並列は未検証。
 
@@ -151,8 +151,8 @@ wait
 - `restore_skipped: true`
 
 > 途中の失敗経緯と切り分けは  
-> `docs/working-memory/session-logs/dual-worker-parallel-backtest-handoff_20260406_0735.md` と  
-> `docs/working-memory/session-logs/tradingview-parallel-backtest-stabilization_20260406_0802.md` を参照。
+> `logs/sessions/dual-worker-parallel-backtest-handoff_20260406_0735.md` と  
+> `logs/sessions/tradingview-parallel-backtest-stabilization_20260406_0802.md` を参照。
 
 ## Stability conditions (confirmed 2026-04-06)
 
@@ -345,13 +345,13 @@ node scripts/backtest/run-long-campaign.mjs <campaign> --phase full --host 172.3
 ### Pilot の扱い
 
 - `pilot` phase は campaign config に互換目的で残っているが、標準フロー（`smoke → full`）からは外れている
-- 既存の `pilot` checkpoint（例: `docs/research/results/campaigns/next-long-run-us-finetune-100x10/pilot/checkpoint-50.json`）は historical artifact として保持し、`full` への流用は不可
+- 既存の `pilot` checkpoint（例: `artifacts/campaigns/next-long-run-us-finetune-100x10/pilot/checkpoint-50.json`）は historical artifact として保持し、`full` への流用は不可
 
 ## References
 
 - `docs/command.md`
 - `docs/exec-plans/active/checkpoint-resume-sequential-visible-backtest_20260410_1052.md`
-- `docs/working-memory/session-logs/wsl-dual-worker-reachability_20260406_0305.md`
-- `docs/working-memory/session-logs/dual-worker-distinct-strategy-backtest_20260406_0423.md`
-- `docs/working-memory/session-logs/tradingview-parallel-backtest-verification_20260406_0053.md`
-- `docs/working-memory/session-logs/dual-worker-parallel-backtest-handoff_20260406_0735.md`
+- `logs/sessions/wsl-dual-worker-reachability_20260406_0305.md`
+- `logs/sessions/dual-worker-distinct-strategy-backtest_20260406_0423.md`
+- `logs/sessions/tradingview-parallel-backtest-verification_20260406_0053.md`
+- `logs/sessions/dual-worker-parallel-backtest-handoff_20260406_0735.md`

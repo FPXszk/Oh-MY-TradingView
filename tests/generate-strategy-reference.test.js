@@ -9,12 +9,12 @@ const PROJECT_ROOT = process.cwd();
 const SCRIPT_PATH = join(PROJECT_ROOT, 'scripts', 'backtest', 'generate-strategy-reference.mjs');
 
 describe('generate-strategy-reference', () => {
-  it('explains the difference between latest config and score artifact sources', () => {
+  it('explains the difference between current config and score artifact sources', () => {
     const tempRoot = mkdtempSync(join(tmpdir(), 'generate-strategy-reference-'));
     const usPath = join(tempRoot, 'us-results.json');
     const jpPath = join(tempRoot, 'jp-results.json');
-    const strategyOut = join(tempRoot, 'latest-strategy-reference.md');
-    const symbolOut = join(tempRoot, 'latest-symbol-reference.md');
+    const strategyOut = join(tempRoot, 'current-strategy-reference.md');
+    const symbolOut = join(tempRoot, 'current-symbol-reference.md');
     const catalogPath = join(tempRoot, 'strategy-catalog.json');
     const usCampaignPath = join(tempRoot, 'us-campaign.json');
     const jpCampaignPath = join(tempRoot, 'jp-campaign.json');
@@ -128,7 +128,7 @@ describe('generate-strategy-reference', () => {
       assert.match(strategyDoc, /score artifact \(JP\): `.*jp-results\.json`/);
       assert.match(symbolDoc, /US campaign: `next-long-run-us-12x10` \/ universe: `next-long-run-us-12`/);
       assert.match(symbolDoc, /score artifact \(US\): `.*us-results\.json`/);
-      assert.match(symbolDoc, /campaign \/ universe は latest config、score 列は上記 artifact に含まれる銘柄だけ埋まります。/);
+      assert.match(symbolDoc, /campaign \/ universe は current config、score 列は上記 artifact に含まれる銘柄だけ埋まります。/);
       assert.match(symbolDoc, /`NVDA` \| NVIDIA \| winners \| `—` \| — \| — \| — \| 2000-01-01 -> 2099-12-31/);
     } finally {
       rmSync(tempRoot, { recursive: true, force: true });

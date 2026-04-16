@@ -309,7 +309,7 @@
 
 - このドキュメントは **research 登録が本線** であり、preset / builder 拡張は別作業として扱う
 - 各候補の backtest 結果は、検証実施後に別ドキュメントとして `docs/research/` に追加する
-- 具体的な投稿 / script URL は [`docs/references/design-ref-llms.md`](../references/design-ref-llms.md) に記録済み
+- 具体的な投稿 / script URL は [`references/external/design-ref-llms.md`](../references/design-ref-llms.md) に記録済み
 
 ---
 

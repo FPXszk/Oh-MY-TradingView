@@ -33,7 +33,7 @@
 
 比較 artifact:
 
-- `docs/references/backtests/mid-parallel-benchmark-comparison_20260406_2330.json`
+- `references/backtests/mid-parallel-benchmark-comparison_20260406_2330.json`
 
 ## 何が分かったか
 

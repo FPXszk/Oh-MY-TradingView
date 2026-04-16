@@ -22,21 +22,22 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 RESEARCH_DOCS_DIR = PROJECT_ROOT / 'docs' / 'research'
-RESEARCH_RESULTS_DIR = RESEARCH_DOCS_DIR / 'results'
-CAMPAIGN_RESULTS_DIR = RESEARCH_RESULTS_DIR / 'campaigns'
-LATEST_RESEARCH_DIR = RESEARCH_DOCS_DIR / 'latest'
-DEFAULT_LATEST_SUMMARY_PATH = LATEST_RESEARCH_DIR / 'main-backtest-latest-summary.md'
-BACKTEST_REFERENCES_DIR = PROJECT_ROOT / 'docs' / 'references' / 'backtests'
-DEFAULT_LATEST_RANKING_ARTIFACT_PATH = BACKTEST_REFERENCES_DIR / 'main-backtest-latest-combined-ranking.json'
+ARTIFACTS_DIR = PROJECT_ROOT / 'artifacts'
+RESEARCH_RESULTS_DIR = ARTIFACTS_DIR
+CAMPAIGN_RESULTS_DIR = ARTIFACTS_DIR / 'campaigns'
+LATEST_RESEARCH_DIR = RESEARCH_DOCS_DIR / 'current'
+DEFAULT_LATEST_SUMMARY_PATH = LATEST_RESEARCH_DIR / 'main-backtest-current-summary.md'
+BACKTEST_REFERENCES_DIR = PROJECT_ROOT / 'references' / 'backtests'
+DEFAULT_LATEST_RANKING_ARTIFACT_PATH = BACKTEST_REFERENCES_DIR / 'main-backtest-current-combined-ranking.json'
 STRATEGY_RESEARCH_DIR = RESEARCH_DOCS_DIR / 'strategy'
-DEFAULT_STRATEGY_REFERENCE_PATH = STRATEGY_RESEARCH_DIR / 'latest-strategy-reference.md'
-DEFAULT_SYMBOL_REFERENCE_PATH = STRATEGY_RESEARCH_DIR / 'latest-symbol-reference.md'
+DEFAULT_STRATEGY_REFERENCE_PATH = STRATEGY_RESEARCH_DIR / 'current-strategy-reference.md'
+DEFAULT_SYMBOL_REFERENCE_PATH = STRATEGY_RESEARCH_DIR / 'current-symbol-reference.md'
 
 
 def resolve_results_dir() -> Path:
     raw = os.environ.get('NIGHT_BATCH_RESULTS_DIR')
     if not raw:
-        return RESEARCH_RESULTS_DIR / 'night-batch'
+        return ARTIFACTS_DIR / 'night-batch'
     normalized = raw.replace('\\', '/') if '\\' in raw and ':' not in raw else raw
     path = Path(normalized)
     return path if path.is_absolute() else PROJECT_ROOT / path
@@ -55,7 +56,7 @@ DEFAULT_US_CAMPAIGN = 'next-long-run-us-12x10'
 DEFAULT_JP_CAMPAIGN = 'next-long-run-jp-12x10'
 DEFAULT_SMOKE_CLI = 'backtest preset ema-cross-9-21 --symbol NVDA --date-from 2024-01-01 --date-to 2024-12-31'
 DEFAULT_PRODUCTION_CLI = 'backtest preset ema-cross-9-21 --symbol NVDA --date-from 2000-01-01 --date-to 2099-12-31'
-DEFAULT_DETACHED_STATE_FILE = 'docs/research/results/night-batch/detached-production-state.json'
+DEFAULT_DETACHED_STATE_FILE = 'artifacts/night-batch/detached-production-state.json'
 EXIT_PREFLIGHT_FAILED = 1
 EXIT_STEP_FAILED = 2
 ROUND_MANIFEST_FILE = 'round-manifest.json'
@@ -121,7 +122,7 @@ def resolve_round_dir(mode: str) -> tuple[Path, int]:
         rounds = find_existing_rounds()
         if not rounds:
             raise RuntimeError(
-                'No existing round found under docs/research/results/night-batch/. '
+                'No existing round found under artifacts/night-batch/. '
                 'Use --round-mode advance-next-round to create a new round.'
             )
         current_num = max(rounds)
@@ -396,7 +397,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     archive_rounds = subparsers.add_parser(
         'archive-rounds',
-        help='Move completed round directories under docs/research/results/night-batch/archive',
+        help='Move completed round directories under artifacts/night-batch/archive',
     )
     archive_rounds.add_argument('--dry-run', action='store_true')
 
@@ -450,14 +451,14 @@ def relative_path(path: Path) -> str:
 
 
 def resolve_latest_summary_path() -> Path:
-    raw = os.environ.get('NIGHT_BATCH_LATEST_SUMMARY_PATH')
+    raw = os.environ.get('NIGHT_BATCH_CURRENT_SUMMARY_PATH') or os.environ.get('NIGHT_BATCH_LATEST_SUMMARY_PATH')
     if raw:
         return resolve_project_path(raw) or (PROJECT_ROOT / raw)
     return DEFAULT_LATEST_SUMMARY_PATH
 
 
 def resolve_latest_ranking_artifact_path() -> Path:
-    raw = os.environ.get('NIGHT_BATCH_LATEST_RANKING_PATH')
+    raw = os.environ.get('NIGHT_BATCH_CURRENT_RANKING_PATH') or os.environ.get('NIGHT_BATCH_LATEST_RANKING_PATH')
     if raw:
         return resolve_project_path(raw) or (PROJECT_ROOT / raw)
     return DEFAULT_LATEST_RANKING_ARTIFACT_PATH
@@ -467,10 +468,10 @@ def resolve_strategy_reference_path() -> Path:
     raw = os.environ.get('NIGHT_BATCH_STRATEGY_REFERENCE_PATH')
     if raw:
         return resolve_project_path(raw) or (PROJECT_ROOT / raw)
-    summary_override = os.environ.get('NIGHT_BATCH_LATEST_SUMMARY_PATH')
+    summary_override = os.environ.get('NIGHT_BATCH_CURRENT_SUMMARY_PATH') or os.environ.get('NIGHT_BATCH_LATEST_SUMMARY_PATH')
     if summary_override:
         summary_path = resolve_project_path(summary_override) or (PROJECT_ROOT / summary_override)
-        return summary_path.with_name('latest-strategy-reference.md')
+        return summary_path.with_name('current-strategy-reference.md')
     return DEFAULT_STRATEGY_REFERENCE_PATH
 
 
@@ -478,10 +479,10 @@ def resolve_symbol_reference_path() -> Path:
     raw = os.environ.get('NIGHT_BATCH_SYMBOL_REFERENCE_PATH')
     if raw:
         return resolve_project_path(raw) or (PROJECT_ROOT / raw)
-    summary_override = os.environ.get('NIGHT_BATCH_LATEST_SUMMARY_PATH')
+    summary_override = os.environ.get('NIGHT_BATCH_CURRENT_SUMMARY_PATH') or os.environ.get('NIGHT_BATCH_LATEST_SUMMARY_PATH')
     if summary_override:
         summary_path = resolve_project_path(summary_override) or (PROJECT_ROOT / summary_override)
-        return summary_path.with_name('latest-symbol-reference.md')
+        return summary_path.with_name('current-symbol-reference.md')
     return DEFAULT_SYMBOL_REFERENCE_PATH
 
 
@@ -923,8 +924,8 @@ def run_process(
 
 
 def default_report_paths(args) -> tuple[str, str, str]:
-    us_path = getattr(args, 'report_us', None) or f'docs/research/results/campaigns/{args.us_campaign}/full/recovered-results.json'
-    jp_path = getattr(args, 'report_jp', None) or f'docs/research/results/campaigns/{args.jp_campaign}/full/recovered-results.json'
+    us_path = getattr(args, 'report_us', None) or f'artifacts/campaigns/{args.us_campaign}/full/recovered-results.json'
+    jp_path = getattr(args, 'report_jp', None) or f'artifacts/campaigns/{args.jp_campaign}/full/recovered-results.json'
     output_dir = resolve_project_path(getattr(args, 'output_dir', None)) or RESULTS_DIR
     report_out = getattr(args, 'report_out', None) or str(output_dir / f'{utc_run_id()}-rich-report.md')
     return us_path, jp_path, report_out
@@ -1436,13 +1437,13 @@ def resolve_live_checkout_protection_targets(settings: dict) -> list[dict]:
     ]
     if us_campaign:
         targets.append({
-            'path': canonical_repo_path(PROJECT_ROOT / 'config' / 'backtest' / 'campaigns' / 'latest' / f'{us_campaign}.json'),
-            'role': 'campaign_latest',
+            'path': canonical_repo_path(PROJECT_ROOT / 'config' / 'backtest' / 'campaigns' / 'current' / f'{us_campaign}.json'),
+            'role': 'campaign_current',
         })
     if jp_campaign:
         targets.append({
-            'path': canonical_repo_path(PROJECT_ROOT / 'config' / 'backtest' / 'campaigns' / 'latest' / f'{jp_campaign}.json'),
-            'role': 'campaign_latest',
+            'path': canonical_repo_path(PROJECT_ROOT / 'config' / 'backtest' / 'campaigns' / 'current' / f'{jp_campaign}.json'),
+            'role': 'campaign_current',
         })
     return targets
 
@@ -2240,9 +2241,10 @@ def write_latest_backtest_summary(
     best_jp = jp_summary['rows'][0] if jp_summary['rows'] else None
 
     lines = [
-        '# Latest main backtest summary',
+        '# Current main backtest summary',
         '',
-        'このファイルは `python/night_batch.py` が backtest 完了後に deterministic に再生成する latest 要約です。',
+        'このファイルは `python/night_batch.py` が backtest 完了後に deterministic に再生成する current 要約です。',
+        'ここでの current は「人間向けの現行入口」を意味し、利用可能な最新 artifact から都度再生成されます。',
         '',
         f'- run_id: `{run_id}`',
         f'- status: `{"SUCCESS" if summary["success"] else "FAILED"}`',
@@ -2344,7 +2346,7 @@ def write_latest_backtest_summary(
     ])
 
     latest_summary_path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
-    logger.info('Latest backtest summary written: %s', relative_path(latest_summary_path))
+    logger.info('Current backtest summary written: %s', relative_path(latest_summary_path))
 
 
 def maybe_write_latest_backtest_summary_from_args(

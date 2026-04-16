@@ -2,7 +2,7 @@
 
 - status: COMPLETED
 - anchor source: `docs/tmp/round9-answer_20260407_0431.md`
-- latest docs entrypoint: `docs/research/latest/README.md`
+- latest docs entrypoint: `docs/research/current/README.md`
 
 ## Top4 anchors
 
@@ -44,20 +44,20 @@
 ### Mag7
 
 - raw:
-  - `docs/references/backtests/round10-top4-mag7-shard-parallel_20260407_0524.json`
-  - `docs/references/backtests/round10-top4-mag7-shard-parallel_20260407_0524.summary.json`
+  - `references/backtests/round10-top4-mag7-shard-parallel_20260407_0524.json`
+  - `references/backtests/round10-top4-mag7-shard-parallel_20260407_0524.summary.json`
 - recovered:
-  - `docs/references/backtests/round10-top4-mag7-shard-parallel-recovered_20260407_0524.json`
-  - `docs/references/backtests/round10-top4-mag7-shard-parallel-recovered_20260407_0524.summary.json`
+  - `references/backtests/round10-top4-mag7-shard-parallel-recovered_20260407_0524.json`
+  - `references/backtests/round10-top4-mag7-shard-parallel-recovered_20260407_0524.summary.json`
 
 ### Alt
 
 - raw:
-  - `docs/references/backtests/round10-top4-alt-shard-parallel_20260407_0620.json`
-  - `docs/references/backtests/round10-top4-alt-shard-parallel_20260407_0620.summary.json`
+  - `references/backtests/round10-top4-alt-shard-parallel_20260407_0620.json`
+  - `references/backtests/round10-top4-alt-shard-parallel_20260407_0620.summary.json`
 - recovered:
-  - `docs/references/backtests/round10-top4-alt-shard-parallel-recovered_20260407_0620.json`
-  - `docs/references/backtests/round10-top4-alt-shard-parallel-recovered_20260407_0620.summary.json`
+  - `references/backtests/round10-top4-alt-shard-parallel-recovered_20260407_0620.json`
+  - `references/backtests/round10-top4-alt-shard-parallel-recovered_20260407_0620.summary.json`
 
 ## Next decision gate
 

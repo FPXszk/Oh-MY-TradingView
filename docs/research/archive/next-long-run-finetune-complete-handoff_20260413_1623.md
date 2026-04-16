@@ -10,8 +10,8 @@
 
 ## What changed
 
-1. `docs/research/latest/` の latest 世代を、**2026-04-10 partial report** から **2026-04-13 complete results** へ更新した
-2. latest full-run の成績を `docs/references/backtests/next-long-run-finetune-complete_20260413.summary.json` に固定した
+1. `docs/research/current/` の latest 世代を、**2026-04-10 partial report** から **2026-04-13 complete results** へ更新した
+2. latest full-run の成績を `references/backtests/next-long-run-finetune-complete_20260413.summary.json` に固定した
 3. local smoke (`external-phase1-run8-us-jp-top6`) の gating 結果も同世代で読めるように統合した
 
 ---
@@ -29,12 +29,12 @@
 
 | topic | source |
 | --- | --- |
-| latest executed run の状態 | `../../docs/research/results/gh-run-24341576697/night-batch-24341576697-1/gha_24341576697_1-summary.md` |
-| latest executed run の件数 | `../../docs/research/results/gh-run-24341576697/night-batch-24341576697-1/gha_24341576697_1.log` |
-| US full metrics | `/mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/docs/research/results/campaigns/next-long-run-us-finetune-100x10/full/recovered-results.json` |
-| JP full metrics | `/mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/docs/research/results/campaigns/next-long-run-jp-finetune-100x10/full/recovered-results.json` |
+| latest executed run の状態 | `../../artifacts/gh-run-24341576697/night-batch-24341576697-1/gha_24341576697_1-summary.md` |
+| latest executed run の件数 | `../../artifacts/gh-run-24341576697/night-batch-24341576697-1/gha_24341576697_1.log` |
+| US full metrics | `/mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/next-long-run-us-finetune-100x10/full/recovered-results.json` |
+| JP full metrics | `/mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/next-long-run-jp-finetune-100x10/full/recovered-results.json` |
 | repo 内の固定サマリ | `../references/backtests/next-long-run-finetune-complete_20260413.summary.json` |
-| local smoke gating | `../../docs/research/results/campaigns/external-phase1-run8-us-jp-top6/smoke/gated-summary.json` |
+| local smoke gating | `../../artifacts/campaigns/external-phase1-run8-us-jp-top6/smoke/gated-summary.json` |
 
 ---
 
@@ -71,7 +71,7 @@
 
 1. JP full では `profit_factor` / `win_rate` が **40 run 欠損**している
 2. latest full metrics の正本は `/mnt/c/actions-runner/...` 側なので、repo 内では summary JSON を固定証跡として使う
-3. worktree には `docs/research/results/` 配下の未追跡 artifact が残っているため、report commit に unrelated artifact を混ぜないこと
+3. worktree には `artifacts/` 配下の未追跡 artifact が残っているため、report commit に unrelated artifact を混ぜないこと
 
 ---
 

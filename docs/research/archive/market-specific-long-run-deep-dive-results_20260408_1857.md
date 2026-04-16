@@ -8,26 +8,26 @@
 ### US entry sweep
 
 - smoke:
-  - `docs/references/backtests/long-run-us-entry-sweep-50x3-smoke-recovered_20260408_1857.json`
-  - `docs/references/backtests/long-run-us-entry-sweep-50x3-smoke-recovered_20260408_1857.summary.json`
+  - `references/backtests/long-run-us-entry-sweep-50x3-smoke-recovered_20260408_1857.json`
+  - `references/backtests/long-run-us-entry-sweep-50x3-smoke-recovered_20260408_1857.summary.json`
 - pilot:
-  - `docs/references/backtests/long-run-us-entry-sweep-50x3-pilot-recovered_20260408_1857.json`
-  - `docs/references/backtests/long-run-us-entry-sweep-50x3-pilot-recovered_20260408_1857.summary.json`
+  - `references/backtests/long-run-us-entry-sweep-50x3-pilot-recovered_20260408_1857.json`
+  - `references/backtests/long-run-us-entry-sweep-50x3-pilot-recovered_20260408_1857.summary.json`
 - full:
-  - `docs/references/backtests/long-run-us-entry-sweep-50x3-full-recovered_20260408_1857.json`
-  - `docs/references/backtests/long-run-us-entry-sweep-50x3-full-recovered_20260408_1857.summary.json`
+  - `references/backtests/long-run-us-entry-sweep-50x3-full-recovered_20260408_1857.json`
+  - `references/backtests/long-run-us-entry-sweep-50x3-full-recovered_20260408_1857.summary.json`
 
 ### JP exit sweep
 
 - smoke:
-  - `docs/references/backtests/long-run-jp-exit-sweep-50x3-smoke-recovered_20260408_1857.json`
-  - `docs/references/backtests/long-run-jp-exit-sweep-50x3-smoke-recovered_20260408_1857.summary.json`
+  - `references/backtests/long-run-jp-exit-sweep-50x3-smoke-recovered_20260408_1857.json`
+  - `references/backtests/long-run-jp-exit-sweep-50x3-smoke-recovered_20260408_1857.summary.json`
 - pilot:
-  - `docs/references/backtests/long-run-jp-exit-sweep-50x3-pilot-recovered_20260408_1857.json`
-  - `docs/references/backtests/long-run-jp-exit-sweep-50x3-pilot-recovered_20260408_1857.summary.json`
+  - `references/backtests/long-run-jp-exit-sweep-50x3-pilot-recovered_20260408_1857.json`
+  - `references/backtests/long-run-jp-exit-sweep-50x3-pilot-recovered_20260408_1857.summary.json`
 - full:
-  - `docs/references/backtests/long-run-jp-exit-sweep-50x3-full-recovered_20260408_1857.json`
-  - `docs/references/backtests/long-run-jp-exit-sweep-50x3-full-recovered_20260408_1857.summary.json`
+  - `references/backtests/long-run-jp-exit-sweep-50x3-full-recovered_20260408_1857.json`
+  - `references/backtests/long-run-jp-exit-sweep-50x3-full-recovered_20260408_1857.summary.json`
 
 ## Phase summary
 

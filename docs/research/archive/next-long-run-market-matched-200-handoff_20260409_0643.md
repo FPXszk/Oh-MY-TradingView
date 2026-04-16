@@ -7,7 +7,7 @@
 ## What changed
 
 1. US 100 symbols / JP 100 symbols の market-matched 3+3 campaign を live で完走した
-2. recovered artifact を `docs/references/backtests/` に固定した
+2. recovered artifact を `references/backtests/` に固定した
 3. latest handoff / results / session log と generation routing を更新した
 4. latest result を raw recovered artifact から再集計する **rich Japanese report** に更新した
 5. `next-long-run-market-matched-200-combined-ranking_20260409_1525.json` を追加し、top 5 Pine export の元データを固定した
@@ -67,4 +67,4 @@
 2. **JP** は `55-20` と `55-18` の差を dominant winner 銘柄込みで分解する
 3. worker2 は distinct parallel smoke を連続で通せるまで本線 execution へ戻さない
 4. long-run fine-tune は `next-long-run-us-finetune-100x10` / `next-long-run-jp-finetune-100x10` を入口に、bundle runner の dual-worker preflight -> fallback 付きで流す
-5. top 5 Pine は `docs/references/pine/next-long-run-market-matched-200_20260409_1525/` を起点に human review へ回す
+5. top 5 Pine は `references/pine/next-long-run-market-matched-200_20260409_1525/` を起点に human review へ回す

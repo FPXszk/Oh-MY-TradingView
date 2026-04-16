@@ -121,7 +121,7 @@ describe('getLiveStrategies / getRetiredStrategies', () => {
     const liveIds = getLiveStrategies(catalog).map((s) => s.id);
     const retiredIds = getRetiredStrategies(catalog).map((s) => s.id);
     const liveFile = JSON.parse(readFileSync(join(PROJECT_ROOT, 'config', 'backtest', 'strategy-presets.json'), 'utf8'));
-    const retiredFile = JSON.parse(readFileSync(join(PROJECT_ROOT, 'docs', 'bad-strategy', 'retired-strategy-presets.json'), 'utf8'));
+    const retiredFile = JSON.parse(readFileSync(join(PROJECT_ROOT, 'docs', 'research', 'strategy', 'retired', 'retired-strategy-presets.json'), 'utf8'));
     assert.deepEqual(liveFile.strategies.map((s) => s.id), liveIds);
     assert.deepEqual(retiredFile.strategies.map((s) => s.id), retiredIds);
   });

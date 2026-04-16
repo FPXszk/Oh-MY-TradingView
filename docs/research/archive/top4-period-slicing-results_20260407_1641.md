@@ -13,24 +13,24 @@
 
 ### Mag7
 
-- raw: `docs/references/backtests/round11-period-slicing-mag7-shard-parallel_20260407_1641.json`
-- raw summary: `docs/references/backtests/round11-period-slicing-mag7-shard-parallel_20260407_1641.summary.json`
-- recovered: `docs/references/backtests/round11-period-slicing-mag7-shard-parallel-recovered_20260407_1641.json`
-- recovered summary: `docs/references/backtests/round11-period-slicing-mag7-shard-parallel-recovered_20260407_1641.summary.json`
+- raw: `references/backtests/round11-period-slicing-mag7-shard-parallel_20260407_1641.json`
+- raw summary: `references/backtests/round11-period-slicing-mag7-shard-parallel_20260407_1641.summary.json`
+- recovered: `references/backtests/round11-period-slicing-mag7-shard-parallel-recovered_20260407_1641.json`
+- recovered summary: `references/backtests/round11-period-slicing-mag7-shard-parallel-recovered_20260407_1641.summary.json`
 
 ### Alt
 
-- raw: `docs/references/backtests/round11-period-slicing-alt-shard-parallel_20260407_1641.json`
-- raw summary: `docs/references/backtests/round11-period-slicing-alt-shard-parallel_20260407_1641.summary.json`
-- recovered: `docs/references/backtests/round11-period-slicing-alt-shard-parallel-recovered_20260407_1641.json`
-- recovered summary: `docs/references/backtests/round11-period-slicing-alt-shard-parallel-recovered_20260407_1641.summary.json`
+- raw: `references/backtests/round11-period-slicing-alt-shard-parallel_20260407_1641.json`
+- raw summary: `references/backtests/round11-period-slicing-alt-shard-parallel_20260407_1641.summary.json`
+- recovered: `references/backtests/round11-period-slicing-alt-shard-parallel-recovered_20260407_1641.json`
+- recovered summary: `references/backtests/round11-period-slicing-alt-shard-parallel-recovered_20260407_1641.summary.json`
 
 ### Phase B shortlist subset
 
-- raw: `docs/references/backtests/round11-universe-substitution-shard-parallel_20260407_1641.json`
-- raw summary: `docs/references/backtests/round11-universe-substitution-shard-parallel_20260407_1641.summary.json`
-- recovered: `docs/references/backtests/round11-universe-substitution-shard-parallel-recovered_20260407_1641.json`
-- recovered summary: `docs/references/backtests/round11-universe-substitution-shard-parallel-recovered_20260407_1641.summary.json`
+- raw: `references/backtests/round11-universe-substitution-shard-parallel_20260407_1641.json`
+- raw summary: `references/backtests/round11-universe-substitution-shard-parallel_20260407_1641.summary.json`
+- recovered: `references/backtests/round11-universe-substitution-shard-parallel-recovered_20260407_1641.json`
+- recovered summary: `references/backtests/round11-universe-substitution-shard-parallel-recovered_20260407_1641.summary.json`
 
 ## Result summary
 

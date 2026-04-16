@@ -1,7 +1,7 @@
 # Theme momentum definition
 
 この文書は、**テーマ投資で「モメンタムのある銘柄」をどう定義するか**を固定の参照先として残すための手書きメモです。  
-generated な `latest-strategy-reference.md` / `latest-symbol-reference.md` とは別に、判断軸だけを stable path で参照できるようにします。
+generated な `current-strategy-reference.md` / `current-symbol-reference.md` とは別に、判断軸だけを stable path で参照できるようにします。
 
 ## 一言でいうと
 
@@ -51,10 +51,10 @@ entry は breakout か強テーマの押し目に限定し、exit は rank・bre
 
 ## 使い方
 
-1. まず `docs/research/latest/README.md` と `main-backtest-latest-summary.md` で最新の状況を掴む
+1. まず `docs/research/current/README.md` と `main-backtest-current-summary.md` で最新の状況を掴む
 2. テーマ投資の候補を読むときは、この文書で判断軸を固定する
-3. 戦略や銘柄の具体例は `latest-strategy-reference.md` / `latest-symbol-reference.md` で確認する
-4. 数値の根拠は `docs/references/backtests/README.md` と `docs/research/results/` を見る
+3. 戦略や銘柄の具体例は `current-strategy-reference.md` / `current-symbol-reference.md` で確認する
+4. 数値の根拠は `references/backtests/README.md` と `artifacts/` を見る
 
 ## 注意
 

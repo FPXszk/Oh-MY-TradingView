@@ -1422,7 +1422,7 @@ describe('next-long-run 12-symbol universes', () => {
 
   it('next-long-run-us-12.json has 12 US-only symbols', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'universes', 'latest', 'next-long-run-us-12.json'),
+      join(__dirname, '..', 'config', 'backtest', 'universes', 'current', 'next-long-run-us-12.json'),
       'utf8',
     );
     const universe = JSON.parse(raw);
@@ -1434,7 +1434,7 @@ describe('next-long-run 12-symbol universes', () => {
 
   it('next-long-run-jp-12.json has 12 JP-only symbols', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'universes', 'latest', 'next-long-run-jp-12.json'),
+      join(__dirname, '..', 'config', 'backtest', 'universes', 'current', 'next-long-run-jp-12.json'),
       'utf8',
     );
     const universe = JSON.parse(raw);
@@ -1447,7 +1447,7 @@ describe('next-long-run 12-symbol universes', () => {
   it('12-symbol universes contain no duplicate symbols', async () => {
     for (const file of ['next-long-run-us-12.json', 'next-long-run-jp-12.json']) {
       const raw = await readFile(
-        join(__dirname, '..', 'config', 'backtest', 'universes', 'latest', file),
+        join(__dirname, '..', 'config', 'backtest', 'universes', 'current', file),
         'utf8',
       );
       const symbols = JSON.parse(raw).symbols.map((s) => s.symbol);
@@ -1457,7 +1457,7 @@ describe('next-long-run 12-symbol universes', () => {
 
   it('US 12-symbol universe has 3 categories x 4 symbols each', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'universes', 'latest', 'next-long-run-us-12.json'),
+      join(__dirname, '..', 'config', 'backtest', 'universes', 'current', 'next-long-run-us-12.json'),
       'utf8',
     );
     const universe = JSON.parse(raw);
@@ -1473,7 +1473,7 @@ describe('next-long-run 12-symbol universes', () => {
 
   it('JP 12-symbol universe has 3 categories x 4 symbols each', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'universes', 'latest', 'next-long-run-jp-12.json'),
+      join(__dirname, '..', 'config', 'backtest', 'universes', 'current', 'next-long-run-jp-12.json'),
       'utf8',
     );
     const universe = JSON.parse(raw);
@@ -1496,7 +1496,7 @@ describe('next-long-run 12x10 campaign config validation', () => {
 
   it('next-long-run-us-12x10.json is valid JSON with expected shape', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-us-12x10.json'),
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'current', 'next-long-run-us-12x10.json'),
       'utf8',
     );
     const config = JSON.parse(raw);
@@ -1511,7 +1511,7 @@ describe('next-long-run 12x10 campaign config validation', () => {
 
   it('next-long-run-jp-12x10.json is valid JSON with expected shape', async () => {
     const raw = await readFile(
-      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'latest', 'next-long-run-jp-12x10.json'),
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'current', 'next-long-run-jp-12x10.json'),
       'utf8',
     );
     const config = JSON.parse(raw);
@@ -1530,7 +1530,7 @@ describe('next-long-run 12x10 campaign config validation', () => {
       'next-long-run-jp-12x10.json',
     ]) {
       const raw = await readFile(
-        join(__dirname, '..', 'config', 'backtest', 'campaigns', 'latest', fileName),
+        join(__dirname, '..', 'config', 'backtest', 'campaigns', 'current', fileName),
         'utf8',
       );
       const config = JSON.parse(raw);

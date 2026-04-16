@@ -157,7 +157,7 @@ OMTV なら将来、
 
 - `config/backtest/strategy-presets.json`
 - `src/core/research-backtest.js`
-- `docs/research/results/`
+- `artifacts/`
 - `docs/research/`
 
 を軸に、**preset exploration harness** として落とし込める。

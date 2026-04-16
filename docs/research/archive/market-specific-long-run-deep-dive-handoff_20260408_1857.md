@@ -7,7 +7,7 @@
 ## What changed
 
 1. US entry sweep と JP exit sweep の smoke / pilot / full を実運用で完走した
-2. recovered artifact を `docs/references/backtests/` に固定した
+2. recovered artifact を `references/backtests/` に固定した
 3. latest handoff / results / session log / exec plan を更新した
 
 ## Execution policy used in this round
