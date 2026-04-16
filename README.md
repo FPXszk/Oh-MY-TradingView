@@ -1,19 +1,29 @@
 # Oh-MY-TradingView
 
-TradingView Desktop を **Copilot CLI 前提** で扱う最小 MCP / CLI ブリッジです。  
-現在の対象は **Windows + WSL** を主軸にした **CDP 接続 / 現在価格取得 / Pine ループ** です。
+TradingView Desktop を **Copilot CLI 前提** で扱う MCP / CLI ブリッジです。  
+現在は **Windows + WSL** を主軸に、**CDP 接続 / market observation / night batch backtest / research docs 導線** までをまとめて扱います。
 
 - **この README が repo の一次入口**
 - docs 全体の地図: `docs/DOCUMENTATION_SYSTEM.md`
 - 人間向けの補助説明: `docs/explain-forhuman.md`
-- 現在の handoff 世代: `docs/research/latest/`
+- latest handoff と latest main summary の違い: `docs/research/latest/README.md`
 - 最新の main backtest 要約: `docs/research/latest/main-backtest-latest-summary.md`
+- テーマ投資で「モメンタムのある銘柄」をどう定義するか: `docs/research/strategy/theme-momentum-definition.md`
 - 戦略と銘柄の人間向けリファレンス: `docs/research/strategy/README.md`
+- 直近の判断ログ: `docs/working-memory/session-logs/`
 - incident / postmortem archive: `docs/reports/README.md`
 - raw backtest artifact の説明: `docs/references/backtests/README.md`
 - Pine snapshot の説明: `docs/references/pine/README.md`
 - 外部・比較調査の参照資料台帳: `docs/references/design-ref-llms.md`
 - **外部資料を参照したら `docs/references/design-ref-llms.md` に必ず記録してください**
+
+## 迷ったらこの順番
+
+1. `docs/research/latest/README.md` — latest handoff と latest main summary の違いを掴む
+2. `docs/research/latest/main-backtest-latest-summary.md` — 今の main backtest の結論を見る
+3. `docs/research/strategy/theme-momentum-definition.md` — テーマ投資の判断基準を確認する
+4. `docs/research/strategy/README.md` — 戦略・銘柄リファレンスへ進む
+5. `docs/working-memory/session-logs/` — 直近の判断経緯が必要なときだけ見る
 
 ## 重要な前提
 
@@ -521,7 +531,7 @@ known-good 条件と制約は
 - 判定: `promote` / `hold` / `reject`
 - `gated-summary.json` / `ranked-candidates.json` の各 candidate には additive に `confluence_snapshot` / `provider_status` / `community_snapshot` が付きます。
 
-運用の正本はこの `README.md`、raw 数値の正本は `docs/references/backtests/README.md`、戦略説明の入口は `docs/research/strategy/README.md` です。
+運用の正本はこの `README.md`、raw 数値の正本は `docs/references/backtests/README.md`、戦略説明の入口は `docs/research/strategy/README.md`、テーマ投資の判断基準は `docs/research/strategy/theme-momentum-definition.md` です。
 
 ### MCP workflow
 

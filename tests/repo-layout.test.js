@@ -4,10 +4,16 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const PROJECT_ROOT = process.cwd();
+const ROOT_README_PATH = join(PROJECT_ROOT, 'README.md');
 const DOCS_COMMAND_PATH = join(PROJECT_ROOT, 'docs', 'command.md');
 const ROOT_COMMAND_PATH = join(PROJECT_ROOT, 'command.md');
 const DOCS_EXPLAIN_PATH = join(PROJECT_ROOT, 'docs', 'explain-forhuman.md');
 const ROOT_EXPLAIN_PATH = join(PROJECT_ROOT, 'explain-forhuman.md');
+const DOCS_REPORTS_README_PATH = join(PROJECT_ROOT, 'docs', 'reports', 'README.md');
+const DOCS_BACKTEST_REFS_README_PATH = join(PROJECT_ROOT, 'docs', 'references', 'backtests', 'README.md');
+const DOCS_PINE_REFS_README_PATH = join(PROJECT_ROOT, 'docs', 'references', 'pine', 'README.md');
+const DOCS_STRATEGY_README_PATH = join(PROJECT_ROOT, 'docs', 'research', 'strategy', 'README.md');
+const DOCS_THEME_MOMENTUM_PATH = join(PROJECT_ROOT, 'docs', 'research', 'strategy', 'theme-momentum-definition.md');
 const RESEARCH_ARCHIVE_DIR = join(PROJECT_ROOT, 'docs', 'research', 'archive');
 const RESEARCH_OLD_DIR = join(PROJECT_ROOT, 'docs', 'research', 'old');
 const DESIGN_DOCS_DIR = join(PROJECT_ROOT, 'docs', 'design-docs');
@@ -28,11 +34,31 @@ const STALE_ACTIVE_PLANS = [
 ];
 
 describe('repository layout policy', () => {
-  it('moves operator docs under docs/', () => {
-    assert.equal(existsSync(DOCS_COMMAND_PATH), true, 'docs/command.md must exist');
+  it('keeps human entrypoints under docs/ and removes obsolete command.md', () => {
+    assert.equal(existsSync(DOCS_COMMAND_PATH), false, 'docs/command.md must be removed');
     assert.equal(existsSync(DOCS_EXPLAIN_PATH), true, 'docs/explain-forhuman.md must exist');
     assert.equal(existsSync(ROOT_COMMAND_PATH), false, 'root command.md must be removed');
     assert.equal(existsSync(ROOT_EXPLAIN_PATH), false, 'root explain-forhuman.md must be removed');
+  });
+
+  it('documents archive and reference directories with dedicated README files', () => {
+    assert.equal(existsSync(DOCS_REPORTS_README_PATH), true, 'docs/reports/README.md must exist');
+    assert.equal(existsSync(DOCS_BACKTEST_REFS_README_PATH), true, 'docs/references/backtests/README.md must exist');
+    assert.equal(existsSync(DOCS_PINE_REFS_README_PATH), true, 'docs/references/pine/README.md must exist');
+    assert.equal(existsSync(DOCS_STRATEGY_README_PATH), true, 'docs/research/strategy/README.md must exist');
+  });
+
+  it('keeps the theme momentum definition at a stable strategy doc path', () => {
+    assert.equal(existsSync(DOCS_THEME_MOMENTUM_PATH), true,
+      'docs/research/strategy/theme-momentum-definition.md must exist');
+
+    const rootReadme = readFileSync(ROOT_README_PATH, 'utf8');
+    const strategyReadme = readFileSync(DOCS_STRATEGY_README_PATH, 'utf8');
+
+    assert.match(rootReadme, /theme-momentum-definition\.md/,
+      'README.md must point readers to theme-momentum-definition.md');
+    assert.match(strategyReadme, /theme-momentum-definition\.md/,
+      'docs/research/strategy/README.md must point readers to theme-momentum-definition.md');
   });
 
   it('uses archive naming and removes the design-docs directory', () => {

@@ -235,6 +235,7 @@ describe('night_batch.py CLI', () => {
 
   it('report writes a deterministic latest backtest summary when recovered results exist', async () => {
     const fakeNodePath = join(tempDir, 'fake-report-node.sh');
+    const fakeNodeLog = join(tempDir, 'fake-report-node.log');
     const usPath = join(tempDir, 'us-recovered-results.json');
     const jpPath = join(tempDir, 'jp-recovered-results.json');
     const reportPath = join(tempDir, 'rich-report.md');
@@ -244,9 +245,13 @@ describe('night_batch.py CLI', () => {
     writeExecutable(
       fakeNodePath,
       `#!/bin/sh
+script="$1"
 out=""
 rankout=""
 catalogout=""
+strategyout=""
+symbolout=""
+printf '%s\n' "$*" >> "${fakeNodeLog}"
 while [ "$#" -gt 0 ]; do
   if [ "$1" = "--out" ]; then
     out="$2"
@@ -263,15 +268,33 @@ while [ "$#" -gt 0 ]; do
     shift 2
     continue
   fi
+  if [ "$1" = "--strategy-out" ]; then
+    strategyout="$2"
+    shift 2
+    continue
+  fi
+  if [ "$1" = "--symbol-out" ]; then
+    symbolout="$2"
+    shift 2
+    continue
+  fi
   shift
 done
-printf '# fake rich report\\n' > "$out"
-if [ -n "$rankout" ]; then
-  printf '[{"presetId":"preset-a","composite_score":2}]\\n' > "$rankout"
-fi
-if [ -n "$catalogout" ]; then
-  printf '{"strategies":[{"id":"preset-a","lifecycle":{"status":"live"}}]}\\n' > "$catalogout"
-fi
+case "$script" in
+  *generate-strategy-reference.mjs)
+    printf '# fake strategy reference\\n' > "$strategyout"
+    printf '# fake symbol reference\\n' > "$symbolout"
+    ;;
+  *)
+    printf '# fake rich report\\n' > "$out"
+    if [ -n "$rankout" ]; then
+      printf '[{"presetId":"preset-a","composite_score":2}]\\n' > "$rankout"
+    fi
+    if [ -n "$catalogout" ]; then
+      printf '{"strategies":[{"id":"preset-a","lifecycle":{"status":"live"}}]}\\n' > "$catalogout"
+    fi
+    ;;
+esac
 exit 0
 `,
     );
@@ -370,8 +393,10 @@ exit 0
     assert.equal(latestRanking[0].presetId, 'preset-a');
     const latestSummary = readFileSync(latestSummaryPath, 'utf8');
     assert.match(latestSummary, /Latest main backtest summary/);
-    assert.match(latestSummary, /`preset-a`/);
-    assert.match(latestSummary, /Combined top 10/);
+    assert.match(latestSummary, /## 結論/);
+    assert.match(latestSummary, /## 全戦略スコア一覧/);
+    assert.match(latestSummary, /## Top 5 戦略の銘柄別成績/);
+    assert.match(latestSummary, /## 改善点と次回バックテスト確認事項/);
     assert.match(latestSummary, /ranking_artifact/,
       'latest summary must include ranking_artifact path when ranking JSON is produced');
     assert.match(latestSummary, /main-backtest-latest-combined-ranking\.json/,
@@ -380,6 +405,13 @@ exit 0
       'latest summary must include strategy_catalog_snapshot path when catalog snapshot is produced');
     assert.match(latestSummary, /Live \/ Retired diff/,
       'latest summary must include Live / Retired diff section');
+    assert.match(latestSummary, /strategy_reference/,
+      'latest summary must include strategy reference path when generated');
+    const nodeInvocations = readFileSync(fakeNodeLog, 'utf8');
+    assert.match(nodeInvocations, /generate-rich-report\.mjs/,
+      'report must use the provided --node-bin for rich report generation');
+    assert.match(nodeInvocations, /generate-strategy-reference\.mjs/,
+      'report must use the provided --node-bin for strategy reference generation');
   });
 
   it('nightly dry-run includes both bundle and report commands', async () => {
@@ -963,6 +995,8 @@ exit 0
     const detachedStateFile = join(tempDir, 'bundle-detached-state.json');
     const latestSummaryPath = join(tempDir, 'main-backtest-latest-summary.md');
     const latestRankingPath = join(tempDir, 'main-backtest-latest-combined-ranking.json');
+    const missingStrategyReferencePath = join(tempDir, 'missing-strategy-reference.md');
+    const missingSymbolReferencePath = join(tempDir, 'missing-symbol-reference.md');
     const outputDir = join(tempDir, 'night-batch-output');
     const suffix = tempDir.split('/').pop();
     const usCampaign = `test-detached-us-${suffix}`;
@@ -1046,6 +1080,8 @@ exit 0
         env: {
           NIGHT_BATCH_LATEST_SUMMARY_PATH: latestSummaryPath,
           NIGHT_BATCH_LATEST_RANKING_PATH: latestRankingPath,
+          NIGHT_BATCH_STRATEGY_REFERENCE_PATH: missingStrategyReferencePath,
+          NIGHT_BATCH_SYMBOL_REFERENCE_PATH: missingSymbolReferencePath,
         },
       });
 
@@ -1053,7 +1089,11 @@ exit 0
       assert.equal(existsSync(latestSummaryPath), true);
       const latestSummary = readFileSync(latestSummaryPath, 'utf8');
       assert.match(latestSummary, /Latest main backtest summary/);
-      assert.match(latestSummary, /preset-a/);
+      assert.match(latestSummary, /## 結論/);
+      assert.doesNotMatch(latestSummary, /strategy_reference/,
+        'latest summary must not point at strategy docs that were not generated in this run');
+      assert.doesNotMatch(latestSummary, /symbol_reference/,
+        'latest summary must not point at symbol docs that were not generated in this run');
     } finally {
       rmSync(join(PROJECT_ROOT, 'docs', 'research', 'results', 'campaigns', usCampaign), { recursive: true, force: true });
       rmSync(join(PROJECT_ROOT, 'docs', 'research', 'results', 'campaigns', jpCampaign), { recursive: true, force: true });

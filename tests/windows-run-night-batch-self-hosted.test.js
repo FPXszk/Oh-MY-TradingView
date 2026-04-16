@@ -13,7 +13,7 @@ const FIND_OUTPUTS_SCRIPT_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'githu
 const APPEND_SUMMARY_SCRIPT_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'github-actions', 'append-night-batch-workflow-summary.ps1');
 const GITATTRIBUTES_PATH = join(PROJECT_ROOT, '.gitattributes');
 const README_PATH = join(PROJECT_ROOT, 'README.md');
-const COMMAND_PATH = join(PROJECT_ROOT, 'docs/command.md');
+const REPORTS_README_PATH = join(PROJECT_ROOT, 'docs', 'reports', 'README.md');
 const RUN8_REPORT_PATH = join(PROJECT_ROOT, 'docs', 'reports', 'night-batch-self-hosted-run8.md');
 const BUNDLE_FG_CONFIG_PATH = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
 const BASELINE_WRITER_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'github-actions', 'write-night-batch-live-checkout-baseline.ps1');
@@ -296,33 +296,11 @@ describe('docs: non-service self-hosted runner policy', () => {
       'README must reference the autostart registration script');
   });
 
-  it('docs/command.md documents the bootstrap startup procedure', () => {
-    const cmd = readFileSync(COMMAND_PATH, 'utf8');
+  it('README no longer relies on docs/command.md for runner guidance', () => {
+    const readme = readFileSync(README_PATH, 'utf8');
 
-    assert.match(cmd, /bootstrap-self-hosted-runner\.cmd/,
-      'docs/command.md must reference bootstrap script');
-    assert.match(cmd, /run-self-hosted-runner-with-bootstrap\.cmd/,
-      'docs/command.md must reference the bootstrap wrapper');
-    assert.match(cmd, /service mode.*使わず/i,
-      'docs/command.md must preserve the non-service policy');
-  });
-
-  it('docs/command.md documents manual hookup step', () => {
-    const cmd = readFileSync(COMMAND_PATH, 'utf8');
-
-    assert.match(cmd, /run\.cmd.*(?:代わり|instead|hookup|置き換え|bootstrap)/i,
-      'docs/command.md must explain using bootstrap wrapper instead of run.cmd directly');
-  });
-
-  it('docs/command.md documents Task Scheduler based runner auto-start', () => {
-    const cmd = readFileSync(COMMAND_PATH, 'utf8');
-
-    assert.match(cmd, /Task Scheduler/i,
-      'docs/command.md must mention Task Scheduler for runner auto-start');
-    assert.match(cmd, /register-self-hosted-runner-autostart\.cmd/i,
-      'docs/command.md must reference the autostart registration script');
-    assert.match(cmd, /ONLOGON|logon/i,
-      'docs/command.md must describe the ONLOGON trigger');
+    assert.doesNotMatch(readme, /docs\/command\.md/,
+      'README must not route users to removed docs/command.md');
   });
 });
 
@@ -520,18 +498,13 @@ describe('docs: run 8 report', () => {
       'report must mention PowerShell as root cause');
   });
 
-  it('README references run 8 report', () => {
-    const readme = readFileSync(README_PATH, 'utf8');
+  it('docs/reports/README classifies run 8 report as an incident reference', () => {
+    const readme = readFileSync(REPORTS_README_PATH, 'utf8');
 
     assert.match(readme, /night-batch-self-hosted-run8\.md/,
-      'README must link to run 8 report');
-  });
-
-  it('docs/command.md references run 8 report', () => {
-    const cmd = readFileSync(COMMAND_PATH, 'utf8');
-
-    assert.match(cmd, /night-batch-self-hosted-run8\.md/,
-      'docs/command.md must link to run 8 report');
+      'docs/reports/README must link to run 8 report');
+    assert.match(readme, /incident|postmortem|archive/i,
+      'docs/reports/README must explain the archive role of docs/reports');
   });
 });
 
@@ -570,42 +543,15 @@ describe('docs: next strategy update policy', () => {
       'README must mention archived round output path');
   });
 
-  it('docs/command.md documents live checkout protection during active run', () => {
-    const cmd = readFileSync(COMMAND_PATH, 'utf8');
+  it('README documents advance-next-round for explicit next run start', () => {
+    const readme = readFileSync(README_PATH, 'utf8');
 
-    assert.match(cmd, /live checkout.*(?:編集しない|変更しない|触らない|do not edit|do not modify)/i,
-      'docs/command.md must state that live checkout must not be edited during active run');
-  });
-
-  it('docs/command.md documents strategy-presets.json as a protected live file', () => {
-    const cmd = readFileSync(COMMAND_PATH, 'utf8');
-
-    assert.match(cmd, /strategy-presets\.json/,
-      'docs/command.md must mention strategy-presets.json as a protected file');
-  });
-
-  it('docs/command.md documents advance-next-round for explicit next run start', () => {
-    const cmd = readFileSync(COMMAND_PATH, 'utf8');
-
-    assert.match(cmd, /advance-next-round/,
-      'docs/command.md must reference advance-next-round');
-    assert.match(cmd, /workflow.*production.*(?:完了|終了|complete|finish).*(?:確認|verify|check)/i,
-      'docs/command.md must instruct to confirm workflow-tracked production completion before updating');
-    assert.match(cmd, /archive\/roundN/i,
-      'docs/command.md must mention archived round output path');
-  });
-
-  it('docs/command.md documents GitHub summary, artifact, and foreground state outputs', () => {
-    const cmd = readFileSync(COMMAND_PATH, 'utf8');
-
-    assert.match(cmd, /GITHUB_STEP_SUMMARY/i,
-      'docs/command.md must mention the GitHub summary output');
-    assert.match(cmd, /upload-artifact|artifact/i,
-      'docs/command.md must mention artifact upload');
-    assert.match(cmd, /roundN\/bundle-foreground-state\.json/i,
-      'docs/command.md must point to the round-scoped foreground state file path');
-    assert.match(cmd, /archive\/roundN/i,
-      'docs/command.md must mention archived round output path');
+    assert.match(readme, /advance-next-round/,
+      'README must reference advance-next-round');
+    assert.match(readme, /workflow.*production.*(?:完了|終了|complete|finish).*(?:確認|verify|check)/i,
+      'README must instruct to confirm workflow-tracked production completion before updating');
+    assert.match(readme, /archive\/roundN/i,
+      'README must mention archived round output path');
   });
 
   it('write-night-batch-live-checkout-baseline.ps1 exists', () => {

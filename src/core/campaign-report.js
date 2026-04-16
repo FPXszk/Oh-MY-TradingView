@@ -167,6 +167,8 @@ export function summarizeStrategyRuns(runs, { initialCapital = 10000, topLimit =
         run_count: group.runs.length,
         success_count: group.successCount,
         ...metricSummary,
+        symbol_results: sortByNetProfitDesc(group.validRuns)
+          .map((entry) => buildRunMetricEntry(entry, { initialCapital })),
         top_symbols: sortByNetProfitDesc(group.validRuns)
           .slice(0, topLimit)
           .map((entry) => buildRunMetricEntry(entry, { initialCapital })),
@@ -322,11 +324,145 @@ export function summarizeMarketCampaign({
 }
 
 export function buildCombinedStrategyRanking(marketSummaries, { topLimit = DEFAULT_TOP_LIMIT } = {}) {
-  const strategyRows = (Array.isArray(marketSummaries) ? marketSummaries : [])
-    .flatMap((summary) => (summary?.strategy_summaries || []).map((entry) => ({
-      ...entry,
-      market: entry.market ?? summary?.market ?? null,
-    })));
+  const summaries = Array.isArray(marketSummaries) ? marketSummaries : [];
+  const combined = new Map();
 
-  return rankStrategySummaries(strategyRows).slice(0, topLimit);
+  for (const summary of summaries) {
+    const strategyRows = Array.isArray(summary?.strategy_summaries) ? summary.strategy_summaries : [];
+    const market = summary?.market ?? null;
+    const netRanks = new Map(
+      [...strategyRows]
+        .sort((left, right) => {
+          const rightNet = right.avg_net_profit ?? Number.NEGATIVE_INFINITY;
+          const leftNet = left.avg_net_profit ?? Number.NEGATIVE_INFINITY;
+          if (rightNet !== leftNet) {
+            return rightNet - leftNet;
+          }
+          return String(left.presetId).localeCompare(String(right.presetId));
+        })
+        .map((entry, index) => [entry.presetId, index + 1]),
+    );
+    const pfRanks = new Map(
+      [...strategyRows]
+        .sort((left, right) => {
+          const rightPf = right.avg_profit_factor ?? Number.NEGATIVE_INFINITY;
+          const leftPf = left.avg_profit_factor ?? Number.NEGATIVE_INFINITY;
+          if (rightPf !== leftPf) {
+            return rightPf - leftPf;
+          }
+          return String(left.presetId).localeCompare(String(right.presetId));
+        })
+        .map((entry, index) => [entry.presetId, index + 1]),
+    );
+    const ddRanks = new Map(
+      [...strategyRows]
+        .sort((left, right) => {
+          const leftDd = left.avg_max_drawdown ?? Number.POSITIVE_INFINITY;
+          const rightDd = right.avg_max_drawdown ?? Number.POSITIVE_INFINITY;
+          if (leftDd !== rightDd) {
+            return leftDd - rightDd;
+          }
+          return String(left.presetId).localeCompare(String(right.presetId));
+        })
+        .map((entry, index) => [entry.presetId, index + 1]),
+    );
+
+    for (const entry of strategyRows) {
+      const current = combined.get(entry.presetId) ?? {
+        presetId: entry.presetId,
+        markets: new Set(),
+        composite_score: 0,
+        avg_net_profit_values: [],
+        avg_profit_factor_values: [],
+        avg_max_drawdown_values: [],
+        avg_max_drawdown_pct_values: [],
+        avg_closed_trades_values: [],
+        avg_percent_profitable_values: [],
+        symbol_results_map: new Map(),
+      };
+      current.markets.add(entry.market ?? market ?? 'Unknown');
+      current.composite_score += (netRanks.get(entry.presetId) ?? 0)
+        + (pfRanks.get(entry.presetId) ?? 0)
+        + (ddRanks.get(entry.presetId) ?? 0);
+      if (Number.isFinite(entry.avg_net_profit)) {
+        current.avg_net_profit_values.push(entry.avg_net_profit);
+      }
+      if (Number.isFinite(entry.avg_profit_factor)) {
+        current.avg_profit_factor_values.push(entry.avg_profit_factor);
+      }
+      if (Number.isFinite(entry.avg_max_drawdown)) {
+        current.avg_max_drawdown_values.push(entry.avg_max_drawdown);
+      }
+      if (Number.isFinite(entry.avg_max_drawdown_pct)) {
+        current.avg_max_drawdown_pct_values.push(entry.avg_max_drawdown_pct);
+      }
+      if (Number.isFinite(entry.avg_closed_trades)) {
+        current.avg_closed_trades_values.push(entry.avg_closed_trades);
+      }
+      if (Number.isFinite(entry.avg_percent_profitable)) {
+        current.avg_percent_profitable_values.push(entry.avg_percent_profitable);
+      }
+      for (const symbolResult of entry.symbol_results || []) {
+        const symbolKey = `${symbolResult.market ?? entry.market ?? market ?? 'Unknown'}::${symbolResult.symbol}`;
+        current.symbol_results_map.set(symbolKey, {
+          ...symbolResult,
+          market: symbolResult.market ?? entry.market ?? market ?? null,
+        });
+      }
+      combined.set(entry.presetId, current);
+    }
+  }
+
+  const ranked = [...combined.values()]
+    .map((entry) => ({
+      presetId: entry.presetId,
+      markets: [...entry.markets].filter(Boolean).sort(),
+      composite_score: entry.composite_score,
+      avg_net_profit: average(entry.avg_net_profit_values, 2),
+      avg_profit_factor: average(entry.avg_profit_factor_values, 4),
+      avg_max_drawdown: average(entry.avg_max_drawdown_values, 2),
+      avg_max_drawdown_pct: average(entry.avg_max_drawdown_pct_values, 4),
+      avg_closed_trades: average(entry.avg_closed_trades_values, 2),
+      avg_percent_profitable: average(entry.avg_percent_profitable_values, 2),
+      symbol_results: [...entry.symbol_results_map.values()].sort((left, right) => {
+        const rightNet = right.net_profit ?? Number.NEGATIVE_INFINITY;
+        const leftNet = left.net_profit ?? Number.NEGATIVE_INFINITY;
+        if (rightNet !== leftNet) {
+          return rightNet - leftNet;
+        }
+        return String(left.symbol).localeCompare(String(right.symbol));
+      }),
+    }))
+    .sort((left, right) => {
+      if (left.composite_score !== right.composite_score) {
+        return left.composite_score - right.composite_score;
+      }
+
+      const rightNet = right.avg_net_profit ?? Number.NEGATIVE_INFINITY;
+      const leftNet = left.avg_net_profit ?? Number.NEGATIVE_INFINITY;
+      if (rightNet !== leftNet) {
+        return rightNet - leftNet;
+      }
+
+      const rightPf = right.avg_profit_factor ?? Number.NEGATIVE_INFINITY;
+      const leftPf = left.avg_profit_factor ?? Number.NEGATIVE_INFINITY;
+      if (rightPf !== leftPf) {
+        return rightPf - leftPf;
+      }
+
+      const leftDdPct = left.avg_max_drawdown_pct ?? Number.POSITIVE_INFINITY;
+      const rightDdPct = right.avg_max_drawdown_pct ?? Number.POSITIVE_INFINITY;
+      if (leftDdPct !== rightDdPct) {
+        return leftDdPct - rightDdPct;
+      }
+
+      return String(left.presetId).localeCompare(String(right.presetId));
+    })
+    .map((entry, index) => ({
+      ...entry,
+      rank: index + 1,
+    }));
+
+  const limit = Number.isFinite(topLimit) && topLimit > 0 ? topLimit : ranked.length;
+  return ranked.slice(0, limit);
 }

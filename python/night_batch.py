@@ -28,6 +28,9 @@ LATEST_RESEARCH_DIR = RESEARCH_DOCS_DIR / 'latest'
 DEFAULT_LATEST_SUMMARY_PATH = LATEST_RESEARCH_DIR / 'main-backtest-latest-summary.md'
 BACKTEST_REFERENCES_DIR = PROJECT_ROOT / 'docs' / 'references' / 'backtests'
 DEFAULT_LATEST_RANKING_ARTIFACT_PATH = BACKTEST_REFERENCES_DIR / 'main-backtest-latest-combined-ranking.json'
+STRATEGY_RESEARCH_DIR = RESEARCH_DOCS_DIR / 'strategy'
+DEFAULT_STRATEGY_REFERENCE_PATH = STRATEGY_RESEARCH_DIR / 'latest-strategy-reference.md'
+DEFAULT_SYMBOL_REFERENCE_PATH = STRATEGY_RESEARCH_DIR / 'latest-symbol-reference.md'
 
 
 def resolve_results_dir() -> Path:
@@ -458,6 +461,28 @@ def resolve_latest_ranking_artifact_path() -> Path:
     if raw:
         return resolve_project_path(raw) or (PROJECT_ROOT / raw)
     return DEFAULT_LATEST_RANKING_ARTIFACT_PATH
+
+
+def resolve_strategy_reference_path() -> Path:
+    raw = os.environ.get('NIGHT_BATCH_STRATEGY_REFERENCE_PATH')
+    if raw:
+        return resolve_project_path(raw) or (PROJECT_ROOT / raw)
+    summary_override = os.environ.get('NIGHT_BATCH_LATEST_SUMMARY_PATH')
+    if summary_override:
+        summary_path = resolve_project_path(summary_override) or (PROJECT_ROOT / summary_override)
+        return summary_path.with_name('latest-strategy-reference.md')
+    return DEFAULT_STRATEGY_REFERENCE_PATH
+
+
+def resolve_symbol_reference_path() -> Path:
+    raw = os.environ.get('NIGHT_BATCH_SYMBOL_REFERENCE_PATH')
+    if raw:
+        return resolve_project_path(raw) or (PROJECT_ROOT / raw)
+    summary_override = os.environ.get('NIGHT_BATCH_LATEST_SUMMARY_PATH')
+    if summary_override:
+        summary_path = resolve_project_path(summary_override) or (PROJECT_ROOT / summary_override)
+        return summary_path.with_name('latest-symbol-reference.md')
+    return DEFAULT_SYMBOL_REFERENCE_PATH
 
 
 def option_was_provided(raw_args: list[str], option_name: str) -> bool:
@@ -1939,6 +1964,24 @@ def format_rank_rows(rows: list[dict], limit: int = 5) -> list[str]:
     return lines
 
 
+def format_symbol_rows(rows: list[dict]) -> list[str]:
+    lines = [
+        '| symbol | label | market | net_profit | profit_factor | max_drawdown | win_rate | closed_trades |',
+        '| --- | --- | --- | ---: | ---: | ---: | ---: | ---: |',
+    ]
+    if not rows:
+        lines.append('| — | — | — | — | — | — | — | — |')
+        return lines
+    for row in rows:
+        lines.append(
+            f'| `{row.get("symbol") or "—"}` | {row.get("label") or row.get("symbol") or "—"} | '
+            f'{row.get("market") or "—"} | {format_metric(row.get("net_profit"))} | '
+            f'{format_metric(row.get("profit_factor"), 3)} | {format_metric(row.get("max_drawdown"))} | '
+            f'{format_metric(row.get("percent_profitable"))} | {format_metric(row.get("closed_trades"))} |'
+        )
+    return lines
+
+
 def summarize_recovered_results(results_path: Path) -> dict | None:
     try:
         payload = json.loads(results_path.read_text(encoding='utf-8'))
@@ -1973,6 +2016,7 @@ def summarize_recovered_results(results_path: Path) -> dict | None:
             'max_drawdown_values': [],
             'win_rate_values': [],
             'closed_trades_values': [],
+            'symbol_rows': [],
         })
 
         for key, bucket in (
@@ -1985,9 +2029,28 @@ def summarize_recovered_results(results_path: Path) -> dict | None:
             value = metrics.get(key)
             if isinstance(value, (int, float)):
                 record[bucket].append(float(value))
+        symbol = item.get('symbol')
+        if symbol:
+            record['symbol_rows'].append({
+                'symbol': symbol,
+                'label': item.get('label') or symbol,
+                'market': item.get('market') or market or 'Unknown',
+                'net_profit': float(metrics.get('net_profit')) if isinstance(metrics.get('net_profit'), (int, float)) else None,
+                'profit_factor': float(metrics.get('profit_factor')) if isinstance(metrics.get('profit_factor'), (int, float)) else None,
+                'max_drawdown': float(metrics.get('max_drawdown')) if isinstance(metrics.get('max_drawdown'), (int, float)) else None,
+                'percent_profitable': float(metrics.get('percent_profitable')) if isinstance(metrics.get('percent_profitable'), (int, float)) else None,
+                'closed_trades': float(metrics.get('closed_trades')) if isinstance(metrics.get('closed_trades'), (int, float)) else None,
+            })
 
     rows = []
     for record in preset_map.values():
+        symbol_rows = sorted(
+            record['symbol_rows'],
+            key=lambda row: (
+                -(row['net_profit'] if row['net_profit'] is not None else float('-inf')),
+                str(row['symbol']),
+            ),
+        )
         rows.append({
             'presetId': record['presetId'],
             'avg_net_profit': round_metric(mean_or_none(record['net_profit_values'])),
@@ -1996,6 +2059,7 @@ def summarize_recovered_results(results_path: Path) -> dict | None:
             'avg_win_rate': round_metric(mean_or_none(record['win_rate_values'])),
             'avg_closed_trades': round_metric(mean_or_none(record['closed_trades_values'])),
             'run_count': len(record['net_profit_values']),
+            'symbol_rows': symbol_rows,
         })
 
     rows.sort(
@@ -2067,6 +2131,77 @@ def build_combined_market_ranking(market_summaries: list[dict]) -> list[dict]:
     return ranked
 
 
+def build_combined_strategy_details(market_summaries: list[dict]) -> dict[str, dict]:
+    combined: dict[str, dict] = {}
+
+    for summary in market_summaries:
+        for row in summary['rows']:
+            record = combined.setdefault(row['presetId'], {
+                'presetId': row['presetId'],
+                'symbol_rows': {},
+            })
+            for symbol_row in row.get('symbol_rows', []):
+                key = f'{symbol_row.get("market") or summary["market"]}::{symbol_row.get("symbol")}'
+                record['symbol_rows'][key] = symbol_row
+
+    for record in combined.values():
+        record['symbol_rows'] = sorted(
+            record['symbol_rows'].values(),
+            key=lambda row: (
+                -(row['net_profit'] if row['net_profit'] is not None else float('-inf')),
+                str(row['symbol']),
+            ),
+        )
+    return combined
+
+
+def generate_strategy_reference_docs(
+    *,
+    node_bin: str,
+    us_results_path: Path,
+    jp_results_path: Path,
+    catalog_snapshot_path: Path | None,
+    logger: logging.Logger,
+) -> tuple[Path | None, Path | None]:
+    strategy_reference_path = resolve_strategy_reference_path()
+    symbol_reference_path = resolve_symbol_reference_path()
+    strategy_reference_path.parent.mkdir(parents=True, exist_ok=True)
+    symbol_reference_path.parent.mkdir(parents=True, exist_ok=True)
+    command = [
+        node_bin,
+        str(PROJECT_ROOT / 'scripts' / 'backtest' / 'generate-strategy-reference.mjs'),
+        '--us',
+        str(us_results_path),
+        '--jp',
+        str(jp_results_path),
+        '--strategy-out',
+        str(strategy_reference_path),
+        '--symbol-out',
+        str(symbol_reference_path),
+    ]
+    if catalog_snapshot_path and catalog_snapshot_path.exists():
+        command.extend(['--catalog-path', str(catalog_snapshot_path)])
+
+    result = subprocess.run(
+        command,
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.stdout.strip():
+        logger.info('[strategy-docs stdout] %s', result.stdout.strip())
+    if result.stderr.strip():
+        logger.info('[strategy-docs stderr] %s', result.stderr.strip())
+    if result.returncode != 0:
+        logger.error('Strategy reference generation failed with exit code %s', result.returncode)
+        return None, None
+    if not strategy_reference_path.exists() or not symbol_reference_path.exists():
+        logger.error('Strategy reference generation succeeded but expected files were not written')
+        return None, None
+    return strategy_reference_path, symbol_reference_path
+
+
 def write_latest_backtest_summary(
     *,
     run_id: str,
@@ -2077,6 +2212,8 @@ def write_latest_backtest_summary(
     rich_report_path: Path | None = None,
     ranking_artifact_path: Path | None = None,
     catalog_snapshot_path: Path | None = None,
+    strategy_reference_path: Path | None = None,
+    symbol_reference_path: Path | None = None,
 ) -> None:
     if not us_results_path or not jp_results_path:
         return
@@ -2093,10 +2230,14 @@ def write_latest_backtest_summary(
     latest_ranking_artifact_path = resolve_latest_ranking_artifact_path()
     latest_ranking_artifact_path.parent.mkdir(parents=True, exist_ok=True)
     combined_rows = build_combined_market_ranking([us_summary, jp_summary])
+    combined_details = build_combined_strategy_details([us_summary, jp_summary])
     latest_ranking_artifact_path.write_text(
         f'{json.dumps(combined_rows, indent=2, ensure_ascii=False)}\n',
         encoding='utf-8',
     )
+    best_overall = combined_rows[0] if combined_rows else None
+    best_us = us_summary['rows'][0] if us_summary['rows'] else None
+    best_jp = jp_summary['rows'][0] if jp_summary['rows'] else None
 
     lines = [
         '# Latest main backtest summary',
@@ -2116,10 +2257,21 @@ def write_latest_backtest_summary(
     lines.append(f'- ranking_artifact: `{relative_path(latest_ranking_artifact_path)}`')
     if catalog_snapshot_path and catalog_snapshot_path.exists():
         lines.append(f'- strategy_catalog_snapshot: `{relative_path(catalog_snapshot_path)}`')
+    if strategy_reference_path and strategy_reference_path.exists():
+        lines.append(f'- strategy_reference: `{relative_path(strategy_reference_path)}`')
+    if symbol_reference_path and symbol_reference_path.exists():
+        lines.append(f'- symbol_reference: `{relative_path(symbol_reference_path)}`')
 
     lines.extend([
         '',
-        '## Combined top 10',
+        '## 結論',
+        '',
+        f'- **総合首位**: `{best_overall["presetId"]}` / composite_score `{best_overall["composite_score"]}` / avg_net_profit `{format_metric(best_overall["avg_net_profit"])}` / avg_profit_factor `{format_metric(best_overall["avg_profit_factor"], 3)}`' if best_overall else '- **総合首位**: `—`',
+        f'- **US 本命**: `{best_us["presetId"]}` / avg_net_profit `{format_metric(best_us["avg_net_profit"])}` / avg_profit_factor `{format_metric(best_us["avg_profit_factor"], 3)}`' if best_us else '- **US 本命**: `—`',
+        f'- **JP 本命**: `{best_jp["presetId"]}` / avg_net_profit `{format_metric(best_jp["avg_net_profit"])}` / avg_profit_factor `{format_metric(best_jp["avg_profit_factor"], 3)}`' if best_jp else '- **JP 本命**: `—`',
+        '- **見方**: まず全戦略スコア一覧で composite score を見て、そのあと Top 5 戦略の銘柄別成績表で偏りを確認する。',
+        '',
+        '## 全戦略スコア一覧',
         '',
         '合成順位は **avg_net_profit 降順 / avg_profit_factor 降順 / avg_max_drawdown 昇順** の市場別順位を合算した deterministic score です。',
         '',
@@ -2127,12 +2279,29 @@ def write_latest_backtest_summary(
         '| ---: | --- | ---: | ---: | ---: | ---: | ---: | --- |',
     ])
 
-    for index, row in enumerate(combined_rows[:10], start=1):
+    for index, row in enumerate(combined_rows, start=1):
         lines.append(
             f'| {index} | `{row["presetId"]}` | {row["composite_score"]} | {format_metric(row["avg_net_profit"])} | '
             f'{format_metric(row["avg_profit_factor"], 3)} | {format_metric(row["avg_max_drawdown"])} | '
             f'{format_metric(row["avg_win_rate"])} | {row["markets"]} |'
         )
+
+    lines.extend([
+        '',
+        '## Top 5 戦略の銘柄別成績',
+        '',
+    ])
+    for row in combined_rows[:5]:
+        lines.extend([
+            f'### `{row["presetId"]}`',
+            '',
+            f'- composite_score: {row["composite_score"]}',
+            f'- markets: {row["markets"]}',
+            f'- avg_net_profit: {format_metric(row["avg_net_profit"])} / avg_profit_factor: {format_metric(row["avg_profit_factor"], 3)} / avg_max_drawdown: {format_metric(row["avg_max_drawdown"])}',
+            '',
+            *format_symbol_rows(combined_details.get(row['presetId'], {}).get('symbol_rows', [])),
+            '',
+        ])
 
     for market_summary in (us_summary, jp_summary):
         lines.extend([
@@ -2163,6 +2332,17 @@ def write_latest_backtest_summary(
     except (FileNotFoundError, json.JSONDecodeError):
         pass
 
+    top_five_ids = ', '.join(f'`{row["presetId"]}`' for row in combined_rows[:5]) or '—'
+    lines.extend([
+        '## 改善点と次回バックテスト確認事項',
+        '',
+        f'1. **Top 5 の確認**: {top_five_ids} の銘柄別表を見て、特定銘柄への依存が強すぎないか再確認する。',
+        f'2. **US 側の掘り下げ**: `{best_us["presetId"]}` が勝っている要因が entry timing か stop 幅かを切り分ける。' if best_us else '2. **US 側の掘り下げ**: 最新 artifact が不足しているため、追加確認が必要。',
+        f'3. **JP 側の掘り下げ**: `{best_jp["presetId"]}` が勝っている要因が exit の締め方か regime 閾値かを追加確認する。' if best_jp else '3. **JP 側の掘り下げ**: 最新 artifact が不足しているため、追加確認が必要。',
+        '4. **次回テンプレ運用**: 次回 backtest でもこの summary を上書きし、全戦略スコア一覧と Top 5 戦略の銘柄別成績表を定点比較する。',
+        '',
+    ])
+
     latest_summary_path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
     logger.info('Latest backtest summary written: %s', relative_path(latest_summary_path))
 
@@ -2180,6 +2360,8 @@ def maybe_write_latest_backtest_summary_from_args(
     rich_report_path: Path | None = None
     ranking_artifact_path: Path | None = None
     catalog_snapshot_path: Path | None = None
+    strategy_reference_path: Path | None = None
+    symbol_reference_path: Path | None = None
 
     if args.command == 'report':
         us_path = resolve_existing_json_path(getattr(args, 'us', None))
@@ -2195,6 +2377,18 @@ def maybe_write_latest_backtest_summary_from_args(
         ranking_artifact_path = resolve_existing_json_path(getattr(args, 'ranking_out', None))
         catalog_snapshot_path = resolve_existing_json_path(getattr(args, 'catalog_out', None))
 
+    if us_path and jp_path and us_path.exists() and jp_path.exists():
+        strategy_reference_path, symbol_reference_path = generate_strategy_reference_docs(
+            node_bin=getattr(args, 'node_bin', None)
+            or os.environ.get('NIGHT_BATCH_STRATEGY_NODE_BIN')
+            or os.environ.get('NODE_BIN')
+            or 'node',
+            us_results_path=us_path,
+            jp_results_path=jp_path,
+            catalog_snapshot_path=catalog_snapshot_path,
+            logger=logger,
+        )
+
     write_latest_backtest_summary(
         run_id=run_id,
         summary=summary,
@@ -2204,6 +2398,8 @@ def maybe_write_latest_backtest_summary_from_args(
         rich_report_path=rich_report_path,
         ranking_artifact_path=ranking_artifact_path,
         catalog_snapshot_path=catalog_snapshot_path,
+        strategy_reference_path=strategy_reference_path,
+        symbol_reference_path=symbol_reference_path,
     )
 
 

@@ -23,16 +23,6 @@ function fmtPercent(value, digits = 2) {
   return `${value.toFixed(digits)}%`;
 }
 
-function shortenPresetId(presetId) {
-  return String(presetId || '')
-    .replace('donchian-', '')
-    .replace('-rsp-filter-rsi14-', ' ')
-    .replace('-theme-deep-pullback-', ' ')
-    .replace('-hard-stop-', ' stop-')
-    .replace(/-/g, ' ')
-    .trim();
-}
-
 function summarizeOutcome(runs) {
   const allRuns = Array.isArray(runs) ? runs : [];
   const success = allRuns.filter((run) => run?.result?.success === true).length;
@@ -41,90 +31,79 @@ function summarizeOutcome(runs) {
   return { total: allRuns.length, success, failure, unreadable };
 }
 
-function renderStrategyTable(summary) {
-  const rows = summary.strategy_summaries.map((entry) => [
+function renderCoverageTable(usOutcome, jpOutcome) {
+  return [
+    '| market | success | failure | unreadable | total |',
+    '| --- | ---: | ---: | ---: | ---: |',
+    `| US | ${usOutcome.success} | ${usOutcome.failure} | ${usOutcome.unreadable} | ${usOutcome.total} |`,
+    `| JP | ${jpOutcome.success} | ${jpOutcome.failure} | ${jpOutcome.unreadable} | ${jpOutcome.total} |`,
+  ].join('\n');
+}
+
+function renderMarketSnapshotTable(summary) {
+  const rows = summary.ranked_strategies.slice(0, 5).map((entry) => [
     `\`${entry.presetId}\``,
     fmtNumber(entry.avg_net_profit),
-    fmtNumber(entry.median_net_profit),
     fmtNumber(entry.avg_profit_factor, 4),
     fmtNumber(entry.avg_max_drawdown),
-    fmtPercent(entry.avg_max_drawdown_pct),
-    fmtNumber(entry.avg_closed_trades),
     fmtPercent(entry.avg_percent_profitable),
-    fmtPercent(entry.positive_run_rate),
-    fmtNumber(entry.profit_to_drawdown_ratio, 4),
-    entry.top_symbols.slice(0, 5).map((item) => `\`${item.symbol}\``).join(', '),
+    fmtNumber(entry.avg_closed_trades),
   ]);
 
   return [
-    '| strategy | avg net | median net | avg PF | avg MDD | avg MDD% | avg trades | avg win rate | positive runs | profit/DD | top symbols |',
-    '| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |',
+    '| strategy | avg net | avg PF | avg MDD | avg win rate | avg trades |',
+    '| --- | ---: | ---: | ---: | ---: | ---: |',
     ...rows.map((row) => `| ${row.join(' | ')} |`),
   ].join('\n');
 }
 
-function renderSymbolTable(symbols) {
+function renderAllStrategyScoreboard(ranking) {
   return [
-    '| symbol | label | best strategy | avg net | avg PF | avg MDD | avg MDD% | avg trades | avg win rate |',
+    '| rank | strategy | markets | composite score | avg net | avg PF | avg MDD | avg win rate | tested symbols |',
+    '| ---: | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |',
+    ...ranking.map((entry) => `| ${entry.rank} | \`${entry.presetId}\` | ${entry.markets.join(', ')} | ${entry.composite_score} | ${fmtNumber(entry.avg_net_profit)} | ${fmtNumber(entry.avg_profit_factor, 4)} | ${fmtNumber(entry.avg_max_drawdown)} | ${fmtPercent(entry.avg_percent_profitable)} | ${entry.symbol_results.length} |`),
+  ].join('\n');
+}
+
+function renderTopStrategySymbolTables(ranking) {
+  return ranking.slice(0, 5).map((entry) => [
+    `### ${entry.rank}. \`${entry.presetId}\``,
+    '',
+    `- markets: ${entry.markets.join(', ')}`,
+    `- composite score: ${entry.composite_score}`,
+    `- avg net: ${fmtNumber(entry.avg_net_profit)} / avg PF: ${fmtNumber(entry.avg_profit_factor, 4)} / avg MDD: ${fmtNumber(entry.avg_max_drawdown)}`,
+    '',
+    '| symbol | label | market | net profit | profit factor | max drawdown | max drawdown % | trades | win rate |',
     '| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |',
-    ...symbols.map((entry) => [
-      `\`${entry.symbol}\``,
-      entry.label || entry.symbol,
-      `\`${entry.best_preset_id}\``,
-      fmtNumber(entry.avg_net_profit),
-      fmtNumber(entry.avg_profit_factor, 4),
-      fmtNumber(entry.avg_max_drawdown),
-      fmtPercent(entry.avg_max_drawdown_pct),
-      fmtNumber(entry.avg_closed_trades),
-      fmtPercent(entry.avg_percent_profitable),
-    ].join(' | '))
-      .map((row) => `| ${row} |`),
+    ...(entry.symbol_results.length > 0
+      ? entry.symbol_results.map((symbolRow) => `| \`${symbolRow.symbol}\` | ${symbolRow.label || symbolRow.symbol} | ${symbolRow.market || 'n/a'} | ${fmtNumber(symbolRow.net_profit)} | ${fmtNumber(symbolRow.profit_factor, 4)} | ${fmtNumber(symbolRow.max_drawdown)} | ${fmtPercent(symbolRow.max_drawdown_pct)} | ${fmtNumber(symbolRow.closed_trades)} | ${fmtPercent(symbolRow.percent_profitable)} |`)
+      : ['| n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a |']),
+  ].join('\n')).join('\n\n');
+}
+
+function renderConclusion(combinedRanking, usSummary, jpSummary) {
+  const bestOverall = combinedRanking[0];
+  const bestUs = usSummary.ranked_strategies[0];
+  const bestJp = jpSummary.ranked_strategies[0];
+
+  return [
+    `- **総合首位**: \`${bestOverall?.presetId ?? 'n/a'}\`（score ${bestOverall?.composite_score ?? 'n/a'} / avg net ${fmtNumber(bestOverall?.avg_net_profit)} / avg PF ${fmtNumber(bestOverall?.avg_profit_factor, 4)}）`,
+    `- **US 本命**: \`${bestUs?.presetId ?? 'n/a'}\`（avg net ${fmtNumber(bestUs?.avg_net_profit)} / avg PF ${fmtNumber(bestUs?.avg_profit_factor, 4)}）`,
+    `- **JP 本命**: \`${bestJp?.presetId ?? 'n/a'}\`（avg net ${fmtNumber(bestJp?.avg_net_profit)} / avg PF ${fmtNumber(bestJp?.avg_profit_factor, 4)}）`,
+    `- **読み方**: 全戦略の順位は market ごとの net / PF / drawdown 順位を合算した composite score を基準にし、そのうえで Top 5 の銘柄別明細で偏りを確認する。`,
   ].join('\n');
 }
 
-function renderStrategyFocus(summary) {
-  return summary.strategy_summaries.map((entry) => {
-    const strongest = entry.top_symbols.slice(0, 5).map((item) => `\`${item.symbol}\``).join(', ');
-    const weakest = entry.worst_symbols.slice(0, 3).map((item) => `\`${item.symbol}\``).join(', ');
-    return [
-      `### \`${entry.presetId}\``,
-      `- avg net: ${fmtNumber(entry.avg_net_profit)} / median net: ${fmtNumber(entry.median_net_profit)}`,
-      `- avg PF: ${fmtNumber(entry.avg_profit_factor, 4)} / avg MDD: ${fmtNumber(entry.avg_max_drawdown)} (${fmtPercent(entry.avg_max_drawdown_pct)})`,
-      `- avg trades: ${fmtNumber(entry.avg_closed_trades)} / avg win rate: ${fmtPercent(entry.avg_percent_profitable)} / positive-run rate: ${fmtPercent(entry.positive_run_rate)}`,
-      `- 強い銘柄: ${strongest || 'n/a'}`,
-      `- 弱い銘柄: ${weakest || 'n/a'}`,
-    ].join('\n');
-  }).join('\n\n');
-}
-
-function renderMarketReview(summary) {
-  const bestAvgNet = [...summary.strategy_summaries].sort((left, right) => (right.avg_net_profit ?? -Infinity) - (left.avg_net_profit ?? -Infinity))[0];
-  const bestRiskAdjusted = summary.ranked_strategies[0];
-  const topSymbols = summary.top_symbols.slice(0, 5).map((entry) => `\`${entry.symbol}\``).join(', ');
+function renderImprovementIdeas(combinedRanking, usSummary, jpSummary) {
+  const topFive = combinedRanking.slice(0, 5).map((entry) => `\`${entry.presetId}\``).join(', ');
+  const usLeaders = usSummary.ranked_strategies.slice(0, 3).map((entry) => `\`${entry.presetId}\``).join(', ');
+  const jpLeaders = jpSummary.ranked_strategies.slice(0, 3).map((entry) => `\`${entry.presetId}\``).join(', ');
 
   return [
-    `- avg net 首位は \`${bestAvgNet?.presetId ?? 'n/a'}\`（${fmtNumber(bestAvgNet?.avg_net_profit)}）`,
-    `- risk-adjusted 本命は \`${bestRiskAdjusted?.presetId ?? 'n/a'}\`（avg PF ${fmtNumber(bestRiskAdjusted?.avg_profit_factor, 4)}, avg MDD% ${fmtPercent(bestRiskAdjusted?.avg_max_drawdown_pct)}）`,
-    `- 上位寄与銘柄は ${topSymbols || 'n/a'} で、market 内の強さが一部の主力銘柄に寄りやすい`,
-    `- 次段では、entry 由来の差なのか exit 由来の差なのかを sector / bucket / symbol cluster で分解する価値が高い`,
-  ].join('\n');
-}
-
-function renderCombinedReview(ranking) {
-  const topFive = ranking.slice(0, 5);
-  return [
-    '| rank | market | strategy | avg net | avg PF | avg MDD% | avg trades | avg win rate |',
-    '| ---: | --- | --- | ---: | ---: | ---: | ---: | ---: |',
-    ...topFive.map((entry) => `| ${entry.rank} | ${entry.market || 'n/a'} | \`${entry.presetId}\` | ${fmtNumber(entry.avg_net_profit)} | ${fmtNumber(entry.avg_profit_factor, 4)} | ${fmtPercent(entry.avg_max_drawdown_pct)} | ${fmtNumber(entry.avg_closed_trades)} | ${fmtPercent(entry.avg_percent_profitable)} |`),
-  ].join('\n');
-}
-
-function renderImprovementIdeas() {
-  return [
-    '1. **US**: `strict-entry-early` と `strict-entry-late` の差を、主力銘柄依存か regime 感応度差かで切り分ける。特に `NVDA` / `AAPL` / `META` 依存が強いなら、entry を少し遅らせた control と shallow stop の比較を続ける。',
-    '2. **JP**: `tight` と `tight-exit-tight` の差を、総利益優先かドローダウン圧縮優先かで明確に分けて運用する。上位寄与銘柄が偏る場合は、entry 緩和より exit / stop の微調整を優先する。',
-    '3. **運用面**: 長時間 batch は shard parallel を優先し、worker2 は distinct parallel smoke を安定通過するまでは本線へ戻さない。checkpoint を 10 run 単位で刻み、fallback を first-class として扱う。',
-    '4. **Pine 運用**: 最終的な top 5 は Pine source を durable 保存し、local chart へ順次適用して人手レビューしやすい形にする。public publish は別タスクとして切り離す。',
+    `1. **Top 5 の再確認**: ${topFive || 'n/a'} について、symbol table で一部銘柄依存が強すぎないかを次回 backtest で再確認する。`,
+    `2. **US 側の確認事項**: ${usLeaders || 'n/a'} の差が entry timing 由来か stop 幅由来かを、同一 symbol 群で切り分ける。`,
+    `3. **JP 側の確認事項**: ${jpLeaders || 'n/a'} の差が exit の締め方由来か regime 閾値由来かを追加比較する。`,
+    '4. **次回のテンプレ運用**: rich report は全戦略スコア一覧を正本にし、Top 5 の銘柄別成績表で human review を行う。',
   ].join('\n');
 }
 
@@ -176,15 +155,15 @@ async function main() {
     runs: usRuns,
     market: 'US',
     initialCapital,
-    topLimit,
+    topLimit: Math.max(topLimit, 5),
   });
   const jpSummary = summarizeMarketCampaign({
     runs: jpRuns,
     market: 'JP',
     initialCapital,
-    topLimit,
+    topLimit: Math.max(topLimit, 5),
   });
-  const combinedRanking = buildCombinedStrategyRanking([usSummary, jpSummary], { topLimit: 10 });
+  const combinedRanking = buildCombinedStrategyRanking([usSummary, jpSummary], { topLimit: Number.MAX_SAFE_INTEGER });
   const usOutcome = summarizeOutcome(usRuns);
   const jpOutcome = summarizeOutcome(jpRuns);
 
@@ -216,73 +195,42 @@ async function main() {
     '- style: detailed Japanese operator report',
     `- date range: ${values['date-from']} -> ${values['date-to']}`,
     '',
-    '## Source artifacts',
+    '## 参照アーティファクト',
     '',
     `- US recovered full: \`${values.us}\``,
     `- JP recovered full: \`${values.jp}\``,
     ...(values['ranking-out'] ? [`- combined ranking: \`${values['ranking-out']}\``] : []),
     ...(values['catalog-out'] ? [`- strategy catalog snapshot: \`${values['catalog-out']}\``] : []),
     '',
-    '## Coverage summary',
+    '## 結論',
     '',
-    '| market | success | failure | unreadable | total |',
-    '| --- | ---: | ---: | ---: | ---: |',
-    `| US | ${usOutcome.success} | ${usOutcome.failure} | ${usOutcome.unreadable} | ${usOutcome.total} |`,
-    `| JP | ${jpOutcome.success} | ${jpOutcome.failure} | ${jpOutcome.unreadable} | ${jpOutcome.total} |`,
+    renderConclusion(combinedRanking, usSummary, jpSummary),
     '',
-    '## Final review',
+    '## 実行カバレッジ',
     '',
-    '今回の full artifact は、**US / JP ともに 100 銘柄 x 3 戦略の完走結果を raw run 単位で再集計したもの**で、avg net だけでなく、ドローダウン、トレード数、勝率、profit-to-drawdown ratio まで含めて比較している。',
+    renderCoverageTable(usOutcome, jpOutcome),
     '',
-    '結論としては、**US は entry timing の差がそのまま performance の差に残りやすく、JP は exit の締め方が成績差の中心**だった。したがって、次段の fine-tune は市場横断で一律に回すよりも、市場ごとに強かった family を中心に微調整する方が自然である。',
+    '## 市場別スナップショット',
     '',
-    '## Overall top strategies',
+    '### US 上位 5',
     '',
-    renderCombinedReview(combinedRanking),
+    renderMarketSnapshotTable(usSummary),
     '',
-    '## US strategy summary',
+    '### JP 上位 5',
     '',
-    renderStrategyTable(usSummary),
+    renderMarketSnapshotTable(jpSummary),
     '',
-    '### US review',
+    '## 全戦略スコア一覧',
     '',
-    renderMarketReview(usSummary),
+    renderAllStrategyScoreboard(combinedRanking),
     '',
-    '### US symbol top 10',
+    '## Top 5 戦略の銘柄別成績',
     '',
-    renderSymbolTable(usSummary.top_symbols),
+    renderTopStrategySymbolTables(combinedRanking),
     '',
-    '### US symbol bottom 10',
+    '## 改善点と次回バックテスト確認事項',
     '',
-    renderSymbolTable(usSummary.worst_symbols),
-    '',
-    '### US strategy-by-strategy notes',
-    '',
-    renderStrategyFocus(usSummary),
-    '',
-    '## JP strategy summary',
-    '',
-    renderStrategyTable(jpSummary),
-    '',
-    '### JP review',
-    '',
-    renderMarketReview(jpSummary),
-    '',
-    '### JP symbol top 10',
-    '',
-    renderSymbolTable(jpSummary.top_symbols),
-    '',
-    '### JP symbol bottom 10',
-    '',
-    renderSymbolTable(jpSummary.worst_symbols),
-    '',
-    '### JP strategy-by-strategy notes',
-    '',
-    renderStrategyFocus(jpSummary),
-    '',
-    '## 次に繋げる改善案',
-    '',
-    renderImprovementIdeas(),
+    renderImprovementIdeas(combinedRanking, usSummary, jpSummary),
     '',
   ].join('\n');
 

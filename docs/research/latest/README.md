@@ -11,8 +11,9 @@
 5. `project-improvement-review.md`
 6. `external-agent-pattern-comparison.md`
 7. `../strategy/README.md`
-8. 別系列の最新 main summary として `main-backtest-latest-summary.md`
-9. 判断経緯が必要なら `../../working-memory/session-logs/archive/next-long-run-us-jp-12x10-registration_20260414_0009.md`
+8. テーマ投資の判断基準が必要なら `../strategy/theme-momentum-definition.md`
+9. 別系列の最新 main summary として `main-backtest-latest-summary.md`
+10. 判断経緯が必要なら `../../working-memory/session-logs/`
 
 ## `latest` の意味
 
@@ -36,4 +37,5 @@
 - `scripts/docs/archive-stale-latest.mjs` が manifest を読み、keep 外の .md を `../archive/` に移す
 - 数値の正本は `../../references/backtests/` と `../results/` を参照する
 - 戦略・銘柄の人間向け説明は `../strategy/` を参照する
+- 手書きの判断基準は `../strategy/theme-momentum-definition.md` の stable path を使う
 - dual-worker の historical runbook は `../archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`

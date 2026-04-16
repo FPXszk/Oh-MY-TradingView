@@ -13,7 +13,8 @@
 2. 必要なら `./explain-forhuman.md`
 3. 最新の研究 handoff を見たいなら `./research/latest/README.md`
 4. 戦略詳細を見たいなら `./research/strategy/README.md`
-5. docs の地図や保守ルールが必要なら `./DOCUMENTATION_SYSTEM.md`
+5. テーマ投資の判断基準を見たいなら `./research/strategy/theme-momentum-definition.md`
+6. docs の地図や保守ルールが必要なら `./DOCUMENTATION_SYSTEM.md`
 
 ### Copilot / エージェント作業
 
@@ -28,7 +29,7 @@
 | `docs/research/latest/` | 最新 1 世代の handoff / 要約 / 次の入口 | stale な世代は置かない |
 | `docs/research/archive/` | latest から外れた研究 docs | 既定では読まない |
 | `docs/research/results/` | 実行 artifact・night batch 出力・campaign result | committed doc ではなく成果物置き場 |
-| `docs/research/strategy/` | 戦略・銘柄の人間向け reference | `strategy-catalog.json` と latest artifact を起点に読む |
+| `docs/research/strategy/` | 戦略・銘柄の人間向け reference と手書き判断基準 | `strategy-catalog.json` と latest artifact を起点に読み、安定した判断基準はここに置く |
 | `docs/references/` | raw data / 参照 JSON / 外部資料固定スナップショット | 数値の正本 |
 | `docs/reports/` | incident / postmortem / run-specific archive | repo root の `../README.md` の代替 runbook にしない |
 | `docs/bad-strategy/` | live set から外した strategy preset の退避先 | `retired-strategy-presets.json` を維持 |
@@ -54,6 +55,7 @@
 - `./research/latest/README.md`
 - `./research/latest/main-backtest-latest-summary.md`
 - `./research/strategy/README.md`
+- `./research/strategy/theme-momentum-definition.md`
 
 ### 過去の研究や旧世代 handoff を見たい
 
