@@ -9,6 +9,7 @@ import {
   readYoutubeContent,
 } from '../core/reach.js';
 import { applyCompaction, renderCompactPayload } from '../core/output-compaction.js';
+import { attachArtifactWarning, tryWriteRawArtifact } from '../core/output-artifacts.js';
 
 export function registerReachTools(server) {
   server.tool(
@@ -35,9 +36,13 @@ export function registerReachTools(server) {
     async ({ url, compact }) => {
       try {
         const result = await readWebContent({ url });
-        const payload = compact
-          ? renderCompactPayload(applyCompaction('reach_read_web', result))
-          : result;
+        if (!compact) return jsonResult(result);
+        const artifactInfo = await tryWriteRawArtifact('reach_read_web', { url }, result, { compact });
+        const payload = renderCompactPayload(applyCompaction(
+          'reach_read_web',
+          attachArtifactWarning(result, artifactInfo),
+          artifactInfo.artifactPath ? { artifactPath: artifactInfo.artifactPath } : undefined,
+        ));
         return jsonResult(payload);
       } catch (err) {
         return jsonResult({ success: false, error: err.message }, true);
@@ -58,9 +63,13 @@ export function registerReachTools(server) {
     async ({ url, maxItems, compact }) => {
       try {
         const result = await readRssFeed({ url, maxItems });
-        const payload = compact
-          ? renderCompactPayload(applyCompaction('reach_read_rss', result))
-          : result;
+        if (!compact) return jsonResult(result);
+        const artifactInfo = await tryWriteRawArtifact('reach_read_rss', { url, maxItems }, result, { compact });
+        const payload = renderCompactPayload(applyCompaction(
+          'reach_read_rss',
+          attachArtifactWarning(result, artifactInfo),
+          artifactInfo.artifactPath ? { artifactPath: artifactInfo.artifactPath } : undefined,
+        ));
         return jsonResult(payload);
       } catch (err) {
         return jsonResult({ success: false, error: err.message }, true);
@@ -81,9 +90,13 @@ export function registerReachTools(server) {
     async ({ query, maxResults, compact }) => {
       try {
         const result = await searchRedditPosts({ query, maxResults });
-        const payload = compact
-          ? renderCompactPayload(applyCompaction('reach_search_reddit', result))
-          : result;
+        if (!compact) return jsonResult(result);
+        const artifactInfo = await tryWriteRawArtifact('reach_search_reddit', { query, maxResults }, result, { compact });
+        const payload = renderCompactPayload(applyCompaction(
+          'reach_search_reddit',
+          attachArtifactWarning(result, artifactInfo),
+          artifactInfo.artifactPath ? { artifactPath: artifactInfo.artifactPath } : undefined,
+        ));
         return jsonResult(payload);
       } catch (err) {
         return jsonResult({ success: false, error: err.message }, true);
@@ -102,9 +115,13 @@ export function registerReachTools(server) {
     async ({ postId, compact }) => {
       try {
         const result = await readRedditPost({ postId });
-        const payload = compact
-          ? renderCompactPayload(applyCompaction('reach_read_reddit_post', result))
-          : result;
+        if (!compact) return jsonResult(result);
+        const artifactInfo = await tryWriteRawArtifact('reach_read_reddit_post', { postId }, result, { compact });
+        const payload = renderCompactPayload(applyCompaction(
+          'reach_read_reddit_post',
+          attachArtifactWarning(result, artifactInfo),
+          artifactInfo.artifactPath ? { artifactPath: artifactInfo.artifactPath } : undefined,
+        ));
         return jsonResult(payload);
       } catch (err) {
         return jsonResult({ success: false, error: err.message }, true);
@@ -123,9 +140,13 @@ export function registerReachTools(server) {
     async ({ url, compact }) => {
       try {
         const result = await readYoutubeContent({ url });
-        const payload = compact
-          ? renderCompactPayload(applyCompaction('reach_read_youtube', result))
-          : result;
+        if (!compact) return jsonResult(result);
+        const artifactInfo = await tryWriteRawArtifact('reach_read_youtube', { url }, result, { compact });
+        const payload = renderCompactPayload(applyCompaction(
+          'reach_read_youtube',
+          attachArtifactWarning(result, artifactInfo),
+          artifactInfo.artifactPath ? { artifactPath: artifactInfo.artifactPath } : undefined,
+        ));
         return jsonResult(payload);
       } catch (err) {
         return jsonResult({ success: false, error: err.message }, true);

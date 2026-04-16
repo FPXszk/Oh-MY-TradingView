@@ -9,6 +9,7 @@ import {
   getTwitterTweetDetail,
 } from '../core/twitter-read.js';
 import { applyCompaction, renderCompactPayload } from '../core/output-compaction.js';
+import { attachArtifactWarning, tryWriteRawArtifact } from '../core/output-artifacts.js';
 
 export function registerTwitterReadTools(server) {
   server.tool(
@@ -51,9 +52,13 @@ export function registerTwitterReadTools(server) {
     async ({ query, timeline, maxResults, compact }) => {
       try {
         const result = await searchTwitterPosts({ query, timeline, maxResults });
-        const payload = compact
-          ? renderCompactPayload(applyCompaction('x_search_posts', result))
-          : result;
+        if (!compact) return jsonResult(result);
+        const artifactInfo = await tryWriteRawArtifact('x_search_posts', { query, timeline, maxResults }, result, { compact });
+        const payload = renderCompactPayload(applyCompaction(
+          'x_search_posts',
+          attachArtifactWarning(result, artifactInfo),
+          artifactInfo.artifactPath ? { artifactPath: artifactInfo.artifactPath } : undefined,
+        ));
         return jsonResult(payload);
       } catch (err) {
         return jsonResult({ success: false, error: err.message }, true);
@@ -89,9 +94,13 @@ export function registerTwitterReadTools(server) {
     async ({ username, maxResults, compact }) => {
       try {
         const result = await getTwitterUserPosts({ username, maxResults });
-        const payload = compact
-          ? renderCompactPayload(applyCompaction('x_user_posts', result))
-          : result;
+        if (!compact) return jsonResult(result);
+        const artifactInfo = await tryWriteRawArtifact('x_user_posts', { username, maxResults }, result, { compact });
+        const payload = renderCompactPayload(applyCompaction(
+          'x_user_posts',
+          attachArtifactWarning(result, artifactInfo),
+          artifactInfo.artifactPath ? { artifactPath: artifactInfo.artifactPath } : undefined,
+        ));
         return jsonResult(payload);
       } catch (err) {
         return jsonResult({ success: false, error: err.message }, true);
@@ -110,9 +119,13 @@ export function registerTwitterReadTools(server) {
     async ({ tweetId, compact }) => {
       try {
         const result = await getTwitterTweetDetail({ tweetId });
-        const payload = compact
-          ? renderCompactPayload(applyCompaction('x_tweet_detail', result))
-          : result;
+        if (!compact) return jsonResult(result);
+        const artifactInfo = await tryWriteRawArtifact('x_tweet_detail', { tweetId }, result, { compact });
+        const payload = renderCompactPayload(applyCompaction(
+          'x_tweet_detail',
+          attachArtifactWarning(result, artifactInfo),
+          artifactInfo.artifactPath ? { artifactPath: artifactInfo.artifactPath } : undefined,
+        ));
         return jsonResult(payload);
       } catch (err) {
         return jsonResult({ success: false, error: err.message }, true);

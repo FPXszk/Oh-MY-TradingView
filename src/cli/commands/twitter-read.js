@@ -8,6 +8,7 @@ import {
   getTwitterTweetDetail,
 } from '../../core/twitter-read.js';
 import { applyCompaction, renderCompactPayload } from '../../core/output-compaction.js';
+import { attachArtifactWarning, tryWriteRawArtifact } from '../../core/output-artifacts.js';
 
 register('x', {
   description: 'Twitter/X read-only via twitter-cli (no CDP required)',
@@ -36,14 +37,30 @@ register('x', {
           max: { type: 'string', short: 'm', description: 'Maximum result count (1-100)' },
           compact: { type: 'boolean', short: 'c', description: 'Emit compact summary output' },
         },
-        handler: (opts) => {
+        handler: async (opts) => {
           if (!opts.query) throw new Error('Usage: tv x search --query "NVDA" [--timeline Latest] [--max 10]');
-          return searchTwitterPosts({
+          const timeline = opts.timeline || 'Latest';
+          const maxResults = opts.max ? Number(opts.max) : 10;
+          const result = await searchTwitterPosts({
             query: opts.query,
-            timeline: opts.timeline || 'Latest',
-            maxResults: opts.max ? Number(opts.max) : undefined,
-          }).then((result) => (
-            opts.compact ? renderCompactPayload(applyCompaction('x_search_posts', result)) : result
+            timeline,
+            maxResults,
+          });
+          if (!opts.compact) return result;
+          const artifactInfo = await tryWriteRawArtifact(
+            'x_search_posts',
+            {
+              query: opts.query,
+              timeline,
+              maxResults,
+            },
+            result,
+            { compact: true },
+          );
+          return renderCompactPayload(applyCompaction(
+            'x_search_posts',
+            attachArtifactWarning(result, artifactInfo),
+            artifactInfo.artifactPath ? { artifactPath: artifactInfo.artifactPath } : undefined,
           ));
         },
       },
@@ -70,13 +87,24 @@ register('x', {
           max: { type: 'string', short: 'm', description: 'Maximum result count (1-100)' },
           compact: { type: 'boolean', short: 'c', description: 'Emit compact summary output' },
         },
-        handler: (opts) => {
+        handler: async (opts) => {
           if (!opts.username) throw new Error('Usage: tv x user-posts --username jack [--max 10]');
-          return getTwitterUserPosts({
+          const maxResults = opts.max ? Number(opts.max) : 10;
+          const result = await getTwitterUserPosts({
             username: opts.username,
-            maxResults: opts.max ? Number(opts.max) : undefined,
-          }).then((result) => (
-            opts.compact ? renderCompactPayload(applyCompaction('x_user_posts', result)) : result
+            maxResults,
+          });
+          if (!opts.compact) return result;
+          const artifactInfo = await tryWriteRawArtifact(
+            'x_user_posts',
+            { username: opts.username, maxResults },
+            result,
+            { compact: true },
+          );
+          return renderCompactPayload(applyCompaction(
+            'x_user_posts',
+            attachArtifactWarning(result, artifactInfo),
+            artifactInfo.artifactPath ? { artifactPath: artifactInfo.artifactPath } : undefined,
           ));
         },
       },
@@ -89,10 +117,15 @@ register('x', {
           id: { type: 'string', short: 'i', description: 'Tweet ID or X status URL' },
           compact: { type: 'boolean', short: 'c', description: 'Emit compact summary output' },
         },
-        handler: (opts) => {
+        handler: async (opts) => {
           if (!opts.id) throw new Error('Usage: tv x tweet --id 1234567890');
-          return getTwitterTweetDetail({ tweetId: opts.id }).then((result) => (
-            opts.compact ? renderCompactPayload(applyCompaction('x_tweet_detail', result)) : result
+          const result = await getTwitterTweetDetail({ tweetId: opts.id });
+          if (!opts.compact) return result;
+          const artifactInfo = await tryWriteRawArtifact('x_tweet_detail', { tweetId: opts.id }, result, { compact: true });
+          return renderCompactPayload(applyCompaction(
+            'x_tweet_detail',
+            attachArtifactWarning(result, artifactInfo),
+            artifactInfo.artifactPath ? { artifactPath: artifactInfo.artifactPath } : undefined,
           ));
         },
       },

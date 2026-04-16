@@ -39,7 +39,8 @@
 |---|---|---|
 | deterministic output compaction | **採用** | `market_*` / `reach_*` / `x_*` / `observe` の高ノイズ出力を rule-based で圧縮する |
 | compact mode | **採用** | selected surface に対して opt-in の compact mode を追加し、full result は通常出力として維持する |
-| tee-and-hint | **採用（概念のみ）** | 出力の compact 版と raw 版を同時に保持する発想 |
+| tee-and-hint | **採用** | compact=true 時に raw JSON を deterministic path (`.output-artifacts/raw/`) へ保存し、compact response に `artifact_path` と `full_output_hint` を加算で返す。compact=false は一切書かない |
+| deterministic summarizer profiles | **採用（部分）** | `src/core/output-summary-profiles.js` で surface → profile の宣言的マップを定義。LLM 要約や汎用 DSL にはしない |
 | tracking | **採用（概念のみ）** | campaign / experiment-gating の tracking に既に類似構造がある |
 | shell hook rewrite | **不採用** | CLI の出力整形は router 内で完結させる。shell hook は運用負荷が大きすぎる |
 | settings patch | **不採用** | 設定変更は手動管理で十分 |
@@ -74,6 +75,21 @@
 - 対象: `market analysis` / `market confluence-rank` / `reach web/rss/reddit/youtube` / `x_*` / `observe snapshot`
 - 方針: full result に `_compact` を付ける helper をベースにしつつ、selected CLI/MCP surface の `compact` / `--compact` 指定時は縮約済み top-level payload を返す
 - escape hatch: compact payload には `raw_hint` を含め、非 compact 実行で完全版を取得できるようにする
+
+### 2a. raw-output artifact + full output hint (tee-and-hint の具体化)
+
+- 場所: `src/core/output-artifacts.js`
+- compact=true のときのみ raw JSON を repo 配下の `.output-artifacts/raw/{surface}/{preview}--{hash}.json` に保存
+- compact payload に `artifact_path` と `full_output_hint` を加算的に追加（既存 `raw_hint` は維持）
+- path traversal / null byte ガード付き。compact=false では一切書き込まない
+- observe の既存 `bundle_dir` / `artifacts` とは独立で共存
+
+### 2b. deterministic summarizer profiles
+
+- 場所: `src/core/output-summary-profiles.js`
+- surface → profile (type / label / description + compact 関数) の plain object マップを持ち、compact runtime の source of truth とする
+- 全 compaction surface に 1:1 対応するプロファイルを定義
+- DSL や LLM 要約は導入しない
 
 ### 3. bounded observability
 

@@ -13,6 +13,7 @@ import {
 } from '../core/market-intel.js';
 import { getSymbolAnalysis } from '../core/market-intel-analysis.js';
 import { applyCompaction, renderCompactPayload } from '../core/output-compaction.js';
+import { attachArtifactWarning, tryWriteRawArtifact } from '../core/output-artifacts.js';
 
 export function registerMarketIntelTools(server) {
   server.tool(
@@ -162,9 +163,13 @@ export function registerMarketIntelTools(server) {
     async ({ symbol, compact }) => {
       try {
         const result = await getSymbolAnalysis(symbol);
-        const payload = compact
-          ? renderCompactPayload(applyCompaction('market_symbol_analysis', result))
-          : result;
+        if (!compact) return jsonResult(result);
+        const artifactInfo = await tryWriteRawArtifact('market_symbol_analysis', { symbol }, result, { compact });
+        const payload = renderCompactPayload(applyCompaction(
+          'market_symbol_analysis',
+          attachArtifactWarning(result, artifactInfo),
+          artifactInfo.artifactPath ? { artifactPath: artifactInfo.artifactPath } : undefined,
+        ));
         return jsonResult(payload);
       } catch (err) {
         return jsonResult({ success: false, error: err.message }, true);
@@ -186,9 +191,13 @@ export function registerMarketIntelTools(server) {
     async ({ symbols, limit, compact }) => {
       try {
         const result = await rankSymbolsByConfluence(symbols, { limit });
-        const payload = compact
-          ? renderCompactPayload(applyCompaction('market_confluence_rank', result))
-          : result;
+        if (!compact) return jsonResult(result);
+        const artifactInfo = await tryWriteRawArtifact('market_confluence_rank', { symbols, limit }, result, { compact });
+        const payload = renderCompactPayload(applyCompaction(
+          'market_confluence_rank',
+          attachArtifactWarning(result, artifactInfo),
+          artifactInfo.artifactPath ? { artifactPath: artifactInfo.artifactPath } : undefined,
+        ));
         return jsonResult(payload);
       } catch (err) {
         return jsonResult({ success: false, error: err.message }, true);

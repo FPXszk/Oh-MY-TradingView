@@ -12,6 +12,7 @@ import {
 } from '../../core/market-intel.js';
 import { getSymbolAnalysis } from '../../core/market-intel-analysis.js';
 import { applyCompaction, renderCompactPayload } from '../../core/output-compaction.js';
+import { attachArtifactWarning, tryWriteRawArtifact } from '../../core/output-artifacts.js';
 
 register('market', {
   description: 'Market intelligence (no CDP required)',
@@ -141,12 +142,15 @@ register('market', {
           symbol: { type: 'string', short: 's', description: 'Ticker symbol' },
           compact: { type: 'boolean', short: 'c', description: 'Emit compact summary output' },
         },
-        handler: (opts) => {
+        handler: async (opts) => {
           if (!opts.symbol) throw new Error('Usage: tv market analysis --symbol AAPL');
-          return getSymbolAnalysis(opts.symbol).then((result) => (
-            opts.compact
-              ? renderCompactPayload(applyCompaction('market_symbol_analysis', result))
-              : result
+          const result = await getSymbolAnalysis(opts.symbol);
+          if (!opts.compact) return result;
+          const artifactInfo = await tryWriteRawArtifact('market_symbol_analysis', { symbol: opts.symbol }, result, { compact: true });
+          return renderCompactPayload(applyCompaction(
+            'market_symbol_analysis',
+            attachArtifactWarning(result, artifactInfo),
+            artifactInfo.artifactPath ? { artifactPath: artifactInfo.artifactPath } : undefined,
           ));
         },
       },
@@ -159,16 +163,24 @@ register('market', {
           limit: { type: 'string', description: 'Maximum ranked results to return' },
           compact: { type: 'boolean', short: 'c', description: 'Emit compact summary output' },
         },
-        handler: (opts, positionals) => {
+        handler: async (opts, positionals) => {
           if (!positionals || positionals.length === 0) {
             throw new Error('Usage: tv market confluence-rank AAPL MSFT NVDA --limit 5');
           }
-          return rankSymbolsByConfluence(positionals, {
+          const result = await rankSymbolsByConfluence(positionals, {
             limit: opts.limit ? Number(opts.limit) : undefined,
-          }).then((result) => (
-            opts.compact
-              ? renderCompactPayload(applyCompaction('market_confluence_rank', result))
-              : result
+          });
+          if (!opts.compact) return result;
+          const artifactInfo = await tryWriteRawArtifact(
+            'market_confluence_rank',
+            { symbols: positionals, limit: opts.limit ? Number(opts.limit) : undefined },
+            result,
+            { compact: true },
+          );
+          return renderCompactPayload(applyCompaction(
+            'market_confluence_rank',
+            attachArtifactWarning(result, artifactInfo),
+            artifactInfo.artifactPath ? { artifactPath: artifactInfo.artifactPath } : undefined,
           ));
         },
       },

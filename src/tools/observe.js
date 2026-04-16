@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { jsonResult } from './_format.js';
 import { captureObservabilitySnapshot } from '../core/observability.js';
 import { applyCompaction, renderCompactPayload } from '../core/output-compaction.js';
+import { attachArtifactWarning, tryWriteRawArtifact } from '../core/output-artifacts.js';
 
 export function registerObserveTools(server) {
   server.tool(
@@ -22,16 +23,34 @@ export function registerObserveTools(server) {
             error: result.error || 'Observability snapshot failed',
             hint: 'Ensure TradingView Desktop is running with CDP enabled.',
           };
+          if (!compact) return jsonResult(failure, true);
+          const artifactInfo = await tryWriteRawArtifact(
+            'tv_observe_snapshot',
+            { snapshotId: failure.snapshot_id || null, success: false, error: failure.error || null },
+            failure,
+            { compact },
+          );
           return jsonResult(
-            compact
-              ? renderCompactPayload(applyCompaction('tv_observe_snapshot', failure))
-              : failure,
+            renderCompactPayload(applyCompaction(
+              'tv_observe_snapshot',
+              attachArtifactWarning(failure, artifactInfo),
+              artifactInfo.artifactPath ? { artifactPath: artifactInfo.artifactPath } : undefined,
+            )),
             true,
           );
         }
-        const payload = compact
-          ? renderCompactPayload(applyCompaction('tv_observe_snapshot', result))
-          : result;
+        if (!compact) return jsonResult(result);
+        const artifactInfo = await tryWriteRawArtifact(
+          'tv_observe_snapshot',
+          { snapshotId: result.snapshot_id || null, success: true },
+          result,
+          { compact },
+        );
+        const payload = renderCompactPayload(applyCompaction(
+          'tv_observe_snapshot',
+          attachArtifactWarning(result, artifactInfo),
+          artifactInfo.artifactPath ? { artifactPath: artifactInfo.artifactPath } : undefined,
+        ));
         return jsonResult(payload);
       } catch (err) {
         return jsonResult(

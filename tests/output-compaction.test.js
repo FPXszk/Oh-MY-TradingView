@@ -16,6 +16,7 @@ import {
   compactObserveSnapshot,
   applyCompaction,
 } from '../src/core/output-compaction.js';
+import { getSummaryProfile, listSummaryProfiles } from '../src/core/output-summary-profiles.js';
 
 // ---------------------------------------------------------------------------
 // compactMarketAnalysis
@@ -363,6 +364,17 @@ describe('applyCompaction', () => {
     assert.equal(result.count, 1);
     assert.ok(result._compact);
   });
+
+  it('adds summary profile metadata for known surfaces', () => {
+    const input = {
+      success: true,
+      query: 'test',
+      count: 1,
+      posts: [{ id: '1', text: 'hello', author: { username: 'a' } }],
+    };
+    const result = applyCompaction('x_search_posts', input);
+    assert.equal(result._compact.profile_type, 'post_list');
+  });
 });
 
 describe('renderCompactPayload', () => {
@@ -422,5 +434,236 @@ describe('renderCompactPayload', () => {
       manifest_path: 'results/snap-1/manifest.json',
       screenshot_path: 'results/snap-1/page.png',
     });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// applyCompaction — artifact path / full output hint (additive contract)
+// ---------------------------------------------------------------------------
+
+describe('applyCompaction with artifactPath option', () => {
+  it('adds artifact_path and full_output_hint when artifactPath is provided', () => {
+    const input = {
+      success: true,
+      query: 'NVDA',
+      count: 1,
+      posts: [{ id: '1', text: 'hello', author: { username: 'a' } }],
+    };
+    const result = applyCompaction('x_search_posts', input, {
+      artifactPath: '.output-artifacts/raw/x_search_posts/nvda.json',
+    });
+    assert.ok(result._compact);
+    assert.equal(result._compact.artifact_path, '.output-artifacts/raw/x_search_posts/nvda.json');
+    assert.ok(result._compact.full_output_hint, 'full_output_hint must exist');
+    assert.ok(result._compact.full_output_hint.includes('.output-artifacts/'));
+  });
+
+  it('preserves raw_hint alongside artifact_path', () => {
+    const input = {
+      success: true,
+      query: 'test',
+      count: 0,
+      posts: [],
+    };
+    const result = applyCompaction('x_search_posts', input, {
+      artifactPath: 'some/path.json',
+    });
+    assert.ok(result._compact.raw_hint, 'raw_hint must still be present');
+    assert.ok(result._compact.artifact_path, 'artifact_path must be added');
+  });
+
+  it('does not add artifact_path when opts is omitted', () => {
+    const input = { success: true, symbol: 'AAPL', analysis: { trend: { direction: 'up' } } };
+    const result = applyCompaction('market_symbol_analysis', input);
+    assert.ok(result._compact);
+    assert.equal(result._compact.artifact_path, undefined);
+    assert.equal(result._compact.full_output_hint, undefined);
+  });
+
+  it('does not add artifact_path for unknown surfaces even with opts', () => {
+    const input = { success: true, data: 'hello' };
+    const result = applyCompaction('unknown_surface', input, {
+      artifactPath: 'some/path.json',
+    });
+    assert.equal(result._compact, undefined, 'unknown surfaces return no _compact');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// renderCompactPayload — artifact_path preservation
+// ---------------------------------------------------------------------------
+
+describe('renderCompactPayload with artifact_path', () => {
+  it('preserves artifact_path and full_output_hint in rendered compact output', () => {
+    const full = applyCompaction('x_search_posts', {
+      success: true,
+      query: 'test',
+      count: 1,
+      source: 'twitter-cli',
+      posts: [{ id: '1', text: 'A'.repeat(200), author: { username: 'alice' } }],
+    }, { artifactPath: '.output-artifacts/raw/x_search_posts/test.json' });
+
+    const compact = renderCompactPayload(full);
+    assert.equal(compact.artifact_path, '.output-artifacts/raw/x_search_posts/test.json');
+    assert.ok(compact.full_output_hint);
+    assert.ok(compact.raw_hint, 'raw_hint preserved');
+    assert.equal(compact.profile_type, 'post_list');
+  });
+
+  it('observe bundle_dir/artifacts are not overwritten by artifact_path', () => {
+    const full = compactObserveSnapshot({
+      success: true,
+      snapshot_id: 'snap-2',
+      bundle_dir: 'results/snap-2',
+      artifacts: { manifest_path: 'results/snap-2/manifest.json' },
+      connection: { target_id: 'T1' },
+      page_state: { chart_symbol: 'BTC', chart_resolution: '1H' },
+      runtime_errors: [],
+      warnings: [],
+    });
+    full._compact.artifact_path = '.output-artifacts/raw/tv_observe_snapshot/snap-2.json';
+    full._compact.full_output_hint = 'Full raw output saved to: ...';
+
+    const compact = renderCompactPayload(full);
+    assert.equal(compact.bundle_dir, 'results/snap-2', 'original bundle_dir preserved');
+    assert.deepEqual(compact.artifacts, { manifest_path: 'results/snap-2/manifest.json' });
+    assert.ok(compact.artifact_path, 'new artifact_path also present');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// compact payload size contract
+// ---------------------------------------------------------------------------
+
+describe('compact payload size contract', () => {
+  it('compact twitter search is smaller than full', () => {
+    const full = {
+      success: true,
+      query: 'NVDA',
+      count: 5,
+      source: 'twitter-cli',
+      posts: Array.from({ length: 5 }, (_, i) => ({
+        id: String(i),
+        text: 'X'.repeat(500),
+        author: { username: `user${i}`, bio: 'B'.repeat(200) },
+        extra: 'Y'.repeat(300),
+      })),
+    };
+    const compacted = applyCompaction('x_search_posts', full);
+    const compact = renderCompactPayload(compacted);
+    assert.ok(
+      JSON.stringify(compact).length < JSON.stringify(full).length,
+      'compact must be smaller than full',
+    );
+  });
+
+  it('compact market analysis is smaller than full', () => {
+    const full = {
+      success: true,
+      symbol: 'AAPL',
+      analysis: {
+        trend: { direction: 'bullish', strength: 'strong', details: 'D'.repeat(500) },
+        fundamentals: { pe_ratio: 28.5, market_cap: 3e12, raw_data: 'R'.repeat(1000) },
+        risk: { level: 'moderate', factors: ['a', 'b', 'c'], details: 'D'.repeat(800) },
+        overall_summary: { confluence_score: 72, confluence_label: 'bullish' },
+      },
+    };
+    const compacted = applyCompaction('market_symbol_analysis', full);
+    const compact = renderCompactPayload(compacted);
+    assert.ok(
+      JSON.stringify(compact).length < JSON.stringify(full).length,
+      'compact must be smaller than full',
+    );
+  });
+
+  it('compact reach web is smaller than full for large content', () => {
+    const full = {
+      success: true,
+      source: 'jina_reader',
+      title: 'Big Article',
+      content: 'C'.repeat(10000),
+    };
+    const compacted = applyCompaction('reach_read_web', full);
+    const compact = renderCompactPayload(compacted);
+    assert.ok(
+      JSON.stringify(compact).length < JSON.stringify(full).length,
+      'compact must be smaller than full',
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// compact=false unchanged
+// ---------------------------------------------------------------------------
+
+describe('compact=false leaves result unchanged', () => {
+  const surfaces = [
+    'market_symbol_analysis',
+    'x_search_posts',
+    'reach_read_web',
+    'tv_observe_snapshot',
+  ];
+
+  for (const s of surfaces) {
+    it(`applyCompaction('${s}', ...) without renderCompactPayload preserves all original fields`, () => {
+      const input = { success: true, data: 'original', extra: { nested: true } };
+      const result = applyCompaction(s, input);
+      assert.equal(result.success, true);
+      assert.equal(result.data, 'original');
+      assert.deepEqual(result.extra, { nested: true });
+    });
+  }
+
+  it('renderCompactPayload returns input unchanged when _compact is absent', () => {
+    const input = { success: true, data: 'hello', nested: { a: 1 } };
+    const result = renderCompactPayload(input);
+    assert.deepEqual(result, input);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// output-summary-profiles
+// ---------------------------------------------------------------------------
+
+describe('output-summary-profiles', () => {
+  it('getSummaryProfile returns a profile for known surfaces', () => {
+    const p = getSummaryProfile('reach_read_web');
+    assert.ok(p, 'profile must exist');
+    assert.ok(p.type, 'profile must have a type');
+    assert.ok(p.label, 'profile must have a label');
+  });
+
+  it('getSummaryProfile returns null for unknown surfaces', () => {
+    const p = getSummaryProfile('totally_unknown');
+    assert.equal(p, null);
+  });
+
+  it('listSummaryProfiles returns all defined profiles', () => {
+    const profiles = listSummaryProfiles();
+    assert.ok(Object.keys(profiles).length >= 5, 'at least 5 profiles expected');
+    for (const [key, profile] of Object.entries(profiles)) {
+      assert.ok(profile.type, `${key} must have type`);
+      assert.ok(profile.label, `${key} must have label`);
+    }
+  });
+
+  it('all compaction surfaces have a matching summary profile', () => {
+    const compactionSurfaces = [
+      'market_symbol_analysis',
+      'market_confluence_rank',
+      'reach_read_web',
+      'reach_read_rss',
+      'reach_search_reddit',
+      'reach_read_reddit_post',
+      'reach_read_youtube',
+      'x_search_posts',
+      'x_user_posts',
+      'x_tweet_detail',
+      'tv_observe_snapshot',
+    ];
+    for (const s of compactionSurfaces) {
+      const p = getSummaryProfile(s);
+      assert.ok(p, `summary profile must exist for ${s}`);
+    }
   });
 });

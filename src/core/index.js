@@ -31,6 +31,8 @@ export {
   readYoutubeContent,
 } from './reach.js';
 export { applyCompaction, renderCompactPayload } from './output-compaction.js';
+export { buildArtifactPath, writeRawArtifact, tryWriteRawArtifact, attachArtifactWarning, ARTIFACT_BASE_DIR, ARTIFACT_WRITE_HINT, REPO_ROOT, resolveArtifactAbsolutePath } from './output-artifacts.js';
+export { getSummaryProfile, listSummaryProfiles } from './output-summary-profiles.js';
 export { listWatchlistSymbols, addWatchlistSymbol, removeWatchlistSymbol, listPanes, focusPane, listTabs, switchTab, listLayouts, applyLayout } from './workspace.js';
 export { listAlerts, createPriceAlert, deleteAlert } from './alerts.js';
 export {
