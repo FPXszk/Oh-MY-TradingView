@@ -993,6 +993,178 @@ describe('market-matched 100-symbol long-run campaigns', () => {
   });
 });
 
+describe('strongest overlay ablation campaign configs', () => {
+  const expectedPresetIds = [
+    'donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight',
+    'donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-chandelier',
+    'donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-atr-trailing',
+    'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-true-55-20-control',
+    'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-chandelier',
+    'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-atr-trailing',
+    'donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide',
+    'donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-chandelier',
+    'donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-atr-trailing',
+  ];
+
+  it('strongest-overlay-us-12x9.json is valid JSON with the planned 9-preset cohort', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'archive', 'strongest-overlay-us-12x9.json'),
+      'utf8',
+    );
+    const config = JSON.parse(raw);
+    assert.equal(config.id, 'strongest-overlay-us-12x9');
+    assert.equal(config.universe, 'next-long-run-us-12');
+    assert.equal(config.date_override.from, '2000-01-01');
+    assert.equal(config.date_override.to, '2099-12-31');
+    assert.deepEqual(config.preset_ids, expectedPresetIds);
+    assert.deepEqual(config.phases.smoke.symbols, ['NVDA', 'DIS', 'INTC']);
+    assert.deepEqual(config.phases.pilot.symbols, ['NVDA', 'AAPL', 'DIS', 'QCOM', 'INTC', 'VZ']);
+  });
+
+  it('strongest-overlay-jp-12x9.json is valid JSON with the planned 9-preset cohort', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'archive', 'strongest-overlay-jp-12x9.json'),
+      'utf8',
+    );
+    const config = JSON.parse(raw);
+    assert.equal(config.id, 'strongest-overlay-jp-12x9');
+    assert.equal(config.universe, 'next-long-run-jp-12');
+    assert.equal(config.date_override.from, '2000-01-01');
+    assert.equal(config.date_override.to, '2099-12-31');
+    assert.deepEqual(config.preset_ids, expectedPresetIds);
+    assert.deepEqual(config.phases.smoke.symbols, ['TSE:7203', 'TSE:9984', 'TSE:7201']);
+    assert.deepEqual(config.phases.pilot.symbols, ['TSE:7203', 'TSE:8002', 'TSE:9984', 'TSE:6857', 'TSE:7201', 'TSE:4503']);
+  });
+
+  it('focused overlay campaign configs pass validateCampaignConfig', async () => {
+    for (const fileName of ['strongest-overlay-us-12x9.json', 'strongest-overlay-jp-12x9.json']) {
+      const raw = await readFile(
+        join(__dirname, '..', 'config', 'backtest', 'campaigns', 'archive', fileName),
+        'utf8',
+      );
+      const config = JSON.parse(raw);
+      const result = validateCampaignConfig(config);
+      assert.equal(result.valid, true, `${fileName}: ${result.errors}`);
+      assert.deepEqual(result.errors, []);
+    }
+  });
+
+  it('loads strongest-overlay-us-12x9 with focused phase sizing and US-only symbols', async () => {
+    const smoke = await loadCampaign('strongest-overlay-us-12x9', { phase: 'smoke' });
+    const pilot = await loadCampaign('strongest-overlay-us-12x9', { phase: 'pilot' });
+    const full = await loadCampaign('strongest-overlay-us-12x9', { phase: 'full' });
+
+    assert.equal(smoke.symbols.length, 3);
+    assert.equal(smoke.matrix.length, 27);
+    assert.equal(pilot.symbols.length, 6);
+    assert.equal(pilot.matrix.length, 54);
+    assert.equal(full.symbols.length, 12);
+    assert.equal(full.matrix.length, 108);
+    assert.ok(full.symbols.every((entry) => entry.market === 'US'));
+    assert.deepEqual(full.strategies.map((strategy) => strategy.id), expectedPresetIds);
+  });
+
+  it('loads strongest-overlay-jp-12x9 with focused phase sizing and JP-only symbols', async () => {
+    const smoke = await loadCampaign('strongest-overlay-jp-12x9', { phase: 'smoke' });
+    const pilot = await loadCampaign('strongest-overlay-jp-12x9', { phase: 'pilot' });
+    const full = await loadCampaign('strongest-overlay-jp-12x9', { phase: 'full' });
+
+    assert.equal(smoke.symbols.length, 3);
+    assert.equal(smoke.matrix.length, 27);
+    assert.equal(pilot.symbols.length, 6);
+    assert.equal(pilot.matrix.length, 54);
+    assert.equal(full.symbols.length, 12);
+    assert.equal(full.matrix.length, 108);
+    assert.ok(full.symbols.every((entry) => entry.market === 'JP'));
+    assert.deepEqual(full.strategies.map((strategy) => strategy.id), expectedPresetIds);
+  });
+});
+
+describe('broader strongest overlay ablation campaign configs', () => {
+  const expectedPresetIds = [
+    'donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight',
+    'donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-chandelier',
+    'donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-atr-trailing',
+    'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-true-55-20-control',
+    'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-chandelier',
+    'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-atr-trailing',
+    'donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide',
+    'donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-chandelier',
+    'donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-atr-trailing',
+  ];
+
+  it('strongest-overlay-us-50x9.json is valid JSON with broader phase sizing', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'archive', 'strongest-overlay-us-50x9.json'),
+      'utf8',
+    );
+    const config = JSON.parse(raw);
+    assert.equal(config.id, 'strongest-overlay-us-50x9');
+    assert.equal(config.universe, 'long-run-us-50');
+    assert.deepEqual(config.preset_ids, expectedPresetIds);
+    assert.equal(config.phases.smoke.symbol_count, 10);
+    assert.equal(config.phases.pilot.symbol_count, 25);
+    assert.equal(config.phases.full.symbol_count, 50);
+  });
+
+  it('strongest-overlay-jp-50x9.json is valid JSON with broader phase sizing', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'config', 'backtest', 'campaigns', 'archive', 'strongest-overlay-jp-50x9.json'),
+      'utf8',
+    );
+    const config = JSON.parse(raw);
+    assert.equal(config.id, 'strongest-overlay-jp-50x9');
+    assert.equal(config.universe, 'long-run-jp-50');
+    assert.deepEqual(config.preset_ids, expectedPresetIds);
+    assert.equal(config.phases.smoke.symbol_count, 10);
+    assert.equal(config.phases.pilot.symbol_count, 25);
+    assert.equal(config.phases.full.symbol_count, 50);
+  });
+
+  it('broader overlay campaign configs pass validateCampaignConfig', async () => {
+    for (const fileName of ['strongest-overlay-us-50x9.json', 'strongest-overlay-jp-50x9.json']) {
+      const raw = await readFile(
+        join(__dirname, '..', 'config', 'backtest', 'campaigns', 'archive', fileName),
+        'utf8',
+      );
+      const config = JSON.parse(raw);
+      const result = validateCampaignConfig(config);
+      assert.equal(result.valid, true, `${fileName}: ${result.errors}`);
+      assert.deepEqual(result.errors, []);
+    }
+  });
+
+  it('loads strongest-overlay-us-50x9 with broader US-only phase sizing', async () => {
+    const smoke = await loadCampaign('strongest-overlay-us-50x9', { phase: 'smoke' });
+    const pilot = await loadCampaign('strongest-overlay-us-50x9', { phase: 'pilot' });
+    const full = await loadCampaign('strongest-overlay-us-50x9', { phase: 'full' });
+
+    assert.equal(smoke.symbols.length, 10);
+    assert.equal(smoke.matrix.length, 90);
+    assert.equal(pilot.symbols.length, 25);
+    assert.equal(pilot.matrix.length, 225);
+    assert.equal(full.symbols.length, 50);
+    assert.equal(full.matrix.length, 450);
+    assert.ok(full.symbols.every((entry) => entry.market === 'US'));
+    assert.deepEqual(full.strategies.map((strategy) => strategy.id), expectedPresetIds);
+  });
+
+  it('loads strongest-overlay-jp-50x9 with broader JP-only phase sizing', async () => {
+    const smoke = await loadCampaign('strongest-overlay-jp-50x9', { phase: 'smoke' });
+    const pilot = await loadCampaign('strongest-overlay-jp-50x9', { phase: 'pilot' });
+    const full = await loadCampaign('strongest-overlay-jp-50x9', { phase: 'full' });
+
+    assert.equal(smoke.symbols.length, 10);
+    assert.equal(smoke.matrix.length, 90);
+    assert.equal(pilot.symbols.length, 25);
+    assert.equal(pilot.matrix.length, 225);
+    assert.equal(full.symbols.length, 50);
+    assert.equal(full.matrix.length, 450);
+    assert.ok(full.symbols.every((entry) => entry.market === 'JP'));
+    assert.deepEqual(full.strategies.map((strategy) => strategy.id), expectedPresetIds);
+  });
+});
+
 describe('next finetune 100x10 campaign configs', () => {
   it('next-long-run-us-finetune-100x10.json is valid JSON with expected shape', async () => {
     const raw = await readFile(

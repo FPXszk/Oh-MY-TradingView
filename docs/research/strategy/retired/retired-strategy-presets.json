@@ -4,6 +4,77 @@
   "rationale": "Removed from live preset set during latest/archive repository cleanup; retained here for historical comparison.",
   "strategies": [
     {
+      "id": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-true-55-20-control",
+      "name": "Donchian 55/20 + RSP Filter + RSI14 Regime 55 + 8% Stop (True 55/20 Control)",
+      "category": "breakout",
+      "builder": "donchian_breakout",
+      "parameters": {
+        "entry_period": 55,
+        "exit_period": 20
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 55,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "deep-pullback-tight-true-55-20-control",
+      "theme_notes": "overlay 寄与分離のために追加した research-only control。55/20 tight の pure base を true 55 entry で固定し、Chandelier / ATR overlay と 1軸比較できるようにする。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "live の 55/20 tight base は実パラメータが 57/20 のため、overlay tranche では true 55/20 control を retired research preset として使う。",
+      "phase": "phase-12",
+      "implementation_stage": "round12",
+      "priority": 198,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "theme-breadth",
+        "theme-deep-pullback",
+        "round12",
+        "research-control",
+        "overlay-ablation"
+      ],
+      "lifecycle": {
+        "status": "retired",
+        "retired_at": "2026-04-16",
+        "retire_reason": {
+          "code": "never_strong",
+          "summary": "research-only true 55/20 control retained to isolate overlay contribution without promoting it into the live strongest set"
+        },
+        "last_strong_generation": null,
+        "replacement_family": {
+          "family_id": "deep-pullback-expansion",
+          "summary": "overlay ablation compares this retired pure 55/20 control against the live deep-pullback expansion variants",
+          "replacement_live_ids": [
+            "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight",
+            "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight",
+            "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide",
+            "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-chandelier",
+            "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-atr-trailing"
+          ]
+        }
+      }
+    },
+    {
       "id": "donchian-55-20-rsp-filter-rsi14-regime-48-hard-stop-8pct-theme-deep-pullback-tight-early",
       "name": "Donchian 55/20 + RSP Filter + RSI14 Regime 48 + 8% Stop",
       "category": "breakout",

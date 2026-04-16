@@ -22,7 +22,7 @@ describe('computeFamilyDiff', () => {
     const totalLive = families.reduce((sum, f) => sum + f.live_count, 0);
     const totalRetired = families.reduce((sum, f) => sum + f.retired_count, 0);
     assert.equal(totalLive, 30);
-    assert.equal(totalRetired, 121);
+    assert.equal(totalRetired, 122);
   });
 
   it('every entry has family_id, live_count, retired_count', async () => {
@@ -67,7 +67,7 @@ describe('buildRetiredLedger', () => {
   it('returns all retired entries', async () => {
     const catalog = await loadCatalog();
     const ledger = buildRetiredLedger(catalog);
-    assert.equal(ledger.length, 121);
+    assert.equal(ledger.length, 122);
   });
 
   it('every entry has presetId, retire_reason, last_strong_generation, replacement_family', async () => {
@@ -91,8 +91,8 @@ describe('buildDiffArtifact', () => {
     const artifact = buildDiffArtifact(catalog);
     assert.ok(artifact.generated_at);
     assert.equal(artifact.live_count, 30);
-    assert.equal(artifact.retired_count, 121);
-    assert.equal(artifact.total_count, 151);
+    assert.equal(artifact.retired_count, 122);
+    assert.equal(artifact.total_count, 152);
     assert.ok(Array.isArray(artifact.family_diff));
     assert.ok(Array.isArray(artifact.retired_ledger));
   });
@@ -108,7 +108,7 @@ describe('formatDiffSummarySection', () => {
     const markdown = formatDiffSummarySection(artifact);
     assert.ok(markdown.includes('## Live / Retired diff'));
     assert.ok(markdown.includes('live_count: 30'));
-    assert.ok(markdown.includes('retired_count: 121'));
+    assert.ok(markdown.includes('retired_count: 122'));
     assert.ok(markdown.includes('| family |'));
   });
 

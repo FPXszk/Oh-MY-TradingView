@@ -89,10 +89,10 @@ describe('getLiveStrategies / getRetiredStrategies', () => {
     assert.equal(live.length, 30);
   });
 
-  it('retired count is 121', async () => {
+  it('retired count is 122', async () => {
     const catalog = await loadCatalog();
     const retired = getRetiredStrategies(catalog);
-    assert.equal(retired.length, 121);
+    assert.equal(retired.length, 122);
   });
 
   it('live IDs match expected list', async () => {
@@ -143,6 +143,18 @@ describe('findStrategyById', () => {
     const catalog = await loadCatalog();
     const result = findStrategyById(catalog, 'nonexistent-strategy');
     assert.equal(result, null);
+  });
+
+  it('finds the research-only true 55/20 control as retired', async () => {
+    const catalog = await loadCatalog();
+    const result = findStrategyById(
+      catalog,
+      'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-true-55-20-control',
+    );
+    assert.ok(result);
+    assert.equal(result.parameters.entry_period, 55);
+    assert.equal(result.parameters.exit_period, 20);
+    assert.equal(result.lifecycle.status, 'retired');
   });
 });
 

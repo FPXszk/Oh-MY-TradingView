@@ -173,11 +173,11 @@ describe('repository layout policy', () => {
     );
   });
 
-  it('strategy-catalog.json exists and has 151 strategies', () => {
+  it('strategy-catalog.json exists and has 152 strategies', () => {
     const catalogPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-catalog.json');
     assert.equal(existsSync(catalogPath), true, 'strategy-catalog.json must exist');
     const catalog = JSON.parse(readFileSync(catalogPath, 'utf8'));
-    assert.equal(catalog.strategies.length, 151, `expected 151 strategies in catalog, got ${catalog.strategies.length}`);
+    assert.equal(catalog.strategies.length, 152, `expected 152 strategies in catalog, got ${catalog.strategies.length}`);
   });
 
   it('retired strategy README mentions catalog as source of truth', () => {

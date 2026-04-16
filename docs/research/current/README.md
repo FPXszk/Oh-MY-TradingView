@@ -14,14 +14,16 @@
 2. この `README.md`
 3. `main-backtest-current-summary.md`
 4. 現行 handoff / details
-5. `../strategy/README.md`
-6. 判断経緯が必要なら `../../../logs/sessions/`
+5. strongest family の寄与分離を進めるときは `strongest-family-overlay-ablation_20260416_1215.md`
+6. `../strategy/README.md`
+7. 判断経緯が必要なら `../../../logs/sessions/`
 
 ## current handoff generation
 
 - campaign ID: `next-long-run-us-12x10` / `next-long-run-jp-12x10`
 - universe ID: `next-long-run-us-12` / `next-long-run-jp-12`
 - live 実行セットは `config/backtest/strategy-presets.json`
+- overlay ablation の current scaffold: `strongest-family-overlay-ablation_20260416_1215.md`
 - 過去世代の文書は `../archive/` を参照します
 
 ## 運用ルール

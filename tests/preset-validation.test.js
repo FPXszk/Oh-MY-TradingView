@@ -583,7 +583,7 @@ describe('strategy-presets.json integration', () => {
   it('retires every non-live preset to docs/research/strategy/retired', async () => {
     const live = await loadPresets();
     const retired = await loadRetiredPresets();
-    assert.equal(retired.strategies.length, 121);
+    assert.equal(retired.strategies.length, 122);
 
     const liveIds = new Set(live.strategies.map((preset) => preset.id));
     const retiredIds = retired.strategies.map((preset) => preset.id);

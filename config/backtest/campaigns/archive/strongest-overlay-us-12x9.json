@@ -1,0 +1,55 @@
+{
+  "id": "strongest-overlay-us-12x9",
+  "name": "Strongest Overlay US 12 symbols x 9 strategies",
+  "description": "Research-only overlay ablation for the strongest deep-pullback tight family across the current US 12-symbol focused universe.",
+  "universe": "next-long-run-us-12",
+  "preset_ids": [
+    "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight",
+    "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-chandelier",
+    "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-atr-trailing",
+    "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-true-55-20-control",
+    "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-chandelier",
+    "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-atr-trailing",
+    "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide",
+    "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-chandelier",
+    "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-atr-trailing"
+  ],
+  "date_override": {
+    "from": "2000-01-01",
+    "to": "2099-12-31"
+  },
+  "phases": {
+    "smoke": {
+      "symbol_count": 3,
+      "symbols": [
+        "NVDA",
+        "DIS",
+        "INTC"
+      ]
+    },
+    "pilot": {
+      "symbol_count": 6,
+      "symbols": [
+        "NVDA",
+        "AAPL",
+        "DIS",
+        "QCOM",
+        "INTC",
+        "VZ"
+      ]
+    },
+    "full": {
+      "symbol_count": 12
+    }
+  },
+  "execution": {
+    "worker_ports": [
+      9223
+    ],
+    "checkpoint_every": 10,
+    "cooldown_ms": 1000,
+    "max_consecutive_failures": 5,
+    "max_rerun_passes": 2
+  },
+  "notes": "Research-only overlay ablation. The 55/20 anchor uses a retired true-55/20 control so exit_overlay is the only moving axis. smoke/pilot reuse the current 12-symbol category-balanced slices. date_override.to=2099-12-31 is an upper bound for latest available bars."
+}

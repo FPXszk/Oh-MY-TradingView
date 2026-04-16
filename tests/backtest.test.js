@@ -1302,6 +1302,17 @@ describe('loadPreset', () => {
     assert.equal(preset.id, 'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight');
     assert.equal(preset.lifecycle, undefined, 'lifecycle must be stripped from loaded preset');
   });
+
+  it('resolves the research-only true 55/20 control from catalog and builds executable source', async () => {
+    const { preset, source } = await loadPreset(
+      'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-true-55-20-control',
+    );
+    assert.ok(preset);
+    assert.equal(preset.parameters.entry_period, 55);
+    assert.equal(preset.parameters.exit_period, 20);
+    assert.ok(source.includes('donchianUpper = ta.highest(high, 55)[1]'));
+    assert.ok(source.includes('donchianLower = ta.lowest(low, 20)[1]'));
+  });
 });
 
 // ---------------------------------------------------------------------------
