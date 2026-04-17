@@ -113,7 +113,7 @@ jobs:
           echo [readiness-diag] bridge port (WSL):
           wsl.exe bash -lc "cd \"%REPO_WSL%\" && python3 -c \"import json,sys; c=json.load(open(sys.argv[1])); h=c.get('runtime',{}).get('host','172.31.144.1'); p=c.get('runtime',{}).get('port',9223); print(f'  host={h} port={p}'); import urllib.request; urllib.request.urlopen(f'http://{h}:{p}/json/list',timeout=3); print('  status=reachable')\" \"%NIGHT_BATCH_CONFIG%\"" 2>&1 || echo [readiness-diag] bridge port: UNREACHABLE
           echo [readiness-diag] tv status readiness:
-          wsl.exe bash -lc "cd \"%REPO_WSL%\" && TV_CDP_HOST=$(python3 -c \"import json,sys; c=json.load(open(sys.argv[1])); print(c.get('runtime',{}).get('host','172.31.144.1'))\" \"%NIGHT_BATCH_CONFIG%\") TV_CDP_PORT=$(python3 -c \"import json,sys; c=json.load(open(sys.argv[1])); print(c.get('runtime',{}).get('port',9223))\" \"%NIGHT_BATCH_CONFIG%\") node src/cli/index.js status 2>&1 || echo '  status=FAILED'" 2>&1 || echo [readiness-diag] tv status: FAILED
+          wsl.exe bash -lc "cd \"%REPO_WSL%\" && python3 -c \"import json, os, subprocess, sys; c=json.load(open(sys.argv[1])); runtime=c.get('runtime',{}); host=str(runtime.get('host','172.31.144.1')); port=str(runtime.get('port',9223)); print(f'  host={host} port={port}'); env=dict(os.environ, TV_CDP_HOST=host, TV_CDP_PORT=port); proc=subprocess.run(['node','src/cli/index.js','status'], env=env, text=True, capture_output=True); sys.stdout.write(proc.stdout); sys.stderr.write(proc.stderr); raise SystemExit(proc.returncode)\" \"%NIGHT_BATCH_CONFIG%\"" 2>&1 || echo [readiness-diag] tv status: FAILED
           echo [readiness-diag] done
         continue-on-error: true
 

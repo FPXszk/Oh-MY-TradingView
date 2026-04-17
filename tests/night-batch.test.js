@@ -1876,4 +1876,53 @@ esac
     assert.match(summary.termination_reason, /readiness|preflight/,
       'termination reason must indicate readiness or preflight failure');
   });
+
+  it('surfaces non-JSON tv status bootstrap failures instead of reporting error=unknown', async () => {
+    server = createServer((req, res) => {
+      if (req.url === '/json/list') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify([
+          { id: 'chart-1', type: 'page', url: 'https://jp.tradingview.com/chart/abc/', title: 'Chart' },
+        ]));
+        return;
+      }
+      res.writeHead(404);
+      res.end('not found');
+    });
+    await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+    port = server.address().port;
+
+    const fakeNodePath = join(tempDir, 'fake-node-bootstrap-fail.sh');
+    writeExecutable(
+      fakeNodePath,
+      `#!/bin/sh
+case "$*" in
+  *status*)
+    printf '%s\\n' "SyntaxError: missing export getTradingViewFinancialsBatch" >&2
+    exit 1
+    ;;
+  *)
+    exit 0
+    ;;
+esac
+`,
+    );
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--host', '127.0.0.1',
+      '--port', String(port),
+      '--startup-check-host', '127.0.0.1',
+      '--startup-check-port', String(port),
+      '--node-bin', fakeNodePath,
+      '--launch-wait-sec', '2',
+    ]);
+
+    assert.notEqual(result.status, 0);
+    assert.doesNotMatch(result.stdout, /error=unknown/,
+      'bootstrap failures must not collapse into error=unknown');
+    assert.match(result.stdout, /SyntaxError|exit code/i,
+      'bootstrap failures must surface CLI stderr/stdout or exit code');
+  });
 });

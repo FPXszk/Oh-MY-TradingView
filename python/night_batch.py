@@ -480,12 +480,33 @@ def readiness_check(host: str, port: int, node_bin: str, logger: logging.Logger)
             except (json.JSONDecodeError, ValueError):
                 continue
 
+    def summarize_output(text: str, label: str) -> str | None:
+        collapsed = ' '.join(text.split())
+        if not collapsed:
+            return None
+        if len(collapsed) > 240:
+            collapsed = f'{collapsed[:237]}...'
+        return f'{label}={collapsed}'
+
     success = payload.get('success') is True and payload.get('api_available') is True
     if not success:
-        api_error = payload.get('apiError') or payload.get('error') or 'unknown'
+        details = [f'api_available={payload.get("api_available")}']
+        api_error = payload.get('apiError') or payload.get('error')
+        if api_error:
+            details.append(f'error={api_error}')
+        else:
+            details.append(f'cli_exit={proc.returncode}')
+            stderr_summary = summarize_output(stderr, 'stderr')
+            stdout_summary = summarize_output(stdout, 'stdout')
+            if stderr_summary:
+                details.append(stderr_summary)
+            elif stdout_summary:
+                details.append(stdout_summary)
+            else:
+                details.append('error=unknown')
         raise RuntimeError(
             f'Readiness check failed for {host}:{port}: '
-            f'api_available={payload.get("api_available")}, error={api_error}'
+            f'{", ".join(details)}'
         )
 
     logger.info(

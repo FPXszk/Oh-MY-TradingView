@@ -174,6 +174,49 @@ export async function getMarketSnapshot(symbols) {
   return response;
 }
 
+export async function getTradingViewFinancials(symbol) {
+  return getSymbolFundamentals(symbol);
+}
+
+export async function getTradingViewFinancialsBatch(symbols) {
+  if (!Array.isArray(symbols) || symbols.length === 0) {
+    throw new Error('symbols array is required and must not be empty');
+  }
+  if (symbols.length > 20) {
+    throw new Error('symbols array must not exceed 20 items');
+  }
+
+  const results = await Promise.allSettled(
+    symbols.map((symbol) => getTradingViewFinancials(symbol)),
+  );
+
+  const financials = results.map((result, index) => {
+    if (result.status === 'fulfilled') {
+      return result.value;
+    }
+    return {
+      success: false,
+      symbol: symbols[index],
+      error: result.reason?.message || 'Unknown error',
+    };
+  });
+  const successCount = financials.filter((entry) => entry.success).length;
+
+  const response = {
+    success: successCount > 0,
+    count: financials.length,
+    successCount,
+    failureCount: financials.length - successCount,
+    financials,
+    retrieved_at: new Date().toISOString(),
+    source: 'yahoo_finance',
+  };
+  if (!response.success) {
+    response.error = 'All financial requests failed';
+  }
+  return response;
+}
+
 /**
  * Financial news — searches Yahoo Finance for news related to a query.
  */

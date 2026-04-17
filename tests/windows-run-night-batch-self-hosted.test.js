@@ -629,4 +629,16 @@ describe('night-batch-self-hosted workflow readiness diagnostics', () => {
     assert.match(diagSection, /status/,
       'readiness diagnostics must invoke status command');
   });
+
+  it('readiness diagnostics avoids inline command substitution for tv status env setup', () => {
+    const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
+    const diagSection = workflow.slice(
+      workflow.indexOf('Readiness diagnostics'),
+      workflow.indexOf('Run smoke gate and foreground production'),
+    );
+    assert.doesNotMatch(diagSection, /TV_CDP_HOST=\$\(python3 -c/,
+      'readiness diagnostics must not inline host resolution into bash env assignment');
+    assert.doesNotMatch(diagSection, /TV_CDP_PORT=\$\(python3 -c/,
+      'readiness diagnostics must not inline port resolution into bash env assignment');
+  });
 });

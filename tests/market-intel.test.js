@@ -74,6 +74,18 @@ describe('getSymbolFundamentals — validation', () => {
   });
 });
 
+describe('market-intel export contracts', () => {
+  it('exports getTradingViewFinancials as a function', async () => {
+    const mod = await import('../src/core/market-intel.js');
+    assert.equal(typeof mod.getTradingViewFinancials, 'function');
+  });
+
+  it('exports getTradingViewFinancialsBatch as a function', async () => {
+    const mod = await import('../src/core/market-intel.js');
+    assert.equal(typeof mod.getTradingViewFinancialsBatch, 'function');
+  });
+});
+
 describe('getMarketSnapshot — validation', () => {
   it('rejects empty array', async () => {
     await assert.rejects(
