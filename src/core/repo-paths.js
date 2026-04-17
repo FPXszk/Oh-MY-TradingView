@@ -27,9 +27,17 @@ function buildSearchDirs(baseDir) {
 export const BACKTEST_CAMPAIGN_SEARCH_DIRS = buildSearchDirs(BACKTEST_CAMPAIGNS_DIR);
 export const BACKTEST_UNIVERSE_SEARCH_DIRS = buildSearchDirs(BACKTEST_UNIVERSES_DIR);
 
+function normalizeNamedJsonId(id) {
+  if (typeof id !== 'string') {
+    return `${id}.json`;
+  }
+  const trimmed = id.trim();
+  return trimmed.endsWith('.json') ? trimmed : `${trimmed}.json`;
+}
+
 export async function resolveNamedJsonPath(searchDirs, id, label) {
   for (const dir of searchDirs) {
-    const candidate = join(dir, `${id}.json`);
+    const candidate = join(dir, normalizeNamedJsonId(id));
     try {
       await access(candidate, fsConstants.R_OK);
       return candidate;
