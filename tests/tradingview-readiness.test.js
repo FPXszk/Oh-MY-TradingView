@@ -37,6 +37,195 @@ describe('DISMISS_DIALOG_JS', () => {
   });
 });
 
+describe('POPUP_MONITOR_JS', () => {
+  it('installs a MutationObserver-based popup monitor', async () => {
+    const { POPUP_MONITOR_JS } = await import('../src/core/tradingview-readiness.js');
+    assert.equal(typeof POPUP_MONITOR_JS, 'string');
+    assert.match(POPUP_MONITOR_JS, /MutationObserver/,
+      'popup monitor JS must install a MutationObserver');
+  });
+});
+
+describe('readVisibleDialogTexts', () => {
+  it('returns dialog texts from visible dialogs', async () => {
+    const { readVisibleDialogTexts } = await import('../src/core/tradingview-readiness.js');
+    const result = await readVisibleDialogTexts({
+      evaluate: async () => ['限定セール中！', 'ログインしてください'],
+    });
+    assert.deepEqual(result, ['限定セール中！', 'ログインしてください']);
+  });
+
+  it('returns an empty array when evaluate returns a non-array', async () => {
+    const { readVisibleDialogTexts } = await import('../src/core/tradingview-readiness.js');
+    const result = await readVisibleDialogTexts({
+      evaluate: async () => null,
+    });
+    assert.deepEqual(result, []);
+  });
+});
+
+describe('dismissTransientDialogs', () => {
+  it('calls dismiss JS and then sends Escape', async () => {
+    const { dismissTransientDialogs } = await import('../src/core/tradingview-readiness.js');
+    const calls = [];
+    await dismissTransientDialogs({
+      evaluate: async () => {
+        calls.push('evaluate');
+        return { detected: 1, clicked: 1, hidden: 0 };
+      },
+      getClient: async () => ({
+        Input: {
+          dispatchKeyEvent: async (event) => {
+            calls.push(`key:${event.type}`);
+          },
+        },
+      }),
+    }, { settleMs: 0 });
+    assert.deepEqual(calls, ['evaluate', 'evaluate', 'key:keyDown', 'key:keyUp']);
+  });
+
+  it('does not send Escape when no popup was handled', async () => {
+    const { dismissTransientDialogs } = await import('../src/core/tradingview-readiness.js');
+    const calls = [];
+    await dismissTransientDialogs({
+      evaluate: async () => {
+        calls.push('evaluate');
+        return { detected: 0, clicked: 0, hidden: 0, texts: [] };
+      },
+      getClient: async () => ({
+        Input: {
+          dispatchKeyEvent: async (event) => {
+            calls.push(`key:${event.type}`);
+          },
+        },
+      }),
+    }, { settleMs: 0 });
+    assert.deepEqual(calls, ['evaluate', 'evaluate']);
+  });
+
+  it('sends Escape when forceEscape is enabled for a visible blocker', async () => {
+    const { dismissTransientDialogs } = await import('../src/core/tradingview-readiness.js');
+    const calls = [];
+    await dismissTransientDialogs({
+      evaluate: async () => {
+        calls.push('evaluate');
+        return { detected: 0, clicked: 0, hidden: 0, texts: [] };
+      },
+      getClient: async () => ({
+        Input: {
+          dispatchKeyEvent: async (event) => {
+            calls.push(`key:${event.type}`);
+          },
+        },
+      }),
+    }, { settleMs: 0, forceEscape: true });
+    assert.deepEqual(calls, ['evaluate', 'evaluate', 'key:keyDown', 'key:keyUp']);
+  });
+});
+
+describe('withPopupGuard', () => {
+  it('succeeds on the first attempt without retry', async () => {
+    const { withPopupGuard } = await import('../src/core/tradingview-readiness.js');
+    const result = await withPopupGuard(
+      async () => 'ok',
+      {
+        evaluate: async () => ({ detected: 0, clicked: 0, hidden: 0 }),
+        getClient: async () => ({ Input: { dispatchKeyEvent: async () => {} } }),
+      },
+      { preClean: false, maxRetries: 1 },
+    );
+    assert.equal(result, 'ok');
+  });
+
+  it('retries after dismissing a detected popup', async () => {
+    const { withPopupGuard } = await import('../src/core/tradingview-readiness.js');
+    let attempt = 0;
+    let dialogReads = 0;
+    const result = await withPopupGuard(
+      async () => {
+        attempt += 1;
+        if (attempt === 1) {
+          throw new Error('chart API is unavailable');
+        }
+        return 'recovered';
+      },
+      {
+        evaluate: async (expression) => {
+          if (expression.includes('MutationObserver')) {
+            return { installed: true, observed: 0, dismissed: 0, hidden: 0 };
+          }
+          if (expression.includes('role="dialog"')) {
+            dialogReads += 1;
+            return dialogReads === 1 ? ['広告モーダル'] : [];
+          }
+          return { detected: 1, clicked: 1, hidden: 0 };
+        },
+        getClient: async () => ({ Input: { dispatchKeyEvent: async () => {} } }),
+      },
+      { preClean: false, maxRetries: 1, retryDelayMs: 0 },
+    );
+    assert.equal(result, 'recovered');
+    assert.equal(attempt, 2);
+  });
+
+  it('does not retry non-popup failures when no popup is detected', async () => {
+    const { withPopupGuard } = await import('../src/core/tradingview-readiness.js');
+    let attempt = 0;
+    await assert.rejects(
+      () => withPopupGuard(
+        async () => {
+          attempt += 1;
+          throw new Error('workspace model unavailable');
+        },
+        {
+          evaluate: async (expression) => {
+            if (expression.includes('MutationObserver')) {
+              return { installed: true, observed: 0, dismissed: 0, hidden: 0 };
+            }
+            if (expression.includes('role="dialog"')) {
+              return [];
+            }
+            return { detected: 0, clicked: 0, hidden: 0 };
+          },
+          getClient: async () => ({ Input: { dispatchKeyEvent: async () => {} } }),
+        },
+        { preClean: false, maxRetries: 2, retryDelayMs: 0 },
+      ),
+      /workspace model unavailable/,
+    );
+    assert.equal(attempt, 1);
+  });
+
+  it('retries when the action resolves an error payload caused by popup blocking', async () => {
+    const { withPopupGuard } = await import('../src/core/tradingview-readiness.js');
+    let attempt = 0;
+    const result = await withPopupGuard(
+      async () => {
+        attempt += 1;
+        if (attempt === 1) {
+          return { error: 'chart API is unavailable' };
+        }
+        return { success: true };
+      },
+      {
+        evaluate: async (expression) => {
+          if (expression.includes('MutationObserver')) {
+            return { installed: true, observed: 0, dismissed: 0, hidden: 0 };
+          }
+          if (expression.includes('role="dialog"')) {
+            return ['広告モーダル'];
+          }
+          return { detected: 1, clicked: 1, hidden: 0 };
+        },
+        getClient: async () => ({ Input: { dispatchKeyEvent: async () => {} } }),
+      },
+      { preClean: false, maxRetries: 1, retryDelayMs: 0 },
+    );
+    assert.deepEqual(result, { success: true });
+    assert.equal(attempt, 2);
+  });
+});
+
 describe('healthCheckWithReadiness', () => {
   it('succeeds on first attempt when API is available', async () => {
     const { healthCheckWithReadiness } = await import('../src/core/tradingview-readiness.js');

@@ -1,4 +1,8 @@
-import { evaluate as _evaluate, evaluateAsync as _evaluateAsync, safeString } from '../connection.js';
+import {
+  evaluateWithPopupGuard as _evaluate,
+  evaluateAsyncWithPopupGuard as _evaluateAsync,
+  safeString,
+} from '../connection.js';
 
 function resolveDeps(deps) {
   return {

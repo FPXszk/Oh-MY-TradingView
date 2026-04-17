@@ -201,6 +201,47 @@ export async function evaluateAsync(expression) {
   return evaluate(expression, { awaitPromise: true });
 }
 
+export const DEFAULT_POPUP_GUARD_OPTIONS = Object.freeze({
+  preClean: true,
+  maxRetries: 1,
+  retryDelayMs: 800,
+});
+
+export function createPopupGuardedEvaluator({
+  evaluateImpl = evaluate,
+  getClientImpl = getClient,
+  defaultGuardOptions = DEFAULT_POPUP_GUARD_OPTIONS,
+} = {}) {
+  return async function popupGuardedEvaluate(expression, opts = {}) {
+    const { popupGuard = {}, ...evaluateOptions } = opts;
+    const { withPopupGuard } = await import('./core/tradingview-readiness.js');
+    return withPopupGuard(
+      () => evaluateImpl(expression, evaluateOptions),
+      {
+        evaluate: (innerExpression, innerOptions = {}) => evaluateImpl(innerExpression, innerOptions),
+        getClient: getClientImpl,
+      },
+      {
+        ...defaultGuardOptions,
+        ...popupGuard,
+      },
+    );
+  };
+}
+
+export function createPopupGuardedAsyncEvaluator(args = {}) {
+  const guardedEvaluate = createPopupGuardedEvaluator(args);
+  return async function popupGuardedEvaluateAsync(expression, opts = {}) {
+    return guardedEvaluate(expression, {
+      ...opts,
+      awaitPromise: true,
+    });
+  };
+}
+
+export const evaluateWithPopupGuard = createPopupGuardedEvaluator();
+export const evaluateAsyncWithPopupGuard = createPopupGuardedAsyncEvaluator();
+
 export async function disconnect() {
   if (client) {
     try {

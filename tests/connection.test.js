@@ -8,6 +8,8 @@ import {
   pickTarget,
   resolveCdpEndpoint,
   buildConnectionHint,
+  createPopupGuardedEvaluator,
+  createPopupGuardedAsyncEvaluator,
   setSessionPort,
   getSessionPort,
   clearSessionPort,
@@ -215,5 +217,117 @@ describe('sameEndpoint', () => {
   it('returns false when host differs or endpoint missing', () => {
     assert.equal(sameEndpoint({ host: 'localhost', port: 9222 }, { host: '127.0.0.1', port: 9222 }), false);
     assert.equal(sameEndpoint(null, { host: 'localhost', port: 9222 }), false);
+  });
+});
+
+describe('createPopupGuardedEvaluator', () => {
+  it('pre-cleans before the guarded action', async () => {
+    const calls = [];
+    const evaluate = createPopupGuardedEvaluator({
+      evaluateImpl: async (expression) => {
+        if (expression === 'ACTION') {
+          calls.push('action');
+          return 'done';
+        }
+        if (expression.includes('MutationObserver')) {
+          calls.push('monitor');
+          return { installed: true, observed: 0, dismissed: 0, hidden: 0 };
+        }
+        calls.push('cleanup');
+        return { detected: 0, clicked: 0, hidden: 0 };
+      },
+      getClientImpl: async () => ({
+        Input: { dispatchKeyEvent: async () => calls.push('escape') },
+      }),
+    });
+
+    const result = await evaluate('ACTION', {
+      popupGuard: { retryDelayMs: 0 },
+    });
+    assert.equal(result, 'done');
+    assert.ok(calls.indexOf('cleanup') < calls.indexOf('action'));
+  });
+
+  it('retries once when popup is detected after a failure', async () => {
+    let attempts = 0;
+    const evaluate = createPopupGuardedEvaluator({
+      evaluateImpl: async (expression) => {
+        if (expression === 'ACTION') {
+          attempts += 1;
+          if (attempts === 1) {
+            throw new Error('chart API is unavailable');
+          }
+          return 'recovered';
+        }
+        if (expression.includes('MutationObserver')) {
+          return { installed: true, observed: 0, dismissed: 0, hidden: 0 };
+        }
+        if (expression.includes('role="dialog"')) {
+          return ['広告モーダル'];
+        }
+        return { detected: 1, clicked: 1, hidden: 0 };
+      },
+      getClientImpl: async () => ({
+        Input: { dispatchKeyEvent: async () => {} },
+      }),
+    });
+
+    const result = await evaluate('ACTION', {
+      popupGuard: { preClean: false, maxRetries: 1, retryDelayMs: 0 },
+    });
+    assert.equal(result, 'recovered');
+    assert.equal(attempts, 2);
+  });
+
+  it('retries once when popup blocking is returned as an error payload', async () => {
+    let attempts = 0;
+    const evaluate = createPopupGuardedEvaluator({
+      evaluateImpl: async (expression) => {
+        if (expression === 'ACTION') {
+          attempts += 1;
+          if (attempts === 1) {
+            return { error: 'chart API is unavailable' };
+          }
+          return { success: true };
+        }
+        if (expression.includes('MutationObserver')) {
+          return { installed: true, observed: 0, dismissed: 0, hidden: 0 };
+        }
+        if (expression.includes('role="dialog"')) {
+          return ['広告モーダル'];
+        }
+        return { detected: 1, clicked: 1, hidden: 0 };
+      },
+      getClientImpl: async () => ({
+        Input: { dispatchKeyEvent: async () => {} },
+      }),
+    });
+
+    const result = await evaluate('ACTION', {
+      popupGuard: { preClean: false, maxRetries: 1, retryDelayMs: 0 },
+    });
+    assert.deepEqual(result, { success: true });
+    assert.equal(attempts, 2);
+  });
+});
+
+describe('createPopupGuardedAsyncEvaluator', () => {
+  it('forces awaitPromise=true for guarded async evaluations', async () => {
+    let receivedOptions = null;
+    const evaluateAsync = createPopupGuardedAsyncEvaluator({
+      evaluateImpl: async (_expression, options) => {
+        receivedOptions = options;
+        return 'async-ok';
+      },
+      getClientImpl: async () => ({
+        Input: { dispatchKeyEvent: async () => {} },
+      }),
+    });
+
+    const result = await evaluateAsync('ASYNC_ACTION', {
+      popupGuard: { preClean: false, retryDelayMs: 0 },
+    });
+    assert.equal(result, 'async-ok');
+    assert.equal(receivedOptions.awaitPromise, true);
   });
 });

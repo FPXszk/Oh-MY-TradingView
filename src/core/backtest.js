@@ -20,6 +20,10 @@ import {
 import { validatePreset } from './preset-validation.js';
 import { buildResearchStrategySource } from './research-backtest.js';
 import { mergeDateOverride, validateDateRange } from './campaign.js';
+import {
+  dismissTransientDialogs as dismissSharedTransientDialogs,
+  readVisibleDialogTexts as readSharedVisibleDialogTexts,
+} from './tradingview-readiness.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -871,43 +875,11 @@ function readWsReportFallbackMetrics(wsListener) {
 }
 
 async function readVisibleDialogTexts() {
-  const dialogs = await evaluate(`
-    (function() {
-      return Array.from(document.querySelectorAll('[role="dialog"], [class*="dialog"], [class*="Dialog"]'))
-        .map(function(el) {
-          var rect = el.getBoundingClientRect();
-          var style = window.getComputedStyle(el);
-          if (style.display === 'none' || style.visibility === 'hidden' || rect.width <= 0 || rect.height <= 0) {
-            return '';
-          }
-          return ((el.innerText || el.textContent || '').trim().replace(/\\s+/g, ' '));
-        })
-        .filter(Boolean);
-    })()
-  `);
-
-  return Array.isArray(dialogs) ? dialogs : [];
+  return readSharedVisibleDialogTexts({ evaluate });
 }
 
 async function dismissTransientDialogs() {
-  const { DISMISS_DIALOG_JS } = await import('./tradingview-readiness.js');
-  await evaluate(DISMISS_DIALOG_JS);
-
-  const client = await getClient();
-  await client.Input.dispatchKeyEvent({
-    type: 'keyDown',
-    key: 'Escape',
-    code: 'Escape',
-    windowsVirtualKeyCode: 27,
-  });
-  await client.Input.dispatchKeyEvent({
-    type: 'keyUp',
-    key: 'Escape',
-    code: 'Escape',
-    windowsVirtualKeyCode: 27,
-  });
-
-  await new Promise((r) => setTimeout(r, 1000));
+  await dismissSharedTransientDialogs({ evaluate, getClient }, { settleMs: 1000 });
 }
 
 async function clearChartStudies() {

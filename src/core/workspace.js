@@ -4,8 +4,8 @@
  */
 
 import {
-  evaluate as _evaluate,
-  evaluateAsync as _evaluateAsync,
+  evaluateWithPopupGuard as _evaluate,
+  evaluateAsyncWithPopupGuard as _evaluateAsync,
   safeString,
 } from '../connection.js';
 

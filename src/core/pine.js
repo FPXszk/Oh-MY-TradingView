@@ -1,4 +1,28 @@
-import { evaluate, evaluateAsync, getClient } from '../connection.js';
+import {
+  evaluateWithPopupGuard as guardedEvaluate,
+  evaluateAsyncWithPopupGuard as guardedEvaluateAsync,
+  getClient,
+} from '../connection.js';
+
+function evaluate(expression, opts = {}) {
+  return guardedEvaluate(expression, {
+    ...opts,
+    popupGuard: {
+      preClean: false,
+      ...(opts.popupGuard || {}),
+    },
+  });
+}
+
+function evaluateAsync(expression, opts = {}) {
+  return guardedEvaluateAsync(expression, {
+    ...opts,
+    popupGuard: {
+      preClean: false,
+      ...(opts.popupGuard || {}),
+    },
+  });
+}
 
 const FIND_MONACO = `
   (function findMonacoEditor() {

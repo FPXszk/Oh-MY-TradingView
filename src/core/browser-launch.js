@@ -150,6 +150,8 @@ function buildBrowserLaunchArgs({ port, userDataDir, url }) {
     `--user-data-dir=${userDataDir}`,
     '--no-first-run',
     '--no-default-browser-check',
+    '--disable-notifications',
+    '--disable-session-crashed-bubble',
     url,
   ];
 }

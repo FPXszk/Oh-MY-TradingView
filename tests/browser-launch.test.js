@@ -88,6 +88,12 @@ describe('buildBrowserLaunchCommand', () => {
     assert.ok(result.args.includes('--no-default-browser-check'));
   });
 
+  it('includes notification-suppression flags', () => {
+    const result = buildBrowserLaunchCommand({ executablePath: '/usr/bin/chromium' });
+    assert.ok(result.args.includes('--disable-notifications'));
+    assert.ok(result.args.includes('--disable-session-crashed-bubble'));
+  });
+
   it('includes a non-default user-data-dir flag', () => {
     const result = buildBrowserLaunchCommand({ executablePath: '/usr/bin/chromium' });
     assert.ok(result.args.some((arg) => arg.startsWith('--user-data-dir=')));
