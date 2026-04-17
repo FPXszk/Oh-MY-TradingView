@@ -443,6 +443,58 @@ def preflight_visible_session(host: str, port: int, logger: logging.Logger) -> d
     return {'url': url, 'targets': len(payload)}
 
 
+def readiness_check(host: str, port: int, node_bin: str, logger: logging.Logger) -> dict:
+    """Run ``tv status`` via Node CLI and verify api_available===true.
+
+    Returns a dict with 'success', 'api_available', and raw 'payload'.
+    Raises RuntimeError when the readiness contract is not met.
+    """
+    cli_path = str(PROJECT_ROOT / 'src' / 'cli' / 'index.js')
+    cmd = [node_bin, cli_path, 'status']
+    env = {
+        **os.environ,
+        'TV_CDP_HOST': host,
+        'TV_CDP_PORT': str(port),
+    }
+    try:
+        proc = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=15,
+            env=env,
+        )
+    except (OSError, subprocess.TimeoutExpired) as error:
+        raise RuntimeError(
+            f'Readiness check failed for {host}:{port}: {error}'
+        ) from error
+
+    stdout = proc.stdout.strip()
+    stderr = proc.stderr.strip()
+    payload: dict = {}
+    for source in (stdout, stderr):
+        if source:
+            try:
+                payload = json.loads(source)
+                break
+            except (json.JSONDecodeError, ValueError):
+                continue
+
+    success = payload.get('success') is True and payload.get('api_available') is True
+    if not success:
+        api_error = payload.get('apiError') or payload.get('error') or 'unknown'
+        raise RuntimeError(
+            f'Readiness check failed for {host}:{port}: '
+            f'api_available={payload.get("api_available")}, error={api_error}'
+        )
+
+    logger.info(
+        'Readiness OK for %s:%s (api_available=%s, symbol=%s)',
+        host, port, payload.get('api_available'), payload.get('chart_symbol', '?'),
+    )
+    return {'success': True, 'api_available': True, 'payload': payload}
+
+
 def relative_path(path: Path) -> str:
     try:
         return str(path.relative_to(PROJECT_ROOT))
@@ -1186,12 +1238,22 @@ def build_runtime_step(settings: dict, phase_name: str) -> dict:
     }
 
 
-def wait_for_visible_session(host: str, port: int, timeout_sec: int, logger: logging.Logger) -> dict:
+def wait_for_visible_session(
+    host: str,
+    port: int,
+    timeout_sec: int,
+    logger: logging.Logger,
+    *,
+    node_bin: str | None = None,
+) -> dict:
     deadline = time.monotonic() + timeout_sec
     last_error: RuntimeError | None = None
     while time.monotonic() <= deadline:
         try:
-            return preflight_visible_session(host, port, logger)
+            result = preflight_visible_session(host, port, logger)
+            if node_bin:
+                readiness_check(host, port, node_bin, logger)
+            return result
         except RuntimeError as error:
             last_error = error
             time.sleep(2)
@@ -1704,7 +1766,7 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
         )
 
     try:
-        wait_for_visible_session(settings['host'], settings['port'], settings['launch_wait_sec'], logger)
+        wait_for_visible_session(settings['host'], settings['port'], settings['launch_wait_sec'], logger, node_bin=settings.get('node_bin'))
         steps.append(make_step_result('preflight', ['GET', preflight_url], success=True))
     except RuntimeError as error:
         logger.error('%s', error)
@@ -1810,7 +1872,13 @@ def execute_production_child(args, logger: logging.Logger, output_dir: Path = RE
     steps: list[dict] = []
     preflight_url = f'http://{args.host}:{args.port}/json/list'
     try:
-        wait_for_visible_session(args.host, args.port, args.launch_wait_sec, logger)
+        wait_for_visible_session(
+            args.host,
+            args.port,
+            args.launch_wait_sec,
+            logger,
+            node_bin=args.node_bin,
+        )
         steps.append(make_step_result('preflight', ['GET', preflight_url], success=True))
     except RuntimeError as error:
         logger.error('%s', error)

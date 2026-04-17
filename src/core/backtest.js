@@ -890,18 +890,8 @@ async function readVisibleDialogTexts() {
 }
 
 async function dismissTransientDialogs() {
-  await evaluate(`
-    (function() {
-      Array.from(document.querySelectorAll('button')).forEach(function(btn) {
-        var text = ((btn.textContent || '') + ' ' + (btn.title || '') + ' ' + (btn.getAttribute('aria-label') || ''))
-          .trim();
-        if (/メニューを閉じる|キャンセル|close|閉じる/i.test(text)) {
-          btn.click();
-        }
-      });
-      return true;
-    })()
-  `);
+  const { DISMISS_DIALOG_JS } = await import('./tradingview-readiness.js');
+  await evaluate(DISMISS_DIALOG_JS);
 
   const client = await getClient();
   await client.Input.dispatchKeyEvent({

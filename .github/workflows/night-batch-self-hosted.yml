@@ -99,6 +99,24 @@ jobs:
             Start-Sleep -Seconds $runtime.launch_wait_sec
           }
 
+      - name: Readiness diagnostics
+        if: steps.freshness.outputs.should_run == 'true'
+        shell: cmd
+        run: |
+          for /f "usebackq delims=" %%I in (`wsl.exe wslpath -a "%CD%"`) do set "REPO_WSL=%%I"
+          if not defined REPO_WSL exit /b 0
+          set "NIGHT_BATCH_CONFIG=${{ inputs.config_path }}"
+          if "%NIGHT_BATCH_CONFIG%"=="" set "NIGHT_BATCH_CONFIG=config/night_batch/bundle-foreground-reuse-config.json"
+          echo [readiness-diag] Checking port connectivity and readiness
+          echo [readiness-diag] startup_check_port (local):
+          wsl.exe bash -lc "cd \"%REPO_WSL%\" && python3 -c \"import json,sys; c=json.load(open(sys.argv[1])); h=c.get('runtime',{}).get('startup_check_host','localhost'); p=c.get('runtime',{}).get('startup_check_port',9222); print(f'  host={h} port={p}'); import urllib.request; urllib.request.urlopen(f'http://{h}:{p}/json/list',timeout=3); print('  status=reachable')\" \"%NIGHT_BATCH_CONFIG%\"" 2>&1 || echo [readiness-diag] startup_check_port: UNREACHABLE
+          echo [readiness-diag] bridge port (WSL):
+          wsl.exe bash -lc "cd \"%REPO_WSL%\" && python3 -c \"import json,sys; c=json.load(open(sys.argv[1])); h=c.get('runtime',{}).get('host','172.31.144.1'); p=c.get('runtime',{}).get('port',9223); print(f'  host={h} port={p}'); import urllib.request; urllib.request.urlopen(f'http://{h}:{p}/json/list',timeout=3); print('  status=reachable')\" \"%NIGHT_BATCH_CONFIG%\"" 2>&1 || echo [readiness-diag] bridge port: UNREACHABLE
+          echo [readiness-diag] tv status readiness:
+          wsl.exe bash -lc "cd \"%REPO_WSL%\" && TV_CDP_HOST=$(python3 -c \"import json,sys; c=json.load(open(sys.argv[1])); print(c.get('runtime',{}).get('host','172.31.144.1'))\" \"%NIGHT_BATCH_CONFIG%\") TV_CDP_PORT=$(python3 -c \"import json,sys; c=json.load(open(sys.argv[1])); print(c.get('runtime',{}).get('port',9223))\" \"%NIGHT_BATCH_CONFIG%\") node src/cli/index.js status 2>&1 || echo '  status=FAILED'" 2>&1 || echo [readiness-diag] tv status: FAILED
+          echo [readiness-diag] done
+        continue-on-error: true
+
       - name: Run smoke gate and foreground production
         if: steps.freshness.outputs.should_run == 'true'
         shell: cmd

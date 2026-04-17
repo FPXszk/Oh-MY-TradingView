@@ -599,3 +599,34 @@ describe('docs: next strategy update policy', () => {
       'summary script must emit Live checkout protection section');
   });
 });
+
+describe('night-batch-self-hosted workflow readiness diagnostics', () => {
+  it('workflow includes readiness diagnostics before the smoke gate step', () => {
+    const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
+    assert.match(workflow, /Readiness diagnostics/i,
+      'workflow must have a readiness diagnostics step');
+    const diagIdx = workflow.indexOf('Readiness diagnostics');
+    const runIdx = workflow.indexOf('Run smoke gate and foreground production');
+    assert.ok(diagIdx > 0, 'readiness diagnostics step must exist');
+    assert.ok(diagIdx < runIdx,
+      'readiness diagnostics must appear before the smoke gate step');
+  });
+
+  it('readiness diagnostics checks both 9222 and 9223 port connectivity', () => {
+    const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
+    assert.match(workflow, /startup_check_port/,
+      'readiness diagnostics must reference startup_check_port (local 9222)');
+    assert.match(workflow, /\bport\b.*readiness|readiness.*\bport\b/i,
+      'readiness diagnostics must reference the WSL bridge port');
+  });
+
+  it('readiness diagnostics invokes tv status for api_available verification', () => {
+    const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
+    const diagSection = workflow.slice(
+      workflow.indexOf('Readiness diagnostics'),
+      workflow.indexOf('Run smoke gate and foreground production'),
+    );
+    assert.match(diagSection, /status/,
+      'readiness diagnostics must invoke status command');
+  });
+});

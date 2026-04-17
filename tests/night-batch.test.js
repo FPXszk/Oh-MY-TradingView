@@ -94,6 +94,14 @@ function writeExecutable(filePath, content) {
   chmodSync(filePath, 0o755);
 }
 
+const STATUS_OK_SNIPPET = `
+case "$*" in *status*) printf '{"success":true,"api_available":true}\\n'; exit 0;; esac
+`;
+
+function writeFakeNode(filePath, body = 'exit 0') {
+  writeExecutable(filePath, `#!/bin/sh\n${STATUS_OK_SNIPPET}${body}\n`);
+}
+
 async function waitFor(check, timeoutMs = 4000, intervalMs = 100) {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() <= deadline) {
@@ -245,7 +253,7 @@ describe('night_batch.py CLI', () => {
     writeExecutable(
       fakeNodePath,
       `#!/bin/sh
-script="$1"
+${STATUS_OK_SNIPPET}script="$1"
 out=""
 rankout=""
 catalogout=""
@@ -453,7 +461,7 @@ exit 0
     writeExecutable(
       fakeNodePath,
       `#!/bin/sh
-printf '%s\n' "$*" >> "${fakeNodeLog}"
+${STATUS_OK_SNIPPET}printf '%s\n' "$*" >> "${fakeNodeLog}"
 exit 0
 `,
     );
@@ -506,7 +514,7 @@ exit 0
     writeExecutable(
       fakeNodePath,
       `#!/bin/sh
-exit 0
+${STATUS_OK_SNIPPET}exit 0
 `,
     );
     writeExecutable(
@@ -556,7 +564,7 @@ exit 0
     writeExecutable(
       fakeNodePath,
       `#!/bin/sh
-count=0
+${STATUS_OK_SNIPPET}count=0
 if [ -f "${counterFile}" ]; then
   count=$(cat "${counterFile}")
 fi
@@ -607,7 +615,7 @@ exit 0
     writeExecutable(
       fakeNodePath,
       `#!/bin/sh
-printf '%s\n' "$*" >> "${fakeNodeLog}"
+${STATUS_OK_SNIPPET}printf '%s\n' "$*" >> "${fakeNodeLog}"
 exit 0
 `,
     );
@@ -687,7 +695,7 @@ exit 0
     writeExecutable(
       fakeNodePath,
       `#!/bin/sh
-printf '%s\n' "$*" >> "${fakeNodeLog}"
+${STATUS_OK_SNIPPET}printf '%s\n' "$*" >> "${fakeNodeLog}"
 exit 0
 `,
     );
@@ -734,7 +742,7 @@ exit 0
     writeExecutable(
       fakeNodePath,
       `#!/bin/sh
-printf '%s\n' "$*" >> "${fakeNodeLog}"
+${STATUS_OK_SNIPPET}printf '%s\n' "$*" >> "${fakeNodeLog}"
 case "$*" in
   *"rsi-mean-reversion"*)
     sleep 2
@@ -792,7 +800,7 @@ exit 0
     writeExecutable(
       fakeNodePath,
       `#!/bin/sh
-exit 0
+${STATUS_OK_SNIPPET}exit 0
 `,
     );
     writeFileSync(
@@ -887,7 +895,7 @@ exit 0
     writeExecutable(
       fakeNodePath,
       `#!/bin/sh
-printf '%s\n' "$*" >> "${fakeNodeLog}"
+${STATUS_OK_SNIPPET}printf '%s\n' "$*" >> "${fakeNodeLog}"
 exit 0
 `,
     );
@@ -938,7 +946,7 @@ exit 0
     writeExecutable(
       fakeNodePath,
       `#!/bin/sh
-printf '%s\n' "$*" >> "${fakeNodeLog}"
+${STATUS_OK_SNIPPET}printf '%s\n' "$*" >> "${fakeNodeLog}"
 case "$*" in
   *"--phases full"*)
     sleep 2
@@ -1011,7 +1019,7 @@ exit 0
     writeExecutable(
       fakeNodePath,
       `#!/bin/sh
-mkdir -p "${usResultsDir}" "${jpResultsDir}"
+${STATUS_OK_SNIPPET}mkdir -p "${usResultsDir}" "${jpResultsDir}"
 cat <<'EOF' > "${usResultsPath}"
 [
   {
@@ -1106,7 +1114,7 @@ exit 0
     writeExecutable(
       fakeNodePath,
       `#!/bin/sh
-printf '%s\n' "$*" >> "${fakeNodeLog}"
+${STATUS_OK_SNIPPET}printf '%s\n' "$*" >> "${fakeNodeLog}"
 exit 0
 `,
     );
@@ -1251,7 +1259,7 @@ exit 0
     writeExecutable(
       fakeNodePath,
       `#!/bin/sh
-printf '%s\n' "$*" >> "${fakeNodeLog}"
+${STATUS_OK_SNIPPET}printf '%s\n' "$*" >> "${fakeNodeLog}"
 exit 0
 `,
     );
@@ -1288,7 +1296,7 @@ exit 0
     writeExecutable(
       fakeNodePath,
       `#!/bin/sh
-printf '%s\n' "$*" >> "${fakeNodeLog}"
+${STATUS_OK_SNIPPET}printf '%s\n' "$*" >> "${fakeNodeLog}"
 exit 0
 `,
     );
@@ -1448,7 +1456,7 @@ exit 0
     }), 'utf8');
 
     const fakeNodePath = join(tempDir, 'fake-node-guard.sh');
-    writeExecutable(fakeNodePath, '#!/bin/sh\nexit 0\n');
+    writeFakeNode(fakeNodePath);
 
     const result = await runPython([
       SCRIPT_PATH,
@@ -1502,7 +1510,7 @@ exit 0
     }), 'utf8');
 
     const fakeNodePath = join(tempDir, 'fake-node-warn.sh');
-    writeExecutable(fakeNodePath, '#!/bin/sh\nexit 0\n');
+    writeFakeNode(fakeNodePath);
 
     const result = await runPython([
       SCRIPT_PATH,
@@ -1559,7 +1567,7 @@ exit 0
     }), 'utf8');
 
     const fakeNodePath = join(tempDir, 'fake-node-campaign.sh');
-    writeExecutable(fakeNodePath, '#!/bin/sh\nexit 0\n');
+    writeFakeNode(fakeNodePath);
 
     const result = await runPython([
       SCRIPT_PATH,
@@ -1617,7 +1625,7 @@ exit 0
     }), 'utf8');
 
     const fakeNodePath = join(tempDir, 'fake-node-catalog.sh');
-    writeExecutable(fakeNodePath, '#!/bin/sh\nexit 0\n');
+    writeFakeNode(fakeNodePath);
 
     const result = await runPython([
       SCRIPT_PATH,
@@ -1642,7 +1650,7 @@ exit 0
 
   it('missing baseline file blocks production when env var is set', async () => {
     const fakeNodePath = join(tempDir, 'fake-node-missing.sh');
-    writeExecutable(fakeNodePath, '#!/bin/sh\nexit 0\n');
+    writeFakeNode(fakeNodePath);
 
     const result = await runPython([
       SCRIPT_PATH,
@@ -1669,7 +1677,7 @@ exit 0
 
   it('no baseline env var means guard is skipped', async () => {
     const fakeNodePath = join(tempDir, 'fake-node-nobaseline.sh');
-    writeExecutable(fakeNodePath, '#!/bin/sh\nexit 0\n');
+    writeFakeNode(fakeNodePath);
 
     const result = await runPython([
       SCRIPT_PATH,
@@ -1687,5 +1695,185 @@ exit 0
     const summary = readSummaryFromResult(result);
     const guardStep = summary.steps.find((s) => s.name === 'live-checkout-guard');
     assert.equal(guardStep, undefined, 'no live-checkout-guard step when env var is not set');
+  });
+});
+
+describe('night_batch.py readiness contract alignment', () => {
+  let server = null;
+  let port = null;
+  let tempDir = null;
+  let resultsDir = null;
+
+  beforeEach(async () => {
+    tempDir = mkdtempSync(join(tmpdir(), 'night-batch-readiness-'));
+    resultsDir = join(tempDir, 'night-batch-results');
+    RESULTS_DIR = resultsDir;
+    mkdirSync(resultsDir, { recursive: true });
+  });
+
+  afterEach(async () => {
+    if (server) {
+      await new Promise((resolve) => server.close(resolve));
+      server = null;
+    }
+    port = null;
+    if (tempDir) {
+      rmSync(tempDir, { recursive: true, force: true });
+      tempDir = null;
+    }
+    RESULTS_DIR = join(PROJECT_ROOT, 'results', 'night-batch');
+    resultsDir = null;
+  });
+
+  it('preflight invokes readiness check (tv status) when node_bin is available', async () => {
+    server = createServer((req, res) => {
+      if (req.url === '/json/list') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify([
+          { id: 'chart-1', type: 'page', url: 'https://jp.tradingview.com/chart/abc/', title: 'Chart' },
+        ]));
+        return;
+      }
+      res.writeHead(404);
+      res.end('not found');
+    });
+    await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+    port = server.address().port;
+
+    const fakeNodePath = join(tempDir, 'fake-node-status.sh');
+    const fakeNodeLog = join(tempDir, 'fake-node-status.log');
+    writeExecutable(
+      fakeNodePath,
+      `#!/bin/sh
+printf '%s\\n' "$*" >> "${fakeNodeLog}"
+case "$*" in
+  *status*)
+    printf '{"success":true,"api_available":true,"chart_symbol":"NVDA"}\\n'
+    exit 0
+    ;;
+  *)
+    exit 0
+    ;;
+esac
+`,
+    );
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--host', '127.0.0.1',
+      '--port', String(port),
+      '--startup-check-host', '127.0.0.1',
+      '--startup-check-port', String(port),
+      '--node-bin', fakeNodePath,
+    ]);
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    const summary = readSummaryFromResult(result);
+    const preflightStep = summary.steps.find((s) => s.name === 'preflight');
+    assert.ok(preflightStep, 'must have preflight step');
+    assert.equal(preflightStep.success, true);
+
+    const logged = readFileSync(fakeNodeLog, 'utf8');
+    assert.match(logged, /status/,
+      'preflight must invoke tv status to verify readiness contract');
+  });
+
+  it('preflight fails when chart target is visible but tv status reports api_available=false', async () => {
+    server = createServer((req, res) => {
+      if (req.url === '/json/list') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify([
+          { id: 'chart-1', type: 'page', url: 'https://jp.tradingview.com/chart/abc/', title: 'Chart' },
+        ]));
+        return;
+      }
+      res.writeHead(404);
+      res.end('not found');
+    });
+    await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+    port = server.address().port;
+
+    const fakeNodePath = join(tempDir, 'fake-node-api-unavail.sh');
+    writeExecutable(
+      fakeNodePath,
+      `#!/bin/sh
+case "$*" in
+  *status*)
+    printf '{"success":false,"api_available":false,"apiError":"dialog blocking"}\\n'
+    exit 1
+    ;;
+  *)
+    exit 0
+    ;;
+esac
+`,
+    );
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--host', '127.0.0.1',
+      '--port', String(port),
+      '--startup-check-host', '127.0.0.1',
+      '--startup-check-port', String(port),
+      '--node-bin', fakeNodePath,
+      '--launch-wait-sec', '2',
+    ]);
+
+    assert.equal(result.status, 1, 'must fail with exit 1 when api_available is false');
+    const summary = readSummaryFromResult(result);
+    const preflightStep = summary.steps.find((s) => s.name === 'preflight');
+    assert.ok(preflightStep, 'must have preflight step');
+    assert.equal(preflightStep.success, false,
+      'preflight must fail when tv status reports api_available=false even though /json/list sees chart target');
+  });
+
+  it('summary classifies readiness failure distinctly from preflight failure', async () => {
+    server = createServer((req, res) => {
+      if (req.url === '/json/list') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify([
+          { id: 'chart-1', type: 'page', url: 'https://jp.tradingview.com/chart/abc/', title: 'Chart' },
+        ]));
+        return;
+      }
+      res.writeHead(404);
+      res.end('not found');
+    });
+    await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+    port = server.address().port;
+
+    const fakeNodePath = join(tempDir, 'fake-node-readiness-fail.sh');
+    writeExecutable(
+      fakeNodePath,
+      `#!/bin/sh
+case "$*" in
+  *status*)
+    printf '{"success":false,"api_available":false}\\n'
+    exit 1
+    ;;
+  *)
+    exit 0
+    ;;
+esac
+`,
+    );
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--host', '127.0.0.1',
+      '--port', String(port),
+      '--startup-check-host', '127.0.0.1',
+      '--startup-check-port', String(port),
+      '--node-bin', fakeNodePath,
+      '--launch-wait-sec', '2',
+    ]);
+
+    assert.notEqual(result.status, 0);
+    const summary = readSummaryFromResult(result);
+    assert.match(summary.termination_reason, /readiness|preflight/,
+      'termination reason must indicate readiness or preflight failure');
   });
 });

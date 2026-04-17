@@ -1,15 +1,15 @@
 {
-  "status": "completed",
+  "status": "failed",
   "mode": "foreground",
   "command": "smoke-prod",
-  "run_id": "20260416_123314",
-  "updated_at": "2026-04-16T12:33:14.619760+00:00",
+  "run_id": "20260416_180109",
+  "updated_at": "2026-04-16T18:01:11.583369+00:00",
   "latest_checkpoint": null,
-  "started_at": "2026-04-16T12:33:14.616522+00:00",
-  "current_step": "production",
-  "summary_path": "/tmp/night-batch-test-lZmfwz/night-batch-results/round1/20260416_123314-summary.json",
-  "termination_reason": "success",
-  "failed_step": null,
-  "success": true,
-  "finished_at": "2026-04-16T12:33:14.619768+00:00"
+  "started_at": "2026-04-16T18:01:09.575782+00:00",
+  "current_step": "preflight",
+  "summary_path": "/tmp/night-batch-readiness-XrgQx0/night-batch-results/round1/20260416_180109-summary.json",
+  "termination_reason": "preflight-failed",
+  "failed_step": "preflight",
+  "success": false,
+  "finished_at": "2026-04-16T18:01:11.583472+00:00"
 }

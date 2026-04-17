@@ -1,4 +1,7 @@
 import { getClient, getTargetInfo, evaluate } from '../connection.js';
+import {
+  healthCheckWithReadiness as _healthCheckWithReadiness,
+} from './tradingview-readiness.js';
 
 /**
  * JS expression to collect page/chart state from TradingView.
@@ -107,4 +110,19 @@ export async function discover() {
   const total = Object.keys(paths).length;
 
   return { success: true, apis_available: available, apis_total: total, apis: paths };
+}
+
+/**
+ * Health check with readiness retry and dialog dismiss.
+ * Wraps healthCheckWithReadiness from tradingview-readiness with
+ * production CDP deps pre-bound.
+ */
+export async function healthCheckWithReadiness(opts = {}) {
+  const deps = {
+    collectPageState,
+    getClient,
+    getTargetInfo,
+    evaluate,
+  };
+  return _healthCheckWithReadiness(deps, opts);
 }

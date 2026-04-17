@@ -8,7 +8,8 @@ export function registerHealthTools(server) {
     {},
     async () => {
       try {
-        return jsonResult(await core.healthCheck());
+        const result = await core.healthCheckWithReadiness();
+        return jsonResult(result, result.success !== true);
       } catch (err) {
         return jsonResult(
           {
