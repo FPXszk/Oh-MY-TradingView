@@ -4,17 +4,16 @@ set -Eeuo pipefail
 
 readonly SESSION_NAME="Oh-MY-TradingView"
 readonly ROOT_DIR="${HOME}/code/Oh-MY-TradingView"
+readonly LOG_FILE="${ROOT_DIR}/Oh-MY-TradingView.log"
 
-if [ ! -d "${ROOT_DIR}" ]; then
-  echo "エラー: ~/code/Oh-MY-TradingView が存在しません" >&2
+die() {
+  echo "devinit.sh: $*" >&2
   exit 1
-fi
+}
 
-cd "${ROOT_DIR}"
-
-export LESS="-R"
-export EDITOR=nano
-export TERM=xterm-256color
+escape() {
+  printf '%q' "$1"
+}
 
 load_twitter_env() {
   local env_file="${ROOT_DIR}/config/.env"
@@ -46,27 +45,24 @@ load_twitter_env() {
   done < "${env_file}"
 }
 
-# Twitter/X 認証情報を安全に読み込む
-load_twitter_env
+initialize_environment() {
+  [[ -d "${ROOT_DIR}" ]] || die "~/code/Oh-MY-TradingView が存在しません"
 
-# ===== Robust SSH Agent Auto Start =====
-if ! ssh-add -l >/dev/null 2>&1; then
-  echo "[devinit] starting new ssh-agent..."
-  eval "$(ssh-agent -s)" >/dev/null
-  ssh-add ~/.ssh/id_ed25519 >/dev/null 2>&1 || true
-fi
+  cd "${ROOT_DIR}"
 
-echo "Copilot CLI をスマホ表示向けモードで起動しています"
+  export LESS="-R"
+  export EDITOR=nano
+  export TERM=xterm-256color
 
-readonly LOG_FILE="${ROOT_DIR}/Oh-MY-TradingView.log"
+  load_twitter_env
 
-die() {
-  echo "devinit.sh: $*" >&2
-  exit 1
-}
+  if ! ssh-add -l >/dev/null 2>&1; then
+    echo "[devinit] starting new ssh-agent..."
+    eval "$(ssh-agent -s)" >/dev/null
+    ssh-add ~/.ssh/id_ed25519 >/dev/null 2>&1 || true
+  fi
 
-escape() {
-  printf '%q' "$1"
+  echo "Copilot CLI 開発セッションを起動しています"
 }
 
 attach_or_switch() {
@@ -78,16 +74,21 @@ attach_or_switch() {
 
 session_is_healthy() {
   local pane_count
-  window_name="$(tmux display-message -p -t ${SESSION_NAME}:0 '#W')"
+  local pane_summary
+  local window_name
+
+  window_name="$(tmux display-message -p -t "${SESSION_NAME}:0" '#W')"
   [[ "${window_name}" == "dev" ]] || return 1
 
   pane_count="$(tmux list-panes -t "${SESSION_NAME}:0" 2>/dev/null | wc -l | tr -d ' ')"
   [[ "${pane_count}" -eq 4 ]] || return 1
 
-  titles="$(tmux list-panes -t "${SESSION_NAME}:0" -F '#{pane_title}' 2>/dev/null)"
-  for expected_title in copilot logs git keepalive; do
-    grep -qx "${expected_title}" <<<"${titles}" || return 1
-  done
+  pane_summary="$(tmux list-panes -t "${SESSION_NAME}:0" -F '#{pane_index}:#{pane_dead}:#{pane_title}:#{pane_current_command}' 2>/dev/null)"
+
+  grep -qx '0:0:.*:copilot' <<<"${pane_summary}" || return 1
+  grep -qx '1:0:logs:tail' <<<"${pane_summary}" || return 1
+  grep -qx '2:0:git:lazygit' <<<"${pane_summary}" || return 1
+  grep -qx '3:0:keepalive:bash' <<<"${pane_summary}" || return 1
 }
 
 validate_paths() {
@@ -136,8 +137,6 @@ start_commands() {
   sleep 2
   tmux select-pane -t "${SESSION_NAME}:0.0"
   tmux resize-pane -Z -t "${SESSION_NAME}:0.0"
-  sleep 1
-  tmux send-keys -t "${SESSION_NAME}:0.0" C-t
 }
 
 main() {
@@ -145,6 +144,7 @@ main() {
 
   command -v tmux >/dev/null 2>&1 || die "tmux is not installed."
   command -v lazygit >/dev/null 2>&1 || die "lazygit is not installed."
+  initialize_environment
 
   if tmux has-session -t "${SESSION_NAME}" 2>/dev/null; then
     if session_is_healthy; then
@@ -167,4 +167,6 @@ main() {
   attach_or_switch
 }
 
-main "$@"
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  main "$@"
+fi
