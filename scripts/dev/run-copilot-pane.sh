@@ -10,12 +10,18 @@ readonly STATUS_LOG="${LOG_DIR}/copilot-pane.status.log"
 readonly EVIDENCE_SCRIPT="${PROJECT_ROOT}/scripts/dev/capture-copilot-pane-evidence.sh"
 readonly COPILOT_PANE_MAX_RESTARTS=1
 
+if ! command -v script >/dev/null 2>&1; then
+  printf '[copilot-pane] FATAL: script(1) not found. Install util-linux.\n' >&2
+  exit 1
+fi
+
 SESSION_NAME="${SESSION_NAME:-Oh-MY-TradingView}"
 PANE_TARGET="${PANE_TARGET:-${SESSION_NAME}:0.0}"
 RESPAWN_COUNT="${COPILOT_PANE_RESPAWN_COUNT:-0}"
 RUN_ID="$(date '+%Y%m%d_%H%M%S')-${RESPAWN_COUNT}-$$"
 RUN_LOG="${LOG_DIR}/${RUN_ID}.log"
 RUN_ARTIFACT_DIR="${ARTIFACT_DIR}/${RUN_ID}"
+TRANSCRIPT="${LOG_DIR}/${RUN_ID}.transcript"
 
 mkdir -p "${LOG_DIR}" "${RUN_ARTIFACT_DIR}"
 
@@ -40,20 +46,22 @@ started_at=${started_at}
 finished_at=${finished_at}
 exit_code=${exit_code}
 run_log=${RUN_LOG}
+transcript=${TRANSCRIPT}
 status_log=${STATUS_LOG}
 EOF
 }
 
-exec > >(tee -a "${RUN_LOG}") 2>&1
-
 started_at="$(date -Is)"
 log_msg "starting run_id=${RUN_ID} respawn_count=${RESPAWN_COUNT} pid=$$ pane=${PANE_TARGET}"
-printf 'run_id=%s\n' "${RUN_ID}"
-printf 'run_log=%s\n' "${RUN_LOG}"
-printf 'artifact_dir=%s\n' "${RUN_ARTIFACT_DIR}"
+{
+  printf 'run_id=%s\n' "${RUN_ID}"
+  printf 'run_log=%s\n' "${RUN_LOG}"
+  printf 'transcript=%s\n' "${TRANSCRIPT}"
+  printf 'artifact_dir=%s\n' "${RUN_ARTIFACT_DIR}"
+} >> "${RUN_LOG}"
 
 set +e
-copilot --yolo --add-github-mcp-toolset all --add-dir "${PROJECT_ROOT}"
+script -qefc 'copilot --yolo --add-github-mcp-toolset all --add-dir "'"${PROJECT_ROOT}"'"' "${TRANSCRIPT}"
 exit_code=$?
 set -e
 

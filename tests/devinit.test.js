@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   chmodSync,
+  existsSync,
   mkdtempSync,
   mkdirSync,
   readFileSync,
@@ -14,6 +15,13 @@ import { spawnSync } from 'node:child_process';
 
 const PROJECT_ROOT = process.cwd();
 const DEVINIT_PATH = join(PROJECT_ROOT, 'devinit.sh');
+const RUN_COPILOT_PANE_PATH = join(PROJECT_ROOT, 'scripts', 'dev', 'run-copilot-pane.sh');
+const CAPTURE_COPILOT_PANE_EVIDENCE_PATH = join(
+  PROJECT_ROOT,
+  'scripts',
+  'dev',
+  'capture-copilot-pane-evidence.sh',
+);
 const script = readFileSync(DEVINIT_PATH, 'utf8');
 const lines = script.split('\n');
 
@@ -90,6 +98,125 @@ esac
         blindCtrlT.length,
         0,
         `devinit.sh sends an unconditional C-t keystroke, which destabilises the Copilot pane:\n  ${blindCtrlT.join('\n  ')}`,
+      );
+    });
+  });
+
+  // -----------------------------------------------------------------------
+  // Issue 1b: pane 0 must launch through a resilience wrapper
+  // -----------------------------------------------------------------------
+  describe('copilot pane resilience wrapper', () => {
+    it('launches pane 0 through run-copilot-pane.sh instead of direct copilot invocation', () => {
+      assert.match(
+        script,
+        /run-copilot-pane\.sh/,
+        'devinit.sh must route pane 0 through the dedicated Copilot wrapper script',
+      );
+      assert.doesNotMatch(
+        script,
+        /copilot_cmd=.*\bcopilot --yolo\b/,
+        'devinit.sh must not hard-code the raw Copilot command directly into pane 0 startup',
+      );
+    });
+
+    it('ships helper scripts for evidence capture and bounded restart', () => {
+      assert.equal(
+        existsSync(RUN_COPILOT_PANE_PATH),
+        true,
+        'scripts/dev/run-copilot-pane.sh must exist',
+      );
+      assert.equal(
+        existsSync(CAPTURE_COPILOT_PANE_EVIDENCE_PATH),
+        true,
+        'scripts/dev/capture-copilot-pane-evidence.sh must exist',
+      );
+
+      const runCopilotPane = readFileSync(RUN_COPILOT_PANE_PATH, 'utf8');
+      const captureEvidence = readFileSync(CAPTURE_COPILOT_PANE_EVIDENCE_PATH, 'utf8');
+
+      assert.match(
+        runCopilotPane,
+        /COPILOT_PANE_MAX_RESTARTS=1/,
+        'run-copilot-pane.sh must enforce a single bounded respawn',
+      );
+      assert.match(
+        runCopilotPane,
+        /capture-copilot-pane-evidence\.sh/,
+        'run-copilot-pane.sh must call the evidence capture helper before respawn',
+      );
+      assert.match(
+        runCopilotPane,
+        /logs\/devinit/,
+        'run-copilot-pane.sh must record pane diagnostics under logs/devinit',
+      );
+      assert.match(
+        runCopilotPane,
+        /artifacts\/devinit/,
+        'run-copilot-pane.sh must persist per-run evidence under artifacts/devinit',
+      );
+      assert.match(
+        captureEvidence,
+        /tmux\s+capture-pane/,
+        'capture-copilot-pane-evidence.sh must save the pane output',
+      );
+      assert.match(
+        captureEvidence,
+        /tmux\s+list-panes/,
+        'capture-copilot-pane-evidence.sh must save pane metadata',
+      );
+      assert.match(
+        captureEvidence,
+        /\bps\b/,
+        'capture-copilot-pane-evidence.sh must capture a process snapshot',
+      );
+    });
+
+    it('launches copilot via script(1) to guarantee a pseudo-TTY', () => {
+      const runCopilotPane = readFileSync(RUN_COPILOT_PANE_PATH, 'utf8');
+      assert.match(
+        runCopilotPane,
+        /\bscript\s+-qefc\b/,
+        'run-copilot-pane.sh must use script -qefc to provide a pseudo-TTY for copilot',
+      );
+    });
+
+    it('does not invoke copilot directly without a TTY wrapper', () => {
+      const runCopilotPane = readFileSync(RUN_COPILOT_PANE_PATH, 'utf8');
+      const lines = runCopilotPane.split('\n');
+      const rawCopilotLines = lines.filter(
+        (l) => /^\s*copilot\s+--/.test(l) && !/^\s*#/.test(l),
+      );
+      assert.equal(
+        rawCopilotLines.length,
+        0,
+        `run-copilot-pane.sh must not invoke copilot directly (found: ${rawCopilotLines.join('; ')})`,
+      );
+    });
+
+    it('does not use pane-wide exec tee redirect that breaks TTY', () => {
+      const runCopilotPane = readFileSync(RUN_COPILOT_PANE_PATH, 'utf8');
+      assert.doesNotMatch(
+        runCopilotPane,
+        /exec\s*>\s*>\(tee\b/,
+        'run-copilot-pane.sh must not use exec > >(tee ...) which destroys the TTY for copilot',
+      );
+    });
+
+    it('checks for script(1) availability and fails explicitly if missing', () => {
+      const runCopilotPane = readFileSync(RUN_COPILOT_PANE_PATH, 'utf8');
+      assert.match(
+        runCopilotPane,
+        /command\s+-v\s+script|which\s+script|type\s+script/,
+        'run-copilot-pane.sh must check that script(1) is available before using it',
+      );
+    });
+
+    it('preserves --yolo flag in the copilot invocation', () => {
+      const runCopilotPane = readFileSync(RUN_COPILOT_PANE_PATH, 'utf8');
+      assert.match(
+        runCopilotPane,
+        /--yolo/,
+        'run-copilot-pane.sh must pass --yolo to copilot',
       );
     });
   });
