@@ -3,6 +3,9 @@ set shell := ["bash", "-cu"]
 dev:
   ./devinit.sh
 
+dev-copilot-legacy:
+  bash scripts/dev/run-copilot-pane.sh
+
 stop:
   tmux kill-session -t Oh-MY-TradingView
 

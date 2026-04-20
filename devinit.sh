@@ -62,7 +62,7 @@ initialize_environment() {
     ssh-add ~/.ssh/id_ed25519 >/dev/null 2>&1 || true
   fi
 
-  echo "Copilot CLI 開発セッションを起動しています"
+  echo "Codex CLI 開発セッションを起動しています"
 }
 
 attach_or_switch() {
@@ -85,7 +85,7 @@ session_is_healthy() {
 
   pane_summary="$(tmux list-panes -t "${SESSION_NAME}:0" -F '#{pane_index}:#{pane_dead}:#{pane_title}:#{pane_current_command}' 2>/dev/null)"
 
-  grep -qx '0:0:.*:copilot' <<<"${pane_summary}" || return 1
+  grep -qx '0:0:.*:codex' <<<"${pane_summary}" || return 1
   grep -qx '1:0:logs:tail' <<<"${pane_summary}" || return 1
   grep -qx '2:0:git:lazygit' <<<"${pane_summary}" || return 1
   grep -qx '3:0:keepalive:bash' <<<"${pane_summary}" || return 1
@@ -105,13 +105,13 @@ create_layout() {
   tmux set-option -g history-limit 50000
   tmux set-option -g remain-on-exit on
 
-  # 4ペイン構成: copilot | logs | git | keepalive
+  # 4ペイン構成: codex | logs | git | keepalive
   tmux split-window -h -t "${SESSION_NAME}:0.0" -c "${ROOT_DIR}"
   tmux split-window -v -t "${SESSION_NAME}:0.1" -c "${ROOT_DIR}"
   tmux split-window -v -t "${SESSION_NAME}:0.2" -c "${ROOT_DIR}"
 
   tmux setw -t "${SESSION_NAME}:0" pane-border-status top
-  tmux select-pane -t "${SESSION_NAME}:0.0" -T copilot
+  tmux select-pane -t "${SESSION_NAME}:0.0" -T codex
   tmux select-pane -t "${SESSION_NAME}:0.1" -T logs
   tmux select-pane -t "${SESSION_NAME}:0.2" -T git
   tmux select-pane -t "${SESSION_NAME}:0.3" -T keepalive
@@ -120,16 +120,18 @@ create_layout() {
 }
 
 start_commands() {
-  local copilot_cmd logs_cmd git_cmd keepalive_cmd
+  local agent_cmd copilot_cmd logs_cmd git_cmd keepalive_cmd
 
   gh auth status >/dev/null 2>&1 || gh auth login --hostname github.com --git-protocol ssh --web
 
+  agent_cmd="cd $(escape "${ROOT_DIR}") && bash $(escape "${ROOT_DIR}/scripts/dev/run-codex-pane.sh")"
+  # Legacy Copilot CLI path retained for rollback/manual comparison:
   copilot_cmd="cd $(escape "${ROOT_DIR}") && bash $(escape "${ROOT_DIR}/scripts/dev/run-copilot-pane.sh")"
   logs_cmd="cd ${ROOT_DIR} && touch $(escape "${LOG_FILE}") && tail -F $(escape "${LOG_FILE}")"
   git_cmd="cd ${ROOT_DIR} && echo 'Launching lazygit...' && lazygit"
   keepalive_cmd="nice -n 19 bash -c 'while true; do sleep 300; done'"
 
-  tmux send-keys -t "${SESSION_NAME}:0.0" "${copilot_cmd}" C-m
+  tmux send-keys -t "${SESSION_NAME}:0.0" "${agent_cmd}" C-m
   tmux send-keys -t "${SESSION_NAME}:0.1" "${logs_cmd}" C-m
   tmux send-keys -t "${SESSION_NAME}:0.2" "${git_cmd}" C-m
   tmux send-keys -t "${SESSION_NAME}:0.3" "${keepalive_cmd}" C-m

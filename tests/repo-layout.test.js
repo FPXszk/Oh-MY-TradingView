@@ -66,6 +66,13 @@ describe('repository layout policy', () => {
     assert.match(config, /^model_reasoning_effort = "medium"$/m, 'Codex should use medium reasoning by default');
     assert.match(config, /^\[plugins\."github@openai-curated"\]$/m, 'GitHub plugin settings must be present');
     assert.match(config, /^enabled = true$/m, 'GitHub plugin must be enabled');
+    assert.match(config, /^\[mcp_servers\.oh-my-tradingview\]$/m, 'Codex MCP server settings must be present');
+    assert.match(config, /^command = "node"$/m, 'Codex MCP server must use node');
+    assert.match(config, /args = \["\/home\/fpxszk\/code\/Oh-MY-TradingView\/src\/server\.js"\]/,
+      'Codex MCP server must point at this repository server.js');
+    assert.match(config, /^\[mcp_servers\.oh-my-tradingview\.env\]$/m, 'Codex MCP env settings must be present');
+    assert.match(config, /^TV_CDP_HOST = "172\.31\.144\.1"$/m, 'Codex MCP should default to the verified WSL host');
+    assert.match(config, /^TV_CDP_PORT = "9223"$/m, 'Codex MCP should default to the verified WSL port');
   });
 
   it('keeps human entrypoints under docs/ and removes obsolete command.md', () => {

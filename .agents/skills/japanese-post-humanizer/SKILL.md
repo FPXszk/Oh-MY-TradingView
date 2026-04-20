@@ -10,8 +10,8 @@ Apply these rules whenever producing or reviewing Japanese text destined for X (
 ## When to Use
 
 - Drafting a new Japanese post or summary
-- Reviewing Copilot-generated Japanese output before publishing
-- Editing `config/copilot_summary_prompt_ja.txt` or `config/copilot_reply_prompt_ja.txt`
+- Reviewing agent-generated Japanese output before publishing
+- Editing Japanese summary or reply prompt templates
 
 ## Hard Constraints (never override)
 

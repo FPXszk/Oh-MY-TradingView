@@ -15,6 +15,13 @@ import { spawnSync } from 'node:child_process';
 
 const PROJECT_ROOT = process.cwd();
 const DEVINIT_PATH = join(PROJECT_ROOT, 'devinit.sh');
+const RUN_CODEX_PANE_PATH = join(PROJECT_ROOT, 'scripts', 'dev', 'run-codex-pane.sh');
+const CAPTURE_CODEX_PANE_EVIDENCE_PATH = join(
+  PROJECT_ROOT,
+  'scripts',
+  'dev',
+  'capture-codex-pane-evidence.sh',
+);
 const RUN_COPILOT_PANE_PATH = join(PROJECT_ROOT, 'scripts', 'dev', 'run-copilot-pane.sh');
 const CAPTURE_COPILOT_PANE_EVIDENCE_PATH = join(
   PROJECT_ROOT,
@@ -87,17 +94,17 @@ esac
   }
 
   // -----------------------------------------------------------------------
-  // Issue 1: C-t send-keys causes [server exited] in Copilot pane
+  // Issue 1: C-t send-keys causes [server exited] in the agent pane
   // -----------------------------------------------------------------------
-  describe('no blind C-t keystroke to copilot pane', () => {
-    it('must not send C-t to the copilot pane unconditionally', () => {
+  describe('no blind C-t keystroke to agent pane', () => {
+    it('must not send C-t to the agent pane unconditionally', () => {
       const blindCtrlT = lines.filter(
         (l) => /send-keys\b.*C-t/.test(l) && !/^\s*#/.test(l),
       );
       assert.equal(
         blindCtrlT.length,
         0,
-        `devinit.sh sends an unconditional C-t keystroke, which destabilises the Copilot pane:\n  ${blindCtrlT.join('\n  ')}`,
+        `devinit.sh sends an unconditional C-t keystroke, which destabilises the agent pane:\n  ${blindCtrlT.join('\n  ')}`,
       );
     });
   });
@@ -105,12 +112,22 @@ esac
   // -----------------------------------------------------------------------
   // Issue 1b: pane 0 must launch through a resilience wrapper
   // -----------------------------------------------------------------------
-  describe('copilot pane resilience wrapper', () => {
-    it('launches pane 0 through run-copilot-pane.sh instead of direct copilot invocation', () => {
+  describe('codex pane resilience wrapper', () => {
+    it('launches pane 0 through run-codex-pane.sh instead of direct codex invocation', () => {
       assert.match(
         script,
-        /run-copilot-pane\.sh/,
-        'devinit.sh must route pane 0 through the dedicated Copilot wrapper script',
+        /run-codex-pane\.sh/,
+        'devinit.sh must route pane 0 through the dedicated Codex wrapper script',
+      );
+      assert.doesNotMatch(
+        script,
+        /agent_cmd=.*\bcodex --full-auto\b/,
+        'devinit.sh must not hard-code the raw Codex command directly into pane 0 startup',
+      );
+      assert.doesNotMatch(
+        script,
+        /tmux send-keys -t "\$\{SESSION_NAME\}:0\.0" "\$\{copilot_cmd\}"/,
+        'devinit.sh must not start the legacy Copilot wrapper as the active pane 0 command',
       );
       assert.doesNotMatch(
         script,
@@ -121,38 +138,38 @@ esac
 
     it('ships helper scripts for evidence capture and bounded restart', () => {
       assert.equal(
-        existsSync(RUN_COPILOT_PANE_PATH),
+        existsSync(RUN_CODEX_PANE_PATH),
         true,
-        'scripts/dev/run-copilot-pane.sh must exist',
+        'scripts/dev/run-codex-pane.sh must exist',
       );
       assert.equal(
-        existsSync(CAPTURE_COPILOT_PANE_EVIDENCE_PATH),
+        existsSync(CAPTURE_CODEX_PANE_EVIDENCE_PATH),
         true,
-        'scripts/dev/capture-copilot-pane-evidence.sh must exist',
+        'scripts/dev/capture-codex-pane-evidence.sh must exist',
       );
 
-      const runCopilotPane = readFileSync(RUN_COPILOT_PANE_PATH, 'utf8');
-      const captureEvidence = readFileSync(CAPTURE_COPILOT_PANE_EVIDENCE_PATH, 'utf8');
+      const runCodexPane = readFileSync(RUN_CODEX_PANE_PATH, 'utf8');
+      const captureEvidence = readFileSync(CAPTURE_CODEX_PANE_EVIDENCE_PATH, 'utf8');
 
       assert.match(
-        runCopilotPane,
-        /COPILOT_PANE_MAX_RESTARTS=1/,
-        'run-copilot-pane.sh must enforce a single bounded respawn',
+        runCodexPane,
+        /CODEX_PANE_MAX_RESTARTS=1/,
+        'run-codex-pane.sh must enforce a single bounded respawn',
       );
       assert.match(
-        runCopilotPane,
-        /capture-copilot-pane-evidence\.sh/,
-        'run-copilot-pane.sh must call the evidence capture helper before respawn',
+        runCodexPane,
+        /capture-codex-pane-evidence\.sh/,
+        'run-codex-pane.sh must call the evidence capture helper before respawn',
       );
       assert.match(
-        runCopilotPane,
+        runCodexPane,
         /logs\/devinit/,
-        'run-copilot-pane.sh must record pane diagnostics under logs/devinit',
+        'run-codex-pane.sh must record pane diagnostics under logs/devinit',
       );
       assert.match(
-        runCopilotPane,
+        runCodexPane,
         /artifacts\/devinit/,
-        'run-copilot-pane.sh must persist per-run evidence under artifacts/devinit',
+        'run-codex-pane.sh must persist per-run evidence under artifacts/devinit',
       );
       assert.match(
         captureEvidence,
@@ -171,52 +188,71 @@ esac
       );
     });
 
-    it('launches copilot via script(1) to guarantee a pseudo-TTY', () => {
-      const runCopilotPane = readFileSync(RUN_COPILOT_PANE_PATH, 'utf8');
+    it('launches codex via script(1) to guarantee a pseudo-TTY', () => {
+      const runCodexPane = readFileSync(RUN_CODEX_PANE_PATH, 'utf8');
       assert.match(
-        runCopilotPane,
+        runCodexPane,
         /\bscript\s+-qefc\b/,
-        'run-copilot-pane.sh must use script -qefc to provide a pseudo-TTY for copilot',
+        'run-codex-pane.sh must use script -qefc to provide a pseudo-TTY for codex',
       );
     });
 
-    it('does not invoke copilot directly without a TTY wrapper', () => {
-      const runCopilotPane = readFileSync(RUN_COPILOT_PANE_PATH, 'utf8');
-      const lines = runCopilotPane.split('\n');
-      const rawCopilotLines = lines.filter(
-        (l) => /^\s*copilot\s+--/.test(l) && !/^\s*#/.test(l),
+    it('does not invoke codex directly without a TTY wrapper', () => {
+      const runCodexPane = readFileSync(RUN_CODEX_PANE_PATH, 'utf8');
+      const lines = runCodexPane.split('\n');
+      const rawCodexLines = lines.filter(
+        (l) => /^\s*codex\s+/.test(l) && !/^\s*#/.test(l),
       );
       assert.equal(
-        rawCopilotLines.length,
+        rawCodexLines.length,
         0,
-        `run-copilot-pane.sh must not invoke copilot directly (found: ${rawCopilotLines.join('; ')})`,
+        `run-codex-pane.sh must not invoke codex directly (found: ${rawCodexLines.join('; ')})`,
       );
     });
 
     it('does not use pane-wide exec tee redirect that breaks TTY', () => {
-      const runCopilotPane = readFileSync(RUN_COPILOT_PANE_PATH, 'utf8');
+      const runCodexPane = readFileSync(RUN_CODEX_PANE_PATH, 'utf8');
       assert.doesNotMatch(
-        runCopilotPane,
+        runCodexPane,
         /exec\s*>\s*>\(tee\b/,
-        'run-copilot-pane.sh must not use exec > >(tee ...) which destroys the TTY for copilot',
+        'run-codex-pane.sh must not use exec > >(tee ...) which destroys the TTY for codex',
       );
     });
 
     it('checks for script(1) availability and fails explicitly if missing', () => {
-      const runCopilotPane = readFileSync(RUN_COPILOT_PANE_PATH, 'utf8');
+      const runCodexPane = readFileSync(RUN_CODEX_PANE_PATH, 'utf8');
       assert.match(
-        runCopilotPane,
+        runCodexPane,
         /command\s+-v\s+script|which\s+script|type\s+script/,
-        'run-copilot-pane.sh must check that script(1) is available before using it',
+        'run-codex-pane.sh must check that script(1) is available before using it',
       );
     });
 
-    it('preserves --yolo flag in the copilot invocation', () => {
-      const runCopilotPane = readFileSync(RUN_COPILOT_PANE_PATH, 'utf8');
+    it('uses Codex full-auto mode in the codex invocation', () => {
+      const runCodexPane = readFileSync(RUN_CODEX_PANE_PATH, 'utf8');
       assert.match(
-        runCopilotPane,
-        /--yolo/,
-        'run-copilot-pane.sh must pass --yolo to copilot',
+        runCodexPane,
+        /--full-auto/,
+        'run-codex-pane.sh must pass --full-auto to codex',
+      );
+      assert.match(
+        runCodexPane,
+        /--cd/,
+        'run-codex-pane.sh must pass --cd to codex',
+      );
+      assert.match(
+        runCodexPane,
+        /--add-dir/,
+        'run-codex-pane.sh must pass --add-dir to codex',
+      );
+    });
+
+    it('keeps the legacy Copilot wrapper available but out of the active path', () => {
+      assert.equal(existsSync(RUN_COPILOT_PANE_PATH), true, 'legacy Copilot wrapper must remain');
+      assert.equal(
+        existsSync(CAPTURE_COPILOT_PANE_EVIDENCE_PATH),
+        true,
+        'legacy Copilot evidence helper must remain',
       );
     });
   });
@@ -241,10 +277,10 @@ esac
   // Issue 3: brittle pane-title exact-match health check
   // -----------------------------------------------------------------------
   describe('session_is_healthy pane-title check', () => {
-    it('accepts a healthy session even when the copilot pane title is dynamic', () => {
+    it('accepts a healthy session even when the codex pane title is dynamic', () => {
       const result = runSessionIsHealthy({
         paneSummary: [
-          '0:0:🤖 Reviewing evidence:copilot',
+          '0:0:codex working:codex',
           '1:0:logs:tail',
           '2:0:git:lazygit',
           '3:0:keepalive:bash',
@@ -253,14 +289,14 @@ esac
       assert.equal(
         result.status,
         0,
-        `expected dynamic copilot pane title to be accepted:\nstdout:\n${result.stdout}\nstderr:\n${result.stderr}`,
+        `expected dynamic codex pane title to be accepted:\nstdout:\n${result.stdout}\nstderr:\n${result.stderr}`,
       );
     });
 
     it('rejects a session when a required pane command no longer matches', () => {
       const result = runSessionIsHealthy({
         paneSummary: [
-          '0:0:copilot:copilot',
+          '0:0:codex:codex',
           '1:0:logs:bash',
           '2:0:git:lazygit',
           '3:0:keepalive:bash',
@@ -273,10 +309,10 @@ esac
       );
     });
 
-    it('rejects a session when the copilot pane has fallen back to bash', () => {
+    it('rejects a session when the codex pane has fallen back to bash', () => {
       const result = runSessionIsHealthy({
         paneSummary: [
-          '0:0:🤖 Reviewing evidence:bash',
+          '0:0:codex working:bash',
           '1:0:logs:tail',
           '2:0:git:lazygit',
           '3:0:keepalive:bash',
@@ -285,7 +321,7 @@ esac
       assert.notEqual(
         result.status,
         0,
-        'health check should fail when pane 0 is no longer running copilot',
+        'health check should fail when pane 0 is no longer running codex',
       );
     });
 
@@ -295,7 +331,7 @@ esac
       );
       assert.ok(
         stableChecks.length > 0,
-        'health check should inspect stable tmux metadata instead of the dynamic copilot pane title',
+        'health check should inspect stable tmux metadata instead of the dynamic codex pane title',
       );
     });
   });

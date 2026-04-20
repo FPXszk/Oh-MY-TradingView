@@ -5,7 +5,7 @@ description: Reinforces this repository's planning workflow — when to use exec
 
 # repo-planning-discipline — Planning Workflow for This Repository
 
-This skill encodes the operational planning discipline specific to this repository. It complements the always-on rules in `.github/copilot-instructions.md` by providing concrete decision guidance and a completeness checklist.
+This skill encodes the operational planning discipline specific to this repository. It complements the always-on repository instructions in `AGENTS.md` and `.github/copilot-instructions.md` by providing concrete decision guidance and a completeness checklist.
 
 ## When to Use
 
@@ -19,7 +19,7 @@ This skill encodes the operational planning discipline specific to this reposito
 | Artifact | Location | Use When |
 |---|---|---|
 | **Committed exec-plan** | `docs/exec-plans/active/<name>_YYYYMMDD_HHMM.md` | Multi-step implementation that needs user review before starting. Move it to `completed/` when entering the COMMIT step. |
-| **Session plan.md** | Session workspace (e.g. `~/.copilot/session-state/plan.md`) | Ephemeral working notes for the current session — approach ideas, scratch analysis, intermediate findings. Not committed. |
+| **Session plan.md** | Session-local workspace (for example a non-repo scratch plan file) | Ephemeral working notes for the current session — approach ideas, scratch analysis, intermediate findings. Not committed. |
 | **SQL todos** | Session SQLite `todos` table | Tracking individual implementation steps within an approved plan — status (`pending`/`in_progress`/`done`/`blocked`), dependencies, and batch progress. |
 
 ### Decision Flow
@@ -62,4 +62,4 @@ Before asking the user to approve a plan, verify every item:
 | Tracking steps only in prose | Use SQL todos for step-by-step status when plan has 3+ steps |
 | Committing session plan.md | Session artifacts stay local; only exec-plans are committed |
 | Creating root-level planning files | Use `docs/exec-plans/` — no planning files in the repository root |
-| Duplicating copilot-instructions.md | This skill adds operational guidance, not a copy of the constitution |
+| Duplicating repository instructions | This skill adds operational guidance, not a copy of the constitution |

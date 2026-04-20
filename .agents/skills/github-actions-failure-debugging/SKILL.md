@@ -155,7 +155,7 @@ Once the root cause is identified:
 
 This repository uses several scheduled workflows (see README for full list). Key debugging notes:
 
-- **`post_buz.yml`**: Depends on `TWITTER_AUTH_TOKEN`, `TWITTER_CT0`, and `COPILOT_GITHUB_TOKEN` secrets. Failure in the post step often means expired Twitter cookies.
+- **`post_buz.yml`**: Check workflow-specific secrets such as `TWITTER_AUTH_TOKEN` and `TWITTER_CT0` before debugging post failures. Failure in the post step often means expired Twitter cookies or a renamed/missing workflow secret.
 - **`auto_follow.yml` / `auto_like.yml`**: Rate-limit sensitive. Failures may be transient — check if retrying resolves it.
 - **`ci.yml`**: Usually points to validation or code issues once dependency installation succeeds, but failures before validation steps can still come from runner, network, or package-index problems.
 - **State/cache**: Many runtime outputs land under `tmp/`, but persisted state is not limited to `tmp/`. Check workflow-specific paths such as `config/follow_state.json` and any restored artifacts like `stock-cache` when investigating state-dependent failures.

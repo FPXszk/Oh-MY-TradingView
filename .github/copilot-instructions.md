@@ -84,4 +84,4 @@ feat:, fix:, refactor:, docs:, test:
 ### Step 5: 次の指示を待つ（WAIT_FOR_NEXT_INSTRUCTION）
 
 次の指示をask_user ツールを呼び出してユーザーの確認を待機すること。ユーザーの承認があるまで次の行動を開始してはいけません。
-指示が来たら、再度　copilot-instructions.mdを確認し、再び Step 1 からワークフローを開始すること。
+指示が来たら、再度 AGENTS.md と本ファイルを確認し、再び Step 1 からワークフローを開始すること。

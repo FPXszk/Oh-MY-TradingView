@@ -1,5 +1,10 @@
 # Copilot CLI セッション約2分後終了の原因確定 exec-plan
 
+## Superseded
+
+2026-04-21 の Codex CLI 移行により、`just dev` の主経路は Codex CLI へ変更する方針になった。
+この計画は旧 Copilot CLI 経路の原因調査記録として残すが、active な実装・調査計画からは外す。
+
 ## 目的
 
 `just dev` / 手動起動の両経路で、Copilot CLI セッションが作業中におおむね約2分後に落ちる問題について、**原因を特定して確定する**。
