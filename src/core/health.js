@@ -126,3 +126,60 @@ export async function healthCheckWithReadiness(opts = {}) {
   };
   return _healthCheckWithReadiness(deps, opts);
 }
+
+/**
+ * Multi-layer health probe for crash recovery classification.
+ * Returns independent process / port / MCP observations.
+ *
+ * @param {{
+ *   checkProcess?: () => Promise<boolean>,
+ *   checkMcp?: () => Promise<boolean>,
+ *   host?: string,
+ *   port?: number
+ * }} _deps
+ * @returns {Promise<{ processAlive: boolean, portOpen: boolean, mcpHealthy: boolean }>}
+ */
+export async function multiLayerHealthCheck(_deps = {}) {
+  const host = _deps.host || process.env.TV_CDP_HOST || 'localhost';
+  const port = Number(_deps.port || process.env.TV_CDP_PORT || 9222);
+
+  let processAlive = false;
+  if (typeof _deps.checkProcess === 'function') {
+    try {
+      processAlive = await _deps.checkProcess();
+    } catch {
+      processAlive = false;
+    }
+  } else {
+    processAlive = true;
+  }
+
+  let portOpen = false;
+  try {
+    const url = `http://${host}:${port}/json/version`;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch(url, { signal: controller.signal });
+    clearTimeout(timer);
+    portOpen = res.ok;
+  } catch {
+    portOpen = false;
+  }
+
+  let mcpHealthy = false;
+  if (portOpen) {
+    const checkMcpFn = typeof _deps.checkMcp === 'function'
+      ? _deps.checkMcp
+      : async () => {
+          const result = await healthCheckWithReadiness({ maxRetries: 0, retryDelayMs: 0 });
+          return result?.success === true && result?.api_available === true;
+        };
+    try {
+      mcpHealthy = await checkMcpFn();
+    } catch {
+      mcpHealthy = false;
+    }
+  }
+
+  return { processAlive, portOpen, mcpHealthy };
+}

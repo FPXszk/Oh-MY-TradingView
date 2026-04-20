@@ -1574,6 +1574,24 @@ describe('run-finetune-bundle default policy', () => {
     assert.ok(!raw.includes('findLatestCheckpoint('));
     assert.ok(!raw.includes('Rerun manually with --ports'));
   });
+
+  it('exposes --recovery-script option for TradingView crash recovery', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'scripts', 'backtest', 'run-finetune-bundle.mjs'),
+      'utf8',
+    );
+    assert.ok(raw.includes("'recovery-script'"), 'must accept --recovery-script option');
+    assert.ok(raw.includes("'recovery-step-retries'"), 'must accept --recovery-step-retries option');
+  });
+
+  it('uses EPIPE/broken-pipe pattern for recoverable crash detection', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'scripts', 'backtest', 'run-finetune-bundle.mjs'),
+      'utf8',
+    );
+    assert.ok(raw.includes('EPIPE'), 'must detect EPIPE as a recoverable crash signal');
+    assert.ok(raw.includes('broken pipe'), 'must detect broken pipe as a recoverable crash signal');
+  });
 });
 
 // ---------------------------------------------------------------------------

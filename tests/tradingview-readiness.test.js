@@ -25,6 +25,30 @@ describe('classifyReadinessFailure', () => {
     const result = classifyReadinessFailure(new Error('some random error'));
     assert.equal(result.category, 'unknown');
   });
+
+  it('classifies EPIPE as cli-epipe', async () => {
+    const { classifyReadinessFailure } = await import('../src/core/tradingview-readiness.js');
+    const result = classifyReadinessFailure(new Error('EPIPE: broken pipe, write'));
+    assert.equal(result.category, 'cli-epipe');
+  });
+
+  it('classifies process-missing errors', async () => {
+    const { classifyReadinessFailure } = await import('../src/core/tradingview-readiness.js');
+    const result = classifyReadinessFailure(new Error('TradingView process not found'));
+    assert.equal(result.category, 'process-missing');
+  });
+
+  it('classifies CDP unreachable (port closed) as cdp-unreachable', async () => {
+    const { classifyReadinessFailure } = await import('../src/core/tradingview-readiness.js');
+    const result = classifyReadinessFailure(new Error('CDP port 9222 is not reachable'));
+    assert.equal(result.category, 'cdp-unreachable');
+  });
+
+  it('classifies MCP unhealthy errors', async () => {
+    const { classifyReadinessFailure } = await import('../src/core/tradingview-readiness.js');
+    const result = classifyReadinessFailure(new Error('MCP server is unhealthy'));
+    assert.equal(result.category, 'mcp-unhealthy');
+  });
 });
 
 describe('DISMISS_DIALOG_JS', () => {
@@ -313,5 +337,159 @@ describe('healthCheckWithReadiness', () => {
     const result = await healthCheckWithReadiness(fakeDeps, { maxRetries: 2, retryDelayMs: 10 });
     assert.equal(result.success, false);
     assert.equal(result.failure_category, 'bridge-unreachable');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// tradingview-recovery.js
+// ---------------------------------------------------------------------------
+describe('classifyCrashFailure', () => {
+  it('classifies process-missing when TradingView process is gone', async () => {
+    const { classifyCrashFailure } = await import('../src/core/tradingview-recovery.js');
+    const result = classifyCrashFailure({ processAlive: false, portOpen: false, mcpHealthy: false });
+    assert.equal(result.severity, 'critical');
+    assert.equal(result.category, 'process-missing');
+  });
+
+  it('classifies cdp-unreachable when process exists but port is closed', async () => {
+    const { classifyCrashFailure } = await import('../src/core/tradingview-recovery.js');
+    const result = classifyCrashFailure({ processAlive: true, portOpen: false, mcpHealthy: false });
+    assert.equal(result.severity, 'moderate');
+    assert.equal(result.category, 'cdp-unreachable');
+  });
+
+  it('classifies mcp-unhealthy when port is open but MCP fails', async () => {
+    const { classifyCrashFailure } = await import('../src/core/tradingview-recovery.js');
+    const result = classifyCrashFailure({ processAlive: true, portOpen: true, mcpHealthy: false });
+    assert.equal(result.severity, 'mild');
+    assert.equal(result.category, 'mcp-unhealthy');
+  });
+
+  it('returns healthy when everything is fine', async () => {
+    const { classifyCrashFailure } = await import('../src/core/tradingview-recovery.js');
+    const result = classifyCrashFailure({ processAlive: true, portOpen: true, mcpHealthy: true });
+    assert.equal(result.severity, 'none');
+    assert.equal(result.category, 'healthy');
+  });
+});
+
+describe('computeBackoff', () => {
+  it('computes exponential backoff with correct delays', async () => {
+    const { computeBackoff } = await import('../src/core/tradingview-recovery.js');
+    assert.equal(computeBackoff(0), 5000);
+    assert.equal(computeBackoff(1), 15000);
+    assert.equal(computeBackoff(2), 30000);
+    assert.equal(computeBackoff(3), 60000);
+  });
+
+  it('caps at max delay for high attempt numbers', async () => {
+    const { computeBackoff } = await import('../src/core/tradingview-recovery.js');
+    assert.equal(computeBackoff(10), 60000);
+    assert.equal(computeBackoff(100), 60000);
+  });
+});
+
+describe('buildRecoveryPlan', () => {
+  it('returns reconnect-only plan for mild failure', async () => {
+    const { buildRecoveryPlan } = await import('../src/core/tradingview-recovery.js');
+    const plan = buildRecoveryPlan({ severity: 'mild', category: 'mcp-unhealthy' });
+    assert.deepEqual(plan.actions, ['reconnect-mcp']);
+    assert.equal(plan.maxRetries, 3);
+  });
+
+  it('returns full restart plan for critical failure', async () => {
+    const { buildRecoveryPlan } = await import('../src/core/tradingview-recovery.js');
+    const plan = buildRecoveryPlan({ severity: 'critical', category: 'process-missing' });
+    assert.ok(plan.actions.includes('kill-existing'));
+    assert.ok(plan.actions.includes('relaunch'));
+    assert.ok(plan.actions.includes('wait-readiness'));
+    assert.ok(plan.actions.includes('reconnect-mcp'));
+    assert.equal(plan.maxRetries, 2);
+  });
+
+  it('returns restart plan for moderate failure', async () => {
+    const { buildRecoveryPlan } = await import('../src/core/tradingview-recovery.js');
+    const plan = buildRecoveryPlan({ severity: 'moderate', category: 'cdp-unreachable' });
+    assert.ok(plan.actions.includes('kill-existing'));
+    assert.ok(plan.actions.includes('relaunch'));
+    assert.equal(plan.maxRetries, 2);
+  });
+
+  it('returns no-action plan when healthy', async () => {
+    const { buildRecoveryPlan } = await import('../src/core/tradingview-recovery.js');
+    const plan = buildRecoveryPlan({ severity: 'none', category: 'healthy' });
+    assert.deepEqual(plan.actions, []);
+    assert.equal(plan.maxRetries, 0);
+  });
+});
+
+describe('executeRecovery', () => {
+  it('succeeds on reconnect-only recovery', async () => {
+    const { executeRecovery } = await import('../src/core/tradingview-recovery.js');
+    const log = [];
+    const fakeDeps = {
+      reconnectMcp: async () => { log.push('reconnect'); return true; },
+      killExisting: async () => { log.push('kill'); },
+      relaunch: async () => { log.push('relaunch'); return { pid: 1234 }; },
+      waitReadiness: async () => { log.push('readiness'); return true; },
+      log: (msg) => log.push(`log:${msg}`),
+    };
+    const plan = { actions: ['reconnect-mcp'], maxRetries: 3 };
+    const result = await executeRecovery(plan, fakeDeps, { retryDelayMs: 0 });
+    assert.equal(result.success, true);
+    assert.ok(log.includes('reconnect'));
+    assert.ok(!log.includes('kill'));
+  });
+
+  it('executes full recovery sequence for critical failure', async () => {
+    const { executeRecovery } = await import('../src/core/tradingview-recovery.js');
+    const log = [];
+    const fakeDeps = {
+      reconnectMcp: async () => { log.push('reconnect'); return true; },
+      killExisting: async () => { log.push('kill'); },
+      relaunch: async () => { log.push('relaunch'); return { pid: 5678 }; },
+      waitReadiness: async () => { log.push('readiness'); return true; },
+      log: (msg) => log.push(`log:${msg}`),
+    };
+    const plan = { actions: ['kill-existing', 'relaunch', 'wait-readiness', 'reconnect-mcp'], maxRetries: 2 };
+    const result = await executeRecovery(plan, fakeDeps, { retryDelayMs: 0 });
+    assert.equal(result.success, true);
+    assert.deepEqual(log.filter((l) => !l.startsWith('log:')), ['kill', 'relaunch', 'readiness', 'reconnect']);
+  });
+
+  it('retries on failure and eventually succeeds', async () => {
+    const { executeRecovery } = await import('../src/core/tradingview-recovery.js');
+    let attempt = 0;
+    const fakeDeps = {
+      reconnectMcp: async () => {
+        attempt++;
+        if (attempt < 2) throw new Error('MCP reconnect failed');
+        return true;
+      },
+      killExisting: async () => {},
+      relaunch: async () => ({ pid: 999 }),
+      waitReadiness: async () => true,
+      log: () => {},
+    };
+    const plan = { actions: ['reconnect-mcp'], maxRetries: 3 };
+    const result = await executeRecovery(plan, fakeDeps, { retryDelayMs: 0 });
+    assert.equal(result.success, true);
+    assert.equal(result.attempts, 2);
+  });
+
+  it('fails after exhausting retries', async () => {
+    const { executeRecovery } = await import('../src/core/tradingview-recovery.js');
+    const fakeDeps = {
+      reconnectMcp: async () => { throw new Error('MCP reconnect failed'); },
+      killExisting: async () => {},
+      relaunch: async () => ({ pid: 111 }),
+      waitReadiness: async () => true,
+      log: () => {},
+    };
+    const plan = { actions: ['reconnect-mcp'], maxRetries: 2 };
+    const result = await executeRecovery(plan, fakeDeps, { retryDelayMs: 0 });
+    assert.equal(result.success, false);
+    assert.equal(result.attempts, 2);
+    assert.match(result.lastError, /MCP reconnect failed/);
   });
 });

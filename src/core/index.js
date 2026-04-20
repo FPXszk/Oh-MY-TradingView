@@ -1,4 +1,4 @@
-export { healthCheck, discover, collectPageState } from './health.js';
+export { healthCheck, discover, collectPageState, multiLayerHealthCheck } from './health.js';
 export { captureObservabilitySnapshot } from './observability.js';
 export { analyze, getSource, setSource, compile, getErrors, smartCompile, verifyStrategyAttached, verifyStrategyAttachmentChange, pickApplyButton, fetchChartStudies, retryApplyStrategy } from './pine.js';
 export { getCurrentPrice, setActiveSymbol, formatPriceResult, validatePriceData, symbolMatches } from './price.js';
@@ -6,6 +6,12 @@ export { buildNvdaMaSource, normalizeMetrics, buildResult, runNvdaMaBacktest, lo
 export { validatePreset, validatePresetIds, filterPresetsByRound } from './preset-validation.js';
 export { buildResearchStrategySource } from './research-backtest.js';
 export { buildLaunchCommand, verifyExecutable, launchDesktop } from './launch.js';
+export {
+  classifyCrashFailure,
+  computeBackoff,
+  buildRecoveryPlan,
+  executeRecovery,
+} from './tradingview-recovery.js';
 export { buildBrowserLaunchCommand, launchBrowserFallback, BROWSER_CANDIDATES, DEFAULT_CHART_URL } from './browser-launch.js';
 export { captureScreenshot } from './capture.js';
 export { resolveStreamParams, streamPriceTicks } from './stream.js';

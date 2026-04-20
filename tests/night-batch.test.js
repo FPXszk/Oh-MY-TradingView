@@ -1829,6 +1829,155 @@ esac
       'preflight must fail when tv status reports api_available=false even though /json/list sees chart target');
   });
 
+  it('preflight recovers and retries when tv status fails with EPIPE before TradingView comes back', async () => {
+    server = createServer((req, res) => {
+      if (req.url === '/json/list') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify([
+          { id: 'chart-1', type: 'page', url: 'https://jp.tradingview.com/chart/abc/', title: 'Chart' },
+        ]));
+        return;
+      }
+      res.writeHead(404);
+      res.end('not found');
+    });
+    await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+    port = server.address().port;
+
+    const readyFlag = join(tempDir, 'recovery-ready.flag');
+    const fakeNodePath = join(tempDir, 'fake-node-recovery-preflight.sh');
+    const fakeNodeLog = join(tempDir, 'fake-node-recovery-preflight.log');
+    const fakeRecoveryPath = join(tempDir, 'fake-recovery-preflight.sh');
+    const fakeRecoveryLog = join(tempDir, 'fake-recovery-preflight.log');
+    const detachedStatePath = join(tempDir, 'detached-state.json');
+
+    writeExecutable(
+      fakeNodePath,
+      `#!/bin/sh
+printf '%s\\n' "$*" >> "${fakeNodeLog}"
+case "$*" in
+  *status*)
+    if [ -f "${readyFlag}" ]; then
+      printf '{"success":true,"api_available":true,"chart_symbol":"NVDA"}\\n'
+      exit 0
+    fi
+    printf '{"success":false,"api_available":false,"error":"EPIPE: broken pipe, write"}\\n'
+    exit 1
+    ;;
+  *)
+    exit 0
+    ;;
+esac
+`,
+    );
+    writeExecutable(
+      fakeRecoveryPath,
+      `#!/bin/sh
+printf 'recover-preflight\\n' >> "${fakeRecoveryLog}"
+touch "${readyFlag}"
+exit 0
+`,
+    );
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--host', '127.0.0.1',
+      '--port', String(port),
+      '--startup-check-host', '127.0.0.1',
+      '--startup-check-port', String(port),
+      '--node-bin', fakeNodePath,
+      '--launch-wait-sec', '2',
+      '--recovery-script', fakeRecoveryPath,
+      '--recovery-step-retries', '1',
+      '--detached-state-file', detachedStatePath,
+    ]);
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    const summary = readSummaryFromResult(result);
+    const preflightStep = summary.steps.find((s) => s.name === 'preflight');
+    assert.ok(preflightStep, 'must have preflight step');
+    assert.equal(preflightStep.success, true);
+    assert.match(readFileSync(fakeRecoveryLog, 'utf8'), /recover-preflight/);
+  });
+
+  it('smoke step reruns after recovery when CLI execution fails with EPIPE', async () => {
+    server = createServer((req, res) => {
+      if (req.url === '/json/list') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify([
+          { id: 'chart-1', type: 'page', url: 'https://jp.tradingview.com/chart/abc/', title: 'Chart' },
+        ]));
+        return;
+      }
+      res.writeHead(404);
+      res.end('not found');
+    });
+    await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+    port = server.address().port;
+
+    const readyFlag = join(tempDir, 'recovery-ready-smoke.flag');
+    const fakeNodePath = join(tempDir, 'fake-node-recovery-smoke.sh');
+    const fakeNodeLog = join(tempDir, 'fake-node-recovery-smoke.log');
+    const fakeRecoveryPath = join(tempDir, 'fake-recovery-smoke.sh');
+    const fakeRecoveryLog = join(tempDir, 'fake-recovery-smoke.log');
+    const detachedStatePath = join(tempDir, 'detached-state-smoke.json');
+
+    writeExecutable(
+      fakeNodePath,
+      `#!/bin/sh
+printf '%s\\n' "$*" >> "${fakeNodeLog}"
+case "$*" in
+  *status*)
+    printf '{"success":true,"api_available":true,"chart_symbol":"NVDA"}\\n'
+    exit 0
+    ;;
+  *2024-01-01*2024-12-31*)
+    if [ -f "${readyFlag}" ]; then
+      exit 0
+    fi
+    printf 'EPIPE: broken pipe, write\\n' >&2
+    exit 1
+    ;;
+  *)
+    exit 0
+    ;;
+esac
+`,
+    );
+    writeExecutable(
+      fakeRecoveryPath,
+      `#!/bin/sh
+printf 'recover-smoke\\n' >> "${fakeRecoveryLog}"
+touch "${readyFlag}"
+exit 0
+`,
+    );
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--host', '127.0.0.1',
+      '--port', String(port),
+      '--startup-check-host', '127.0.0.1',
+      '--startup-check-port', String(port),
+      '--node-bin', fakeNodePath,
+      '--recovery-script', fakeRecoveryPath,
+      '--recovery-step-retries', '1',
+      '--detached-state-file', detachedStatePath,
+    ]);
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    const summary = readSummaryFromResult(result);
+    const smokeStep = summary.steps.find((s) => s.name === 'smoke');
+    assert.ok(smokeStep, 'must have smoke step');
+    assert.equal(smokeStep.success, true);
+    assert.match(readFileSync(fakeRecoveryLog, 'utf8'), /recover-smoke/);
+    const fakeNodeCalls = readFileSync(fakeNodeLog, 'utf8');
+    assert.ok((fakeNodeCalls.match(/2024-01-01/g) || []).length >= 2,
+      'smoke CLI must be attempted again after recovery');
+  });
+
   it('summary classifies readiness failure distinctly from preflight failure', async () => {
     server = createServer((req, res) => {
       if (req.url === '/json/list') {

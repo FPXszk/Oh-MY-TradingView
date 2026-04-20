@@ -97,6 +97,7 @@ TradingView Desktop が自動ワークフロー実行中にクラッシュし、
 - `scripts/tmux/run-night-batch-with-recovery.sh`
 - `src/core/tradingview-recovery.js`
 - `src/core/health.js`
+- `src/core/index.js`
 
 ### 主なテスト更新対象
 

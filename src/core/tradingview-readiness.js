@@ -239,6 +239,18 @@ export const DISMISS_DIALOG_JS = `(function() {
  */
 export function classifyReadinessFailure(error) {
   const msg = String(error?.message || error || '');
+  if (/EPIPE|broken pipe/i.test(msg)) {
+    return { category: 'cli-epipe', message: msg };
+  }
+  if (/process.*(not found|missing|gone|exited|crashed)|no.*tradingview.*process/i.test(msg)) {
+    return { category: 'process-missing', message: msg };
+  }
+  if (/cdp.*port.*not reachable|cdp.*unreachable|9222.*unreachable|port.*9222.*closed/i.test(msg)) {
+    return { category: 'cdp-unreachable', message: msg };
+  }
+  if (/mcp.*(unhealthy|unavailable|not responding|server.*down)/i.test(msg)) {
+    return { category: 'mcp-unhealthy', message: msg };
+  }
   if (/ECONNREFUSED|ETIMEDOUT|ECONNRESET|EHOSTUNREACH|socket hang up/i.test(msg)) {
     return { category: 'bridge-unreachable', message: msg };
   }

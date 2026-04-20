@@ -57,11 +57,22 @@ DEFAULT_JP_CAMPAIGN = 'next-long-run-jp-12x10'
 DEFAULT_SMOKE_CLI = 'backtest preset ema-cross-9-21 --symbol NVDA --date-from 2024-01-01 --date-to 2024-12-31'
 DEFAULT_PRODUCTION_CLI = 'backtest preset ema-cross-9-21 --symbol NVDA --date-from 2000-01-01 --date-to 2099-12-31'
 DEFAULT_DETACHED_STATE_FILE = 'artifacts/night-batch/detached-production-state.json'
+DEFAULT_RECOVERY_SCRIPT = 'scripts/backtest/ensure-tradingview-recovery.sh'
+DEFAULT_RECOVERY_STEP_RETRIES = 2
+DEFAULT_RECOVERY_TIMEOUT_SEC = 90
 EXIT_PREFLIGHT_FAILED = 1
 EXIT_STEP_FAILED = 2
 ROUND_MANIFEST_FILE = 'round-manifest.json'
 ARCHIVE_DIR_NAME = 'archive'
 ROUND_DIR_PATTERN = re.compile(r'^round(\d+)$')
+RECOVERABLE_RUNTIME_FAILURE = re.compile(
+    r'EPIPE|broken pipe|process.*(not found|missing|gone|exited|crashed)'
+    r'|TradingView Desktop Critical Error|No requested worker port passed status preflight'
+    r'|Preflight failed for CDP session|chart API is unavailable|api_available.?false'
+    r'|ECONNREFUSED|ETIMEDOUT|ECONNRESET|EHOSTUNREACH|socket hang up'
+    r'|cdp.*unreachable|port.*9222.*closed|mcp.*(unhealthy|unavailable|not responding)',
+    re.IGNORECASE,
+)
 
 
 def utc_run_id() -> str:
@@ -310,6 +321,9 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help='Round selection mode: advance-next-round creates a new round dir; resume-current-round reuses the latest.',
     )
+    common.add_argument('--recovery-script', default=os.environ.get('NIGHT_BATCH_RECOVERY_SCRIPT', DEFAULT_RECOVERY_SCRIPT))
+    common.add_argument('--recovery-step-retries', type=int, default=DEFAULT_RECOVERY_STEP_RETRIES)
+    common.add_argument('--recovery-timeout-sec', type=int, default=DEFAULT_RECOVERY_TIMEOUT_SEC)
 
     parser = argparse.ArgumentParser(
         description='WSL-first orchestrator for TradingView backtest night runs.',
@@ -821,6 +835,27 @@ def load_smoke_prod_settings(args, raw_args: list[str]) -> dict:
         runtime.get('production_timeout_sec'),
         default_production_timeout,
     )
+    recovery_script = resolve_option(
+        raw_args,
+        '--recovery-script',
+        getattr(args, 'recovery_script', None),
+        runtime.get('recovery_script'),
+        DEFAULT_RECOVERY_SCRIPT,
+    )
+    recovery_step_retries = resolve_int_option(
+        raw_args,
+        '--recovery-step-retries',
+        getattr(args, 'recovery_step_retries', None),
+        runtime.get('recovery_step_retries'),
+        DEFAULT_RECOVERY_STEP_RETRIES,
+    )
+    recovery_timeout_sec = resolve_int_option(
+        raw_args,
+        '--recovery-timeout-sec',
+        getattr(args, 'recovery_timeout_sec', None),
+        runtime.get('recovery_timeout_sec'),
+        DEFAULT_RECOVERY_TIMEOUT_SEC,
+    )
     bundle_us_campaign = bundle.get('us_campaign')
     bundle_jp_campaign = bundle.get('jp_campaign')
     bundle_smoke_phases = bundle.get('smoke_phases') or 'smoke'
@@ -857,6 +892,9 @@ def load_smoke_prod_settings(args, raw_args: list[str]) -> dict:
         'detached_state_file': detached_state_file,
         'smoke_timeout_sec': smoke_timeout_sec,
         'production_timeout_sec': production_timeout_sec,
+        'recovery_script': resolve_project_path(recovery_script),
+        'recovery_step_retries': max(0, recovery_step_retries),
+        'recovery_timeout_sec': max(5, recovery_timeout_sec),
         'smoke_mode': smoke_mode,
         'production_mode': production_mode,
         'bundle_us_campaign': bundle_us_campaign,
@@ -1259,6 +1297,176 @@ def build_runtime_step(settings: dict, phase_name: str) -> dict:
     }
 
 
+def summarize_recovery_text(text: str, limit: int = 320) -> str | None:
+    collapsed = ' '.join(str(text or '').split())
+    if not collapsed:
+        return None
+    if len(collapsed) > limit:
+        return f'{collapsed[:limit - 3]}...'
+    return collapsed
+
+
+def summarize_captured_lines(captured_lines: list[dict], limit: int = 8) -> str:
+    lines = [
+        str(entry.get('line') or '').strip()
+        for entry in captured_lines[-limit:]
+        if str(entry.get('line') or '').strip()
+    ]
+    return ' | '.join(lines)
+
+
+def should_attempt_recovery(message: str) -> bool:
+    return bool(RECOVERABLE_RUNTIME_FAILURE.search(message or ''))
+
+
+def build_step_failure_message(result: dict) -> str:
+    details: list[str] = []
+    if result.get('timed_out'):
+        details.append('timed_out=true')
+    exit_code = result.get('exit_code')
+    if exit_code not in (None, 0):
+        details.append(f'exit_code={exit_code}')
+    captured = summarize_captured_lines(result.get('captured_lines') or [])
+    if captured:
+        details.append(captured)
+    return ', '.join(details) if details else 'step failed without output'
+
+
+def update_bundle_resume_targets(settings: dict, phase_name: str, logger: logging.Logger) -> None:
+    if settings.get(f'{phase_name}_mode') != 'bundle':
+        return
+    phase_value = settings.get(f'bundle_{phase_name}_phases') or phase_name
+    bundle_phase = phase_value.split(',')[0].strip() or phase_name
+    for market_key, campaign_key in (('us', 'bundle_us_campaign'), ('jp', 'bundle_jp_campaign')):
+        campaign_id = settings.get(campaign_key)
+        if not campaign_id:
+            continue
+        checkpoint = find_latest_checkpoint([CAMPAIGN_RESULTS_DIR / campaign_id / bundle_phase])
+        resume_key = f'{phase_name}_{market_key}_resume'
+        settings[resume_key] = relative_path(checkpoint) if checkpoint else None
+        if checkpoint:
+            logger.info(
+                'Recovery picked %s resume checkpoint for %s: %s',
+                market_key.upper(),
+                phase_name,
+                settings[resume_key],
+            )
+
+
+def run_recovery_helper(settings: dict, logger: logging.Logger, reason: str) -> bool:
+    recovery_script = settings.get('recovery_script')
+    if recovery_script is None:
+        logger.error('Recovery script is not configured; cannot recover %s', reason)
+        return False
+    command = [
+        str(recovery_script),
+        '--host',
+        settings['host'],
+        '--port',
+        str(settings['port']),
+        '--desktop-port',
+        str(settings['startup_check_port']),
+        '--max-retries',
+        str(max(1, settings.get('recovery_step_retries', 1))),
+        '--readiness-timeout',
+        str(max(settings.get('launch_wait_sec', DEFAULT_LAUNCH_WAIT_SEC), settings.get('recovery_timeout_sec', DEFAULT_RECOVERY_TIMEOUT_SEC))),
+    ]
+    env = os.environ.copy()
+    env.update({
+        'TV_CDP_HOST': settings['host'],
+        'TV_CDP_PORT': str(settings['port']),
+        'TV_DESKTOP_PORT': str(settings['startup_check_port']),
+    })
+    logger.warning('Invoking TradingView recovery helper for %s: %s', reason, shlex.join(command))
+    try:
+        proc = subprocess.run(
+            command,
+            cwd=PROJECT_ROOT,
+            capture_output=True,
+            text=True,
+            timeout=max(settings.get('recovery_timeout_sec', DEFAULT_RECOVERY_TIMEOUT_SEC), settings.get('launch_wait_sec', DEFAULT_LAUNCH_WAIT_SEC)) + 30,
+            env=env,
+        )
+    except (OSError, subprocess.TimeoutExpired) as error:
+        logger.error('Recovery helper failed for %s: %s', reason, error)
+        return False
+    stdout_summary = summarize_recovery_text(proc.stdout)
+    stderr_summary = summarize_recovery_text(proc.stderr)
+    if stdout_summary:
+        logger.info('Recovery helper stdout: %s', stdout_summary)
+    if stderr_summary:
+        logger.warning('Recovery helper stderr: %s', stderr_summary)
+    if proc.returncode != 0:
+        logger.error('Recovery helper exited with code %s for %s', proc.returncode, reason)
+        return False
+    return True
+
+
+def wait_for_visible_session_with_recovery(settings: dict, logger: logging.Logger) -> dict:
+    max_retries = max(0, settings.get('recovery_step_retries', 0))
+    for attempt in range(max_retries + 1):
+        try:
+            return wait_for_visible_session(
+                settings['host'],
+                settings['port'],
+                settings['launch_wait_sec'],
+                logger,
+                node_bin=settings.get('node_bin'),
+            )
+        except RuntimeError as error:
+            message = str(error)
+            if attempt >= max_retries or not should_attempt_recovery(message):
+                raise
+            logger.warning(
+                'Preflight failed with recoverable TradingView error (%s/%s): %s',
+                attempt + 1,
+                max_retries,
+                message,
+            )
+            if not run_recovery_helper(settings, logger, 'preflight'):
+                raise
+    raise RuntimeError('Preflight recovery exhausted unexpectedly')
+
+
+def execute_step_with_recovery(
+    settings: dict,
+    step_name: str,
+    step_builder,
+    timeout_sec: int,
+    logger: logging.Logger,
+    *,
+    progress_callback=None,
+) -> dict:
+    max_retries = max(0, settings.get('recovery_step_retries', 0))
+    for attempt in range(max_retries + 1):
+        step = step_builder()
+        result = run_process(
+            step['command'],
+            step.get('checkpoint_roots', []),
+            timeout_sec,
+            False,
+            logger,
+            env_overrides=step.get('env_overrides'),
+            progress_callback=progress_callback,
+        )
+        if result['success']:
+            return result
+        failure_message = build_step_failure_message(result)
+        if attempt >= max_retries or not should_attempt_recovery(failure_message):
+            return result
+        logger.warning(
+            '%s step failed with recoverable TradingView error (%s/%s): %s',
+            step_name,
+            attempt + 1,
+            max_retries,
+            failure_message,
+        )
+        if not run_recovery_helper(settings, logger, f'{step_name}-step'):
+            return result
+        update_bundle_resume_targets(settings, step_name, logger)
+    raise RuntimeError(f'{step_name} recovery exhausted unexpectedly')
+
+
 def wait_for_visible_session(
     host: str,
     port: int,
@@ -1436,6 +1644,10 @@ def build_production_child_command(settings: dict, child_run_id: str, production
         str(settings['production_timeout_sec']),
         '--launch-wait-sec',
         str(settings['launch_wait_sec']),
+        '--recovery-step-retries',
+        str(settings['recovery_step_retries']),
+        '--recovery-timeout-sec',
+        str(settings['recovery_timeout_sec']),
         '--detached-state-file',
         str(settings['detached_state_file']),
         '--run-id',
@@ -1443,6 +1655,8 @@ def build_production_child_command(settings: dict, child_run_id: str, production
         '--output-dir',
         str(output_dir),
     ]
+    if settings.get('recovery_script'):
+        cmd.extend(['--recovery-script', str(settings['recovery_script'])])
     if settings.get('production_mode') == 'bundle':
         cmd.extend([
             '--bundle-us-campaign',
@@ -1787,7 +2001,7 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
         )
 
     try:
-        wait_for_visible_session(settings['host'], settings['port'], settings['launch_wait_sec'], logger, node_bin=settings.get('node_bin'))
+        wait_for_visible_session_with_recovery(settings, logger)
         steps.append(make_step_result('preflight', ['GET', preflight_url], success=True))
     except RuntimeError as error:
         logger.error('%s', error)
@@ -1799,13 +2013,12 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
         logger.info('Smoke already completed in this round — skipping')
         steps.append(make_step_result('smoke', smoke_step['command'], success=True, skipped=True))
     else:
-        smoke_result = run_process(
-            smoke_step['command'],
-            smoke_step['checkpoint_roots'],
+        smoke_result = execute_step_with_recovery(
+            settings,
+            'smoke',
+            lambda: build_runtime_step(settings, 'smoke'),
             settings['smoke_timeout_sec'],
-            False,
             logger,
-            env_overrides=smoke_step['env_overrides'],
             progress_callback=make_progress('smoke'),
         )
         steps.append({**smoke_result, 'name': 'smoke'})
@@ -1876,13 +2089,12 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
         steps.append(make_step_result('production', production_step['command'], success=True, skipped=True))
         return 0, steps, live_checkout_protection
 
-    production_result = run_process(
-        production_step['command'],
-        production_step['checkpoint_roots'],
+    production_result = execute_step_with_recovery(
+        settings,
+        'production',
+        lambda: build_runtime_step(settings, 'production'),
         settings['production_timeout_sec'],
-        False,
         logger,
-        env_overrides=production_step['env_overrides'],
         progress_callback=make_progress('production'),
     )
     steps.append({**production_result, 'name': 'production'})
@@ -1892,14 +2104,22 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
 def execute_production_child(args, logger: logging.Logger, output_dir: Path = RESULTS_DIR) -> tuple[int, list[dict]]:
     steps: list[dict] = []
     preflight_url = f'http://{args.host}:{args.port}/json/list'
+    recovery_settings = {
+        'host': args.host,
+        'port': args.port,
+        'startup_check_port': DEFAULT_STARTUP_CHECK_PORT,
+        'launch_wait_sec': args.launch_wait_sec,
+        'node_bin': args.node_bin,
+        'recovery_script': resolve_project_path(args.recovery_script) if getattr(args, 'recovery_script', None) else None,
+        'recovery_step_retries': max(0, getattr(args, 'recovery_step_retries', DEFAULT_RECOVERY_STEP_RETRIES)),
+        'recovery_timeout_sec': max(5, getattr(args, 'recovery_timeout_sec', DEFAULT_RECOVERY_TIMEOUT_SEC)),
+        'production_mode': 'bundle' if getattr(args, 'bundle_us_campaign', None) and getattr(args, 'bundle_jp_campaign', None) else 'cli',
+        'bundle_us_campaign': getattr(args, 'bundle_us_campaign', None),
+        'bundle_jp_campaign': getattr(args, 'bundle_jp_campaign', None),
+        'bundle_production_phases': getattr(args, 'bundle_production_phases', 'full'),
+    }
     try:
-        wait_for_visible_session(
-            args.host,
-            args.port,
-            args.launch_wait_sec,
-            logger,
-            node_bin=args.node_bin,
-        )
+        wait_for_visible_session_with_recovery(recovery_settings, logger)
         steps.append(make_step_result('preflight', ['GET', preflight_url], success=True))
     except RuntimeError as error:
         logger.error('%s', error)
@@ -1924,14 +2144,39 @@ def execute_production_child(args, logger: logging.Logger, output_dir: Path = RE
     checkpoint_roots_raw = json.loads(args.production_checkpoint_roots_json)
     if not isinstance(checkpoint_roots_raw, list) or not all(isinstance(item, str) for item in checkpoint_roots_raw):
         raise ValueError('production-child requires --production-checkpoint-roots-json to decode to a string array')
-    production_result = run_process(
-        production_command,
-        [Path(item) for item in checkpoint_roots_raw],
-        args.production_timeout_sec,
-        args.dry_run,
-        logger,
-        env_overrides=production_env,
-    )
+
+    def build_child_step() -> dict:
+        if recovery_settings['production_mode'] == 'bundle':
+            production_step = build_runtime_step(recovery_settings, 'production')
+            return {
+                'command': production_step['command'],
+                'checkpoint_roots': production_step['checkpoint_roots'],
+                'env_overrides': production_env,
+            }
+        return {
+            'command': production_command,
+            'checkpoint_roots': [Path(item) for item in checkpoint_roots_raw],
+            'env_overrides': production_env,
+        }
+
+    if args.dry_run:
+        step = build_child_step()
+        production_result = run_process(
+            step['command'],
+            step['checkpoint_roots'],
+            args.production_timeout_sec,
+            True,
+            logger,
+            env_overrides=step['env_overrides'],
+        )
+    else:
+        production_result = execute_step_with_recovery(
+            recovery_settings,
+            'production',
+            build_child_step,
+            args.production_timeout_sec,
+            logger,
+        )
     steps.append({**production_result, 'name': 'production'})
     state_path = resolve_project_path(args.detached_state_file) or (PROJECT_ROOT / DEFAULT_DETACHED_STATE_FILE)
     write_detached_state(
