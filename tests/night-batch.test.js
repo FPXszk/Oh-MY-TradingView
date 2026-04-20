@@ -1058,7 +1058,11 @@ exit 0
     assert.match(detachedState.production_command.join(' '), /--phases full/);
   });
 
-  it('production-child writes the latest backtest summary for detached bundle runs', async () => {
+  it('production-child writes the latest backtest summary for detached bundle runs', async (t) => {
+    if (process.env.CI) {
+      t.skip('latest detached bundle summary uses local campaign artifacts');
+      return;
+    }
     const fakeNodePath = join(tempDir, 'fake-bundle-node.sh');
     const detachedStateFile = join(tempDir, 'bundle-detached-state.json');
     const latestSummaryPath = join(tempDir, 'main-backtest-current-summary.md');
