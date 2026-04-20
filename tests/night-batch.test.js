@@ -827,6 +827,8 @@ exit 0
       'smoke-prod',
       '--config',
       configPath,
+      '--detached-state-file',
+      detachedStateFile,
       '--node-bin',
       fakeNodePath,
     ]);
@@ -980,8 +982,6 @@ exit 0
       'smoke-prod',
       '--config',
       configPath,
-      '--detached-state-file',
-      detachedStateFile,
       '--node-bin',
       fakeNodePath,
     ]);
@@ -1132,6 +1132,8 @@ exit 0
         String(port),
         '--production-command-json',
         JSON.stringify([fakeNodePath]),
+        '--node-bin',
+        fakeNodePath,
         '--production-checkpoint-roots-json',
         '[]',
         '--detached-state-file',
