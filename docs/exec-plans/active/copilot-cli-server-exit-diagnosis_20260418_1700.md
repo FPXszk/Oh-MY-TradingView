@@ -1,95 +1,110 @@
-# Copilot CLI `[server exited]` / 約2分後終了の調査 exec-plan
+# Copilot CLI セッション約2分後終了の原因確定 exec-plan
 
 ## 目的
 
-`just dev` で `devinit.sh` を起動した約2分後に Copilot CLI が終了し、tmux/WSL は生きたまま pane 0 だけが落ちる問題について、**どのプロセスが何をトリガーに終了しているかを特定する**。
+`just dev` / 手動起動の両経路で、Copilot CLI セッションが作業中におおむね約2分後に落ちる問題について、**原因を特定して確定する**。
 
-今回のゴールは次の 3 点に限定する。
+今回のゴールは次の 4 点に限定する。
 
-1. `[server exited]` の出所を特定する
-2. 約120秒付近の終了条件を再現・切り分けする
-3. 恒久対策候補を、根拠つきで提示する
+1. pane 0 / Copilot CLI / repo 側プロセスのうち、どの層が先に落ちているかを確定する
+2. 直近変更 (`7ec9b5e`, `539db68`) と発症タイミングの関係を因果で説明できるか確認する
+3. GitHub Actions run `24544232199` とローカル再現、VS Code 拡張機能側の挙動差を突き合わせる
+4. rate limit / upstream 既知不具合 / hang 系 issue を調べ、今回症状との一致・不一致を整理する
+
+**今回は再発防止策や恒久修正の実装までは行わない。**
+
+## 既知事実
+
+- `just dev` は `justfile` 経由で `./devinit.sh` を起動する
+- `devinit.sh` の pane 0 は `scripts/dev/run-copilot-pane.sh` を経由して Copilot CLI を起動する
+- `run-copilot-pane.sh` は `script -qefc` で pseudo-TTY を与え、終了時は `logs/devinit/` と `artifacts/devinit/` に証跡を残す
+- 直近変更として、wrapper/evidence capture (`7ec9b5e`) と TTY wrapper hardening (`539db68`) が入っている
+- ユーザー観測では「アイドル放置では落ちにくい」「作業を指示すると約2分で落ちる」「VS Code 拡張機能では実行できることがあるが、後日ハング気味の停止もあった」
+- 既知の仮説として `[server exited]` は repo の `src/server.js` ではなく Copilot CLI UI 表示の可能性が高いが、今回あらためて根拠つきで確定する
+
+## 調査対象ファイル / リソース
+
+### ローカルファイル
+
+- `justfile`
+- `devinit.sh`
+- `scripts/dev/run-copilot-pane.sh`
+- `scripts/dev/capture-copilot-pane-evidence.sh`
+- `tests/devinit.test.js`
+- `package.json`
+- `src/server.js`
+- `README.md`（必要に応じて参照のみ）
+- `docs/exec-plans/completed/copilot-cli-devinit-stability_20260417_1005.md`
+
+### 実行時証跡
+
+- `logs/devinit/`
+- `artifacts/devinit/`
+- `Oh-MY-TradingView.log`
+- `tmux list-panes ...`
+- `ps -eo pid,ppid,pgid,sid,stat,etimes,args`
+
+### 外部参照
+
+- GitHub Actions run `24544232199` / job `71756304556`
+- `github/copilot-cli` 系の issue / discussion / release notes
+- 必要なら Copilot CLI 公式ドキュメント
 
 ## スコープ
 
 ### 含む
 
-- `just dev` → `devinit.sh` → pane 0 の `copilot ...` 起動経路の確認
-- `copilot --help` / `copilot --version` / 実行プロセス観察による CLI 側要因の切り分け
-- `src/server.js` とその起動有無・stdio 切断条件の確認
-- `Oh-MY-TradingView.log` 末尾と OS ログ (`journalctl`, `dmesg`) の確認
-- 既存の `devinit` 周辺テスト・過去 plan の参照
-- 必要最小限の `devinit.sh` 修正案の提示
+- `just dev` 経由と手動起動経路の差分確認
+- pane 0 の親子プロセス・終了コード・時系列観察
+- `src/server.js` が直接原因か従属終了かの切り分け
+- wrapper 変更前後の git 履歴確認
+- Actions 時点で正常だった条件と、発症後との差分確認
+- VS Code 拡張機能側との振る舞い比較
+- rate limit / upstream issue の調査と今回症状との照合
 
 ### 含まない
 
-- まず原因が特定できる前提の大規模修正
+- 恒久修正の実装
+- tmux レイアウトや wrapper の設計変更
+- TradingView crash / night-batch / readiness の別課題対応
 - Copilot CLI 本体バイナリの改変
-- TradingView / night-batch / readiness 系の別課題対応
-- tmux レイアウトの全面再設計
+- 推測だけに基づく回避策の導入
 
-## 調査対象ファイル / リソース
+## 調査方針
 
-### 読む
+1. **起点の確定**
+   - `just dev` と手動起動で、実際に実行される Copilot コマンドライン・親子関係・TTY 条件を確認する
+   - `[server exited]` 文字列の repo 内出所有無、`src/server.js` の終了条件、pane 0 の UI 表示を突き合わせる
 
-- `justfile`
-- `devinit.sh`
-- `src/server.js`
-- `tests/devinit.test.js`
-- `docs/exec-plans/completed/copilot-cli-devinit-stability_20260417_1005.md`
-- `Oh-MY-TradingView.log`
+2. **時系列の確定**
+   - pane 0 でタスク投入直後から約2分後までを観測し、どのプロセスが最初に exit / hang / disconnect するかをログと PID ベースで特定する
+   - `logs/devinit/` と `artifacts/devinit/` の evidence を現物確認し、直前の終了コード・pane 内容・プロセススナップショットを読む
 
-### 条件付きで変更する
+3. **変更起因か環境起因かの切り分け**
+   - `7ec9b5e`, `539db68` 前後の差分と、ユーザー観測の「手動起動でも似た挙動だった可能性」を比較する
+   - wrapper 導入が原因なら `just dev` 経路に偏るはずで、手動起動・VS Code 拡張機能との差で反証できるかを見る
 
-- `devinit.sh`
-- `tests/devinit.test.js`
-- `README.md`
-
-## 優先順に沿った調査手順
-
-1. **`[server exited]` の出所確認**
-   - repo 内文字列検索で該当メッセージの有無を確認
-   - repo 内に無ければ Copilot CLI 本体の表示とみなし、pane 0 の挙動と整合するか確認
-   - `src/server.js` 側が同様メッセージを出す実装かどうか確認
-
-2. **Copilot CLI のアイドルタイムアウト確認**
-   - `copilot --help` / `copilot --version` を確認
-   - 約120秒相当の timeout / idle / keepalive / session 関連オプションの有無を確認
-   - 必要なら `strings` や起動ログではなく、まず公開オプションと実行挙動を優先して根拠化する
-
-3. **`devinit.sh` の pane 0 起動コマンド確認**
-   - `start_commands` の `copilot_cmd` を正確に抽出
-   - pane 0 が落ちるときに、pane command / title / exit status がどう変わるか観察
-   - `just dev` が落ちるのは `attach_or_switch` 後ではなく、pane 0 のプロセス終了が原因かを確認
-
-4. **`src/server.js` プロセス状態確認**
-   - pane 0 が生きている間に `node src/server.js` 系プロセスが別途存在するか確認
-   - pane 0 終了時点で `server.js` が先に死ぬのか、親の Copilot CLI が落ちて stdio が閉じるのかを確認
-   - stdio transport 切断が server.js 側の終了条件になっていないか確認
-
-5. **直近ログ / OS ログ確認**
-   - `Oh-MY-TradingView.log` 末尾を確認
-   - `journalctl` と `dmesg` で OOM / SIGKILL / segfault 相当が無いか確認
-
-## 実装が必要になった場合の方針
-
-- 原因が `devinit.sh` 起動条件にあるなら、**最小差分**で `devinit.sh` を修正する
-- 原因が keepalive 不足や CLI 実行条件なら、pane 0 向け keepalive / wrapper / 再試行条件の改善案を出す
-- 原因が `src/server.js` の stdio 終了連鎖なら、切断理由が見えるよう診断ログまたは起動方法の改善を検討する
+4. **外部要因の切り分け**
+   - rate limit、Copilot サービス側エラー、CLI 既知不具合、長時間応答待ちによる hang を issue / release note で確認する
+   - 今回症状が「明示 exit」なのか「ハングして UI だけ残る」なのかを、CLI と拡張機能で比較する
 
 ## TDD / 検証方針
 
+今回の主目的は原因調査であり、原則として本番コード変更は行わない。
+
 ### RED
 
-- 修正が必要な場合のみ、再現条件を落とし込む `devinit` 周辺テストを先に失敗で追加する
+- 調査に必要な診断面が既存コードで不足し、**最小の診断補強**が必要な場合のみ、先に失敗するテストを追加する
+- 候補:
+  - `tests/devinit.test.js`
 
 ### GREEN
 
-- `devinit.sh` または関連箇所を最小修正し、再現条件のテストを通す
+- 必要最小限の診断補強だけを入れてテストを通す
 
 ### REFACTOR
 
-- 恒久対策として不要な複雑化が入っていないか見直す
+- 診断のために入れた変更が不要に複雑でないか確認する
 
 ## 検証コマンド
 
@@ -97,40 +112,44 @@
 - `copilot --help`
 - `just dev`
 - `just stop`
-- `npm test`
+- `node --test tests/devinit.test.js`
+- 必要に応じて `npm test`
+- `git --no-pager log --oneline --decorate -n 20 -- devinit.sh scripts/dev/run-copilot-pane.sh scripts/dev/capture-copilot-pane-evidence.sh tests/devinit.test.js justfile`
 
-必要に応じて補助的に以下も使う。
+補助観測:
 
-- `tmux list-panes -a -F '#{session_name}:#{window_index}.#{pane_index}:#{pane_dead}:#{pane_title}:#{pane_current_command}'`
-- `ps -ef`
-- `journalctl --since ...`
-- `dmesg`
+- `tmux list-panes -a -F '#{session_name}:#{window_index}.#{pane_index}:dead=#{pane_dead}:title=#{pane_title}:cmd=#{pane_current_command}:pid=#{pane_pid}'`
+- `ps -eo pid,ppid,pgid,sid,stat,etimes,args`
 
 ## リスク / 注意点
 
-- Copilot CLI 本体由来の表示は repo 内検索だけでは断定できず、実プロセス観察が必要
-- shared environment のため、既存 tmux セッションや他ユーザーのプロセスを壊さないよう対象 PID を限定して観察する
-- `journalctl` は権限や保持設定で情報不足の可能性がある
+- shared environment なので、既存 tmux セッションや他プロセスは壊さず対象 PID のみ観測する
+- `logs/devinit/` / `artifacts/devinit/` は未追跡生成物の可能性があるため、勝手に削除しない
+- upstream issue は症状が似ていても原因が別の可能性があるため、ローカル証跡で必ず裏取りする
+- VS Code 拡張機能側は「成功」と「ハング」の両観測があるため、単純に正常系扱いしない
 
 ## 既存 active plan との関係
 
-- `docs/exec-plans/active/tradingview-crash-auto-recovery_20260417_0739.md` とは対象が異なる
-- `docs/exec-plans/active/night-batch-readiness-stabilization_20260416_1706.md` とは対象が異なる
-- 直近の completed plan `docs/exec-plans/completed/copilot-cli-devinit-stability_20260417_1005.md` は関連履歴として参照するが、今回の調査対象は「起動直後」ではなく「約2分後終了」の切り分け
+- `night-batch-readiness-stabilization_20260416_1706.md` と `night-batch-summary-and-storage-followup_20260420_1123.md` とは対象が異なる
+- 本計画は既存の Copilot CLI 調査 plan を、**今回の依頼に合わせて原因確定専用へ再定義**したもの
 
 ## 実施ステップ
 
-- [ ] `justfile` / `devinit.sh` / `tests/devinit.test.js` / 既存 plan を確認し、再発条件を整理する
-- [ ] `src/server.js` と関連起動経路を確認し、`[server exited]` の repo 内出所有無を確定する
-- [ ] `copilot --help` / `copilot --version` を確認し、timeout / idle 関連オプション有無を整理する
-- [ ] `just dev` を再現し、pane 0・Copilot CLI・`src/server.js` の各プロセス状態を時系列で観察する
-- [ ] `Oh-MY-TradingView.log` と OS ログを確認し、外因性の kill/OOM を除外する
-- [ ] 原因仮説を比較し、最有力原因と反証材料をまとめる
-- [ ] 恒久対策案を、設定変更 / keepalive 改善 / `devinit.sh` 修正案に分けて整理する
+- [ ] `justfile` / `devinit.sh` / wrapper scripts / `tests/devinit.test.js` / 既存 completed plan を読み、現行起動経路と既知対策を整理する
+- [ ] `src/server.js` と repo 内文字列検索で `[server exited]` と終了条件を確認し、UI 表示と repo 実装の境界を確定する
+- [ ] `git log` と関連コミット差分を確認し、`7ec9b5e` / `539db68` の影響仮説を整理する
+- [ ] `copilot --version` / `copilot --help` / 必要なら手動起動を確認し、timeout / rate limit / session 関連の表面仕様を整理する
+- [ ] `just dev` を再現し、pane 0・Copilot CLI・repo 側プロセスを時系列で観測して最初の異常点を特定する
+- [ ] `logs/devinit/` / `artifacts/devinit/` / `Oh-MY-TradingView.log` を読み、終了直前の証跡を突き合わせる
+- [ ] Actions run `24544232199` とローカル挙動を比較し、正常だった時点との差分を整理する
+- [ ] GitHub issue / discussion / release notes を調査し、rate limit や同症状報告の一致度を評価する
+- [ ] 最終的に、最有力原因・反証した仮説・未確定事項を分けて結論化する
 
 ## 完了条件
 
-- `[server exited]` がどのレイヤの表示か説明できる
-- 約2分後終了の直接トリガーを、プロセス観察またはログ根拠つきで説明できる
-- `src/server.js` が原因か、親プロセス終了の従属結果かを説明できる
-- 具体的な恒久対策案を提示できる
+- どの層が最初に落ちているかを、ログまたはプロセス証跡つきで説明できる
+- 約2分という時間軸が、ローカル証跡または外部要因との照合で意味づけできる
+- `7ec9b5e` / `539db68` が原因・非原因・増幅要因のどれかを説明できる
+- `src/server.js` 直接原因説の真偽を説明できる
+- rate limit / upstream 既知不具合の一致・不一致を説明できる
+- 再発防止策ではなく、**原因確定の結論**として報告できる
