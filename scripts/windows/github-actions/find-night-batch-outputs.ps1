@@ -17,38 +17,51 @@ $richReport = ''
 $rankingArtifact = ''
 $protectionReport = ''
 
-if (Test-Path 'results\night-batch') {
-    $summaryJsonFile = Get-ChildItem -Path 'results\night-batch' -Recurse -File `
+$searchRoots = @(
+    'artifacts\night-batch',
+    'results\night-batch'
+)
+
+foreach ($searchRoot in $searchRoots) {
+    if (-not (Test-Path $searchRoot)) {
+        continue
+    }
+
+    $summaryJsonFile = Get-ChildItem -Path $searchRoot -Recurse -File `
         -Filter ($ExpectedRunId + '-summary.json') |
         Sort-Object LastWriteTimeUtc -Descending |
         Select-Object -First 1
 
-    if ($summaryJsonFile) {
-        $artifactDir = $summaryJsonFile.Directory.FullName
-        $summaryJson = $summaryJsonFile.FullName
-        $summaryMdCandidate = $summaryJsonFile.FullName -replace '-summary\.json$', '-summary.md'
-        if (Test-Path $summaryMdCandidate) {
-            $summaryMd = $summaryMdCandidate
-        }
-        $richReportFile = Get-ChildItem -Path $artifactDir -File -Filter '*-rich-report.md' |
-            Sort-Object LastWriteTimeUtc -Descending |
-            Select-Object -First 1
-        if ($richReportFile) {
-            $richReport = $richReportFile.FullName
-        }
-        $rankingFile = Get-ChildItem -Path $artifactDir -File -Filter '*-combined-ranking.json' |
-            Sort-Object LastWriteTimeUtc -Descending |
-            Select-Object -First 1
-        if ($rankingFile) {
-            $rankingArtifact = $rankingFile.FullName
-        }
-        $protectionReportFile = Get-ChildItem -Path $artifactDir -File -Filter '*-live-checkout-protection.json' |
-            Sort-Object LastWriteTimeUtc -Descending |
-            Select-Object -First 1
-        if ($protectionReportFile) {
-            $protectionReport = $protectionReportFile.FullName
-        }
+    if (-not $summaryJsonFile) {
+        continue
     }
+
+    $artifactDir = $summaryJsonFile.Directory.FullName
+    $summaryJson = $summaryJsonFile.FullName
+    $summaryMdCandidate = $summaryJsonFile.FullName -replace '-summary\.json$', '-summary.md'
+    if (Test-Path $summaryMdCandidate) {
+        $summaryMd = $summaryMdCandidate
+    }
+    $richReportFile = Get-ChildItem -Path $artifactDir -File -Filter '*-rich-report.md' |
+        Sort-Object LastWriteTimeUtc -Descending |
+        Select-Object -First 1
+    if ($richReportFile) {
+        $richReport = $richReportFile.FullName
+    }
+    $rankingFile = Get-ChildItem -Path $artifactDir -File -Filter '*-combined-ranking.json' |
+        Sort-Object LastWriteTimeUtc -Descending |
+        Select-Object -First 1
+    if ($rankingFile) {
+        $rankingArtifact = $rankingFile.FullName
+    }
+    $protectionReportFile = Get-ChildItem -Path $artifactDir -File -Filter '*-live-checkout-protection.json' |
+        Sort-Object LastWriteTimeUtc -Descending |
+        Select-Object -First 1
+    if ($protectionReportFile) {
+        $protectionReport = $protectionReportFile.FullName
+    }
+
+    break
 }
 
 "round_dir=$artifactDir"            | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append

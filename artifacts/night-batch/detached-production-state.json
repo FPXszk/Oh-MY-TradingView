@@ -1,15 +1,15 @@
 {
-  "status": "failed",
+  "status": "completed",
   "mode": "foreground",
   "command": "smoke-prod",
-  "run_id": "20260416_180109",
-  "updated_at": "2026-04-16T18:01:11.583369+00:00",
-  "latest_checkpoint": null,
-  "started_at": "2026-04-16T18:01:09.575782+00:00",
-  "current_step": "preflight",
-  "summary_path": "/tmp/night-batch-readiness-XrgQx0/night-batch-results/round1/20260416_180109-summary.json",
-  "termination_reason": "preflight-failed",
-  "failed_step": "preflight",
-  "success": false,
-  "finished_at": "2026-04-16T18:01:11.583472+00:00"
+  "run_id": "20260420_015719",
+  "updated_at": "2026-04-20T01:57:19.966749+00:00",
+  "latest_checkpoint": "artifacts/campaigns/next-long-run-us-finetune-100x10/pilot/checkpoint-40.json",
+  "started_at": "2026-04-20T01:57:19.954156+00:00",
+  "current_step": "production",
+  "summary_path": "/tmp/night-batch-test-gmKoCS/night-batch-results/round1/20260420_015719-summary.json",
+  "termination_reason": "success",
+  "failed_step": null,
+  "success": true,
+  "finished_at": "2026-04-20T01:57:19.966756+00:00"
 }

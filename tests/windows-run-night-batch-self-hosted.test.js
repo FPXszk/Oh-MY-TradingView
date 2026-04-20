@@ -374,6 +374,13 @@ describe('external PowerShell scripts for workflow summary', () => {
       'find script must output ranking_artifact');
   });
 
+  it('find-night-batch-outputs.ps1 searches artifacts/night-batch for workflow outputs', () => {
+    const script = readFileSync(FIND_OUTPUTS_SCRIPT_PATH, 'utf8');
+
+    assert.match(script, /artifacts\\night-batch/,
+      'find script must search artifacts/night-batch where night_batch.py writes summaries');
+  });
+
   it('append-night-batch-workflow-summary.ps1 safely handles nullable fields', () => {
     const script = readFileSync(APPEND_SUMMARY_SCRIPT_PATH, 'utf8');
 
