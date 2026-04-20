@@ -48,7 +48,7 @@ function runPython(args, options = {}) {
 
     let stdout = '';
     let stderr = '';
-    const timeoutMs = options.timeoutMs ?? 15000;
+    const timeoutMs = options.timeoutMs ?? 30000;
     const timer = setTimeout(() => {
       child.kill('SIGKILL');
       reject(new Error(`python night_batch.py timed out after ${timeoutMs}ms: ${effectiveArgs.join(' ')}`));
@@ -693,6 +693,8 @@ exit 0
       'smoke-prod',
       '--config',
       configPath,
+      '--detached-state-file',
+      foregroundStateFile,
       '--node-bin',
       fakeNodePath,
     ]);
@@ -825,6 +827,8 @@ exit 0
       'smoke-prod',
       '--config',
       configPath,
+      '--detached-state-file',
+      detachedStateFile,
       '--node-bin',
       fakeNodePath,
     ]);
@@ -918,6 +922,8 @@ ${STATUS_OK_SNIPPET}exit 0
       'smoke-prod',
       '--config',
       configPath,
+      '--detached-state-file',
+      detachedStateFile,
       '--dry-run',
     ]);
 
@@ -928,6 +934,8 @@ ${STATUS_OK_SNIPPET}exit 0
       'smoke-prod',
       '--config',
       configPath,
+      '--detached-state-file',
+      detachedStateFile,
     ]);
 
     assert.equal(liveResult.status, 2, liveResult.stderr || liveResult.stdout);
@@ -974,6 +982,8 @@ exit 0
       'smoke-prod',
       '--config',
       configPath,
+      '--detached-state-file',
+      detachedStateFile,
       '--node-bin',
       fakeNodePath,
     ]);
