@@ -31,6 +31,10 @@ function runPython(args, options = {}) {
       && ROUND_MODE_COMMANDS.has(effectiveArgs[1])) {
     effectiveArgs.splice(2, 0, '--round-mode', 'advance-next-round');
   }
+  if ((effectiveArgs[1] === 'smoke-prod' || effectiveArgs[1] === 'production-child')
+      && !effectiveArgs.includes('--detached-state-file')) {
+    effectiveArgs.push('--detached-state-file', join(RESULTS_DIR, 'detached-production-state.json'));
+  }
   return new Promise((resolve, reject) => {
     const child = spawn('python3', effectiveArgs, {
       cwd: PROJECT_ROOT,
@@ -44,14 +48,23 @@ function runPython(args, options = {}) {
 
     let stdout = '';
     let stderr = '';
+    const timeoutMs = options.timeoutMs ?? 15000;
+    const timer = setTimeout(() => {
+      child.kill('SIGKILL');
+      reject(new Error(`python night_batch.py timed out after ${timeoutMs}ms: ${effectiveArgs.join(' ')}`));
+    }, timeoutMs);
     child.stdout.on('data', (chunk) => {
       stdout += String(chunk);
     });
     child.stderr.on('data', (chunk) => {
       stderr += String(chunk);
     });
-    child.on('error', reject);
+    child.on('error', (error) => {
+      clearTimeout(timer);
+      reject(error);
+    });
     child.on('close', (code) => {
+      clearTimeout(timer);
       resolve({ status: code, stdout, stderr });
     });
   });
@@ -113,13 +126,47 @@ async function waitFor(check, timeoutMs = 4000, intervalMs = 100) {
   assert.fail('timed out waiting for condition');
 }
 
+function listenOnLocalhost(server, requestedPort = 0) {
+  return new Promise((resolve, reject) => {
+    const onError = (error) => {
+      server.off('listening', onListening);
+      reject(error);
+    };
+    const onListening = () => {
+      server.off('error', onError);
+      resolve();
+    };
+    server.once('error', onError);
+    server.once('listening', onListening);
+    server.listen(requestedPort, '127.0.0.1');
+  });
+}
+
+async function listenOrSkip(testContext, server, requestedPort = 0) {
+  try {
+    await listenOnLocalhost(server, requestedPort);
+  } catch (error) {
+    if (error?.code === 'EPERM' || error?.code === 'EACCES') {
+      testContext.skip(`local HTTP fixture cannot listen on 127.0.0.1: ${error.code}`);
+      return false;
+    }
+    throw error;
+  }
+  return true;
+}
+
 describe('night_batch.py CLI', () => {
   let server = null;
   let port = null;
   let tempDir = null;
   let resultsDir = null;
 
-  beforeEach(async () => {
+  beforeEach(async (testContext) => {
+    tempDir = mkdtempSync(join(tmpdir(), 'night-batch-test-'));
+    resultsDir = join(tempDir, 'night-batch-results');
+    RESULTS_DIR = resultsDir;
+    mkdirSync(resultsDir, { recursive: true });
+
     server = createServer((req, res) => {
       if (req.url === '/json/version') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -144,18 +191,18 @@ describe('night_batch.py CLI', () => {
       res.writeHead(404);
       res.end('not found');
     });
-    await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+    if (!await listenOrSkip(testContext, server)) {
+      server = null;
+      return;
+    }
     port = server.address().port;
-    tempDir = mkdtempSync(join(tmpdir(), 'night-batch-test-'));
-    resultsDir = join(tempDir, 'night-batch-results');
-    RESULTS_DIR = resultsDir;
-    mkdirSync(resultsDir, { recursive: true });
   });
 
   afterEach(async () => {
-    if (!server) return;
-    await new Promise((resolve) => server.close(resolve));
-    server = null;
+    if (server) {
+      await new Promise((resolve) => server.close(resolve));
+      server = null;
+    }
     port = null;
     if (tempDir) {
       rmSync(tempDir, { recursive: true, force: true });
@@ -432,7 +479,7 @@ exit 0
     assert.match(result.stdout, /generate-rich-report\.mjs/);
   });
 
-  it('bundle dry-run fails preflight when no TradingView chart target exists', async () => {
+  it('bundle dry-run fails preflight when no TradingView chart target exists', async (t) => {
     await new Promise((resolve) => server.close(resolve));
     server = createServer((req, res) => {
       if (req.url === '/json/list') {
@@ -443,7 +490,10 @@ exit 0
       res.writeHead(404);
       res.end('not found');
     });
-    await new Promise((resolve) => server.listen(port, '127.0.0.1', resolve));
+    if (!await listenOrSkip(t, server, port)) {
+      server = null;
+      return;
+    }
 
     const result = await runPython(
       [SCRIPT_PATH, 'bundle', '--host', '127.0.0.1', '--port', String(port), '--dry-run'],
@@ -1725,7 +1775,7 @@ describe('night_batch.py readiness contract alignment', () => {
     resultsDir = null;
   });
 
-  it('preflight invokes readiness check (tv status) when node_bin is available', async () => {
+  it('preflight invokes readiness check (tv status) when node_bin is available', async (t) => {
     server = createServer((req, res) => {
       if (req.url === '/json/list') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -1737,7 +1787,10 @@ describe('night_batch.py readiness contract alignment', () => {
       res.writeHead(404);
       res.end('not found');
     });
-    await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+    if (!await listenOrSkip(t, server)) {
+      server = null;
+      return;
+    }
     port = server.address().port;
 
     const fakeNodePath = join(tempDir, 'fake-node-status.sh');
@@ -1779,7 +1832,7 @@ esac
       'preflight must invoke tv status to verify readiness contract');
   });
 
-  it('preflight fails when chart target is visible but tv status reports api_available=false', async () => {
+  it('preflight fails when chart target is visible but tv status reports api_available=false', async (t) => {
     server = createServer((req, res) => {
       if (req.url === '/json/list') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -1791,7 +1844,10 @@ esac
       res.writeHead(404);
       res.end('not found');
     });
-    await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+    if (!await listenOrSkip(t, server)) {
+      server = null;
+      return;
+    }
     port = server.address().port;
 
     const fakeNodePath = join(tempDir, 'fake-node-api-unavail.sh');
@@ -1829,7 +1885,7 @@ esac
       'preflight must fail when tv status reports api_available=false even though /json/list sees chart target');
   });
 
-  it('preflight recovers and retries when tv status fails with EPIPE before TradingView comes back', async () => {
+  it('preflight recovers and retries when tv status fails with EPIPE before TradingView comes back', async (t) => {
     server = createServer((req, res) => {
       if (req.url === '/json/list') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -1841,7 +1897,10 @@ esac
       res.writeHead(404);
       res.end('not found');
     });
-    await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+    if (!await listenOrSkip(t, server)) {
+      server = null;
+      return;
+    }
     port = server.address().port;
 
     const readyFlag = join(tempDir, 'recovery-ready.flag');
@@ -1901,7 +1960,7 @@ exit 0
     assert.match(readFileSync(fakeRecoveryLog, 'utf8'), /recover-preflight/);
   });
 
-  it('smoke step reruns after recovery when CLI execution fails with EPIPE', async () => {
+  it('smoke step reruns after recovery when CLI execution fails with EPIPE', async (t) => {
     server = createServer((req, res) => {
       if (req.url === '/json/list') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -1913,7 +1972,10 @@ exit 0
       res.writeHead(404);
       res.end('not found');
     });
-    await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+    if (!await listenOrSkip(t, server)) {
+      server = null;
+      return;
+    }
     port = server.address().port;
 
     const readyFlag = join(tempDir, 'recovery-ready-smoke.flag');
@@ -1978,7 +2040,7 @@ exit 0
       'smoke CLI must be attempted again after recovery');
   });
 
-  it('summary classifies readiness failure distinctly from preflight failure', async () => {
+  it('summary classifies readiness failure distinctly from preflight failure', async (t) => {
     server = createServer((req, res) => {
       if (req.url === '/json/list') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -1990,7 +2052,10 @@ exit 0
       res.writeHead(404);
       res.end('not found');
     });
-    await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+    if (!await listenOrSkip(t, server)) {
+      server = null;
+      return;
+    }
     port = server.address().port;
 
     const fakeNodePath = join(tempDir, 'fake-node-readiness-fail.sh');
@@ -2026,7 +2091,7 @@ esac
       'termination reason must indicate readiness or preflight failure');
   });
 
-  it('surfaces non-JSON tv status bootstrap failures instead of reporting error=unknown', async () => {
+  it('surfaces non-JSON tv status bootstrap failures instead of reporting error=unknown', async (t) => {
     server = createServer((req, res) => {
       if (req.url === '/json/list') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -2038,7 +2103,10 @@ esac
       res.writeHead(404);
       res.end('not found');
     });
-    await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+    if (!await listenOrSkip(t, server)) {
+      server = null;
+      return;
+    }
     port = server.address().port;
 
     const fakeNodePath = join(tempDir, 'fake-node-bootstrap-fail.sh');

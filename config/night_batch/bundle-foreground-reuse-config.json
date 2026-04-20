@@ -13,8 +13,8 @@
     "shortcut_path": "C:\\TradingView\\TradingView.exe - ショートカット.lnk"
   },
   "bundle": {
-    "us_campaign": "strongest-overlay-us-50x9.json",
-    "jp_campaign": "strongest-overlay-jp-50x9.json",
+    "us_campaign": "next-long-run-us-12x10",
+    "jp_campaign": "next-long-run-jp-12x10",
     "smoke_phases": "smoke",
     "production_phases": "full"
   }
