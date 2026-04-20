@@ -144,11 +144,11 @@
 - [x] 検証: `node tests/windows-run-night-batch-self-hosted.test.js`
 - [x] 検証: `node tests/night-batch.test.js`
 - [x] 検証: `npm test` はローカルで一度実行するが、長時間 hang 対策として `timeout 180 npm test` を使う
-- [ ] 検証: `gh workflow list` / push 後の `gh run list` で CI workflow を確認する
+- [x] 検証: `gh workflow list` / push 後の `gh run list` で CI workflow を確認する
 - [x] レビュー: ロジック破綻、設計原則違反、不要な複雑化がないか確認する
 - [x] コミット前: 本計画を `docs/exec-plans/completed/` に移動する
-- [ ] コミット: Conventional Commits 形式でコミットする
-- [ ] プッシュ: `main` を SSH 経由で `origin/main` にプッシュする
+- [x] コミット: Conventional Commits 形式でコミットする
+- [x] プッシュ: `main` を SSH 経由で `origin/main` にプッシュする
 
 ## 実施結果
 
