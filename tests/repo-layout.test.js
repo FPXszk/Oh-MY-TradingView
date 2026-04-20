@@ -1,10 +1,12 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
 const PROJECT_ROOT = process.cwd();
 const ROOT_README_PATH = join(PROJECT_ROOT, 'README.md');
+const CODEX_DIR = join(PROJECT_ROOT, '.codex');
+const CODEX_CONFIG_PATH = join(CODEX_DIR, 'config.toml');
 const DOCS_COMMAND_PATH = join(PROJECT_ROOT, 'docs', 'command.md');
 const ROOT_COMMAND_PATH = join(PROJECT_ROOT, 'command.md');
 const DOCS_README_PATH = join(PROJECT_ROOT, 'docs', 'README.md');
@@ -54,6 +56,18 @@ const STALE_ACTIVE_PLANS = [
 ];
 
 describe('repository layout policy', () => {
+  it('keeps shared Codex settings under .codex/config.toml', () => {
+    assert.equal(existsSync(CODEX_DIR), true, '.codex directory must exist');
+    assert.equal(statSync(CODEX_DIR).isDirectory(), true, '.codex must be a directory');
+    assert.equal(existsSync(CODEX_CONFIG_PATH), true, '.codex/config.toml must exist');
+
+    const config = readFileSync(CODEX_CONFIG_PATH, 'utf8');
+    assert.match(config, /^model = "gpt-5\.4"$/m, 'Codex should use the current frontier model');
+    assert.match(config, /^model_reasoning_effort = "medium"$/m, 'Codex should use medium reasoning by default');
+    assert.match(config, /^\[plugins\."github@openai-curated"\]$/m, 'GitHub plugin settings must be present');
+    assert.match(config, /^enabled = true$/m, 'GitHub plugin must be enabled');
+  });
+
   it('keeps human entrypoints under docs/ and removes obsolete command.md', () => {
     assert.equal(existsSync(DOCS_COMMAND_PATH), false, 'docs/command.md must be removed');
     assert.equal(existsSync(DOCS_README_PATH), true, 'docs/README.md must exist');

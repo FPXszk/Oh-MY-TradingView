@@ -1,0 +1,6 @@
+model = "gpt-5.4"
+model_reasoning_effort = "medium"
+
+[plugins."github@openai-curated"]
+enabled = true
+
