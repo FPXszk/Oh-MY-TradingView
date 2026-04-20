@@ -827,8 +827,6 @@ exit 0
       'smoke-prod',
       '--config',
       configPath,
-      '--detached-state-file',
-      detachedStateFile,
       '--node-bin',
       fakeNodePath,
     ]);
@@ -1041,6 +1039,8 @@ exit 0
       'smoke-prod',
       '--config',
       configPath,
+      '--detached-state-file',
+      detachedStateFile,
       '--node-bin',
       fakeNodePath,
     ]);
@@ -1144,6 +1144,7 @@ exit 0
         jpCampaign,
         '--bundle-production-phases',
         'full',
+        '--dry-run',
       ], {
         env: {
           NIGHT_BATCH_CURRENT_SUMMARY_PATH: latestSummaryPath,
