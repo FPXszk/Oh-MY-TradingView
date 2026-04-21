@@ -14,3 +14,4 @@
 - `night-batch-self-hosted-run8.md` — incident / postmortem
 - `night-batch-self-hosted-run15.md` — historical run archive
 - `night-batch-self-hosted-run17.md` — latest successful main run archive
+- `night-batch-public-vs-strongest.md` — public top10 と既存 strongest 系の比較メモ
