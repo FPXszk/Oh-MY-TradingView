@@ -3,7 +3,7 @@ strategy("MASU Ultimate", overlay=true, default_qty_type=strategy.percent_of_equ
 ema21 = ta.ema(close, 21)
 ema50 = ta.ema(close, 50)
 ema200 = ta.ema(close, 200)
-adxValue = ta.adx(14)
+[plusDI, minusDI, adxValue] = ta.dmi(14, 14)
 volumeSpike = volume > ta.sma(volume, 20)
 longSignal = close > ema200 and ema21 > ema50 and adxValue > 20 and volumeSpike
 shortSignal = close < ema200 and ema21 < ema50 and adxValue > 20 and volumeSpike

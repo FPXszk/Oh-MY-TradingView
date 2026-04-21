@@ -5,14 +5,16 @@ atr = ta.atr(14)
 inSession = not na(time(timeframe.period, sessionInput))
 var float asianHigh = na
 var float asianLow = na
-if ta.change(time("D"))
+if ta.change(time("D")) != 0
     asianHigh := na
     asianLow := na
 if inSession
     asianHigh := na(asianHigh) ? high : math.max(asianHigh, high)
     asianLow := na(asianLow) ? low : math.min(asianLow, low)
-longSignal = not inSession and not na(asianHigh) and ta.crossover(close, asianHigh)
-shortSignal = not inSession and not na(asianLow) and ta.crossunder(close, asianLow)
+crossedAboveAsianHigh = ta.crossover(close, asianHigh)
+crossedBelowAsianLow = ta.crossunder(close, asianLow)
+longSignal = not inSession and not na(asianHigh) and crossedAboveAsianHigh
+shortSignal = not inSession and not na(asianLow) and crossedBelowAsianLow
 if longSignal
     strategy.entry("Long", strategy.long)
 if shortSignal
