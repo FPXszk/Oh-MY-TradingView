@@ -56,6 +56,8 @@ export {
   buildCheckpoint,
   summarizeResults,
   needsRerun,
+  buildPresetFailureBudgetState,
+  filterRunsByFailureBudget,
   findPendingRuns,
 } from './campaign.js';
 export {

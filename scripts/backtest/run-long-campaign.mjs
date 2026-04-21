@@ -140,6 +140,8 @@ async function main() {
     isRecoveredSuccess,
     needsRerun,
     findPendingRuns,
+    buildPresetFailureBudgetState,
+    filterRunsByFailureBudget,
   } = campaignModule;
 
   const campaign = await loadCampaign(campaignId, { phase });
@@ -232,23 +234,41 @@ async function main() {
 
   async function runPass(runs, passLabel) {
     if (runs.length === 0) {
-      return false;
+      return { blockedPresets: [] };
     }
 
-    process.stdout.write(`${passLabel}: ${runs.length} runs queued\n`);
+    const initialBudget = filterRunsByFailureBudget(runs, rawResults, maxConsecutiveFailures);
+    const queuedRuns = initialBudget.runs;
+    if (queuedRuns.length === 0) {
+      process.stdout.write(`${passLabel}: 0 runs queued (all remaining presets exhausted failure budget)\n`);
+      return { blockedPresets: initialBudget.blockedPresets };
+    }
+
+    if (initialBudget.skippedRuns.length > 0) {
+      process.stderr.write(
+        `[failure-budget] Skipping ${initialBudget.skippedRuns.length} queued runs across ` +
+        `${initialBudget.blockedPresetIds.length} blocked presets before ${passLabel}.\n`,
+      );
+    }
+
+    process.stdout.write(`${passLabel}: ${queuedRuns.length} runs queued\n`);
 
     let nextIndex = 0;
-    let aborted = false;
+    const announcedBlockedPresets = new Set(initialBudget.blockedPresetIds);
 
     await Promise.all(
       workers.map(async (worker) => {
-        let consecutiveFailures = 0;
-
-        while (!aborted) {
-          const run = runs[nextIndex];
+        while (true) {
+          const run = queuedRuns[nextIndex];
           nextIndex += 1;
           if (!run) {
             break;
+          }
+
+          const liveBudget = buildPresetFailureBudgetState(rawResults, maxConsecutiveFailures);
+          if (liveBudget.blockedPresetIds.includes(run.presetId)) {
+            announcedBlockedPresets.add(run.presetId);
+            continue;
           }
 
           process.stdout.write(`[${passLabel}] ${worker.name} ${run.presetId} × ${run.symbol} ... `);
@@ -274,19 +294,23 @@ async function main() {
           rawResults.push(entry);
 
           if (isRecoveredSuccess(entry.result)) {
-            consecutiveFailures = 0;
             process.stdout.write(`OK (${entry.duration_ms} ms)\n`);
           } else {
-            consecutiveFailures += 1;
             process.stdout.write(`FAIL (${entry.result.error || entry.result.tester_reason_category || 'unknown'})\n`);
           }
 
           await queueCheckpoint(false);
 
-          if (consecutiveFailures >= maxConsecutiveFailures) {
-            aborted = true;
-            process.stderr.write(`\nAborting ${passLabel}: ${worker.name} hit ${maxConsecutiveFailures} consecutive failures.\n`);
-            break;
+          const updatedBudget = buildPresetFailureBudgetState(rawResults, maxConsecutiveFailures);
+          for (const preset of updatedBudget.blockedPresets) {
+            if (announcedBlockedPresets.has(preset.presetId)) {
+              continue;
+            }
+            announcedBlockedPresets.add(preset.presetId);
+            process.stderr.write(
+              `\n[failure-budget] Blocking preset ${preset.presetId} after ` +
+              `${preset.consecutiveFailures} consecutive failures during ${passLabel}.\n`,
+            );
           }
 
           if (cooldownMs > 0) {
@@ -296,26 +320,29 @@ async function main() {
       }),
     );
 
-    return aborted;
+    const finalBudget = buildPresetFailureBudgetState(rawResults, maxConsecutiveFailures);
+    return { blockedPresets: finalBudget.blockedPresets };
   }
 
-  const primaryPending = findPendingRuns(campaign.matrix, rawResults);
-  const primaryAborted = await runPass(primaryPending, 'primary');
+  const primaryPending = filterRunsByFailureBudget(
+    findPendingRuns(campaign.matrix, rawResults),
+    rawResults,
+    maxConsecutiveFailures,
+  ).runs;
+  await runPass(primaryPending, 'primary');
 
-  let rerunAborted = false;
-  if (!primaryAborted) {
-    for (let rerunPass = 1; rerunPass <= maxRerunPasses; rerunPass += 1) {
-      const effectiveRuns = collapseCompletedRuns(rawResults);
-      const rerunQueue = effectiveRuns.filter((entry) => needsRerun(entry.result)).map(stripRun);
-      if (rerunQueue.length === 0) {
-        break;
-      }
-
-      rerunAborted = await runPass(rerunQueue, `rerun-${rerunPass}`);
-      if (rerunAborted) {
-        break;
-      }
+  for (let rerunPass = 1; rerunPass <= maxRerunPasses; rerunPass += 1) {
+    const effectiveRuns = collapseCompletedRuns(rawResults);
+    const rerunQueue = filterRunsByFailureBudget(
+      effectiveRuns.filter((entry) => needsRerun(entry.result)).map(stripRun),
+      rawResults,
+      maxConsecutiveFailures,
+    ).runs;
+    if (rerunQueue.length === 0) {
+      break;
     }
+
+    await runPass(rerunQueue, `rerun-${rerunPass}`);
   }
 
   await queueCheckpoint(true);
@@ -323,14 +350,19 @@ async function main() {
 
   const effectiveRuns = collapseCompletedRuns(rawResults);
   const summary = summarizeResults(effectiveRuns.map((entry) => entry.result));
+  const failureBudget = buildPresetFailureBudgetState(rawResults, maxConsecutiveFailures);
   const finalPayload = {
     campaign_id: campaignId,
     phase,
     started_at: startedAt,
     finished_at: new Date().toISOString(),
-    aborted: primaryAborted || rerunAborted,
+    aborted: false,
     summary,
     attempts: rawResults.length,
+    failure_budget: {
+      max_consecutive_failures: maxConsecutiveFailures,
+      blocked_presets: failureBudget.blockedPresets,
+    },
     effective_results: effectiveRuns,
     results: rawResults,
   };

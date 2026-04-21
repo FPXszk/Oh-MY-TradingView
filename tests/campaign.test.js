@@ -21,6 +21,8 @@ import {
   selectPhaseSymbols,
   partitionRuns,
   needsRerun,
+  buildPresetFailureBudgetState,
+  filterRunsByFailureBudget,
 } from '../src/core/campaign.js';
 
 import { loadPreset } from '../src/core/backtest.js';
@@ -328,6 +330,43 @@ describe('needsRerun', () => {
 
   it('returns false for successful readable results', () => {
     assert.equal(needsRerun({ success: true, tester_available: true }), false);
+  });
+});
+
+describe('preset failure budget helpers', () => {
+  it('blocks only the preset that exhausts consecutive failures', () => {
+    const completedRuns = [
+      { presetId: 'bad', symbol: 'AAPL', attempt: 'primary', result: { success: false, tester_reason_category: 'apply_failed' } },
+      { presetId: 'good', symbol: 'AAPL', attempt: 'primary', result: { success: true, tester_available: true } },
+      { presetId: 'bad', symbol: 'MSFT', attempt: 'primary', result: { success: false, tester_reason_category: 'apply_failed' } },
+    ];
+    const matrix = [
+      { presetId: 'bad', symbol: 'NVDA' },
+      { presetId: 'good', symbol: 'NVDA' },
+    ];
+
+    const state = buildPresetFailureBudgetState(completedRuns, 2);
+    assert.deepEqual(state.blockedPresetIds, ['bad']);
+    assert.equal(state.blockedPresets[0].presetId, 'bad');
+    assert.equal(state.blockedPresets[0].consecutiveFailures, 2);
+
+    const filtered = filterRunsByFailureBudget(matrix, completedRuns, 2);
+    assert.deepEqual(filtered.runs, [{ presetId: 'good', symbol: 'NVDA' }]);
+    assert.deepEqual(filtered.blockedPresetIds, ['bad']);
+    assert.equal(filtered.skippedRuns.length, 1);
+    assert.deepEqual(filtered.skippedRuns[0], { presetId: 'bad', symbol: 'NVDA' });
+  });
+
+  it('resets consecutive failures after a success for the same preset', () => {
+    const completedRuns = [
+      { presetId: 'mixed', symbol: 'AAPL', attempt: 'primary', result: { success: false, tester_reason_category: 'apply_failed' } },
+      { presetId: 'mixed', symbol: 'MSFT', attempt: 'primary', result: { success: true, tester_available: true } },
+      { presetId: 'mixed', symbol: 'NVDA', attempt: 'primary', result: { success: false, tester_reason_category: 'apply_failed' } },
+    ];
+
+    const state = buildPresetFailureBudgetState(completedRuns, 2);
+    assert.deepEqual(state.blockedPresetIds, []);
+    assert.equal(state.presets.find((preset) => preset.presetId === 'mixed').consecutiveFailures, 1);
   });
 });
 

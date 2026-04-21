@@ -569,6 +569,108 @@ export function needsRerun(result) {
   return result.success !== true;
 }
 
+export function buildPresetFailureBudgetState(completedRuns, maxConsecutiveFailures = 5) {
+  const latestByPreset = new Map();
+  const blockedPresets = [];
+
+  if (!Number.isInteger(maxConsecutiveFailures) || maxConsecutiveFailures <= 0) {
+    return {
+      blockedPresetIds: [],
+      blockedPresets: [],
+      presets: [],
+    };
+  }
+
+  for (const entry of completedRuns) {
+    if (!entry || typeof entry.presetId !== 'string' || entry.presetId.length === 0) {
+      continue;
+    }
+
+    const current = latestByPreset.get(entry.presetId) ?? {
+      presetId: entry.presetId,
+      consecutiveFailures: 0,
+      attempts: 0,
+      successes: 0,
+      failures: 0,
+      blocked: false,
+      blockedAt: null,
+      lastFailureReason: null,
+    };
+
+    current.attempts += 1;
+    if (isRecoveredSuccess(entry.result)) {
+      current.successes += 1;
+      current.consecutiveFailures = 0;
+      current.lastFailureReason = null;
+    } else {
+      current.failures += 1;
+      current.consecutiveFailures += 1;
+      current.lastFailureReason = entry?.result?.error
+        || entry?.result?.tester_reason_category
+        || 'unknown';
+      if (!current.blocked && current.consecutiveFailures >= maxConsecutiveFailures) {
+        current.blocked = true;
+        current.blockedAt = {
+          symbol: entry.symbol ?? null,
+          attempt: entry.attempt ?? null,
+        };
+        blockedPresets.push({
+          presetId: current.presetId,
+          consecutiveFailures: current.consecutiveFailures,
+          attempts: current.attempts,
+          successes: current.successes,
+          failures: current.failures,
+          blockedAt: current.blockedAt,
+          lastFailureReason: current.lastFailureReason,
+        });
+      }
+    }
+
+    latestByPreset.set(entry.presetId, current);
+  }
+
+  const presets = [...latestByPreset.values()]
+    .map((preset) => ({
+      presetId: preset.presetId,
+      consecutiveFailures: preset.consecutiveFailures,
+      attempts: preset.attempts,
+      successes: preset.successes,
+      failures: preset.failures,
+      blocked: preset.blocked,
+      blockedAt: preset.blockedAt,
+      lastFailureReason: preset.lastFailureReason,
+    }))
+    .sort((left, right) => left.presetId.localeCompare(right.presetId));
+
+  return {
+    blockedPresetIds: blockedPresets.map((preset) => preset.presetId),
+    blockedPresets,
+    presets,
+  };
+}
+
+export function filterRunsByFailureBudget(runs, completedRuns, maxConsecutiveFailures = 5) {
+  const state = buildPresetFailureBudgetState(completedRuns, maxConsecutiveFailures);
+  const blockedPresetIds = new Set(state.blockedPresetIds);
+  const allowedRuns = [];
+  const skippedRuns = [];
+
+  for (const run of runs) {
+    if (blockedPresetIds.has(run.presetId)) {
+      skippedRuns.push(run);
+      continue;
+    }
+    allowedRuns.push(run);
+  }
+
+  return {
+    runs: allowedRuns,
+    skippedRuns,
+    blockedPresetIds: state.blockedPresetIds,
+    blockedPresets: state.blockedPresets,
+  };
+}
+
 export function findPendingRuns(matrix, completedRuns) {
   const effectiveRuns = collapseCompletedRuns(completedRuns);
   const done = new Set(effectiveRuns.map((entry) => buildRunKey(entry)));
