@@ -653,6 +653,254 @@ export async function smartCompile({ preferSaveAndAdd = false } = {}) {
   };
 }
 
+async function getPineSaveStoreState() {
+  return evaluate(`
+    (function() {
+      var nameBtn = document.querySelector('.nameButton-k49p41Es, [class*="nameButton"]');
+      if (!nameBtn) return null;
+      var key = Object.keys(nameBtn).find(function(k) { return k.startsWith('__reactFiber$'); });
+      var current = key ? nameBtn[key] : null;
+      for (var i = 0; current && i < 20; i += 1, current = current.return) {
+        if (current.memoizedProps && current.memoizedProps.store) {
+          var state = current.memoizedProps.store.getState();
+          return {
+            scriptName: state.script && state.script.scriptName || '',
+            scriptTitle: state.script && state.script.scriptTitle || '',
+            saveStatus: state.saveScript && state.saveScript.status || null,
+            saveRequestId: state.saveScript && state.saveScript.requestId || null,
+            savedFirstTime: state.ui && state.ui.savedFirstTime || false,
+            savedScripts: state.ui && Array.isArray(state.ui.savedScripts) ? state.ui.savedScripts.map(function(entry) {
+              return {
+                scriptName: entry.scriptName || '',
+                scriptTitle: entry.scriptTitle || '',
+              };
+            }) : []
+          };
+        }
+      }
+      return null;
+    })()
+  `);
+}
+
+async function openPineTitleMenu() {
+  return evaluate(`
+    (function() {
+      var nameBtn = document.querySelector('.nameButton-k49p41Es, [class*="nameButton"]');
+      if (!nameBtn) return false;
+      var key = Object.keys(nameBtn).find(function(k) { return k.startsWith('__reactFiber$'); });
+      var fiber = key ? nameBtn[key] : null;
+      if (fiber && fiber.memoizedProps && typeof fiber.memoizedProps.onClick === 'function') {
+        fiber.memoizedProps.onClick({
+          currentTarget: nameBtn,
+          target: nameBtn,
+          preventDefault: function() {},
+          stopPropagation: function() {},
+        });
+      } else {
+        nameBtn.click();
+      }
+      return nameBtn.getAttribute('aria-expanded') === 'true';
+    })()
+  `);
+}
+
+async function clickPineTitleMenuItem(label) {
+  const labelJson = JSON.stringify(label);
+  return evaluate(`
+    (function() {
+      var target = ${labelJson};
+      var item = Array.from(document.querySelectorAll('.button-HZXWyU6m,[role="menuitem"]')).find(function(el) {
+        return (el.textContent || '').trim().indexOf(target) === 0;
+      });
+      if (!item) return false;
+      ['mouseover', 'mousedown', 'mouseup', 'click'].forEach(function(type) {
+        item.dispatchEvent(new MouseEvent(type, {
+          bubbles: true,
+          cancelable: true,
+          view: window
+        }));
+      });
+      var key = Object.keys(item).find(function(k) { return k.startsWith('__reactFiber$'); });
+      var fiber = key ? item[key] : null;
+      if (fiber && fiber.memoizedProps && typeof fiber.memoizedProps.onClick === 'function') {
+        fiber.memoizedProps.onClick({
+          currentTarget: item,
+          target: item,
+          preventDefault: function() {},
+          stopPropagation: function() {},
+        });
+      } else {
+        item.click();
+      }
+      return true;
+    })()
+  `);
+}
+
+async function isPineSaveDialogOpen() {
+  return evaluate(`
+    (function() {
+      return Array.from(document.querySelectorAll('div')).some(function(el) {
+        var text = (el.innerText || '').trim();
+        return text.indexOf('スクリプトを保存') !== -1 && text.indexOf('スクリプト名') !== -1;
+      });
+    })()
+  `);
+}
+
+async function fillPineSaveDialogInput(scriptName) {
+  const nameJson = JSON.stringify(scriptName);
+  return evaluate(`
+    (function() {
+      var dialog = Array.from(document.querySelectorAll('div')).find(function(el) {
+        var text = (el.innerText || '').trim();
+        return text.indexOf('スクリプトを保存') !== -1 && text.indexOf('スクリプト名') !== -1;
+      });
+      if (!dialog) return false;
+      var input = dialog.querySelector('input');
+      if (!input) return false;
+      var descriptor = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value');
+      if (!descriptor || typeof descriptor.set !== 'function') return false;
+      descriptor.set.call(input, ${nameJson});
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      return true;
+    })()
+  `);
+}
+
+async function clickPineSaveDialogSaveButton() {
+  return evaluate(`
+    (function() {
+      var dialog = Array.from(document.querySelectorAll('div')).find(function(el) {
+        var text = (el.innerText || '').trim();
+        return text.indexOf('スクリプトを保存') !== -1 && text.indexOf('スクリプト名') !== -1;
+      });
+      if (!dialog) return false;
+      var button = Array.from(dialog.querySelectorAll('button,[role="button"]')).find(function(el) {
+        return (el.textContent || '').trim() === '保存';
+      });
+      if (!button) return false;
+      button.click();
+      return true;
+    })()
+  `);
+}
+
+async function closeBlockingPineOverlays() {
+  await evaluate(`
+    (function() {
+      var dialogs = Array.from(document.querySelectorAll('div')).filter(function(el) {
+        var text = (el.innerText || '').trim();
+        return text.indexOf('インジケーター・指標・ストラテジー') !== -1
+          || text.indexOf('スクリプトを保存') !== -1
+          || text.indexOf('確認') !== -1;
+      });
+
+      dialogs.forEach(function(dialog) {
+        var close = Array.from(dialog.querySelectorAll('button,[role="button"]')).find(function(el) {
+          var text = (el.textContent || '').trim();
+          var aria = (el.getAttribute('aria-label') || '').trim();
+          return text === '×'
+            || text === 'キャンセル'
+            || text === 'いいえ'
+            || aria === '終了'
+            || aria === 'メニューを閉じる';
+        });
+        if (close) close.click();
+      });
+    })()
+  `);
+
+  const client = await getClient();
+  for (let i = 0; i < 2; i += 1) {
+    await client.Input.dispatchKeyEvent({
+      type: 'keyDown',
+      key: 'Escape',
+      code: 'Escape',
+      windowsVirtualKeyCode: 27,
+    });
+    await client.Input.dispatchKeyEvent({
+      type: 'keyUp',
+      key: 'Escape',
+      code: 'Escape',
+      windowsVirtualKeyCode: 27,
+    });
+    await new Promise((r) => setTimeout(r, 100));
+  }
+}
+
+export async function saveCurrentScript({ scriptName, timeoutMs = 15000 } = {}) {
+  if (typeof scriptName !== 'string' || scriptName.trim().length === 0) {
+    throw new Error('scriptName is required');
+  }
+
+  const editorReady = await ensurePineEditorReady();
+  if (!editorReady) throw new Error('Could not open Pine Editor.');
+
+  await closeBlockingPineOverlays();
+  await new Promise((r) => setTimeout(r, 300));
+
+  const menuOpened = await openPineTitleMenu();
+  if (!menuOpened) {
+    throw new Error('Could not open Pine title menu.');
+  }
+
+  const copyMenuClicked = await clickPineTitleMenuItem('コピーを作成…');
+  if (!copyMenuClicked) {
+    throw new Error('Could not find Pine copy menu item.');
+  }
+
+  const normalizedName = scriptName.trim();
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    if (await isPineSaveDialogOpen()) break;
+    await new Promise((r) => setTimeout(r, 200));
+  }
+
+  const dialogOpen = await isPineSaveDialogOpen();
+  if (!dialogOpen) {
+    throw new Error('Pine save dialog did not open.');
+  }
+
+  const inputFilled = await fillPineSaveDialogInput(normalizedName);
+  if (!inputFilled) {
+    throw new Error('Could not fill Pine save dialog input.');
+  }
+
+  const saveClicked = await clickPineSaveDialogSaveButton();
+  if (!saveClicked) {
+    throw new Error('Could not click Pine save dialog save button.');
+  }
+
+  while (Date.now() < deadline) {
+    const state = await getPineSaveStoreState();
+    if (
+      state
+      && state.saveStatus === 'saved'
+      && state.savedScripts.some((entry) => entry.scriptName === normalizedName || entry.scriptTitle === normalizedName)
+    ) {
+      return {
+        success: true,
+        save_status: state.saveStatus,
+        script_name: normalizedName,
+      };
+    }
+    if (state && state.saveStatus === 'error') {
+      break;
+    }
+    await new Promise((r) => setTimeout(r, 300));
+  }
+
+  const finalState = await getPineSaveStoreState();
+  return {
+    success: false,
+    save_status: finalState?.saveStatus || 'unknown',
+    script_name: normalizedName,
+  };
+}
+
 /**
  * Fetch the list of studies currently on the active chart via CDP.
  * Returns an array of { id, name } or an empty array on failure.
