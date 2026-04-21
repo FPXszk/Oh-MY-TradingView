@@ -70,6 +70,7 @@ RECOVERABLE_RUNTIME_FAILURE = re.compile(
     r'|TradingView Desktop Critical Error|No requested worker port passed status preflight'
     r'|Preflight failed for CDP session|chart API is unavailable|api_available.?false'
     r'|ECONNREFUSED|ETIMEDOUT|ECONNRESET|EHOSTUNREACH|socket hang up'
+    r'|connection reset by peer|remote end closed connection without response'
     r'|cdp.*unreachable|port.*9222.*closed|mcp.*(unhealthy|unavailable|not responding)',
     re.IGNORECASE,
 )
@@ -439,7 +440,7 @@ def preflight_visible_session(host: str, port: int, logger: logging.Logger) -> d
     try:
         with urllib.request.urlopen(url, timeout=3) as response:
             payload = json.loads(response.read().decode('utf-8'))
-    except (urllib.error.URLError, TimeoutError, ValueError) as error:
+    except (urllib.error.URLError, TimeoutError, ValueError, OSError) as error:
         raise RuntimeError(
             f'Preflight failed for CDP session {host}:{port}: {error}'
         ) from error

@@ -2026,6 +2026,55 @@ exit 0
     assert.match(readFileSync(fakeRecoveryLog, 'utf8'), /recover-preflight/);
   });
 
+  it('preflight normalizes ConnectionResetError into a recoverable RuntimeError', async () => {
+    const script = `
+import logging
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path.cwd() / 'python'))
+import night_batch
+
+def raise_connection_reset(*args, **kwargs):
+    raise ConnectionResetError(104, 'Connection reset by peer')
+
+night_batch.urllib.request.urlopen = raise_connection_reset
+
+try:
+    night_batch.preflight_visible_session('127.0.0.1', 9223, logging.getLogger('test'))
+except RuntimeError as exc:
+    print(str(exc))
+    sys.exit(0)
+except Exception as exc:
+    print(f'{type(exc).__name__}: {exc}')
+    sys.exit(2)
+
+sys.exit(3)
+`;
+
+    const result = await new Promise((resolve, reject) => {
+      const child = spawn('python3', ['-c', script], {
+        cwd: PROJECT_ROOT,
+        stdio: ['ignore', 'pipe', 'pipe'],
+      });
+      let stdout = '';
+      let stderr = '';
+      child.stdout.on('data', (chunk) => {
+        stdout += String(chunk);
+      });
+      child.stderr.on('data', (chunk) => {
+        stderr += String(chunk);
+      });
+      child.on('error', reject);
+      child.on('close', (code) => {
+        resolve({ status: code, stdout, stderr });
+      });
+    });
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.match(result.stdout, /Preflight failed for CDP session 127\.0\.0\.1:9223: \[Errno 104\] Connection reset by peer/);
+  });
+
   it('smoke step reruns after recovery when CLI execution fails with EPIPE', async (t) => {
     server = createServer((req, res) => {
       if (req.url === '/json/list') {
