@@ -315,6 +315,9 @@ export function validateCampaignConfig(config) {
     if (execution.max_rerun_passes != null && (!Number.isInteger(execution.max_rerun_passes) || execution.max_rerun_passes < 0)) {
       errors.push('execution.max_rerun_passes must be a non-negative integer');
     }
+    if (execution.per_run_timeout_ms != null && !isPositiveInteger(execution.per_run_timeout_ms)) {
+      errors.push('execution.per_run_timeout_ms must be a positive integer');
+    }
     if (execution.worker_ports != null) {
       if (!Array.isArray(execution.worker_ports) || execution.worker_ports.length === 0) {
         errors.push('execution.worker_ports must be a non-empty array when provided');

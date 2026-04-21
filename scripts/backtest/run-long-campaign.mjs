@@ -30,7 +30,17 @@ function parsePorts(rawPorts, fallbackPorts) {
   }));
 }
 
-function parseJsonPayload(stdout, stderr, error) {
+function parseJsonPayload(stdout, stderr, error, timeoutMs) {
+  if (error?.killed && timeoutMs > 0) {
+    return {
+      success: false,
+      timed_out: true,
+      error: `Timed out after ${timeoutMs}ms`,
+      stdout: String(stdout || '').trim(),
+      stderr: String(stderr || '').trim(),
+    };
+  }
+
   const payload = [stdout, stderr].map((value) => String(value || '').trim()).find(Boolean);
   if (!payload) {
     return {
@@ -51,7 +61,7 @@ function parseJsonPayload(stdout, stderr, error) {
   }
 }
 
-function runPresetCli({ run, worker, host, dateOverride }) {
+function runPresetCli({ run, worker, host, dateOverride, perRunTimeoutMs }) {
   const args = [
     join(PROJECT_ROOT, 'src', 'cli', 'index.js'),
     'backtest',
@@ -83,6 +93,7 @@ function runPresetCli({ run, worker, host, dateOverride }) {
           TV_CDP_PORT: String(worker.port),
         },
         maxBuffer: 10 * 1024 * 1024,
+        timeout: perRunTimeoutMs,
       },
       (error, stdout, stderr) => {
         resolve({
@@ -91,8 +102,8 @@ function runPresetCli({ run, worker, host, dateOverride }) {
           started_at: startedAt,
           finished_at: new Date().toISOString(),
           duration_ms: Date.now() - startedMs,
-          exit_code: typeof error?.code === 'number' ? error.code : 0,
-          result: parseJsonPayload(stdout, stderr, error),
+          exit_code: typeof error?.code === 'number' ? error.code : (error?.killed ? 124 : 0),
+          result: parseJsonPayload(stdout, stderr, error, perRunTimeoutMs),
         });
       },
     );
@@ -152,6 +163,7 @@ async function main() {
   const cooldownMs = execution.cooldown_ms ?? 0;
   const maxConsecutiveFailures = execution.max_consecutive_failures ?? 5;
   const maxRerunPasses = execution.max_rerun_passes ?? 1;
+  const perRunTimeoutMs = execution.per_run_timeout_ms ?? 0;
   const outDir = join(RESEARCH_RESULTS_DIR, 'campaigns', campaignId, phase);
   const campaignFingerprint = buildCampaignFingerprint({
     config: campaign.config,
@@ -277,6 +289,7 @@ async function main() {
             worker,
             host,
             dateOverride: campaign.config.date_override,
+            perRunTimeoutMs,
           });
 
           const entry = {
