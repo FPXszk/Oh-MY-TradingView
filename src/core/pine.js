@@ -82,23 +82,36 @@ export async function ensurePineEditorOpen() {
   const already = await evaluate(`(function() { var m = ${FIND_MONACO}; return m !== null; })()`);
   if (already) return true;
 
-  await evaluate(`
+  // Use CDP Input.dispatchMouseEvent to reliably click Pine button (no hang)
+  const client = await getClient();
+  const boundingBox = await evaluateAsync(`
     (function() {
-      var bwb = window.TradingView && window.TradingView.bottomWidgetBar;
-      if (!bwb) return;
-      if (typeof bwb.activateScriptEditorTab === 'function') bwb.activateScriptEditorTab();
-      else if (typeof bwb.open === 'function') bwb.open('pine-editor');
-      else if (typeof bwb.showWidget === 'function') bwb.showWidget('pine-editor');
+      var btn = document.querySelector('[aria-label="Pine"]');
+      if (!btn) return null;
+      var rect = btn.getBoundingClientRect();
+      return {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+      };
     })()
   `);
 
-  await evaluate(`
-    (function() {
-      var btn = document.querySelector('[aria-label="Pine"]')
-        || document.querySelector('[data-name="pine-dialog-button"]');
-      if (btn) btn.click();
-    })()
-  `);
+  if (boundingBox?.x && boundingBox?.y) {
+    await client.Input.dispatchMouseEvent({
+      type: 'mousePressed',
+      x: boundingBox.x,
+      y: boundingBox.y,
+      button: 'left',
+      clickCount: 1,
+    });
+    await new Promise((r) => setTimeout(r, 100));
+    await client.Input.dispatchMouseEvent({
+      type: 'mouseReleased',
+      x: boundingBox.x,
+      y: boundingBox.y,
+      button: 'left',
+    });
+  }
 
   for (let i = 0; i < 50; i++) {
     await new Promise(r => setTimeout(r, 200));
@@ -527,6 +540,53 @@ export async function setSource({ source }) {
   return { success: true, lines_set: source.split('\n').length };
 }
 
+export async function createNewPineScript({ timeoutMs = 10000 } = {}) {
+  const editorReady = await ensurePineEditorReady();
+  if (!editorReady) throw new Error('Could not open Pine Editor.');
+
+  const alreadyUntitled = await evaluate(`
+    (function() {
+      var nameButton = document.querySelector('.nameButton-k49p41Es, [class*="nameButton"]');
+      if (!nameButton) return false;
+      return (nameButton.textContent || '').trim() === '名前なしのスクリプト';
+    })()
+  `);
+  if (alreadyUntitled) {
+    return { success: true, title: '名前なしのスクリプト' };
+  }
+
+  const titleMenuOpened = await openPineTitleMenu();
+  if (!titleMenuOpened) {
+    throw new Error('Could not open Pine title menu.');
+  }
+
+  const newItemHovered = await movePointerToPineTitleMenuItem('新規作成');
+  if (!newItemHovered) {
+    throw new Error('Could not hover Pine new script menu item.');
+  }
+
+  const strategyItemClicked = await clickPineTitleSubmenuItem('ストラテジー');
+  if (!strategyItemClicked) {
+    throw new Error('Could not click Pine new strategy submenu item.');
+  }
+
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    const title = await evaluate(`
+      (function() {
+        var nameButton = document.querySelector('.nameButton-k49p41Es, [class*="nameButton"]');
+        return nameButton ? (nameButton.textContent || '').trim() : '';
+      })()
+    `);
+    if (title === '名前なしのスクリプト') {
+      return { success: true, title };
+    }
+    await new Promise((r) => setTimeout(r, 200));
+  }
+
+  throw new Error('Timed out waiting for a new untitled Pine script.');
+}
+
 export async function compile({ preferSaveAndAdd = false } = {}) {
   const editorReady = await ensurePineEditorReady();
   if (!editorReady) throw new Error('Could not open Pine Editor.');
@@ -683,29 +743,213 @@ async function getPineSaveStoreState() {
   `);
 }
 
-async function openPineTitleMenu() {
-  return evaluate(`
+async function clickPineToolbarButtonByTitle(title) {
+  const client = await getClient();
+
+  const titleJson = JSON.stringify(title);
+  const boundingBox = await evaluateAsync(`
     (function() {
-      var nameBtn = document.querySelector('.nameButton-k49p41Es, [class*="nameButton"]');
-      if (!nameBtn) return false;
-      var key = Object.keys(nameBtn).find(function(k) { return k.startsWith('__reactFiber$'); });
-      var fiber = key ? nameBtn[key] : null;
-      if (fiber && fiber.memoizedProps && typeof fiber.memoizedProps.onClick === 'function') {
-        fiber.memoizedProps.onClick({
-          currentTarget: nameBtn,
-          target: nameBtn,
-          preventDefault: function() {},
-          stopPropagation: function() {},
-        });
-      } else {
-        nameBtn.click();
+      var targetTitle = ${titleJson};
+      var nameButton = document.querySelector('.nameButton-k49p41Es, [class*="nameButton"]');
+      var anchorY = null;
+      if (nameButton) {
+        var nameRect = nameButton.getBoundingClientRect();
+        anchorY = nameRect.top + nameRect.height / 2;
       }
-      return nameBtn.getAttribute('aria-expanded') === 'true';
+      var buttons = Array.from(document.querySelectorAll('button,[role="button"]')).filter(function(el) {
+        return (el.getAttribute('title') || '').trim() === targetTitle;
+      });
+      if (buttons.length === 0) return null;
+      var button = buttons.reduce(function(best, current) {
+        var currentRect = current.getBoundingClientRect();
+        if (currentRect.width === 0 || currentRect.height === 0) return best;
+        if (!best) return current;
+        var bestRect = best.getBoundingClientRect();
+        if (bestRect.width === 0 || bestRect.height === 0) return current;
+        if (anchorY !== null) {
+          var currentDistance = Math.abs((currentRect.top + currentRect.height / 2) - anchorY);
+          var bestDistance = Math.abs((bestRect.top + bestRect.height / 2) - anchorY);
+          if (currentDistance !== bestDistance) {
+            return currentDistance < bestDistance ? current : best;
+          }
+        }
+        return currentRect.left > bestRect.left ? current : best;
+      }, null);
+      if (!button) return null;
+      var rect = button.getBoundingClientRect();
+      return {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+      };
     })()
   `);
+
+  if (!boundingBox?.x || !boundingBox?.y) return false;
+
+  try {
+    await client.Input.dispatchMouseEvent({
+      type: 'mousePressed',
+      x: boundingBox.x,
+      y: boundingBox.y,
+      button: 'left',
+      clickCount: 1,
+    });
+    await new Promise((r) => setTimeout(r, 100));
+    await client.Input.dispatchMouseEvent({
+      type: 'mouseReleased',
+      x: boundingBox.x,
+      y: boundingBox.y,
+      button: 'left',
+    });
+
+    await new Promise((r) => setTimeout(r, 300));
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
 
-async function clickPineTitleMenuItem(label) {
+async function openPineTitleMenu() {
+  const client = await getClient();
+
+  const boundingBox = await evaluateAsync(`
+    (function() {
+      var nameBtn = document.querySelector('.nameButton-k49p41Es, [class*="nameButton"]');
+      if (!nameBtn) return null;
+      var rect = nameBtn.getBoundingClientRect();
+      return {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+      };
+    })()
+  `);
+
+  if (!boundingBox?.x || !boundingBox?.y) return false;
+
+  try {
+    await client.Input.dispatchMouseEvent({
+      type: 'mousePressed',
+      x: boundingBox.x,
+      y: boundingBox.y,
+      button: 'left',
+      clickCount: 1,
+    });
+    await new Promise((r) => setTimeout(r, 100));
+    await client.Input.dispatchMouseEvent({
+      type: 'mouseReleased',
+      x: boundingBox.x,
+      y: boundingBox.y,
+      button: 'left',
+    });
+    await new Promise((r) => setTimeout(r, 300));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function clickPineSaveButton() {
+  const client = await getClient();
+
+  const boundingBox = await evaluateAsync(`
+    (function() {
+      var nameButton = document.querySelector('.nameButton-k49p41Es, [class*="nameButton"]');
+      var anchorY = null;
+      if (nameButton) {
+        var nameRect = nameButton.getBoundingClientRect();
+        anchorY = nameRect.top + nameRect.height / 2;
+      }
+
+      var candidates = Array.from(document.querySelectorAll('button,[role="button"]')).filter(function(el) {
+        var className = String(el.className || '');
+        var title = (el.getAttribute('title') || '').trim();
+        return className.indexOf('saveButton') !== -1 || title === 'スクリプトを保存';
+      });
+      if (candidates.length === 0) return null;
+
+      var button = candidates.reduce(function(best, current) {
+        var currentRect = current.getBoundingClientRect();
+        if (currentRect.width === 0 || currentRect.height === 0) return best;
+        if (!best) return current;
+        var bestRect = best.getBoundingClientRect();
+        if (bestRect.width === 0 || bestRect.height === 0) return current;
+        if (anchorY === null) return currentRect.top > bestRect.top ? current : best;
+        var currentDistance = Math.abs((currentRect.top + currentRect.height / 2) - anchorY);
+        var bestDistance = Math.abs((bestRect.top + bestRect.height / 2) - anchorY);
+        return currentDistance < bestDistance ? current : best;
+      }, null);
+      if (!button) return null;
+
+      var rect = button.getBoundingClientRect();
+      return {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+      };
+    })()
+  `);
+
+  if (!boundingBox?.x || !boundingBox?.y) return false;
+
+  try {
+    await client.Input.dispatchMouseEvent({
+      type: 'mousePressed',
+      x: boundingBox.x,
+      y: boundingBox.y,
+      button: 'left',
+      clickCount: 1,
+    });
+    await new Promise((r) => setTimeout(r, 100));
+    await client.Input.dispatchMouseEvent({
+      type: 'mouseReleased',
+      x: boundingBox.x,
+      y: boundingBox.y,
+      button: 'left',
+    });
+    await new Promise((r) => setTimeout(r, 300));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function movePointerToPineTitleMenuItem(label) {
+  const client = await getClient();
+  const labelJson = JSON.stringify(label);
+
+  const boundingBox = await evaluateAsync(`
+    (function() {
+      var target = ${labelJson};
+      var item = Array.from(document.querySelectorAll('.button-HZXWyU6m,[role="menuitem"]')).find(function(el) {
+        var text = (el.textContent || '').trim();
+        var aria = (el.getAttribute('aria-label') || '').trim();
+        return text.indexOf(target) === 0 || aria === target;
+      });
+      if (!item) return null;
+      var rect = item.getBoundingClientRect();
+      return {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+      };
+    })()
+  `);
+
+  if (!boundingBox?.x || !boundingBox?.y) return false;
+
+  try {
+    await client.Input.dispatchMouseEvent({
+      type: 'mouseMoved',
+      x: boundingBox.x,
+      y: boundingBox.y,
+      button: 'none',
+    });
+    await new Promise((r) => setTimeout(r, 500));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function isPineTitleMenuItemAvailable(label) {
   const labelJson = JSON.stringify(label);
   return evaluate(`
     (function() {
@@ -714,25 +958,49 @@ async function clickPineTitleMenuItem(label) {
         return (el.textContent || '').trim().indexOf(target) === 0;
       });
       if (!item) return false;
-      ['mouseover', 'mousedown', 'mouseup', 'click'].forEach(function(type) {
-        item.dispatchEvent(new MouseEvent(type, {
-          bubbles: true,
-          cancelable: true,
-          view: window
-        }));
+      var ariaDisabled = (item.getAttribute('aria-disabled') || '').trim();
+      var className = String(item.className || '').toLowerCase();
+      return ariaDisabled !== 'true' && className.indexOf('disabled') === -1;
+    })()
+  `);
+}
+
+async function clickPineTitleMenuItem(label) {
+  const labelJson = JSON.stringify(label);
+
+  return evaluate(`
+    (function() {
+      var target = ${labelJson};
+      var item = Array.from(document.querySelectorAll('.button-HZXWyU6m,[role="menuitem"]')).find(function(el) {
+        return (el.textContent || '').trim().indexOf(target) === 0;
       });
-      var key = Object.keys(item).find(function(k) { return k.startsWith('__reactFiber$'); });
-      var fiber = key ? item[key] : null;
-      if (fiber && fiber.memoizedProps && typeof fiber.memoizedProps.onClick === 'function') {
-        fiber.memoizedProps.onClick({
-          currentTarget: item,
-          target: item,
-          preventDefault: function() {},
-          stopPropagation: function() {},
-        });
-      } else {
-        item.click();
-      }
+      if (!item) return false;
+      item.click();
+      return true;
+    })()
+  `);
+}
+
+async function clickPineTitleSubmenuItem(label) {
+  const labelJson = JSON.stringify(label);
+
+  return evaluate(`
+    (function() {
+      var target = ${labelJson};
+      var candidates = Array.from(document.querySelectorAll('.button-HZXWyU6m,[role="menuitem"]')).filter(function(el) {
+        var text = (el.textContent || '').trim();
+        var aria = (el.getAttribute('aria-label') || '').trim();
+        return text.indexOf(target) === 0 || aria === target;
+      });
+      if (candidates.length === 0) return false;
+      var item = candidates.reduce(function(best, current) {
+        if (!best) return current;
+        var bestRect = best.getBoundingClientRect();
+        var currentRect = current.getBoundingClientRect();
+        return currentRect.left < bestRect.left ? current : best;
+      }, null);
+      if (!item) return false;
+      item.click();
       return true;
     })()
   `);
@@ -771,21 +1039,106 @@ async function fillPineSaveDialogInput(scriptName) {
 }
 
 async function clickPineSaveDialogSaveButton() {
-  return evaluate(`
+  const client = await getClient();
+
+  const boundingBox = await evaluateAsync(`
     (function() {
       var dialog = Array.from(document.querySelectorAll('div')).find(function(el) {
         var text = (el.innerText || '').trim();
         return text.indexOf('スクリプトを保存') !== -1 && text.indexOf('スクリプト名') !== -1;
       });
-      if (!dialog) return false;
+      if (!dialog) return null;
       var button = Array.from(dialog.querySelectorAll('button,[role="button"]')).find(function(el) {
         return (el.textContent || '').trim() === '保存';
       });
-      if (!button) return false;
-      button.click();
-      return true;
+      if (!button) return null;
+      var rect = button.getBoundingClientRect();
+      return {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+      };
     })()
   `);
+
+  if (!boundingBox?.x || !boundingBox?.y) return false;
+
+  try {
+    await client.Input.dispatchMouseEvent({
+      type: 'mousePressed',
+      x: boundingBox.x,
+      y: boundingBox.y,
+      button: 'left',
+      clickCount: 1,
+    });
+    await new Promise((r) => setTimeout(r, 100));
+    await client.Input.dispatchMouseEvent({
+      type: 'mouseReleased',
+      x: boundingBox.x,
+      y: boundingBox.y,
+      button: 'left',
+    });
+
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function isPineOverwriteConfirmOpen() {
+  return evaluate(`
+    (function() {
+      return Array.from(document.querySelectorAll('div')).some(function(el) {
+        var text = (el.innerText || '').trim();
+        return text.indexOf('本当に書き換えますか？') !== -1 && text.indexOf('はい') !== -1;
+      });
+    })()
+  `);
+}
+
+async function clickPineOverwriteConfirmYesButton() {
+  const client = await getClient();
+
+  const boundingBox = await evaluateAsync(`
+    (function() {
+      var dialog = Array.from(document.querySelectorAll('div')).find(function(el) {
+        var text = (el.innerText || '').trim();
+        return text.indexOf('本当に書き換えますか？') !== -1 && text.indexOf('はい') !== -1;
+      });
+      if (!dialog) return null;
+      var button = Array.from(dialog.querySelectorAll('button,[role="button"]')).find(function(el) {
+        return (el.textContent || '').trim() === 'はい';
+      });
+      if (!button) return null;
+      var rect = button.getBoundingClientRect();
+      return {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+      };
+    })()
+  `);
+
+  if (!boundingBox?.x || !boundingBox?.y) return false;
+
+  try {
+    await client.Input.dispatchMouseEvent({
+      type: 'mousePressed',
+      x: boundingBox.x,
+      y: boundingBox.y,
+      button: 'left',
+      clickCount: 1,
+    });
+    await new Promise((r) => setTimeout(r, 100));
+    await client.Input.dispatchMouseEvent({
+      type: 'mouseReleased',
+      x: boundingBox.x,
+      y: boundingBox.y,
+      button: 'left',
+    });
+    await new Promise((r) => setTimeout(r, 300));
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
 
 async function closeBlockingPineOverlays() {
@@ -842,18 +1195,39 @@ export async function saveCurrentScript({ scriptName, timeoutMs = 15000 } = {}) 
   await closeBlockingPineOverlays();
   await new Promise((r) => setTimeout(r, 300));
 
-  const menuOpened = await openPineTitleMenu();
-  if (!menuOpened) {
+  const normalizedName = scriptName.trim();
+  const deadline = Date.now() + timeoutMs;
+
+  const titleMenuOpened = await openPineTitleMenu();
+  if (!titleMenuOpened) {
     throw new Error('Could not open Pine title menu.');
   }
 
-  const copyMenuClicked = await clickPineTitleMenuItem('コピーを作成…');
-  if (!copyMenuClicked) {
-    throw new Error('Could not find Pine copy menu item.');
+  const copyAvailable = await isPineTitleMenuItemAvailable('コピーを作成…');
+  const saveMenuAvailable = await isPineTitleMenuItemAvailable('スクリプトを保存');
+
+  if (copyAvailable) {
+    const copyClicked = await clickPineTitleMenuItem('コピーを作成…');
+    if (!copyClicked) {
+      throw new Error('Could not click Pine copy menu item.');
+    }
+    await new Promise((r) => setTimeout(r, 400));
+    const saveButtonClicked = await clickPineSaveButton();
+    if (!saveButtonClicked) {
+      throw new Error('Could not click Pine save button after copy.');
+    }
+  } else if (saveMenuAvailable) {
+    const saveMenuClicked = await clickPineTitleMenuItem('スクリプトを保存');
+    if (!saveMenuClicked) {
+      throw new Error('Could not click Pine save menu item.');
+    }
+  } else {
+    const saveButtonClicked = await clickPineSaveButton();
+    if (!saveButtonClicked) {
+      throw new Error('Could not click Pine save button.');
+    }
   }
 
-  const normalizedName = scriptName.trim();
-  const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
     if (await isPineSaveDialogOpen()) break;
     await new Promise((r) => setTimeout(r, 200));
@@ -874,7 +1248,16 @@ export async function saveCurrentScript({ scriptName, timeoutMs = 15000 } = {}) 
     throw new Error('Could not click Pine save dialog save button.');
   }
 
+  let overwriteHandled = false;
   while (Date.now() < deadline) {
+    if (!overwriteHandled && await isPineOverwriteConfirmOpen()) {
+      const confirmed = await clickPineOverwriteConfirmYesButton();
+      if (!confirmed) {
+        throw new Error('Could not confirm Pine overwrite dialog.');
+      }
+      overwriteHandled = true;
+    }
+
     const state = await getPineSaveStoreState();
     if (
       state

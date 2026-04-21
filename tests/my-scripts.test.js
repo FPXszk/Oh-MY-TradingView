@@ -46,22 +46,20 @@ describe('resolveStrategiesForMyScripts', () => {
 });
 
 describe('saveStrategiesToMyScripts', () => {
-  it('compiles and then saves each resolved strategy into My Scripts', async () => {
+  it('sets source before saving each resolved strategy into My Scripts', async () => {
     const calls = [];
     const result = await saveStrategiesToMyScripts(['alpha', 'beta'], {
       resolveStrategiesForMyScripts: async () => ([
         { id: 'alpha', name: 'Alpha Script', source: 'strategy("Alpha")' },
         { id: 'beta', name: 'Beta Script', source: 'strategy("Beta")' },
       ]),
+      createNewPineScript: async () => {
+        calls.push('new');
+        return { success: true };
+      },
       setSource: async ({ source }) => {
         calls.push(`set:${source}`);
-      },
-      wait: async (ms) => {
-        calls.push(`wait:${ms}`);
-      },
-      getErrors: async () => {
-        calls.push('errors');
-        return { success: true, has_errors: false, error_count: 0, button_clicked: 'チャートに追加', study_added: true };
+        return { success: true };
       },
       saveCurrentScript: async ({ scriptName }) => {
         calls.push(`save:${scriptName}`);
@@ -70,13 +68,11 @@ describe('saveStrategiesToMyScripts', () => {
     });
 
     assert.deepEqual(calls, [
+      'new',
       'set:strategy("Alpha")',
-      'wait:1000',
-      'errors',
       'save:Alpha Script',
+      'new',
       'set:strategy("Beta")',
-      'wait:1000',
-      'errors',
       'save:Beta Script',
     ]);
     assert.deepEqual(
@@ -88,24 +84,39 @@ describe('saveStrategiesToMyScripts', () => {
     );
   });
 
-  it('does not save when compilation reports errors', async () => {
+  it('does not save when script saving fails', async () => {
     let saveCalls = 0;
     const result = await saveStrategiesToMyScripts(['broken'], {
       resolveStrategiesForMyScripts: async () => ([
         { id: 'broken', name: 'Broken Script', source: 'strategy("Broken")' },
       ]),
-      setSource: async () => {},
-      wait: async () => {},
-      getErrors: async () => ({
-        success: true,
-        has_errors: true,
-        error_count: 2,
-        button_clicked: 'チャートに追加',
-        study_added: false,
-      }),
+      createNewPineScript: async () => ({ success: true }),
+      setSource: async () => ({ success: true }),
       saveCurrentScript: async () => {
         saveCalls += 1;
-        return { success: true, save_status: 'saved', script_name: 'Broken Script' };
+        return { success: false, save_status: 'error', script_name: 'Broken Script', error: 'Save failed' };
+      },
+    });
+
+    assert.equal(saveCalls, 1);
+    assert.equal(result[0].success, false);
+    assert.equal(result[0].save_status, 'error');
+    assert.equal(result[0].saved_name, 'Broken Script');
+  });
+
+  it('does not save when source replacement fails', async () => {
+    let saveCalls = 0;
+    const result = await saveStrategiesToMyScripts(['broken-source'], {
+      resolveStrategiesForMyScripts: async () => ([
+        { id: 'broken-source', name: 'Broken Source Script', source: 'strategy("Broken Source")' },
+      ]),
+      createNewPineScript: async () => ({ success: true }),
+      setSource: async () => {
+        throw new Error('Monaco found but setValue() failed.');
+      },
+      saveCurrentScript: async () => {
+        saveCalls += 1;
+        return { success: true, save_status: 'saved', script_name: 'Broken Source Script' };
       },
     });
 
@@ -113,5 +124,6 @@ describe('saveStrategiesToMyScripts', () => {
     assert.equal(result[0].success, false);
     assert.equal(result[0].save_status, null);
     assert.equal(result[0].saved_name, null);
+    assert.match(result[0].error, /setValue\(\) failed/);
   });
 });
