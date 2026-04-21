@@ -13,8 +13,7 @@
     "shortcut_path": "C:\\TradingView\\TradingView.exe - ショートカット.lnk"
   },
   "bundle": {
-    "us_campaign": "next-long-run-us-12x10",
-    "jp_campaign": "next-long-run-jp-12x10",
+    "us_campaign": "public-top10-us-40x10",
     "smoke_phases": "smoke",
     "production_phases": "full"
   }

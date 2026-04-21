@@ -1,0 +1,40 @@
+{
+  "id": "public-top10-us-40x10",
+  "name": "TradingView public top10 x US40",
+  "description": "TradingView Public Library strategy snapshot on 2026-04-21 against the US-only 40-symbol matrix.",
+  "universe": "public-top10-us-40",
+  "strategy_ids": [
+    "tv-public-kdj-l2",
+    "tv-public-masu-ultimate",
+    "tv-public-asian-breakout-autobot",
+    "tv-public-adaptive-risk-regime",
+    "tv-public-joat-institutional-convergence",
+    "tv-public-pivot-vwap-confluence",
+    "tv-public-brosio-break-and-retest",
+    "tv-public-agni-momentum",
+    "tv-public-gold-hft-hybrid",
+    "tv-public-mtf-matrix"
+  ],
+  "date_override": {
+    "from": "2000-01-01",
+    "to": "2099-12-31"
+  },
+  "phases": {
+    "smoke": {
+      "symbols": ["NVDA", "AAPL", "INTC", "SPY"]
+    },
+    "pilot": {
+      "symbols": ["NVDA", "META", "AAPL", "MSFT", "INTC", "PFE", "SPY", "QQQ", "GLD", "IBIT"]
+    },
+    "full": {
+      "symbol_count": 40
+    }
+  },
+  "execution": {
+    "worker_ports": [9223],
+    "checkpoint_every": 10,
+    "cooldown_ms": 1000,
+    "max_consecutive_failures": 5,
+    "max_rerun_passes": 2
+  }
+}

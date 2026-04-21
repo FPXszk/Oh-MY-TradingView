@@ -22,8 +22,9 @@
 
 - Public Library 上位 10 は **TradingView Public Library の Strategy 一覧における all-time popularity 系の並び** を採用する
 - repo に取り込む対象は **Pine source を閲覧できる open-source/public script のみ** とし、protected/paid/closed-source script は除外する
-- 個別株 30 銘柄は **米国株のみ** から自動選定し、直近 5 年 total return を基準に **上位 10 / 中央近辺 10 / 下位 10** の 3 バケットに分ける
+- 個別株 30 銘柄は **米国株のみ** から自動選定し、直近 5 年 total return を基準に **勝ち組 10 / 横ばい帯 10 / 負け組 10** の 3 バケットに分ける
 - 指数・アセット 10 銘柄は、ユーザー要望に沿って **Gold / Bitcoin / S&P 500 / Nasdaq / 半導体系を含む代表 10 本** を固定構成で持つ
+- 指数・アセット 10 銘柄の初期候補は `SPY` `QQQ` `DIA` `IWM` `SMH` `SOXX` `GLD` `BTCUSD` `TLT` `USO` とし、TradingView symbol 解決上の都合で同等指数ティッカーへ読み替える場合がある
 
 ## 変更・作成対象ファイル
 
@@ -59,6 +60,7 @@
 - Public Library 上位 10 の metadata/source を repo 内 registry に固定化する
 - source-backed strategy を campaign / long-run runner から実行できるようにする
 - US-only 40 symbol universe と 10 strategy campaign を current config に追加する
+- 40 symbol universe の内訳を **米国個別株 30（勝ち組 10 / 横ばい帯 10 / 負け組 10）+ 指数/アセット 10** として固定する
 - night batch / bundle 実行を single-market 構成でも動くように一般化する
 - 上位 3 strategy を TradingView 側へ保存するための自動化を追加する
 - 関連テストと必要最小限のドキュメント更新

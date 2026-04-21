@@ -102,6 +102,20 @@ describe('pickApplyButton', () => {
     assert.equal(result.label, '保存してチャートに追加');
   });
 
+  it('prefers "Save and add to chart" when save-first mode is enabled', () => {
+    const labels = ['Add to chart', 'Save and add to chart'];
+    const result = pickApplyButton(labels, { preferSaveAndAdd: true });
+    assert.equal(result.label, 'Save and add to chart');
+    assert.equal(result.index, 1);
+  });
+
+  it('prefers Japanese "保存してチャートに追加" when save-first mode is enabled', () => {
+    const labels = ['チャートに追加', '保存してチャートに追加'];
+    const result = pickApplyButton(labels, { preferSaveAndAdd: true });
+    assert.equal(result.label, '保存してチャートに追加');
+    assert.equal(result.index, 1);
+  });
+
   it('returns null when no matching button found', () => {
     const labels = ['Save', 'Close'];
     const result = pickApplyButton(labels);

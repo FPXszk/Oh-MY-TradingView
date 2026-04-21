@@ -465,7 +465,7 @@ function pickUnlabeledApplyButtonNearSave(entries) {
  * @param {string[]} labels
  * @returns {{ label: string, index: number }|null}
  */
-export function pickApplyButton(labels) {
+export function pickApplyButton(labels, { preferSaveAndAdd = false } = {}) {
   if (!Array.isArray(labels) || labels.length === 0) return null;
   let best = null;
   for (let i = 0; i < labels.length; i++) {
@@ -474,8 +474,9 @@ export function pickApplyButton(labels) {
     for (const text of candidates) {
       for (const { pattern, priority } of APPLY_PATTERNS) {
         if (pattern.test(text)) {
-          if (!best || priority < best.priority) {
-            best = { label: text, index: i, priority };
+          const effectivePriority = preferSaveAndAdd && priority === 3 ? 0 : priority;
+          if (!best || effectivePriority < best.priority) {
+            best = { label: text, index: i, priority: effectivePriority };
           }
         }
       }
@@ -526,11 +527,11 @@ export async function setSource({ source }) {
   return { success: true, lines_set: source.split('\n').length };
 }
 
-export async function compile() {
+export async function compile({ preferSaveAndAdd = false } = {}) {
   const editorReady = await ensurePineEditorReady();
   if (!editorReady) throw new Error('Could not open Pine Editor.');
 
-  const clicked = await clickPreferredApplyButton();
+  const clicked = await clickPreferredApplyButton({ preferSaveAndAdd });
 
   if (!clicked) {
     const c = await getClient();
@@ -580,7 +581,7 @@ export async function getErrors() {
   };
 }
 
-export async function smartCompile() {
+export async function smartCompile({ preferSaveAndAdd = false } = {}) {
   const editorReady = await ensurePineEditorReady();
   if (!editorReady) throw new Error('Could not open Pine Editor.');
 
@@ -594,7 +595,7 @@ export async function smartCompile() {
     })()
   `);
 
-  const buttonClicked = await clickPreferredApplyButton();
+  const buttonClicked = await clickPreferredApplyButton({ preferSaveAndAdd });
 
   if (!buttonClicked) {
     const c = await getClient();
@@ -707,7 +708,7 @@ async function clickButtonByIndex(targetIndex) {
   `);
 }
 
-async function clickPreferredApplyButton() {
+async function clickPreferredApplyButton({ preferSaveAndAdd = false } = {}) {
   const buttons = await evaluate(`
     (function() {
       return Array.from(document.querySelectorAll('button'))
@@ -723,7 +724,7 @@ async function clickPreferredApplyButton() {
         });
     })()
   `);
-  const picked = pickApplyButton(Array.isArray(buttons) ? buttons : []);
+  const picked = pickApplyButton(Array.isArray(buttons) ? buttons : [], { preferSaveAndAdd });
   if (!picked) return null;
   const clicked = picked.label === TOOLBAR_UNLABELED_APPLY_LABEL
     ? await clickButtonByIndex(picked.index)

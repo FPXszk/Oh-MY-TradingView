@@ -84,6 +84,16 @@ function normalizeUniverseSymbols(universe) {
 }
 
 function resolveStrategies(strategies, config) {
+  if (Array.isArray(config.strategy_ids) && config.strategy_ids.length > 0) {
+    return config.strategy_ids.map((strategyId) => {
+      const strategy = strategies.find((entry) => entry.id === strategyId);
+      if (!strategy) {
+        throw new Error(`Campaign strategy "${strategyId}" not found in strategy catalog`);
+      }
+      return strategy;
+    });
+  }
+
   if (Array.isArray(config.preset_ids) && config.preset_ids.length > 0) {
     return config.preset_ids.map((presetId) => {
       const preset = strategies.find((strategy) => strategy.id === presetId);
@@ -246,8 +256,19 @@ export function validateCampaignConfig(config) {
     if (!config.preset_ids.every((presetId) => typeof presetId === 'string' && presetId.length > 0)) {
       errors.push('preset_ids must contain only non-empty strings');
     }
-  } else if (!config.strategy_filter) {
-    errors.push('preset_ids or strategy_filter is required');
+  }
+
+  if (Array.isArray(config.strategy_ids)) {
+    if (config.strategy_ids.length === 0) {
+      errors.push('strategy_ids must contain at least one strategy id');
+    }
+    if (!config.strategy_ids.every((strategyId) => typeof strategyId === 'string' && strategyId.length > 0)) {
+      errors.push('strategy_ids must contain only non-empty strings');
+    }
+  }
+
+  if (!Array.isArray(config.preset_ids) && !Array.isArray(config.strategy_ids) && !config.strategy_filter) {
+    errors.push('preset_ids or strategy_ids or strategy_filter is required');
   }
 
   if (config.strategy_limit != null && !isPositiveInteger(config.strategy_limit)) {
@@ -382,7 +403,7 @@ export async function loadCampaign(campaignId, { phase = 'full' } = {}) {
 
   const [presetsRaw, catalog] = await Promise.all([
     readFile(BACKTEST_PRESETS_PATH, 'utf8'),
-    loadCatalog(),
+    loadCatalog(undefined, { includePublic: true }),
   ]);
   const presetsData = JSON.parse(presetsRaw);
   let strategies = resolveStrategies(
@@ -429,6 +450,7 @@ export function buildLegacyCampaignFingerprint({ config, defaults, phase, matrix
     campaign_id: config.id,
     phase,
     preset_ids: config.preset_ids ?? null,
+    strategy_ids: config.strategy_ids ?? null,
     date_range: defaults.date_range ?? null,
     total_runs: matrix.length,
   })).digest('hex');
@@ -444,6 +466,7 @@ export function buildCampaignFingerprint({ config, defaults, phase, matrix }) {
     universe: config.universe ?? null,
     phase,
     preset_ids: config.preset_ids ?? null,
+    strategy_ids: config.strategy_ids ?? null,
     date_range: defaults.date_range ?? null,
     initial_capital: defaults.initial_capital ?? null,
     total_runs: matrix.length,

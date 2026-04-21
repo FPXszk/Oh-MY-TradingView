@@ -996,6 +996,55 @@ exit 0
     assert.match(loggedCommands[1], /--phases full/);
   });
 
+  it('smoke-prod can run a single-market bundle when only us_campaign is configured', async () => {
+    const fakeNodePath = join(tempDir, 'fake-node.sh');
+    const fakeNodeLog = join(tempDir, 'fake-node.log');
+    const configPath = join(tempDir, 'bundle-single-market.json');
+    writeExecutable(
+      fakeNodePath,
+      `#!/bin/sh
+${STATUS_OK_SNIPPET}printf '%s\n' "$*" >> "${fakeNodeLog}"
+exit 0
+`,
+    );
+    writeFileSync(
+      configPath,
+      JSON.stringify({
+        runtime: {
+          host: '127.0.0.1',
+          port,
+          startup_check_host: '127.0.0.1',
+          startup_check_port: port,
+          detach_after_smoke: false,
+        },
+        bundle: {
+          us_campaign: 'public-top10-us-40x10',
+          smoke_phases: 'smoke',
+          production_phases: 'full',
+        },
+      }),
+      'utf8',
+    );
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--config',
+      configPath,
+      '--node-bin',
+      fakeNodePath,
+    ]);
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    const loggedCommands = readFileSync(fakeNodeLog, 'utf8').trim().split('\n');
+    assert.equal(loggedCommands.length, 2);
+    assert.match(loggedCommands[0], /run-finetune-bundle\.mjs/);
+    assert.match(loggedCommands[0], /public-top10-us-40x10/);
+    assert.doesNotMatch(loggedCommands[0], /next-long-run-jp|jp-campaign/i);
+    assert.match(loggedCommands[1], /run-finetune-bundle\.mjs/);
+    assert.match(loggedCommands[1], /public-top10-us-40x10/);
+  });
+
   it('smoke-prod can detach the full bundle phase after a smoke bundle gate', async () => {
     const fakeNodePath = join(tempDir, 'fake-node.sh');
     const fakeNodeLog = join(tempDir, 'fake-node.log');

@@ -44,6 +44,13 @@ function parsePortList(raw) {
     .filter(Number.isFinite);
 }
 
+function buildCampaignQueue(values) {
+  return [
+    { id: values['us-campaign'], resume: values['us-resume'] || null },
+    { id: values['jp-campaign'], resume: values['jp-resume'] || null },
+  ].filter((campaign) => typeof campaign.id === 'string' && campaign.id.trim().length > 0);
+}
+
 function isRecoverable(text) {
   return RECOVERABLE_PATTERN.test(text || '');
 }
@@ -188,10 +195,10 @@ async function main() {
     }
   }
 
-  const campaigns = [
-    { id: values['us-campaign'], resume: values['us-resume'] || null },
-    { id: values['jp-campaign'], resume: values['jp-resume'] || null },
-  ];
+  const campaigns = buildCampaignQueue(values);
+  if (campaigns.length === 0) {
+    throw new Error('At least one campaign is required');
+  }
   for (const phase of phases) {
     process.stdout.write(`\n=== Phase: ${phase} ===\n`);
     for (const campaign of campaigns) {
@@ -262,4 +269,3 @@ main().catch((error) => {
   process.stderr.write(`Fatal: ${error.message}\n`);
   process.exit(1);
 });
-

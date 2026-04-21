@@ -862,9 +862,9 @@ def load_smoke_prod_settings(args, raw_args: list[str]) -> dict:
     bundle_production_phases = bundle.get('production_phases') or 'full'
     smoke_mode = 'cli'
     production_mode = 'cli'
-    if bundle_us_campaign and bundle_jp_campaign and not smoke.get('cli') and not option_was_provided(raw_args, '--smoke-cli'):
+    if (bundle_us_campaign or bundle_jp_campaign) and not smoke.get('cli') and not option_was_provided(raw_args, '--smoke-cli'):
         smoke_mode = 'bundle'
-    if bundle_us_campaign and bundle_jp_campaign and not production.get('cli') and not option_was_provided(raw_args, '--production-cli'):
+    if (bundle_us_campaign or bundle_jp_campaign) and not production.get('cli') and not option_was_provided(raw_args, '--production-cli'):
         production_mode = 'bundle'
 
     us_resume = resolve_option(
@@ -1090,11 +1090,11 @@ def build_step_specs(args) -> list[dict]:
             port,
             '--phases',
             args.phases,
-            '--us-campaign',
-            args.us_campaign,
-            '--jp-campaign',
-            args.jp_campaign,
         ]
+        if getattr(args, 'us_campaign', None):
+            command.extend(['--us-campaign', args.us_campaign])
+        if getattr(args, 'jp_campaign', None):
+            command.extend(['--jp-campaign', args.jp_campaign])
         if args.dry_run:
             command.append('--dry-run')
         us_resume = getattr(args, 'us_resume', None)
@@ -1107,8 +1107,9 @@ def build_step_specs(args) -> list[dict]:
             'name': 'bundle',
             'command': command,
             'checkpoint_roots': [
-                CAMPAIGN_RESULTS_DIR / args.us_campaign,
-                CAMPAIGN_RESULTS_DIR / args.jp_campaign,
+                CAMPAIGN_RESULTS_DIR / campaign_id
+                for campaign_id in [getattr(args, 'us_campaign', None), getattr(args, 'jp_campaign', None)]
+                if campaign_id
             ],
         }]
 
@@ -1658,14 +1659,11 @@ def build_production_child_command(settings: dict, child_run_id: str, production
     if settings.get('recovery_script'):
         cmd.extend(['--recovery-script', str(settings['recovery_script'])])
     if settings.get('production_mode') == 'bundle':
-        cmd.extend([
-            '--bundle-us-campaign',
-            settings['bundle_us_campaign'],
-            '--bundle-jp-campaign',
-            settings['bundle_jp_campaign'],
-            '--bundle-production-phases',
-            settings['bundle_production_phases'],
-        ])
+        if settings.get('bundle_us_campaign'):
+            cmd.extend(['--bundle-us-campaign', settings['bundle_us_campaign']])
+        if settings.get('bundle_jp_campaign'):
+            cmd.extend(['--bundle-jp-campaign', settings['bundle_jp_campaign']])
+        cmd.extend(['--bundle-production-phases', settings['bundle_production_phases']])
     return cmd
 
 
@@ -2113,7 +2111,7 @@ def execute_production_child(args, logger: logging.Logger, output_dir: Path = RE
         'recovery_script': resolve_project_path(args.recovery_script) if getattr(args, 'recovery_script', None) else None,
         'recovery_step_retries': max(0, getattr(args, 'recovery_step_retries', DEFAULT_RECOVERY_STEP_RETRIES)),
         'recovery_timeout_sec': max(5, getattr(args, 'recovery_timeout_sec', DEFAULT_RECOVERY_TIMEOUT_SEC)),
-        'production_mode': 'bundle' if getattr(args, 'bundle_us_campaign', None) and getattr(args, 'bundle_jp_campaign', None) else 'cli',
+        'production_mode': 'bundle' if getattr(args, 'bundle_us_campaign', None) or getattr(args, 'bundle_jp_campaign', None) else 'cli',
         'bundle_us_campaign': getattr(args, 'bundle_us_campaign', None),
         'bundle_jp_campaign': getattr(args, 'bundle_jp_campaign', None),
         'bundle_production_phases': getattr(args, 'bundle_production_phases', 'full'),

@@ -1313,6 +1313,13 @@ describe('loadPreset', () => {
     assert.ok(source.includes('donchianUpper = ta.highest(high, 55)[1]'));
     assert.ok(source.includes('donchianLower = ta.lowest(low, 20)[1]'));
   });
+
+  it('loads raw-source public library strategies directly from catalog metadata', async () => {
+    const { preset, source } = await loadPreset('tv-public-kdj-l2');
+    assert.equal(preset.builder, 'raw_source');
+    assert.ok(typeof source === 'string');
+    assert.match(source, /strategy\(/);
+  });
 });
 
 // ---------------------------------------------------------------------------

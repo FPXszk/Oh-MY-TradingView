@@ -1,0 +1,107 @@
+{
+  "snapshot_at": "2026-04-21T10:01:41+09:00",
+  "source": "https://www.tradingview.com/scripts/?script_type=strategies&script_access=all",
+  "sort": "most-popular-open-source-strategies",
+  "strategies": [
+    {
+      "id": "tv-public-kdj-l2",
+      "rank": 1,
+      "name": "KDJ L2: Advanced Momentum & Reversal Strategy",
+      "author": "MyStrategyHub",
+      "url": "https://www.tradingview.com/script/0mCoTcC1-kdj-l2-advanced-momentum-reversal-strategy/",
+      "category": "public-library",
+      "tags": ["public-library", "open-source", "momentum", "reversal"],
+      "source_path": "public-library-sources/tv-public-kdj-l2.pine"
+    },
+    {
+      "id": "tv-public-masu-ultimate",
+      "rank": 2,
+      "name": "MASU Ultimate",
+      "author": "Mark_Novak",
+      "url": "https://www.tradingview.com/script/5srFH2Cp-MASU-Ultimate/",
+      "category": "public-library",
+      "tags": ["public-library", "open-source", "trend", "multi-filter"],
+      "source_path": "public-library-sources/tv-public-masu-ultimate.pine"
+    },
+    {
+      "id": "tv-public-asian-breakout-autobot",
+      "rank": 3,
+      "name": "Asian Breakout AutoBot (NASDAQ, S&P 500, Gold)",
+      "author": "bhanubisen1",
+      "url": "https://www.tradingview.com/script/slqi9xMe-Asian-Breakout-AutoBot-NASDAQ-S-P-500-Gold/",
+      "category": "public-library",
+      "tags": ["public-library", "open-source", "breakout", "session"],
+      "source_path": "public-library-sources/tv-public-asian-breakout-autobot.pine"
+    },
+    {
+      "id": "tv-public-adaptive-risk-regime",
+      "rank": 4,
+      "name": "Adaptive Risk Regime Strategy",
+      "author": "AIScripts",
+      "url": "https://www.tradingview.com/script/KjIJTzGP-Adaptive-Risk-Regime-Strategy/",
+      "category": "public-library",
+      "tags": ["public-library", "open-source", "risk-regime"],
+      "source_path": "public-library-sources/tv-public-adaptive-risk-regime.pine"
+    },
+    {
+      "id": "tv-public-joat-institutional-convergence",
+      "rank": 5,
+      "name": "JOAT Institutional Convergence [JOAT]",
+      "author": "officialjackofalltrades",
+      "url": "https://www.tradingview.com/script/jn1rXKpM-JOAT-Institutional-Convergence-JOAT/",
+      "category": "public-library",
+      "tags": ["public-library", "open-source", "confluence"],
+      "source_path": "public-library-sources/tv-public-joat-institutional-convergence.pine"
+    },
+    {
+      "id": "tv-public-pivot-vwap-confluence",
+      "rank": 6,
+      "name": "Pivot Vwap confluence entry system",
+      "author": "Runnemeade",
+      "url": "https://www.tradingview.com/script/pJlHYjCK-Pivot-Vwap-confluence-entry-system/",
+      "category": "public-library",
+      "tags": ["public-library", "open-source", "pivot", "vwap"],
+      "source_path": "public-library-sources/tv-public-pivot-vwap-confluence.pine"
+    },
+    {
+      "id": "tv-public-brosio-break-and-retest",
+      "rank": 7,
+      "name": "BROSIO TRADES 8:00 15 Min Break and Retest",
+      "author": "DDBrosio",
+      "url": "https://www.tradingview.com/script/iZ9pJtfN-BROSIO-TRADES-8-00-15-Min-Break-and-Retest/",
+      "category": "public-library",
+      "tags": ["public-library", "open-source", "orb", "retest"],
+      "source_path": "public-library-sources/tv-public-brosio-break-and-retest.pine"
+    },
+    {
+      "id": "tv-public-agni-momentum",
+      "rank": 8,
+      "name": "AGNI MOMENTUM - Ultimate Swing Strategy",
+      "author": "The_Stock_Yogi",
+      "url": "https://www.tradingview.com/script/yp4CqVVY-AGNI-MOMENTUM-Ultimate-Swing-Strategy/",
+      "category": "public-library",
+      "tags": ["public-library", "open-source", "swing", "momentum"],
+      "source_path": "public-library-sources/tv-public-agni-momentum.pine"
+    },
+    {
+      "id": "tv-public-gold-hft-hybrid",
+      "rank": 9,
+      "name": "Gold HFT - Hybrid MT5 Final",
+      "author": "amivora19",
+      "url": "https://www.tradingview.com/script/5UrAuvx9-Gold-HFT-Hybrid-MT5-Final/",
+      "category": "public-library",
+      "tags": ["public-library", "open-source", "gold", "scalp"],
+      "source_path": "public-library-sources/tv-public-gold-hft-hybrid.pine"
+    },
+    {
+      "id": "tv-public-mtf-matrix",
+      "rank": 10,
+      "name": "MTF Matrix Strategy",
+      "author": "Okeefe06",
+      "url": "https://www.tradingview.com/script/FQVb4qo4/",
+      "category": "public-library",
+      "tags": ["public-library", "open-source", "mtf"],
+      "source_path": "public-library-sources/tv-public-mtf-matrix.pine"
+    }
+  ]
+}

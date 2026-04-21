@@ -232,6 +232,16 @@ describe('validateCampaignConfig', () => {
     assert.equal(r.valid, true);
   });
 
+  it('accepts strategy_ids without preset_ids', () => {
+    const r = validateCampaignConfig({
+      id: 'public-top10-us-40x10',
+      universe: 'public-top10-us-40',
+      strategy_ids: ['tv-public-kdj-l2'],
+    });
+    assert.equal(r.valid, true);
+    assert.deepEqual(r.errors, []);
+  });
+
   it('rejects empty preset_ids', () => {
     const r = validateCampaignConfig({ ...validConfig, preset_ids: [] });
     assert.equal(r.valid, false);
@@ -239,6 +249,15 @@ describe('validateCampaignConfig', () => {
 
   it('rejects non-string preset_ids entries', () => {
     const r = validateCampaignConfig({ ...validConfig, preset_ids: ['ema-cross-9-21', 10] });
+    assert.equal(r.valid, false);
+  });
+
+  it('rejects non-string strategy_ids entries', () => {
+    const r = validateCampaignConfig({
+      id: 'public-top10-us-40x10',
+      universe: 'public-top10-us-40',
+      strategy_ids: ['tv-public-kdj-l2', 10],
+    });
     assert.equal(r.valid, false);
   });
 
@@ -1242,6 +1261,38 @@ describe('next long-run finetune campaigns', () => {
     assert.equal(usPilot.symbols.length, 25);
     assert.equal(jpSmoke.symbols.length, 1);
     assert.equal(jpPilot.symbols.length, 25);
+  });
+});
+
+describe('public library top10 US40 campaign', () => {
+  it('public-top10-us-40 current universe keeps 30 US stocks + 10 macro assets', async () => {
+    const raw = await readFile(
+      join(__dirname, '..', 'config', 'backtest', 'universes', 'current', 'public-top10-us-40.json'),
+      'utf8',
+    );
+    const universe = JSON.parse(raw);
+    const stockSymbols = universe.symbols.filter((entry) => entry.market === 'US');
+    const macroSymbols = universe.symbols.filter((entry) => entry.market === 'macro');
+
+    assert.equal(universe.id, 'public-top10-us-40');
+    assert.equal(universe.symbols.length, 40);
+    assert.equal(stockSymbols.length, 30);
+    assert.equal(macroSymbols.length, 10);
+    assert.equal(stockSymbols.filter((entry) => entry.bucket === 'winners').length, 10);
+    assert.equal(stockSymbols.filter((entry) => entry.bucket === 'range').length, 10);
+    assert.equal(stockSymbols.filter((entry) => entry.bucket === 'losers').length, 10);
+  });
+
+  it('loads public-top10-us-40x10 config with a 40 x 10 matrix', async () => {
+    const campaign = await loadCampaign('public-top10-us-40x10');
+
+    assert.equal(campaign.config.id, 'public-top10-us-40x10');
+    assert.equal(campaign.config.universe, 'public-top10-us-40');
+    assert.equal(campaign.config.strategy_ids.length, 10);
+    assert.equal(campaign.symbols.length, 40);
+    assert.equal(campaign.strategies.length, 10);
+    assert.equal(campaign.matrix.length, 400);
+    assert.equal(campaign.totalRuns, 400);
   });
 });
 

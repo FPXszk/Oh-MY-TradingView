@@ -258,7 +258,7 @@ describe('repository layout policy', () => {
     const campaignFiles = readdirSync(CAMPAIGNS_LATEST_DIR).filter((name) => name.endsWith('.json'));
     for (const file of campaignFiles) {
       const campaign = JSON.parse(readFileSync(join(CAMPAIGNS_LATEST_DIR, file), 'utf8'));
-      for (const presetId of campaign.preset_ids) {
+      for (const presetId of campaign.preset_ids || []) {
         assert.ok(livePresetIds.has(presetId),
           `campaign ${file} uses preset "${presetId}" not in live strategy-presets.json`);
       }

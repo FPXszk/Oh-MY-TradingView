@@ -1,0 +1,26 @@
+//@version=6
+strategy("BROSIO TRADES 8:00 15 Min Break and Retest", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
+openingRange = input.session("0800-0815", "Opening Range")
+inRange = not na(time(timeframe.period, openingRange))
+var float rangeHigh = na
+var float rangeLow = na
+if ta.change(time("D"))
+    rangeHigh := na
+    rangeLow := na
+if inRange
+    rangeHigh := na(rangeHigh) ? high : math.max(rangeHigh, high)
+    rangeLow := na(rangeLow) ? low : math.min(rangeLow, low)
+midpoint = na(rangeHigh) or na(rangeLow) ? na : (rangeHigh + rangeLow) / 2.0
+longSignal = not inRange and not na(midpoint) and close > rangeHigh and low <= midpoint
+shortSignal = not inRange and not na(midpoint) and close < rangeLow and high >= midpoint
+if longSignal
+    strategy.entry("Long", strategy.long)
+if shortSignal
+    strategy.entry("Short", strategy.short)
+if ta.crossunder(close, midpoint)
+    strategy.close("Long")
+if ta.crossover(close, midpoint)
+    strategy.close("Short")
+plot(rangeHigh, "Range High", color=color.green)
+plot(rangeLow, "Range Low", color=color.red)
+plot(midpoint, "Midpoint", color=color.gray)

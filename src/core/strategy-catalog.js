@@ -5,6 +5,7 @@
 import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { loadPublicStrategyRegistry } from './public-strategy-registry.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -13,9 +14,25 @@ export const CATALOG_PATH = join(__dirname, '..', '..', 'config', 'backtest', 's
 
 const VALID_STATUSES = new Set(['live', 'retired']);
 
-export async function loadCatalog(catalogPath = CATALOG_PATH) {
+export async function loadCatalog(catalogPath = CATALOG_PATH, { includePublic = false } = {}) {
   const raw = await readFile(catalogPath, 'utf8');
-  return JSON.parse(raw);
+  const catalog = JSON.parse(raw);
+  if (!includePublic) {
+    return catalog;
+  }
+  const registry = await loadPublicStrategyRegistry().catch(() => ({ strategies: [] }));
+  const publicStrategies = Array.isArray(registry.strategies) ? registry.strategies : [];
+  if (publicStrategies.length === 0) {
+    return catalog;
+  }
+
+  return {
+    ...catalog,
+    strategies: [
+      ...catalog.strategies,
+      ...publicStrategies,
+    ],
+  };
 }
 
 export function getLiveStrategies(catalog) {

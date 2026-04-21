@@ -20,6 +20,7 @@ import {
 import { validatePreset } from './preset-validation.js';
 import { buildResearchStrategySource } from './research-backtest.js';
 import { mergeDateOverride, validateDateRange } from './campaign.js';
+import { loadCatalog } from './strategy-catalog.js';
 import {
   dismissTransientDialogs as dismissSharedTransientDialogs,
   readVisibleDialogTexts as readSharedVisibleDialogTexts,
@@ -1393,14 +1394,12 @@ export async function runNvdaMaBacktest() {
 // ---------------------------------------------------------------------------
 const PRESETS_PATH = join(__dirname, '..', '..', 'config', 'backtest', 'strategy-presets.json');
 const RETIRED_PRESETS_PATH = join(__dirname, '..', '..', 'docs', 'research', 'strategy', 'retired', 'retired-strategy-presets.json');
-const CATALOG_PATH = join(__dirname, '..', '..', 'config', 'backtest', 'strategy-catalog.json');
 
 export async function loadPreset(presetId, { dateOverride } = {}) {
   let preset;
   let data;
   try {
-    const catalogRaw = await readFile(CATALOG_PATH, 'utf8');
-    const catalog = JSON.parse(catalogRaw);
+    const catalog = await loadCatalog(undefined, { includePublic: true });
     const entry = catalog.strategies.find((s) => s.id === presetId);
     if (entry) {
       const { lifecycle, ...presetFields } = entry;
@@ -1438,10 +1437,14 @@ export async function loadPreset(presetId, { dateOverride } = {}) {
   }
 
   let source;
-  try {
-    source = buildResearchStrategySource(preset, effectiveDefaults);
-  } catch (err) {
-    throw new Error(`Preset "${presetId}" is not executable by repo CLI: ${err.message}`);
+  if (preset.builder === 'raw_source') {
+    source = preset.source;
+  } else {
+    try {
+      source = buildResearchStrategySource(preset, effectiveDefaults);
+    } catch (err) {
+      throw new Error(`Preset "${presetId}" is not executable by repo CLI: ${err.message}`);
+    }
   }
 
   return { preset, defaults: effectiveDefaults, source };

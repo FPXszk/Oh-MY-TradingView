@@ -1,0 +1,23 @@
+//@version=6
+strategy("Asian Breakout AutoBot (NASDAQ, S&P 500, Gold)", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
+sessionInput = input.session("0000-0600", "Asian Session")
+atr = ta.atr(14)
+inSession = not na(time(timeframe.period, sessionInput))
+var float asianHigh = na
+var float asianLow = na
+if ta.change(time("D"))
+    asianHigh := na
+    asianLow := na
+if inSession
+    asianHigh := na(asianHigh) ? high : math.max(asianHigh, high)
+    asianLow := na(asianLow) ? low : math.min(asianLow, low)
+longSignal = not inSession and not na(asianHigh) and ta.crossover(close, asianHigh)
+shortSignal = not inSession and not na(asianLow) and ta.crossunder(close, asianLow)
+if longSignal
+    strategy.entry("Long", strategy.long)
+if shortSignal
+    strategy.entry("Short", strategy.short)
+strategy.exit("Long Exit", from_entry="Long", stop=strategy.position_avg_price - atr * 1.5, limit=strategy.position_avg_price + atr * 3.0)
+strategy.exit("Short Exit", from_entry="Short", stop=strategy.position_avg_price + atr * 1.5, limit=strategy.position_avg_price - atr * 3.0)
+plot(asianHigh, "Asian High", color=color.lime)
+plot(asianLow, "Asian Low", color=color.red)

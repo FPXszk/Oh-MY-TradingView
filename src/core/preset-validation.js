@@ -29,6 +29,7 @@ function isNonEmptyTrimmedString(value) {
 }
 
 const BUILDER_PARAMETER_RULES = {
+  raw_source: [],
   price_vs_ma: [
     ['period', 'number'],
     ['ma_type', VALID_MA_TYPES],
@@ -81,6 +82,12 @@ export function validatePreset(preset) {
   }
   if (!preset.parameters || typeof preset.parameters !== 'object') {
     errors.push('parameters is required and must be an object');
+  }
+
+  if (preset.builder === 'raw_source') {
+    if (!isNonEmptyTrimmedString(preset.source)) {
+      errors.push('source is required and must be a non-empty string for raw_source presets');
+    }
   }
 
   const parameterRules = BUILDER_PARAMETER_RULES[preset.builder];

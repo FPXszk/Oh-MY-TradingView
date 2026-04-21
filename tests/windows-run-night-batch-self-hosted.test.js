@@ -203,14 +203,14 @@ describe('.gitattributes', () => {
 describe('foreground bundle config default campaign', () => {
   const config = JSON.parse(readFileSync(BUNDLE_FG_CONFIG_PATH, 'utf8'));
 
-  it('us_campaign defaults to 12x10', () => {
-    assert.equal(config.bundle.us_campaign, 'next-long-run-us-12x10',
-      'bundle-foreground-reuse-config.json must default us_campaign to 12x10');
+  it('us_campaign defaults to public-top10-us-40x10', () => {
+    assert.equal(config.bundle.us_campaign, 'public-top10-us-40x10',
+      'bundle-foreground-reuse-config.json must default us_campaign to public-top10-us-40x10');
   });
 
-  it('jp_campaign defaults to 12x10', () => {
-    assert.equal(config.bundle.jp_campaign, 'next-long-run-jp-12x10',
-      'bundle-foreground-reuse-config.json must default jp_campaign to 12x10');
+  it('jp_campaign is omitted for the US-only bundle default', () => {
+    assert.equal('jp_campaign' in config.bundle, false,
+      'bundle-foreground-reuse-config.json must not keep a JP default for the US-only bundle');
   });
 
   it('config path must not change', () => {

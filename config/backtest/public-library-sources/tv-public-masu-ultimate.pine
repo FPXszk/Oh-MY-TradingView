@@ -1,0 +1,19 @@
+//@version=6
+strategy("MASU Ultimate", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
+ema21 = ta.ema(close, 21)
+ema50 = ta.ema(close, 50)
+ema200 = ta.ema(close, 200)
+adxValue = ta.adx(14)
+volumeSpike = volume > ta.sma(volume, 20)
+longSignal = close > ema200 and ema21 > ema50 and adxValue > 20 and volumeSpike
+shortSignal = close < ema200 and ema21 < ema50 and adxValue > 20 and volumeSpike
+atr = ta.atr(14)
+if longSignal and strategy.position_size <= 0
+    strategy.entry("Long", strategy.long)
+if shortSignal and strategy.position_size >= 0
+    strategy.entry("Short", strategy.short)
+strategy.exit("Long Exit", from_entry="Long", stop=strategy.position_avg_price - atr * 2.0, limit=strategy.position_avg_price + atr * 3.0)
+strategy.exit("Short Exit", from_entry="Short", stop=strategy.position_avg_price + atr * 2.0, limit=strategy.position_avg_price - atr * 3.0)
+plot(ema21, "EMA 21", color=color.green)
+plot(ema50, "EMA 50", color=color.orange)
+plot(ema200, "EMA 200", color=color.blue)
