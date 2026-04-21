@@ -119,5 +119,7 @@ failure は `tv-public-brosio-break-and-retest` だった。
 
 - run 17 infra report: `docs/reports/night-batch-self-hosted-run17.md`
 - comparison note: `docs/reports/night-batch-public-vs-strongest.md`
+- full40 comparison note: `docs/reports/public-top10-us40-full40-comparison.md`
+- sandbox incident: `docs/reports/public-top10-us40-tail35-sandbox-incident_20260421.md`
 - run 18 artifact summary: `/tmp/night-batch-24718820173/night-batch-24718820173-1/gha_24718820173_1-summary.json`
 - brosio tail checkpoint: `artifacts/campaigns/public-top10-us-40-brosio-tail35/full/checkpoint-20.json`
