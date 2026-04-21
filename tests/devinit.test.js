@@ -66,6 +66,9 @@ describe('devinit.sh stability', () => {
     ;;
 esac
 `);
+    writeExecutable(join(binDir, 'ps'), `#!/bin/sh
+printf '%s\n' "\${PS_TEST_OUTPUT:-}"
+`);
   });
 
   afterEach(() => {
@@ -76,7 +79,7 @@ esac
     }
   });
 
-  function runSessionIsHealthy({ windowName = 'dev', paneSummary }) {
+  function runSessionIsHealthy({ windowName = 'dev', paneSummary, psOutput = '' }) {
     return spawnSync(
       'bash',
       ['-lc', 'source "$1"; session_is_healthy', 'bash', DEVINIT_PATH],
@@ -88,6 +91,7 @@ esac
           PATH: `${binDir}:${process.env.PATH}`,
           TMUX_TEST_WINDOW_NAME: windowName,
           TMUX_TEST_PANE_SUMMARY: paneSummary,
+          PS_TEST_OUTPUT: psOutput,
         },
       },
     );
@@ -228,7 +232,7 @@ esac
       );
     });
 
-    it('uses Codex full-auto mode in the codex invocation', () => {
+    it('uses the requested Codex launch flags in the codex invocation', () => {
       const runCodexPane = readFileSync(RUN_CODEX_PANE_PATH, 'utf8');
       assert.match(
         runCodexPane,
@@ -247,18 +251,28 @@ esac
       );
       assert.match(
         runCodexPane,
-        /--sandbox\s+danger-full-access/,
-        'run-codex-pane.sh must pass --sandbox danger-full-access to codex',
+        /--sandbox\s+workspace-write/,
+        'run-codex-pane.sh must pass --sandbox workspace-write to codex',
       );
       assert.match(
+        runCodexPane,
+        /--ask-for-approval\s+never/,
+        'run-codex-pane.sh must pass --ask-for-approval never to codex',
+      );
+      assert.doesNotMatch(
+        runCodexPane,
+        /--sandbox\s+danger-full-access/,
+        'run-codex-pane.sh must not pass --sandbox danger-full-access to codex',
+      );
+      assert.doesNotMatch(
         runCodexPane,
         /--bypass-approvals/,
-        'run-codex-pane.sh must pass --bypass-approvals to codex',
+        'run-codex-pane.sh must not pass --bypass-approvals to codex',
       );
-      assert.match(
+      assert.doesNotMatch(
         runCodexPane,
         /--trusted-workspace/,
-        'run-codex-pane.sh must pass --trusted-workspace to codex',
+        'run-codex-pane.sh must not pass --trusted-workspace to codex',
       );
     });
 
@@ -295,10 +309,16 @@ esac
     it('accepts a healthy session even when the codex pane title is dynamic', () => {
       const result = runSessionIsHealthy({
         paneSummary: [
-          '0:0:codex working:codex',
-          '1:0:logs:tail',
-          '2:0:git:lazygit',
-          '3:0:keepalive:bash',
+          '0:0:codex working:bash:4001',
+          '1:0:logs:tail:4002',
+          '2:0:git:lazygit:4003',
+          '3:0:keepalive:bash:4004',
+        ].join('\n'),
+        psOutput: [
+          '4001 3999 -bash',
+          '4100 4001 bash /repo/scripts/dev/run-codex-pane.sh',
+          '4101 4100 script -qefc codex --full-auto --sandbox workspace-write',
+          '4102 4101 node /bin/codex --full-auto --sandbox workspace-write',
         ].join('\n'),
       });
       assert.equal(
@@ -311,10 +331,16 @@ esac
     it('rejects a session when a required pane command no longer matches', () => {
       const result = runSessionIsHealthy({
         paneSummary: [
-          '0:0:codex:codex',
-          '1:0:logs:bash',
-          '2:0:git:lazygit',
-          '3:0:keepalive:bash',
+          '0:0:codex:bash:4001',
+          '1:0:logs:bash:4002',
+          '2:0:git:lazygit:4003',
+          '3:0:keepalive:bash:4004',
+        ].join('\n'),
+        psOutput: [
+          '4001 3999 -bash',
+          '4100 4001 bash /repo/scripts/dev/run-codex-pane.sh',
+          '4101 4100 script -qefc codex --full-auto --sandbox workspace-write',
+          '4102 4101 node /bin/codex --full-auto --sandbox workspace-write',
         ].join('\n'),
       });
       assert.notEqual(
@@ -327,26 +353,30 @@ esac
     it('rejects a session when the codex pane has fallen back to bash', () => {
       const result = runSessionIsHealthy({
         paneSummary: [
-          '0:0:codex working:bash',
-          '1:0:logs:tail',
-          '2:0:git:lazygit',
-          '3:0:keepalive:bash',
+          '0:0:codex working:bash:4001',
+          '1:0:logs:tail:4002',
+          '2:0:git:lazygit:4003',
+          '3:0:keepalive:bash:4004',
+        ].join('\n'),
+        psOutput: [
+          '4001 3999 -bash',
+          '4100 4001 bash',
         ].join('\n'),
       });
       assert.notEqual(
         result.status,
         0,
-        'health check should fail when pane 0 is no longer running codex',
+        'health check should fail when pane 0 no longer has a live codex descendant',
       );
     });
 
-    it('uses pane index and current command for stable health checks', () => {
+    it('uses pane pid and process inspection for stable health checks', () => {
       const stableChecks = lines.filter(
-        (l) => /pane_index|pane_current_command|pane_dead/.test(l) && !/^\s*#/.test(l),
+        (l) => /pane_index|pane_current_command|pane_dead|pane_pid|\bps\b/.test(l) && !/^\s*#/.test(l),
       );
       assert.ok(
         stableChecks.length > 0,
-        'health check should inspect stable tmux metadata instead of the dynamic codex pane title',
+        'health check should inspect stable tmux metadata plus process state instead of the dynamic codex pane title',
       );
     });
   });

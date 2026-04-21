@@ -13,3 +13,9 @@ args = ["/home/fpxszk/code/Oh-MY-TradingView/src/server.js"]
 [mcp_servers.oh-my-tradingview.env]
 TV_CDP_HOST = "172.31.144.1"
 TV_CDP_PORT = "9223"
+
+[mcp_servers.oh-my-tradingview.tools.tv_health_check]
+approval_mode = "approve"
+
+[mcp_servers.oh-my-tradingview.tools.tv_launch]
+approval_mode = "approve"

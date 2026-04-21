@@ -72,9 +72,44 @@ attach_or_switch() {
   exec tmux attach-session -t "${SESSION_NAME}"
 }
 
+pane_has_live_codex_descendant() {
+  local pane_pid="$1"
+
+  [[ "${pane_pid}" =~ ^[0-9]+$ ]] || return 1
+
+  ps -eo pid=,ppid=,args= 2>/dev/null | awk -v root="${pane_pid}" '
+    {
+      pid = $1
+      ppid = $2
+      $1 = ""
+      $2 = ""
+      sub(/^[[:space:]]+/, "", $0)
+      parents[pid] = ppid
+      commands[pid] = $0
+    }
+    END {
+      exit has_codex_descendant(root) ? 0 : 1
+    }
+    function is_codex_process(cmd) {
+      return cmd ~ /(^|[[:space:]\/])codex([[:space:]]|$)/
+    }
+    function has_codex_descendant(node,    pid) {
+      for (pid in parents) {
+        if (parents[pid] == node) {
+          if (is_codex_process(commands[pid]) || has_codex_descendant(pid)) {
+            return 1
+          }
+        }
+      }
+      return 0
+    }
+  '
+}
+
 session_is_healthy() {
   local pane_count
   local pane_summary
+  local pane_zero_pid
   local window_name
 
   window_name="$(tmux display-message -p -t "${SESSION_NAME}:0" '#W')"
@@ -83,12 +118,13 @@ session_is_healthy() {
   pane_count="$(tmux list-panes -t "${SESSION_NAME}:0" 2>/dev/null | wc -l | tr -d ' ')"
   [[ "${pane_count}" -eq 4 ]] || return 1
 
-  pane_summary="$(tmux list-panes -t "${SESSION_NAME}:0" -F '#{pane_index}:#{pane_dead}:#{pane_title}:#{pane_current_command}' 2>/dev/null)"
+  pane_summary="$(tmux list-panes -t "${SESSION_NAME}:0" -F '#{pane_index}:#{pane_dead}:#{pane_title}:#{pane_current_command}:#{pane_pid}' 2>/dev/null)"
+  pane_zero_pid="$(awk -F: '$1 == "0" && $2 == "0" { print $5 }' <<<"${pane_summary}")"
 
-  grep -qx '0:0:.*:codex' <<<"${pane_summary}" || return 1
-  grep -qx '1:0:logs:tail' <<<"${pane_summary}" || return 1
-  grep -qx '2:0:git:lazygit' <<<"${pane_summary}" || return 1
-  grep -qx '3:0:keepalive:bash' <<<"${pane_summary}" || return 1
+  pane_has_live_codex_descendant "${pane_zero_pid}" || return 1
+  grep -Eq '^1:0:logs:tail:[0-9]+$' <<<"${pane_summary}" || return 1
+  grep -Eq '^2:0:git:lazygit:[0-9]+$' <<<"${pane_summary}" || return 1
+  grep -Eq '^3:0:keepalive:bash:[0-9]+$' <<<"${pane_summary}" || return 1
 }
 
 validate_paths() {
