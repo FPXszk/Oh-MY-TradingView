@@ -220,6 +220,21 @@ describe('foreground bundle config default campaign', () => {
 });
 
 describe('night-batch-self-hosted workflow', () => {
+  it('uses workflow_dispatch only and removes stale schedule freshness gating', () => {
+    const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
+
+    assert.match(workflow, /workflow_dispatch:/,
+      'workflow must remain manually dispatchable');
+    assert.doesNotMatch(workflow, /\n\s*schedule:/,
+      'workflow must not retain a daily schedule trigger');
+    assert.doesNotMatch(workflow, /Evaluate schedule freshness/,
+      'workflow must not keep the stale schedule freshness step');
+    assert.doesNotMatch(workflow, /should_run=/,
+      'workflow must not export should_run gating outputs');
+    assert.doesNotMatch(workflow, /Skipped stale scheduled run/i,
+      'workflow must not report stale scheduled skips after schedule removal');
+  });
+
   it('defaults workflow_dispatch config_path to the foreground monitoring config', () => {
     const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
 
@@ -238,8 +253,18 @@ describe('night-batch-self-hosted workflow', () => {
       'workflow must inspect the config path before starting TradingView');
     assert.match(workflow, /Start-Process -FilePath \$launch\.shortcut_path/,
       'workflow must start TradingView from the configured shortcut when needed');
+    assert.match(workflow, /Start-Process -FilePath \$launch\.shortcut_path -WindowStyle Normal/,
+      'workflow must request a normal visible TradingView window from the shortcut');
     assert.match(workflow, /Get-ChildItem -Path \$shortcutDir -Filter '\*\.lnk' -File/,
       'workflow must fall back to searching the TradingView folder for a shortcut');
+    assert.match(workflow, /Start-Process -FilePath \$shortcut -WindowStyle Normal/,
+      'workflow must keep fallback shortcut launches visible');
+    assert.match(workflow, /Start-Process -FilePath \$launcher -ArgumentList "--remote-debugging-port=\$\(\$runtime\.startup_check_port\)" -WindowStyle Normal/,
+      'workflow must keep direct launcher fallback visible');
+    assert.doesNotMatch(workflow, /WindowStyle\s+Hidden/i,
+      'workflow must not hide the TradingView window');
+    assert.doesNotMatch(workflow, /--headless/i,
+      'workflow must not launch TradingView in headless mode');
     assert.match(workflow, /actions\/upload-artifact@v4/,
       'workflow must upload night batch artifacts');
     assert.match(workflow, /Archive completed night batch rounds/,

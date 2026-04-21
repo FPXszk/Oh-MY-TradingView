@@ -1294,6 +1294,16 @@ describe('public library top10 US40 campaign', () => {
     assert.equal(campaign.matrix.length, 400);
     assert.equal(campaign.totalRuns, 400);
   });
+
+  it('uses SPY-only smoke for public-top10-us-40x10 so each strategy is checked once', async () => {
+    const campaign = await loadCampaign('public-top10-us-40x10', { phase: 'smoke' });
+
+    assert.deepEqual(campaign.config.phases.smoke.symbols, ['SPY']);
+    assert.equal(campaign.symbols.length, 1);
+    assert.equal(campaign.strategies.length, 10);
+    assert.equal(campaign.matrix.length, 10);
+    assert.equal(campaign.totalRuns, 10);
+  });
 });
 
 // ---------------------------------------------------------------------------

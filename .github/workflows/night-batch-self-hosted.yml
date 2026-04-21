@@ -1,8 +1,6 @@
 name: Night Batch Self Hosted
 
 on:
-  schedule:
-    - cron: '0 15 * * *'
   workflow_dispatch:
     inputs:
       config_path:
@@ -20,22 +18,7 @@ jobs:
         with:
           clean: false
 
-      - name: Evaluate schedule freshness
-        id: freshness
-        shell: powershell -NoProfile -ExecutionPolicy Bypass -command ". '{0}'"
-        run: |
-          $shouldRun = 'true'
-          if ('${{ github.event_name }}' -eq 'schedule') {
-            $jst = [System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId([DateTimeOffset]::UtcNow, 'Tokyo Standard Time')
-            if ($jst.Hour -ne 0) {
-              Write-Host "Skipping stale scheduled run at $($jst.ToString('yyyy-MM-dd HH:mm:ss zzz'))"
-              $shouldRun = 'false'
-            }
-          }
-          "should_run=$shouldRun" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-
       - name: Install dependencies in WSL workspace
-        if: steps.freshness.outputs.should_run == 'true'
         shell: cmd
         run: |
           for /f "usebackq delims=" %%I in (`wsl.exe wslpath -a "%CD%"`) do set "REPO_WSL=%%I"
@@ -43,13 +26,11 @@ jobs:
           wsl.exe bash -lc "cd \"%REPO_WSL%\" && npm ci --silent"
 
       - name: Record live checkout baseline
-        if: steps.freshness.outputs.should_run == 'true'
         shell: powershell -NoProfile -ExecutionPolicy Bypass -command ". '{0}'"
         run: |
           & scripts/windows/github-actions/write-night-batch-live-checkout-baseline.ps1 -RunId 'gha_${{ github.run_id }}_${{ github.run_attempt }}' -RunAttempt '${{ github.run_attempt }}' -BundleConfigPath '${{ inputs.config_path }}'
 
       - name: Ensure TradingView is running
-        if: steps.freshness.outputs.should_run == 'true'
         shell: powershell -NoProfile -ExecutionPolicy Bypass -command ". '{0}'"
         run: |
           $configPath = Join-Path $PWD '${{ inputs.config_path }}'
@@ -74,7 +55,7 @@ jobs:
 
           if (-not $alreadyRunning) {
             if ($launch.shortcut_path -and (Test-Path $launch.shortcut_path)) {
-              Start-Process -FilePath $launch.shortcut_path
+              Start-Process -FilePath $launch.shortcut_path -WindowStyle Normal
             } else {
               $shortcut = $null
               $shortcutDir = Split-Path -Parent $launch.shortcut_path
@@ -85,7 +66,7 @@ jobs:
               }
 
               if ($shortcut) {
-                Start-Process -FilePath $shortcut
+                Start-Process -FilePath $shortcut -WindowStyle Normal
                 Start-Sleep -Seconds $runtime.launch_wait_sec
                 return
               }
@@ -94,13 +75,12 @@ jobs:
               if (-not (Test-Path $launcher)) {
                 throw "No TradingView launcher found at $launcher, $($launch.shortcut_path), or any TradingView shortcut in $shortcutDir"
               }
-              Start-Process -FilePath $launcher -ArgumentList "--remote-debugging-port=$($runtime.startup_check_port)"
+              Start-Process -FilePath $launcher -ArgumentList "--remote-debugging-port=$($runtime.startup_check_port)" -WindowStyle Normal
             }
             Start-Sleep -Seconds $runtime.launch_wait_sec
           }
 
       - name: Readiness diagnostics
-        if: steps.freshness.outputs.should_run == 'true'
         shell: cmd
         run: |
           for /f "usebackq delims=" %%I in (`wsl.exe wslpath -a "%CD%"`) do set "REPO_WSL=%%I"
@@ -118,7 +98,6 @@ jobs:
         continue-on-error: true
 
       - name: Run smoke gate and foreground production
-        if: steps.freshness.outputs.should_run == 'true'
         shell: cmd
         run: |
           set "NIGHT_BATCH_CONFIG=${{ inputs.config_path }}"
@@ -157,20 +136,20 @@ jobs:
           exit /b %BATCH_EXIT%
 
       - name: Locate night batch outputs
-        if: always() && steps.freshness.outputs.should_run == 'true'
+        if: always()
         id: night_batch_outputs
         shell: powershell -NoProfile -ExecutionPolicy Bypass -command ". '{0}'"
         run: |
           & scripts/windows/github-actions/find-night-batch-outputs.ps1 -ExpectedRunId 'gha_${{ github.run_id }}_${{ github.run_attempt }}'
 
       - name: Append night batch workflow summary
-        if: always() && steps.freshness.outputs.should_run == 'true'
+        if: always()
         shell: powershell -NoProfile -ExecutionPolicy Bypass -command ". '{0}'"
         run: |
           & scripts/windows/github-actions/append-night-batch-workflow-summary.ps1 -SummaryJsonPath '${{ steps.night_batch_outputs.outputs.summary_json }}' -SummaryMdPath '${{ steps.night_batch_outputs.outputs.summary_md }}' -RichReportPath '${{ steps.night_batch_outputs.outputs.rich_report }}' -RankingArtifactPath '${{ steps.night_batch_outputs.outputs.ranking_artifact }}' -ProtectionReportPath '${{ steps.night_batch_outputs.outputs.protection_report }}'
 
       - name: Upload night batch artifacts
-        if: always() && steps.freshness.outputs.should_run == 'true' && steps.night_batch_outputs.outputs.round_dir != ''
+        if: always() && steps.night_batch_outputs.outputs.round_dir != ''
         uses: actions/upload-artifact@v4
         with:
           name: night-batch-${{ github.run_id }}-${{ github.run_attempt }}
@@ -178,7 +157,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Archive completed night batch rounds
-        if: always() && steps.freshness.outputs.should_run == 'true'
+        if: always()
         shell: cmd
         run: |
           for /f "usebackq delims=" %%I in (`wsl.exe wslpath -a "%CD%"`) do set "REPO_WSL=%%I"
@@ -186,14 +165,9 @@ jobs:
           wsl.exe bash -lc "cd \"%REPO_WSL%\" && python3 python/night_batch.py archive-rounds"
 
       - name: Archive stale latest research docs
-        if: always() && steps.freshness.outputs.should_run == 'true'
+        if: always()
         shell: cmd
         run: |
           for /f "usebackq delims=" %%I in (`wsl.exe wslpath -a "%CD%"`) do set "REPO_WSL=%%I"
           if not defined REPO_WSL exit /b 1
           wsl.exe bash -lc "cd \"%REPO_WSL%\" && node scripts/docs/archive-stale-latest.mjs"
-
-      - name: Report skipped stale schedule
-        if: steps.freshness.outputs.should_run != 'true'
-        shell: powershell -NoProfile -ExecutionPolicy Bypass -command ". '{0}'"
-        run: Write-Host 'Skipped stale scheduled run outside the 00:00 JST launch window.'

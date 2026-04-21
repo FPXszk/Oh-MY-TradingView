@@ -21,7 +21,7 @@
   },
   "phases": {
     "smoke": {
-      "symbols": ["NVDA", "AAPL", "INTC", "SPY"]
+      "symbols": ["SPY"]
     },
     "pilot": {
       "symbols": ["NVDA", "META", "AAPL", "MSFT", "INTC", "PFE", "SPY", "QQQ", "GLD", "IBIT"]
