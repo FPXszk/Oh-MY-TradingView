@@ -61,7 +61,7 @@ log_msg "starting run_id=${RUN_ID} respawn_count=${RESPAWN_COUNT} pid=$$ pane=${
 } >> "${RUN_LOG}"
 
 set +e
-script -qefc 'codex --full-auto --cd "'"${PROJECT_ROOT}"'" --add-dir "'"${PROJECT_ROOT}"'"' "${TRANSCRIPT}"
+script -qefc 'codex --full-auto --sandbox danger-full-access --bypass-approvals --trusted-workspace --cd "'"${PROJECT_ROOT}"'" --add-dir "'"${PROJECT_ROOT}"'"' "${TRANSCRIPT}"
 exit_code=$?
 set -e
 

@@ -245,6 +245,21 @@ esac
         /--add-dir/,
         'run-codex-pane.sh must pass --add-dir to codex',
       );
+      assert.match(
+        runCodexPane,
+        /--sandbox\s+danger-full-access/,
+        'run-codex-pane.sh must pass --sandbox danger-full-access to codex',
+      );
+      assert.match(
+        runCodexPane,
+        /--bypass-approvals/,
+        'run-codex-pane.sh must pass --bypass-approvals to codex',
+      );
+      assert.match(
+        runCodexPane,
+        /--trusted-workspace/,
+        'run-codex-pane.sh must pass --trusted-workspace to codex',
+      );
     });
 
     it('keeps the legacy Copilot wrapper available but out of the active path', () => {
