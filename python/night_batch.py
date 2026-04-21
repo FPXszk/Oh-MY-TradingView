@@ -2752,8 +2752,8 @@ def maybe_write_latest_backtest_summary_from_settings(
         return
 
     phase = (settings.get('bundle_production_phases') or 'full').split(',')[0].strip() or 'full'
-    us_path = CAMPAIGN_RESULTS_DIR / settings['bundle_us_campaign'] / phase / 'recovered-results.json'
-    jp_path = CAMPAIGN_RESULTS_DIR / settings['bundle_jp_campaign'] / phase / 'recovered-results.json'
+    us_path = CAMPAIGN_RESULTS_DIR / settings['bundle_us_campaign'] / phase / 'recovered-results.json' if settings.get('bundle_us_campaign') else None
+    jp_path = CAMPAIGN_RESULTS_DIR / settings['bundle_jp_campaign'] / phase / 'recovered-results.json' if settings.get('bundle_jp_campaign') else None
     write_latest_backtest_summary(
         run_id=run_id,
         summary=summary,
@@ -2872,7 +2872,7 @@ def main() -> int:
                     ])
                     if cp:
                         settings['smoke_us_resume'] = str(cp)
-                if not settings.get('smoke_jp_resume'):
+                if not settings.get('smoke_jp_resume') and settings.get('bundle_jp_campaign'):
                     cp = find_latest_checkpoint([
                         CAMPAIGN_RESULTS_DIR / settings['bundle_jp_campaign'] / smoke_phase,
                     ])
@@ -2886,7 +2886,7 @@ def main() -> int:
                     ])
                     if cp:
                         settings['production_us_resume'] = str(cp)
-                if not settings.get('production_jp_resume'):
+                if not settings.get('production_jp_resume') and settings.get('bundle_jp_campaign'):
                     cp = find_latest_checkpoint([
                         CAMPAIGN_RESULTS_DIR / settings['bundle_jp_campaign'] / production_phase,
                     ])
