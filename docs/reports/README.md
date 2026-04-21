@@ -13,3 +13,4 @@
 
 - `night-batch-self-hosted-run8.md` — incident / postmortem
 - `night-batch-self-hosted-run15.md` — historical run archive
+- `night-batch-self-hosted-run17.md` — latest successful main run archive
