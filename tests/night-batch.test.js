@@ -1018,7 +1018,7 @@ exit 0
           detach_after_smoke: false,
         },
         bundle: {
-          us_campaign: 'public-top10-us-40x10',
+          us_campaign: 'selected-us40-8pack',
           smoke_phases: 'smoke',
           production_phases: 'full',
         },
@@ -1039,10 +1039,10 @@ exit 0
     const loggedCommands = readFileSync(fakeNodeLog, 'utf8').trim().split('\n');
     assert.equal(loggedCommands.length, 2);
     assert.match(loggedCommands[0], /run-finetune-bundle\.mjs/);
-    assert.match(loggedCommands[0], /public-top10-us-40x10/);
+    assert.match(loggedCommands[0], /selected-us40-8pack/);
     assert.doesNotMatch(loggedCommands[0], /next-long-run-jp|jp-campaign/i);
     assert.match(loggedCommands[1], /run-finetune-bundle\.mjs/);
-    assert.match(loggedCommands[1], /public-top10-us-40x10/);
+    assert.match(loggedCommands[1], /selected-us40-8pack/);
   });
 
   it('smoke-prod can detach the full bundle phase after a smoke bundle gate', async () => {
