@@ -17,6 +17,7 @@ import {
   isTesterPanelStateVisible,
   normalizeRestorePolicy,
   pickTesterMetricsTab,
+  prepareBacktestPineSource,
   RESTORE_POLICY,
   loadPreset,
   probeStrategySourceShape,
@@ -93,6 +94,46 @@ describe('buildNvdaMaSource', () => {
     const src = buildNvdaMaSource();
     assert.ok(src.includes('strategy.entry('));
     assert.ok(src.includes('strategy.close('));
+  });
+});
+
+describe('prepareBacktestPineSource', () => {
+  it('creates a new untitled Pine script before setting source', async () => {
+    const calls = [];
+
+    await prepareBacktestPineSource('strategy("x", overlay=true)', {
+      createNewPineScriptImpl: async () => {
+        calls.push('create');
+        return { success: true, title: '名前なしのスクリプト' };
+      },
+      setSourceImpl: async ({ source }) => {
+        calls.push(`set:${source}`);
+        return { success: true };
+      },
+    });
+
+    assert.deepEqual(calls, [
+      'create',
+      'set:strategy("x", overlay=true)',
+    ]);
+  });
+
+  it('passes through createNewPineScript failures without editing the current saved script', async () => {
+    let setCalled = false;
+
+    await assert.rejects(
+      () => prepareBacktestPineSource('strategy("x", overlay=true)', {
+        createNewPineScriptImpl: async () => {
+          throw new Error('Could not open Pine title menu.');
+        },
+        setSourceImpl: async () => {
+          setCalled = true;
+        },
+      }),
+      /Could not open Pine title menu/,
+    );
+
+    assert.equal(setCalled, false);
   });
 });
 

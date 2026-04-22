@@ -12,6 +12,7 @@ import {
   diagnosePineEditorState,
   getSource,
   setSource,
+  createNewPineScript,
   smartCompile,
   fetchChartStudies,
   verifyStrategyAttachmentChange,
@@ -1111,6 +1112,17 @@ async function restorePineEditor() {
   }
 }
 
+export async function prepareBacktestPineSource(
+  source,
+  {
+    createNewPineScriptImpl = createNewPineScript,
+    setSourceImpl = setSource,
+  } = {},
+) {
+  await createNewPineScriptImpl();
+  await setSourceImpl({ source });
+}
+
 async function performRestore({
   policy,
   originalSymbol,
@@ -1227,7 +1239,7 @@ export async function runNvdaMaBacktest() {
     }
     await clearChartStudies();
     const studiesBeforeCompile = await fetchChartStudies();
-    await setSource({ source });
+    await prepareBacktestPineSource(source);
 
     let compileResult = await smartCompile();
     if (compileResult.has_errors) {
@@ -1496,7 +1508,7 @@ export async function runPresetBacktest({ presetId, symbol = 'NVDA', dateOverrid
     }
     await clearChartStudies();
     const studiesBeforeCompile = await fetchChartStudies();
-    await setSource({ source });
+    await prepareBacktestPineSource(source);
 
     let compileResult = await smartCompile();
     if (compileResult.has_errors) {
