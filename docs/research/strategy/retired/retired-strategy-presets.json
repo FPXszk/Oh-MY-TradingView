@@ -7016,6 +7016,68 @@
           ]
         }
       }
+    },
+    {
+      "id": "breakout-finder",
+      "name": "Breakout Finder Strategy",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {},
+      "source_path": "public-library-sources/breakout-finder-strategy.pine",
+      "theme_axis": "visual-breakout-pattern",
+      "theme_notes": "複数回テストされた pivot resistance の上抜けを breakout とみなし、support band または hard stop で退出する視覚寄り breakout 戦略。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "status": "experimental",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "raw-source",
+        "breakout",
+        "pattern",
+        "pivot"
+      ],
+      "lifecycle": {
+        "status": "retired",
+        "retired_at": "2026-04-22",
+        "retire_reason": {
+          "code": "research_candidate_only",
+          "summary": "strongest 30 live セットには入れず、研究候補として退避管理する"
+        }
+      }
+    },
+    {
+      "id": "breakout-trend-follower",
+      "name": "Breakout Trend Follower",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {},
+      "source_path": "public-library-sources/breakout-trend-follower-strategy.pine",
+      "theme_axis": "swing-breakout-trend-follow",
+      "theme_notes": "直近 swing high 上抜けで entry し、直近 swing low を trailing stop に使う素直な trend following breakout 戦略。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "status": "experimental",
+      "implementation_difficulty": "low",
+      "pine_complexity": "moderate",
+      "tags": [
+        "raw-source",
+        "breakout",
+        "trend-following",
+        "swing"
+      ],
+      "lifecycle": {
+        "status": "retired",
+        "retired_at": "2026-04-22",
+        "retire_reason": {
+          "code": "research_candidate_only",
+          "summary": "strongest 30 live セットには入れず、研究候補として退避管理する"
+        }
+      }
     }
   ]
 }

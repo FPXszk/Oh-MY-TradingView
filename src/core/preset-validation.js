@@ -85,8 +85,10 @@ export function validatePreset(preset) {
   }
 
   if (preset.builder === 'raw_source') {
-    if (!isNonEmptyTrimmedString(preset.source)) {
-      errors.push('source is required and must be a non-empty string for raw_source presets');
+    const hasInlineSource = isNonEmptyTrimmedString(preset.source);
+    const hasSourcePath = isNonEmptyTrimmedString(preset.source_path);
+    if (!hasInlineSource && !hasSourcePath) {
+      errors.push('source or source_path is required and must be a non-empty string for raw_source presets');
     }
   }
 

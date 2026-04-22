@@ -1419,6 +1419,14 @@ export async function loadPreset(presetId, { dateOverride } = {}) {
     }
     const liveRaw = await readFile(PRESETS_PATH, 'utf8');
     data = JSON.parse(liveRaw);
+    if (!preset) {
+      preset = data.strategies.find((s) => s.id === presetId);
+    }
+    if (!preset) {
+      const retiredRaw = await readFile(RETIRED_PRESETS_PATH, 'utf8');
+      const retired = JSON.parse(retiredRaw);
+      preset = retired.strategies.find((s) => s.id === presetId);
+    }
   } catch {
     const raw = await readFile(PRESETS_PATH, 'utf8');
     data = JSON.parse(raw);
@@ -1450,7 +1458,13 @@ export async function loadPreset(presetId, { dateOverride } = {}) {
 
   let source;
   if (preset.builder === 'raw_source') {
-    source = preset.source;
+    if (typeof preset.source === 'string' && preset.source.trim()) {
+      source = preset.source;
+    } else if (typeof preset.source_path === 'string' && preset.source_path.trim()) {
+      source = await readFile(join(dirname(PRESETS_PATH), preset.source_path), 'utf8');
+    } else {
+      throw new Error(`Preset "${presetId}" raw_source is missing source and source_path`);
+    }
   } else {
     try {
       source = buildResearchStrategySource(preset, effectiveDefaults);

@@ -95,6 +95,19 @@ describe('validatePreset', () => {
     assert.equal(result.valid, false);
     assert.ok(result.errors.some((e) => /parameters\.entry_below/.test(e)));
   });
+
+  it('accepts a raw_source preset with source_path instead of inline source', () => {
+    const result = validatePreset({
+      id: 'raw-source-path',
+      name: 'Raw Source Path',
+      category: 'breakout',
+      builder: 'raw_source',
+      parameters: {},
+      source_path: 'public-library-sources/tv-public-kdj-l2.pine',
+    });
+    assert.equal(result.valid, true);
+    assert.deepEqual(result.errors, []);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -583,7 +596,7 @@ describe('strategy-presets.json integration', () => {
   it('retires every non-live preset to docs/research/strategy/retired', async () => {
     const live = await loadPresets();
     const retired = await loadRetiredPresets();
-    assert.equal(retired.strategies.length, 122);
+    assert.equal(retired.strategies.length, 124);
 
     const liveIds = new Set(live.strategies.map((preset) => preset.id));
     const retiredIds = retired.strategies.map((preset) => preset.id);
