@@ -798,7 +798,7 @@ exit 0
     assert.doesNotMatch(result.stderr, /NoneType/);
   });
 
-  it('smoke-prod dry-run uses a WSL-safe PowerShell path for fallback launch', async () => {
+  it('smoke-prod dry-run uses a WSL-safe cmd start wrapper for fallback launch', async () => {
     const result = await runPython([
       SCRIPT_PATH,
       'smoke-prod',
@@ -818,14 +818,16 @@ exit 0
     const summary = readSummaryFromResult(result);
     const launchStep = summary.steps.find((step) => step.name === 'launch');
     assert.deepEqual(
-      launchStep.command.slice(0, 3),
+      launchStep.command.slice(0, 5),
       [
-        '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe',
-        '-NoProfile',
-        '-Command',
+        'cmd.exe',
+        '/c',
+        'start',
+        '',
+        'C:\\TradingView\\TradingView.exe - ショートカット.lnk',
       ],
     );
-    assert.doesNotMatch(launchStep.command[0], /^powershell\.exe$/i);
+    assert.doesNotMatch(launchStep.command.join(' '), /powershell\.exe/i);
   });
 
   it('smoke-prod lets CLI smoke-cli override the JSON config value', async () => {

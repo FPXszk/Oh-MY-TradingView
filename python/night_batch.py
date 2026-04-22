@@ -49,7 +49,6 @@ DEFAULT_PORT = 9223
 DEFAULT_STARTUP_CHECK_HOST = '127.0.0.1'
 DEFAULT_STARTUP_CHECK_PORT = 9222
 DEFAULT_SHORTCUT_PATH = r'C:\TradingView\TradingView.exe - ショートカット.lnk'
-DEFAULT_WINDOWS_POWERSHELL_PATH = '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe'
 DEFAULT_LAUNCH_WAIT_SEC = 20
 DEFAULT_PHASES = 'smoke,full'
 DEFAULT_TIMEOUT = 4 * 60 * 60
@@ -1271,12 +1270,12 @@ def make_step_result(
 def build_shortcut_launch_command(args) -> list[str]:
     if args['launch_command']:
         return shlex.split(args['launch_command'])
-    escaped_shortcut_path = args['shortcut_path'].replace("'", "''")
     return [
-        DEFAULT_WINDOWS_POWERSHELL_PATH,
-        '-NoProfile',
-        '-Command',
-        f"Start-Process -FilePath '{escaped_shortcut_path}'",
+        'cmd.exe',
+        '/c',
+        'start',
+        '',
+        args['shortcut_path'],
     ]
 
 
