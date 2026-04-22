@@ -49,6 +49,7 @@ DEFAULT_PORT = 9223
 DEFAULT_STARTUP_CHECK_HOST = '127.0.0.1'
 DEFAULT_STARTUP_CHECK_PORT = 9222
 DEFAULT_SHORTCUT_PATH = r'C:\TradingView\TradingView.exe - ショートカット.lnk'
+DEFAULT_SHORTCUT_LAUNCH_SCRIPT = PROJECT_ROOT / 'scripts' / 'backtest' / 'launch-tradingview-shortcut.sh'
 DEFAULT_LAUNCH_WAIT_SEC = 20
 DEFAULT_PHASES = 'smoke,full'
 DEFAULT_TIMEOUT = 4 * 60 * 60
@@ -1271,10 +1272,8 @@ def build_shortcut_launch_command(args) -> list[str]:
     if args['launch_command']:
         return shlex.split(args['launch_command'])
     return [
-        'cmd.exe',
-        '/c',
-        'start',
-        '',
+        'bash',
+        str(DEFAULT_SHORTCUT_LAUNCH_SCRIPT),
         args['shortcut_path'],
     ]
 

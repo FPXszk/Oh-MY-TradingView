@@ -798,7 +798,7 @@ exit 0
     assert.doesNotMatch(result.stderr, /NoneType/);
   });
 
-  it('smoke-prod dry-run uses a WSL-safe cmd start wrapper for fallback launch', async () => {
+  it('smoke-prod dry-run uses the proven shell wrapper for fallback launch', async () => {
     const result = await runPython([
       SCRIPT_PATH,
       'smoke-prod',
@@ -818,16 +818,13 @@ exit 0
     const summary = readSummaryFromResult(result);
     const launchStep = summary.steps.find((step) => step.name === 'launch');
     assert.deepEqual(
-      launchStep.command.slice(0, 5),
+      launchStep.command,
       [
-        'cmd.exe',
-        '/c',
-        'start',
-        '',
+        'bash',
+        `${PROJECT_ROOT}/scripts/backtest/launch-tradingview-shortcut.sh`,
         'C:\\TradingView\\TradingView.exe - ショートカット.lnk',
       ],
     );
-    assert.doesNotMatch(launchStep.command.join(' '), /powershell\.exe/i);
   });
 
   it('smoke-prod lets CLI smoke-cli override the JSON config value', async () => {
