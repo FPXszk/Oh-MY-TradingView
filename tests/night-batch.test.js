@@ -798,6 +798,36 @@ exit 0
     assert.doesNotMatch(result.stderr, /NoneType/);
   });
 
+  it('smoke-prod dry-run uses a WSL-safe PowerShell path for fallback launch', async () => {
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--host',
+      '127.0.0.1',
+      '--port',
+      String(port),
+      '--startup-check-host',
+      '127.0.0.1',
+      '--startup-check-port',
+      String(port),
+      '--dry-run',
+    ]);
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+
+    const summary = readSummaryFromResult(result);
+    const launchStep = summary.steps.find((step) => step.name === 'launch');
+    assert.deepEqual(
+      launchStep.command.slice(0, 3),
+      [
+        '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe',
+        '-NoProfile',
+        '-Command',
+      ],
+    );
+    assert.doesNotMatch(launchStep.command[0], /^powershell\.exe$/i);
+  });
+
   it('smoke-prod lets CLI smoke-cli override the JSON config value', async () => {
     const fakeNodePath = join(tempDir, 'fake-node.sh');
     const fakeNodeLog = join(tempDir, 'fake-node.log');
