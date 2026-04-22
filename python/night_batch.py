@@ -1267,21 +1267,6 @@ def make_step_result(
     }
 
 
-def build_shortcut_launch_command(args) -> list[str]:
-    if args['launch_command']:
-        return shlex.split(args['launch_command'])
-    escaped_shortcut_path = args['shortcut_path'].replace("'", "''")
-    wrapper_command = (
-        'powershell.exe -NoProfile -Command '
-        f'"Start-Process -FilePath \'{escaped_shortcut_path}\' -WindowStyle Normal"'
-    )
-    return [
-        'bash',
-        '-lc',
-        wrapper_command,
-    ]
-
-
 def build_cli_command(node_bin: str, cli_string: str) -> list[str]:
     tokens = shlex.split(cli_string)
     if not tokens or tokens[0] != 'backtest':
@@ -1925,7 +1910,7 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
                 )
             )
         steps.append(make_step_result('startup-check', ['GET', startup_url], success=True, skipped=True))
-        steps.append(make_step_result('launch', build_shortcut_launch_command(settings), success=True, skipped=True))
+        steps.append(make_step_result('launch', ['WORKFLOW_STARTUP_OWNED'], success=True, skipped=True))
         steps.append(make_step_result('preflight', ['GET', preflight_url], success=True, skipped=True))
         smoke_step = build_runtime_step(settings, 'smoke')
         if resume_smoke:
@@ -2001,7 +1986,7 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
         steps.append(
             make_step_result(
                 'launch',
-                build_shortcut_launch_command(settings),
+                ['WORKFLOW_STARTUP_OWNED'],
                 success=True,
                 skipped=True,
             )
@@ -2009,18 +1994,15 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
     except RuntimeError as startup_error:
         logger.warning('Startup check did not detect a running TradingView instance: %s', startup_error)
         steps.append(make_step_result('startup-check', ['GET', startup_url], success=False, exit_code=1))
-        launch_result = run_process(
-            build_shortcut_launch_command(settings),
-            [],
-            min(settings['timeout'], settings['launch_wait_sec']),
-            False,
-            logger,
-            progress_callback=make_progress('launch'),
-            heartbeat_label='launch',
+        steps.append(
+            make_step_result(
+                'launch',
+                ['WORKFLOW_STARTUP_OWNED'],
+                success=False,
+                exit_code=1,
+                skipped=True,
+            )
         )
-        steps.append({**launch_result, 'name': 'launch'})
-        if not launch_result['success']:
-            return EXIT_STEP_FAILED, steps, None
 
     if not settings['detach_after_smoke']:
         update_foreground_state(

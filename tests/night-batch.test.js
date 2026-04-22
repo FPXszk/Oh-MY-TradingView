@@ -553,7 +553,7 @@ exit 0
     assert.equal(launchStep.success, true);
   });
 
-  it('smoke-prod launches the shortcut path when startup check fails and then rechecks connectivity', async () => {
+  it('smoke-prod fails without launching when startup check fails', async () => {
     const fakeNodePath = join(tempDir, 'fake-node.sh');
     const launchMarker = join(tempDir, 'launch-marker.txt');
     const launchScript = join(tempDir, 'launch.sh');
@@ -594,17 +594,18 @@ exit 0
       fakeNodePath,
     ]);
 
-    assert.equal(result.status, 0, result.stderr || result.stdout);
-    assert.equal(existsSync(launchMarker), true);
+    assert.equal(result.status, 1, result.stderr || result.stdout);
+    assert.equal(existsSync(launchMarker), false);
+    assert.match(result.stdout, /Preflight failed/);
 
     const summary = readSummaryFromResult(result);
     const startupStep = summary.steps.find((step) => step.name === 'startup-check');
     const launchStep = summary.steps.find((step) => step.name === 'launch');
     const preflightStep = summary.steps.find((step) => step.name === 'preflight');
     assert.equal(startupStep.success, false);
-    assert.equal(launchStep.success, true);
-    assert.equal(launchStep.skipped, false);
-    assert.equal(preflightStep.success, true);
+    assert.equal(launchStep.success, false);
+    assert.equal(launchStep.skipped, true);
+    assert.equal(preflightStep.success, false);
   });
 
   it('smoke-prod stops before production when the smoke backtest fails', async () => {
@@ -798,7 +799,7 @@ exit 0
     assert.doesNotMatch(result.stderr, /NoneType/);
   });
 
-  it('smoke-prod dry-run uses the proven bash wrapper command for fallback launch', async () => {
+  it('smoke-prod dry-run records launch as skipped when workflow owns startup', async () => {
     const result = await runPython([
       SCRIPT_PATH,
       'smoke-prod',
@@ -817,10 +818,8 @@ exit 0
 
     const summary = readSummaryFromResult(result);
     const launchStep = summary.steps.find((step) => step.name === 'launch');
-    assert.equal(launchStep.command[0], 'bash');
-    assert.equal(launchStep.command[1], '-lc');
-    assert.match(launchStep.command[2], /powershell\.exe -NoProfile -Command/);
-    assert.match(launchStep.command[2], /Start-Process -FilePath 'C:\\TradingView\\TradingView\.exe - ショートカット\.lnk' -WindowStyle Normal/);
+    assert.equal(launchStep.success, true);
+    assert.equal(launchStep.skipped, true);
   });
 
   it('smoke-prod lets CLI smoke-cli override the JSON config value', async () => {
