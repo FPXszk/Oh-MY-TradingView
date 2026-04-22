@@ -938,6 +938,17 @@ def stream_reader(stream, logger: logging.Logger, label: str, sink: list[dict]) 
         stream.close()
 
 
+def resolve_heartbeat_interval_sec() -> int:
+    raw_value = os.environ.get('NIGHT_BATCH_HEARTBEAT_SEC')
+    if raw_value is None or raw_value == '':
+        return 30
+    try:
+        value = int(raw_value)
+    except ValueError:
+        return 30
+    return max(1, value)
+
+
 def run_process(
     command: list[str],
     checkpoint_roots: list[Path],
@@ -946,6 +957,7 @@ def run_process(
     logger: logging.Logger,
     env_overrides: dict[str, str] | None = None,
     progress_callback=None,
+    heartbeat_label: str | None = None,
 ) -> dict:
     if dry_run:
         logger.info('[dry-run] %s', shlex.join(command))
@@ -991,6 +1003,9 @@ def run_process(
     latest_checkpoint = find_latest_checkpoint(checkpoint_roots)
     logged_checkpoint = relative_path(latest_checkpoint) if latest_checkpoint else None
     timed_out = False
+    heartbeat_interval_sec = resolve_heartbeat_interval_sec()
+    next_heartbeat_at = started + heartbeat_interval_sec
+    effective_heartbeat_label = heartbeat_label or Path(command[0]).name
     if progress_callback:
         progress_callback(logged_checkpoint, True)
 
@@ -1011,6 +1026,16 @@ def run_process(
         if current_checkpoint_rel and current_checkpoint_rel != logged_checkpoint:
             logger.info('Checkpoint updated: %s', current_checkpoint_rel)
             logged_checkpoint = current_checkpoint_rel
+        now = time.monotonic()
+        if now >= next_heartbeat_at:
+            elapsed_sec = int(now - started)
+            logger.info(
+                'Heartbeat: %s still running (elapsed=%ss, latest_checkpoint=%s)',
+                effective_heartbeat_label,
+                elapsed_sec,
+                current_checkpoint_rel or 'none',
+            )
+            next_heartbeat_at = now + heartbeat_interval_sec
         if progress_callback:
             progress_callback(current_checkpoint_rel, False)
 
@@ -1450,6 +1475,7 @@ def execute_step_with_recovery(
             logger,
             env_overrides=step.get('env_overrides'),
             progress_callback=progress_callback,
+            heartbeat_label=step_name,
         )
         if result['success']:
             return result
@@ -1909,6 +1935,7 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
                 True,
                 logger,
                 env_overrides=smoke_step['env_overrides'],
+                heartbeat_label='smoke',
             )
             steps.append({**smoke_result, 'name': 'smoke'})
         if settings['detach_after_smoke']:
@@ -1929,6 +1956,7 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
                     True,
                     logger,
                     env_overrides=production_step['env_overrides'],
+                    heartbeat_label='production',
                 )
                 steps.append({**production_result, 'name': 'production'})
         return 0, steps, None
@@ -1985,6 +2013,7 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
             False,
             logger,
             progress_callback=make_progress('launch'),
+            heartbeat_label='launch',
         )
         steps.append({**launch_result, 'name': 'launch'})
         if not launch_result['success']:
@@ -2167,6 +2196,7 @@ def execute_production_child(args, logger: logging.Logger, output_dir: Path = RE
             True,
             logger,
             env_overrides=step['env_overrides'],
+            heartbeat_label='production',
         )
     else:
         production_result = execute_step_with_recovery(
@@ -2981,6 +3011,7 @@ def main() -> int:
             args.timeout,
             args.dry_run,
             logger,
+            heartbeat_label=step_spec['name'],
         )
         steps.append({
             'name': step_spec['name'],

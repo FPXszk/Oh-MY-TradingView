@@ -717,6 +717,64 @@ exit 0
     assert.match(state.summary_path, /-summary\.json$/);
   });
 
+  it('smoke-prod emits heartbeat logs while foreground steps are still running', async () => {
+    const fakeNodePath = join(tempDir, 'fake-heartbeat-node.sh');
+    const configPath = join(tempDir, 'nightly-heartbeat.json');
+    writeExecutable(
+      fakeNodePath,
+      `#!/bin/sh
+${STATUS_OK_SNIPPET}sleep 2
+exit 0
+`,
+    );
+    writeFileSync(
+      configPath,
+      JSON.stringify({
+        runtime: {
+          host: '127.0.0.1',
+          port,
+          startup_check_host: '127.0.0.1',
+          startup_check_port: port,
+          detach_after_smoke: false,
+        },
+        strategies: {
+          smoke: { cli: 'backtest heartbeat-smoke' },
+          production: { cli: 'backtest heartbeat-production' },
+        },
+      }),
+      'utf8',
+    );
+
+    const result = await runPython(
+      [
+        SCRIPT_PATH,
+        'smoke-prod',
+        '--config',
+        configPath,
+        '--node-bin',
+        fakeNodePath,
+      ],
+      {
+        env: {
+          NIGHT_BATCH_HEARTBEAT_SEC: '1',
+        },
+        timeoutMs: 10000,
+      },
+    );
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.match(
+      result.stdout,
+      /Heartbeat: smoke still running \(/,
+      'foreground smoke-prod must emit heartbeat logs during long-running steps',
+    );
+    assert.match(
+      result.stdout,
+      /Heartbeat: production still running \(/,
+      'foreground smoke-prod must emit heartbeat logs during long-running production',
+    );
+  });
+
   it('smoke-prod dry-run with foreground bundle config succeeds even when no checkpoints exist yet', async () => {
     const result = await runPython([
       SCRIPT_PATH,
