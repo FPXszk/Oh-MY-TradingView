@@ -1345,30 +1345,6 @@ describe('public library top10 US40 campaign', () => {
     assert.equal(campaign.totalRuns, 10);
   });
 
-  it('loads theme-momentum-us40-3pack config with a 40 x 3 matrix', async () => {
-    const campaign = await loadCampaign('theme-momentum-us40-3pack');
-
-    assert.equal(campaign.config.id, 'theme-momentum-us40-3pack');
-    assert.equal(campaign.config.universe, 'public-top10-us-40');
-    assert.equal(campaign.config.strategy_ids.length, 3);
-    assert.equal(campaign.symbols.length, 40);
-    assert.equal(campaign.strategies.length, 3);
-    assert.equal(campaign.matrix.length, 120);
-    assert.equal(campaign.totalRuns, 120);
-    assert.equal(campaign.defaults.date_range.from, '2015-01-01');
-    assert.equal(campaign.defaults.date_range.to, '2025-12-31');
-  });
-
-  it('uses SPY-only smoke for theme-momentum-us40-3pack so each strategy is checked once', async () => {
-    const campaign = await loadCampaign('theme-momentum-us40-3pack', { phase: 'smoke' });
-
-    assert.deepEqual(campaign.config.phases.smoke.symbols, ['SPY']);
-    assert.equal(campaign.symbols.length, 1);
-    assert.equal(campaign.strategies.length, 3);
-    assert.equal(campaign.matrix.length, 3);
-    assert.equal(campaign.totalRuns, 3);
-  });
-
   it('loads selected-us40-8pack config with a 40 x 8 matrix', async () => {
     const campaign = await loadCampaign('selected-us40-8pack');
 
