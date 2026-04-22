@@ -596,7 +596,7 @@ describe('strategy-presets.json integration', () => {
   it('retires every non-live preset to docs/research/strategy/retired', async () => {
     const live = await loadPresets();
     const retired = await loadRetiredPresets();
-    assert.equal(retired.strategies.length, 124);
+    assert.equal(retired.strategies.length, 128);
 
     const liveIds = new Set(live.strategies.map((preset) => preset.id));
     const retiredIds = retired.strategies.map((preset) => preset.id);
@@ -612,6 +612,21 @@ describe('strategy-presets.json integration', () => {
     const liveIds = new Set(live.strategies.map((s) => s.id));
     for (const s of retired.strategies) {
       assert.equal(liveIds.has(s.id), false, 'overlap: "' + s.id + '" in both live and retired');
+    }
+  });
+
+  it('includes the six breakout research variants in retired presets', async () => {
+    const retired = await loadRetiredPresets();
+    const ids = new Set(retired.strategies.map((preset) => preset.id));
+    for (const id of [
+      'breakout-finder-tight',
+      'breakout-finder-balanced',
+      'breakout-finder-wide',
+      'breakout-trend-follower-fast',
+      'breakout-trend-follower-balanced',
+      'breakout-trend-follower-slow',
+    ]) {
+      assert.equal(ids.has(id), true, `retired preset "${id}" must exist`);
     }
   });
 });

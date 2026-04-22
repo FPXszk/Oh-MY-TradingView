@@ -1363,9 +1363,9 @@ describe('loadPreset', () => {
   });
 
   it('loads a raw_source preset from source_path', async () => {
-    const { preset, source } = await loadPreset('breakout-trend-follower');
+    const { preset, source } = await loadPreset('breakout-trend-follower-balanced');
     assert.equal(preset.builder, 'raw_source');
-    assert.equal(preset.source_path, 'public-library-sources/breakout-trend-follower-strategy.pine');
+    assert.equal(preset.source_path, 'public-library-sources/breakout-trend-follower-balanced.pine');
     assert.ok(typeof source === 'string');
     assert.match(source, /strategy\(/);
     assert.match(source, /Breakout Trend Follower/);

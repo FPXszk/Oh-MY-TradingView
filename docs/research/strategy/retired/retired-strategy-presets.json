@@ -7018,14 +7018,14 @@
       }
     },
     {
-      "id": "breakout-finder",
-      "name": "Breakout Finder Strategy",
+      "id": "breakout-finder-tight",
+      "name": "Breakout Finder Tight",
       "category": "breakout",
       "builder": "raw_source",
       "parameters": {},
-      "source_path": "public-library-sources/breakout-finder-strategy.pine",
-      "theme_axis": "visual-breakout-pattern",
-      "theme_notes": "複数回テストされた pivot resistance の上抜けを breakout とみなし、support band または hard stop で退出する視覚寄り breakout 戦略。",
+      "source_path": "public-library-sources/breakout-finder-tight.pine",
+      "theme_axis": "visual-breakout-pattern-tight",
+      "theme_notes": "Breakout Finder を短め period・狭め threshold・浅め stop に寄せた早め反応版。",
       "recommended_timeframes": [
         "D"
       ],
@@ -7037,7 +7037,8 @@
         "raw-source",
         "breakout",
         "pattern",
-        "pivot"
+        "pivot",
+        "tight"
       ],
       "lifecycle": {
         "status": "retired",
@@ -7049,14 +7050,78 @@
       }
     },
     {
-      "id": "breakout-trend-follower",
-      "name": "Breakout Trend Follower",
+      "id": "breakout-finder-balanced",
+      "name": "Breakout Finder Balanced",
       "category": "breakout",
       "builder": "raw_source",
       "parameters": {},
-      "source_path": "public-library-sources/breakout-trend-follower-strategy.pine",
-      "theme_axis": "swing-breakout-trend-follow",
-      "theme_notes": "直近 swing high 上抜けで entry し、直近 swing low を trailing stop に使う素直な trend following breakout 戦略。",
+      "source_path": "public-library-sources/breakout-finder-balanced.pine",
+      "theme_axis": "visual-breakout-pattern-balanced",
+      "theme_notes": "Breakout Finder の基準版。period・threshold・stop を中庸に置いた比較軸。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "status": "experimental",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "raw-source",
+        "breakout",
+        "pattern",
+        "pivot",
+        "balanced"
+      ],
+      "lifecycle": {
+        "status": "retired",
+        "retired_at": "2026-04-22",
+        "retire_reason": {
+          "code": "research_candidate_only",
+          "summary": "strongest 30 live セットには入れず、研究候補として退避管理する"
+        }
+      }
+    },
+    {
+      "id": "breakout-finder-wide",
+      "name": "Breakout Finder Wide",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {},
+      "source_path": "public-library-sources/breakout-finder-wide.pine",
+      "theme_axis": "visual-breakout-pattern-wide",
+      "theme_notes": "Breakout Finder を長め lookback・広め channel・深め stop に寄せた保守版。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "status": "experimental",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "raw-source",
+        "breakout",
+        "pattern",
+        "pivot",
+        "wide"
+      ],
+      "lifecycle": {
+        "status": "retired",
+        "retired_at": "2026-04-22",
+        "retire_reason": {
+          "code": "research_candidate_only",
+          "summary": "strongest 30 live セットには入れず、研究候補として退避管理する"
+        }
+      }
+    },
+    {
+      "id": "breakout-trend-follower-fast",
+      "name": "Breakout Trend Follower Fast",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {},
+      "source_path": "public-library-sources/breakout-trend-follower-fast.pine",
+      "theme_axis": "swing-breakout-trend-follow-fast",
+      "theme_notes": "Breakout Trend Follower を短め MA・狭め pivot に寄せた早反応版。",
       "recommended_timeframes": [
         "D"
       ],
@@ -7068,7 +7133,72 @@
         "raw-source",
         "breakout",
         "trend-following",
-        "swing"
+        "swing",
+        "fast"
+      ],
+      "lifecycle": {
+        "status": "retired",
+        "retired_at": "2026-04-22",
+        "retire_reason": {
+          "code": "research_candidate_only",
+          "summary": "strongest 30 live セットには入れず、研究候補として退避管理する"
+        }
+      }
+    },
+    {
+      "id": "breakout-trend-follower-balanced",
+      "name": "Breakout Trend Follower Balanced",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {},
+      "source_path": "public-library-sources/breakout-trend-follower-balanced.pine",
+      "theme_axis": "swing-breakout-trend-follow-balanced",
+      "theme_notes": "Breakout Trend Follower の基準版。MA50 と pivot 3/3 を使う中庸設定。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "status": "experimental",
+      "implementation_difficulty": "low",
+      "pine_complexity": "moderate",
+      "tags": [
+        "raw-source",
+        "breakout",
+        "trend-following",
+        "swing",
+        "balanced"
+      ],
+      "lifecycle": {
+        "status": "retired",
+        "retired_at": "2026-04-22",
+        "retire_reason": {
+          "code": "research_candidate_only",
+          "summary": "strongest 30 live セットには入れず、研究候補として退避管理する"
+        }
+      }
+    },
+    {
+      "id": "breakout-trend-follower-slow",
+      "name": "Breakout Trend Follower Slow",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {},
+      "source_path": "public-library-sources/breakout-trend-follower-slow.pine",
+      "theme_axis": "swing-breakout-trend-follow-slow",
+      "theme_notes": "Breakout Trend Follower を長め MA・広め pivot・小 buffer 付きにした遅め反応版。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "status": "experimental",
+      "implementation_difficulty": "low",
+      "pine_complexity": "moderate",
+      "tags": [
+        "raw-source",
+        "breakout",
+        "trend-following",
+        "swing",
+        "slow"
       ],
       "lifecycle": {
         "status": "retired",

@@ -1,5 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   BACKTEST_CAMPAIGN_SEARCH_DIRS,
   BACKTEST_PRESETS_PATH,
@@ -7,6 +9,19 @@ import {
   resolveNamedJsonPath,
 } from './repo-paths.js';
 import { loadCatalog } from './strategy-catalog.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const RETIRED_PRESETS_PATH = join(
+  __dirname,
+  '..',
+  '..',
+  'docs',
+  'research',
+  'strategy',
+  'retired',
+  'retired-strategy-presets.json',
+);
 
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const DEFAULT_FROM = '2015-01-01';
@@ -404,13 +419,19 @@ export async function loadCampaign(campaignId, { phase = 'full' } = {}) {
     symbols = symbols.slice(0, config.symbol_limit);
   }
 
-  const [presetsRaw, catalog] = await Promise.all([
+  const [presetsRaw, retiredRaw, catalog] = await Promise.all([
     readFile(BACKTEST_PRESETS_PATH, 'utf8'),
+    readFile(RETIRED_PRESETS_PATH, 'utf8'),
     loadCatalog(undefined, { includePublic: true }),
   ]);
   const presetsData = JSON.parse(presetsRaw);
+  const retiredData = JSON.parse(retiredRaw);
+  const executableStrategies = [
+    ...catalog.strategies.map(({ lifecycle, ...strategy }) => strategy),
+    ...retiredData.strategies.map(({ lifecycle, ...strategy }) => strategy),
+  ];
   let strategies = resolveStrategies(
-    catalog.strategies.map(({ lifecycle, ...strategy }) => strategy),
+    executableStrategies,
     config,
   );
   if (strategies.length === 0) {

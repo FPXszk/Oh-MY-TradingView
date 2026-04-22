@@ -1,0 +1,107 @@
+//@version=6
+strategy("Breakout Finder Strategy Balanced", overlay=true, max_bars_back=500, max_lines_count=400, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
+
+prd = input.int(5, "Period", minval=2)
+boLen = input.int(200, "Max Breakout Length", minval=30, maxval=300)
+thresholdRate = input.float(3.0, "Threshold Rate %", minval=1.0, maxval=10.0, step=0.1) / 100.0
+minTests = input.int(2, "Minimum Number of Tests", minval=1)
+useMaFilter = input.bool(true, "Use MA Filter")
+maLength = input.int(50, "MA Length", minval=1)
+stopPct = input.float(8.0, "Hard Stop %", minval=0.1, step=0.1)
+
+lll = math.max(math.min(bar_index, 300), 1)
+h = ta.highest(high, lll)
+l = ta.lowest(low, lll)
+channelWidth = (h - l) * thresholdRate
+maValue = ta.sma(close, maLength)
+
+plot(maValue, "Trend Filter MA", color=color.new(color.green, 40), linewidth=2)
+
+ph = ta.pivothigh(high, prd, prd)
+pl = ta.pivotlow(low, prd, prd)
+
+var phVals = array.new_float()
+var phLocs = array.new_int()
+var plVals = array.new_float()
+var plLocs = array.new_int()
+
+if not na(ph)
+    array.unshift(phVals, ph)
+    array.unshift(phLocs, bar_index - prd)
+    while array.size(phLocs) > 0 and bar_index - array.get(phLocs, array.size(phLocs) - 1) > boLen
+        array.pop(phLocs)
+        array.pop(phVals)
+
+if not na(pl)
+    array.unshift(plVals, pl)
+    array.unshift(plLocs, bar_index - prd)
+    while array.size(plLocs) > 0 and bar_index - array.get(plLocs, array.size(plLocs) - 1) > boLen
+        array.pop(plLocs)
+        array.pop(plVals)
+
+float breakoutCeiling = na
+float breakoutFloor = na
+int breakoutTests = 0
+
+highestPrev = ta.highest(high, prd)[1]
+if array.size(phVals) >= minTests and close > open and close > highestPrev
+    float localMax = array.get(phVals, 0)
+    int boundary = 0
+    for x = 0 to array.size(phVals) - 1
+        float pivotValue = array.get(phVals, x)
+        if pivotValue >= close
+            break
+        boundary := x
+        localMax := math.max(localMax, pivotValue)
+    if boundary >= minTests and open <= localMax
+        int tests = 0
+        for x = 0 to boundary
+            float pivotValue = array.get(phVals, x)
+            if pivotValue <= localMax and pivotValue >= localMax - channelWidth
+                tests += 1
+        if tests >= minTests and highestPrev < localMax
+            breakoutCeiling := localMax
+            breakoutFloor := localMax - channelWidth
+            breakoutTests := tests
+
+float breakdownFloor = na
+lowestPrev = ta.lowest(low, prd)[1]
+if array.size(plVals) >= minTests and close < open and close < lowestPrev
+    float localMin = array.get(plVals, 0)
+    int boundary = 0
+    for x = 0 to array.size(plVals) - 1
+        float pivotValue = array.get(plVals, x)
+        if pivotValue <= close
+            break
+        boundary := x
+        localMin := math.min(localMin, pivotValue)
+    if boundary >= minTests and open >= localMin
+        int tests = 0
+        for x = 0 to boundary
+            float pivotValue = array.get(plVals, x)
+            if pivotValue >= localMin and pivotValue <= localMin + channelWidth
+                tests += 1
+        if tests >= minTests and lowestPrev > localMin
+            breakdownFloor := localMin
+
+var float activeStop = na
+entryAllowed = not useMaFilter or close > maValue
+breakoutSignal = not na(breakoutCeiling) and breakoutTests >= minTests and entryAllowed
+
+if breakoutSignal and strategy.position_size <= 0
+    activeStop := breakoutFloor
+    strategy.entry("Long", strategy.long)
+
+if strategy.position_size > 0 and not na(breakoutFloor)
+    activeStop := na(activeStop) ? breakoutFloor : math.max(activeStop, breakoutFloor)
+
+hardStop = strategy.position_size > 0 ? strategy.position_avg_price * (1 - stopPct / 100.0) : na
+effectiveStop = strategy.position_size > 0 ? math.max(nz(activeStop, hardStop), hardStop) : na
+
+if strategy.position_size > 0 and not na(effectiveStop)
+    strategy.exit("Breakout Stop", "Long", stop=effectiveStop)
+
+if strategy.position_size > 0 and not na(breakdownFloor)
+    strategy.close("Long", comment="Breakdown detected")
+
+plot(effectiveStop, "Active Stop", color=color.new(color.orange, 25), linewidth=1, style=plot.style_linebr)

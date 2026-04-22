@@ -1,0 +1,33 @@
+{
+  "id": "breakout-6pack-us40",
+  "name": "Breakout 6-Pack US40",
+  "description": "Six breakout research variants across Breakout Finder and Breakout Trend Follower for the current US40 universe.",
+  "universe": "public-top10-us-40",
+  "strategy_ids": [
+    "breakout-finder-tight",
+    "breakout-finder-balanced",
+    "breakout-finder-wide",
+    "breakout-trend-follower-fast",
+    "breakout-trend-follower-balanced",
+    "breakout-trend-follower-slow"
+  ],
+  "date_override": {
+    "from": "2015-01-01",
+    "to": "2025-12-31"
+  },
+  "phases": {
+    "smoke": {
+      "symbols": ["SPY"]
+    },
+    "full": {
+      "symbol_count": 40
+    }
+  },
+  "execution": {
+    "worker_ports": [9223],
+    "checkpoint_every": 10,
+    "cooldown_ms": 1000,
+    "max_consecutive_failures": 5,
+    "max_rerun_passes": 2
+  }
+}

@@ -1368,6 +1368,30 @@ describe('public library top10 US40 campaign', () => {
     assert.equal(campaign.matrix.length, 8);
     assert.equal(campaign.totalRuns, 8);
   });
+
+  it('loads breakout-6pack-us40 config with a 40 x 6 matrix', async () => {
+    const campaign = await loadCampaign('breakout-6pack-us40');
+
+    assert.equal(campaign.config.id, 'breakout-6pack-us40');
+    assert.equal(campaign.config.universe, 'public-top10-us-40');
+    assert.equal(campaign.config.strategy_ids.length, 6);
+    assert.equal(campaign.symbols.length, 40);
+    assert.equal(campaign.strategies.length, 6);
+    assert.equal(campaign.matrix.length, 240);
+    assert.equal(campaign.totalRuns, 240);
+    assert.equal(campaign.defaults.date_range.from, '2015-01-01');
+    assert.equal(campaign.defaults.date_range.to, '2025-12-31');
+  });
+
+  it('uses SPY-only smoke for breakout-6pack-us40 so each strategy is checked once', async () => {
+    const campaign = await loadCampaign('breakout-6pack-us40', { phase: 'smoke' });
+
+    assert.deepEqual(campaign.config.phases.smoke.symbols, ['SPY']);
+    assert.equal(campaign.symbols.length, 1);
+    assert.equal(campaign.strategies.length, 6);
+    assert.equal(campaign.matrix.length, 6);
+    assert.equal(campaign.totalRuns, 6);
+  });
 });
 
 // ---------------------------------------------------------------------------
