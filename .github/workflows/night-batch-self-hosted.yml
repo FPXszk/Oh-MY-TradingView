@@ -80,7 +80,7 @@ jobs:
             Start-Sleep -Seconds $runtime.launch_wait_sec
           }
 
-      - name: Readiness diagnostics
+      - name: Readiness diagnostics (non-blocking)
         shell: cmd
         run: |
           for /f "usebackq delims=" %%I in (`wsl.exe wslpath -a "%CD%"`) do set "REPO_WSL=%%I"
@@ -96,6 +96,16 @@ jobs:
           wsl.exe bash -lc "cd \"%REPO_WSL%\" && python3 -c \"import json, os, subprocess, sys; c=json.load(open(sys.argv[1])); runtime=c.get('runtime',{}); host=str(runtime.get('host','172.31.144.1')); port=str(runtime.get('port',9223)); print(f'  host={host} port={port}'); env=dict(os.environ, TV_CDP_HOST=host, TV_CDP_PORT=port); proc=subprocess.run(['node','src/cli/index.js','status'], env=env, text=True, capture_output=True); sys.stdout.write(proc.stdout); sys.stderr.write(proc.stderr); raise SystemExit(proc.returncode)\" \"%NIGHT_BATCH_CONFIG%\"" 2>&1 || echo [readiness-diag] tv status: FAILED
           echo [readiness-diag] done
         continue-on-error: true
+
+      - name: Wait for TradingView connection (required gate)
+        shell: cmd
+        run: |
+          for /f "usebackq delims=" %%I in (`wsl.exe wslpath -a "%CD%"`) do set "REPO_WSL=%%I"
+          if not defined REPO_WSL exit /b 1
+          set "NIGHT_BATCH_CONFIG=${{ inputs.config_path }}"
+          if "%NIGHT_BATCH_CONFIG%"=="" set "NIGHT_BATCH_CONFIG=config/night_batch/bundle-foreground-reuse-config.json"
+          echo [connection-gate] Waiting for TradingView connection before smoke-prod
+          wsl.exe bash -lc "cd \"%REPO_WSL%\" && node scripts/backtest/wait-for-tradingview-readiness.mjs --config \"%NIGHT_BATCH_CONFIG%\" --timeout-sec 180 --interval-sec 5"
 
       - name: Run smoke gate and foreground production
         shell: cmd

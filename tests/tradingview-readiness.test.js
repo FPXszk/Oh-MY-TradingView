@@ -493,3 +493,78 @@ describe('executeRecovery', () => {
     assert.match(result.lastError, /MCP reconnect failed/);
   });
 });
+
+describe('night-batch connection gate helpers', () => {
+  it('detects a TradingView chart target from /json/list payloads', async () => {
+    const { hasTradingViewChartTarget } = await import('../src/core/night-batch-connection-gate.js');
+    assert.equal(hasTradingViewChartTarget([
+      { type: 'page', url: 'https://www.tradingview.com/chart/abc123/' },
+    ]), true);
+    assert.equal(hasTradingViewChartTarget([
+      { type: 'page', url: 'https://www.tradingview.com/pricing/' },
+    ]), false);
+  });
+
+  it('parses status payloads from stderr when stdout is empty', async () => {
+    const { parseStatusPayload } = await import('../src/core/night-batch-connection-gate.js');
+    const result = parseStatusPayload({
+      exitCode: 1,
+      stdout: '',
+      stderr: '{"success":false,"api_available":false,"error":"chart API is unavailable"}',
+    });
+    assert.equal(result.success, false);
+    assert.equal(result.apiAvailable, false);
+    assert.match(result.summary, /chart API is unavailable/);
+  });
+
+  it('retries until the probe succeeds before the timeout window closes', async () => {
+    const { waitForConnection } = await import('../src/core/night-batch-connection-gate.js');
+    const attempts = [];
+    const result = await waitForConnection({
+      timeoutMs: 60,
+      intervalMs: 10,
+      probe: async () => {
+        attempts.push('probe');
+        return attempts.length >= 3
+          ? { success: true, startupReachable: true, bridgeReachable: true, statusReady: true, summary: 'ok' }
+          : { success: false, startupReachable: false, bridgeReachable: false, statusReady: false, summary: 'not ready' };
+      },
+      sleep: async () => {},
+      now: (() => {
+        let tick = 0;
+        return () => {
+          tick += 10;
+          return tick;
+        };
+      })(),
+    });
+    assert.equal(result.success, true);
+    assert.equal(result.attempts, 3);
+  });
+
+  it('fails with the last probe summary after the timeout window expires', async () => {
+    const { waitForConnection } = await import('../src/core/night-batch-connection-gate.js');
+    const result = await waitForConnection({
+      timeoutMs: 20,
+      intervalMs: 5,
+      probe: async () => ({
+        success: false,
+        startupReachable: true,
+        bridgeReachable: false,
+        statusReady: false,
+        summary: 'bridge unreachable; tv status failed',
+      }),
+      sleep: async () => {},
+      now: (() => {
+        let tick = 0;
+        return () => {
+          tick += 10;
+          return tick;
+        };
+      })(),
+    });
+    assert.equal(result.success, false);
+    assert.match(result.summary, /bridge unreachable/);
+    assert.ok(result.attempts >= 2);
+  });
+});

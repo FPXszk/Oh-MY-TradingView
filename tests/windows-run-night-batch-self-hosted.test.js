@@ -673,4 +673,19 @@ describe('night-batch-self-hosted workflow readiness diagnostics', () => {
     assert.doesNotMatch(diagSection, /TV_CDP_PORT=\$\(python3 -c/,
       'readiness diagnostics must not inline port resolution into bash env assignment');
   });
+
+  it('includes a required polling gate that must succeed before the smoke gate step', () => {
+    const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
+    assert.match(workflow, /Wait for TradingView connection \(required gate\)/,
+      'workflow must expose a clearly named required connection gate');
+    assert.match(workflow, /wait-for-tradingview-readiness\.mjs/,
+      'workflow must invoke the readiness polling script');
+    assert.doesNotMatch(workflow, /Wait for TradingView connection \(required gate\)[\s\S]*continue-on-error:\s*true/i,
+      'required connection gate must fail the workflow instead of continuing');
+    assert.ok(
+      workflow.indexOf('Wait for TradingView connection (required gate)')
+        < workflow.indexOf('Run smoke gate and foreground production'),
+      'required connection gate must run before the smoke gate step',
+    );
+  });
 });
