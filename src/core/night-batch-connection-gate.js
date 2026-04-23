@@ -145,6 +145,7 @@ export async function probeConnection({
   fetchImpl,
   nodeBin,
   cliPath,
+  runStatusImpl = runStatus,
   httpTimeoutMs = DEFAULT_HTTP_TIMEOUT_MS,
   statusTimeoutMs = DEFAULT_STATUS_TIMEOUT_MS,
 }) {
@@ -161,14 +162,15 @@ export async function probeConnection({
     timeoutMs: httpTimeoutMs,
   });
   const status = parseStatusPayload(
-    await runStatus({ nodeBin, cliPath, host, port, timeoutMs: statusTimeoutMs }),
+    await runStatusImpl({ nodeBin, cliPath, host, port, timeoutMs: statusTimeoutMs }),
   );
 
   const summaryParts = [];
+  const warningParts = [];
   if (!startup.reachable) {
-    summaryParts.push(`startup_check unreachable (${startup.error})`);
+    warningParts.push(`startup_check unreachable (${startup.error})`);
   } else if (!startup.chartReachable) {
-    summaryParts.push('startup_check reachable but no chart target');
+    warningParts.push('startup_check reachable but no chart target');
   }
   if (!bridge.reachable) {
     summaryParts.push(`bridge unreachable (${bridge.error})`);
@@ -180,11 +182,12 @@ export async function probeConnection({
   }
 
   return {
-    success: summaryParts.length === 0,
+    success: bridge.reachable && bridge.chartReachable && status.success,
     startupReachable: startup.reachable && startup.chartReachable,
     bridgeReachable: bridge.reachable && bridge.chartReachable,
     statusReady: status.success,
-    summary: summaryParts.join('; ') || 'ready',
+    summary: [...summaryParts, ...warningParts].join('; ') || 'ready',
+    warnings: warningParts,
     startup,
     bridge,
     status,

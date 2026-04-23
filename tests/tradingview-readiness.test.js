@@ -567,4 +567,38 @@ describe('night-batch connection gate helpers', () => {
     assert.match(result.summary, /bridge unreachable/);
     assert.ok(result.attempts >= 2);
   });
+
+  it('treats startup_check as diagnostic-only when bridge and tv status are ready', async () => {
+    const { probeConnection } = await import('../src/core/night-batch-connection-gate.js');
+    const responsePayload = [{ type: 'page', url: 'https://www.tradingview.com/chart/abc123/' }];
+    const fetchImpl = async (url) => {
+      if (String(url).includes('127.0.0.1:9222')) {
+        throw new Error('connect ECONNREFUSED 127.0.0.1:9222');
+      }
+      return {
+        ok: true,
+        async json() {
+          return responsePayload;
+        },
+      };
+    };
+    const result = await probeConnection({
+      startupHost: '127.0.0.1',
+      startupPort: 9222,
+      host: '172.31.144.1',
+      port: 9223,
+      fetchImpl,
+      runStatusImpl: async () => ({
+        exitCode: 0,
+        stdout: '{"success":true,"api_available":true}',
+        stderr: '',
+      }),
+    });
+    assert.equal(result.bridgeReachable, true);
+    assert.equal(result.statusReady, true);
+    assert.equal(result.success, true);
+    assert.match(result.summary, /startup_check unreachable/);
+    assert.equal(Array.isArray(result.warnings), true);
+    assert.equal(result.warnings.length, 1);
+  });
 });
