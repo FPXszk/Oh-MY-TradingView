@@ -1,8 +1,8 @@
 //@version=6
 strategy("Breakout Trend Follower Slow", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
 
-startTime = input.time(timestamp("2015-01-01T00:00:00Z"), "Start Time")
-finishTime = input.time(timestamp("2025-12-31T23:59:59Z"), "End Time")
+startTime = input.time(1420070400000, "Start Time")
+finishTime = input.time(1767225540000, "End Time")
 
 useMaFilter = input.bool(true, "Use MA for Filtering?")
 maType = input.string("SMA", "MA Type For Filtering", options=["EMA", "SMA"])

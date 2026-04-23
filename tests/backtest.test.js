@@ -1370,6 +1370,35 @@ describe('loadPreset', () => {
     assert.match(source, /strategy\(/);
     assert.match(source, /Breakout Trend Follower/);
   });
+
+  it('keeps breakout finder raw source strategy titles aligned with preset names', async () => {
+    for (const presetId of [
+      'breakout-finder-tight',
+      'breakout-finder-balanced',
+      'breakout-finder-wide',
+    ]) {
+      const { preset, source } = await loadPreset(presetId);
+      const titleMatch = source.match(/strategy\("([^"]+)"/);
+      assert.ok(titleMatch, `strategy title must exist for ${presetId}`);
+      assert.equal(titleMatch[1], preset.name, `raw source title mismatch for ${presetId}`);
+    }
+  });
+
+  it('uses numeric timestamp arguments in breakout trend follower raw sources', async () => {
+    for (const presetId of [
+      'breakout-trend-follower-fast',
+      'breakout-trend-follower-balanced',
+      'breakout-trend-follower-slow',
+    ]) {
+      const { source } = await loadPreset(presetId);
+      assert.ok(
+        !source.includes('timestamp("'),
+        `raw source must not use string timestamp format for ${presetId}`,
+      );
+      assert.match(source, /input\.time\(\d{13}, "Start Time"\)/);
+      assert.match(source, /input\.time\(\d{13}, "End Time"\)/);
+    }
+  });
 });
 
 // ---------------------------------------------------------------------------

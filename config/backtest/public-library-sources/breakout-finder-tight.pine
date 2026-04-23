@@ -1,5 +1,5 @@
 //@version=6
-strategy("Breakout Finder Strategy Tight", overlay=true, max_bars_back=500, max_lines_count=400, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
+strategy("Breakout Finder Tight", overlay=true, max_bars_back=500, max_lines_count=400, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
 
 prd = input.int(4, "Period", minval=2)
 boLen = input.int(160, "Max Breakout Length", minval=30, maxval=300)
