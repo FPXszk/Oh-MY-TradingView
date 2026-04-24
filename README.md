@@ -27,13 +27,11 @@ TradingView Desktop を **Codex CLI 主経路** で扱う MCP / CLI ブリッジ
 
 ## 重要な前提
 
-- **非公式**: TradingView Inc. とは無関係です
 - **CDP 操作はローカル限定**: `tv_*` / `pine_*` / `backtest` 系はローカルの TradingView Desktop に対して動作します
 - **`market_*` は外部取得あり**: `market_quote` / `market_fundamentals` / `market_snapshot` / `market_news` / `market_screener` / `market_ta_summary` / `market_ta_rank` / `market_symbol_analysis` / `market_confluence_rank` は Yahoo Finance の public endpoint を使います
 - **`x_*` は read-only**: `x_status` / `x_whoami` / `x_search_posts` / `x_user_profile` / `x_user_posts` / `x_tweet_detail` はローカルの `twitter-cli` と認証済みブラウザ cookies または `TWITTER_AUTH_TOKEN` / `TWITTER_CT0` を使います
 - **`reach_*` は Twitter 以外の目**: `reach_status` / `reach_read_web` / `reach_read_rss` / `reach_search_reddit` / `reach_read_reddit_post` / `reach_read_youtube` は read-only の external observation layer です
 - **要ユーザー起動**: 現行前提は **Windows で `9222` 起動 / WSL からは `9223` 接続** です
-- **利用規約順守**: TradingView の Terms of Use は利用者責任です
 
 ## できること
 
@@ -672,14 +670,3 @@ tests/
   workspace.test.js       # Unit: workspace CDP operations with mocks
   alerts.test.js          # Unit: alert CDP operations with mocks
 ```
-
-## Safety
-
-- **Target allowlist**: only connects to `page` targets matching `tradingview.com`
-- **safeString**: JSON.stringify-based escaping for CDP evaluate injection
-- **requireFinite**: blocks NaN/Infinity from reaching TradingView APIs
-- **Local-only**: no external network calls (except TradingView's own in-app)
-
-## License
-
-MIT
