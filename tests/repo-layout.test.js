@@ -177,10 +177,15 @@ describe('repository layout policy', () => {
   });
 
   it('prunes strategy-presets.json to the strongest 30 and records retired strategies', () => {
+    const expectedLiveStrategies = 40;
     const presets = JSON.parse(
       readFileSync(join(PROJECT_ROOT, 'config', 'backtest', 'strategy-presets.json'), 'utf8'),
     );
-    assert.equal(presets.strategies.length, 30, `expected 30 strategies, got ${presets.strategies.length}`);
+    assert.equal(
+      presets.strategies.length,
+      expectedLiveStrategies,
+      `expected ${expectedLiveStrategies} strategies, got ${presets.strategies.length}`,
+    );
     assert.equal(
       existsSync(join(DOCS_RETIRED_STRATEGY_DIR, 'README.md')),
       true,
@@ -194,11 +199,11 @@ describe('repository layout policy', () => {
     );
   });
 
-  it('strategy-catalog.json exists and has 152 strategies', () => {
+  it('strategy-catalog.json exists and has 162 strategies', () => {
     const catalogPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-catalog.json');
     assert.equal(existsSync(catalogPath), true, 'strategy-catalog.json must exist');
     const catalog = JSON.parse(readFileSync(catalogPath, 'utf8'));
-    assert.equal(catalog.strategies.length, 152, `expected 152 strategies in catalog, got ${catalog.strategies.length}`);
+    assert.equal(catalog.strategies.length, 162, `expected 162 strategies in catalog, got ${catalog.strategies.length}`);
   });
 
   it('retired strategy README mentions catalog as source of truth', () => {

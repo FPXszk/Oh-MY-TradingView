@@ -1,7 +1,7 @@
 //@version=6
-strategy("Donchian 60/20 + RSP Filter + RSI14 Regime 60 + 8% Stop", overlay=true, pyramiding=0, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission_type=strategy.commission.percent, commission_value=0, slippage=0)
-startDate = timestamp(2000, 1, 1, 0, 0)
-endDate = timestamp(2099, 12, 31, 23, 59)
+strategy("Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/25 + TP 100/50 + Risk 1%", overlay=true, pyramiding=0, initial_capital=10000, default_qty_type=strategy.fixed, default_qty_value=1, commission_type=strategy.commission.percent, commission_value=0, slippage=0)
+startDate = timestamp(2015, 1, 1, 0, 0)
+endDate = timestamp(2025, 12, 31, 23, 59)
 inDateRange = time >= startDate and time <= endDate
 regimeRefClose = request.security("BATS:RSP", timeframe.period, close)
 regimeRefMa = ta.sma(regimeRefClose, 200)
@@ -13,11 +13,33 @@ donchianUpper = ta.highest(high, 60)[1]
 donchianLower = ta.lowest(low, 20)[1]
 plot(donchianUpper, "Donchian Upper", color=color.green)
 plot(donchianLower, "Donchian Lower", color=color.red)
+tp1TriggerPct = 0.30
+tp1ClosePct = 25
+tp2TriggerPct = 1.00
+tp2ClosePct = 50
+riskPercent = 0.01
 entrySignal = ta.crossover(close, donchianUpper)
 exitSignal = ta.crossunder(close, donchianLower)
 allowEntry = inDateRange and regimeOk and rsiRegimeOk
-if entrySignal and allowEntry and strategy.position_size <= 0
-    strategy.entry("Long", strategy.long)
+entryStopPrice = close * (1 - 0.08)
+riskPerShare = close - entryStopPrice
+riskAmount = strategy.equity * 0.01
+maxAffordableQty = close > 0 ? math.floor(strategy.equity / close) : 0
+riskBasedQty = riskPerShare > 0 ? math.floor(riskAmount / riskPerShare) : 0
+entryQty = math.floor(math.min(riskBasedQty, maxAffordableQty))
+var bool tp1Taken = false
+var bool tp2Taken = false
+if strategy.position_size <= 0
+    tp1Taken := false
+    tp2Taken := false
+if entrySignal and allowEntry and strategy.position_size <= 0 and entryQty > 0
+    strategy.entry("Long", strategy.long, qty=entryQty)
+if strategy.position_size > 0 and not tp1Taken and close >= strategy.position_avg_price * (1 + 0.30)
+    strategy.close("Long", qty_percent=25, comment="TP1 30%")
+    tp1Taken := true
+if strategy.position_size > 0 and not tp2Taken and close >= strategy.position_avg_price * (1 + 1.00)
+    strategy.close("Long", qty_percent=50, comment="TP2 100%")
+    tp2Taken := true
 if exitSignal and strategy.position_size > 0
     strategy.close("Long", comment="Base exit")
 if regimeForceExit and not regimeOk and strategy.position_size > 0

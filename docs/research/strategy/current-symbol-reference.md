@@ -1,4 +1,4 @@
-# Latest symbol reference
+# Current symbol reference
 
 このファイルは **銘柄側から戦略を見るための入口** です。current config 上の campaign / universe と、上記 artifact で観測できた best strategy をまとめます。
 

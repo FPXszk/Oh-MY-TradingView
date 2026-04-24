@@ -203,9 +203,9 @@ describe('.gitattributes', () => {
 describe('foreground bundle config default campaign', () => {
   const config = JSON.parse(readFileSync(BUNDLE_FG_CONFIG_PATH, 'utf8'));
 
-  it('us_campaign defaults to breakout-6pack-us40', () => {
-    assert.equal(config.bundle.us_campaign, 'breakout-6pack-us40',
-      'bundle-foreground-reuse-config.json must default us_campaign to breakout-6pack-us40');
+  it('us_campaign defaults to selected-us40-10pack', () => {
+    assert.equal(config.bundle.us_campaign, 'selected-us40-10pack',
+      'bundle-foreground-reuse-config.json must default us_campaign to selected-us40-10pack');
   });
 
   it('jp_campaign is omitted for the US-only bundle default', () => {
