@@ -198,6 +198,7 @@ cython_debug/
 # .vscode/
 
 # Ruff stuff:
+*:Zone.Identifier
 .ruff_cache/
 
 # PyPI configuration file
