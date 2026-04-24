@@ -390,13 +390,15 @@ describe('external PowerShell scripts for workflow summary', () => {
       'find script must output summary_md');
   });
 
-  it('find-night-batch-outputs.ps1 outputs rich_report and ranking_artifact', () => {
+  it('find-night-batch-outputs.ps1 outputs rich_report, ranking_artifact, and campaign_artifact_paths', () => {
     const script = readFileSync(FIND_OUTPUTS_SCRIPT_PATH, 'utf8');
 
     assert.match(script, /rich_report=/,
       'find script must output rich_report');
     assert.match(script, /ranking_artifact=/,
       'find script must output ranking_artifact');
+    assert.match(script, /campaign_artifact_paths/i,
+      'find script must output campaign_artifact_paths');
   });
 
   it('find-night-batch-outputs.ps1 searches artifacts/night-batch for workflow outputs', () => {
@@ -404,6 +406,8 @@ describe('external PowerShell scripts for workflow summary', () => {
 
     assert.match(script, /artifacts\\night-batch/,
       'find script must search artifacts/night-batch where night_batch.py writes summaries');
+    assert.match(script, /artifacts\/campaigns|artifacts\\campaigns/,
+      'find script must derive campaign artifact directories from summary traces');
   });
 
   it('append-night-batch-workflow-summary.ps1 safely handles nullable fields', () => {
@@ -486,6 +490,13 @@ describe('workflow delegates to external PowerShell scripts', () => {
       'workflow must reference rich_report output');
     assert.match(workflow, /ranking_artifact/,
       'workflow must reference ranking_artifact output');
+  });
+
+  it('Upload step includes campaign artifact paths alongside the round directory', () => {
+    assert.match(workflow, /campaign_artifact_paths/,
+      'workflow upload step must reference campaign_artifact_paths output');
+    assert.match(workflow, /path:\s*\|\s*[\s\S]*round_dir[\s\S]*campaign_artifact_paths/m,
+      'workflow upload path must include both round_dir and campaign_artifact_paths');
   });
 
   it('workflow Locate step has no large inline PowerShell logic', () => {

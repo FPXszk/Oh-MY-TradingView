@@ -2,10 +2,16 @@
 
 import { execFile } from 'node:child_process';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { join, dirname } from 'node:path';
+import { join, dirname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { RESEARCH_RESULTS_DIR } from '../../src/core/repo-paths.js';
+import {
+  buildCampaignStrategyRankingArtifact,
+  renderCampaignStrategyRankingMarkdown,
+  collectCampaignStrategyRankingArtifacts,
+  renderCurrentArtifactScoreboardsMarkdown,
+} from '../../src/core/artifact-scoreboards.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -383,10 +389,35 @@ async function main() {
   const rawPath = join(outDir, 'final-results.json');
   const recoveredPath = join(outDir, 'recovered-results.json');
   const summaryPath = join(outDir, 'recovered-summary.json');
+  const rankingJsonPath = join(outDir, 'strategy-ranking.json');
+  const rankingMarkdownPath = join(outDir, 'strategy-ranking.md');
+  const currentScoreboardsPath = join(PROJECT_ROOT, 'docs', 'research', 'current', 'artifacts-backtest-scoreboards.md');
 
   await writeFile(rawPath, `${JSON.stringify(finalPayload, null, 2)}\n`);
   await writeFile(recoveredPath, `${JSON.stringify(effectiveRuns, null, 2)}\n`);
   await writeFile(summaryPath, `${JSON.stringify(summary, null, 2)}\n`);
+
+  const rankingArtifact = buildCampaignStrategyRankingArtifact({
+    campaignId,
+    phase,
+    runs: effectiveRuns,
+    initialCapital: campaign.defaults.initial_capital,
+    sourceRunId: process.env.NIGHT_BATCH_RUN_ID || null,
+    sourceKind: process.env.NIGHT_BATCH_RUN_ID ? 'workflow' : 'manual',
+    sourceResultsPath: relative(PROJECT_ROOT, recoveredPath).replaceAll('\\', '/'),
+  });
+  await writeFile(rankingJsonPath, `${JSON.stringify(rankingArtifact, null, 2)}\n`);
+  await writeFile(rankingMarkdownPath, renderCampaignStrategyRankingMarkdown(rankingArtifact));
+
+  const currentArtifacts = await collectCampaignStrategyRankingArtifacts(
+    join(RESEARCH_RESULTS_DIR, 'campaigns'),
+    PROJECT_ROOT,
+  );
+  await mkdir(dirname(currentScoreboardsPath), { recursive: true });
+  await writeFile(
+    currentScoreboardsPath,
+    renderCurrentArtifactScoreboardsMarkdown(currentArtifacts),
+  );
 
   // --- Experiment gating (additive artifacts) ---
   const gatingConfig = campaign.config.experiment_gating;
@@ -445,6 +476,9 @@ async function main() {
   process.stdout.write(`  Raw results: ${rawPath}\n`);
   process.stdout.write(`  Recovered results: ${recoveredPath}\n`);
   process.stdout.write(`  Summary: ${summaryPath}\n`);
+  process.stdout.write(`  Strategy ranking JSON: ${rankingJsonPath}\n`);
+  process.stdout.write(`  Strategy ranking MD: ${rankingMarkdownPath}\n`);
+  process.stdout.write(`  Current scoreboards: ${currentScoreboardsPath}\n`);
 }
 
 main().catch((error) => {

@@ -16,6 +16,7 @@ $summaryMd = ''
 $richReport = ''
 $rankingArtifact = ''
 $protectionReport = ''
+$campaignArtifactDirs = [System.Collections.Generic.List[string]]::new()
 
 $searchRoots = @(
     'artifacts\night-batch',
@@ -61,6 +62,23 @@ foreach ($searchRoot in $searchRoots) {
         $protectionReport = $protectionReportFile.FullName
     }
 
+    try {
+        $summaryData = Get-Content -Raw -Path $summaryJson | ConvertFrom-Json
+        foreach ($step in @($summaryData.steps)) {
+            foreach ($capturedLine in @($step.captured_lines)) {
+                $line = [string]$capturedLine.line
+                if ($line -match 'artifacts/campaigns/([^/]+)/([^/]+)/') {
+                    $campaignDir = Join-Path $PWD ("artifacts\campaigns\" + $Matches[1] + "\" + $Matches[2])
+                    if ((Test-Path $campaignDir) -and (-not $campaignArtifactDirs.Contains($campaignDir))) {
+                        $campaignArtifactDirs.Add($campaignDir)
+                    }
+                }
+            }
+        }
+    } catch {
+        # best-effort only
+    }
+
     break
 }
 
@@ -70,3 +88,6 @@ foreach ($searchRoot in $searchRoots) {
 "rich_report=$richReport"            | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 "ranking_artifact=$rankingArtifact"  | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 "protection_report=$protectionReport" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+"campaign_artifact_paths<<EOF"       | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+$campaignArtifactDirs                | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+"EOF"                                | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append

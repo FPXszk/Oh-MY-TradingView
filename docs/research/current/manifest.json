@@ -3,6 +3,8 @@
   "keep": [
     "README.md",
     "main-backtest-current-summary.md",
+    "artifacts-backtest-scoreboards.md",
+    "night-batch-self-hosted-run64_20260424.md",
     "night-batch-self-hosted-run33_20260418.md",
     "strongest-family-overlay-ablation_20260416_1215.md",
     "run63-detailed-metrics-and-comparison.md"

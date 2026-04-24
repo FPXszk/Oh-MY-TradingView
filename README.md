@@ -9,10 +9,9 @@ TradingView Desktop を **Codex CLI 主経路** で扱う MCP / CLI ブリッジ
 - 人間向けの補助説明: `docs/explain-forhuman.md`
 - current handoff と current main summary の違い: `docs/research/current/README.md`
 - 最新の main backtest 要約: `docs/research/current/main-backtest-current-summary.md`
+- artifact 起点の current ランキング表: `docs/research/current/artifacts-backtest-scoreboards.md`
 - テーマ投資で「モメンタムのある銘柄」をどう定義するか: `docs/research/strategy/theme-momentum-definition.md`
 - 戦略と銘柄の人間向けリファレンス: `docs/research/strategy/README.md`
-- dev session の pane diagnostics: `logs/devinit/`
-- dev session の abnormal-exit evidence: `artifacts/devinit/`
 - 直近の判断ログ: `logs/sessions/`
 - incident / postmortem archive: `docs/reports/README.md`
 - 数値リファレンスの説明: `references/backtests/README.md`
@@ -24,9 +23,10 @@ TradingView Desktop を **Codex CLI 主経路** で扱う MCP / CLI ブリッジ
 
 1. `docs/research/current/README.md` — current handoff と current main summary の違いを掴む
 2. `docs/research/current/main-backtest-current-summary.md` — 今の main backtest の結論を見る
-3. `docs/research/strategy/theme-momentum-definition.md` — テーマ投資の判断基準を確認する
-4. `docs/research/strategy/README.md` — 戦略・銘柄リファレンスへ進む
-5. `logs/sessions/` — 直近の判断経緯が必要なときだけ見る
+3. `docs/research/current/artifacts-backtest-scoreboards.md` — artifact に保存された campaign ごとのランキング表を見る
+4. `docs/research/strategy/theme-momentum-definition.md` — テーマ投資の判断基準を確認する
+5. `docs/research/strategy/README.md` — 戦略・銘柄リファレンスへ進む
+6. `logs/sessions/` — 直近の判断経緯が必要なときだけ見る
 
 ## 重要な前提
 
@@ -234,13 +234,12 @@ uv tool install yt-dlp
 
 ```bash
 just dev
-just devinit-logs
 just session-logs
 ```
 
-`just dev` の pane 0 は wrapper 経由で Codex CLI を起動します。異常終了時は `logs/devinit/` に run log を、`artifacts/devinit/<run-id>/` に pane capture / pane metadata / process snapshot を残し、1 回だけ自動再起動します。再度落ちた場合は pane を bash に落として診断できる状態を残します。
+`just dev` の pane 0 は Codex CLI を直接起動します。調査用の wrapper や evidence capture は通常経路から外し、開発セッションは tmux 上でそのまま使う前提に戻しています。
 
-旧 Copilot CLI 経路は削除せず、比較・復旧用に残しています。
+旧 Copilot CLI の確認が必要な場合だけ、直接起動用の recipe を使えます。
 
 ```bash
 just dev-copilot-legacy

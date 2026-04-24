@@ -15,20 +15,6 @@ import { spawnSync } from 'node:child_process';
 
 const PROJECT_ROOT = process.cwd();
 const DEVINIT_PATH = join(PROJECT_ROOT, 'devinit.sh');
-const RUN_CODEX_PANE_PATH = join(PROJECT_ROOT, 'scripts', 'dev', 'run-codex-pane.sh');
-const CAPTURE_CODEX_PANE_EVIDENCE_PATH = join(
-  PROJECT_ROOT,
-  'scripts',
-  'dev',
-  'capture-codex-pane-evidence.sh',
-);
-const RUN_COPILOT_PANE_PATH = join(PROJECT_ROOT, 'scripts', 'dev', 'run-copilot-pane.sh');
-const CAPTURE_COPILOT_PANE_EVIDENCE_PATH = join(
-  PROJECT_ROOT,
-  'scripts',
-  'dev',
-  'capture-copilot-pane-evidence.sh',
-);
 const script = readFileSync(DEVINIT_PATH, 'utf8');
 const lines = script.split('\n');
 
@@ -113,175 +99,65 @@ printf '%s\n' "\${PS_TEST_OUTPUT:-}"
     });
   });
 
-  // -----------------------------------------------------------------------
-  // Issue 1b: pane 0 must launch through a resilience wrapper
-  // -----------------------------------------------------------------------
-  describe('codex pane resilience wrapper', () => {
-    it('launches pane 0 through run-codex-pane.sh instead of direct codex invocation', () => {
+  describe('codex pane direct launch', () => {
+    it('launches pane 0 directly with codex instead of a wrapper script', () => {
       assert.match(
-        script,
-        /run-codex-pane\.sh/,
-        'devinit.sh must route pane 0 through the dedicated Codex wrapper script',
-      );
-      assert.doesNotMatch(
         script,
         /agent_cmd=.*\bcodex --full-auto\b/,
-        'devinit.sh must not hard-code the raw Codex command directly into pane 0 startup',
+        'devinit.sh must launch pane 0 with a direct codex command',
       );
-      assert.doesNotMatch(
+      assert.match(
         script,
-        /tmux send-keys -t "\$\{SESSION_NAME\}:0\.0" "\$\{copilot_cmd\}"/,
-        'devinit.sh must not start the legacy Copilot wrapper as the active pane 0 command',
+        /--sandbox workspace-write/,
+        'direct codex launch must keep workspace-write sandbox',
       );
-      assert.doesNotMatch(
+      assert.match(
         script,
-        /copilot_cmd=.*\bcopilot --yolo\b/,
-        'devinit.sh must not hard-code the raw Copilot command directly into pane 0 startup',
-      );
-    });
-
-    it('ships helper scripts for evidence capture and bounded restart', () => {
-      assert.equal(
-        existsSync(RUN_CODEX_PANE_PATH),
-        true,
-        'scripts/dev/run-codex-pane.sh must exist',
-      );
-      assert.equal(
-        existsSync(CAPTURE_CODEX_PANE_EVIDENCE_PATH),
-        true,
-        'scripts/dev/capture-codex-pane-evidence.sh must exist',
-      );
-
-      const runCodexPane = readFileSync(RUN_CODEX_PANE_PATH, 'utf8');
-      const captureEvidence = readFileSync(CAPTURE_CODEX_PANE_EVIDENCE_PATH, 'utf8');
-
-      assert.match(
-        runCodexPane,
-        /CODEX_PANE_MAX_RESTARTS=1/,
-        'run-codex-pane.sh must enforce a single bounded respawn',
+        /--ask-for-approval never/,
+        'direct codex launch must keep ask-for-approval never',
       );
       assert.match(
-        runCodexPane,
-        /capture-codex-pane-evidence\.sh/,
-        'run-codex-pane.sh must call the evidence capture helper before respawn',
-      );
-      assert.match(
-        runCodexPane,
-        /logs\/devinit/,
-        'run-codex-pane.sh must record pane diagnostics under logs/devinit',
-      );
-      assert.match(
-        runCodexPane,
-        /artifacts\/devinit/,
-        'run-codex-pane.sh must persist per-run evidence under artifacts/devinit',
-      );
-      assert.match(
-        captureEvidence,
-        /tmux\s+capture-pane/,
-        'capture-copilot-pane-evidence.sh must save the pane output',
-      );
-      assert.match(
-        captureEvidence,
-        /tmux\s+list-panes/,
-        'capture-copilot-pane-evidence.sh must save pane metadata',
-      );
-      assert.match(
-        captureEvidence,
-        /\bps\b/,
-        'capture-copilot-pane-evidence.sh must capture a process snapshot',
-      );
-    });
-
-    it('launches codex via script(1) to guarantee a pseudo-TTY', () => {
-      const runCodexPane = readFileSync(RUN_CODEX_PANE_PATH, 'utf8');
-      assert.match(
-        runCodexPane,
-        /\bscript\s+-qefc\b/,
-        'run-codex-pane.sh must use script -qefc to provide a pseudo-TTY for codex',
-      );
-    });
-
-    it('does not invoke codex directly without a TTY wrapper', () => {
-      const runCodexPane = readFileSync(RUN_CODEX_PANE_PATH, 'utf8');
-      const lines = runCodexPane.split('\n');
-      const rawCodexLines = lines.filter(
-        (l) => /^\s*codex\s+/.test(l) && !/^\s*#/.test(l),
-      );
-      assert.equal(
-        rawCodexLines.length,
-        0,
-        `run-codex-pane.sh must not invoke codex directly (found: ${rawCodexLines.join('; ')})`,
-      );
-    });
-
-    it('does not use pane-wide exec tee redirect that breaks TTY', () => {
-      const runCodexPane = readFileSync(RUN_CODEX_PANE_PATH, 'utf8');
-      assert.doesNotMatch(
-        runCodexPane,
-        /exec\s*>\s*>\(tee\b/,
-        'run-codex-pane.sh must not use exec > >(tee ...) which destroys the TTY for codex',
-      );
-    });
-
-    it('checks for script(1) availability and fails explicitly if missing', () => {
-      const runCodexPane = readFileSync(RUN_CODEX_PANE_PATH, 'utf8');
-      assert.match(
-        runCodexPane,
-        /command\s+-v\s+script|which\s+script|type\s+script/,
-        'run-codex-pane.sh must check that script(1) is available before using it',
-      );
-    });
-
-    it('uses the requested Codex launch flags in the codex invocation', () => {
-      const runCodexPane = readFileSync(RUN_CODEX_PANE_PATH, 'utf8');
-      assert.match(
-        runCodexPane,
-        /--full-auto/,
-        'run-codex-pane.sh must pass --full-auto to codex',
-      );
-      assert.match(
-        runCodexPane,
+        script,
         /--cd/,
-        'run-codex-pane.sh must pass --cd to codex',
+        'direct codex launch must keep --cd',
       );
       assert.match(
-        runCodexPane,
+        script,
         /--add-dir/,
-        'run-codex-pane.sh must pass --add-dir to codex',
-      );
-      assert.match(
-        runCodexPane,
-        /--sandbox\s+workspace-write/,
-        'run-codex-pane.sh must pass --sandbox workspace-write to codex',
-      );
-      assert.match(
-        runCodexPane,
-        /--ask-for-approval\s+never/,
-        'run-codex-pane.sh must pass --ask-for-approval never to codex',
+        'direct codex launch must keep --add-dir',
       );
       assert.doesNotMatch(
-        runCodexPane,
-        /--sandbox\s+danger-full-access/,
-        'run-codex-pane.sh must not pass --sandbox danger-full-access to codex',
+        script,
+        /run-codex-pane\.sh/,
+        'devinit.sh must not route pane 0 through a codex wrapper',
       );
       assert.doesNotMatch(
-        runCodexPane,
-        /--bypass-approvals/,
-        'run-codex-pane.sh must not pass --bypass-approvals to codex',
-      );
-      assert.doesNotMatch(
-        runCodexPane,
-        /--trusted-workspace/,
-        'run-codex-pane.sh must not pass --trusted-workspace to codex',
+        script,
+        /run-copilot-pane\.sh/,
+        'devinit.sh must not route copilot through a wrapper either',
       );
     });
 
-    it('keeps the legacy Copilot wrapper available but out of the active path', () => {
-      assert.equal(existsSync(RUN_COPILOT_PANE_PATH), true, 'legacy Copilot wrapper must remain');
+    it('does not require devinit wrapper helper scripts', () => {
       assert.equal(
-        existsSync(CAPTURE_COPILOT_PANE_EVIDENCE_PATH),
-        true,
-        'legacy Copilot evidence helper must remain',
+        existsSync(join(PROJECT_ROOT, 'scripts', 'dev', 'run-codex-pane.sh')),
+        false,
+        'run-codex-pane.sh should be removed from the active repo layout',
+      );
+      assert.equal(
+        existsSync(join(PROJECT_ROOT, 'scripts', 'dev', 'capture-codex-pane-evidence.sh')),
+        false,
+        'capture-codex-pane-evidence.sh should be removed from the active repo layout',
+      );
+      assert.equal(
+        existsSync(join(PROJECT_ROOT, 'scripts', 'dev', 'run-copilot-pane.sh')),
+        false,
+        'run-copilot-pane.sh should be removed from the active repo layout',
+      );
+      assert.equal(
+        existsSync(join(PROJECT_ROOT, 'scripts', 'dev', 'capture-copilot-pane-evidence.sh')),
+        false,
+        'capture-copilot-pane-evidence.sh should be removed from the active repo layout',
       );
     });
   });
@@ -316,9 +192,7 @@ printf '%s\n' "\${PS_TEST_OUTPUT:-}"
         ].join('\n'),
         psOutput: [
           '4001 3999 -bash',
-          '4100 4001 bash /repo/scripts/dev/run-codex-pane.sh',
-          '4101 4100 script -qefc codex --full-auto --sandbox workspace-write',
-          '4102 4101 node /bin/codex --full-auto --sandbox workspace-write',
+          '4100 4001 codex --full-auto --sandbox workspace-write --ask-for-approval never',
         ].join('\n'),
       });
       assert.equal(
@@ -338,9 +212,7 @@ printf '%s\n' "\${PS_TEST_OUTPUT:-}"
         ].join('\n'),
         psOutput: [
           '4001 3999 -bash',
-          '4100 4001 bash /repo/scripts/dev/run-codex-pane.sh',
-          '4101 4100 script -qefc codex --full-auto --sandbox workspace-write',
-          '4102 4101 node /bin/codex --full-auto --sandbox workspace-write',
+          '4100 4001 codex --full-auto --sandbox workspace-write --ask-for-approval never',
         ].join('\n'),
       });
       assert.notEqual(

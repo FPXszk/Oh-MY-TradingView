@@ -163,7 +163,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: night-batch-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ steps.night_batch_outputs.outputs.round_dir }}
+          path: |
+            ${{ steps.night_batch_outputs.outputs.round_dir }}
+            ${{ steps.night_batch_outputs.outputs.campaign_artifact_paths }}
           if-no-files-found: warn
 
       - name: Archive completed night batch rounds
