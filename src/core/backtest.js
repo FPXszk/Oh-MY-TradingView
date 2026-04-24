@@ -1405,7 +1405,7 @@ export async function runNvdaMaBacktest() {
 // Preset loader (pure — unit testable)
 // ---------------------------------------------------------------------------
 const PRESETS_PATH = join(__dirname, '..', '..', 'config', 'backtest', 'strategy-presets.json');
-const RETIRED_PRESETS_PATH = join(__dirname, '..', '..', 'docs', 'research', 'strategy', 'retired', 'retired-strategy-presets.json');
+const RETIRED_PRESETS_PATH = join(__dirname, '..', '..', 'docs', 'research', 'archive', 'retired', 'retired-strategy-presets.json');
 
 export async function loadPreset(presetId, { dateOverride } = {}) {
   let preset;

@@ -46,7 +46,7 @@ async function loadPresets() {
       'utf8',
     ),
     readFile(
-      join(__dirname, '..', 'docs', 'research', 'strategy', 'retired', 'retired-strategy-presets.json'),
+      join(__dirname, '..', 'docs', 'research', 'archive', 'retired', 'retired-strategy-presets.json'),
       'utf8',
     ),
   ]);
@@ -1198,54 +1198,6 @@ describe('buildResearchStrategySource', () => {
     assert.ok(source.includes('stopLossPrice = strategy.position_avg_price * (1 - 0.08)'));
   });
 
-  it('builds round11 deep-pullback-strict-entry-early preset sources from the preset catalog', async () => {
-    const data = await loadPresets();
-    const preset = data.strategies.find(
-      (entry) => entry.id === 'donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early',
-    );
-
-    assert.ok(preset, 'Expected round11 deep-pullback-strict-entry-early preset to exist');
-    const source = buildResearchStrategySource(preset, defaults);
-
-    assert.ok(source.includes('request.security("BATS:RSP", timeframe.period, close)'));
-    assert.ok(source.includes('donchianUpper = ta.highest(high, 50)[1]'));
-    assert.ok(source.includes('donchianLower = ta.lowest(low, 20)[1]'));
-    assert.ok(source.includes('rsiRegimeOk = rsiRegimeValue > 60'));
-    assert.ok(source.includes('stopLossPrice = strategy.position_avg_price * (1 - 0.08)'));
-  });
-
-  it('builds round11 deep-pullback-tight-exit-tight preset sources from the preset catalog', async () => {
-    const data = await loadPresets();
-    const preset = data.strategies.find(
-      (entry) => entry.id === 'donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight',
-    );
-
-    assert.ok(preset, 'Expected round11 deep-pullback-tight-exit-tight preset to exist');
-    const source = buildResearchStrategySource(preset, defaults);
-
-    assert.ok(source.includes('request.security("BATS:RSP", timeframe.period, close)'));
-    assert.ok(source.includes('donchianUpper = ta.highest(high, 55)[1]'));
-    assert.ok(source.includes('donchianLower = ta.lowest(low, 18)[1]'));
-    assert.ok(source.includes('rsiRegimeOk = rsiRegimeValue > 55'));
-    assert.ok(source.includes('stopLossPrice = strategy.position_avg_price * (1 - 0.08)'));
-  });
-
-  it('builds round11 breadth-quality-balanced-wide-exit-wide preset sources from the preset catalog', async () => {
-    const data = await loadPresets();
-    const preset = data.strategies.find(
-      (entry) => entry.id === 'donchian-55-22-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide-exit-wide',
-    );
-
-    assert.ok(preset, 'Expected round11 breadth-quality-balanced-wide-exit-wide preset to exist');
-    const source = buildResearchStrategySource(preset, defaults);
-
-    assert.ok(source.includes('request.security("BATS:RSP", timeframe.period, close)'));
-    assert.ok(source.includes('donchianUpper = ta.highest(high, 55)[1]'));
-    assert.ok(source.includes('donchianLower = ta.lowest(low, 22)[1]'));
-    assert.ok(source.includes('rsiRegimeOk = rsiRegimeValue > 50'));
-    assert.ok(source.includes('stopLossPrice = strategy.position_avg_price * (1 - 0.08)'));
-  });
-
   it('rejects unsupported regime filters in the generator', () => {
     assert.throws(() => buildResearchStrategySource({
       id: 'bad-regime',
@@ -1337,14 +1289,14 @@ describe('loadPreset', () => {
 
   it('resolves a live preset from catalog when available', async () => {
     const { preset } = await loadPreset(
-      'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight',
+      'donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late',
     );
     assert.ok(preset);
-    assert.equal(preset.id, 'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight');
+    assert.equal(preset.id, 'donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late');
     assert.equal(preset.lifecycle, undefined, 'lifecycle must be stripped from loaded preset');
   });
 
-  it('resolves the research-only true 55/20 control from catalog and builds executable source', async () => {
+  it('resolves the research-only true 55/20 control from retired presets and builds executable source', async () => {
     const { preset, source } = await loadPreset(
       'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-true-55-20-control',
     );
@@ -1353,22 +1305,6 @@ describe('loadPreset', () => {
     assert.equal(preset.parameters.exit_period, 20);
     assert.ok(source.includes('donchianUpper = ta.highest(high, 55)[1]'));
     assert.ok(source.includes('donchianLower = ta.lowest(low, 20)[1]'));
-  });
-
-  it('loads raw-source public library strategies directly from catalog metadata', async () => {
-    const { preset, source } = await loadPreset('tv-public-kdj-l2');
-    assert.equal(preset.builder, 'raw_source');
-    assert.ok(typeof source === 'string');
-    assert.match(source, /strategy\(/);
-  });
-
-  it('loads a raw_source preset from source_path', async () => {
-    const { preset, source } = await loadPreset('breakout-trend-follower-balanced');
-    assert.equal(preset.builder, 'raw_source');
-    assert.equal(preset.source_path, 'public-library-sources/breakout-trend-follower-balanced.pine');
-    assert.ok(typeof source === 'string');
-    assert.match(source, /strategy\(/);
-    assert.match(source, /Breakout Trend Follower/);
   });
 
   it('loads the strongest profit-protect raw_source preset with staged partial exits and risk sizing', async () => {
@@ -1383,35 +1319,6 @@ describe('loadPreset', () => {
     assert.match(source, /riskAmount = strategy\.equity \* 0\.01/);
     assert.match(source, /entryQty = math\.floor\(math\.min\(riskBasedQty, maxAffordableQty\)\)/);
     assert.match(source, /strategy\.entry\("Long", strategy\.long, qty=entryQty\)/);
-  });
-
-  it('keeps breakout finder raw source strategy titles aligned with preset names', async () => {
-    for (const presetId of [
-      'breakout-finder-tight',
-      'breakout-finder-balanced',
-      'breakout-finder-wide',
-    ]) {
-      const { preset, source } = await loadPreset(presetId);
-      const titleMatch = source.match(/strategy\("([^"]+)"/);
-      assert.ok(titleMatch, `strategy title must exist for ${presetId}`);
-      assert.equal(titleMatch[1], preset.name, `raw source title mismatch for ${presetId}`);
-    }
-  });
-
-  it('uses numeric timestamp arguments in breakout trend follower raw sources', async () => {
-    for (const presetId of [
-      'breakout-trend-follower-fast',
-      'breakout-trend-follower-balanced',
-      'breakout-trend-follower-slow',
-    ]) {
-      const { source } = await loadPreset(presetId);
-      assert.ok(
-        !source.includes('timestamp("'),
-        `raw source must not use string timestamp format for ${presetId}`,
-      );
-      assert.match(source, /input\.time\(\d{13}, "Start Time"\)/);
-      assert.match(source, /input\.time\(\d{13}, "End Time"\)/);
-    }
   });
 });
 

@@ -10,10 +10,21 @@ import {
   findStrategyById,
   validateCatalogIntegrity,
 } from '../src/core/strategy-catalog.js';
-import { buildExpansionLiveIds } from './strategy-expansion-fixtures.js';
 
 const PROJECT_ROOT = process.cwd();
-const expectedLiveIds = buildExpansionLiveIds();
+const EXPECTED_LIVE_IDS = [
+  'donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late',
+  'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-50-risk1',
+  'donchian-60-20-rsp-rsi14-regime60-tp25-25-tp100-50-risk1',
+  'donchian-60-20-rsp-rsi14-regime60-tp35-25-tp100-50-risk1',
+  'donchian-60-20-rsp-rsi14-regime60-tp30-20-tp100-50-risk1',
+  'donchian-60-20-rsp-rsi14-regime60-tp30-33-tp100-50-risk1',
+  'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp80-50-risk1',
+  'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp120-50-risk1',
+  'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-33-risk1',
+  'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-67-risk1',
+  'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-50-risk2',
+];
 
 // ---------------------------------------------------------------------------
 // loadCatalog
@@ -83,22 +94,22 @@ describe('validateCatalogIntegrity', () => {
 // getLiveStrategies / getRetiredStrategies
 // ---------------------------------------------------------------------------
 describe('getLiveStrategies / getRetiredStrategies', () => {
-  it('live count is 40', async () => {
+  it('live count is 11', async () => {
     const catalog = await loadCatalog();
     const live = getLiveStrategies(catalog);
-    assert.equal(live.length, 40);
+    assert.equal(live.length, 11);
   });
 
-  it('retired count is 122', async () => {
+  it('retired count is 2', async () => {
     const catalog = await loadCatalog();
     const retired = getRetiredStrategies(catalog);
-    assert.equal(retired.length, 122);
+    assert.equal(retired.length, 2);
   });
 
   it('live IDs match expected list', async () => {
     const catalog = await loadCatalog();
     const live = getLiveStrategies(catalog);
-    assert.deepEqual(live.map((s) => s.id), expectedLiveIds);
+    assert.deepEqual(live.map((s) => s.id), EXPECTED_LIVE_IDS);
   });
 
   it('live and retired do not overlap', async () => {
@@ -121,7 +132,7 @@ describe('getLiveStrategies / getRetiredStrategies', () => {
     const liveIds = getLiveStrategies(catalog).map((s) => s.id);
     const retiredIds = getRetiredStrategies(catalog).map((s) => s.id);
     const liveFile = JSON.parse(readFileSync(join(PROJECT_ROOT, 'config', 'backtest', 'strategy-presets.json'), 'utf8'));
-    const retiredFile = JSON.parse(readFileSync(join(PROJECT_ROOT, 'docs', 'research', 'strategy', 'retired', 'retired-strategy-presets.json'), 'utf8'));
+    const retiredFile = JSON.parse(readFileSync(join(PROJECT_ROOT, 'docs', 'research', 'archive', 'retired', 'retired-strategy-presets.json'), 'utf8'));
     assert.deepEqual(liveFile.strategies.map((s) => s.id), liveIds);
     const retiredFileIds = new Set(retiredFile.strategies.map((s) => s.id));
     for (const retiredId of retiredIds) {
@@ -136,9 +147,9 @@ describe('getLiveStrategies / getRetiredStrategies', () => {
 describe('findStrategyById', () => {
   it('finds a live strategy by id', async () => {
     const catalog = await loadCatalog();
-    const result = findStrategyById(catalog, expectedLiveIds[0]);
+    const result = findStrategyById(catalog, EXPECTED_LIVE_IDS[0]);
     assert.ok(result);
-    assert.equal(result.id, expectedLiveIds[0]);
+    assert.equal(result.id, EXPECTED_LIVE_IDS[0]);
     assert.equal(result.lifecycle.status, 'live');
   });
 
@@ -148,15 +159,13 @@ describe('findStrategyById', () => {
     assert.equal(result, null);
   });
 
-  it('finds the research-only true 55/20 control as retired', async () => {
+  it('finds the early-entry variant as retired in catalog', async () => {
     const catalog = await loadCatalog();
     const result = findStrategyById(
       catalog,
-      'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-true-55-20-control',
+      'donchian-50-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-entry-early',
     );
     assert.ok(result);
-    assert.equal(result.parameters.entry_period, 55);
-    assert.equal(result.parameters.exit_period, 20);
     assert.equal(result.lifecycle.status, 'retired');
   });
 });

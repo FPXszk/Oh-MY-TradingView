@@ -18,7 +18,7 @@ const RETIRED_PRESETS_PATH = join(
   '..',
   'docs',
   'research',
-  'strategy',
+  'archive',
   'retired',
   'retired-strategy-presets.json',
 );

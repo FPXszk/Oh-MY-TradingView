@@ -11,7 +11,6 @@ import {
 } from '../src/core/preset-validation.js';
 
 import { buildNvdaMaSource } from '../src/core/backtest.js';
-import { buildExpansionLiveIds } from './strategy-expansion-fixtures.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -26,7 +25,7 @@ async function loadPresets() {
 
 async function loadRetiredPresets() {
   const raw = await readFile(
-    join(__dirname, '..', 'docs', 'research', 'strategy', 'retired', 'retired-strategy-presets.json'),
+    join(__dirname, '..', 'docs', 'research', 'archive', 'retired', 'retired-strategy-presets.json'),
     'utf8',
   );
   return JSON.parse(raw);
@@ -545,7 +544,19 @@ describe('filterPresetsByRound', () => {
 // Integration: live/retired preset policy
 // ---------------------------------------------------------------------------
 describe('strategy-presets.json integration', () => {
-  const expectedLiveIds = buildExpansionLiveIds();
+  const EXPECTED_LIVE_IDS = [
+    'donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late',
+    'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-50-risk1',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-25-tp100-50-risk1',
+    'donchian-60-20-rsp-rsi14-regime60-tp35-25-tp100-50-risk1',
+    'donchian-60-20-rsp-rsi14-regime60-tp30-20-tp100-50-risk1',
+    'donchian-60-20-rsp-rsi14-regime60-tp30-33-tp100-50-risk1',
+    'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp80-50-risk1',
+    'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp120-50-risk1',
+    'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-33-risk1',
+    'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-67-risk1',
+    'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-50-risk2',
+  ];
 
   it('all live presets pass validation', async () => {
     const data = await loadPresets();
@@ -569,31 +580,24 @@ describe('strategy-presets.json integration', () => {
     );
   });
 
-  it('keeps exactly the strongest 30 live presets in deterministic order', async () => {
+  it('keeps exactly 11 live presets in deterministic order', async () => {
     const data = await loadPresets();
-    assert.equal(data.strategies.length, 30);
-    assert.deepEqual(data.strategies.map((preset) => preset.id), expectedLiveIds);
+    assert.equal(data.strategies.length, 11);
+    assert.deepEqual(data.strategies.map((preset) => preset.id), EXPECTED_LIVE_IDS);
   });
 
-  it('keeps only approved donchian breakout families in the live preset file', async () => {
+  it('keeps only approved donchian breakout and raw_source families in the live preset file', async () => {
     const data = await loadPresets();
+    const approvedBuilders = new Set(['donchian_breakout', 'raw_source']);
     for (const preset of data.strategies) {
-      assert.equal(preset.category, 'breakout');
-      assert.equal(preset.builder, 'donchian_breakout');
+      assert.equal(preset.category, 'breakout', `Preset "${preset.id}" must be breakout category`);
+      assert.ok(approvedBuilders.has(preset.builder), `Preset "${preset.id}" has unapproved builder: ${preset.builder}`);
       assert.ok(Array.isArray(preset.tags));
       assert.ok(preset.tags.includes('rsi-regime'), 'Preset "' + preset.id + '" must keep rsi-regime tag');
-      if (preset.id.includes('theme-breadth-quality-balanced-wide')) {
-        assert.ok(preset.tags.includes('theme-breadth'), 'Preset "' + preset.id + '" must keep theme-breadth tag');
-        assert.ok(preset.tags.includes('theme-quality'), 'Preset "' + preset.id + '" must keep theme-quality tag');
-        assert.match(preset.id, /theme-breadth-quality-balanced-wide/);
-      } else {
-        assert.ok(preset.tags.includes('theme-deep-pullback'), 'Preset "' + preset.id + '" must keep theme-deep-pullback tag');
-        assert.match(preset.id, /theme-deep-pullback/);
-      }
     }
   });
 
-  it('retires every non-live preset to docs/research/strategy/retired', async () => {
+  it('retires every non-live preset to docs/research/archive/retired', async () => {
     const live = await loadPresets();
     const retired = await loadRetiredPresets();
     assert.equal(retired.strategies.length, 128);

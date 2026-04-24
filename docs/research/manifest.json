@@ -1,0 +1,7 @@
+{
+  "$schema_note": "current research docs の keep-set を機械可読化する manifest。archive-stale-latest.mjs が参照する。",
+  "keep": [
+    "artifacts-backtest-scoreboards.md",
+    "night-batch-self-hosted-run64_20260424.md"
+  ]
+}
