@@ -546,16 +546,16 @@ describe('filterPresetsByRound', () => {
 describe('strategy-presets.json integration', () => {
   const EXPECTED_LIVE_IDS = [
     'donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late',
-    'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-50-risk1',
-    'donchian-60-20-rsp-rsi14-regime60-tp25-25-tp100-50-risk1',
-    'donchian-60-20-rsp-rsi14-regime60-tp35-25-tp100-50-risk1',
-    'donchian-60-20-rsp-rsi14-regime60-tp30-20-tp100-50-risk1',
-    'donchian-60-20-rsp-rsi14-regime60-tp30-33-tp100-50-risk1',
-    'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp80-50-risk1',
-    'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp120-50-risk1',
-    'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-33-risk1',
-    'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-67-risk1',
-    'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-50-risk2',
+    'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-50',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-25-tp100-50',
+    'donchian-60-20-rsp-rsi14-regime60-tp35-25-tp100-50',
+    'donchian-60-20-rsp-rsi14-regime60-tp30-20-tp100-50',
+    'donchian-60-20-rsp-rsi14-regime60-tp30-33-tp100-50',
+    'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp80-50',
+    'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp120-50',
+    'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-33',
+    'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-67',
+    'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp90-50',
   ];
 
   it('all live presets pass validation', async () => {

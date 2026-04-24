@@ -1307,8 +1307,8 @@ describe('loadPreset', () => {
     assert.ok(source.includes('donchianLower = ta.lowest(low, 20)[1]'));
   });
 
-  it('loads the strongest profit-protect raw_source preset with staged partial exits and risk sizing', async () => {
-    const { preset, source } = await loadPreset('donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-50-risk1');
+  it('loads the strongest profit-protect raw_source preset with staged partial exits and no risk sizing override', async () => {
+    const { preset, source } = await loadPreset('donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-50');
     assert.equal(preset.builder, 'raw_source');
     assert.match(source, /var bool tp1Taken = false/);
     assert.match(source, /var bool tp2Taken = false/);
@@ -1316,9 +1316,11 @@ describe('loadPreset', () => {
     assert.match(source, /strategy\.close\("Long", qty_percent=25, comment="TP1 30%"\)/);
     assert.match(source, /close >= strategy\.position_avg_price \* \(1 \+ 1\.00\)/);
     assert.match(source, /strategy\.close\("Long", qty_percent=50, comment="TP2 100%"\)/);
-    assert.match(source, /riskAmount = strategy\.equity \* 0\.01/);
-    assert.match(source, /entryQty = math\.floor\(math\.min\(riskBasedQty, maxAffordableQty\)\)/);
-    assert.match(source, /strategy\.entry\("Long", strategy\.long, qty=entryQty\)/);
+    assert.doesNotMatch(source, /riskAmount = strategy\.equity \* 0\.[0-9]+/);
+    assert.doesNotMatch(source, /riskBasedQty/);
+    assert.doesNotMatch(source, /qty=entryQty/);
+    assert.match(source, /default_qty_type=strategy\.percent_of_equity/);
+    assert.match(source, /strategy\.entry\("Long", strategy\.long\)/);
   });
 });
 

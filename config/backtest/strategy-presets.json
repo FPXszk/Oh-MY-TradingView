@@ -72,8 +72,8 @@
       }
     },
     {
-      "id": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-50-risk1",
-      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/25 + TP 100/50 + Risk 1%",
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-50",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/25 + TP 100/50",
       "category": "breakout",
       "builder": "raw_source",
       "parameters": {
@@ -96,13 +96,13 @@
         "type": "hard_percent",
         "value": 8
       },
-      "theme_axis": "strongest-profit-protect-risk1-base",
-      "theme_notes": "最強戦略そのままの 60/20・RSP・RSI60 を維持しつつ、30% と 100% の二段階部分利確と 1% リスク固定サイズを追加した基準線。",
+      "theme_axis": "strongest-profit-protect-base",
+      "theme_notes": "最強戦略そのままの 60/20・RSP・RSI60 を維持しつつ、30% と 100% の二段階部分利確だけを追加した基準線。",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "最強戦略の含み益保護とサイズ制御だけを足した基準版。",
+      "mag7_notes": "最強戦略に含み益保護だけを足した基準版。",
       "phase": "phase-12",
       "implementation_stage": "selected-us40-10pack",
       "priority": 201,
@@ -116,14 +116,14 @@
         "rsi-regime",
         "hard-stop",
         "profit-protect",
-        "risk-sizing",
+        "partial-take-profit",
         "selected-us40-10pack"
       ],
-      "source_path": "../../references/pine/next-long-run-market-matched-200_20260409_1525/04_donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late.pine"
+      "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-50.pine"
     },
     {
-      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-25-tp100-50-risk1",
-      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/25 + TP 100/50 + Risk 1%",
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-25-tp100-50",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/25 + TP 100/50",
       "category": "breakout",
       "builder": "raw_source",
       "parameters": {
@@ -146,7 +146,7 @@
         "type": "hard_percent",
         "value": 8
       },
-      "theme_axis": "strongest-profit-protect-risk1-tp25",
+      "theme_axis": "strongest-profit-protect-tp1-early",
       "theme_notes": "1回目の利確発動を 25% へ早め、早期保護の効き方を比較する。",
       "recommended_timeframes": [
         "D"
@@ -166,14 +166,14 @@
         "rsi-regime",
         "hard-stop",
         "profit-protect",
-        "risk-sizing",
+        "partial-take-profit",
         "selected-us40-10pack"
       ],
-      "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp25-25-tp100-50-risk1.pine"
+      "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp25-25-tp100-50.pine"
     },
     {
-      "id": "donchian-60-20-rsp-rsi14-regime60-tp35-25-tp100-50-risk1",
-      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 35/25 + TP 100/50 + Risk 1%",
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp35-25-tp100-50",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 35/25 + TP 100/50",
       "category": "breakout",
       "builder": "raw_source",
       "parameters": {
@@ -196,7 +196,7 @@
         "type": "hard_percent",
         "value": 8
       },
-      "theme_axis": "strongest-profit-protect-risk1-tp35",
+      "theme_axis": "strongest-profit-protect-tp1-late",
       "theme_notes": "1回目の利確発動を 35% へ遅らせ、伸びを残す方向の差を比較する。",
       "recommended_timeframes": [
         "D"
@@ -216,14 +216,14 @@
         "rsi-regime",
         "hard-stop",
         "profit-protect",
-        "risk-sizing",
+        "partial-take-profit",
         "selected-us40-10pack"
       ],
-      "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp35-25-tp100-50-risk1.pine"
+      "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp35-25-tp100-50.pine"
     },
     {
-      "id": "donchian-60-20-rsp-rsi14-regime60-tp30-20-tp100-50-risk1",
-      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/20 + TP 100/50 + Risk 1%",
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp30-20-tp100-50",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/20 + TP 100/50",
       "category": "breakout",
       "builder": "raw_source",
       "parameters": {
@@ -246,7 +246,7 @@
         "type": "hard_percent",
         "value": 8
       },
-      "theme_axis": "strongest-profit-protect-risk1-tp1-light",
+      "theme_axis": "strongest-profit-protect-tp1-light",
       "theme_notes": "1回目の利確比率を 20% に下げ、上振れ余地を残したまま保護できるかを比較する。",
       "recommended_timeframes": [
         "D"
@@ -266,14 +266,14 @@
         "rsi-regime",
         "hard-stop",
         "profit-protect",
-        "risk-sizing",
+        "partial-take-profit",
         "selected-us40-10pack"
       ],
-      "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp30-20-tp100-50-risk1.pine"
+      "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp30-20-tp100-50.pine"
     },
     {
-      "id": "donchian-60-20-rsp-rsi14-regime60-tp30-33-tp100-50-risk1",
-      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/33 + TP 100/50 + Risk 1%",
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp30-33-tp100-50",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/33 + TP 100/50",
       "category": "breakout",
       "builder": "raw_source",
       "parameters": {
@@ -296,7 +296,7 @@
         "type": "hard_percent",
         "value": 8
       },
-      "theme_axis": "strongest-profit-protect-risk1-tp1-heavy",
+      "theme_axis": "strongest-profit-protect-tp1-heavy",
       "theme_notes": "1回目の利確比率を 33% に上げ、早期ロックの強さを比較する。",
       "recommended_timeframes": [
         "D"
@@ -316,14 +316,14 @@
         "rsi-regime",
         "hard-stop",
         "profit-protect",
-        "risk-sizing",
+        "partial-take-profit",
         "selected-us40-10pack"
       ],
-      "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp30-33-tp100-50-risk1.pine"
+      "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp30-33-tp100-50.pine"
     },
     {
-      "id": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp80-50-risk1",
-      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/25 + TP 80/50 + Risk 1%",
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp80-50",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/25 + TP 80/50",
       "category": "breakout",
       "builder": "raw_source",
       "parameters": {
@@ -346,7 +346,7 @@
         "type": "hard_percent",
         "value": 8
       },
-      "theme_axis": "strongest-profit-protect-risk1-tp2-early",
+      "theme_axis": "strongest-profit-protect-tp2-early",
       "theme_notes": "2回目の利確発動を 80% へ前倒しし、急騰の利確圧を強めた比較版。",
       "recommended_timeframes": [
         "D"
@@ -366,14 +366,14 @@
         "rsi-regime",
         "hard-stop",
         "profit-protect",
-        "risk-sizing",
+        "partial-take-profit",
         "selected-us40-10pack"
       ],
-      "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp30-25-tp80-50-risk1.pine"
+      "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp30-25-tp80-50.pine"
     },
     {
-      "id": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp120-50-risk1",
-      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/25 + TP 120/50 + Risk 1%",
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp120-50",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/25 + TP 120/50",
       "category": "breakout",
       "builder": "raw_source",
       "parameters": {
@@ -396,7 +396,7 @@
         "type": "hard_percent",
         "value": 8
       },
-      "theme_axis": "strongest-profit-protect-risk1-tp2-late",
+      "theme_axis": "strongest-profit-protect-tp2-late",
       "theme_notes": "2回目の利確発動を 120% へ遅らせ、超大型 winner を残す方向の比較版。",
       "recommended_timeframes": [
         "D"
@@ -416,14 +416,14 @@
         "rsi-regime",
         "hard-stop",
         "profit-protect",
-        "risk-sizing",
+        "partial-take-profit",
         "selected-us40-10pack"
       ],
-      "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp30-25-tp120-50-risk1.pine"
+      "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp30-25-tp120-50.pine"
     },
     {
-      "id": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-33-risk1",
-      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/25 + TP 100/33 + Risk 1%",
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-33",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/25 + TP 100/33",
       "category": "breakout",
       "builder": "raw_source",
       "parameters": {
@@ -446,7 +446,7 @@
         "type": "hard_percent",
         "value": 8
       },
-      "theme_axis": "strongest-profit-protect-risk1-tp2-light",
+      "theme_axis": "strongest-profit-protect-tp2-light",
       "theme_notes": "2回目の利確比率を 33% に下げ、後半の追従玉を残す方向の比較版。",
       "recommended_timeframes": [
         "D"
@@ -466,14 +466,14 @@
         "rsi-regime",
         "hard-stop",
         "profit-protect",
-        "risk-sizing",
+        "partial-take-profit",
         "selected-us40-10pack"
       ],
-      "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-33-risk1.pine"
+      "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-33.pine"
     },
     {
-      "id": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-67-risk1",
-      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/25 + TP 100/67 + Risk 1%",
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-67",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/25 + TP 100/67",
       "category": "breakout",
       "builder": "raw_source",
       "parameters": {
@@ -496,7 +496,7 @@
         "type": "hard_percent",
         "value": 8
       },
-      "theme_axis": "strongest-profit-protect-risk1-tp2-heavy",
+      "theme_axis": "strongest-profit-protect-tp2-heavy",
       "theme_notes": "2回目の利確比率を 67% に上げ、急騰後のロックを強めた比較版。",
       "recommended_timeframes": [
         "D"
@@ -516,14 +516,14 @@
         "rsi-regime",
         "hard-stop",
         "profit-protect",
-        "risk-sizing",
+        "partial-take-profit",
         "selected-us40-10pack"
       ],
-      "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-67-risk1.pine"
+      "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-67.pine"
     },
     {
-      "id": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-50-risk2",
-      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/25 + TP 100/50 + Risk 2%",
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp90-50",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/25 + TP 90/50",
       "category": "breakout",
       "builder": "raw_source",
       "parameters": {
@@ -546,13 +546,13 @@
         "type": "hard_percent",
         "value": 8
       },
-      "theme_axis": "strongest-profit-protect-risk2-base",
-      "theme_notes": "含み益保護は基準版のまま、許容リスクを 2% に広げた比較版。",
+      "theme_axis": "strongest-profit-protect-tp2-mid",
+      "theme_notes": "2回目の利確発動を 90% に早め、80% と 100% の中間帯を比較する。",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "サイズだけ広げた時の収益効率と DD を比較する。",
+      "mag7_notes": "二段目を 90% にした時のバランス感を比較する。",
       "phase": "phase-12",
       "implementation_stage": "selected-us40-10pack",
       "priority": 210,
@@ -566,10 +566,10 @@
         "rsi-regime",
         "hard-stop",
         "profit-protect",
-        "risk-sizing",
+        "partial-take-profit",
         "selected-us40-10pack"
       ],
-      "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-50-risk2.pine"
+      "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp30-25-tp90-50.pine"
     }
   ]
 }
