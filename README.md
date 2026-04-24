@@ -7,26 +7,23 @@ TradingView Desktop を **Codex CLI 主経路** で扱う MCP / CLI ブリッジ
 - docs 全体の入口: `docs/README.md`
 - docs の保守ルール: `docs/DOCUMENTATION_SYSTEM.md`
 - 人間向けの補助説明: `docs/explain-forhuman.md`
-- current handoff と current main summary の違い: `docs/research/current/README.md`
-- 最新の main backtest 要約: `docs/research/current/main-backtest-current-summary.md`
-- artifact 起点の current ランキング表: `docs/research/current/artifacts-backtest-scoreboards.md`
-- テーマ投資で「モメンタムのある銘柄」をどう定義するか: `docs/research/strategy/theme-momentum-definition.md`
-- 戦略と銘柄の人間向けリファレンス: `docs/research/strategy/README.md`
-- 直近の判断ログ: `logs/sessions/`
+- artifact 起点の current ランキング表: `docs/research/artifacts-backtest-scoreboards.md`
+- 最新の main backtest 要約: `docs/research/archive/main-backtest-current-summary.md`
+- テーマ投資で「モメンタムのある銘柄」をどう定義するか: `docs/strategy/theme-momentum-definition.md`
+- 戦略と銘柄の人間向けリファレンス: `docs/strategy/current-strategy-reference.md`
+- 直近の判断ログ: `docs/sessions/`
 - incident / postmortem archive: `docs/reports/README.md`
-- 数値リファレンスの説明: `references/backtests/README.md`
-- Pine snapshot の説明: `references/pine/README.md`
-- 外部・比較調査の参照資料台帳: `references/external/design-ref-llms.md`
-- **外部資料を参照したら `references/external/design-ref-llms.md` に必ず記録してください**
+- Pine snapshot の説明: `docs/references/pine/`
+- 外部・比較調査の参照資料台帳: `docs/references/design-ref-llms.md`
+- **外部資料を参照したら `docs/references/design-ref-llms.md` に必ず記録してください**
 
 ## 迷ったらこの順番
 
-1. `docs/research/current/README.md` — current handoff と current main summary の違いを掴む
-2. `docs/research/current/main-backtest-current-summary.md` — 今の main backtest の結論を見る
-3. `docs/research/current/artifacts-backtest-scoreboards.md` — artifact に保存された campaign ごとのランキング表を見る
-4. `docs/research/strategy/theme-momentum-definition.md` — テーマ投資の判断基準を確認する
-5. `docs/research/strategy/README.md` — 戦略・銘柄リファレンスへ進む
-6. `logs/sessions/` — 直近の判断経緯が必要なときだけ見る
+1. `docs/research/artifacts-backtest-scoreboards.md` — artifact に保存された campaign ごとの最新ランキング表を見る
+2. `docs/research/archive/main-backtest-current-summary.md` — 今の main backtest の結論を見る
+3. `docs/strategy/theme-momentum-definition.md` — テーマ投資の判断基準を確認する
+4. `docs/strategy/current-strategy-reference.md` — 戦略・銘柄リファレンスへ進む
+5. `docs/sessions/` — 直近の判断経緯が必要なときだけ見る
 
 ## 重要な前提
 
@@ -560,7 +557,7 @@ known-good 条件と制約は
 - 判定: `promote` / `hold` / `reject`
 - `gated-summary.json` / `ranked-candidates.json` の各 candidate には additive に `confluence_snapshot` / `provider_status` / `community_snapshot` が付きます。
 
-運用の正本はこの `README.md`、raw 数値の正本は `references/backtests/README.md`、戦略説明の入口は `docs/research/strategy/README.md`、テーマ投資の判断基準は `docs/research/strategy/theme-momentum-definition.md` です。
+運用の正本はこの `README.md`、戦略説明の入口は `docs/strategy/current-strategy-reference.md`、テーマ投資の判断基準は `docs/strategy/theme-momentum-definition.md` です。
 
 ### MCP workflow
 

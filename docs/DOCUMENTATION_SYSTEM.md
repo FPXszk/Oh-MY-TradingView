@@ -5,11 +5,11 @@
 
 ## 基本原則
 
-1. `docs/` は **人間向けの説明**
-2. `references/` は **再利用する参照物と数値の根拠**
+1. `docs/` は **人間向けの説明・参照物・実装計画**
+2. `docs/references/` は **再利用する参照物**
 3. `artifacts/` は **run ごとの生成物**
-4. `logs/` は **判断ログと transcript**
-5. `plans/` は **durable な実装計画**
+4. `logs/` は **runtime ログ**
+5. `docs/exec-plans/` は **durable な実装計画**
 
 ## `current` と `archive`
 
@@ -21,28 +21,27 @@
 
 | path | role |
 | --- | --- |
-| `docs/research/current/` | current handoff と main summary の入口 |
+| `docs/research/` | current research docs の入口（manifest.json で keep-set を管理） |
 | `docs/research/archive/` | 過去の handoff / research doc |
-| `docs/research/strategy/` | 戦略・銘柄の人間向け説明 |
-| `docs/research/strategy/retired/` | retired preset の説明と退避先 |
-| `references/backtests/` | ranking / summary などの数値根拠 |
-| `references/pine/` | Pine source snapshot |
-| `references/external/` | 外部調査台帳 |
+| `docs/strategy/` | 戦略・銘柄の人間向け説明 |
+| `docs/research/archive/retired/` | retired preset の説明と退避先 |
+| `docs/references/pine/` | Pine source snapshot |
+| `docs/references/design-ref-llms.md` | 外部調査台帳 |
 | `artifacts/` | night batch / campaign / runtime verification の生成物 |
-| `logs/sessions/` | 直近の判断ログ |
-| `plans/exec/` | exec-plan の active / completed |
+| `docs/sessions/` | 直近の判断ログ |
+| `docs/exec-plans/` | exec-plan の active / completed |
 
 ## 更新ルール
 
-- `docs/research/current/` には current 世代だけを置き、外れたものは `docs/research/archive/` へ移す
-- `logs/sessions/` の古いものは `logs/sessions/archive/` へ移す
-- `config/backtest/campaigns/current/` と `config/backtest/universes/current/` を current config の正本にする
-- `config/backtest/strategy-presets.json` は live set、`docs/research/strategy/retired/retired-strategy-presets.json` は retired set とする
+- `docs/research/` には `manifest.json` の `keep` に列挙した current docs を置き、outdated になったものは `docs/research/archive/` へ移す
+- `docs/sessions/` の古いものは `docs/sessions/archive/` へ移す
+- `config/backtest/strategy-presets.json` は live set、`docs/research/archive/retired/retired-strategy-presets.json` は retired set とする
 - path を変えたら `README.md`、この文書、関連テストを同時に直す
 
 ## 読み分け
 
-- 今の状況を知る: `../README.md` → `./research/current/README.md` → `./research/strategy/README.md`
-- 数値の根拠を見る: `../references/backtests/README.md`
-- 生成物を追う: `../artifacts/README.md`
-- 判断経緯を追う: `../logs/README.md`
+- 今の状況を知る: `../README.md` → `./research/artifacts-backtest-scoreboards.md` → `./strategy/current-strategy-reference.md`
+- 生成物を追う: `../artifacts/campaigns/`
+- 判断経緯を追う: `./sessions/`
+- Pine 参照: `./references/pine/`
+- 外部調査台帳: `./references/design-ref-llms.md`
