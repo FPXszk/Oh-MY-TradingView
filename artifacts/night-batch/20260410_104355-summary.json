@@ -1,9 +1,0 @@
-{
-  "success": false,
-  "command": "smoke-prod",
-  "host": "172.31.144.1",
-  "port": 9223,
-  "preflight_required": true,
-  "error": "Config file not found: /home/fpxszk/code/Oh-MY-TradingView/config\\night_batch\\nightly.default.json",
-  "steps": []
-}

@@ -1,6 +1,5 @@
 # orijinal
-logs/devinit/
-artifacts/devinit/
+_old/
 
 # Node.js
 node_modules/

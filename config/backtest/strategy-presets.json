@@ -20,162 +20,6 @@
   },
   "strategies": [
     {
-      "id": "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight",
-      "name": "Donchian 55/18 + RSP Filter + RSI14 Regime 55 + 8% Stop",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 55,
-        "exit_period": 18
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 55,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "deep-pullback-tight-exit-tight",
-      "theme_notes": "deep-pullback-tight の entry を固定したまま exit を 18 へ早め、stable anchor の撤退速度だけで DD を改善できるかを見る。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "tight anchor の readability を壊さず、exit 短縮で守りの改善が出るかを点検する。",
-      "phase": "phase-11",
-      "implementation_stage": "round11",
-      "priority": 137,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-deep-pullback",
-        "round11"
-      ],
-      "lifecycle": {
-        "status": "live"
-      }
-    },
-    {
-      "id": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight",
-      "name": "Donchian 55/20 + RSP Filter + RSI14 Regime 55 + 8% Stop",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 57,
-        "exit_period": 20
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 55,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "deep-pullback-tight",
-      "theme_notes": "deep-pullback の耐久性は維持しつつ stop を 8% に締め、alt での DD 改善余地を確認する。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "round7 deep-pullback の 10% stop を少し締め、深い押し許容の最適 stop 幅を探る。",
-      "phase": "phase-8",
-      "implementation_stage": "round8",
-      "priority": 97,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-deep-pullback",
-        "round8"
-      ],
-      "lifecycle": {
-        "status": "live"
-      }
-    },
-    {
-      "id": "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide",
-      "name": "Donchian 55/22 + RSP Filter + RSI14 Regime 55 + 8% Stop",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 55,
-        "exit_period": 22
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 55,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "deep-pullback-tight-exit-wide",
-      "theme_notes": "deep-pullback-tight の entry を固定したまま exit を 22 へ遅らせ、stable anchor の利幅取りを少し広げた場合の頑健性を確認する。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "tight anchor の安定性を維持したまま、exit 延長で upper tail を拾えるかを見る。",
-      "phase": "phase-11",
-      "implementation_stage": "round11",
-      "priority": 138,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-deep-pullback",
-        "round11"
-      ],
-      "lifecycle": {
-        "status": "live"
-      }
-    },
-    {
       "id": "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late",
       "name": "Donchian 60/20 + RSP Filter + RSI14 Regime 60 + 8% Stop",
       "category": "breakout",
@@ -221,1578 +65,6 @@
         "hard-stop",
         "theme-breadth",
         "theme-deep-pullback",
-        "round11"
-      ],
-      "lifecycle": {
-        "status": "live"
-      }
-    },
-    {
-      "id": "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early",
-      "name": "Donchian 50/20 + RSP Filter + RSI14 Regime 60 + 8% Stop",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 50,
-        "exit_period": 20
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 60,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "deep-pullback-strict-entry-early",
-      "theme_notes": "deep-pullback-strict の exit を固定したまま entry を 50 へ早め、strict 側の押し目が少し早い条件でどこまで耐久を保てるかを見る。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "strict anchor の遅すぎる可能性を切り分けるため、entry だけを 50 へ寄せる。",
-      "phase": "phase-11",
-      "implementation_stage": "round11",
-      "priority": 131,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-deep-pullback",
-        "round11"
-      ],
-      "lifecycle": {
-        "status": "live"
-      }
-    },
-    {
-      "id": "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-chandelier",
-      "name": "Donchian 55/18 + RSP Filter + RSI14 Regime 55 + 8% Stop + Chandelier Exit",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 55,
-        "exit_period": 18
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 55,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "deep-pullback-tight-exit-tight-profit-protect-chandelier",
-      "theme_notes": "deep-pullback-tight の entry を固定したまま exit を 18 へ早め、stable anchor の撤退速度だけで DD を改善できるかを見る。 + Chandelier Exit を追加し、エントリー/イグジットの分離特性を確認する。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "tight anchor の readability を壊さず、exit 短縮で守りの改善が出るかを点検する。 + Chandelier Exit を検証する。",
-      "phase": "phase-12",
-      "implementation_stage": "round12",
-      "priority": 200,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-deep-pullback",
-        "round11",
-        "profit-protection",
-        "chandelier-exit"
-      ],
-      "lifecycle": {
-        "status": "live"
-      },
-      "exit_overlay": {
-        "type": "chandelier_exit",
-        "atr_period": 22,
-        "atr_multiplier": 3
-      }
-    },
-    {
-      "id": "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-profit-protect-atr-trailing",
-      "name": "Donchian 55/18 + RSP Filter + RSI14 Regime 55 + 8% Stop + ATR Trailing Stop",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 55,
-        "exit_period": 18
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 55,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "deep-pullback-tight-exit-tight-profit-protect-atr-trailing",
-      "theme_notes": "deep-pullback-tight の entry を固定したまま exit を 18 へ早め、stable anchor の撤退速度だけで DD を改善できるかを見る。 + ATR Trailing Stop を追加し、エントリー/イグジットの分離特性を確認する。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "tight anchor の readability を壊さず、exit 短縮で守りの改善が出るかを点検する。 + ATR Trailing Stop を検証する。",
-      "phase": "phase-12",
-      "implementation_stage": "round12",
-      "priority": 201,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-deep-pullback",
-        "round11",
-        "profit-protection",
-        "atr-trailing-stop"
-      ],
-      "lifecycle": {
-        "status": "live"
-      },
-      "exit_overlay": {
-        "type": "atr_trailing_stop",
-        "atr_period": 14,
-        "atr_multiplier": 2.5
-      }
-    },
-    {
-      "id": "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-ftd-entry-early",
-      "name": "Donchian 55/18 + RSP Filter + RSI14 Regime 55 + 8% Stop + Follow-Through Entry Early",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 50,
-        "exit_period": 18
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 55,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "deep-pullback-tight-exit-tight-ftd-entry-early",
-      "theme_notes": "deep-pullback-tight の entry を固定したまま exit を 18 へ早め、stable anchor の撤退速度だけで DD を改善できるかを見る。 + Follow-Through Entry Early を追加し、エントリー/イグジットの分離特性を確認する。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "tight anchor の readability を壊さず、exit 短縮で守りの改善が出るかを点検する。 + Follow-Through Entry Early を検証する。",
-      "phase": "phase-12",
-      "implementation_stage": "round12",
-      "priority": 210,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-deep-pullback",
-        "round11",
-        "entry-confirmation",
-        "market-follow-through"
-      ],
-      "lifecycle": {
-        "status": "live"
-      },
-      "entry_confirmation_filter": {
-        "type": "market_follow_through",
-        "symbols": [
-          "SPY",
-          "QQQ",
-          "DIA"
-        ],
-        "price_ma_type": "sma",
-        "price_ma_period": 20,
-        "vix_symbol": "VIX",
-        "vix_ma_type": "sma",
-        "vix_ma_period": 20
-      }
-    },
-    {
-      "id": "donchian-55-18-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-tight-ftd-entry-late",
-      "name": "Donchian 55/18 + RSP Filter + RSI14 Regime 55 + 8% Stop + Follow-Through Entry Late",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 60,
-        "exit_period": 18
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 55,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "deep-pullback-tight-exit-tight-ftd-entry-late",
-      "theme_notes": "deep-pullback-tight の entry を固定したまま exit を 18 へ早め、stable anchor の撤退速度だけで DD を改善できるかを見る。 + Follow-Through Entry Late を追加し、エントリー/イグジットの分離特性を確認する。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "tight anchor の readability を壊さず、exit 短縮で守りの改善が出るかを点検する。 + Follow-Through Entry Late を検証する。",
-      "phase": "phase-12",
-      "implementation_stage": "round12",
-      "priority": 211,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-deep-pullback",
-        "round11",
-        "entry-confirmation",
-        "market-follow-through"
-      ],
-      "lifecycle": {
-        "status": "live"
-      },
-      "entry_confirmation_filter": {
-        "type": "market_follow_through",
-        "symbols": [
-          "SPY",
-          "QQQ",
-          "DIA"
-        ],
-        "price_ma_type": "sma",
-        "price_ma_period": 20,
-        "vix_symbol": "VIX",
-        "vix_ma_type": "sma",
-        "vix_ma_period": 20
-      }
-    },
-    {
-      "id": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-chandelier",
-      "name": "Donchian 55/20 + RSP Filter + RSI14 Regime 55 + 8% Stop + Chandelier Exit",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 55,
-        "exit_period": 20
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 55,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "deep-pullback-tight-profit-protect-chandelier",
-      "theme_notes": "deep-pullback の耐久性は維持しつつ stop を 8% に締め、alt での DD 改善余地を確認する。 + Chandelier Exit を追加し、エントリー/イグジットの分離特性を確認する。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "round7 deep-pullback の 10% stop を少し締め、深い押し許容の最適 stop 幅を探る。 + Chandelier Exit を検証する。",
-      "phase": "phase-12",
-      "implementation_stage": "round12",
-      "priority": 201,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-deep-pullback",
-        "round8",
-        "profit-protection",
-        "chandelier-exit"
-      ],
-      "lifecycle": {
-        "status": "live"
-      },
-      "exit_overlay": {
-        "type": "chandelier_exit",
-        "atr_period": 24,
-        "atr_multiplier": 3
-      }
-    },
-    {
-      "id": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-profit-protect-atr-trailing",
-      "name": "Donchian 55/20 + RSP Filter + RSI14 Regime 55 + 8% Stop + ATR Trailing Stop",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 55,
-        "exit_period": 20
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 55,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "deep-pullback-tight-profit-protect-atr-trailing",
-      "theme_notes": "deep-pullback の耐久性は維持しつつ stop を 8% に締め、alt での DD 改善余地を確認する。 + ATR Trailing Stop を追加し、エントリー/イグジットの分離特性を確認する。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "round7 deep-pullback の 10% stop を少し締め、深い押し許容の最適 stop 幅を探る。 + ATR Trailing Stop を検証する。",
-      "phase": "phase-12",
-      "implementation_stage": "round12",
-      "priority": 202,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-deep-pullback",
-        "round8",
-        "profit-protection",
-        "atr-trailing-stop"
-      ],
-      "lifecycle": {
-        "status": "live"
-      },
-      "exit_overlay": {
-        "type": "atr_trailing_stop",
-        "atr_period": 14,
-        "atr_multiplier": 2.5
-      }
-    },
-    {
-      "id": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-ftd-entry-early",
-      "name": "Donchian 55/20 + RSP Filter + RSI14 Regime 55 + 8% Stop + Follow-Through Entry Early",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 50,
-        "exit_period": 20
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 55,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "deep-pullback-tight-ftd-entry-early",
-      "theme_notes": "deep-pullback の耐久性は維持しつつ stop を 8% に締め、alt での DD 改善余地を確認する。 + Follow-Through Entry Early を追加し、エントリー/イグジットの分離特性を確認する。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "round7 deep-pullback の 10% stop を少し締め、深い押し許容の最適 stop 幅を探る。 + Follow-Through Entry Early を検証する。",
-      "phase": "phase-12",
-      "implementation_stage": "round12",
-      "priority": 211,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-deep-pullback",
-        "round8",
-        "entry-confirmation",
-        "market-follow-through"
-      ],
-      "lifecycle": {
-        "status": "live"
-      },
-      "entry_confirmation_filter": {
-        "type": "market_follow_through",
-        "symbols": [
-          "SPY",
-          "QQQ",
-          "DIA"
-        ],
-        "price_ma_type": "sma",
-        "price_ma_period": 20,
-        "vix_symbol": "VIX",
-        "vix_ma_type": "sma",
-        "vix_ma_period": 20
-      }
-    },
-    {
-      "id": "donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-ftd-entry-late",
-      "name": "Donchian 55/20 + RSP Filter + RSI14 Regime 55 + 8% Stop + Follow-Through Entry Late",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 60,
-        "exit_period": 20
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 55,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "deep-pullback-tight-ftd-entry-late",
-      "theme_notes": "deep-pullback の耐久性は維持しつつ stop を 8% に締め、alt での DD 改善余地を確認する。 + Follow-Through Entry Late を追加し、エントリー/イグジットの分離特性を確認する。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "round7 deep-pullback の 10% stop を少し締め、深い押し許容の最適 stop 幅を探る。 + Follow-Through Entry Late を検証する。",
-      "phase": "phase-12",
-      "implementation_stage": "round12",
-      "priority": 212,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-deep-pullback",
-        "round8",
-        "entry-confirmation",
-        "market-follow-through"
-      ],
-      "lifecycle": {
-        "status": "live"
-      },
-      "entry_confirmation_filter": {
-        "type": "market_follow_through",
-        "symbols": [
-          "SPY",
-          "QQQ",
-          "DIA"
-        ],
-        "price_ma_type": "sma",
-        "price_ma_period": 20,
-        "vix_symbol": "VIX",
-        "vix_ma_type": "sma",
-        "vix_ma_period": 20
-      }
-    },
-    {
-      "id": "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-chandelier",
-      "name": "Donchian 55/22 + RSP Filter + RSI14 Regime 55 + 8% Stop + Chandelier Exit",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 55,
-        "exit_period": 22
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 55,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "deep-pullback-tight-exit-wide-profit-protect-chandelier",
-      "theme_notes": "deep-pullback-tight の entry を固定したまま exit を 22 へ遅らせ、stable anchor の利幅取りを少し広げた場合の頑健性を確認する。 + Chandelier Exit を追加し、エントリー/イグジットの分離特性を確認する。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "tight anchor の安定性を維持したまま、exit 延長で upper tail を拾えるかを見る。 + Chandelier Exit を検証する。",
-      "phase": "phase-12",
-      "implementation_stage": "round12",
-      "priority": 202,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-deep-pullback",
-        "round11",
-        "profit-protection",
-        "chandelier-exit"
-      ],
-      "lifecycle": {
-        "status": "live"
-      },
-      "exit_overlay": {
-        "type": "chandelier_exit",
-        "atr_period": 26,
-        "atr_multiplier": 3
-      }
-    },
-    {
-      "id": "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-profit-protect-atr-trailing",
-      "name": "Donchian 55/22 + RSP Filter + RSI14 Regime 55 + 8% Stop + ATR Trailing Stop",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 55,
-        "exit_period": 22
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 55,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "deep-pullback-tight-exit-wide-profit-protect-atr-trailing",
-      "theme_notes": "deep-pullback-tight の entry を固定したまま exit を 22 へ遅らせ、stable anchor の利幅取りを少し広げた場合の頑健性を確認する。 + ATR Trailing Stop を追加し、エントリー/イグジットの分離特性を確認する。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "tight anchor の安定性を維持したまま、exit 延長で upper tail を拾えるかを見る。 + ATR Trailing Stop を検証する。",
-      "phase": "phase-12",
-      "implementation_stage": "round12",
-      "priority": 203,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-deep-pullback",
-        "round11",
-        "profit-protection",
-        "atr-trailing-stop"
-      ],
-      "lifecycle": {
-        "status": "live"
-      },
-      "exit_overlay": {
-        "type": "atr_trailing_stop",
-        "atr_period": 14,
-        "atr_multiplier": 2.5
-      }
-    },
-    {
-      "id": "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-ftd-entry-early",
-      "name": "Donchian 55/22 + RSP Filter + RSI14 Regime 55 + 8% Stop + Follow-Through Entry Early",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 50,
-        "exit_period": 22
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 55,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "deep-pullback-tight-exit-wide-ftd-entry-early",
-      "theme_notes": "deep-pullback-tight の entry を固定したまま exit を 22 へ遅らせ、stable anchor の利幅取りを少し広げた場合の頑健性を確認する。 + Follow-Through Entry Early を追加し、エントリー/イグジットの分離特性を確認する。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "tight anchor の安定性を維持したまま、exit 延長で upper tail を拾えるかを見る。 + Follow-Through Entry Early を検証する。",
-      "phase": "phase-12",
-      "implementation_stage": "round12",
-      "priority": 212,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-deep-pullback",
-        "round11",
-        "entry-confirmation",
-        "market-follow-through"
-      ],
-      "lifecycle": {
-        "status": "live"
-      },
-      "entry_confirmation_filter": {
-        "type": "market_follow_through",
-        "symbols": [
-          "SPY",
-          "QQQ",
-          "DIA"
-        ],
-        "price_ma_type": "sma",
-        "price_ma_period": 20,
-        "vix_symbol": "VIX",
-        "vix_ma_type": "sma",
-        "vix_ma_period": 20
-      }
-    },
-    {
-      "id": "donchian-55-22-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-exit-wide-ftd-entry-late",
-      "name": "Donchian 55/22 + RSP Filter + RSI14 Regime 55 + 8% Stop + Follow-Through Entry Late",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 60,
-        "exit_period": 22
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 55,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "deep-pullback-tight-exit-wide-ftd-entry-late",
-      "theme_notes": "deep-pullback-tight の entry を固定したまま exit を 22 へ遅らせ、stable anchor の利幅取りを少し広げた場合の頑健性を確認する。 + Follow-Through Entry Late を追加し、エントリー/イグジットの分離特性を確認する。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "tight anchor の安定性を維持したまま、exit 延長で upper tail を拾えるかを見る。 + Follow-Through Entry Late を検証する。",
-      "phase": "phase-12",
-      "implementation_stage": "round12",
-      "priority": 213,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-deep-pullback",
-        "round11",
-        "entry-confirmation",
-        "market-follow-through"
-      ],
-      "lifecycle": {
-        "status": "live"
-      },
-      "entry_confirmation_filter": {
-        "type": "market_follow_through",
-        "symbols": [
-          "SPY",
-          "QQQ",
-          "DIA"
-        ],
-        "price_ma_type": "sma",
-        "price_ma_period": 20,
-        "vix_symbol": "VIX",
-        "vix_ma_type": "sma",
-        "vix_ma_period": 20
-      }
-    },
-    {
-      "id": "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-profit-protect-chandelier",
-      "name": "Donchian 60/20 + RSP Filter + RSI14 Regime 60 + 8% Stop + Chandelier Exit",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 60,
-        "exit_period": 20
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 60,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "deep-pullback-strict-entry-late-profit-protect-chandelier",
-      "theme_notes": "deep-pullback-strict の exit を固定したまま entry を 60 へ遅らせ、strict 側の質優先をさらに強めたときの残り方を確認する。 + Chandelier Exit を追加し、エントリー/イグジットの分離特性を確認する。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "strict anchor がまだ早いかどうかを、entry 遅延だけで見極める。 + Chandelier Exit を検証する。",
-      "phase": "phase-12",
-      "implementation_stage": "round12",
-      "priority": 203,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-deep-pullback",
-        "round11",
-        "profit-protection",
-        "chandelier-exit"
-      ],
-      "lifecycle": {
-        "status": "live"
-      },
-      "exit_overlay": {
-        "type": "chandelier_exit",
-        "atr_period": 24,
-        "atr_multiplier": 3
-      }
-    },
-    {
-      "id": "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-profit-protect-atr-trailing",
-      "name": "Donchian 60/20 + RSP Filter + RSI14 Regime 60 + 8% Stop + ATR Trailing Stop",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 60,
-        "exit_period": 20
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 60,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "deep-pullback-strict-entry-late-profit-protect-atr-trailing",
-      "theme_notes": "deep-pullback-strict の exit を固定したまま entry を 60 へ遅らせ、strict 側の質優先をさらに強めたときの残り方を確認する。 + ATR Trailing Stop を追加し、エントリー/イグジットの分離特性を確認する。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "strict anchor がまだ早いかどうかを、entry 遅延だけで見極める。 + ATR Trailing Stop を検証する。",
-      "phase": "phase-12",
-      "implementation_stage": "round12",
-      "priority": 204,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-deep-pullback",
-        "round11",
-        "profit-protection",
-        "atr-trailing-stop"
-      ],
-      "lifecycle": {
-        "status": "live"
-      },
-      "exit_overlay": {
-        "type": "atr_trailing_stop",
-        "atr_period": 14,
-        "atr_multiplier": 2.5
-      }
-    },
-    {
-      "id": "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-ftd-entry-early",
-      "name": "Donchian 60/20 + RSP Filter + RSI14 Regime 60 + 8% Stop + Follow-Through Entry Early",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 55,
-        "exit_period": 20
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 60,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "deep-pullback-strict-entry-late-ftd-entry-early",
-      "theme_notes": "deep-pullback-strict の exit を固定したまま entry を 60 へ遅らせ、strict 側の質優先をさらに強めたときの残り方を確認する。 + Follow-Through Entry Early を追加し、エントリー/イグジットの分離特性を確認する。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "strict anchor がまだ早いかどうかを、entry 遅延だけで見極める。 + Follow-Through Entry Early を検証する。",
-      "phase": "phase-12",
-      "implementation_stage": "round12",
-      "priority": 213,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-deep-pullback",
-        "round11",
-        "entry-confirmation",
-        "market-follow-through"
-      ],
-      "lifecycle": {
-        "status": "live"
-      },
-      "entry_confirmation_filter": {
-        "type": "market_follow_through",
-        "symbols": [
-          "SPY",
-          "QQQ",
-          "DIA"
-        ],
-        "price_ma_type": "sma",
-        "price_ma_period": 20,
-        "vix_symbol": "VIX",
-        "vix_ma_type": "sma",
-        "vix_ma_period": 20
-      }
-    },
-    {
-      "id": "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late-ftd-entry-late",
-      "name": "Donchian 60/20 + RSP Filter + RSI14 Regime 60 + 8% Stop + Follow-Through Entry Late",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 65,
-        "exit_period": 20
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 60,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "deep-pullback-strict-entry-late-ftd-entry-late",
-      "theme_notes": "deep-pullback-strict の exit を固定したまま entry を 60 へ遅らせ、strict 側の質優先をさらに強めたときの残り方を確認する。 + Follow-Through Entry Late を追加し、エントリー/イグジットの分離特性を確認する。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "strict anchor がまだ早いかどうかを、entry 遅延だけで見極める。 + Follow-Through Entry Late を検証する。",
-      "phase": "phase-12",
-      "implementation_stage": "round12",
-      "priority": 214,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-deep-pullback",
-        "round11",
-        "entry-confirmation",
-        "market-follow-through"
-      ],
-      "lifecycle": {
-        "status": "live"
-      },
-      "entry_confirmation_filter": {
-        "type": "market_follow_through",
-        "symbols": [
-          "SPY",
-          "QQQ",
-          "DIA"
-        ],
-        "price_ma_type": "sma",
-        "price_ma_period": 20,
-        "vix_symbol": "VIX",
-        "vix_ma_type": "sma",
-        "vix_ma_period": 20
-      }
-    },
-    {
-      "id": "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-profit-protect-chandelier",
-      "name": "Donchian 50/20 + RSP Filter + RSI14 Regime 60 + 8% Stop + Chandelier Exit",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 50,
-        "exit_period": 20
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 60,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "deep-pullback-strict-entry-early-profit-protect-chandelier",
-      "theme_notes": "deep-pullback-strict の exit を固定したまま entry を 50 へ早め、strict 側の押し目が少し早い条件でどこまで耐久を保てるかを見る。 + Chandelier Exit を追加し、エントリー/イグジットの分離特性を確認する。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "strict anchor の遅すぎる可能性を切り分けるため、entry だけを 50 へ寄せる。 + Chandelier Exit を検証する。",
-      "phase": "phase-12",
-      "implementation_stage": "round12",
-      "priority": 204,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-deep-pullback",
-        "round11",
-        "profit-protection",
-        "chandelier-exit"
-      ],
-      "lifecycle": {
-        "status": "live"
-      },
-      "exit_overlay": {
-        "type": "chandelier_exit",
-        "atr_period": 24,
-        "atr_multiplier": 3
-      }
-    },
-    {
-      "id": "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-profit-protect-atr-trailing",
-      "name": "Donchian 50/20 + RSP Filter + RSI14 Regime 60 + 8% Stop + ATR Trailing Stop",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 50,
-        "exit_period": 20
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 60,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "deep-pullback-strict-entry-early-profit-protect-atr-trailing",
-      "theme_notes": "deep-pullback-strict の exit を固定したまま entry を 50 へ早め、strict 側の押し目が少し早い条件でどこまで耐久を保てるかを見る。 + ATR Trailing Stop を追加し、エントリー/イグジットの分離特性を確認する。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "strict anchor の遅すぎる可能性を切り分けるため、entry だけを 50 へ寄せる。 + ATR Trailing Stop を検証する。",
-      "phase": "phase-12",
-      "implementation_stage": "round12",
-      "priority": 205,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-deep-pullback",
-        "round11",
-        "profit-protection",
-        "atr-trailing-stop"
-      ],
-      "lifecycle": {
-        "status": "live"
-      },
-      "exit_overlay": {
-        "type": "atr_trailing_stop",
-        "atr_period": 14,
-        "atr_multiplier": 2.5
-      }
-    },
-    {
-      "id": "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-ftd-entry-early",
-      "name": "Donchian 50/20 + RSP Filter + RSI14 Regime 60 + 8% Stop + Follow-Through Entry Early",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 45,
-        "exit_period": 20
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 60,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "deep-pullback-strict-entry-early-ftd-entry-early",
-      "theme_notes": "deep-pullback-strict の exit を固定したまま entry を 50 へ早め、strict 側の押し目が少し早い条件でどこまで耐久を保てるかを見る。 + Follow-Through Entry Early を追加し、エントリー/イグジットの分離特性を確認する。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "strict anchor の遅すぎる可能性を切り分けるため、entry だけを 50 へ寄せる。 + Follow-Through Entry Early を検証する。",
-      "phase": "phase-12",
-      "implementation_stage": "round12",
-      "priority": 214,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-deep-pullback",
-        "round11",
-        "entry-confirmation",
-        "market-follow-through"
-      ],
-      "lifecycle": {
-        "status": "live"
-      },
-      "entry_confirmation_filter": {
-        "type": "market_follow_through",
-        "symbols": [
-          "SPY",
-          "QQQ",
-          "DIA"
-        ],
-        "price_ma_type": "sma",
-        "price_ma_period": 20,
-        "vix_symbol": "VIX",
-        "vix_ma_type": "sma",
-        "vix_ma_period": 20
-      }
-    },
-    {
-      "id": "donchian-50-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-early-ftd-entry-late",
-      "name": "Donchian 50/20 + RSP Filter + RSI14 Regime 60 + 8% Stop + Follow-Through Entry Late",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 57,
-        "exit_period": 20
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 60,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "deep-pullback-strict-entry-early-ftd-entry-late",
-      "theme_notes": "deep-pullback-strict の exit を固定したまま entry を 57 へ遅らせ、strict 側の押し目が少し遅い条件でどこまで耐久を保てるかを見る。 + Follow-Through Entry Late を追加し、エントリー/イグジットの分離特性を確認する。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "strict anchor の遅すぎる可能性を切り分けるため、entry だけを 57 へ寄せる。 + Follow-Through Entry Late を検証する。",
-      "phase": "phase-12",
-      "implementation_stage": "round12",
-      "priority": 215,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-deep-pullback",
-        "round11",
-        "entry-confirmation",
-        "market-follow-through"
-      ],
-      "lifecycle": {
-        "status": "live"
-      },
-      "entry_confirmation_filter": {
-        "type": "market_follow_through",
-        "symbols": [
-          "SPY",
-          "QQQ",
-          "DIA"
-        ],
-        "price_ma_type": "sma",
-        "price_ma_period": 20,
-        "vix_symbol": "VIX",
-        "vix_ma_type": "sma",
-        "vix_ma_period": 20
-      }
-    },
-    {
-      "id": "donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide",
-      "name": "Donchian 55/20 + RSP Filter + RSI14 Regime 50 + 8% Stop",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 55,
-        "exit_period": 20
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 50,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "breadth-quality-balanced-wide",
-      "theme_notes": "breadth-quality 系の regime 50 を維持しつつ stop を 8% に広げ、quality 寄せ枝の過度な防御を減らせるかを見る。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "round7 breadth-quality base と round8 breadth-quality-strict の中間として、balanced + wide stop の cross-universe 適性を試す。",
-      "phase": "phase-9",
-      "implementation_stage": "round9",
-      "priority": 115,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-quality",
-        "round9"
-      ],
-      "lifecycle": {
-        "status": "live"
-      }
-    },
-    {
-      "id": "donchian-50-20-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide-entry-early",
-      "name": "Donchian 50/20 + RSP Filter + RSI14 Regime 50 + 8% Stop",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 50,
-        "exit_period": 20
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 50,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "breadth-quality-balanced-wide-entry-early",
-      "theme_notes": "breadth-quality-balanced-wide の exit を固定したまま entry を 50 へ早め、alt 首位 anchor の取りこぼしを減らせるかを見る。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "breadth-quality 本線の universe 強さを保ったまま、entry 緩和で Mag7 側の弱さを補えるかを確認する。",
-      "phase": "phase-11",
-      "implementation_stage": "round11",
-      "priority": 139,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-quality",
-        "round11"
-      ],
-      "lifecycle": {
-        "status": "live"
-      }
-    },
-    {
-      "id": "donchian-60-20-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide-entry-late",
-      "name": "Donchian 60/20 + RSP Filter + RSI14 Regime 50 + 8% Stop",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 60,
-        "exit_period": 20
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 50,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "breadth-quality-balanced-wide-entry-late",
-      "theme_notes": "breadth-quality-balanced-wide の exit を固定したまま entry を 60 へ遅らせ、breadth-quality の quality 寄り化を period だけで試す。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "breadth-quality 本線の強みを崩さず、entry 遅延が false breakout を減らすかを確認する。",
-      "phase": "phase-11",
-      "implementation_stage": "round11",
-      "priority": 140,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-quality",
-        "round11"
-      ],
-      "lifecycle": {
-        "status": "live"
-      }
-    },
-    {
-      "id": "donchian-55-18-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide-exit-tight",
-      "name": "Donchian 55/18 + RSP Filter + RSI14 Regime 50 + 8% Stop",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 55,
-        "exit_period": 18
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 50,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "breadth-quality-balanced-wide-exit-tight",
-      "theme_notes": "breadth-quality-balanced-wide の entry を固定したまま exit を 18 へ早め、alt 首位 anchor の守りを少し強めた場合の cross-universe 安定性を見る。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "breadth-quality 本線の universe 優位を残したまま、exit 短縮で drawdown を抑えられるかを確認する。",
-      "phase": "phase-11",
-      "implementation_stage": "round11",
-      "priority": 141,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-quality",
-        "round11"
-      ],
-      "lifecycle": {
-        "status": "live"
-      }
-    },
-    {
-      "id": "donchian-55-22-rsp-filter-rsi14-regime-50-hard-stop-8pct-theme-breadth-quality-balanced-wide-exit-wide",
-      "name": "Donchian 55/22 + RSP Filter + RSI14 Regime 50 + 8% Stop",
-      "category": "breakout",
-      "builder": "donchian_breakout",
-      "parameters": {
-        "entry_period": 55,
-        "exit_period": 22
-      },
-      "regime_filter": {
-        "type": "rsp_above_sma200",
-        "reference_symbol": "RSP",
-        "reference_ma_type": "sma",
-        "reference_ma_period": 200,
-        "action_when_false": "no_new_entry"
-      },
-      "rsi_regime_filter": {
-        "rsi_period": 14,
-        "threshold": 50,
-        "direction": "above"
-      },
-      "stop_loss": {
-        "type": "hard_percent",
-        "value": 8
-      },
-      "theme_axis": "breadth-quality-balanced-wide-exit-wide",
-      "theme_notes": "breadth-quality-balanced-wide の entry を固定したまま exit を 22 へ遅らせ、alt 首位 anchor の利幅拡張余地を確認する。",
-      "recommended_timeframes": [
-        "D"
-      ],
-      "recommended_regime": "trending",
-      "mag7_notes": "breadth-quality 本線の cross-universe 強さを保ちつつ、exit 遅延で upside を伸ばせるかを点検する。",
-      "phase": "phase-11",
-      "implementation_stage": "round11",
-      "priority": 142,
-      "status": "ready",
-      "implementation_difficulty": "medium",
-      "pine_complexity": "moderate",
-      "tags": [
-        "donchian",
-        "breakout",
-        "rsp",
-        "rsi-regime",
-        "hard-stop",
-        "theme-breadth",
-        "theme-quality",
         "round11"
       ],
       "lifecycle": {
@@ -1854,13 +126,31 @@
       "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/25 + TP 100/50 + Risk 1%",
       "category": "breakout",
       "builder": "raw_source",
-      "parameters": { "entry_period": 60, "exit_period": 20 },
-      "regime_filter": { "type": "rsp_above_sma200", "reference_symbol": "RSP", "reference_ma_type": "sma", "reference_ma_period": 200, "action_when_false": "no_new_entry" },
-      "rsi_regime_filter": { "rsi_period": 14, "threshold": 60, "direction": "above" },
-      "stop_loss": { "type": "hard_percent", "value": 8 },
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
       "theme_axis": "strongest-profit-protect-risk1-tp25",
       "theme_notes": "1回目の利確発動を 25% へ早め、早期保護の効き方を比較する。",
-      "recommended_timeframes": ["D"],
+      "recommended_timeframes": [
+        "D"
+      ],
       "recommended_regime": "trending",
       "mag7_notes": "早めの一段目利確が質優先 breakout に合うかを見る。",
       "phase": "phase-12",
@@ -1869,7 +159,16 @@
       "status": "ready",
       "implementation_difficulty": "medium",
       "pine_complexity": "moderate",
-      "tags": ["donchian", "breakout", "rsp", "rsi-regime", "hard-stop", "profit-protect", "risk-sizing", "selected-us40-10pack"],
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "profit-protect",
+        "risk-sizing",
+        "selected-us40-10pack"
+      ],
       "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp25-25-tp100-50-risk1.pine"
     },
     {
@@ -1877,13 +176,31 @@
       "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 35/25 + TP 100/50 + Risk 1%",
       "category": "breakout",
       "builder": "raw_source",
-      "parameters": { "entry_period": 60, "exit_period": 20 },
-      "regime_filter": { "type": "rsp_above_sma200", "reference_symbol": "RSP", "reference_ma_type": "sma", "reference_ma_period": 200, "action_when_false": "no_new_entry" },
-      "rsi_regime_filter": { "rsi_period": 14, "threshold": 60, "direction": "above" },
-      "stop_loss": { "type": "hard_percent", "value": 8 },
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
       "theme_axis": "strongest-profit-protect-risk1-tp35",
       "theme_notes": "1回目の利確発動を 35% へ遅らせ、伸びを残す方向の差を比較する。",
-      "recommended_timeframes": ["D"],
+      "recommended_timeframes": [
+        "D"
+      ],
       "recommended_regime": "trending",
       "mag7_notes": "一段目を遅らせても DD 改善が残るかを見る。",
       "phase": "phase-12",
@@ -1892,7 +209,16 @@
       "status": "ready",
       "implementation_difficulty": "medium",
       "pine_complexity": "moderate",
-      "tags": ["donchian", "breakout", "rsp", "rsi-regime", "hard-stop", "profit-protect", "risk-sizing", "selected-us40-10pack"],
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "profit-protect",
+        "risk-sizing",
+        "selected-us40-10pack"
+      ],
       "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp35-25-tp100-50-risk1.pine"
     },
     {
@@ -1900,13 +226,31 @@
       "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/20 + TP 100/50 + Risk 1%",
       "category": "breakout",
       "builder": "raw_source",
-      "parameters": { "entry_period": 60, "exit_period": 20 },
-      "regime_filter": { "type": "rsp_above_sma200", "reference_symbol": "RSP", "reference_ma_type": "sma", "reference_ma_period": 200, "action_when_false": "no_new_entry" },
-      "rsi_regime_filter": { "rsi_period": 14, "threshold": 60, "direction": "above" },
-      "stop_loss": { "type": "hard_percent", "value": 8 },
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
       "theme_axis": "strongest-profit-protect-risk1-tp1-light",
       "theme_notes": "1回目の利確比率を 20% に下げ、上振れ余地を残したまま保護できるかを比較する。",
-      "recommended_timeframes": ["D"],
+      "recommended_timeframes": [
+        "D"
+      ],
       "recommended_regime": "trending",
       "mag7_notes": "軽めの部分利確で勝ち筋の伸びを保てるかを見る。",
       "phase": "phase-12",
@@ -1915,7 +259,16 @@
       "status": "ready",
       "implementation_difficulty": "medium",
       "pine_complexity": "moderate",
-      "tags": ["donchian", "breakout", "rsp", "rsi-regime", "hard-stop", "profit-protect", "risk-sizing", "selected-us40-10pack"],
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "profit-protect",
+        "risk-sizing",
+        "selected-us40-10pack"
+      ],
       "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp30-20-tp100-50-risk1.pine"
     },
     {
@@ -1923,13 +276,31 @@
       "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/33 + TP 100/50 + Risk 1%",
       "category": "breakout",
       "builder": "raw_source",
-      "parameters": { "entry_period": 60, "exit_period": 20 },
-      "regime_filter": { "type": "rsp_above_sma200", "reference_symbol": "RSP", "reference_ma_type": "sma", "reference_ma_period": 200, "action_when_false": "no_new_entry" },
-      "rsi_regime_filter": { "rsi_period": 14, "threshold": 60, "direction": "above" },
-      "stop_loss": { "type": "hard_percent", "value": 8 },
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
       "theme_axis": "strongest-profit-protect-risk1-tp1-heavy",
       "theme_notes": "1回目の利確比率を 33% に上げ、早期ロックの強さを比較する。",
-      "recommended_timeframes": ["D"],
+      "recommended_timeframes": [
+        "D"
+      ],
       "recommended_regime": "trending",
       "mag7_notes": "早めに玉を落とした時の PF / DD 改善余地を見る。",
       "phase": "phase-12",
@@ -1938,7 +309,16 @@
       "status": "ready",
       "implementation_difficulty": "medium",
       "pine_complexity": "moderate",
-      "tags": ["donchian", "breakout", "rsp", "rsi-regime", "hard-stop", "profit-protect", "risk-sizing", "selected-us40-10pack"],
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "profit-protect",
+        "risk-sizing",
+        "selected-us40-10pack"
+      ],
       "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp30-33-tp100-50-risk1.pine"
     },
     {
@@ -1946,13 +326,31 @@
       "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/25 + TP 80/50 + Risk 1%",
       "category": "breakout",
       "builder": "raw_source",
-      "parameters": { "entry_period": 60, "exit_period": 20 },
-      "regime_filter": { "type": "rsp_above_sma200", "reference_symbol": "RSP", "reference_ma_type": "sma", "reference_ma_period": 200, "action_when_false": "no_new_entry" },
-      "rsi_regime_filter": { "rsi_period": 14, "threshold": 60, "direction": "above" },
-      "stop_loss": { "type": "hard_percent", "value": 8 },
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
       "theme_axis": "strongest-profit-protect-risk1-tp2-early",
       "theme_notes": "2回目の利確発動を 80% へ前倒しし、急騰の利確圧を強めた比較版。",
-      "recommended_timeframes": ["D"],
+      "recommended_timeframes": [
+        "D"
+      ],
       "recommended_regime": "trending",
       "mag7_notes": "二段目を早めた時の回転改善を比較する。",
       "phase": "phase-12",
@@ -1961,7 +359,16 @@
       "status": "ready",
       "implementation_difficulty": "medium",
       "pine_complexity": "moderate",
-      "tags": ["donchian", "breakout", "rsp", "rsi-regime", "hard-stop", "profit-protect", "risk-sizing", "selected-us40-10pack"],
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "profit-protect",
+        "risk-sizing",
+        "selected-us40-10pack"
+      ],
       "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp30-25-tp80-50-risk1.pine"
     },
     {
@@ -1969,13 +376,31 @@
       "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/25 + TP 120/50 + Risk 1%",
       "category": "breakout",
       "builder": "raw_source",
-      "parameters": { "entry_period": 60, "exit_period": 20 },
-      "regime_filter": { "type": "rsp_above_sma200", "reference_symbol": "RSP", "reference_ma_type": "sma", "reference_ma_period": 200, "action_when_false": "no_new_entry" },
-      "rsi_regime_filter": { "rsi_period": 14, "threshold": 60, "direction": "above" },
-      "stop_loss": { "type": "hard_percent", "value": 8 },
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
       "theme_axis": "strongest-profit-protect-risk1-tp2-late",
       "theme_notes": "2回目の利確発動を 120% へ遅らせ、超大型 winner を残す方向の比較版。",
-      "recommended_timeframes": ["D"],
+      "recommended_timeframes": [
+        "D"
+      ],
       "recommended_regime": "trending",
       "mag7_notes": "二段目を遅らせて big winner をどこまで残せるかを見る。",
       "phase": "phase-12",
@@ -1984,7 +409,16 @@
       "status": "ready",
       "implementation_difficulty": "medium",
       "pine_complexity": "moderate",
-      "tags": ["donchian", "breakout", "rsp", "rsi-regime", "hard-stop", "profit-protect", "risk-sizing", "selected-us40-10pack"],
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "profit-protect",
+        "risk-sizing",
+        "selected-us40-10pack"
+      ],
       "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp30-25-tp120-50-risk1.pine"
     },
     {
@@ -1992,13 +426,31 @@
       "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/25 + TP 100/33 + Risk 1%",
       "category": "breakout",
       "builder": "raw_source",
-      "parameters": { "entry_period": 60, "exit_period": 20 },
-      "regime_filter": { "type": "rsp_above_sma200", "reference_symbol": "RSP", "reference_ma_type": "sma", "reference_ma_period": 200, "action_when_false": "no_new_entry" },
-      "rsi_regime_filter": { "rsi_period": 14, "threshold": 60, "direction": "above" },
-      "stop_loss": { "type": "hard_percent", "value": 8 },
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
       "theme_axis": "strongest-profit-protect-risk1-tp2-light",
       "theme_notes": "2回目の利確比率を 33% に下げ、後半の追従玉を残す方向の比較版。",
-      "recommended_timeframes": ["D"],
+      "recommended_timeframes": [
+        "D"
+      ],
       "recommended_regime": "trending",
       "mag7_notes": "二段目を軽くして大勝ちの tail を残せるかを見る。",
       "phase": "phase-12",
@@ -2007,7 +459,16 @@
       "status": "ready",
       "implementation_difficulty": "medium",
       "pine_complexity": "moderate",
-      "tags": ["donchian", "breakout", "rsp", "rsi-regime", "hard-stop", "profit-protect", "risk-sizing", "selected-us40-10pack"],
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "profit-protect",
+        "risk-sizing",
+        "selected-us40-10pack"
+      ],
       "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-33-risk1.pine"
     },
     {
@@ -2015,13 +476,31 @@
       "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/25 + TP 100/67 + Risk 1%",
       "category": "breakout",
       "builder": "raw_source",
-      "parameters": { "entry_period": 60, "exit_period": 20 },
-      "regime_filter": { "type": "rsp_above_sma200", "reference_symbol": "RSP", "reference_ma_type": "sma", "reference_ma_period": 200, "action_when_false": "no_new_entry" },
-      "rsi_regime_filter": { "rsi_period": 14, "threshold": 60, "direction": "above" },
-      "stop_loss": { "type": "hard_percent", "value": 8 },
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
       "theme_axis": "strongest-profit-protect-risk1-tp2-heavy",
       "theme_notes": "2回目の利確比率を 67% に上げ、急騰後のロックを強めた比較版。",
-      "recommended_timeframes": ["D"],
+      "recommended_timeframes": [
+        "D"
+      ],
       "recommended_regime": "trending",
       "mag7_notes": "二段目を強く切った時の守りの強さを比較する。",
       "phase": "phase-12",
@@ -2030,7 +509,16 @@
       "status": "ready",
       "implementation_difficulty": "medium",
       "pine_complexity": "moderate",
-      "tags": ["donchian", "breakout", "rsp", "rsi-regime", "hard-stop", "profit-protect", "risk-sizing", "selected-us40-10pack"],
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "profit-protect",
+        "risk-sizing",
+        "selected-us40-10pack"
+      ],
       "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-67-risk1.pine"
     },
     {
@@ -2038,13 +526,31 @@
       "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/25 + TP 100/50 + Risk 2%",
       "category": "breakout",
       "builder": "raw_source",
-      "parameters": { "entry_period": 60, "exit_period": 20 },
-      "regime_filter": { "type": "rsp_above_sma200", "reference_symbol": "RSP", "reference_ma_type": "sma", "reference_ma_period": 200, "action_when_false": "no_new_entry" },
-      "rsi_regime_filter": { "rsi_period": 14, "threshold": 60, "direction": "above" },
-      "stop_loss": { "type": "hard_percent", "value": 8 },
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
       "theme_axis": "strongest-profit-protect-risk2-base",
       "theme_notes": "含み益保護は基準版のまま、許容リスクを 2% に広げた比較版。",
-      "recommended_timeframes": ["D"],
+      "recommended_timeframes": [
+        "D"
+      ],
       "recommended_regime": "trending",
       "mag7_notes": "サイズだけ広げた時の収益効率と DD を比較する。",
       "phase": "phase-12",
@@ -2053,7 +559,16 @@
       "status": "ready",
       "implementation_difficulty": "medium",
       "pine_complexity": "moderate",
-      "tags": ["donchian", "breakout", "rsp", "rsi-regime", "hard-stop", "profit-protect", "risk-sizing", "selected-us40-10pack"],
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "profit-protect",
+        "risk-sizing",
+        "selected-us40-10pack"
+      ],
       "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-50-risk2.pine"
     }
   ]

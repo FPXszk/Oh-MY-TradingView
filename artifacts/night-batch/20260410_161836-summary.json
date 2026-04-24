@@ -1,9 +1,0 @@
-{
-  "success": false,
-  "command": "smoke-prod",
-  "host": "172.31.144.1",
-  "port": 9223,
-  "preflight_required": false,
-  "error": "--config path is a directory, not a file: /home/fpxszk/code/Oh-MY-TradingView/results",
-  "steps": []
-}

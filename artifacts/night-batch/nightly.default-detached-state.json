@@ -1,8 +1,0 @@
-{
-  "status": "completed",
-  "child_run_id": "20260410_104949_production",
-  "pid": 91188,
-  "summary_path": "docs/research/results/night-batch/20260410_104949_production-summary.json",
-  "success": true,
-  "finished_at": "2026-04-10T10:50:15.234756+00:00"
-}

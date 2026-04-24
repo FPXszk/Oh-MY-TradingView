@@ -1,9 +1,0 @@
-{
-  "success": false,
-  "command": "bundle",
-  "host": "127.0.0.1",
-  "port": 39567,
-  "preflight_required": true,
-  "error": "Preflight failed for CDP session 127.0.0.1:39567: no TradingView chart target found",
-  "steps": []
-}
