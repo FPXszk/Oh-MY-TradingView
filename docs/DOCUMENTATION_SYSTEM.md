@@ -72,3 +72,25 @@
 - 戦略を追加・変更したら `config/backtest/strategy-presets.json` と `docs/strategy/current-strategy-reference.md` を同時に更新する
 - retired 戦略は `docs/research/archive/retired/retired-strategy-presets.json` へ退避する
 - 実装計画は `docs/exec-plans/active/` に置き、完了後に `docs/exec-plans/completed/` へ移動する
+
+## アーカイブルール（退避）
+
+各ディレクトリの退避方式と退避先：
+
+| 対象パス | 退避先 | 方式 |
+|---|---|---|
+| `docs/research/` | `docs/research/archive/` | **自動**（`scripts/docs/archive-stale-latest.mjs` が `manifest.json` の keep-set 外を退避） |
+| `docs/sessions/` | `docs/sessions/archive/` | **自動**（同スクリプトが最新1件のみ残して退避） |
+| `docs/reports/` | `docs/reports/archive/` | **手動**（Night Batch run 後に手動で退避） |
+| `config/backtest/campaigns/` | `config/backtest/campaigns/archive/` | **手動**（active campaign に変更がある場合に手動で退避） |
+| `config/backtest/universes/` | `config/backtest/universes/archive/` | **手動**（universe に変更がある場合に手動で退避） |
+| `artifacts/campaigns/` | `artifacts/campaigns/archive/` | **自動**（night batch workflow の `archive-rounds` コマンドで退避） |
+
+### 自動退避のトリガー
+
+`scripts/docs/archive-stale-latest.mjs` は GitHub Actions workflow（`.github/workflows/night-batch-self-hosted.yml`）からバッチ後に自動実行される。  
+ローカルで手動実行する場合は：
+
+```bash
+node scripts/docs/archive-stale-latest.mjs
+```

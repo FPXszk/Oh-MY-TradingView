@@ -12,9 +12,9 @@ const { values } = parseArgs({
 });
 
 const root = resolve(values.root ?? process.cwd());
-const researchLatestDir = join(root, 'docs', 'research', 'current');
+const researchLatestDir = join(root, 'docs', 'research');
 const researchArchiveDir = join(root, 'docs', 'research', 'archive');
-const sessionLogsDir = join(root, 'logs', 'sessions');
+const sessionLogsDir = join(root, 'docs', 'sessions');
 const sessionLogsArchiveDir = join(sessionLogsDir, 'archive');
 
 async function loadManifestKeep(latestDir) {
