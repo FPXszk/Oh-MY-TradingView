@@ -1322,6 +1322,28 @@ describe('loadPreset', () => {
     assert.match(source, /default_qty_type=strategy\.percent_of_equity/);
     assert.match(source, /strategy\.entry\("Long", strategy\.long\)/);
   });
+
+  it('loads a run68 tp25-28 micro sweep raw_source preset', async () => {
+    const { preset, source } = await loadPreset('donchian-60-20-rsp-rsi14-regime60-tp25-28-tp100-50');
+    assert.equal(preset.builder, 'raw_source');
+    assert.match(source, /strategy\("Donchian 60\/20 \+ RSP \+ RSI14 Regime 60 \+ TP 25\/28 \+ TP 100\/50"/);
+    assert.match(source, /close >= strategy\.position_avg_price \* \(1 \+ 0\.25\)/);
+    assert.match(source, /strategy\.close\("Long", qty_percent=28, comment="TP1 25%"\)/);
+    assert.match(source, /strategy\.close\("Long", qty_percent=50, comment="TP2 100%"\)/);
+  });
+
+  it('loads the panic reversal raw_source preset with panic filter, RSI2 confirm, and no stop loss', async () => {
+    const { preset, source } = await loadPreset('rsp-vix-spy-panic-reversal-rsi2-confirm-sma25-rsi65-exit-no-stop');
+    assert.equal(preset.builder, 'raw_source');
+    assert.match(source, /request\.security\("BATS:RSP", timeframe\.period, close\)/);
+    assert.match(source, /request\.security\("CBOE:VIX", timeframe\.period, close\)/);
+    assert.match(source, /request\.security\("BATS:SPY", timeframe\.period, close\)/);
+    assert.match(source, /panicFilter = rspClose < rspSma200 and vixClose > 30 and spyRsi14 < 30 and spyClose < spySma200/);
+    assert.match(source, /bottomConfirm = ta\.crossover\(spyRsi2, 10\)/);
+    assert.match(source, /strategy\.entry\("Long", strategy\.long\)/);
+    assert.match(source, /exitSignal = close > sma25 and rsiValue >= 65/);
+    assert.doesNotMatch(source, /stopLossPrice = strategy\.position_avg_price/);
+  });
 });
 
 // ---------------------------------------------------------------------------

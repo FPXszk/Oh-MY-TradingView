@@ -1,0 +1,38 @@
+{
+  "id": "tp1-micro-sweep-panic-reversal-us40-11pack",
+  "name": "TP1 Micro Sweep + Panic Reversal US40 11-Pack",
+  "description": "Run68 TP1 micro sweep 10-pack plus one panic reversal special strategy on the current US40 universe.",
+  "universe": "public-top10-us-40",
+  "strategy_ids": [
+    "donchian-60-20-rsp-rsi14-regime60-tp25-27-tp100-50",
+    "donchian-60-20-rsp-rsi14-regime60-tp25-28-tp100-50",
+    "donchian-60-20-rsp-rsi14-regime60-tp25-29-tp100-50",
+    "donchian-60-20-rsp-rsi14-regime60-tp25-30-tp100-50",
+    "donchian-60-20-rsp-rsi14-regime60-tp25-31-tp100-50",
+    "donchian-60-20-rsp-rsi14-regime60-tp25-32-tp100-50",
+    "donchian-60-20-rsp-rsi14-regime60-tp25-33-tp100-50",
+    "donchian-60-20-rsp-rsi14-regime60-tp25-34-tp100-50",
+    "donchian-60-20-rsp-rsi14-regime60-tp25-35-tp100-50",
+    "donchian-60-20-rsp-rsi14-regime60-tp25-36-tp100-50",
+    "rsp-vix-spy-panic-reversal-rsi2-confirm-sma25-rsi65-exit-no-stop"
+  ],
+  "date_override": {
+    "from": "2015-01-01",
+    "to": "2025-12-31"
+  },
+  "phases": {
+    "smoke": {
+      "symbols": ["SPY"]
+    },
+    "full": {
+      "symbol_count": 40
+    }
+  },
+  "execution": {
+    "worker_ports": [9223],
+    "checkpoint_every": 10,
+    "cooldown_ms": 1000,
+    "max_consecutive_failures": 5,
+    "max_rerun_passes": 2
+  }
+}

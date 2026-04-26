@@ -827,6 +827,30 @@ describe('public library top10 US40 campaign', () => {
     assert.equal(campaign.totalRuns, 10);
   });
 
+  it('loads tp1-micro-sweep-panic-reversal-us40-11pack config with a 40 x 11 matrix', async () => {
+    const campaign = await loadCampaign('tp1-micro-sweep-panic-reversal-us40-11pack');
+
+    assert.equal(campaign.config.id, 'tp1-micro-sweep-panic-reversal-us40-11pack');
+    assert.equal(campaign.config.universe, 'public-top10-us-40');
+    assert.equal(campaign.config.strategy_ids.length, 11);
+    assert.equal(campaign.symbols.length, 40);
+    assert.equal(campaign.strategies.length, 11);
+    assert.equal(campaign.matrix.length, 440);
+    assert.equal(campaign.totalRuns, 440);
+    assert.equal(campaign.defaults.date_range.from, '2015-01-01');
+    assert.equal(campaign.defaults.date_range.to, '2025-12-31');
+  });
+
+  it('uses SPY-only smoke for tp1-micro-sweep-panic-reversal-us40-11pack so each strategy is checked once', async () => {
+    const campaign = await loadCampaign('tp1-micro-sweep-panic-reversal-us40-11pack', { phase: 'smoke' });
+
+    assert.deepEqual(campaign.config.phases.smoke.symbols, ['SPY']);
+    assert.equal(campaign.symbols.length, 1);
+    assert.equal(campaign.strategies.length, 11);
+    assert.equal(campaign.matrix.length, 11);
+    assert.equal(campaign.totalRuns, 11);
+  });
+
   it('loads breakout-6pack-us40 config with a 40 x 6 matrix', async () => {
     const campaign = await loadCampaign('breakout-6pack-us40');
 
@@ -1222,4 +1246,3 @@ describe('next-long-run 12x10 campaign config validation', () => {
     }
   });
 });
-

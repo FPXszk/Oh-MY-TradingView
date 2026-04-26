@@ -1,0 +1,32 @@
+//@version=6
+strategy("Panic Reversal + RSP/VIX/SPY Fear Filter + RSI2 Confirm + SMA25 RSI65 Exit", overlay=true, pyramiding=0, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission_type=strategy.commission.percent, commission_value=0, slippage=0)
+startDate = timestamp(2015, 1, 1, 0, 0)
+endDate = timestamp(2025, 12, 31, 23, 59)
+inDateRange = time >= startDate and time <= endDate
+
+rspClose = request.security("BATS:RSP", timeframe.period, close)
+rspSma200 = ta.sma(rspClose, 200)
+vixClose = request.security("CBOE:VIX", timeframe.period, close)
+spyClose = request.security("BATS:SPY", timeframe.period, close)
+spySma200 = ta.sma(spyClose, 200)
+spyRsi14 = ta.rsi(spyClose, 14)
+spyRsi2 = ta.rsi(spyClose, 2)
+
+panicFilter = rspClose < rspSma200 and vixClose > 30 and spyRsi14 < 30 and spyClose < spySma200
+bottomConfirm = ta.crossover(spyRsi2, 10)
+allowEntry = inDateRange and panicFilter and bottomConfirm
+
+sma25 = ta.sma(close, 25)
+rsiValue = ta.rsi(close, 14)
+exitSignal = close > sma25 and rsiValue >= 65
+
+plot(sma25, "SMA25", color=color.orange)
+
+if allowEntry and strategy.position_size <= 0
+    strategy.entry("Long", strategy.long)
+
+if exitSignal and strategy.position_size > 0
+    strategy.close("Long", comment="SMA25 RSI65 exit")
+
+if not inDateRange and strategy.position_size > 0
+    strategy.close("Long", comment="Date exit")

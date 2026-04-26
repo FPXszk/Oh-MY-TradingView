@@ -820,6 +820,443 @@
         "selected-us40-10pack"
       ],
       "source_path": "../../references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp30-25-tp90-50.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-tp100-50",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + TP 100/50",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-profit-protect-tp1-micro-27",
+      "theme_notes": "run68 micro sweep の下側 shoulder。TP1 を 25% で発動しつつ 27% だけ利確して 25/30 の谷間を埋める。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "25% 利確帯の最小厚み寄りで PF / DD の変化を確認する。",
+      "phase": "phase-13",
+      "implementation_stage": "tp1-micro-sweep-panic-reversal-us40-11pack",
+      "priority": 211,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "profit-protect",
+        "partial-take-profit",
+        "tp1-micro-sweep-panic-reversal-us40-11pack"
+      ],
+      "source_path": "../../docs/references/pine/tp1-micro-sweep-panic-reversal-us40-11pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-tp100-50.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-28-tp100-50",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/28 + TP 100/50",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-profit-protect-tp1-micro-28",
+      "theme_notes": "run68 micro sweep の本命下側。28% 利確で 30% 手前の滑らかな改善を確認する。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "28% の軽め利確で 30% との差を測る。",
+      "phase": "phase-13",
+      "implementation_stage": "tp1-micro-sweep-panic-reversal-us40-11pack",
+      "priority": 212,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "profit-protect",
+        "partial-take-profit",
+        "tp1-micro-sweep-panic-reversal-us40-11pack"
+      ],
+      "source_path": "../../docs/references/pine/tp1-micro-sweep-panic-reversal-us40-11pack/donchian-60-20-rsp-rsi14-regime60-tp25-28-tp100-50.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-29-tp100-50",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/29 + TP 100/50",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-profit-protect-tp1-micro-29",
+      "theme_notes": "28% と 30% の間を埋める 29% 利確版。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "30% anchor 直下で PF と net profit のバランスを見る。",
+      "phase": "phase-13",
+      "implementation_stage": "tp1-micro-sweep-panic-reversal-us40-11pack",
+      "priority": 213,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "profit-protect",
+        "partial-take-profit",
+        "tp1-micro-sweep-panic-reversal-us40-11pack"
+      ],
+      "source_path": "../../docs/references/pine/tp1-micro-sweep-panic-reversal-us40-11pack/donchian-60-20-rsp-rsi14-regime60-tp25-29-tp100-50.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-31-tp100-50",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/31 + TP 100/50",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-profit-protect-tp1-micro-31",
+      "theme_notes": "30% と 33% の間で立ち上がりを見る 31% 利確版。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "33% 本命へ向かう改善カーブの入り口を確認する。",
+      "phase": "phase-13",
+      "implementation_stage": "tp1-micro-sweep-panic-reversal-us40-11pack",
+      "priority": 214,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "profit-protect",
+        "partial-take-profit",
+        "tp1-micro-sweep-panic-reversal-us40-11pack"
+      ],
+      "source_path": "../../docs/references/pine/tp1-micro-sweep-panic-reversal-us40-11pack/donchian-60-20-rsp-rsi14-regime60-tp25-31-tp100-50.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-32-tp100-50",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/32 + TP 100/50",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-profit-protect-tp1-micro-32",
+      "theme_notes": "33% 本命の直前を埋める 32% 利確版。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "首位候補 33% の直前で飽和するかを測る。",
+      "phase": "phase-13",
+      "implementation_stage": "tp1-micro-sweep-panic-reversal-us40-11pack",
+      "priority": 215,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "profit-protect",
+        "partial-take-profit",
+        "tp1-micro-sweep-panic-reversal-us40-11pack"
+      ],
+      "source_path": "../../docs/references/pine/tp1-micro-sweep-panic-reversal-us40-11pack/donchian-60-20-rsp-rsi14-regime60-tp25-32-tp100-50.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-34-tp100-50",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/34 + TP 100/50",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-profit-protect-tp1-micro-34",
+      "theme_notes": "33% 首位候補を少し上回る 34% 利確版。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "33% を超えても PF / DD 改善が続くかを見る。",
+      "phase": "phase-13",
+      "implementation_stage": "tp1-micro-sweep-panic-reversal-us40-11pack",
+      "priority": 216,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "profit-protect",
+        "partial-take-profit",
+        "tp1-micro-sweep-panic-reversal-us40-11pack"
+      ],
+      "source_path": "../../docs/references/pine/tp1-micro-sweep-panic-reversal-us40-11pack/donchian-60-20-rsp-rsi14-regime60-tp25-34-tp100-50.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-35-tp100-50",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/35 + TP 100/50",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-profit-protect-tp1-micro-35",
+      "theme_notes": "run68 上側 anchor の 35% 利確版。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "33% 超えの改善が 35% まで続くかを確認する。",
+      "phase": "phase-13",
+      "implementation_stage": "tp1-micro-sweep-panic-reversal-us40-11pack",
+      "priority": 217,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "profit-protect",
+        "partial-take-profit",
+        "tp1-micro-sweep-panic-reversal-us40-11pack"
+      ],
+      "source_path": "../../docs/references/pine/tp1-micro-sweep-panic-reversal-us40-11pack/donchian-60-20-rsp-rsi14-regime60-tp25-35-tp100-50.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-36-tp100-50",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/36 + TP 100/50",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-profit-protect-tp1-micro-36",
+      "theme_notes": "35% 上側の境界確認用 36% 利確版。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "35% をさらに重くした時の悪化開始点を探る。",
+      "phase": "phase-13",
+      "implementation_stage": "tp1-micro-sweep-panic-reversal-us40-11pack",
+      "priority": 218,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "profit-protect",
+        "partial-take-profit",
+        "tp1-micro-sweep-panic-reversal-us40-11pack"
+      ],
+      "source_path": "../../docs/references/pine/tp1-micro-sweep-panic-reversal-us40-11pack/donchian-60-20-rsp-rsi14-regime60-tp25-36-tp100-50.pine"
+    },
+    {
+      "id": "rsp-vix-spy-panic-reversal-rsi2-confirm-sma25-rsi65-exit-no-stop",
+      "name": "Panic Reversal + RSP/VIX/SPY Fear Filter + RSI2 Confirm + SMA25 RSI65 Exit",
+      "category": "mean_reversion",
+      "builder": "raw_source",
+      "parameters": {
+        "bottom_confirm_rsi_period": 2,
+        "bottom_confirm_threshold": 10,
+        "exit_ma_period": 25,
+        "exit_rsi_period": 14,
+        "exit_rsi_threshold": 65
+      },
+      "theme_axis": "panic-reversal-stage1-tv-only",
+      "theme_notes": "RSP・VIX・SPY だけで panic 局面を検出し、SPY RSI(2) の反転で逆張りエントリーして、SMA25 + RSI65 まで長く持つ第1段階版。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "panic",
+      "mag7_notes": "市場全体の恐怖が強い局面だけを取りに行く長期保有版。",
+      "phase": "phase-13",
+      "implementation_stage": "tp1-micro-sweep-panic-reversal-us40-11pack",
+      "priority": 219,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "panic-reversal",
+        "mean-reversion",
+        "rsp",
+        "vix",
+        "spy",
+        "rsi2",
+        "long-hold",
+        "tp1-micro-sweep-panic-reversal-us40-11pack"
+      ],
+      "source_path": "../../docs/references/pine/tp1-micro-sweep-panic-reversal-us40-11pack/rsp-vix-spy-panic-reversal-rsi2-confirm-sma25-rsi65-exit-no-stop.pine"
     }
   ]
 }
