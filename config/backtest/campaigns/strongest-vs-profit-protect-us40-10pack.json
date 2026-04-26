@@ -1,0 +1,37 @@
+{
+  "id": "strongest-vs-profit-protect-us40-10pack",
+  "name": "Strongest vs Profit Protect US40 10-Pack",
+  "description": "Direct 10-pack comparison between the current strongest non-profit-protect baseline and nine profit-protect variants on the current US40 universe.",
+  "universe": "public-top10-us-40",
+  "strategy_ids": [
+    "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late",
+    "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-50",
+    "donchian-60-20-rsp-rsi14-regime60-tp25-25-tp100-50",
+    "donchian-60-20-rsp-rsi14-regime60-tp35-25-tp100-50",
+    "donchian-60-20-rsp-rsi14-regime60-tp30-20-tp100-50",
+    "donchian-60-20-rsp-rsi14-regime60-tp30-33-tp100-50",
+    "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp80-50",
+    "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp120-50",
+    "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-33",
+    "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-67"
+  ],
+  "date_override": {
+    "from": "2015-01-01",
+    "to": "2025-12-31"
+  },
+  "phases": {
+    "smoke": {
+      "symbols": ["SPY"]
+    },
+    "full": {
+      "symbol_count": 40
+    }
+  },
+  "execution": {
+    "worker_ports": [9223],
+    "checkpoint_every": 10,
+    "cooldown_ms": 1000,
+    "max_consecutive_failures": 5,
+    "max_rerun_passes": 2
+  }
+}
