@@ -1,6 +1,6 @@
 [
   {
-    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-50-risk1",
+    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-50",
     "symbol": "SPY",
     "market": "macro",
     "bucket": "index",
@@ -8,9 +8,9 @@
     "attempt": "primary",
     "worker": "worker1",
     "port": 9223,
-    "started_at": "2026-04-24T04:48:42.950Z",
-    "finished_at": "2026-04-24T04:49:07.924Z",
-    "duration_ms": 24974,
+    "started_at": "2026-04-24T15:40:23.522Z",
+    "finished_at": "2026-04-24T15:40:36.079Z",
+    "duration_ms": 12557,
     "exit_code": 0,
     "result": {
       "success": true,
@@ -30,11 +30,11 @@
       "tester_available": true,
       "apply_failed": false,
       "metrics": {
-        "net_profit": 707,
+        "net_profit": 8362.970000000001,
         "closed_trades": 79,
         "percent_profitable": 55.7,
-        "profit_factor": 2.6994783779236085,
-        "max_drawdown": 91.5
+        "profit_factor": 2.5738654220733403,
+        "max_drawdown": 1167.8899999999994
       },
       "restore_policy": "skip",
       "restore_success": true,
@@ -42,7 +42,7 @@
     }
   },
   {
-    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp25-25-tp100-50-risk1",
+    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp25-25-tp100-50",
     "symbol": "SPY",
     "market": "macro",
     "bucket": "index",
@@ -50,9 +50,9 @@
     "attempt": "primary",
     "worker": "worker1",
     "port": 9223,
-    "started_at": "2026-04-24T04:49:08.926Z",
-    "finished_at": "2026-04-24T04:49:19.447Z",
-    "duration_ms": 10521,
+    "started_at": "2026-04-24T15:40:37.081Z",
+    "finished_at": "2026-04-24T15:40:47.662Z",
+    "duration_ms": 10581,
     "exit_code": 0,
     "result": {
       "success": true,
@@ -72,11 +72,11 @@
       "tester_available": true,
       "apply_failed": false,
       "metrics": {
-        "net_profit": 707,
+        "net_profit": 8362.970000000001,
         "closed_trades": 79,
         "percent_profitable": 55.7,
-        "profit_factor": 2.6994783779236085,
-        "max_drawdown": 91.5
+        "profit_factor": 2.5738654220733403,
+        "max_drawdown": 1167.8899999999994
       },
       "restore_policy": "skip",
       "restore_success": true,
@@ -84,7 +84,7 @@
     }
   },
   {
-    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp35-25-tp100-50-risk1",
+    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp35-25-tp100-50",
     "symbol": "SPY",
     "market": "macro",
     "bucket": "index",
@@ -92,9 +92,9 @@
     "attempt": "primary",
     "worker": "worker1",
     "port": 9223,
-    "started_at": "2026-04-24T04:49:20.454Z",
-    "finished_at": "2026-04-24T04:49:31.023Z",
-    "duration_ms": 10569,
+    "started_at": "2026-04-24T15:40:48.670Z",
+    "finished_at": "2026-04-24T15:40:59.196Z",
+    "duration_ms": 10526,
     "exit_code": 0,
     "result": {
       "success": true,
@@ -114,11 +114,11 @@
       "tester_available": true,
       "apply_failed": false,
       "metrics": {
-        "net_profit": 707,
+        "net_profit": 8362.970000000001,
         "closed_trades": 79,
         "percent_profitable": 55.7,
-        "profit_factor": 2.6994783779236085,
-        "max_drawdown": 91.5
+        "profit_factor": 2.5738654220733403,
+        "max_drawdown": 1167.8899999999994
       },
       "restore_policy": "skip",
       "restore_success": true,
@@ -126,7 +126,7 @@
     }
   },
   {
-    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-20-tp100-50-risk1",
+    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-20-tp100-50",
     "symbol": "SPY",
     "market": "macro",
     "bucket": "index",
@@ -134,9 +134,9 @@
     "attempt": "primary",
     "worker": "worker1",
     "port": 9223,
-    "started_at": "2026-04-24T04:49:32.025Z",
-    "finished_at": "2026-04-24T04:49:42.560Z",
-    "duration_ms": 10535,
+    "started_at": "2026-04-24T15:41:00.198Z",
+    "finished_at": "2026-04-24T15:41:10.766Z",
+    "duration_ms": 10568,
     "exit_code": 0,
     "result": {
       "success": true,
@@ -156,11 +156,11 @@
       "tester_available": true,
       "apply_failed": false,
       "metrics": {
-        "net_profit": 707,
+        "net_profit": 8362.970000000001,
         "closed_trades": 79,
         "percent_profitable": 55.7,
-        "profit_factor": 2.6994783779236085,
-        "max_drawdown": 91.5
+        "profit_factor": 2.5738654220733403,
+        "max_drawdown": 1167.8899999999994
       },
       "restore_policy": "skip",
       "restore_success": true,
@@ -168,7 +168,7 @@
     }
   },
   {
-    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-33-tp100-50-risk1",
+    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-33-tp100-50",
     "symbol": "SPY",
     "market": "macro",
     "bucket": "index",
@@ -176,9 +176,9 @@
     "attempt": "primary",
     "worker": "worker1",
     "port": 9223,
-    "started_at": "2026-04-24T04:49:43.561Z",
-    "finished_at": "2026-04-24T04:49:54.167Z",
-    "duration_ms": 10606,
+    "started_at": "2026-04-24T15:41:11.768Z",
+    "finished_at": "2026-04-24T15:41:22.290Z",
+    "duration_ms": 10522,
     "exit_code": 0,
     "result": {
       "success": true,
@@ -198,11 +198,11 @@
       "tester_available": true,
       "apply_failed": false,
       "metrics": {
-        "net_profit": 707,
+        "net_profit": 8362.970000000001,
         "closed_trades": 79,
         "percent_profitable": 55.7,
-        "profit_factor": 2.6994783779236085,
-        "max_drawdown": 91.5
+        "profit_factor": 2.5738654220733403,
+        "max_drawdown": 1167.8899999999994
       },
       "restore_policy": "skip",
       "restore_success": true,
@@ -210,7 +210,7 @@
     }
   },
   {
-    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp80-50-risk1",
+    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp80-50",
     "symbol": "SPY",
     "market": "macro",
     "bucket": "index",
@@ -218,9 +218,9 @@
     "attempt": "primary",
     "worker": "worker1",
     "port": 9223,
-    "started_at": "2026-04-24T04:49:55.169Z",
-    "finished_at": "2026-04-24T04:50:05.712Z",
-    "duration_ms": 10544,
+    "started_at": "2026-04-24T15:41:23.292Z",
+    "finished_at": "2026-04-24T15:41:33.849Z",
+    "duration_ms": 10557,
     "exit_code": 0,
     "result": {
       "success": true,
@@ -240,11 +240,11 @@
       "tester_available": true,
       "apply_failed": false,
       "metrics": {
-        "net_profit": 707,
+        "net_profit": 8362.970000000001,
         "closed_trades": 79,
         "percent_profitable": 55.7,
-        "profit_factor": 2.6994783779236085,
-        "max_drawdown": 91.5
+        "profit_factor": 2.5738654220733403,
+        "max_drawdown": 1167.8899999999994
       },
       "restore_policy": "skip",
       "restore_success": true,
@@ -252,7 +252,7 @@
     }
   },
   {
-    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp120-50-risk1",
+    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp90-50",
     "symbol": "SPY",
     "market": "macro",
     "bucket": "index",
@@ -260,9 +260,9 @@
     "attempt": "primary",
     "worker": "worker1",
     "port": 9223,
-    "started_at": "2026-04-24T04:50:06.714Z",
-    "finished_at": "2026-04-24T04:50:17.233Z",
-    "duration_ms": 10519,
+    "started_at": "2026-04-24T15:41:34.851Z",
+    "finished_at": "2026-04-24T15:41:45.407Z",
+    "duration_ms": 10556,
     "exit_code": 0,
     "result": {
       "success": true,
@@ -282,11 +282,11 @@
       "tester_available": true,
       "apply_failed": false,
       "metrics": {
-        "net_profit": 707,
+        "net_profit": 8362.970000000001,
         "closed_trades": 79,
         "percent_profitable": 55.7,
-        "profit_factor": 2.6994783779236085,
-        "max_drawdown": 91.5
+        "profit_factor": 2.5738654220733403,
+        "max_drawdown": 1167.8899999999994
       },
       "restore_policy": "skip",
       "restore_success": true,
@@ -294,7 +294,7 @@
     }
   },
   {
-    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-33-risk1",
+    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp120-50",
     "symbol": "SPY",
     "market": "macro",
     "bucket": "index",
@@ -302,9 +302,9 @@
     "attempt": "primary",
     "worker": "worker1",
     "port": 9223,
-    "started_at": "2026-04-24T04:50:18.235Z",
-    "finished_at": "2026-04-24T04:50:28.701Z",
-    "duration_ms": 10466,
+    "started_at": "2026-04-24T15:41:46.409Z",
+    "finished_at": "2026-04-24T15:41:56.993Z",
+    "duration_ms": 10584,
     "exit_code": 0,
     "result": {
       "success": true,
@@ -324,11 +324,11 @@
       "tester_available": true,
       "apply_failed": false,
       "metrics": {
-        "net_profit": 707,
+        "net_profit": 8362.970000000001,
         "closed_trades": 79,
         "percent_profitable": 55.7,
-        "profit_factor": 2.6994783779236085,
-        "max_drawdown": 91.5
+        "profit_factor": 2.5738654220733403,
+        "max_drawdown": 1167.8899999999994
       },
       "restore_policy": "skip",
       "restore_success": true,
@@ -336,7 +336,7 @@
     }
   },
   {
-    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-67-risk1",
+    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-33",
     "symbol": "SPY",
     "market": "macro",
     "bucket": "index",
@@ -344,9 +344,9 @@
     "attempt": "primary",
     "worker": "worker1",
     "port": 9223,
-    "started_at": "2026-04-24T04:50:29.703Z",
-    "finished_at": "2026-04-24T04:50:40.224Z",
-    "duration_ms": 10521,
+    "started_at": "2026-04-24T15:41:57.994Z",
+    "finished_at": "2026-04-24T15:42:08.574Z",
+    "duration_ms": 10580,
     "exit_code": 0,
     "result": {
       "success": true,
@@ -366,11 +366,11 @@
       "tester_available": true,
       "apply_failed": false,
       "metrics": {
-        "net_profit": 707,
+        "net_profit": 8362.970000000001,
         "closed_trades": 79,
         "percent_profitable": 55.7,
-        "profit_factor": 2.6994783779236085,
-        "max_drawdown": 91.5
+        "profit_factor": 2.5738654220733403,
+        "max_drawdown": 1167.8899999999994
       },
       "restore_policy": "skip",
       "restore_success": true,
@@ -378,7 +378,7 @@
     }
   },
   {
-    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-50-risk2",
+    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-67",
     "symbol": "SPY",
     "market": "macro",
     "bucket": "index",
@@ -386,9 +386,9 @@
     "attempt": "primary",
     "worker": "worker1",
     "port": 9223,
-    "started_at": "2026-04-24T04:50:41.226Z",
-    "finished_at": "2026-04-24T04:50:51.724Z",
-    "duration_ms": 10498,
+    "started_at": "2026-04-24T15:42:09.576Z",
+    "finished_at": "2026-04-24T15:42:20.151Z",
+    "duration_ms": 10575,
     "exit_code": 0,
     "result": {
       "success": true,
@@ -408,11 +408,11 @@
       "tester_available": true,
       "apply_failed": false,
       "metrics": {
-        "net_profit": 1612.3500000000008,
+        "net_profit": 8362.970000000001,
         "closed_trades": 79,
         "percent_profitable": 55.7,
-        "profit_factor": 2.7273019443998097,
-        "max_drawdown": 198.86999999999898
+        "profit_factor": 2.5738654220733403,
+        "max_drawdown": 1167.8899999999994
       },
       "restore_policy": "skip",
       "restore_success": true,
