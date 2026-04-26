@@ -1,0 +1,422 @@
+[
+  {
+    "presetId": "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late",
+    "symbol": "SPY",
+    "market": "macro",
+    "bucket": "index",
+    "label": "S&P 500 ETF",
+    "attempt": "primary",
+    "worker": "worker1",
+    "port": 9223,
+    "started_at": "2026-04-26T04:54:27.463Z",
+    "finished_at": "2026-04-26T04:54:40.127Z",
+    "duration_ms": 12664,
+    "exit_code": 0,
+    "result": {
+      "success": true,
+      "symbol": "BATS:SPY",
+      "compile_detail": {
+        "success": true,
+        "button_clicked": "チャートに追加",
+        "has_errors": false,
+        "error_count": 0,
+        "warning_count": 0,
+        "info_count": 0,
+        "errors": [],
+        "warnings": [],
+        "infos": [],
+        "study_added": false
+      },
+      "tester_available": true,
+      "apply_failed": false,
+      "metrics": {
+        "net_profit": 8362.970000000001,
+        "closed_trades": 79,
+        "percent_profitable": 55.7,
+        "profit_factor": 2.5738654220733403,
+        "max_drawdown": 1167.8899999999994
+      },
+      "restore_policy": "skip",
+      "restore_success": true,
+      "restore_skipped": true
+    }
+  },
+  {
+    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-50",
+    "symbol": "SPY",
+    "market": "macro",
+    "bucket": "index",
+    "label": "S&P 500 ETF",
+    "attempt": "primary",
+    "worker": "worker1",
+    "port": 9223,
+    "started_at": "2026-04-26T04:54:41.130Z",
+    "finished_at": "2026-04-26T04:54:52.097Z",
+    "duration_ms": 10967,
+    "exit_code": 0,
+    "result": {
+      "success": true,
+      "symbol": "BATS:SPY",
+      "compile_detail": {
+        "success": true,
+        "button_clicked": "チャートに追加",
+        "has_errors": false,
+        "error_count": 0,
+        "warning_count": 0,
+        "info_count": 0,
+        "errors": [],
+        "warnings": [],
+        "infos": [],
+        "study_added": true
+      },
+      "tester_available": true,
+      "apply_failed": false,
+      "metrics": {
+        "net_profit": 8362.970000000001,
+        "closed_trades": 79,
+        "percent_profitable": 55.7,
+        "profit_factor": 2.5738654220733403,
+        "max_drawdown": 1167.8899999999994
+      },
+      "restore_policy": "skip",
+      "restore_success": true,
+      "restore_skipped": true
+    }
+  },
+  {
+    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp25-25-tp100-50",
+    "symbol": "SPY",
+    "market": "macro",
+    "bucket": "index",
+    "label": "S&P 500 ETF",
+    "attempt": "primary",
+    "worker": "worker1",
+    "port": 9223,
+    "started_at": "2026-04-26T04:54:53.104Z",
+    "finished_at": "2026-04-26T04:55:03.677Z",
+    "duration_ms": 10573,
+    "exit_code": 0,
+    "result": {
+      "success": true,
+      "symbol": "BATS:SPY",
+      "compile_detail": {
+        "success": true,
+        "button_clicked": "チャートに追加",
+        "has_errors": false,
+        "error_count": 0,
+        "warning_count": 0,
+        "info_count": 0,
+        "errors": [],
+        "warnings": [],
+        "infos": [],
+        "study_added": true
+      },
+      "tester_available": true,
+      "apply_failed": false,
+      "metrics": {
+        "net_profit": 8362.970000000001,
+        "closed_trades": 79,
+        "percent_profitable": 55.7,
+        "profit_factor": 2.5738654220733403,
+        "max_drawdown": 1167.8899999999994
+      },
+      "restore_policy": "skip",
+      "restore_success": true,
+      "restore_skipped": true
+    }
+  },
+  {
+    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp35-25-tp100-50",
+    "symbol": "SPY",
+    "market": "macro",
+    "bucket": "index",
+    "label": "S&P 500 ETF",
+    "attempt": "primary",
+    "worker": "worker1",
+    "port": 9223,
+    "started_at": "2026-04-26T04:55:04.679Z",
+    "finished_at": "2026-04-26T04:55:15.281Z",
+    "duration_ms": 10602,
+    "exit_code": 0,
+    "result": {
+      "success": true,
+      "symbol": "BATS:SPY",
+      "compile_detail": {
+        "success": true,
+        "button_clicked": "チャートに追加",
+        "has_errors": false,
+        "error_count": 0,
+        "warning_count": 0,
+        "info_count": 0,
+        "errors": [],
+        "warnings": [],
+        "infos": [],
+        "study_added": true
+      },
+      "tester_available": true,
+      "apply_failed": false,
+      "metrics": {
+        "net_profit": 8362.970000000001,
+        "closed_trades": 79,
+        "percent_profitable": 55.7,
+        "profit_factor": 2.5738654220733403,
+        "max_drawdown": 1167.8899999999994
+      },
+      "restore_policy": "skip",
+      "restore_success": true,
+      "restore_skipped": true
+    }
+  },
+  {
+    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-20-tp100-50",
+    "symbol": "SPY",
+    "market": "macro",
+    "bucket": "index",
+    "label": "S&P 500 ETF",
+    "attempt": "primary",
+    "worker": "worker1",
+    "port": 9223,
+    "started_at": "2026-04-26T04:55:16.283Z",
+    "finished_at": "2026-04-26T04:55:26.928Z",
+    "duration_ms": 10645,
+    "exit_code": 0,
+    "result": {
+      "success": true,
+      "symbol": "BATS:SPY",
+      "compile_detail": {
+        "success": true,
+        "button_clicked": "チャートに追加",
+        "has_errors": false,
+        "error_count": 0,
+        "warning_count": 0,
+        "info_count": 0,
+        "errors": [],
+        "warnings": [],
+        "infos": [],
+        "study_added": true
+      },
+      "tester_available": true,
+      "apply_failed": false,
+      "metrics": {
+        "net_profit": 8362.970000000001,
+        "closed_trades": 79,
+        "percent_profitable": 55.7,
+        "profit_factor": 2.5738654220733403,
+        "max_drawdown": 1167.8899999999994
+      },
+      "restore_policy": "skip",
+      "restore_success": true,
+      "restore_skipped": true
+    }
+  },
+  {
+    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-33-tp100-50",
+    "symbol": "SPY",
+    "market": "macro",
+    "bucket": "index",
+    "label": "S&P 500 ETF",
+    "attempt": "primary",
+    "worker": "worker1",
+    "port": 9223,
+    "started_at": "2026-04-26T04:55:27.930Z",
+    "finished_at": "2026-04-26T04:55:38.561Z",
+    "duration_ms": 10631,
+    "exit_code": 0,
+    "result": {
+      "success": true,
+      "symbol": "BATS:SPY",
+      "compile_detail": {
+        "success": true,
+        "button_clicked": "チャートに追加",
+        "has_errors": false,
+        "error_count": 0,
+        "warning_count": 0,
+        "info_count": 0,
+        "errors": [],
+        "warnings": [],
+        "infos": [],
+        "study_added": true
+      },
+      "tester_available": true,
+      "apply_failed": false,
+      "metrics": {
+        "net_profit": 8362.970000000001,
+        "closed_trades": 79,
+        "percent_profitable": 55.7,
+        "profit_factor": 2.5738654220733403,
+        "max_drawdown": 1167.8899999999994
+      },
+      "restore_policy": "skip",
+      "restore_success": true,
+      "restore_skipped": true
+    }
+  },
+  {
+    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp80-50",
+    "symbol": "SPY",
+    "market": "macro",
+    "bucket": "index",
+    "label": "S&P 500 ETF",
+    "attempt": "primary",
+    "worker": "worker1",
+    "port": 9223,
+    "started_at": "2026-04-26T04:55:39.563Z",
+    "finished_at": "2026-04-26T04:55:50.344Z",
+    "duration_ms": 10781,
+    "exit_code": 0,
+    "result": {
+      "success": true,
+      "symbol": "BATS:SPY",
+      "compile_detail": {
+        "success": true,
+        "button_clicked": "チャートに追加",
+        "has_errors": false,
+        "error_count": 0,
+        "warning_count": 0,
+        "info_count": 0,
+        "errors": [],
+        "warnings": [],
+        "infos": [],
+        "study_added": true
+      },
+      "tester_available": true,
+      "apply_failed": false,
+      "metrics": {
+        "net_profit": 8362.970000000001,
+        "closed_trades": 79,
+        "percent_profitable": 55.7,
+        "profit_factor": 2.5738654220733403,
+        "max_drawdown": 1167.8899999999994
+      },
+      "restore_policy": "skip",
+      "restore_success": true,
+      "restore_skipped": true
+    }
+  },
+  {
+    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp120-50",
+    "symbol": "SPY",
+    "market": "macro",
+    "bucket": "index",
+    "label": "S&P 500 ETF",
+    "attempt": "primary",
+    "worker": "worker1",
+    "port": 9223,
+    "started_at": "2026-04-26T04:55:51.346Z",
+    "finished_at": "2026-04-26T04:56:01.980Z",
+    "duration_ms": 10634,
+    "exit_code": 0,
+    "result": {
+      "success": true,
+      "symbol": "BATS:SPY",
+      "compile_detail": {
+        "success": true,
+        "button_clicked": "チャートに追加",
+        "has_errors": false,
+        "error_count": 0,
+        "warning_count": 0,
+        "info_count": 0,
+        "errors": [],
+        "warnings": [],
+        "infos": [],
+        "study_added": true
+      },
+      "tester_available": true,
+      "apply_failed": false,
+      "metrics": {
+        "net_profit": 8362.970000000001,
+        "closed_trades": 79,
+        "percent_profitable": 55.7,
+        "profit_factor": 2.5738654220733403,
+        "max_drawdown": 1167.8899999999994
+      },
+      "restore_policy": "skip",
+      "restore_success": true,
+      "restore_skipped": true
+    }
+  },
+  {
+    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-33",
+    "symbol": "SPY",
+    "market": "macro",
+    "bucket": "index",
+    "label": "S&P 500 ETF",
+    "attempt": "primary",
+    "worker": "worker1",
+    "port": 9223,
+    "started_at": "2026-04-26T04:56:02.982Z",
+    "finished_at": "2026-04-26T04:56:13.606Z",
+    "duration_ms": 10624,
+    "exit_code": 0,
+    "result": {
+      "success": true,
+      "symbol": "BATS:SPY",
+      "compile_detail": {
+        "success": true,
+        "button_clicked": "チャートに追加",
+        "has_errors": false,
+        "error_count": 0,
+        "warning_count": 0,
+        "info_count": 0,
+        "errors": [],
+        "warnings": [],
+        "infos": [],
+        "study_added": true
+      },
+      "tester_available": true,
+      "apply_failed": false,
+      "metrics": {
+        "net_profit": 8362.970000000001,
+        "closed_trades": 79,
+        "percent_profitable": 55.7,
+        "profit_factor": 2.5738654220733403,
+        "max_drawdown": 1167.8899999999994
+      },
+      "restore_policy": "skip",
+      "restore_success": true,
+      "restore_skipped": true
+    }
+  },
+  {
+    "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-67",
+    "symbol": "SPY",
+    "market": "macro",
+    "bucket": "index",
+    "label": "S&P 500 ETF",
+    "attempt": "primary",
+    "worker": "worker1",
+    "port": 9223,
+    "started_at": "2026-04-26T04:56:14.608Z",
+    "finished_at": "2026-04-26T04:56:25.209Z",
+    "duration_ms": 10601,
+    "exit_code": 0,
+    "result": {
+      "success": true,
+      "symbol": "BATS:SPY",
+      "compile_detail": {
+        "success": true,
+        "button_clicked": "チャートに追加",
+        "has_errors": false,
+        "error_count": 0,
+        "warning_count": 0,
+        "info_count": 0,
+        "errors": [],
+        "warnings": [],
+        "infos": [],
+        "study_added": true
+      },
+      "tester_available": true,
+      "apply_failed": false,
+      "metrics": {
+        "net_profit": 8362.970000000001,
+        "closed_trades": 79,
+        "percent_profitable": 55.7,
+        "profit_factor": 2.5738654220733403,
+        "max_drawdown": 1167.8899999999994
+      },
+      "restore_policy": "skip",
+      "restore_success": true,
+      "restore_skipped": true
+    }
+  }
+]

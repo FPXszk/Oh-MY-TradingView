@@ -1,0 +1,111 @@
+{
+  "campaign_id": "strongest-vs-profit-protect-us40-10pack",
+  "phase": "smoke",
+  "generated_at": "2026-04-26T04:56:26.242Z",
+  "source_run_id": "gha_24948625082_1",
+  "source_kind": "workflow",
+  "source_results_path": "artifacts/campaigns/strongest-vs-profit-protect-us40-10pack/smoke/recovered-results.json",
+  "strategy_count": 10,
+  "rows": [
+    {
+      "rank": 1,
+      "presetId": "donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 8362.97,
+      "avg_profit_factor": 2.5739,
+      "avg_max_drawdown": 1167.89,
+      "avg_percent_profitable": 55.7
+    },
+    {
+      "rank": 2,
+      "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-50",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 8362.97,
+      "avg_profit_factor": 2.5739,
+      "avg_max_drawdown": 1167.89,
+      "avg_percent_profitable": 55.7
+    },
+    {
+      "rank": 3,
+      "presetId": "donchian-60-20-rsp-rsi14-regime60-tp25-25-tp100-50",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 8362.97,
+      "avg_profit_factor": 2.5739,
+      "avg_max_drawdown": 1167.89,
+      "avg_percent_profitable": 55.7
+    },
+    {
+      "rank": 4,
+      "presetId": "donchian-60-20-rsp-rsi14-regime60-tp35-25-tp100-50",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 8362.97,
+      "avg_profit_factor": 2.5739,
+      "avg_max_drawdown": 1167.89,
+      "avg_percent_profitable": 55.7
+    },
+    {
+      "rank": 5,
+      "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-20-tp100-50",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 8362.97,
+      "avg_profit_factor": 2.5739,
+      "avg_max_drawdown": 1167.89,
+      "avg_percent_profitable": 55.7
+    },
+    {
+      "rank": 6,
+      "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-33-tp100-50",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 8362.97,
+      "avg_profit_factor": 2.5739,
+      "avg_max_drawdown": 1167.89,
+      "avg_percent_profitable": 55.7
+    },
+    {
+      "rank": 7,
+      "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp80-50",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 8362.97,
+      "avg_profit_factor": 2.5739,
+      "avg_max_drawdown": 1167.89,
+      "avg_percent_profitable": 55.7
+    },
+    {
+      "rank": 8,
+      "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp120-50",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 8362.97,
+      "avg_profit_factor": 2.5739,
+      "avg_max_drawdown": 1167.89,
+      "avg_percent_profitable": 55.7
+    },
+    {
+      "rank": 9,
+      "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-33",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 8362.97,
+      "avg_profit_factor": 2.5739,
+      "avg_max_drawdown": 1167.89,
+      "avg_percent_profitable": 55.7
+    },
+    {
+      "rank": 10,
+      "presetId": "donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-67",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 8362.97,
+      "avg_profit_factor": 2.5739,
+      "avg_max_drawdown": 1167.89,
+      "avg_percent_profitable": 55.7
+    }
+  ]
+}
