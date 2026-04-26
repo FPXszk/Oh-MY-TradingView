@@ -5,7 +5,7 @@
 - catalog source: `config/backtest/strategy-catalog.json`
 - score artifact (US): `artifacts/campaigns/next-long-run-us-finetune-100x10/smoke/recovered-results.json`
 - score artifact (JP): `artifacts/campaigns/next-long-run-jp-finetune-100x10/smoke/recovered-results.json`
-- live count: 40
+- live count: 45
 - retired count: 122
 
 ## 読み方
@@ -22,9 +22,14 @@
 | retired | `donchian-50-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-entry-early` | Donchian 50/20 + RSP Filter + RSI14 Regime 55 + 8% Stop | 10 | JP | entry_period=50, exit_period=20 | RSP>SMA200 / RSI14 > 55 | 8% hard stop | deep-pullback-tight-entry-early | deep-pullback-tight の exit を固定したまま entry を 50 へ早め、stable anchor の上振れ余地を period だけで確認する。 |
 | retired | `donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-6pct-theme-deep-pullback-strict-narrow` | Donchian 55/20 + RSP Filter + RSI14 Regime 60 + 6% Stop | 9 | US | entry_period=55, exit_period=20 | RSP>SMA200 / RSI14 > 60 | 6% hard stop | deep-pullback-strict-narrow | deep-pullback-strict の strict entry を維持しながら stop を 6% に締め、深押し枝の防御限界を確認する。 |
 | live | `donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-50` | Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/25 + TP 100/50 | — | — | entry_period=60, exit_period=20 | RSP>SMA200 / RSI14 > 60 | 8% hard stop | strongest-profit-protect-base | 最強戦略そのままの 60/20・RSP・RSI60 を維持しつつ、30% と 100% の二段階部分利確だけを追加した基準線。 |
+| live | `donchian-60-20-rsp-rsi14-regime60-tp22-25-tp100-50` | Donchian 60/20 + RSP + RSI14 Regime 60 + TP 22/25 + TP 100/50 | — | — | entry_period=60, exit_period=20 | RSP>SMA200 / RSI14 > 60 | 8% hard stop | strongest-profit-protect-tp1-very-early | 1回目の利確発動を 22% まで前倒しし、最速寄りの保護強度を比較する。 |
 | live | `donchian-60-20-rsp-rsi14-regime60-tp25-25-tp100-50` | Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/25 + TP 100/50 | — | — | entry_period=60, exit_period=20 | RSP>SMA200 / RSI14 > 60 | 8% hard stop | strongest-profit-protect-tp1-early | 1回目の利確発動を 25% へ早め、早期保護の効き方を比較する。 |
+| live | `donchian-60-20-rsp-rsi14-regime60-tp27-25-tp100-50` | Donchian 60/20 + RSP + RSI14 Regime 60 + TP 27/25 + TP 100/50 | — | — | entry_period=60, exit_period=20 | RSP>SMA200 / RSI14 > 60 | 8% hard stop | strongest-profit-protect-tp1-near-early | 1回目の利確発動を 27% に置き、25% と 30% の中間帯を比較する。 |
 | live | `donchian-60-20-rsp-rsi14-regime60-tp35-25-tp100-50` | Donchian 60/20 + RSP + RSI14 Regime 60 + TP 35/25 + TP 100/50 | — | — | entry_period=60, exit_period=20 | RSP>SMA200 / RSI14 > 60 | 8% hard stop | strongest-profit-protect-tp1-late | 1回目の利確発動を 35% へ遅らせ、伸びを残す方向の差を比較する。 |
+| live | `donchian-60-20-rsp-rsi14-regime60-tp25-20-tp100-50` | Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/20 + TP 100/50 | — | — | entry_period=60, exit_period=20 | RSP>SMA200 / RSI14 > 60 | 8% hard stop | strongest-profit-protect-tp1-early-light | 1回目の利確発動を 25% に固定しつつ、利確比率だけを 20% に抑えて比較する。 |
 | live | `donchian-60-20-rsp-rsi14-regime60-tp30-20-tp100-50` | Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/20 + TP 100/50 | — | — | entry_period=60, exit_period=20 | RSP>SMA200 / RSI14 > 60 | 8% hard stop | strongest-profit-protect-tp1-light | 1回目の利確比率を 20% に下げ、上振れ余地を残したまま保護できるかを比較する。 |
+| live | `donchian-60-20-rsp-rsi14-regime60-tp25-30-tp100-50` | Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/30 + TP 100/50 | — | — | entry_period=60, exit_period=20 | RSP>SMA200 / RSI14 > 60 | 8% hard stop | strongest-profit-protect-tp1-early-mid-heavy | 1回目の利確発動を 25% に固定しつつ、利確比率を 30% へ上げた中間比較版。 |
+| live | `donchian-60-20-rsp-rsi14-regime60-tp25-33-tp100-50` | Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/33 + TP 100/50 | — | — | entry_period=60, exit_period=20 | RSP>SMA200 / RSI14 > 60 | 8% hard stop | strongest-profit-protect-tp1-early-heavy | 1回目の利確発動を 25% に固定しつつ、利確比率を 33% に上げて比較する。 |
 | live | `donchian-60-20-rsp-rsi14-regime60-tp30-33-tp100-50` | Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/33 + TP 100/50 | — | — | entry_period=60, exit_period=20 | RSP>SMA200 / RSI14 > 60 | 8% hard stop | strongest-profit-protect-tp1-heavy | 1回目の利確比率を 33% に上げ、早期ロックの強さを比較する。 |
 | live | `donchian-60-20-rsp-rsi14-regime60-tp30-25-tp80-50` | Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/25 + TP 80/50 | — | — | entry_period=60, exit_period=20 | RSP>SMA200 / RSI14 > 60 | 8% hard stop | strongest-profit-protect-tp2-early | 2回目の利確発動を 80% へ前倒しし、急騰の利確圧を強めた比較版。 |
 | live | `donchian-60-20-rsp-rsi14-regime60-tp30-25-tp120-50` | Donchian 60/20 + RSP + RSI14 Regime 60 + TP 30/25 + TP 120/50 | — | — | entry_period=60, exit_period=20 | RSP>SMA200 / RSI14 > 60 | 8% hard stop | strongest-profit-protect-tp2-late | 2回目の利確発動を 120% へ遅らせ、超大型 winner を残す方向の比較版。 |

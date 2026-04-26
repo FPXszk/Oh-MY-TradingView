@@ -286,6 +286,59 @@
       }
     },
     {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp22-25-tp100-50",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 22/25 + TP 100/50",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-profit-protect-tp1-very-early",
+      "theme_notes": "1回目の利確発動を 22% まで前倒しし、最速寄りの保護強度を比較する。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "利を急ぎめに確保した時の DD 改善余地を確認する。",
+      "phase": "phase-12",
+      "implementation_stage": "selected-us40-10pack",
+      "priority": 202,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "profit-protect",
+        "partial-take-profit",
+        "selected-us40-10pack"
+      ],
+      "source_path": "../../docs/references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp22-25-tp100-50.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
       "id": "donchian-60-20-rsp-rsi14-regime60-tp25-25-tp100-50",
       "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/25 + TP 100/50",
       "category": "breakout",
@@ -339,6 +392,59 @@
       }
     },
     {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp27-25-tp100-50",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 27/25 + TP 100/50",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-profit-protect-tp1-near-early",
+      "theme_notes": "1回目の利確発動を 27% に置き、25% と 30% の中間帯を比較する。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "極端に早すぎず遅すぎない帯での保護バランスを見る。",
+      "phase": "phase-12",
+      "implementation_stage": "selected-us40-10pack",
+      "priority": 204,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "profit-protect",
+        "partial-take-profit",
+        "selected-us40-10pack"
+      ],
+      "source_path": "../../docs/references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp27-25-tp100-50.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
       "id": "donchian-60-20-rsp-rsi14-regime60-tp35-25-tp100-50",
       "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 35/25 + TP 100/50",
       "category": "breakout",
@@ -387,6 +493,59 @@
         "selected-us40-10pack"
       ],
       "source_path": "../../docs/references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp35-25-tp100-50.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-20-tp100-50",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/20 + TP 100/50",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-profit-protect-tp1-early-light",
+      "theme_notes": "1回目の利確発動を 25% に固定しつつ、利確比率だけを 20% に抑えて比較する。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "早め発動でも軽く切ることで勝ち筋を残せるかを見る。",
+      "phase": "phase-12",
+      "implementation_stage": "selected-us40-10pack",
+      "priority": 206,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "profit-protect",
+        "partial-take-profit",
+        "selected-us40-10pack"
+      ],
+      "source_path": "../../docs/references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp25-20-tp100-50.pine",
       "lifecycle": {
         "status": "live"
       }
@@ -493,6 +652,112 @@
         "selected-us40-10pack"
       ],
       "source_path": "../../docs/references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp30-33-tp100-50.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-30-tp100-50",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/30 + TP 100/50",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-profit-protect-tp1-early-mid-heavy",
+      "theme_notes": "1回目の利確発動を 25% に固定しつつ、利確比率を 30% へ上げた中間比較版。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "25% 到達時にやや厚めに落とした時の守りを比較する。",
+      "phase": "phase-12",
+      "implementation_stage": "selected-us40-10pack",
+      "priority": 208,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "profit-protect",
+        "partial-take-profit",
+        "selected-us40-10pack"
+      ],
+      "source_path": "../../docs/references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp25-30-tp100-50.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-33-tp100-50",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/33 + TP 100/50",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-profit-protect-tp1-early-heavy",
+      "theme_notes": "1回目の利確発動を 25% に固定しつつ、利確比率を 33% に上げて比較する。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "25% 到達直後のロックを強めた時の PF / DD 改善余地を見る。",
+      "phase": "phase-12",
+      "implementation_stage": "selected-us40-10pack",
+      "priority": 209,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "profit-protect",
+        "partial-take-profit",
+        "selected-us40-10pack"
+      ],
+      "source_path": "../../docs/references/pine/selected-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp25-33-tp100-50.pine",
       "lifecycle": {
         "status": "live"
       }
