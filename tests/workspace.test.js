@@ -5,6 +5,7 @@ import {
   listWatchlistSymbols,
   addWatchlistSymbol,
   removeWatchlistSymbol,
+  selectWatchlistSearchResult,
   listPanes,
   focusPane,
   listTabs,
@@ -129,6 +130,34 @@ describe('removeWatchlistSymbol — mocked CDP', () => {
       }),
       /removeWatchlistSymbol failed.*not found/,
     );
+  });
+});
+
+describe('selectWatchlistSearchResult', () => {
+  it('prefers major US venues when multiple exact ticker matches exist', () => {
+    const result = selectWatchlistSearchResult([
+      { index: 0, title: 'AMSC', text: 'AMSCAmerican Superconductor CorporationstockBMV' },
+      { index: 1, title: 'AMSC', text: 'AMSCAmerican Superconductor CorporationstockNASDAQ' },
+      { index: 2, title: 'AMSC', text: 'AMSCAmerican Superconductor CorporationstockBIVA' },
+    ], 'AMSC');
+
+    assert.deepEqual(result, { index: 1, title: 'AMSC', text: 'AMSCAmerican Superconductor CorporationstockNASDAQ' });
+  });
+
+  it('returns the only exact ticker match when no preferred venue exists', () => {
+    const result = selectWatchlistSearchResult([
+      { index: 0, title: 'VICR', text: 'VICRVicor CorporationstockNASDAQ' },
+    ], 'VICR');
+
+    assert.deepEqual(result, { index: 0, title: 'VICR', text: 'VICRVicor CorporationstockNASDAQ' });
+  });
+
+  it('returns null when exact ticker match is absent', () => {
+    const result = selectWatchlistSearchResult([
+      { index: 0, title: 'AMSC_SHORT_VOLUME', text: 'AMSC Short Sale VolumeindexFINRA' },
+    ], 'AMSC');
+
+    assert.equal(result, null);
   });
 });
 

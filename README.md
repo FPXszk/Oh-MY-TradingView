@@ -391,6 +391,139 @@ WSL からの既定例:
 TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9223 node src/cli/index.js backtest nvda-ma
 ```
 
+### 電力関連ウォッチリスト登録の再現例
+
+以下は、今回実運用した **「X から候補抽出 → 時価総額順に 1 つの watchlist へ投入」** の最短 runbook です。  
+repo root で実行し、CLI は `npm run tv -- ...` で揃える前提にしています。
+
+1. X 用の認証情報が `config/.env` にある場合は先に読み込む
+2. WSL から Windows 側 TradingView CDP へ接続できることを確認する
+3. TradingView Desktop 側で新規 watchlist を 1 つ作成して active にする
+4. X 投稿を読み、今回の power テーマ銘柄群を確定する
+5. 時価総額順の ticker 列を `watchlist-add` で上から順に投入する
+
+#### 1. 前提確認
+
+X 認証情報を `config/.env` に置いている場合:
+
+```bash
+set -a
+. ./config/.env
+set +a
+```
+
+WSL からの接続確認:
+
+```bash
+export TV_CDP_HOST=172.31.144.1
+export TV_CDP_PORT=9223
+
+npm run tv -- status
+npm run tv -- x whoami
+```
+
+#### 2. 初回だけ TradingView UI で watchlist を作る
+
+現行 CLI は **active な watchlist に対する list/add/remove** までです。  
+そのため、**最初の新規リスト作成と active 化だけは TradingView Desktop の UI で行います**。
+
+1. 右サイドバーの **ウォッチリスト**
+2. watchlist メニュー
+3. **新規リスト作成…**
+4. 例: `Power US Infra`
+5. その watchlist を active のままにする
+
+空の active list であることを確認:
+
+```bash
+npm run tv -- workspace watchlist-list
+```
+
+#### 3. 候補ソースを読む
+
+今回の元ネタ確認:
+
+```bash
+npm run tv -- x tweet --id "https://x.com/aleabitoreddit/status/2047030798554132901?s=46"
+npm run tv -- x user-posts --username aleabitoreddit --max 100
+```
+
+今回の session では、直近 3 ヶ月の電力関連投稿から次の **米国株** を採用しました。
+
+```text
+TXN ETN VRT AEIS VICR SPXC POWL VMI CLF AZZ NVTS VSH ATKR AMSC PLPC
+```
+
+> `tv market fundamentals` は環境によって 401 になることがあるため、今回の並び順確定では Yahoo Finance quote page と Stock Analysis の market cap も補完利用しました。参照先は `docs/references/design-ref-llms.md` を見てください。
+
+#### 4. 時価総額順で watchlist へ投入する
+
+今回確定した順序は次の通りです。
+
+```text
+TXN
+ETN
+VRT
+AEIS
+VICR
+SPXC
+POWL
+VMI
+CLF
+AZZ
+NVTS
+VSH
+ATKR
+AMSC
+PLPC
+```
+
+そのまま再投入する場合:
+
+```bash
+for symbol in TXN ETN VRT AEIS VICR SPXC POWL VMI CLF AZZ NVTS VSH ATKR AMSC PLPC; do
+  npm run tv -- workspace watchlist-add --symbol "$symbol"
+done
+```
+
+確認:
+
+```bash
+npm run tv -- workspace watchlist-list
+```
+
+期待する最終結果:
+
+```json
+{
+  "success": true,
+  "symbols": [
+    "NASDAQ:TXN",
+    "NYSE:ETN",
+    "NYSE:VRT",
+    "NASDAQ:AEIS",
+    "NASDAQ:VICR",
+    "NYSE:SPXC",
+    "NASDAQ:POWL",
+    "NYSE:VMI",
+    "NYSE:CLF",
+    "NYSE:AZZ",
+    "NASDAQ:NVTS",
+    "NYSE:VSH",
+    "NYSE:ATKR",
+    "NASDAQ:AMSC",
+    "NASDAQ:PLPC"
+  ],
+  "count": 15
+}
+```
+
+#### 5. 補足
+
+- `watchlist-list` / `watchlist-add` / `watchlist-remove` は **active watchlist に対してだけ** 動きます
+- 別リストへ入れたい場合は、先に TradingView Desktop 側でその watchlist を active にしてから CLI を実行してください
+- 既存リストを汚したくない場合は、毎回 `watchlist-list` で現在の active list を確認してから追加してください
+
 ### Python night batch
 
 夜間自動化は **Python が WSL 側の `9223` 接続を preflight し、TradingView 操作本体は既存 Node script を subprocess 実行する** 構成を想定しています。CDP/backtest 本体を Python に再実装しません。

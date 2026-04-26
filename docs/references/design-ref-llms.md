@@ -521,3 +521,33 @@
 - このプロジェクトにどう活かしたか: `.agents/skills/` に recipe-runbook スタイルの TradingView 向け skill を追加し、`tests/agent-skills-conformance.test.js` で frontmatter / 必須 section を固定する設計の根拠とした。
 - 採用したもの: thin harness + fat skills、recipe-runbook style、conformance test、compiled-truth/timeline の発想。
 - 採用しなかったもの: personal brain、Bun/PGLite/Postgres 依存、常時 sync/autopilot、DB migration。
+
+---
+
+## 52：aleabitoreddit の電力関連ポスト群
+
+- URL: https://x.com/aleabitoreddit , https://x.com/aleabitoreddit/status/2047030798554132901?s=46
+- 参考にした理由: 電力インフラ需要の恩恵銘柄を、実際の市場観測から拾って TradingView ウォッチリスト候補へ落とすための一次ソースとして使った。
+- このプロジェクトにどう活かしたか: 直近 3 ヶ月の電力関連投稿から米国株候補を抽出し、`Power US Infra` ウォッチリストの母集団を定義した。
+- 採用したもの: DPA / grid infrastructure / 800V DC infrastructure 文脈からの候補抽出。
+- 採用しなかったもの: 非米国株や、電力テーマとの結びつきが弱い周辺銘柄の採用。
+
+---
+
+## 53：Yahoo Finance quote pages
+
+- URL: https://finance.yahoo.com/quote/TXN/ , https://finance.yahoo.com/quote/ETN/ , https://finance.yahoo.com/quote/VRT/ , https://finance.yahoo.com/quote/AEIS/ , https://finance.yahoo.com/quote/VICR/ , https://finance.yahoo.com/quote/VMI/ , https://finance.yahoo.com/quote/CLF/ , https://finance.yahoo.com/quote/NVTS/ , https://finance.yahoo.com/quote/VSH/ , https://finance.yahoo.com/quote/AMSC/
+- 参考にした理由: `tv market fundamentals` が 401 で使えなかったため、ウォッチリスト並び順に必要な時価総額を補完取得するため。
+- このプロジェクトにどう活かしたか: 米国株候補の market cap を回収し、`Power US Infra` を時価総額降順で並べる根拠にした。
+- 採用したもの: quote page 上の `Market Cap (intraday)` を一次的な並び順根拠として使う運用。
+- 採用しなかったもの: Yahoo の 401/503 を回避するための非公開 API 依存やスクレイピング強化。
+
+---
+
+## 54：Stock Analysis market cap pages
+
+- URL: https://stockanalysis.com/stocks/spxc/market-cap/ , https://stockanalysis.com/stocks/powl/market-cap/ , https://stockanalysis.com/stocks/azz/market-cap/ , https://stockanalysis.com/stocks/atkr/market-cap/ , https://stockanalysis.com/stocks/plpc/market-cap/
+- 参考にした理由: Yahoo Finance が一部銘柄で 503 を返したため、market cap の欠損を補う代替ソースとして使った。
+- このプロジェクトにどう活かしたか: SPXC / POWL / AZZ / ATKR / PLPC の時価総額を補完し、単一ウォッチリストの並び順を最後まで確定させた。
+- 採用したもの: 銘柄ごとの market cap 補完ソースとしての限定利用。
+- 採用しなかったもの: valuation / analyst estimate など、今回の並び順に不要な周辺データの採用。
