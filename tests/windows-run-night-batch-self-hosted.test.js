@@ -390,13 +390,17 @@ describe('external PowerShell scripts for workflow summary', () => {
       'find script must output summary_md');
   });
 
-  it('find-night-batch-outputs.ps1 outputs rich_report, ranking_artifact, and campaign_artifact_paths', () => {
+  it('find-night-batch-outputs.ps1 outputs rich_report, ranking_artifact, campaign manifests, and campaign_artifact_paths', () => {
     const script = readFileSync(FIND_OUTPUTS_SCRIPT_PATH, 'utf8');
 
     assert.match(script, /rich_report=/,
       'find script must output rich_report');
     assert.match(script, /ranking_artifact=/,
       'find script must output ranking_artifact');
+    assert.match(script, /campaign_manifest_json=/,
+      'find script must output campaign_manifest_json');
+    assert.match(script, /campaign_manifest_md=/,
+      'find script must output campaign_manifest_md');
     assert.match(script, /campaign_artifact_paths/i,
       'find script must output campaign_artifact_paths');
   });
@@ -449,22 +453,30 @@ describe('external PowerShell scripts for workflow summary', () => {
       'summary script must accept SummaryJsonPath parameter');
   });
 
-  it('append-night-batch-workflow-summary.ps1 accepts RichReportPath and RankingArtifactPath parameters', () => {
+  it('append-night-batch-workflow-summary.ps1 accepts RichReportPath, RankingArtifactPath, and campaign manifest parameters', () => {
     const script = readFileSync(APPEND_SUMMARY_SCRIPT_PATH, 'utf8');
 
     assert.match(script, /RichReportPath/,
       'summary script must accept RichReportPath parameter');
     assert.match(script, /RankingArtifactPath/,
       'summary script must accept RankingArtifactPath parameter');
+    assert.match(script, /CampaignManifestJsonPath/,
+      'summary script must accept CampaignManifestJsonPath parameter');
+    assert.match(script, /CampaignManifestMdPath/,
+      'summary script must accept CampaignManifestMdPath parameter');
   });
 
-  it('append-night-batch-workflow-summary.ps1 emits rich_report and ranking_artifact when provided', () => {
+  it('append-night-batch-workflow-summary.ps1 emits rich_report, ranking_artifact, and campaign manifest paths when provided', () => {
     const script = readFileSync(APPEND_SUMMARY_SCRIPT_PATH, 'utf8');
 
     assert.match(script, /rich_report/,
       'summary script must emit rich_report field');
     assert.match(script, /ranking_artifact/,
       'summary script must emit ranking_artifact field');
+    assert.match(script, /campaign_manifest_json/,
+      'summary script must emit campaign_manifest_json field');
+    assert.match(script, /campaign_manifest_md/,
+      'summary script must emit campaign_manifest_md field');
   });
 });
 
@@ -481,15 +493,23 @@ describe('workflow delegates to external PowerShell scripts', () => {
       'workflow must call append-night-batch-workflow-summary.ps1');
   });
 
-  it('Append step passes rich_report and ranking_artifact outputs', () => {
+  it('Append step passes rich_report, ranking_artifact, and campaign manifest outputs', () => {
     assert.match(workflow, /RichReportPath/,
       'workflow Append step must pass RichReportPath');
     assert.match(workflow, /RankingArtifactPath/,
       'workflow Append step must pass RankingArtifactPath');
+    assert.match(workflow, /CampaignManifestJsonPath/,
+      'workflow Append step must pass CampaignManifestJsonPath');
+    assert.match(workflow, /CampaignManifestMdPath/,
+      'workflow Append step must pass CampaignManifestMdPath');
     assert.match(workflow, /rich_report/,
       'workflow must reference rich_report output');
     assert.match(workflow, /ranking_artifact/,
       'workflow must reference ranking_artifact output');
+    assert.match(workflow, /campaign_manifest_json/,
+      'workflow must reference campaign_manifest_json output');
+    assert.match(workflow, /campaign_manifest_md/,
+      'workflow must reference campaign_manifest_md output');
   });
 
   it('Upload step includes campaign artifact paths alongside the round directory', () => {

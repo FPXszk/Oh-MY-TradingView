@@ -16,12 +16,32 @@ $summaryMd = ''
 $richReport = ''
 $rankingArtifact = ''
 $protectionReport = ''
+$campaignManifestJson = ''
+$campaignManifestMd = ''
 $campaignArtifactDirs = [System.Collections.Generic.List[string]]::new()
 
 $searchRoots = @(
     'artifacts\night-batch',
     'results\night-batch'
 )
+
+function Resolve-RepoPath {
+    param(
+        [Parameter(Mandatory = $false)]
+        [string]$PathValue = ''
+    )
+
+    if ([string]::IsNullOrWhiteSpace($PathValue)) {
+        return ''
+    }
+
+    $normalized = $PathValue -replace '/', '\'
+    if ([System.IO.Path]::IsPathRooted($normalized)) {
+        return $normalized
+    }
+
+    return Join-Path $PWD $normalized
+}
 
 foreach ($searchRoot in $searchRoots) {
     if (-not (Test-Path $searchRoot)) {
@@ -64,10 +84,28 @@ foreach ($searchRoot in $searchRoots) {
 
     try {
         $summaryData = Get-Content -Raw -Path $summaryJson | ConvertFrom-Json
+        $campaignManifestJson = Resolve-RepoPath ([string]$summaryData.campaign_manifest_json_path)
+        $campaignManifestMd = Resolve-RepoPath ([string]$summaryData.campaign_manifest_md_path)
+
+        foreach ($artifactEntry in @($summaryData.campaign_artifacts)) {
+            $campaignDirPath = [string]$artifactEntry.campaign_dir
+            if ([string]::IsNullOrWhiteSpace($campaignDirPath)) {
+                $campaign = [string]$artifactEntry.campaign
+                $phase = [string]$artifactEntry.phase
+                if (-not [string]::IsNullOrWhiteSpace($campaign) -and -not [string]::IsNullOrWhiteSpace($phase)) {
+                    $campaignDirPath = "artifacts/campaigns/$campaign/$phase"
+                }
+            }
+            $campaignDir = Resolve-RepoPath $campaignDirPath
+            if ($campaignDir -ne '' -and (Test-Path $campaignDir) -and (-not $campaignArtifactDirs.Contains($campaignDir))) {
+                $campaignArtifactDirs.Add($campaignDir)
+            }
+        }
+
         foreach ($step in @($summaryData.steps)) {
             foreach ($capturedLine in @($step.captured_lines)) {
                 $line = [string]$capturedLine.line
-                if ($line -match 'artifacts/campaigns/([^/]+)/([^/]+)/') {
+                if ($line -match '^artifacts/campaigns/([^/]+)/([^/]+)/') {
                     $campaignDir = Join-Path $PWD ("artifacts\campaigns\" + $Matches[1] + "\" + $Matches[2])
                     if ((Test-Path $campaignDir) -and (-not $campaignArtifactDirs.Contains($campaignDir))) {
                         $campaignArtifactDirs.Add($campaignDir)
@@ -88,6 +126,8 @@ foreach ($searchRoot in $searchRoots) {
 "rich_report=$richReport"            | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 "ranking_artifact=$rankingArtifact"  | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 "protection_report=$protectionReport" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+"campaign_manifest_json=$campaignManifestJson" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+"campaign_manifest_md=$campaignManifestMd" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 "campaign_artifact_paths<<EOF"       | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 $campaignArtifactDirs                | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 "EOF"                                | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append

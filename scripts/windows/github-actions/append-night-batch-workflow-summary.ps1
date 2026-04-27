@@ -4,7 +4,7 @@
 # PowerShell parser ambiguity on Windows.
 #
 # Usage (GitHub Actions step):
-#   powershell -NoProfile -ExecutionPolicy Bypass -File scripts/windows/github-actions/append-night-batch-workflow-summary.ps1 -SummaryJsonPath "<path>" [-SummaryMdPath "<path>"] [-RichReportPath "<path>"] [-RankingArtifactPath "<path>"]
+#   powershell -NoProfile -ExecutionPolicy Bypass -File scripts/windows/github-actions/append-night-batch-workflow-summary.ps1 -SummaryJsonPath "<path>" [-SummaryMdPath "<path>"] [-RichReportPath "<path>"] [-RankingArtifactPath "<path>"] [-CampaignManifestJsonPath "<path>"] [-CampaignManifestMdPath "<path>"]
 
 param(
     [Parameter(Mandatory = $true)]
@@ -21,7 +21,13 @@ param(
     [string]$RankingArtifactPath = '',
 
     [Parameter(Mandatory = $false)]
-    [string]$ProtectionReportPath = ''
+    [string]$ProtectionReportPath = '',
+
+    [Parameter(Mandatory = $false)]
+    [string]$CampaignManifestJsonPath = '',
+
+    [Parameter(Mandatory = $false)]
+    [string]$CampaignManifestMdPath = ''
 )
 
 Add-Content $env:GITHUB_STEP_SUMMARY '## Night batch result'
@@ -48,6 +54,12 @@ if ($RichReportPath -ne '') {
 }
 if ($RankingArtifactPath -ne '') {
     Add-Content $env:GITHUB_STEP_SUMMARY "- ranking_artifact: $RankingArtifactPath"
+}
+if ($CampaignManifestJsonPath -ne '') {
+    Add-Content $env:GITHUB_STEP_SUMMARY "- campaign_manifest_json: $CampaignManifestJsonPath"
+}
+if ($CampaignManifestMdPath -ne '') {
+    Add-Content $env:GITHUB_STEP_SUMMARY "- campaign_manifest_md: $CampaignManifestMdPath"
 }
 
 if ($SummaryMdPath -ne '') {

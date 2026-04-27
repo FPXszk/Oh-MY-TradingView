@@ -1353,6 +1353,86 @@ exit 0
     rmSync(roundDir, { recursive: true, force: true });
   });
 
+  it('advance-next-round writes a campaign artifact manifest when the summary captures output paths', async () => {
+    const fakeNodePath = join(tempDir, 'fake-node-manifest.sh');
+    const fakeNodeLog = join(tempDir, 'fake-node-manifest.log');
+    writeExecutable(
+      fakeNodePath,
+      `#!/bin/sh
+${STATUS_OK_SNIPPET}printf '%s\\n' "$*" >> "${fakeNodeLog}"
+case "$*" in
+  *2024-01-01*2024-12-31*)
+    printf '  → checkpoint saved: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/demo-campaign/smoke/checkpoint-1.json\\n'
+    printf '  Raw results: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/demo-campaign/smoke/final-results.json\\n'
+    printf '  Recovered results: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/demo-campaign/smoke/recovered-results.json\\n'
+    printf '  Summary: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/demo-campaign/smoke/recovered-summary.json\\n'
+    printf '  Strategy ranking JSON: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/demo-campaign/smoke/strategy-ranking.json\\n'
+    printf '  Strategy ranking MD: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/demo-campaign/smoke/strategy-ranking.md\\n'
+    exit 0
+    ;;
+  *2000-01-01*2099-12-31*)
+    printf '  → checkpoint saved: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/demo-campaign/full/checkpoint-40.json\\n'
+    printf '  Raw results: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/demo-campaign/full/final-results.json\\n'
+    printf '  Recovered results: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/demo-campaign/full/recovered-results.json\\n'
+    printf '  Summary: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/demo-campaign/full/recovered-summary.json\\n'
+    printf '  Strategy ranking JSON: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/demo-campaign/full/strategy-ranking.json\\n'
+    printf '  Strategy ranking MD: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/demo-campaign/full/strategy-ranking.md\\n'
+    printf '  Current scoreboards: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/docs/research/current/artifacts-backtest-scoreboards.md\\n'
+    exit 0
+    ;;
+  *)
+    exit 0
+    ;;
+esac
+`,
+    );
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--host',
+      '127.0.0.1',
+      '--port',
+      String(port),
+      '--startup-check-host',
+      '127.0.0.1',
+      '--startup-check-port',
+      String(port),
+      '--node-bin',
+      fakeNodePath,
+      '--round-mode',
+      'advance-next-round',
+    ]);
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+
+    const summary = readSummaryFromResult(result);
+    assert.match(summary.campaign_manifest_json_path, /campaign-artifacts\.json$/);
+    assert.match(summary.campaign_manifest_md_path, /campaign-artifacts\.md$/);
+    assert.equal(Array.isArray(summary.campaign_artifacts), true);
+    assert.equal(summary.campaign_artifacts.length, 2);
+
+    const manifestJsonPath = summary.campaign_manifest_json_path.startsWith('/')
+      ? summary.campaign_manifest_json_path
+      : join(PROJECT_ROOT, summary.campaign_manifest_json_path);
+    const manifestMdPath = summary.campaign_manifest_md_path.startsWith('/')
+      ? summary.campaign_manifest_md_path
+      : join(PROJECT_ROOT, summary.campaign_manifest_md_path);
+    assert.equal(existsSync(manifestJsonPath), true);
+    assert.equal(existsSync(manifestMdPath), true);
+
+    const manifest = JSON.parse(readFileSync(manifestJsonPath, 'utf8'));
+    assert.equal(manifest.campaigns.length, 2);
+    assert.deepEqual(
+      manifest.campaigns.map((entry) => entry.phase),
+      ['full', 'smoke'],
+    );
+    assert.equal(manifest.campaigns[0].campaign, 'demo-campaign');
+    assert.match(manifest.campaigns[0].campaign_dir, /artifacts\/campaigns\/demo-campaign\/full/);
+    assert.match(manifest.campaigns[0].strategy_ranking_json_path, /demo-campaign\/full\/strategy-ranking\.json/);
+    assert.match(readFileSync(manifestMdPath, 'utf8'), /Night batch campaign artifacts/);
+  });
+
   it('resume-current-round errors when no round exists', async () => {
     const existingRounds = [];
     try {

@@ -1565,6 +1565,165 @@ def enrich_summary(summary: dict) -> dict:
     return normalized
 
 
+CAMPAIGN_ARTIFACT_LINE_FIELDS = (
+    ('Raw results', 'final_results_path'),
+    ('Recovered results', 'recovered_results_path'),
+    ('Summary', 'recovered_summary_path'),
+    ('Strategy ranking JSON', 'strategy_ranking_json_path'),
+    ('Strategy ranking MD', 'strategy_ranking_md_path'),
+    ('Current scoreboards', 'scoreboards_path'),
+)
+
+
+def normalize_logged_repo_path(raw_path: str | None) -> str | None:
+    if not raw_path:
+        return None
+    normalized = str(raw_path).strip().replace('\\', '/')
+    if not normalized:
+        return None
+    if normalized.startswith(('artifacts/', 'docs/', 'results/', 'config/')):
+        return normalized
+    project_root_posix = PROJECT_ROOT.as_posix()
+    if normalized.startswith(f'{project_root_posix}/'):
+        return relative_path(Path(normalized))
+    marker = f'/{PROJECT_ROOT.name}/'
+    if marker in normalized:
+        return normalized.rsplit(marker, 1)[-1].lstrip('/')
+    return None
+
+
+def extract_labeled_repo_path(line: str, label: str) -> str | None:
+    match = re.match(rf'^\s*{re.escape(label)}:\s*(.+?)\s*$', line)
+    if not match:
+        return None
+    return normalize_logged_repo_path(match.group(1))
+
+
+def extract_campaign_artifacts(summary: dict) -> list[dict]:
+    artifacts_by_key: dict[tuple[str, str], dict] = {}
+
+    for step in summary.get('steps', []):
+        checkpoint_path = normalize_logged_repo_path(step.get('latest_checkpoint'))
+        campaign_id: str | None = None
+        phase: str | None = None
+        if checkpoint_path:
+            match = re.match(r'^artifacts/campaigns/([^/]+)/([^/]+)/', checkpoint_path)
+            if match:
+                campaign_id, phase = match.groups()
+
+        captured_lines = step.get('captured_lines') or []
+        if not campaign_id or not phase:
+            for captured in captured_lines:
+                line = str(captured.get('line') or '')
+                for label, _field in CAMPAIGN_ARTIFACT_LINE_FIELDS:
+                    path_value = extract_labeled_repo_path(line, label)
+                    if not path_value:
+                        continue
+                    match = re.match(r'^artifacts/campaigns/([^/]+)/([^/]+)/', path_value)
+                    if match:
+                        campaign_id, phase = match.groups()
+                        break
+                if campaign_id and phase:
+                    break
+
+        if not campaign_id or not phase:
+            continue
+
+        key = (campaign_id, phase)
+        current = artifacts_by_key.get(key) or {
+            'campaign': campaign_id,
+            'phase': phase,
+            'campaign_dir': f'artifacts/campaigns/{campaign_id}/{phase}',
+            'checkpoint_path': checkpoint_path,
+            'final_results_path': None,
+            'recovered_results_path': None,
+            'recovered_summary_path': None,
+            'strategy_ranking_json_path': None,
+            'strategy_ranking_md_path': None,
+            'scoreboards_path': None,
+        }
+        if checkpoint_path:
+            current['checkpoint_path'] = checkpoint_path
+
+        for captured in captured_lines:
+            line = str(captured.get('line') or '')
+            checkpoint_match = re.search(r'checkpoint saved:\s*(.+?)\s*$', line)
+            if checkpoint_match:
+                resolved_checkpoint = normalize_logged_repo_path(checkpoint_match.group(1))
+                if resolved_checkpoint:
+                    current['checkpoint_path'] = resolved_checkpoint
+            for label, field in CAMPAIGN_ARTIFACT_LINE_FIELDS:
+                path_value = extract_labeled_repo_path(line, label)
+                if path_value:
+                    current[field] = path_value
+
+        artifacts_by_key[key] = current
+
+    return sorted(
+        artifacts_by_key.values(),
+        key=lambda entry: (entry.get('campaign') or '', entry.get('phase') or ''),
+    )
+
+
+def build_campaign_artifacts_manifest(run_id: str, summary: dict) -> dict | None:
+    campaign_artifacts = extract_campaign_artifacts(summary)
+    if not campaign_artifacts:
+        return None
+
+    run_match = re.match(r'^gha_(\d+)_(\d+)$', run_id)
+    github_run_id = int(run_match.group(1)) if run_match else None
+    github_run_attempt = int(run_match.group(2)) if run_match else None
+
+    raw_run_number = os.environ.get('GITHUB_RUN_NUMBER')
+    github_run_number = None
+    if raw_run_number and raw_run_number.isdigit():
+        github_run_number = int(raw_run_number)
+
+    return {
+        'run_id': run_id,
+        'github_run_id': github_run_id,
+        'run_number': github_run_number,
+        'run_attempt': github_run_attempt,
+        'workflow_name': os.environ.get('GITHUB_WORKFLOW') or 'night-batch',
+        'command': summary.get('command'),
+        'round': summary.get('round'),
+        'campaigns': campaign_artifacts,
+    }
+
+
+def render_campaign_artifacts_manifest_markdown(manifest: dict) -> str:
+    lines = [
+        f'# Night batch campaign artifacts {manifest.get("run_id") or "n/a"}',
+        '',
+        '- この manifest は round artifact 内の主要 campaign 成果物パスを repo 相対でまとめたものです。',
+        f'- workflow_name: `{manifest.get("workflow_name") or "n/a"}`',
+        f'- github_run_id: `{manifest.get("github_run_id") or "n/a"}`',
+        f'- run_number: `{manifest.get("run_number") or "n/a"}`',
+        f'- run_attempt: `{manifest.get("run_attempt") or "n/a"}`',
+        f'- round: `{manifest.get("round") or "n/a"}`',
+        '',
+    ]
+
+    for artifact in manifest.get('campaigns', []):
+        lines.extend([
+            f'## {artifact["campaign"]} / {artifact["phase"]}',
+            '',
+            '| artifact | path |',
+            '| --- | --- |',
+            f'| campaign_dir | `{artifact.get("campaign_dir") or "—"}` |',
+            f'| checkpoint | `{artifact.get("checkpoint_path") or "—"}` |',
+            f'| raw_results | `{artifact.get("final_results_path") or "—"}` |',
+            f'| recovered_results | `{artifact.get("recovered_results_path") or "—"}` |',
+            f'| recovered_summary | `{artifact.get("recovered_summary_path") or "—"}` |',
+            f'| strategy_ranking_json | `{artifact.get("strategy_ranking_json_path") or "—"}` |',
+            f'| strategy_ranking_md | `{artifact.get("strategy_ranking_md_path") or "—"}` |',
+            f'| current_scoreboards | `{artifact.get("scoreboards_path") or "—"}` |',
+            '',
+        ])
+
+    return '\n'.join(lines) + '\n'
+
+
 def update_foreground_state(
     state_path: Path,
     run_id: str,
@@ -2212,8 +2371,24 @@ def write_summary(run_id: str, summary: dict, logger: logging.Logger, output_dir
     summary_json_path = output_dir / f'{run_id}-summary.json'
     summary_md_path = output_dir / f'{run_id}-summary.md'
     summary = enrich_summary(summary)
+    campaign_manifest = build_campaign_artifacts_manifest(run_id, summary)
+    campaign_manifest_json_path = output_dir / f'{run_id}-campaign-artifacts.json'
+    campaign_manifest_md_path = output_dir / f'{run_id}-campaign-artifacts.md'
+    if campaign_manifest:
+        summary['campaign_artifacts'] = campaign_manifest['campaigns']
+        summary['campaign_manifest_json_path'] = relative_path(campaign_manifest_json_path)
+        summary['campaign_manifest_md_path'] = relative_path(campaign_manifest_md_path)
 
     summary_json_path.write_text(f'{json.dumps(summary, indent=2, ensure_ascii=False)}\n', encoding='utf-8')
+    if campaign_manifest:
+        campaign_manifest_json_path.write_text(
+            f'{json.dumps(campaign_manifest, indent=2, ensure_ascii=False)}\n',
+            encoding='utf-8',
+        )
+        campaign_manifest_md_path.write_text(
+            render_campaign_artifacts_manifest_markdown(campaign_manifest),
+            encoding='utf-8',
+        )
 
     lines = [
         f'# Night batch summary {run_id}',
@@ -2271,7 +2446,18 @@ def write_summary(run_id: str, summary: dict, logger: logging.Logger, output_dir
             for wf in protection['warning_files']:
                 lines.append(f'  - {wf["path"]} ({wf["role"]}): {wf["reason"]}')
 
+    if campaign_manifest:
+        lines.extend([
+            '',
+            '## Campaign artifact manifest',
+            '',
+            f'- campaign_manifest_json: {summary["campaign_manifest_json_path"]}',
+            f'- campaign_manifest_md: {summary["campaign_manifest_md_path"]}',
+        ])
+
     summary_md_path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
+    if campaign_manifest:
+        logger.info('Campaign artifact manifest written: %s', relative_path(campaign_manifest_md_path))
     logger.info('Summary written: %s', relative_path(summary_md_path))
     return summary_json_path, summary_md_path
 
