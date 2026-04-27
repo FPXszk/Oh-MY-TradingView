@@ -132,8 +132,8 @@ describe('repository layout policy', () => {
     }
   });
 
-  it('prunes strategy-presets.json to 16 live strategies and records retired strategies', () => {
-    const expectedLiveStrategies = 16;
+  it('prunes strategy-presets.json to 74 live strategies and records retired strategies', () => {
+    const expectedLiveStrategies = 74;
     const presets = JSON.parse(
       readFileSync(join(PROJECT_ROOT, 'config', 'backtest', 'strategy-presets.json'), 'utf8'),
     );
@@ -156,11 +156,11 @@ describe('repository layout policy', () => {
     );
   });
 
-  it('strategy-catalog.json exists and has 18 strategies', () => {
+  it('strategy-catalog.json exists and has 76 strategies', () => {
     const catalogPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-catalog.json');
     assert.equal(existsSync(catalogPath), true, 'strategy-catalog.json must exist');
     const catalog = JSON.parse(readFileSync(catalogPath, 'utf8'));
-    assert.equal(catalog.strategies.length, 18, `expected 18 strategies in catalog, got ${catalog.strategies.length}`);
+    assert.equal(catalog.strategies.length, 76, `expected 76 strategies in catalog, got ${catalog.strategies.length}`);
   });
 
   it('base campaigns and archive campaigns do not overlap', () => {
@@ -335,8 +335,8 @@ describe('repository layout policy', () => {
     }
   });
 
-  it('prunes strategy-presets.json to 16 live strategies and records retired strategies', () => {
-    const expectedLiveStrategies = 16;
+  it('prunes strategy-presets.json to 74 live strategies and records retired strategies', () => {
+    const expectedLiveStrategies = 74;
     const presets = JSON.parse(
       readFileSync(join(PROJECT_ROOT, 'config', 'backtest', 'strategy-presets.json'), 'utf8'),
     );
@@ -359,11 +359,11 @@ describe('repository layout policy', () => {
     );
   });
 
-  it('strategy-catalog.json exists and has 18 strategies', () => {
+  it('strategy-catalog.json exists and has 76 strategies', () => {
     const catalogPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-catalog.json');
     assert.equal(existsSync(catalogPath), true, 'strategy-catalog.json must exist');
     const catalog = JSON.parse(readFileSync(catalogPath, 'utf8'));
-    assert.equal(catalog.strategies.length, 18, `expected 18 strategies in catalog, got ${catalog.strategies.length}`);
+    assert.equal(catalog.strategies.length, 76, `expected 76 strategies in catalog, got ${catalog.strategies.length}`);
   });
 
   it('base campaigns and archive campaigns do not overlap', () => {

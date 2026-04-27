@@ -547,15 +547,78 @@ describe('strategy-presets.json integration', () => {
   const EXPECTED_LIVE_IDS = [
     'donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late',
     'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-50',
+    'donchian-60-20-rsp-rsi14-regime60-tp22-25-tp100-50',
     'donchian-60-20-rsp-rsi14-regime60-tp25-25-tp100-50',
+    'donchian-60-20-rsp-rsi14-regime60-tp27-25-tp100-50',
     'donchian-60-20-rsp-rsi14-regime60-tp35-25-tp100-50',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-20-tp100-50',
     'donchian-60-20-rsp-rsi14-regime60-tp30-20-tp100-50',
     'donchian-60-20-rsp-rsi14-regime60-tp30-33-tp100-50',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-30-tp100-50',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-33-tp100-50',
     'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp80-50',
     'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp120-50',
     'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-33',
     'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-67',
     'donchian-60-20-rsp-rsi14-regime60-tp30-25-tp90-50',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-tp100-50',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-28-tp100-50',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-29-tp100-50',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-31-tp100-50',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-32-tp100-50',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-34-tp100-50',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-35-tp100-50',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-36-tp100-50',
+    'rsp-vix-spy-panic-reversal-rsi2-confirm-sma25-rsi65-exit-no-stop',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma25-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma25-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma25-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi35-vixpeak-sma25-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi45-vixpeak-sma25-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma20-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma25-rsi60',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-rsi2x10-sma25-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-rsi2x10-sma25-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma20-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma20-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi35-vixpeak-sma20-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi45-vixpeak-sma20-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma20-rsi60',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma20-rsi60',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma20-rsi60',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi35-vixpeak-sma25-rsi60',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-rsi2only-sma25-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-rsi2only-sma25-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-rsi2only-sma25-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-or-rsi2x10-sma25-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-or-rsi2x10-sma25-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-or-rsi2x10-sma25-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-and-rsi2x10-sma25-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-and-rsi2x10-sma25-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-and-rsi2x10-sma25-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-noconfirm-sma25-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-noconfirm-sma25-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-noconfirm-sma25-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma15-rsi60',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma20-rsi62',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma25-rsi62',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma15-rsi62',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma15-rsi60',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma15-rsi62',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma20-rsi62',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma25-rsi62',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma15-rsi60',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma15-rsi62',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma20-rsi62',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma25-rsi62',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-rsi2only-sma20-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-and-rsi2x10-sma20-rsi65',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-rsi2only-sma25-rsi60',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-and-rsi2x10-sma25-rsi60',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-rsi2only-sma25-rsi60',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-and-rsi2x10-sma25-rsi60',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-rsi2only-sma25-rsi60',
+    'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-and-rsi2x10-sma25-rsi60',
   ];
 
   it('all live presets pass validation', async () => {
@@ -582,18 +645,26 @@ describe('strategy-presets.json integration', () => {
 
   it('keeps exactly 11 live presets in deterministic order', async () => {
     const data = await loadPresets();
-    assert.equal(data.strategies.length, 11);
+    assert.equal(data.strategies.length, 74);
     assert.deepEqual(data.strategies.map((preset) => preset.id), EXPECTED_LIVE_IDS);
   });
 
-  it('keeps only approved donchian breakout and raw_source families in the live preset file', async () => {
+  it('keeps only approved live preset families and builders in the live preset file', async () => {
     const data = await loadPresets();
     const approvedBuilders = new Set(['donchian_breakout', 'raw_source']);
+    const approvedCategories = new Set(['breakout', 'mean_reversion']);
     for (const preset of data.strategies) {
-      assert.equal(preset.category, 'breakout', `Preset "${preset.id}" must be breakout category`);
       assert.ok(approvedBuilders.has(preset.builder), `Preset "${preset.id}" has unapproved builder: ${preset.builder}`);
+      assert.ok(approvedCategories.has(preset.category), `Preset "${preset.id}" has unapproved category: ${preset.category}`);
       assert.ok(Array.isArray(preset.tags));
-      assert.ok(preset.tags.includes('rsi-regime'), 'Preset "' + preset.id + '" must keep rsi-regime tag');
+      if (preset.category === 'breakout') {
+        assert.ok(preset.tags.includes('rsi-regime'), 'Preset "' + preset.id + '" must keep rsi-regime tag');
+      } else {
+        assert.ok(
+          preset.tags.includes('mean-reversion') || preset.tags.includes('panic-reversal'),
+          'Preset "' + preset.id + '" must keep a panic/mean-reversion tag',
+        );
+      }
     }
   });
 

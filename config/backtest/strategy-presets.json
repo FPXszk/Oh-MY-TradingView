@@ -1763,6 +1763,2266 @@
         "strongest-plus-recovery-reversal-us40-10pack"
       ],
       "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-rsi2x10-sma25-rsi65.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma20-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX24 RSI40 Peakout SMA20 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 24,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 20,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-vix24-rsi40-sma20-exitrsi65",
+      "theme_notes": "50pack 深掘り向けに VIX>24 / SPY RSI14<40 / exit SMA20 / exit RSI65 を揃え、VIX peakout を確認に使う基準系。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>24 と exit SMA20 / RSI65 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 229,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma20-rsi65.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma20-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX28 RSI40 Peakout SMA20 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 28,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 20,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-vix28-rsi40-sma20-exitrsi65",
+      "theme_notes": "50pack 深掘り向けに VIX>28 / SPY RSI14<40 / exit SMA20 / exit RSI65 を揃え、VIX peakout を確認に使う基準系。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>28 と exit SMA20 / RSI65 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 230,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma20-rsi65.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi35-vixpeak-sma20-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX20 RSI35 Peakout SMA20 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 20,
+        "recovery_spy_rsi_max": 35,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 20,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-vix20-rsi35-sma20-exitrsi65",
+      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<35 / exit SMA20 / exit RSI65 を揃え、VIX peakout を確認に使う基準系。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>20 と exit SMA20 / RSI65 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 231,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi35-vixpeak-sma20-rsi65.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi45-vixpeak-sma20-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX20 RSI45 Peakout SMA20 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 20,
+        "recovery_spy_rsi_max": 45,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 20,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-vix20-rsi45-sma20-exitrsi65",
+      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<45 / exit SMA20 / exit RSI65 を揃え、VIX peakout を確認に使う基準系。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>20 と exit SMA20 / RSI65 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 232,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi45-vixpeak-sma20-rsi65.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma20-rsi60",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX20 RSI40 Peakout SMA20 RSI60",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 20,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 20,
+        "recovery_exit_rsi_threshold": 60
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-vix20-rsi40-sma20-exitrsi60",
+      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA20 / exit RSI60 を揃え、VIX peakout を確認に使う基準系。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>20 と exit SMA20 / RSI60 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 233,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma20-rsi60.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma20-rsi60",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX24 RSI40 Peakout SMA20 RSI60",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 24,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 20,
+        "recovery_exit_rsi_threshold": 60
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-vix24-rsi40-sma20-exitrsi60",
+      "theme_notes": "50pack 深掘り向けに VIX>24 / SPY RSI14<40 / exit SMA20 / exit RSI60 を揃え、VIX peakout を確認に使う基準系。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>24 と exit SMA20 / RSI60 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 234,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma20-rsi60.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma20-rsi60",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX28 RSI40 Peakout SMA20 RSI60",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 28,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 20,
+        "recovery_exit_rsi_threshold": 60
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-vix28-rsi40-sma20-exitrsi60",
+      "theme_notes": "50pack 深掘り向けに VIX>28 / SPY RSI14<40 / exit SMA20 / exit RSI60 を揃え、VIX peakout を確認に使う基準系。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>28 と exit SMA20 / RSI60 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 235,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma20-rsi60.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi35-vixpeak-sma25-rsi60",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX20 RSI35 Peakout SMA25 RSI60",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 20,
+        "recovery_spy_rsi_max": 35,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 60
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-vix20-rsi35-sma25-exitrsi60",
+      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<35 / exit SMA25 / exit RSI60 を揃え、VIX peakout を確認に使う基準系。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>20 と exit SMA25 / RSI60 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 236,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi35-vixpeak-sma25-rsi60.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-rsi2only-sma25-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX20 RSI40 RSI2x10 Only SMA25 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 20,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "rsi2_cross_10",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-rsi2only-vix20-rsi40-sma25-exitrsi65",
+      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA25 / exit RSI65 を揃え、SPY RSI2 の 10 上抜け単独で回復 entry する。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "panic reversal 系の confirm を単独接続して比較する。 VIX>20 と exit SMA25 / RSI65 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 237,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack",
+        "rsi2"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-rsi2only-sma25-rsi65.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-rsi2only-sma25-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX24 RSI40 RSI2x10 Only SMA25 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 24,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "rsi2_cross_10",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-rsi2only-vix24-rsi40-sma25-exitrsi65",
+      "theme_notes": "50pack 深掘り向けに VIX>24 / SPY RSI14<40 / exit SMA25 / exit RSI65 を揃え、SPY RSI2 の 10 上抜け単独で回復 entry する。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "panic reversal 系の confirm を単独接続して比較する。 VIX>24 と exit SMA25 / RSI65 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 238,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack",
+        "rsi2"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-rsi2only-sma25-rsi65.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-rsi2only-sma25-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX28 RSI40 RSI2x10 Only SMA25 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 28,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "rsi2_cross_10",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-rsi2only-vix28-rsi40-sma25-exitrsi65",
+      "theme_notes": "50pack 深掘り向けに VIX>28 / SPY RSI14<40 / exit SMA25 / exit RSI65 を揃え、SPY RSI2 の 10 上抜け単独で回復 entry する。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "panic reversal 系の confirm を単独接続して比較する。 VIX>28 と exit SMA25 / RSI65 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 239,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack",
+        "rsi2"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-rsi2only-sma25-rsi65.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-or-rsi2x10-sma25-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX20 RSI40 Peakout Or RSI2x10 SMA25 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 20,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout_or_rsi2_cross_10",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-or-rsi2-vix20-rsi40-sma25-exitrsi65",
+      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA25 / exit RSI65 を揃え、VIX peakout または SPY RSI2 10 上抜けのどちらかで回復 entry する。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "confirm を緩めた時に反発取りこぼしが減るかを見る。 VIX>20 と exit SMA25 / RSI65 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 240,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack",
+        "rsi2"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-or-rsi2x10-sma25-rsi65.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-or-rsi2x10-sma25-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX24 RSI40 Peakout Or RSI2x10 SMA25 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 24,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout_or_rsi2_cross_10",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-or-rsi2-vix24-rsi40-sma25-exitrsi65",
+      "theme_notes": "50pack 深掘り向けに VIX>24 / SPY RSI14<40 / exit SMA25 / exit RSI65 を揃え、VIX peakout または SPY RSI2 10 上抜けのどちらかで回復 entry する。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "confirm を緩めた時に反発取りこぼしが減るかを見る。 VIX>24 と exit SMA25 / RSI65 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 241,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack",
+        "rsi2"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-or-rsi2x10-sma25-rsi65.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-or-rsi2x10-sma25-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX28 RSI40 Peakout Or RSI2x10 SMA25 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 28,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout_or_rsi2_cross_10",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-or-rsi2-vix28-rsi40-sma25-exitrsi65",
+      "theme_notes": "50pack 深掘り向けに VIX>28 / SPY RSI14<40 / exit SMA25 / exit RSI65 を揃え、VIX peakout または SPY RSI2 10 上抜けのどちらかで回復 entry する。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "confirm を緩めた時に反発取りこぼしが減るかを見る。 VIX>28 と exit SMA25 / RSI65 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 242,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack",
+        "rsi2"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-or-rsi2x10-sma25-rsi65.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-and-rsi2x10-sma25-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX20 RSI40 Peakout And RSI2x10 SMA25 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 20,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout_and_rsi2_cross_10",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-and-rsi2-vix20-rsi40-sma25-exitrsi65",
+      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA25 / exit RSI65 を揃え、VIX peakout と SPY RSI2 10 上抜けの両方を要求する。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "confirm を厳しくした時の DD 改善余地を見る。 VIX>20 と exit SMA25 / RSI65 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 243,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack",
+        "rsi2"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-and-rsi2x10-sma25-rsi65.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-and-rsi2x10-sma25-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX24 RSI40 Peakout And RSI2x10 SMA25 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 24,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout_and_rsi2_cross_10",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-and-rsi2-vix24-rsi40-sma25-exitrsi65",
+      "theme_notes": "50pack 深掘り向けに VIX>24 / SPY RSI14<40 / exit SMA25 / exit RSI65 を揃え、VIX peakout と SPY RSI2 10 上抜けの両方を要求する。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "confirm を厳しくした時の DD 改善余地を見る。 VIX>24 と exit SMA25 / RSI65 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 244,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack",
+        "rsi2"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-and-rsi2x10-sma25-rsi65.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-and-rsi2x10-sma25-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX28 RSI40 Peakout And RSI2x10 SMA25 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 28,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout_and_rsi2_cross_10",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-and-rsi2-vix28-rsi40-sma25-exitrsi65",
+      "theme_notes": "50pack 深掘り向けに VIX>28 / SPY RSI14<40 / exit SMA25 / exit RSI65 を揃え、VIX peakout と SPY RSI2 10 上抜けの両方を要求する。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "confirm を厳しくした時の DD 改善余地を見る。 VIX>28 と exit SMA25 / RSI65 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 245,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack",
+        "rsi2"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-and-rsi2x10-sma25-rsi65.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-noconfirm-sma25-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX20 RSI40 No Confirm SMA25 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 20,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "none",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-noconfirm-vix20-rsi40-sma25-exitrsi65",
+      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA25 / exit RSI65 を揃え、weakMarket 条件だけで回復 entry し、confirm を置かない。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "confirm を外した時の entry 数増加と DD 悪化を比較する。 VIX>20 と exit SMA25 / RSI65 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 246,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack",
+        "no-confirm"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-noconfirm-sma25-rsi65.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-noconfirm-sma25-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX24 RSI40 No Confirm SMA25 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 24,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "none",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-noconfirm-vix24-rsi40-sma25-exitrsi65",
+      "theme_notes": "50pack 深掘り向けに VIX>24 / SPY RSI14<40 / exit SMA25 / exit RSI65 を揃え、weakMarket 条件だけで回復 entry し、confirm を置かない。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "confirm を外した時の entry 数増加と DD 悪化を比較する。 VIX>24 と exit SMA25 / RSI65 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 247,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack",
+        "no-confirm"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-noconfirm-sma25-rsi65.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-noconfirm-sma25-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX28 RSI40 No Confirm SMA25 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 28,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "none",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-noconfirm-vix28-rsi40-sma25-exitrsi65",
+      "theme_notes": "50pack 深掘り向けに VIX>28 / SPY RSI14<40 / exit SMA25 / exit RSI65 を揃え、weakMarket 条件だけで回復 entry し、confirm を置かない。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "confirm を外した時の entry 数増加と DD 悪化を比較する。 VIX>28 と exit SMA25 / RSI65 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 248,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack",
+        "no-confirm"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-noconfirm-sma25-rsi65.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma15-rsi60",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX20 RSI40 Peakout SMA15 RSI60",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 20,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 15,
+        "recovery_exit_rsi_threshold": 60
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-vix20-rsi40-sma15-exitrsi60",
+      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA15 / exit RSI60 を揃え、VIX peakout を確認に使う基準系。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>20 と exit SMA15 / RSI60 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 249,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma15-rsi60.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma20-rsi62",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX20 RSI40 Peakout SMA20 RSI62",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 20,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 20,
+        "recovery_exit_rsi_threshold": 62
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-vix20-rsi40-sma20-exitrsi62",
+      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA20 / exit RSI62 を揃え、VIX peakout を確認に使う基準系。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>20 と exit SMA20 / RSI62 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 250,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma20-rsi62.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma25-rsi62",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX20 RSI40 Peakout SMA25 RSI62",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 20,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 62
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-vix20-rsi40-sma25-exitrsi62",
+      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA25 / exit RSI62 を揃え、VIX peakout を確認に使う基準系。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>20 と exit SMA25 / RSI62 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 251,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma25-rsi62.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma15-rsi62",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX20 RSI40 Peakout SMA15 RSI62",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 20,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 15,
+        "recovery_exit_rsi_threshold": 62
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-vix20-rsi40-sma15-exitrsi62",
+      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA15 / exit RSI62 を揃え、VIX peakout を確認に使う基準系。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>20 と exit SMA15 / RSI62 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 252,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma15-rsi62.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma15-rsi60",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX24 RSI40 Peakout SMA15 RSI60",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 24,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 15,
+        "recovery_exit_rsi_threshold": 60
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-vix24-rsi40-sma15-exitrsi60",
+      "theme_notes": "50pack 深掘り向けに VIX>24 / SPY RSI14<40 / exit SMA15 / exit RSI60 を揃え、VIX peakout を確認に使う基準系。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>24 と exit SMA15 / RSI60 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 253,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma15-rsi60.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma15-rsi62",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX24 RSI40 Peakout SMA15 RSI62",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 24,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 15,
+        "recovery_exit_rsi_threshold": 62
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-vix24-rsi40-sma15-exitrsi62",
+      "theme_notes": "50pack 深掘り向けに VIX>24 / SPY RSI14<40 / exit SMA15 / exit RSI62 を揃え、VIX peakout を確認に使う基準系。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>24 と exit SMA15 / RSI62 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 234,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma15-rsi62.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma20-rsi62",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX24 RSI40 Peakout SMA20 RSI62",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 24,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 20,
+        "recovery_exit_rsi_threshold": 62
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-vix24-rsi40-sma20-exitrsi62",
+      "theme_notes": "50pack 深掘り向けに VIX>24 / SPY RSI14<40 / exit SMA20 / exit RSI62 を揃え、VIX peakout を確認に使う基準系。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>24 と exit SMA20 / RSI62 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 255,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma20-rsi62.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma25-rsi62",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX24 RSI40 Peakout SMA25 RSI62",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 24,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 62
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-vix24-rsi40-sma25-exitrsi62",
+      "theme_notes": "50pack 深掘り向けに VIX>24 / SPY RSI14<40 / exit SMA25 / exit RSI62 を揃え、VIX peakout を確認に使う基準系。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>24 と exit SMA25 / RSI62 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 256,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma25-rsi62.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma15-rsi60",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX28 RSI40 Peakout SMA15 RSI60",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 28,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 15,
+        "recovery_exit_rsi_threshold": 60
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-vix28-rsi40-sma15-exitrsi60",
+      "theme_notes": "50pack 深掘り向けに VIX>28 / SPY RSI14<40 / exit SMA15 / exit RSI60 を揃え、VIX peakout を確認に使う基準系。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>28 と exit SMA15 / RSI60 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 257,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma15-rsi60.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma15-rsi62",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX28 RSI40 Peakout SMA15 RSI62",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 28,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 15,
+        "recovery_exit_rsi_threshold": 62
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-vix28-rsi40-sma15-exitrsi62",
+      "theme_notes": "50pack 深掘り向けに VIX>28 / SPY RSI14<40 / exit SMA15 / exit RSI62 を揃え、VIX peakout を確認に使う基準系。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>28 と exit SMA15 / RSI62 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 235,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma15-rsi62.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma20-rsi62",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX28 RSI40 Peakout SMA20 RSI62",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 28,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 20,
+        "recovery_exit_rsi_threshold": 62
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-vix28-rsi40-sma20-exitrsi62",
+      "theme_notes": "50pack 深掘り向けに VIX>28 / SPY RSI14<40 / exit SMA20 / exit RSI62 を揃え、VIX peakout を確認に使う基準系。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>28 と exit SMA20 / RSI62 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 259,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma20-rsi62.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma25-rsi62",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX28 RSI40 Peakout SMA25 RSI62",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 28,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 62
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-vix28-rsi40-sma25-exitrsi62",
+      "theme_notes": "50pack 深掘り向けに VIX>28 / SPY RSI14<40 / exit SMA25 / exit RSI62 を揃え、VIX peakout を確認に使う基準系。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>28 と exit SMA25 / RSI62 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 260,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma25-rsi62.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-rsi2only-sma20-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX20 RSI40 RSI2x10 Only SMA20 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 20,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "rsi2_cross_10",
+        "recovery_exit_sma_period": 20,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-rsi2only-vix20-rsi40-sma20-exitrsi65",
+      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA20 / exit RSI65 を揃え、SPY RSI2 の 10 上抜け単独で回復 entry する。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "panic reversal 系の confirm を単独接続して比較する。 VIX>20 と exit SMA20 / RSI65 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 261,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack",
+        "rsi2"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-rsi2only-sma20-rsi65.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-and-rsi2x10-sma20-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX20 RSI40 Peakout And RSI2x10 SMA20 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 20,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout_and_rsi2_cross_10",
+        "recovery_exit_sma_period": 20,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-and-rsi2-vix20-rsi40-sma20-exitrsi65",
+      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA20 / exit RSI65 を揃え、VIX peakout と SPY RSI2 10 上抜けの両方を要求する。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "confirm を厳しくした時の DD 改善余地を見る。 VIX>20 と exit SMA20 / RSI65 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 262,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack",
+        "rsi2"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-and-rsi2x10-sma20-rsi65.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-rsi2only-sma25-rsi60",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX20 RSI40 RSI2x10 Only SMA25 RSI60",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 20,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "rsi2_cross_10",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 60
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-rsi2only-vix20-rsi40-sma25-exitrsi60",
+      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA25 / exit RSI60 を揃え、SPY RSI2 の 10 上抜け単独で回復 entry する。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "panic reversal 系の confirm を単独接続して比較する。 VIX>20 と exit SMA25 / RSI60 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 263,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack",
+        "rsi2"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-rsi2only-sma25-rsi60.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-and-rsi2x10-sma25-rsi60",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX20 RSI40 Peakout And RSI2x10 SMA25 RSI60",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 20,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout_and_rsi2_cross_10",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 60
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-and-rsi2-vix20-rsi40-sma25-exitrsi60",
+      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA25 / exit RSI60 を揃え、VIX peakout と SPY RSI2 10 上抜けの両方を要求する。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "confirm を厳しくした時の DD 改善余地を見る。 VIX>20 と exit SMA25 / RSI60 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 264,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack",
+        "rsi2"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-and-rsi2x10-sma25-rsi60.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-rsi2only-sma25-rsi60",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX24 RSI40 RSI2x10 Only SMA25 RSI60",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 24,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "rsi2_cross_10",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 60
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-rsi2only-vix24-rsi40-sma25-exitrsi60",
+      "theme_notes": "50pack 深掘り向けに VIX>24 / SPY RSI14<40 / exit SMA25 / exit RSI60 を揃え、SPY RSI2 の 10 上抜け単独で回復 entry する。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "panic reversal 系の confirm を単独接続して比較する。 VIX>24 と exit SMA25 / RSI60 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 265,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack",
+        "rsi2"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-rsi2only-sma25-rsi60.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-and-rsi2x10-sma25-rsi60",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX24 RSI40 Peakout And RSI2x10 SMA25 RSI60",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 24,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout_and_rsi2_cross_10",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 60
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-and-rsi2-vix24-rsi40-sma25-exitrsi60",
+      "theme_notes": "50pack 深掘り向けに VIX>24 / SPY RSI14<40 / exit SMA25 / exit RSI60 を揃え、VIX peakout と SPY RSI2 10 上抜けの両方を要求する。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "confirm を厳しくした時の DD 改善余地を見る。 VIX>24 と exit SMA25 / RSI60 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 266,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack",
+        "rsi2"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-and-rsi2x10-sma25-rsi60.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-rsi2only-sma25-rsi60",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX28 RSI40 RSI2x10 Only SMA25 RSI60",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 28,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "rsi2_cross_10",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 60
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-rsi2only-vix28-rsi40-sma25-exitrsi60",
+      "theme_notes": "50pack 深掘り向けに VIX>28 / SPY RSI14<40 / exit SMA25 / exit RSI60 を揃え、SPY RSI2 の 10 上抜け単独で回復 entry する。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "panic reversal 系の confirm を単独接続して比較する。 VIX>28 と exit SMA25 / RSI60 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 267,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack",
+        "rsi2"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-rsi2only-sma25-rsi60.pine"
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-and-rsi2x10-sma25-rsi60",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX28 RSI40 Peakout And RSI2x10 SMA25 RSI60",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 28,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout_and_rsi2_cross_10",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 60
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-and-rsi2-vix28-rsi40-sma25-exitrsi60",
+      "theme_notes": "50pack 深掘り向けに VIX>28 / SPY RSI14<40 / exit SMA25 / exit RSI60 を揃え、VIX peakout と SPY RSI2 10 上抜けの両方を要求する。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "confirm を厳しくした時の DD 改善余地を見る。 VIX>28 と exit SMA25 / RSI60 の組み合わせで比較する。",
+      "phase": "phase-15",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
+      "priority": 268,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-50pack",
+        "rsi2"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-50pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-and-rsi2x10-sma25-rsi60.pine"
     }
   ]
 }

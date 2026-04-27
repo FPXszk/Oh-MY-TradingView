@@ -1,0 +1,76 @@
+//@version=6
+strategy("Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX20 RSI40 RSI2x10 Only SMA20 RSI65", overlay=true, pyramiding=0, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission_type=strategy.commission.percent, commission_value=0, slippage=0)
+startDate = timestamp(2015, 1, 1, 0, 0)
+endDate = timestamp(2025, 12, 31, 23, 59)
+inDateRange = time >= startDate and time <= endDate
+
+rspClose = request.security("BATS:RSP", timeframe.period, close)
+rspSma200 = ta.sma(rspClose, 200)
+spyClose = request.security("BATS:SPY", timeframe.period, close)
+spySma200 = ta.sma(spyClose, 200)
+spyRsi14 = ta.rsi(spyClose, 14)
+spyRsi2 = ta.rsi(spyClose, 2)
+vixClose = request.security("CBOE:VIX", timeframe.period, close)
+vixMa = ta.ema(vixClose, 10)
+
+regimeOk = rspClose > rspSma200
+rsiRegimeValue = ta.rsi(close, 14)
+rsiRegimeOk = rsiRegimeValue > 60
+donchianUpper = ta.highest(high, 60)[1]
+donchianLower = ta.lowest(low, 20)[1]
+breakoutEntrySignal = ta.crossover(close, donchianUpper)
+breakoutExitSignal = ta.crossunder(close, donchianLower)
+allowBreakoutEntry = inDateRange and regimeOk and rsiRegimeOk
+
+weakMarket = rspClose < rspSma200 and spyClose < spySma200 and spyRsi14 < 40 and vixClose > 20
+vixPeakout = ta.crossunder(vixClose, vixMa)
+rsi2Confirm = ta.crossover(spyRsi2, 10)
+recoveryConfirm = rsi2Confirm
+recoveryEntrySignal = inDateRange and weakMarket and recoveryConfirm
+recoveryExitSma = ta.sma(close, 20)
+recoveryExitRsi = ta.rsi(close, 14)
+recoveryExitSignal = close > recoveryExitSma and recoveryExitRsi >= 65
+
+plot(donchianUpper, "Donchian Upper", color=color.green)
+plot(donchianLower, "Donchian Lower", color=color.red)
+plot(recoveryExitSma, "Recovery Exit SMA", color=color.orange)
+plot(vixMa, "VIX EMA", display=display.none)
+
+var bool tp1Taken = false
+var bool tp2Taken = false
+var int activeEntryMode = 0
+
+if strategy.position_size <= 0
+    tp1Taken := false
+    tp2Taken := false
+    activeEntryMode := 0
+
+if breakoutEntrySignal and allowBreakoutEntry and strategy.position_size <= 0
+    strategy.entry("BreakoutLong", strategy.long)
+    activeEntryMode := 1
+
+if recoveryEntrySignal and strategy.position_size <= 0
+    strategy.entry("RecoveryLong", strategy.long)
+    activeEntryMode := 2
+
+if activeEntryMode == 1 and strategy.position_size > 0 and not tp1Taken and close >= strategy.position_avg_price * (1 + 0.25)
+    strategy.close("BreakoutLong", qty_percent=27, comment="TP1 25%")
+    tp1Taken := true
+
+if activeEntryMode == 1 and strategy.position_size > 0 and not tp2Taken and close >= strategy.position_avg_price * (1 + 1.00)
+    strategy.close("BreakoutLong", qty_percent=50, comment="TP2 100%")
+    tp2Taken := true
+
+if activeEntryMode == 1 and breakoutExitSignal and strategy.position_size > 0
+    strategy.close("BreakoutLong", comment="Base exit")
+
+if activeEntryMode == 2 and recoveryExitSignal and strategy.position_size > 0
+    strategy.close("RecoveryLong", comment="Recovery exit")
+
+if not inDateRange and strategy.position_size > 0
+    strategy.close("BreakoutLong", comment="Date exit")
+    strategy.close("RecoveryLong", comment="Date exit")
+
+stopLossPrice = strategy.position_avg_price * (1 - 0.08)
+if activeEntryMode == 1 and strategy.position_size > 0 and not na(stopLossPrice)
+    strategy.exit("Breakout Stop Loss", "BreakoutLong", stop=stopLossPrice)

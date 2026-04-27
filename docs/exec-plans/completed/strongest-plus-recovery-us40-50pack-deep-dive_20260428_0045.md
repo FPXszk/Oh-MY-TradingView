@@ -34,6 +34,8 @@ run70 の改善点 5 項目を、**50 strategies × 40 symbols = 2000 runs** の
 - `tests/campaign.test.js`
 - `tests/preset-validation.test.js`
 - `tests/repo-layout.test.js`
+- `tests/strategy-catalog.test.js`
+- `tests/strategy-live-retired-diff.test.js`
 
 ## 50-strategy lineup
 
@@ -83,11 +85,11 @@ run70 の改善点 5 項目を、**50 strategies × 40 symbols = 2000 runs** の
 33. `donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma25-rsi62`
 34. `donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma15-rsi62`
 35. `donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma15-rsi60`
-36. `donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma20-rsi60`
+36. `donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma15-rsi62`
 37. `donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma20-rsi62`
 38. `donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma25-rsi62`
 39. `donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma15-rsi60`
-40. `donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma20-rsi60`
+40. `donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma15-rsi62`
 41. `donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma20-rsi62`
 42. `donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma25-rsi62`
 
@@ -145,6 +147,7 @@ run70 の改善点 5 項目を、**50 strategies × 40 symbols = 2000 runs** の
 - `tests/backtest.test.js` に代表的な新 confirm mode (`rsi2only`, `vixpeak-or-rsi2x10`, `noconfirm`) と tighter exit preset の raw_source load テストを追加する。
 - `tests/preset-validation.test.js` の `EXPECTED_LIVE_IDS` と live preset count を post-change totals に更新する。
 - `tests/repo-layout.test.js` の live preset / catalog count を post-change totals (`74`, `76`) に更新する。
+- `tests/strategy-catalog.test.js` と `tests/strategy-live-retired-diff.test.js` の live/catalog count hardcode を post-change totals に更新する。
 
 ### GREEN
 
@@ -168,6 +171,7 @@ run70 の改善点 5 項目を、**50 strategies × 40 symbols = 2000 runs** の
 - `noconfirm` と `rsi2only` は DD 悪化の可能性が高いので、実装時に weakMarket 条件そのものは触らず confirm 条件だけを切り替える。
 - raw_source 40 本の量が多いので、手編集ではなく既存 Pine からの外科的複製で揃える。
 - `tests/preset-validation.test.js` と `tests/repo-layout.test.js` は件数と順序を hardcode しているため、campaign / preset 実装だけでは終わらない。
+- `tests/strategy-catalog.test.js` と `tests/strategy-live-retired-diff.test.js` も live/catalog count と ID 一覧を hardcode している。
 - 今回は signal count / order-history export を入れないため、SMA20/SMA25 の「完全同値なら preset 統合」判断までは行わず、まずは metrics 差分の有無確認までに留める。
 
 ## Execution checklist
@@ -181,5 +185,6 @@ run70 の改善点 5 項目を、**50 strategies × 40 symbols = 2000 runs** の
 - [ ] `tests/campaign.test.js` に 50pack campaign 解決テストを追加する
 - [ ] `tests/backtest.test.js` に代表 preset load テストを追加する
 - [ ] `tests/preset-validation.test.js` / `tests/repo-layout.test.js` の hardcoded count と order を更新する
+- [ ] `tests/strategy-catalog.test.js` / `tests/strategy-live-retired-diff.test.js` の hardcoded count と order を更新する
 - [ ] focused tests を通す
 - [ ] `gh workflow run` 用の専用 config path を使う前提で最終 review する

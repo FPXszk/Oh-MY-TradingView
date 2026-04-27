@@ -1362,6 +1362,42 @@ describe('loadPreset', () => {
     assert.match(source, /rsi2Confirm = ta\.crossover\(spyRsi2, 10\)/);
     assert.match(source, /recoveryConfirm = vixPeakout and rsi2Confirm/);
   });
+
+  it('loads the 50pack or-confirm preset with widened recovery confirmation', async () => {
+    const { preset, source } = await loadPreset('donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-or-rsi2x10-sma25-rsi65');
+    assert.equal(preset.builder, 'raw_source');
+    assert.equal(preset.parameters.recovery_confirm, 'vix_peakout_or_rsi2_cross_10');
+    assert.match(source, /weakMarket = rspClose < rspSma200 and spyClose < spySma200 and spyRsi14 < 40 and vixClose > 24/);
+    assert.match(source, /recoveryConfirm = vixPeakout or rsi2Confirm/);
+  });
+
+  it('loads the 50pack no-confirm preset with direct weakMarket entries', async () => {
+    const { preset, source } = await loadPreset('donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-noconfirm-sma25-rsi65');
+    assert.equal(preset.builder, 'raw_source');
+    assert.equal(preset.parameters.recovery_confirm, 'none');
+    assert.match(source, /recoveryConfirm = true/);
+    assert.match(source, /recoveryEntrySignal = inDateRange and weakMarket and recoveryConfirm/);
+  });
+
+  it('loads the 50pack rsi2-only preset with a shorter exit SMA', async () => {
+    const { preset, source } = await loadPreset('donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-rsi2only-sma20-rsi65');
+    assert.equal(preset.builder, 'raw_source');
+    assert.equal(preset.parameters.recovery_confirm, 'rsi2_cross_10');
+    assert.equal(preset.parameters.recovery_exit_sma_period, 20);
+    assert.match(source, /recoveryConfirm = rsi2Confirm/);
+    assert.match(source, /recoveryExitSma = ta\.sma\(close, 20\)/);
+  });
+
+  it('loads the 50pack DD suppression preset with SMA15 and RSI62 exits', async () => {
+    const { preset, source } = await loadPreset('donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma15-rsi62');
+    assert.equal(preset.builder, 'raw_source');
+    assert.equal(preset.parameters.recovery_vix_min, 24);
+    assert.equal(preset.parameters.recovery_exit_sma_period, 15);
+    assert.equal(preset.parameters.recovery_exit_rsi_threshold, 62);
+    assert.match(source, /weakMarket = rspClose < rspSma200 and spyClose < spySma200 and spyRsi14 < 40 and vixClose > 24/);
+    assert.match(source, /recoveryExitSma = ta\.sma\(close, 15\)/);
+    assert.match(source, /recoveryExitSignal = close > recoveryExitSma and recoveryExitRsi >= 62/);
+  });
 });
 
 // ---------------------------------------------------------------------------

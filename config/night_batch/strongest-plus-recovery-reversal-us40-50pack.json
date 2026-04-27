@@ -1,0 +1,20 @@
+{
+  "runtime": {
+    "host": "172.31.144.1",
+    "port": 9223,
+    "startup_check_host": "127.0.0.1",
+    "startup_check_port": 9222,
+    "launch_wait_sec": 25,
+    "detach_after_smoke": false,
+    "detached_state_file": "artifacts/night-batch/strongest-plus-recovery-reversal-us40-50pack-state.json",
+    "production_timeout_sec": 28800
+  },
+  "launch": {
+    "shortcut_path": "C:\\TradingView\\TradingView.exe - ショートカット.lnk"
+  },
+  "bundle": {
+    "us_campaign": "strongest-plus-recovery-reversal-us40-50pack",
+    "smoke_phases": "smoke",
+    "production_phases": "full"
+  }
+}

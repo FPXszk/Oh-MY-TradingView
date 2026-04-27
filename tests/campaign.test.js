@@ -875,6 +875,30 @@ describe('public library top10 US40 campaign', () => {
     assert.equal(campaign.totalRuns, 10);
   });
 
+  it('loads strongest-plus-recovery-reversal-us40-50pack config with a 40 x 50 matrix', async () => {
+    const campaign = await loadCampaign('strongest-plus-recovery-reversal-us40-50pack');
+
+    assert.equal(campaign.config.id, 'strongest-plus-recovery-reversal-us40-50pack');
+    assert.equal(campaign.config.universe, 'public-top10-us-40');
+    assert.equal(campaign.config.strategy_ids.length, 50);
+    assert.equal(campaign.symbols.length, 40);
+    assert.equal(campaign.strategies.length, 50);
+    assert.equal(campaign.matrix.length, 2000);
+    assert.equal(campaign.totalRuns, 2000);
+    assert.equal(campaign.defaults.date_range.from, '2015-01-01');
+    assert.equal(campaign.defaults.date_range.to, '2025-12-31');
+  });
+
+  it('uses SPY-only smoke for strongest-plus-recovery-reversal-us40-50pack so each strategy is checked once', async () => {
+    const campaign = await loadCampaign('strongest-plus-recovery-reversal-us40-50pack', { phase: 'smoke' });
+
+    assert.deepEqual(campaign.config.phases.smoke.symbols, ['SPY']);
+    assert.equal(campaign.symbols.length, 1);
+    assert.equal(campaign.strategies.length, 50);
+    assert.equal(campaign.matrix.length, 50);
+    assert.equal(campaign.totalRuns, 50);
+  });
+
   it('loads breakout-6pack-us40 config with a 40 x 6 matrix', async () => {
     const campaign = await loadCampaign('breakout-6pack-us40');
 
