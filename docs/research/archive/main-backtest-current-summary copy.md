@@ -27,7 +27,7 @@
 
 合成順位は **avg_net_profit 降順 / avg_profit_factor 降順 / avg_max_drawdown 昇順** の市場別順位を合算した deterministic score です。
 
-| rank | universe | presetId | composite_score | avg_net_profit | avg_profit_factor | avg_max_drawdown | avg_win_rate | markets | best_combo |
+| rank | presetId | composite_score | avg_net_profit | avg_profit_factor | avg_max_drawdown | avg_win_rate | markets |
 | ---: | --- | ---: | ---: | ---: | ---: | ---: | --- |
 | 1 | `donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late` | 6 | 18918.78 | 1.828 | 4620.50 | 44.28 | US |
 | 2 | `donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-6pct-theme-deep-pullback-strict-narrow` | 9 | 20538.77 | 1.762 | 5181.22 | 42.95 | US |
