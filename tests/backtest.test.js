@@ -1344,6 +1344,24 @@ describe('loadPreset', () => {
     assert.match(source, /exitSignal = close > sma25 and rsiValue >= 65/);
     assert.doesNotMatch(source, /stopLossPrice = strategy\.position_avg_price/);
   });
+
+  it('loads the strongest plus recovery core preset with breakout and VIX peakout overlay', async () => {
+    const { preset, source } = await loadPreset('donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma25-rsi65');
+    assert.equal(preset.builder, 'raw_source');
+    assert.match(source, /strategy\("Donchian 60\/20 \+ RSP \+ RSI14 Regime 60 \+ TP 25\/27 \+ Recovery VIX20 RSI40 Peakout SMA25 RSI65"/);
+    assert.match(source, /weakMarket = rspClose < rspSma200 and spyClose < spySma200 and spyRsi14 < 40 and vixClose > 20/);
+    assert.match(source, /recoveryConfirm = vixPeakout/);
+    assert.match(source, /strategy\.entry\("BreakoutLong", strategy\.long\)/);
+    assert.match(source, /strategy\.entry\("RecoveryLong", strategy\.long\)/);
+    assert.match(source, /strategy\.close\("BreakoutLong", qty_percent=27, comment="TP1 25%"\)/);
+    assert.match(source, /recoveryExitSignal = close > recoveryExitSma and recoveryExitRsi >= 65/);
+  });
+
+  it('loads the strongest plus recovery strict confirm preset with both VIX peakout and RSI2 cross', async () => {
+    const { source } = await loadPreset('donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-rsi2x10-sma25-rsi65');
+    assert.match(source, /rsi2Confirm = ta\.crossover\(spyRsi2, 10\)/);
+    assert.match(source, /recoveryConfirm = vixPeakout and rsi2Confirm/);
+  });
 });
 
 // ---------------------------------------------------------------------------

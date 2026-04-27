@@ -203,9 +203,9 @@ describe('.gitattributes', () => {
 describe('foreground bundle config default campaign', () => {
   const config = JSON.parse(readFileSync(BUNDLE_FG_CONFIG_PATH, 'utf8'));
 
-  it('us_campaign defaults to tp1-micro-sweep-panic-reversal-us40-11pack', () => {
-    assert.equal(config.bundle.us_campaign, 'tp1-micro-sweep-panic-reversal-us40-11pack',
-      'bundle-foreground-reuse-config.json must default us_campaign to tp1-micro-sweep-panic-reversal-us40-11pack');
+  it('us_campaign defaults to strongest-plus-recovery-reversal-us40-10pack', () => {
+    assert.equal(config.bundle.us_campaign, 'strongest-plus-recovery-reversal-us40-10pack',
+      'bundle-foreground-reuse-config.json must default us_campaign to strongest-plus-recovery-reversal-us40-10pack');
   });
 
   it('jp_campaign is omitted for the US-only bundle default', () => {

@@ -1490,6 +1490,539 @@
       "lifecycle": {
         "status": "live"
       }
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma25-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX20 RSI40 Peakout SMA25 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 20,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-core",
+      "theme_notes": "run69 首位 tp25-27 に、RSP 200SMA 以下では VIX peakout で回復局面 entry を足した基準版。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "平時 breakout を維持しつつ panic rebound だけを拾う最小 overlay。",
+      "phase": "phase-14",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-10pack",
+      "priority": 220,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-10pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma25-rsi65.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma25-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX24 RSI40 Peakout SMA25 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 24,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-vix24",
+      "theme_notes": "panic 判定の VIX 下限を 24 に上げ、弱い反発を減らす比較版。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "VIX 20 だと早すぎる反発を拾うかを切り分ける。",
+      "phase": "phase-14",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-10pack",
+      "priority": 221,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-10pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma25-rsi65.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma25-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX28 RSI40 Peakout SMA25 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 28,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-vix28",
+      "theme_notes": "panic 判定をさらに深い VIX 28 超へ寄せ、暴落色が強い局面だけを拾う版。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "本当に深い fear だけに絞ると勝率が上がるかを見る。",
+      "phase": "phase-14",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-10pack",
+      "priority": 222,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-10pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-sma25-rsi65.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi35-vixpeak-sma25-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX20 RSI35 Peakout SMA25 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 20,
+        "recovery_spy_rsi_max": 35,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-rsi35",
+      "theme_notes": "SPY RSI14 上限を 35 まで絞り、より oversold な時だけ回復 entry する版。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "浅い調整を避けて panic らしい局面だけを通す。",
+      "phase": "phase-14",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-10pack",
+      "priority": 223,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-10pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi35-vixpeak-sma25-rsi65.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi45-vixpeak-sma25-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX20 RSI45 Peakout SMA25 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 20,
+        "recovery_spy_rsi_max": 45,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-rsi45",
+      "theme_notes": "SPY RSI14 上限を 45 まで緩め、早い回復局面も許す版。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "oversold 条件を緩めた時に回数で勝てるかを確認する。",
+      "phase": "phase-14",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-10pack",
+      "priority": 224,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-10pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi45-vixpeak-sma25-rsi65.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma20-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX20 RSI40 Peakout SMA20 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 20,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 20,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-sma20",
+      "theme_notes": "回復 exit の移動平均を 20 日へ短縮し、利確を早める版。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "回復利確を少し前倒しした時の net / DD 変化を見る。",
+      "phase": "phase-14",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-10pack",
+      "priority": 225,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-10pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma20-rsi65.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma25-rsi60",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX20 RSI40 Peakout SMA25 RSI60",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 20,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 60
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-exitrsi60",
+      "theme_notes": "回復 exit の RSI 閾値を 60 に下げ、少し早く逃がす版。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "利益確定の速度を上げた時の保守性を比較する。",
+      "phase": "phase-14",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-10pack",
+      "priority": 226,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "strongest-plus-recovery-reversal-us40-10pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma25-rsi60.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-rsi2x10-sma25-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX20 RSI40 RSI2x10 SMA25 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 20,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "rsi2_cross_10",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-rsi2-only",
+      "theme_notes": "回復 entry を VIX peakout ではなく SPY RSI2 の 10 上抜けだけで行う版。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "既存 panic reversal の底打ち確認を単独で breakout に接続する。",
+      "phase": "phase-14",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-10pack",
+      "priority": 227,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "rsi2",
+        "strongest-plus-recovery-reversal-us40-10pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-rsi2x10-sma25-rsi65.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-rsi2x10-sma25-rsi65",
+      "name": "Donchian 60/20 + RSP + RSI14 Regime 60 + TP 25/27 + Recovery VIX20 RSI40 Peakout RSI2x10 SMA25 RSI65",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "entry_period": 60,
+        "exit_period": 20,
+        "recovery_vix_min": 20,
+        "recovery_spy_rsi_max": 40,
+        "recovery_confirm": "vix_peakout_and_rsi2_cross_10",
+        "recovery_exit_sma_period": 25,
+        "recovery_exit_rsi_threshold": 65
+      },
+      "regime_filter": {
+        "type": "rsp_above_sma200",
+        "reference_symbol": "RSP",
+        "reference_ma_type": "sma",
+        "reference_ma_period": 200,
+        "action_when_false": "no_new_entry"
+      },
+      "rsi_regime_filter": {
+        "rsi_period": 14,
+        "threshold": 60,
+        "direction": "above"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strongest-recovery-vixpeak-rsi2-both",
+      "theme_notes": "VIX peakout と SPY RSI2 反転の両方を要求する最も厳しい回復 entry 版。",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "entry を絞り込んだ時に panic rebound の質が改善するかを見る。",
+      "phase": "phase-14",
+      "implementation_stage": "strongest-plus-recovery-reversal-us40-10pack",
+      "priority": 228,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "donchian",
+        "breakout",
+        "rsp",
+        "rsi-regime",
+        "hard-stop",
+        "recovery-overlay",
+        "vix",
+        "spy",
+        "rsi2",
+        "strongest-plus-recovery-reversal-us40-10pack"
+      ],
+      "source_path": "../../docs/references/pine/strongest-plus-recovery-reversal-us40-10pack/donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-rsi2x10-sma25-rsi65.pine",
+      "lifecycle": {
+        "status": "live"
+      }
     }
   ]
 }
