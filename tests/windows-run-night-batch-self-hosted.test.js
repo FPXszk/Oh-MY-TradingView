@@ -38,6 +38,14 @@ describe('run-night-batch-self-hosted.cmd', () => {
     assert.doesNotMatch(script, /--round-mode \\"\$ROUND_MODE\\"/);
   });
 
+  it('falls back to advance-next-round when resume hits a fingerprint mismatch', () => {
+    const script = readFileSync(WRAPPER_PATH, 'utf8');
+
+    assert.match(script, /Latest round fingerprint does not match the current strategy set/);
+    assert.match(script, /fingerprint mismatch on resume-current-round; retrying with advance-next-round/);
+    assert.match(script, /grep -q 'Latest round fingerprint does not match the current strategy set'/);
+  });
+
   it('keeps the WSL working directory anchored to the resolved repo path', () => {
     const script = readFileSync(WRAPPER_PATH, 'utf8');
 
