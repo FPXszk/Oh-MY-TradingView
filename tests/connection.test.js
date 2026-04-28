@@ -109,15 +109,33 @@ describe('resolveCdpEndpoint', () => {
     assert.equal(ep.port, 9222);
   });
 
+  it('returns WSL defaults when WSL_DISTRO_NAME is set', () => {
+    const ep = resolveCdpEndpoint({ WSL_DISTRO_NAME: 'Ubuntu' });
+    assert.equal(ep.host, '172.31.144.1');
+    assert.equal(ep.port, 9223);
+  });
+
   it('respects TV_CDP_HOST', () => {
     const ep = resolveCdpEndpoint({ TV_CDP_HOST: '172.20.10.1' });
     assert.equal(ep.host, '172.20.10.1');
     assert.equal(ep.port, 9222);
   });
 
+  it('keeps WSL default port when only TV_CDP_HOST is overridden in WSL', () => {
+    const ep = resolveCdpEndpoint({ WSL_DISTRO_NAME: 'Ubuntu', TV_CDP_HOST: '10.0.0.5' });
+    assert.equal(ep.host, '10.0.0.5');
+    assert.equal(ep.port, 9223);
+  });
+
   it('respects TV_CDP_PORT', () => {
     const ep = resolveCdpEndpoint({ TV_CDP_PORT: '9333' });
     assert.equal(ep.host, 'localhost');
+    assert.equal(ep.port, 9333);
+  });
+
+  it('keeps WSL default host when only TV_CDP_PORT is overridden in WSL', () => {
+    const ep = resolveCdpEndpoint({ WSL_DISTRO_NAME: 'Ubuntu', TV_CDP_PORT: '9333' });
+    assert.equal(ep.host, '172.31.144.1');
     assert.equal(ep.port, 9333);
   });
 
@@ -186,6 +204,15 @@ describe('session port persistence', () => {
     clearSessionPort();
     setSessionPort(9555);
     const ep = resolveCdpEndpoint({});
+    assert.equal(ep.port, 9555);
+    clearSessionPort();
+  });
+
+  it('resolveCdpEndpoint uses session port over WSL default port', () => {
+    clearSessionPort();
+    setSessionPort(9555);
+    const ep = resolveCdpEndpoint({ WSL_DISTRO_NAME: 'Ubuntu' });
+    assert.equal(ep.host, '172.31.144.1');
     assert.equal(ep.port, 9555);
     clearSessionPort();
   });
