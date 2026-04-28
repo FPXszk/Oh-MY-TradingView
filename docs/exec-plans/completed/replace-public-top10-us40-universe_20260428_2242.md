@@ -33,7 +33,7 @@
 - `public-top10-us-40` を参照する複数 campaign の実行対象が一斉に切り替わるため、意図した差し替えであることを維持する。
 
 ## 実装ステップ
-- [ ] `config/backtest/universes/public-top10-us-40.json` を依頼された 40 銘柄構成へ更新する
-- [ ] `public-top10-us-40` の件数・bucket・market 配分が依頼内容どおりか確認する
-- [ ] `node --test tests/campaign.test.js` で universe/campaign 読み込み整合性を検証する
-- [ ] 必要なら `node --test tests/repo-layout.test.js` を実行し、repo layout 制約への副作用がないことを確認する
+- [x] `config/backtest/universes/public-top10-us-40.json` を依頼された 40 銘柄構成へ更新する
+- [x] `public-top10-us-40` の件数・bucket・market 配分が依頼内容どおりか確認する
+- [x] `node --test tests/campaign.test.js` で universe/campaign 読み込み整合性を検証する
+- [x] `node --test tests/repo-layout.test.js` を実行し、repo layout 制約への副作用がないことを確認する
