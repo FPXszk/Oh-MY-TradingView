@@ -242,6 +242,13 @@ describe('night-batch-self-hosted workflow', () => {
       'workflow must default to the foreground monitoring config');
   });
 
+  it('sets an explicit job timeout long enough for the foreground 50pack run', () => {
+    const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
+
+    assert.match(workflow, /start-night-batch:\s*\n\s+timeout-minutes:\s+540/,
+      'workflow must set start-night-batch.timeout-minutes to 540');
+  });
+
   it('publishes GitHub summary details and uploads artifacts after the run', () => {
     const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
 

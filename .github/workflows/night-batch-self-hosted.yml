@@ -10,6 +10,7 @@ on:
 
 jobs:
   start-night-batch:
+    timeout-minutes: 540
     runs-on:
       - self-hosted
       - windows
