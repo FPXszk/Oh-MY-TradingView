@@ -18,13 +18,14 @@
 
 ## 変更対象ファイル
 - 作成: `config/backtest/campaigns/deep-pullback-plus-recovery-us40-50pack.json`
+- 作成: `config/night_batch/deep-pullback-plus-recovery-us40-50pack.json`
 - 変更: `tests/campaign.test.js`
 - 作成: `docs/exec-plans/active/tonight-us40-50pack-recompose_20260428_2259.md`
 
 ## 変更予定なし（監査のみ）
 - `config/backtest/strategy-presets.json`
 - `config/backtest/strategy-catalog.json`
-- `config/night_batch/*.json`
+- 既存 `config/night_batch/*.json`
 
 ## 実装内容
 - 既存 `strongest-plus-recovery-reversal-us40-50pack` をベースに、新しい今夜用 campaign を追加する。
@@ -41,6 +42,7 @@
   - `from: "2015-01-01"`
   - `to: "2026-04-27"`
 - smoke phase は既存 US40 campaign と同様に `SPY` 1銘柄だけで各戦略 1 回ずつ確認する。
+- workflow 実行用に `config/night_batch/deep-pullback-plus-recovery-us40-50pack.json` を追加し、新 campaign を dispatch 可能にする。
 
 ## 50戦略の構成
 - Baseline 1: `donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late`
@@ -61,7 +63,6 @@
 ## スコープ外
 - TradingView My Scripts への登録
 - night batch dispatch の実行
-- `config/night_batch/` の新規 bundle 追加
 - 新規 raw_source Pine の作成
 - 既存 preset / catalog のリネームや整理
 
@@ -80,9 +81,10 @@
 - `docs/exec-plans/active/repo-structure-align-and-archive-rules_20260424_2015.md` は docs / archive 整理タスクであり、今回の campaign 追加とは競合しない。
 
 ## 実装ステップ
-- [ ] 新 campaign `deep-pullback-plus-recovery-us40-50pack` の JSON を追加する
-- [ ] strategy_ids を 50 本に整え、baseline 2 本・上位 4 本・派生 44 本の構成を確認する
-- [ ] `date_override.to` を `2026-04-27` に固定する
-- [ ] `tests/campaign.test.js` に新 campaign の 40 x 50 と smoke phase の読み込み検証を追加する
-- [ ] `node --test tests/campaign.test.js` を実行する
-- [ ] 必要なら `node --test tests/repo-layout.test.js` を実行し、副作用がないことを確認する
+- [x] 新 campaign `deep-pullback-plus-recovery-us40-50pack` の JSON を追加する
+- [x] workflow dispatch 用の `config/night_batch/deep-pullback-plus-recovery-us40-50pack.json` を追加する
+- [x] strategy_ids を 50 本に整え、baseline 2 本・上位 4 本・派生 44 本の構成を確認する
+- [x] `date_override.to` を `2026-04-27` に固定する
+- [x] `tests/campaign.test.js` に新 campaign の 40 x 50 と smoke phase の読み込み検証を追加する
+- [x] `node --test tests/campaign.test.js` を実行する
+- [x] `node --test tests/repo-layout.test.js` を実行し、副作用がないことを確認する
