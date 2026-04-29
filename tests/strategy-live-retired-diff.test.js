@@ -21,7 +21,7 @@ describe('computeFamilyDiff', () => {
 
     const totalLive = families.reduce((sum, f) => sum + f.live_count, 0);
     const totalRetired = families.reduce((sum, f) => sum + f.retired_count, 0);
-    assert.equal(totalLive, 74);
+    assert.equal(totalLive, 124);
     assert.equal(totalRetired, 2);
   });
 
@@ -90,9 +90,9 @@ describe('buildDiffArtifact', () => {
     const catalog = await loadCatalog();
     const artifact = buildDiffArtifact(catalog);
     assert.ok(artifact.generated_at);
-    assert.equal(artifact.live_count, 74);
+    assert.equal(artifact.live_count, 124);
     assert.equal(artifact.retired_count, 2);
-    assert.equal(artifact.total_count, 76);
+    assert.equal(artifact.total_count, 126);
     assert.ok(Array.isArray(artifact.family_diff));
     assert.ok(Array.isArray(artifact.retired_ledger));
   });
@@ -107,7 +107,7 @@ describe('formatDiffSummarySection', () => {
     const artifact = buildDiffArtifact(catalog);
     const markdown = formatDiffSummarySection(artifact);
     assert.ok(markdown.includes('## Live / Retired diff'));
-    assert.ok(markdown.includes('live_count: 74'));
+    assert.ok(markdown.includes('live_count: 124'));
     assert.ok(markdown.includes('retired_count: 2'));
     assert.ok(markdown.includes('| family |'));
   });

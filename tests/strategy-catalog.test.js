@@ -87,6 +87,56 @@ const EXPECTED_LIVE_IDS = [
   'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-and-rsi2x10-sma25-rsi60',
   'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-rsi2only-sma25-rsi60',
   'donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix28-rsi40-vixpeak-and-rsi2x10-sma25-rsi60',
+  'emr-breakout-baseline-ema9-20-macd12-26-9-rsi50-stop8',
+  'emr-breakout-base-ema8-21-macd12-26-9-rsi50-stop8',
+  'emr-breakout-base-ema10-24-macd12-26-9-rsi50-stop8',
+  'emr-breakout-base-ema12-26-macd12-26-9-rsi52-stop8',
+  'emr-breakout-base-ema9-20-macd8-21-5-rsi50-stop8',
+  'emr-breakout-delay-1bar-close-above-signal-high',
+  'emr-breakout-delay-2bar-close-above-signal-high',
+  'emr-breakout-delay-3bar-close-above-signal-high',
+  'emr-breakout-delay-2bar-close-above-ema-fast',
+  'emr-breakout-delay-3bar-macd-hist-rising',
+  'emr-breakout-confirm-close-above-5d-high',
+  'emr-breakout-confirm-close-above-10d-high',
+  'emr-breakout-confirm-intraday-above-20d-high',
+  'emr-breakout-confirm-breakout-and-rsi55',
+  'emr-breakout-confirm-breakout-and-macd-positive',
+  'emr-breakout-trend-price-above-ema200',
+  'emr-breakout-trend-ema50-above-ema200',
+  'emr-breakout-trend-ema200-rising-20bars',
+  'emr-breakout-trend-price-above-ema200-rsi55',
+  'emr-breakout-trend-ema50-200-and-macd-positive',
+  'emr-breakout-stop6-base-exit',
+  'emr-breakout-stop7-base-exit',
+  'emr-breakout-stop9-base-exit',
+  'emr-breakout-stop10-base-exit',
+  'emr-breakout-stop8-signal-low-buffer',
+  'emr-breakout-breakeven-at-plus4',
+  'emr-breakout-breakeven-at-plus6',
+  'emr-breakout-breakeven-at-plus8',
+  'emr-breakout-breakeven-plus1-after-plus6',
+  'emr-breakout-breakeven-plus2-after-plus8',
+  'emr-breakout-tp8-full-exit',
+  'emr-breakout-tp10-full-exit',
+  'emr-breakout-tp12-full-exit',
+  'emr-breakout-tp8-half-then-trail-ema20',
+  'emr-breakout-tp10-half-then-trail-ema20',
+  'emr-breakout-trail-atr14x2',
+  'emr-breakout-trail-atr14x25',
+  'emr-breakout-trail-atr14x3',
+  'emr-breakout-trail-chandelier-22x25',
+  'emr-breakout-trail-chandelier-22x3',
+  'emr-breakout-profit-protect-close-below-ema10',
+  'emr-breakout-profit-protect-close-below-ema15',
+  'emr-breakout-profit-protect-close-below-ema20',
+  'emr-breakout-profit-protect-macd-bear-after-plus6',
+  'emr-breakout-profit-protect-rsi-loss-55-after-plus8',
+  'emr-breakout-strength-rsi55-and-rsi-over-rsiema',
+  'emr-breakout-strength-rsi60-and-rsi-over-rsiema',
+  'emr-breakout-strength-macd-hist-rising-3bars',
+  'emr-breakout-strength-all-align-and-close-above-fast-ema',
+  'emr-breakout-strength-all-align-and-breakout-5d-high',
 ];
 
 // ---------------------------------------------------------------------------
@@ -157,10 +207,10 @@ describe('validateCatalogIntegrity', () => {
 // getLiveStrategies / getRetiredStrategies
 // ---------------------------------------------------------------------------
 describe('getLiveStrategies / getRetiredStrategies', () => {
-  it('live count is 74', async () => {
+  it('live count is 124', async () => {
     const catalog = await loadCatalog();
     const live = getLiveStrategies(catalog);
-    assert.equal(live.length, 74);
+    assert.equal(live.length, 124);
   });
 
   it('retired count is 2', async () => {

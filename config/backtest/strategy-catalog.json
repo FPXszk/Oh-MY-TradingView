@@ -4403,6 +4403,2116 @@
       "lifecycle": {
         "status": "live"
       }
+    },
+    {
+      "id": "emr-breakout-baseline-ema9-20-macd12-26-9-rsi50-stop8",
+      "name": "EMR Breakout Baseline 9/20 12/26/9 RSI50 Stop 8",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "ema_fast": 9,
+        "ema_slow": 20,
+        "macd_fast": 12,
+        "macd_slow": 26,
+        "macd_signal": 9,
+        "rsi_level": 50,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "baseline",
+      "theme_notes": "Exact baseline copy kept in the pack for side-by-side comparison.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 300,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "simple",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "baseline",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-baseline-ema9-20-macd12-26-9-rsi50-stop8.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-base-ema8-21-macd12-26-9-rsi50-stop8",
+      "name": "EMR Breakout Fast EMA 8/21 RSI50 Stop 8",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "ema_fast": 8,
+        "ema_slow": 21,
+        "macd_fast": 12,
+        "macd_slow": 26,
+        "macd_signal": 9,
+        "rsi_level": 50,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "base-sensitivity",
+      "theme_notes": "Faster EMA pair to pick earlier continuation entries.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 301,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "base-sensitivity",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-base-ema8-21-macd12-26-9-rsi50-stop8.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-base-ema10-24-macd12-26-9-rsi50-stop8",
+      "name": "EMR Breakout EMA 10/24 RSI50 Stop 8",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "ema_fast": 10,
+        "ema_slow": 24,
+        "macd_fast": 12,
+        "macd_slow": 26,
+        "macd_signal": 9,
+        "rsi_level": 50,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "base-sensitivity",
+      "theme_notes": "Slightly slower EMA pair to reduce whip entries.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 302,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "base-sensitivity",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-base-ema10-24-macd12-26-9-rsi50-stop8.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-base-ema12-26-macd12-26-9-rsi52-stop8",
+      "name": "EMR Breakout EMA 12/26 RSI52 Stop 8",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "ema_fast": 12,
+        "ema_slow": 26,
+        "macd_fast": 12,
+        "macd_slow": 26,
+        "macd_signal": 9,
+        "rsi_level": 52,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "base-sensitivity",
+      "theme_notes": "Slower alignment and slightly higher RSI threshold for cleaner trend entries.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 303,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "base-sensitivity",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-base-ema12-26-macd12-26-9-rsi52-stop8.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-base-ema9-20-macd8-21-5-rsi50-stop8",
+      "name": "EMR Breakout Fast MACD 8/21/5 RSI50 Stop 8",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "ema_fast": 9,
+        "ema_slow": 20,
+        "macd_fast": 8,
+        "macd_slow": 21,
+        "macd_signal": 5,
+        "rsi_level": 50,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "base-sensitivity",
+      "theme_notes": "Faster MACD triplet to react sooner to acceleration.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 304,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "base-sensitivity",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-base-ema9-20-macd8-21-5-rsi50-stop8.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-delay-1bar-close-above-signal-high",
+      "name": "EMR Breakout Delay 1 Bar Above Signal High",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "delay_bars": 1,
+        "require_signal_high": true,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "delay-confirm",
+      "theme_notes": "Wait one bar and require a close above the signal bar high.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 305,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "delay-confirm",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-delay-1bar-close-above-signal-high.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-delay-2bar-close-above-signal-high",
+      "name": "EMR Breakout Delay 2 Bars Above Signal High",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "delay_bars": 2,
+        "require_signal_high": true,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "delay-confirm",
+      "theme_notes": "Allow a two-bar follow-through window above the signal bar high.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 306,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "delay-confirm",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-delay-2bar-close-above-signal-high.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-delay-3bar-close-above-signal-high",
+      "name": "EMR Breakout Delay 3 Bars Above Signal High",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "delay_bars": 3,
+        "require_signal_high": true,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "delay-confirm",
+      "theme_notes": "Require follow-through within three bars instead of buying the crossover bar.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 307,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "delay-confirm",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-delay-3bar-close-above-signal-high.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-delay-2bar-close-above-ema-fast",
+      "name": "EMR Breakout Delay 2 Bars Above Fast EMA",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "delay_bars": 2,
+        "require_fast_ema": true,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "delay-confirm",
+      "theme_notes": "Wait two bars and require price to stay above the fast EMA before entry.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 308,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "delay-confirm",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-delay-2bar-close-above-ema-fast.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-delay-3bar-macd-hist-rising",
+      "name": "EMR Breakout Delay 3 Bars Rising MACD Histogram",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "delay_bars": 3,
+        "require_hist_rising": true,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "delay-confirm",
+      "theme_notes": "Wait for a three-bar follow-through window with improving MACD histogram.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 309,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "delay-confirm",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-delay-3bar-macd-hist-rising.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-confirm-close-above-5d-high",
+      "name": "EMR Breakout Confirm Close Above 5 Day High",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakout_close_len": 5,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "price-breakout-confirm",
+      "theme_notes": "Require the entry bar to close above the prior five-day high.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 310,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "price-breakout-confirm",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-confirm-close-above-5d-high.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-confirm-close-above-10d-high",
+      "name": "EMR Breakout Confirm Close Above 10 Day High",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakout_close_len": 10,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "price-breakout-confirm",
+      "theme_notes": "Require the entry bar to close above the prior ten-day high.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 311,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "price-breakout-confirm",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-confirm-close-above-10d-high.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-confirm-intraday-above-20d-high",
+      "name": "EMR Breakout Confirm Intraday Above 20 Day High",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakout_intraday_len": 20,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "price-breakout-confirm",
+      "theme_notes": "Require the bar high to break above the prior twenty-day high.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 312,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "price-breakout-confirm",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-confirm-intraday-above-20d-high.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-confirm-breakout-and-rsi55",
+      "name": "EMR Breakout Confirm 5 Day High Plus RSI 55",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakout_close_len": 5,
+        "strength_rsi_min": 55,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "price-breakout-confirm",
+      "theme_notes": "Require a five-day breakout close and RSI strength above 55.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 313,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "price-breakout-confirm",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-confirm-breakout-and-rsi55.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-confirm-breakout-and-macd-positive",
+      "name": "EMR Breakout Confirm 5 Day High Plus Positive MACD Histogram",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakout_close_len": 5,
+        "require_hist_positive": true,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "price-breakout-confirm",
+      "theme_notes": "Require a five-day breakout close with positive MACD histogram.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 314,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "price-breakout-confirm",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-confirm-breakout-and-macd-positive.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-trend-price-above-ema200",
+      "name": "EMR Breakout Trend Price Above EMA200",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "trend_mode": "price_above_ema200",
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "trend-filter",
+      "theme_notes": "Only allow new entries while price remains above EMA200.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 315,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "trend-filter",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-trend-price-above-ema200.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-trend-ema50-above-ema200",
+      "name": "EMR Breakout Trend EMA50 Above EMA200",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "trend_mode": "ema50_above_ema200",
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "trend-filter",
+      "theme_notes": "Only allow entries when the medium trend is above EMA200.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 316,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "trend-filter",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-trend-ema50-above-ema200.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-trend-ema200-rising-20bars",
+      "name": "EMR Breakout Trend EMA200 Rising 20 Bars",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "trend_mode": "ema200_rising_20",
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "trend-filter",
+      "theme_notes": "Only take entries when EMA200 is rising versus 20 bars ago.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 317,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "trend-filter",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-trend-ema200-rising-20bars.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-trend-price-above-ema200-rsi55",
+      "name": "EMR Breakout Trend Price Above EMA200 Plus RSI55",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "trend_mode": "price_above_ema200",
+        "strength_rsi_min": 55,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "trend-filter",
+      "theme_notes": "Price must be above EMA200 and RSI must already be above 55.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 318,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "trend-filter",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-trend-price-above-ema200-rsi55.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-trend-ema50-200-and-macd-positive",
+      "name": "EMR Breakout Trend EMA50 Above EMA200 Plus Positive MACD Histogram",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "trend_mode": "ema50_above_ema200",
+        "require_hist_positive": true,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "trend-filter",
+      "theme_notes": "Trend filter plus MACD histogram must stay positive.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 319,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "trend-filter",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-trend-ema50-200-and-macd-positive.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-stop6-base-exit",
+      "name": "EMR Breakout Stop 6 Base Exit",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "stop_pct": 6
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 6
+      },
+      "theme_axis": "stop-tuning",
+      "theme_notes": "Tighter six percent hard stop for faster loss control.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 320,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "stop-tuning",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-stop6-base-exit.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-stop7-base-exit",
+      "name": "EMR Breakout Stop 7 Base Exit",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "stop_pct": 7
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 7
+      },
+      "theme_axis": "stop-tuning",
+      "theme_notes": "Seven percent hard stop variant.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 321,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "stop-tuning",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-stop7-base-exit.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-stop9-base-exit",
+      "name": "EMR Breakout Stop 9 Base Exit",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "stop_pct": 9
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 9
+      },
+      "theme_axis": "stop-tuning",
+      "theme_notes": "Nine percent hard stop for a little more breathing room.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 322,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "stop-tuning",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-stop9-base-exit.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-stop10-base-exit",
+      "name": "EMR Breakout Stop 10 Base Exit",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "stop_pct": 10
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 10
+      },
+      "theme_axis": "stop-tuning",
+      "theme_notes": "Ten percent hard stop for wide trend swings.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 323,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "stop-tuning",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-stop10-base-exit.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-stop8-signal-low-buffer",
+      "name": "EMR Breakout Stop 8 With Signal Low Buffer",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "stop_pct": 8,
+        "signal_low_buffer_stop": true
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "stop-tuning",
+      "theme_notes": "Use the wider of the eight percent stop and the signal bar low.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 324,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "stop-tuning",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-stop8-signal-low-buffer.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-breakeven-at-plus4",
+      "name": "EMR Breakout Breakeven At Plus 4",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakeven_trigger_pct": 4,
+        "breakeven_lock_pct": 0,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "breakeven",
+      "theme_notes": "Move stop to breakeven after a four percent excursion.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 325,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "breakeven",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-breakeven-at-plus4.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-breakeven-at-plus6",
+      "name": "EMR Breakout Breakeven At Plus 6",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakeven_trigger_pct": 6,
+        "breakeven_lock_pct": 0,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "breakeven",
+      "theme_notes": "Move stop to breakeven after a six percent excursion.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 326,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "breakeven",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-breakeven-at-plus6.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-breakeven-at-plus8",
+      "name": "EMR Breakout Breakeven At Plus 8",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakeven_trigger_pct": 8,
+        "breakeven_lock_pct": 0,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "breakeven",
+      "theme_notes": "Move stop to breakeven after an eight percent excursion.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 327,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "breakeven",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-breakeven-at-plus8.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-breakeven-plus1-after-plus6",
+      "name": "EMR Breakout Breakeven Plus 1 After Plus 6",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakeven_trigger_pct": 6,
+        "breakeven_lock_pct": 1,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "breakeven",
+      "theme_notes": "Lock one percent once the trade reaches six percent open profit.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 328,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "breakeven",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-breakeven-plus1-after-plus6.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-breakeven-plus2-after-plus8",
+      "name": "EMR Breakout Breakeven Plus 2 After Plus 8",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakeven_trigger_pct": 8,
+        "breakeven_lock_pct": 2,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "breakeven",
+      "theme_notes": "Lock two percent once the trade reaches eight percent open profit.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 329,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "breakeven",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-breakeven-plus2-after-plus8.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-tp8-full-exit",
+      "name": "EMR Breakout TP 8 Full Exit",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "tp1_pct": 8,
+        "tp1_qty": 100,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "take-profit",
+      "theme_notes": "Take the full position off at plus eight percent.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 330,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "take-profit",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-tp8-full-exit.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-tp10-full-exit",
+      "name": "EMR Breakout TP 10 Full Exit",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "tp1_pct": 10,
+        "tp1_qty": 100,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "take-profit",
+      "theme_notes": "Take the full position off at plus ten percent.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 331,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "take-profit",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-tp10-full-exit.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-tp12-full-exit",
+      "name": "EMR Breakout TP 12 Full Exit",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "tp1_pct": 12,
+        "tp1_qty": 100,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "take-profit",
+      "theme_notes": "Take the full position off at plus twelve percent.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 332,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "take-profit",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-tp12-full-exit.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-tp8-half-then-trail-ema20",
+      "name": "EMR Breakout TP 8 Half Then Trail EMA20",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "tp1_pct": 8,
+        "tp1_qty": 50,
+        "trail_mode": "ema20",
+        "trail_activation_pct": 8,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "take-profit",
+      "theme_notes": "Take half at plus eight percent and trail the balance on EMA20.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 333,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "take-profit",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-tp8-half-then-trail-ema20.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-tp10-half-then-trail-ema20",
+      "name": "EMR Breakout TP 10 Half Then Trail EMA20",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "tp1_pct": 10,
+        "tp1_qty": 50,
+        "trail_mode": "ema20",
+        "trail_activation_pct": 10,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "take-profit",
+      "theme_notes": "Take half at plus ten percent and trail the balance on EMA20.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 334,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "take-profit",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-tp10-half-then-trail-ema20.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-trail-atr14x2",
+      "name": "EMR Breakout Trail ATR14 x 2",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "trail_mode": "atr",
+        "trail_atr_period": 14,
+        "trail_atr_mult": 2,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "trailing-stop",
+      "theme_notes": "Use a two ATR trailing stop from entry.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 335,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "trailing-stop",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-trail-atr14x2.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-trail-atr14x25",
+      "name": "EMR Breakout Trail ATR14 x 2.5",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "trail_mode": "atr",
+        "trail_atr_period": 14,
+        "trail_atr_mult": 2.5,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "trailing-stop",
+      "theme_notes": "Use a two and a half ATR trailing stop from entry.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 336,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "trailing-stop",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-trail-atr14x25.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-trail-atr14x3",
+      "name": "EMR Breakout Trail ATR14 x 3",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "trail_mode": "atr",
+        "trail_atr_period": 14,
+        "trail_atr_mult": 3,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "trailing-stop",
+      "theme_notes": "Use a three ATR trailing stop from entry.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 337,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "trailing-stop",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-trail-atr14x3.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-trail-chandelier-22x25",
+      "name": "EMR Breakout Trail Chandelier 22 x 2.5",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "trail_mode": "chandelier",
+        "trail_chandelier_len": 22,
+        "trail_chandelier_mult": 2.5,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "trailing-stop",
+      "theme_notes": "Use a twenty-two bar chandelier stop with 2.5 ATR multiplier.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 338,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "trailing-stop",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-trail-chandelier-22x25.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-trail-chandelier-22x3",
+      "name": "EMR Breakout Trail Chandelier 22 x 3",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "trail_mode": "chandelier",
+        "trail_chandelier_len": 22,
+        "trail_chandelier_mult": 3,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "trailing-stop",
+      "theme_notes": "Use a twenty-two bar chandelier stop with 3 ATR multiplier.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 339,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "trailing-stop",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-trail-chandelier-22x3.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-profit-protect-close-below-ema10",
+      "name": "EMR Breakout Profit Protect Close Below EMA10",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "profit_protect_mode": "ema10",
+        "profit_protect_trigger_pct": 6,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "profit-protect",
+      "theme_notes": "Once the trade reaches six percent, use EMA10 as the protective stop.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 340,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "profit-protect",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-profit-protect-close-below-ema10.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-profit-protect-close-below-ema15",
+      "name": "EMR Breakout Profit Protect Close Below EMA15",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "profit_protect_mode": "ema15",
+        "profit_protect_trigger_pct": 6,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "profit-protect",
+      "theme_notes": "Once the trade reaches six percent, use EMA15 as the protective stop.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 341,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "profit-protect",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-profit-protect-close-below-ema15.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-profit-protect-close-below-ema20",
+      "name": "EMR Breakout Profit Protect Close Below EMA20",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "profit_protect_mode": "ema20",
+        "profit_protect_trigger_pct": 8,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "profit-protect",
+      "theme_notes": "Once the trade reaches eight percent, use EMA20 as the protective stop.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 342,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "profit-protect",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-profit-protect-close-below-ema20.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-profit-protect-macd-bear-after-plus6",
+      "name": "EMR Breakout Profit Protect MACD Bear After Plus 6",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "profit_protect_mode": "macd_bear",
+        "profit_protect_trigger_pct": 6,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "profit-protect",
+      "theme_notes": "Close on a MACD bear cross once the trade has reached six percent open profit.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 343,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "profit-protect",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-profit-protect-macd-bear-after-plus6.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-profit-protect-rsi-loss-55-after-plus8",
+      "name": "EMR Breakout Profit Protect RSI Loss 55 After Plus 8",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "profit_protect_mode": "rsi_loss",
+        "profit_protect_trigger_pct": 8,
+        "profit_protect_rsi_threshold": 55,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "profit-protect",
+      "theme_notes": "Close once RSI loses 55 after the trade has reached eight percent open profit.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 344,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "profit-protect",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-profit-protect-rsi-loss-55-after-plus8.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-strength-rsi55-and-rsi-over-rsiema",
+      "name": "EMR Breakout Strength RSI55 Over RSI EMA",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "strength_rsi_min": 55,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strength-filter",
+      "theme_notes": "Require RSI to be at least 55 and still above its own EMA.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 345,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "strength-filter",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-strength-rsi55-and-rsi-over-rsiema.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-strength-rsi60-and-rsi-over-rsiema",
+      "name": "EMR Breakout Strength RSI60 Over RSI EMA",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "strength_rsi_min": 60,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strength-filter",
+      "theme_notes": "Require RSI to be at least 60 and still above its own EMA.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 346,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "strength-filter",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-strength-rsi60-and-rsi-over-rsiema.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-strength-macd-hist-rising-3bars",
+      "name": "EMR Breakout Strength MACD Histogram Rising 3 Bars",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "strength_hist_rising_3": true,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strength-filter",
+      "theme_notes": "Require the MACD histogram to improve for three bars in a row.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 347,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "strength-filter",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-strength-macd-hist-rising-3bars.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-strength-all-align-and-close-above-fast-ema",
+      "name": "EMR Breakout Strength All Align Plus Close Above Fast EMA",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "strength_close_above_fast_ema": true,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strength-filter",
+      "theme_notes": "Require the close to hold above the fast EMA on top of the base confluence rules.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 348,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "strength-filter",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-strength-all-align-and-close-above-fast-ema.pine",
+      "lifecycle": {
+        "status": "live"
+      }
+    },
+    {
+      "id": "emr-breakout-strength-all-align-and-breakout-5d-high",
+      "name": "EMR Breakout Strength All Align Plus 5 Day Breakout",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "strength_breakout_len": 5,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "strength-filter",
+      "theme_notes": "Require a close above the prior five-day high on top of the base confluence rules.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA + MACD + RSI breakout variant generated for the US40 50-pack comparison.",
+      "phase": "phase-15",
+      "implementation_stage": "ema-macd-rsi-breakout-us40-50pack",
+      "priority": 349,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "hard-stop",
+        "rsi-regime",
+        "strength-filter",
+        "ema-macd-rsi-breakout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-strength-all-align-and-breakout-5d-high.pine",
+      "lifecycle": {
+        "status": "live"
+      }
     }
   ]
 }

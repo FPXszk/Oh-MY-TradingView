@@ -1,0 +1,240 @@
+//@version=5
+strategy(
+     title             = "EMR Breakout Trail Chandelier 22 x 3",
+     overlay           = true,
+     initial_capital   = 10000,
+     currency          = currency.USD,
+     default_qty_type  = strategy.percent_of_equity,
+     default_qty_value = 100,
+     commission_type   = strategy.commission.percent,
+     commission_value  = 0.1
+ )
+
+// Fixed backtest range
+startDate = timestamp(2015, 1, 1, 0, 0)
+endDate   = timestamp(2026, 4, 27, 0, 0)
+inRange   = time >= startDate and time <= endDate
+
+// Variant metadata
+variantId   = "emr-breakout-trail-chandelier-22x3"
+variantNote = "Use a twenty-two bar chandelier stop with 3 ATR multiplier."
+
+// Fixed parameters for this variant
+emaFastLen  = 9
+emaSlowLen  = 20
+macdFast    = 12
+macdSlow    = 26
+macdSignal  = 9
+rsiLen      = 14
+rsiEmaLen   = 14
+rsiLevel    = 50
+stopPct     = 8
+
+delayBars                = 0
+delayRequireSignalHigh   = false
+delayRequireFastEma      = false
+delayRequireHistRising   = false
+breakoutCloseLen         = 0
+breakoutIntradayLen      = 0
+trendMode                = "none"
+signalLowBufferStop      = false
+breakevenTriggerPct      = 0
+breakevenLockPct         = 0
+tp1Pct                   = 0
+tp1Qty                   = 0
+trailMode                = "chandelier"
+trailActivationPct       = 0
+trailAtrPeriod           = 14
+trailAtrMult             = 0
+trailChandelierLen       = 22
+trailChandelierMult      = 3
+profitProtectMode        = "none"
+profitProtectTriggerPct  = 0
+profitProtectRsiThreshold = 55
+strengthRsiMin           = 0
+strengthHistPositive     = false
+strengthHist3            = false
+strengthCloseAboveFastEma = false
+strengthBreakoutLen      = 0
+
+// Core calculations
+emaFast = ta.ema(close, emaFastLen)
+emaSlow = ta.ema(close, emaSlowLen)
+ema10   = ta.ema(close, 10)
+ema15   = ta.ema(close, 15)
+ema20   = ta.ema(close, 20)
+ema50   = ta.ema(close, 50)
+ema200  = ta.ema(close, 200)
+[macdLine, signalLine, histLine] = ta.macd(close, macdFast, macdSlow, macdSignal)
+rsi    = ta.rsi(close, rsiLen)
+rsiEma = ta.ema(rsi, rsiEmaLen)
+trailAtr = ta.atr(trailAtrPeriod)
+
+emaBullCross = ta.crossover(emaFast, emaSlow)
+emaBearCross = ta.crossunder(emaFast, emaSlow)
+emaAlignBull = emaFast > emaSlow
+emaAlignBear = emaFast < emaSlow
+
+macdBullCross = ta.crossover(macdLine, signalLine)
+macdBearCross = ta.crossunder(macdLine, signalLine)
+macdAlignBull = macdLine > signalLine
+macdAlignBear = macdLine < signalLine
+
+rsiBullCross = ta.crossover(rsi, rsiEma)
+rsiBearCross = ta.crossunder(rsi, rsiEma)
+rsiAlignBull = rsi > rsiEma
+rsiAlignBear = rsi < rsiEma
+
+buyRaw  = (emaBullCross  and macdAlignBull and rsiAlignBull) or
+          (macdBullCross and emaAlignBull  and rsiAlignBull) or
+          (rsiBullCross  and emaAlignBull  and macdAlignBull)
+
+sellRaw = (emaBearCross  and macdAlignBear and rsiAlignBear) or
+          (macdBearCross and emaAlignBear  and rsiAlignBear) or
+          (rsiBearCross  and emaAlignBear  and macdAlignBear)
+
+breakoutCloseOk = true
+if breakoutCloseLen > 0
+    breakoutCloseOk := close > ta.highest(high, breakoutCloseLen)[1]
+
+breakoutIntradayOk = true
+if breakoutIntradayLen > 0
+    breakoutIntradayOk := high > ta.highest(high, breakoutIntradayLen)[1]
+
+strengthBreakoutOk = true
+if strengthBreakoutLen > 0
+    strengthBreakoutOk := close > ta.highest(high, strengthBreakoutLen)[1]
+
+strengthRsiOk = strengthRsiMin <= 0 or (rsi >= strengthRsiMin and rsi > rsiEma)
+strengthHistPositiveOk = not strengthHistPositive or histLine > 0
+strengthHist3Ok = not strengthHist3 or (histLine > histLine[1] and histLine[1] > histLine[2])
+strengthCloseOk = not strengthCloseAboveFastEma or close > emaFast
+
+trendOk = switch trendMode
+    "price_above_ema200" => close > ema200
+    "ema50_above_ema200" => ema50 > ema200
+    "ema200_rising_20"   => ema200 > ema200[20]
+    => true
+
+entryFiltersOk = breakoutCloseOk and breakoutIntradayOk and strengthBreakoutOk and strengthRsiOk and strengthHistPositiveOk and strengthHist3Ok and strengthCloseOk and trendOk
+
+var bool pendingLong = false
+var float pendingSignalHigh = na
+var float pendingSignalLow = na
+var int pendingSignalBar = na
+var float entrySignalLow = na
+var float highestSinceEntry = na
+
+if strategy.position_size > 0
+    highestSinceEntry := na(highestSinceEntry) ? high : math.max(highestSinceEntry, high)
+else
+    highestSinceEntry := na
+    entrySignalLow := na
+
+newSignal = inRange and barstate.isconfirmed and buyRaw and strategy.position_size <= 0 and not pendingLong
+if newSignal
+    if delayBars == 0
+        if entryFiltersOk
+            strategy.entry("Long", strategy.long)
+            entrySignalLow := low
+    else
+        pendingLong := true
+        pendingSignalHigh := high
+        pendingSignalLow := low
+        pendingSignalBar := bar_index
+
+barsSincePending = pendingLong and not na(pendingSignalBar) ? bar_index - pendingSignalBar : na
+pendingWindowOk = pendingLong and not na(barsSincePending) and barsSincePending > 0 and barsSincePending <= delayBars
+pendingConfirmOk = entryFiltersOk and emaAlignBull and macdAlignBull and rsiAlignBull and (not delayRequireSignalHigh or close > pendingSignalHigh) and (not delayRequireFastEma or close > emaFast) and (not delayRequireHistRising or histLine > histLine[1])
+
+if pendingWindowOk and pendingConfirmOk and inRange and barstate.isconfirmed and strategy.position_size <= 0
+    strategy.entry("Long", strategy.long)
+    entrySignalLow := pendingSignalLow
+    pendingLong := false
+    pendingSignalHigh := na
+    pendingSignalLow := na
+    pendingSignalBar := na
+
+if pendingLong and (sellRaw or (not na(barsSincePending) and barsSincePending > delayBars))
+    pendingLong := false
+    pendingSignalHigh := na
+    pendingSignalLow := na
+    pendingSignalBar := na
+
+if inRange and sellRaw and barstate.isconfirmed
+    pendingLong := false
+    pendingSignalHigh := na
+    pendingSignalLow := na
+    pendingSignalBar := na
+    if strategy.position_size > 0
+        strategy.close("Long", comment="SELL")
+
+entryPrice = strategy.position_avg_price
+reachedPct(pct) => strategy.position_size > 0 and not na(highestSinceEntry) and highestSinceEntry >= entryPrice * (1 + pct / 100)
+
+baseStop = strategy.position_size > 0 ? entryPrice * (1 - stopPct / 100) : na
+signalLowStop = signalLowBufferStop and strategy.position_size > 0 and not na(entrySignalLow) ? entrySignalLow : na
+effectiveBaseStop = na(baseStop) ? na : (signalLowBufferStop and not na(signalLowStop) ? math.min(baseStop, signalLowStop) : baseStop)
+
+breakevenStop = strategy.position_size > 0 and breakevenTriggerPct > 0 and reachedPct(breakevenTriggerPct)
+    ? entryPrice * (1 + breakevenLockPct / 100)
+    : na
+
+trailActivationOk = strategy.position_size > 0 and trailMode != "none" and (trailActivationPct <= 0 or reachedPct(trailActivationPct))
+trailingStop = na
+if trailActivationOk
+    if trailMode == "atr" and not na(highestSinceEntry)
+        trailingStop := highestSinceEntry - trailAtr * trailAtrMult
+    else if trailMode == "chandelier"
+        trailingStop := ta.highest(high, trailChandelierLen) - trailAtr * trailChandelierMult
+    else if trailMode == "ema20"
+        trailingStop := ema20
+
+profitProtectTriggerReached = profitProtectTriggerPct <= 0 ? strategy.position_size > 0 : reachedPct(profitProtectTriggerPct)
+profitProtectStop = na
+if strategy.position_size > 0 and profitProtectTriggerReached
+    if profitProtectMode == "ema10"
+        profitProtectStop := ema10
+    else if profitProtectMode == "ema15"
+        profitProtectStop := ema15
+    else if profitProtectMode == "ema20"
+        profitProtectStop := ema20
+
+if strategy.position_size > 0 and profitProtectTriggerReached and profitProtectMode == "macd_bear" and macdBearCross and barstate.isconfirmed
+    strategy.close("Long", comment="ProfitProtect")
+
+if strategy.position_size > 0 and profitProtectTriggerReached and profitProtectMode == "rsi_loss" and rsi < profitProtectRsiThreshold and barstate.isconfirmed
+    strategy.close("Long", comment="ProfitProtect")
+
+activeStop = na
+if not na(effectiveBaseStop)
+    activeStop := effectiveBaseStop
+if not na(breakevenStop)
+    activeStop := na(activeStop) ? breakevenStop : math.max(activeStop, breakevenStop)
+if not na(trailingStop)
+    activeStop := na(activeStop) ? trailingStop : math.max(activeStop, trailingStop)
+if not na(profitProtectStop)
+    activeStop := na(activeStop) ? profitProtectStop : math.max(activeStop, profitProtectStop)
+
+if strategy.position_size > 0 and tp1Pct > 0 and tp1Qty > 0
+    strategy.exit("TP1", from_entry="Long", limit=entryPrice * (1 + tp1Pct / 100), qty_percent=tp1Qty)
+
+if strategy.position_size > 0 and not na(activeStop)
+    strategy.exit("RiskExit", from_entry="Long", stop=activeStop)
+
+bullScore = (emaAlignBull ? 1 : 0) + (macdAlignBull ? 1 : 0) + (rsiAlignBull ? 1 : 0) + (rsi > rsiLevel ? 1 : 0) + (histLine > 0 ? 1 : 0)
+bearScore = (emaAlignBear ? 1 : 0) + (macdAlignBear ? 1 : 0) + (rsiAlignBear ? 1 : 0) + (rsi < rsiLevel ? 1 : 0) + (histLine < 0 ? 1 : 0)
+
+bullTrans = bullScore >= 5 ? 12 : bullScore == 4 ? 28 : bullScore == 3 ? 48 : 82
+bearTrans = bearScore >= 5 ? 12 : bearScore == 4 ? 28 : bearScore == 3 ? 48 : 82
+ribbonColor = bullScore > bearScore ? color.new(color.lime, bullTrans) : bearScore > bullScore ? color.new(color.red, bearTrans) : color.new(color.gray, 92)
+
+p1 = plot(emaFast, "Fast EMA", color=color.new(color.aqua, 0), linewidth=1)
+p2 = plot(emaSlow, "Slow EMA", color=color.new(color.orange, 0), linewidth=1)
+plot(ema200, "EMA 200", color=color.new(color.gray, 45), linewidth=1)
+plot(activeStop, "Active Stop", color=color.new(color.red, 15), linewidth=1, style=plot.style_linebr)
+fill(p1, p2, color=ribbonColor, title="Confluence Ribbon")
+
+plotshape(inRange and newSignal and delayBars == 0 and entryFiltersOk and barstate.isconfirmed, title="BUY", style=shape.labelup, location=location.belowbar, color=color.new(color.lime, 10), textcolor=color.black, text="BUY", size=size.tiny)
+plotshape(inRange and pendingWindowOk and pendingConfirmOk and barstate.isconfirmed, title="BUY Delay", style=shape.labelup, location=location.belowbar, color=color.new(color.green, 10), textcolor=color.black, text="BUY", size=size.tiny)
+plotshape(inRange and sellRaw and barstate.isconfirmed, title="SELL", style=shape.labeldown, location=location.abovebar, color=color.new(color.red, 10), textcolor=color.white, text="SELL", size=size.tiny)
