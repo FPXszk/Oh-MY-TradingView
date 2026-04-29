@@ -4,7 +4,7 @@ dev:
   ./devinit.sh
 
 dev-copilot-legacy:
-  cd . && copilot --yolo --add-github-mcp-toolset all --add-dir .
+  cd . && copilot --yolo --remote --add-github-mcp-toolset all --add-dir .
 
 stop:
   tmux kill-session -t Oh-MY-TradingView
