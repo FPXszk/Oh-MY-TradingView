@@ -401,3 +401,53 @@ GitHub の画面から押せても、以下が死んでいると backtest は進
 > **strategy catalog が実行対象戦略の正本、universe が銘柄群、campaign がその組み合わせ方、workflow はそれを夜間実行する入口。**
 
 もし次に **別の campaign を GitHub 画面から実行したい場合**は、`workflow_dispatch` の `config_path` に別の config を指定するか、新しい bundle config を作成します。
+
+---
+
+## TradingView スクリーナー機能について
+
+この repo には、TradingView の内部スキャナー API を利用したスクリーニング機能があります。  
+backtest とは異なり、**CDP 不要・認証不要**で動作します。
+
+### TradingView Scanner API とは
+
+TradingView の Screener ページが内部で使っている HTTP エンドポイントです。
+
+- **URL**: `POST https://scanner.tradingview.com/{market}/scan`
+- **認証**: 遅延データは不要（ライブ/ストリームは cookies 必要）
+- **対応市場**: `america` / `crypto` / `forex` / `global` 等
+- **フィールド数**: 3,000+ （RSI / SMA / 時価総額 / 出来高 / MACD / 52週高値 等）
+
+> これは **非公式 API** です。フィールド名変更・エンドポイント廃止のリスクがあります。
+
+### ミネルビニ7条件スクリーナー
+
+マーク・ミネルビニが提唱するモメンタム銘柄の選定条件をそのまま実装したスクリーナーです。
+
+```bash
+tv screener minervini           # 上位50件
+tv screener minervini --limit 20
+tv screener minervini --compact   # シンボルと価格のみ
+```
+
+| 条件 | 内容 |
+|---|---|
+| 市場 | 米国株のみ |
+| RSI(14) | 60 以上 |
+| 時価総額 | 10億ドル以上 |
+| 直近出来高 | 平均の1.2倍以上 |
+| 現在値 | 200日移動平均線より上 |
+| 現在値 | 50日移動平均線より上 |
+| 現在値 | 52週高値の75%以上 |
+
+### CDP vs スキャナー API の使い分け
+
+| 機能 | 手段 | CDP 必要? |
+|---|---|---|
+| ミネルビニスクリーニング | TradingView Scanner API | 不要 |
+| quote / 指標取得 | Yahoo Finance API | 不要 |
+| チャートのスクリーンショット | CDP | 必要 |
+| バックテスト | CDP + Strategy Tester | 必要 |
+| Pine スクリプト編集 | CDP + Pine エディタ | 必要 |
+
+> スクリーニングは外部 API のみで完結します。backtest は CDP が必須です。

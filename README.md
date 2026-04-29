@@ -29,6 +29,7 @@ TradingView Desktop を **Codex CLI 主経路** で扱う MCP / CLI ブリッジ
 
 - **CDP 操作はローカル限定**: `tv_*` / `pine_*` / `backtest` 系はローカルの TradingView Desktop に対して動作します
 - **`market_*` は外部取得あり**: `market_quote` / `market_fundamentals` / `market_snapshot` / `market_news` / `market_screener` / `market_ta_summary` / `market_ta_rank` / `market_symbol_analysis` / `market_confluence_rank` は Yahoo Finance の public endpoint を使います
+- **`market_minervini_screener` は TradingView Scanner API 利用**: TradingView の内部スキャナー API（`scanner.tradingview.com/america/scan`）を使用します。認証不要ですが非公式 API のため変更リスクあり
 - **`x_*` は read-only**: `x_status` / `x_whoami` / `x_search_posts` / `x_user_profile` / `x_user_posts` / `x_tweet_detail` はローカルの `twitter-cli` と認証済みブラウザ cookies または `TWITTER_AUTH_TOKEN` / `TWITTER_CT0` を使います
 - **`reach_*` は Twitter 以外の目**: `reach_status` / `reach_read_web` / `reach_read_rss` / `reach_search_reddit` / `reach_read_reddit_post` / `reach_read_youtube` は read-only の external observation layer です
 - **要ユーザー起動**: 現行前提は **Windows で `9222` 起動 / WSL からは `9223` 接続** です
@@ -69,6 +70,7 @@ TradingView Desktop を **Codex CLI 主経路** で扱う MCP / CLI ブリッジ
 - `market_ta_rank` — TA 指標で銘柄ランキング（priceChange / rsi14 / sma20Deviation / sma50Deviation）
 - `market_symbol_analysis` — 単一銘柄の deterministic analyst-style analysis（trend / fundamentals / news / risk / overall + confluence）
 - `market_confluence_rank` — 複数銘柄を deterministic confluence score で順位付け
+- `market_minervini_screener` — TradingView Scanner API 経由でミネルビニ7条件（RSI60+/SMA200上/SMA50上/52週高値75%+/出来高1.2倍+/時価総額10億ドル+/米国株のみ）を一括スクリーニング
 - `x_status` — Twitter/X の認証状態確認（read-only）
 - `x_whoami` — 認証済みの Twitter/X アカウント確認
 - `x_search_posts` — Twitter/X 投稿検索
@@ -146,6 +148,9 @@ TradingView Desktop を **Codex CLI 主経路** で扱う MCP / CLI ブリッジ
 - `tv market ta-rank AAPL MSFT --sort-by rsi14 --order asc`
 - `tv market analysis --symbol AAPL`
 - `tv market confluence-rank AAPL MSFT NVDA --limit 3`
+- `tv screener minervini` — ミネルビニ7条件スクリーニング（上位50件）
+- `tv screener minervini --limit 20` — 上限20件
+- `tv screener minervini --compact` — シンボルと価格のみの compact 表示
 - `tv x status`
 - `tv x whoami`
 - `tv x search --query "NVDA" --max 3`
@@ -180,6 +185,42 @@ TradingView Desktop を **Codex CLI 主経路** で扱う MCP / CLI ブリッジ
 - `analysis.provider_status` には `quote` / `fundamentals` / `ta` / `news` / `community` の `status` / `missing_reason` / `available` が入り、silent null を避けます。
 - `analysis.community_snapshot` には `x` / `reddit` の件数、最新時刻、source presence、provider別 warning が入り、初期実装では **directional sentiment は返しません**。
 - `tv market confluence-rank ...` でも `ranked_symbols[]` に `provider_status` と `community_snapshot` が伝播し、`--limit` で落ちた成功銘柄は `omitted[]` に残ります。
+
+### ミネルビニスクリーナーの使い方
+
+TradingView の内部スキャナー API（`scanner.tradingview.com/america/scan`）を使い、ミネルビニ流モメンタム7条件を一括スクリーニングします。CDP 不要です。
+
+#### 適用される条件
+
+| # | 条件 | 実装方式 |
+|---|---|---|
+| 1 | 対象市場：米国株のみ | API `markets: ["america"]` |
+| 2 | RSI(14) ≥ 60 | サーバー側フィルタ |
+| 3 | 時価総額 ≥ 10億ドル | サーバー側フィルタ |
+| 4 | 直近出来高 ≥ 平均出来高の1.2倍 | サーバー側フィルタ |
+| 5 | 現在値 > 200日移動平均線 | クライアント側後処理 |
+| 6 | 現在値 > 50日移動平均線 | クライアント側後処理 |
+| 7 | 現在値 ≥ 52週高値の75% | クライアント側後処理 |
+
+#### CLI
+
+```bash
+tv screener minervini                # 上位50件（デフォルト）
+tv screener minervini --limit 20     # 上限20件
+tv screener minervini --compact      # シンボルと価格のみを表示
+```
+
+#### MCP tool
+
+```
+market_minervini_screener          # 引数なし（limit/compact はオプション）
+```
+
+#### 注意事項
+
+- TradingView の非公式 API を使用しているため、フィールド名やエンドポイントが変更される可能性があります
+- SMA が null の銘柄（OTC 等）はそのフィルタをスキップして通過します（過包含）
+- レート制限回避のためデフォルト上限は 50 件です
 
 ## アーキテクチャ
 
