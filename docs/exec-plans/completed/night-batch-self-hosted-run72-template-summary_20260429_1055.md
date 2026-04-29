@@ -93,13 +93,13 @@ GitHub Actions run `25059045892` の成果物を読み、`docs/research/TEMPLATE
 
 ## 実装ステップ
 
-- [ ] run `25059045892` の workflow / artifact / campaign 情報を確定する
-- [ ] full `strategy-ranking.json` と `recovered-summary.json` から順位表と市場別平均の元データを抽出する
-- [ ] `recovered-results.json` から Top 3 の銘柄集中度を算出する
-- [ ] `docs/research/night-batch-self-hosted-run72_20260429.md` を `TEMPLATE.md` 準拠で作成する
-- [ ] 数値・叙述・参照パスの整合性をレビューする
-- [ ] plan を `docs/exec-plans/completed/` に移動する
-- [ ] Conventional Commit で commit し、`main` に push する
+- [x] run `25059045892` の workflow / artifact / campaign 情報を確定する
+- [x] full `strategy-ranking.json` と `recovered-summary.json` から順位表と市場別平均の元データを抽出する
+- [x] `recovered-results.json` から Top 3 の銘柄集中度を算出する
+- [x] `docs/research/night-batch-self-hosted-run72_20260429.md` を `TEMPLATE.md` 準拠で作成する
+- [x] 数値・叙述・参照パスの整合性をレビューする
+- [x] plan を `docs/exec-plans/completed/` に移動する
+- [x] Conventional Commit で commit し、`main` に push する
 
 ## 完了条件
 
