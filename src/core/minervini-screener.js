@@ -24,7 +24,7 @@ const COLUMNS = [
   'SMA200',
   'SMA50',
   'High.All',
-  'Relative.Volume',
+  'relative_volume_10d_calc',
   'market_cap_basic',
   'volume',
 ];
@@ -36,7 +36,7 @@ function buildRequestBody(serverLimit) {
     filter: [
       { left: 'RSI', operation: 'egreater', right: 60 },
       { left: 'market_cap_basic', operation: 'egreater', right: 1_000_000_000 },
-      { left: 'Relative.Volume', operation: 'egreater', right: 1.2 },
+      { left: 'relative_volume_10d_calc', operation: 'egreater', right: 1.2 },
     ],
     options: { lang: 'en' },
     markets: ['america'],
@@ -59,7 +59,7 @@ function normalizeRow(row) {
   const sma200 = d[COL['SMA200']] ?? null;
   const sma50 = d[COL['SMA50']] ?? null;
   const high52w = d[COL['High.All']] ?? null;
-  const relativeVolume = d[COL['Relative.Volume']] ?? null;
+  const relativeVolume = d[COL['relative_volume_10d_calc']] ?? null;
   const marketCapUsd = d[COL['market_cap_basic']] ?? null;
   const volume = d[COL['volume']] ?? null;
 
