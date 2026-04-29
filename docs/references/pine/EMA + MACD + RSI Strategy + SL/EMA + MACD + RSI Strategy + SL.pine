@@ -1,0 +1,116 @@
+//@version=5
+strategy(
+     title             = "EMA + MACD + RSI Strategy",
+     overlay           = true,
+     initial_capital   = 10000,
+     currency          = currency.USD,
+     default_qty_type  = strategy.percent_of_equity,
+     default_qty_value = 100,
+     commission_type   = strategy.commission.percent,
+     commission_value  = 0.1
+ )
+
+// ── Date Range ────────────────────────────────────────────────────────────────
+startDate = timestamp(2015, 1, 1, 0, 0)
+endDate   = timestamp(2026, 4, 27, 0, 0)
+inRange   = time >= startDate and time <= endDate
+
+// ── Inputs ────────────────────────────────────────────────────────────────────
+emaFastLen = input.int(9,    "Fast EMA",       minval=1)
+emaSlowLen = input.int(20,   "Slow EMA",       minval=1)
+macdFast   = input.int(12,   "MACD Fast",      minval=1)
+macdSlow   = input.int(26,   "MACD Slow",      minval=1)
+macdSignal = input.int(9,    "MACD Signal",    minval=1)
+rsiLen     = input.int(14,   "RSI Length",     minval=1)
+rsiEmaLen  = input.int(14,   "RSI EMA Length", minval=1)
+rsiLevel   = input.float(50, "RSI Level",      minval=1, maxval=99)
+
+// ── Calculations ──────────────────────────────────────────────────────────────
+emaFast = ta.ema(close, emaFastLen)
+emaSlow = ta.ema(close, emaSlowLen)
+
+[macdLine, signalLine, histLine] = ta.macd(close, macdFast, macdSlow, macdSignal)
+
+rsi    = ta.rsi(close, rsiLen)
+rsiEma = ta.ema(rsi, rsiEmaLen)
+
+// ── Condition 1 — EMA ─────────────────────────────────────────────────────────
+emaBullCross = ta.crossover(emaFast, emaSlow)
+emaBearCross = ta.crossunder(emaFast, emaSlow)
+emaAlignBull = emaFast > emaSlow
+emaAlignBear = emaFast < emaSlow
+
+// ── Condition 2 — MACD ────────────────────────────────────────────────────────
+macdBullCross = ta.crossover(macdLine, signalLine)
+macdBearCross = ta.crossunder(macdLine, signalLine)
+macdAlignBull = macdLine > signalLine
+macdAlignBear = macdLine < signalLine
+
+// ── Condition 3 — RSI ─────────────────────────────────────────────────────────
+rsiBullCross = ta.crossover(rsi, rsiEma)
+rsiBearCross = ta.crossunder(rsi, rsiEma)
+rsiAlignBull = rsi > rsiEma
+rsiAlignBear = rsi < rsiEma
+
+// ── Raw signals ───────────────────────────────────────────────────────────────
+buyRaw  = (emaBullCross  and macdAlignBull and rsiAlignBull) or
+          (macdBullCross and emaAlignBull  and rsiAlignBull) or
+          (rsiBullCross  and emaAlignBull  and macdAlignBull)
+
+sellRaw = (emaBearCross  and macdAlignBear and rsiAlignBear) or
+          (macdBearCross and emaAlignBear  and rsiAlignBear) or
+          (rsiBearCross  and emaAlignBear  and macdAlignBear)
+
+// ── State machine — suppress repeat signals ───────────────────────────────────
+var int posState = 0
+buySignal  = buyRaw  and posState != 1
+sellSignal = sellRaw and posState != -1
+if buySignal
+    posState := 1
+if sellSignal
+    posState := -1
+
+// ── Strategy orders ───────────────────────────────────────────────────────────
+if inRange and buySignal and barstate.isconfirmed
+    strategy.entry("Long", strategy.long)
+
+// SELLシグナルで決済
+if inRange and sellSignal and barstate.isconfirmed
+    strategy.close("Long", comment="SELL")
+
+// ── ★ 追加：ストップロス（-8%） ───────────────────────────────────────────────
+stopLossPrice = strategy.position_avg_price * (1 - 0.08)
+
+if strategy.position_size > 0
+    strategy.exit("StopLoss", from_entry="Long", stop=stopLossPrice)
+
+// ── Confluence score for ribbon ───────────────────────────────────────────────
+bullScore = (emaAlignBull   ? 1 : 0) + (macdAlignBull  ? 1 : 0) + (rsiAlignBull   ? 1 : 0)
+          + (rsi > rsiLevel ? 1 : 0) + (rsiEma > rsiLevel ? 1 : 0) + (histLine > 0 ? 1 : 0)
+bearScore = (emaAlignBear   ? 1 : 0) + (macdAlignBear  ? 1 : 0) + (rsiAlignBear   ? 1 : 0)
+          + (rsi < rsiLevel ? 1 : 0) + (rsiEma < rsiLevel ? 1 : 0) + (histLine < 0 ? 1 : 0)
+
+bullTrans = bullScore == 6 ? 10 : bullScore == 5 ? 25 : bullScore == 4 ? 45
+          : bullScore == 3 ? 62 : bullScore == 2 ? 78 : 90
+bearTrans = bearScore == 6 ? 10 : bearScore == 5 ? 25 : bearScore == 4 ? 45
+          : bearScore == 3 ? 62 : bearScore == 2 ? 78 : 90
+
+ribbonColor =
+  bullScore > bearScore ? color.new(color.lime, bullTrans) :
+  bearScore > bullScore ? color.new(color.red,  bearTrans) :
+  color.new(color.gray, 92)
+
+// ── Plot ──────────────────────────────────────────────────────────────────────
+p1 = plot(emaFast, "EMA 9",  color=color.new(color.aqua,   0), linewidth=1)
+p2 = plot(emaSlow, "EMA 20", color=color.new(color.orange, 0), linewidth=1)
+fill(p1, p2, color=ribbonColor, title="Confluence Ribbon")
+
+plotshape(inRange and buySignal and barstate.isconfirmed,
+     title="BUY", style=shape.labelup, location=location.belowbar,
+     color=color.new(color.lime, 10), textcolor=color.black,
+     text="BUY", size=size.normal)
+
+plotshape(inRange and sellSignal and barstate.isconfirmed,
+     title="SELL", style=shape.labeldown, location=location.abovebar,
+     color=color.new(color.red, 10), textcolor=color.white,
+     text="SELL", size=size.normal)
