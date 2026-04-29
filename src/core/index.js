@@ -16,6 +16,7 @@ export { buildBrowserLaunchCommand, launchBrowserFallback, BROWSER_CANDIDATES, D
 export { captureScreenshot } from './capture.js';
 export { resolveStreamParams, streamPriceTicks } from './stream.js';
 export { getSymbolQuote, getSymbolFundamentals, getTradingViewFinancials, getTradingViewFinancialsBatch, getMarketSnapshot, getFinancialNews, runScreener, computeRsi, computeSma, getMultiSymbolTaSummary, rankSymbolsByTa, getMultiSymbolAnalysis, rankSymbolsByConfluence } from './market-intel.js';
+export { runMinervinScreener } from './minervini-screener.js';
 export { getSymbolAnalysis } from './market-intel-analysis.js';
 export { computeConfluenceSummary, buildCoverageSummary } from './market-confluence.js';
 export { classifyProviderFailure, buildProviderStatusEntry, summarizeProviderCoverage } from './market-provider-status.js';

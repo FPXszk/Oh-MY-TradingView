@@ -14,6 +14,7 @@ import './commands/observe.js';
 import './commands/browser-launch.js';
 import './commands/twitter-read.js';
 import './commands/reach.js';
+import './commands/screener.js';
 
 import { run } from './router.js';
 await run(process.argv);

@@ -14,6 +14,7 @@ import { registerObserveTools } from './tools/observe.js';
 import { registerBrowserLaunchTools } from './tools/browser-launch.js';
 import { registerTwitterReadTools } from './tools/twitter-read.js';
 import { registerReachTools } from './tools/reach.js';
+import { registerScreenerTools } from './tools/screener.js';
 
 const server = new McpServer(
   {
@@ -131,6 +132,7 @@ registerObserveTools(server);
 registerBrowserLaunchTools(server);
 registerTwitterReadTools(server);
 registerReachTools(server);
+registerScreenerTools(server);
 
 process.stderr.write(
   '⚠  oh-my-tradingview  |  Unofficial tool. Not affiliated with TradingView Inc.\n'
