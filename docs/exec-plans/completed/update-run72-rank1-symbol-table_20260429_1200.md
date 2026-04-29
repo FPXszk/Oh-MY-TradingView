@@ -73,11 +73,11 @@
 
 ## 実装ステップ
 
-- [ ] 1位 preset の銘柄別 metrics を抽出し、表形式へ整形する
-- [ ] `night-batch-self-hosted-run72_20260429.md` の 1位 セクションへ `全銘柄の成績` 表を追記する
-- [ ] 文書差分と数値整合をレビューする
-- [ ] plan を `docs/exec-plans/completed/` に移動する
-- [ ] Conventional Commit で commit し、`main` に push する
+- [x] 1位 preset の銘柄別 metrics を抽出し、表形式へ整形する
+- [x] `night-batch-self-hosted-run72_20260429.md` の 1位 セクションへ `全銘柄の成績` 表を追記する
+- [x] 文書差分と数値整合をレビューする
+- [x] plan を `docs/exec-plans/completed/` に移動する
+- [x] Conventional Commit で commit し、`main` に push する
 
 ## 完了条件
 
