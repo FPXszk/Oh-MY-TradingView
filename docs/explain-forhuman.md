@@ -451,3 +451,57 @@ tv screener minervini --compact   # シンボルと価格のみ
 | Pine スクリプト編集 | CDP + Pine エディタ | 必要 |
 
 > スクリーニングは外部 API のみで完結します。backtest は CDP が必須です。
+
+調査結果をまとめます：
+
+---
+
+## Scanner API 応用可能性の調査結果
+
+### ✅ 現時点のデータ（今できること）
+
+**セクターパフォーマンス集計が実際に動いた例（上の実行結果）:**
+- `sector` / `industry` フィールドで絞り込み・集計可能
+- `Perf.W` / `Perf.1M` / `Perf.3M` / `Perf.6M` / `Perf.Y` で期間別パフォーマンス取得可能
+- 上位1000銘柄の3M平均パフォーマンスをセクター別に集計できた
+
+**取得できる財務情報（確認済み）:**
+
+| フィールド | 内容 |
+|---|---|
+| `sector` / `industry` | セクター・業種 |
+| `price_earnings_ttm` | PER（TTM） |
+| `price_book_fq` | PBR |
+| `return_on_equity` | ROE |
+| `earnings_per_share_diluted_ttm` | EPS |
+| `dividends_yield_current` | 配当利回り |
+| `Perf.W/1M/3M/6M/Y` | 期間別リターン |
+
+**取得できないフィールド（エラーになった）:**
+- `gross_profit_margin_ttm` / `current_ratio_annual` など（命名規則が違うと思われる）
+
+---
+
+### ❌ 過去時点のデータ（できないこと）
+
+**「3ヶ月前にどのセクターが熱かったか」は Scanner API では不可能です。**
+Scanner API は常に「今」のスナップショットしか返しません。
+
+過去時点のセクター分析には CDP 経由でチャートデータを取得するか、外部の株価 API（yfinance 等）が必要です。
+
+---
+
+### 実現可能な応用例
+
+| 応用 | 実現可能? | 概要 |
+|---|---|---|
+| セクター別強さランキング（現在） | ✅ | sector × Perf.3M 集計で即座に実現可能 |
+| ファンダメンタルスクリーナー（PER/ROE/EPS） | ✅ | フィールド確認済み |
+| モメンタム×財務品質スクリーナー | ✅ | RSI + ROE + EPS 組み合わせ |
+| 業種内トップ銘柄フィルタ | ✅ | `sector=XX` filter + Perf.3M sort |
+| 過去時点のセクターの盛り上がり | ❌ | Scanner API は現時点のみ |
+| バックテスト形式での検証 | ❌ | CDP + TV Desktop が必要 |
+
+---
+
+実装したいものがあれば言ってください。特に「**セクター別強さランキング**」は今すぐ実装できる状態です。
