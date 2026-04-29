@@ -108,6 +108,19 @@ composite_score の計算方法:
 - composite_score: `x` / markets: `US/JP/US+JP`
 - avg_net_profit: `x` / avg_profit_factor: `x` / avg_max_drawdown: `x`
 
+**全銘柄の成績**
+
+<!--
+【AIへの指示】
+  ### 1位のみ recovered-results.json から該当 presetId の銘柄別データを読み取り、下表を埋めること。
+  net_profit の降順で並べる。
+-->
+
+| 銘柄 | net_profit | profit_factor | max_drawdown | win_rate | trades |
+|---|---:|---:|---:|---:|---:|
+| `AAPL` | 0.00 | 0.000 | 0.00 | 0.00% | 0 |
+| `MSFT` | 0.00 | 0.000 | 0.00 | 0.00% | 0 |
+
 **他と比べて強かった点（同一市場の平均との差で書く）**
 
 - `例: avg_net_profit が US平均(18,662)より +5,877 (+31%) 高い`
