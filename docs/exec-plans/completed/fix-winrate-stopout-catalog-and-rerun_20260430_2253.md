@@ -38,8 +38,8 @@
 - [x] `tests/strategy-catalog.test.js` と `tests/repo-layout.test.js` を更新し、catalog 件数と live projection を現状へ同期する
 - [x] `tests/windows-run-night-batch-self-hosted.test.js` の default campaign 期待値を新 pack に合わせる
 - [x] `node --test tests/strategy-catalog.test.js tests/campaign.test.js tests/repo-layout.test.js` と個別の `tests/windows-run-night-batch-self-hosted.test.js` で関連検証を行う
-- [ ] `gh workflow run 'Night Batch Self Hosted' --ref main --field config_path=config/night_batch/bundle-foreground-reuse-config.json` を再実行する
-- [ ] `gh run list --workflow 'Night Batch Self Hosted' --limit 5` と `gh run view <run-id>` で再実行結果を確認する
+- [x] `gh workflow run 'Night Batch Self Hosted' --ref main --field config_path=config/night_batch/bundle-foreground-reuse-config.json` を再実行する
+- [x] `gh run list --workflow 'Night Batch Self Hosted' --limit 5` と `gh run view 25169766862` で再実行結果を確認する
 
 ## テスト戦略
 
@@ -60,6 +60,12 @@
 - catalog のみ更新しても、別の strategy ID typo が campaign 内に残っていれば再度 smoke で落ちる
 - workflow 再実行は self-hosted runner の混雑や一時エラーに影響される
 - `tests/night-batch.test.js` はこの環境で長時間完了しなかったため、今回は変更直結の個別テストを優先して確認する
+
+## 実行結果
+
+- 修正 commit `550bcc0` を `main` に push 後、`Night Batch Self Hosted` を再 dispatch した
+- 新 run は `run_id=25169766862`
+- 記録時点では `start-night-batch` job が起動済みで、queue は通過している
 
 ## 範囲外
 
