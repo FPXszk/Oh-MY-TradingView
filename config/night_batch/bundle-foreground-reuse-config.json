@@ -13,7 +13,7 @@
     "shortcut_path": "C:\\TradingView\\TradingView.exe - ショートカット.lnk"
   },
   "bundle": {
-    "us_campaign": "ema-macd-rsi-breakout-us40-50pack",
+    "us_campaign": "ema-breakout-winrate-stopout-us40-50pack",
     "smoke_phases": "smoke",
     "production_phases": "full"
   }
