@@ -31,9 +31,9 @@
 ## 実装ステップ
 
 - [x] ローカル smoke は試行済みだが、`9223` preflight 不通で未完了だったことを確認する
-- [ ] `config/night_batch/bundle-foreground-reuse-config.json` の `bundle.us_campaign` を `ema-breakout-winrate-stopout-us40-50pack` へ切り替える
-- [ ] `gh workflow run .github/workflows/night-batch-self-hosted.yml --ref main --field config_path=config/night_batch/bundle-foreground-reuse-config.json` を実行する
-- [ ] `gh run list --workflow 'Night Batch Self Hosted' --limit 5` で新 run を確認し、必要なら `gh run view <run-id>` で起動状態を確認する
+- [x] `config/night_batch/bundle-foreground-reuse-config.json` の `bundle.us_campaign` を `ema-breakout-winrate-stopout-us40-50pack` へ切り替える
+- [x] `gh workflow run 'Night Batch Self Hosted' --ref main --field config_path=config/night_batch/bundle-foreground-reuse-config.json` を実行する
+- [x] `gh run list --workflow 'Night Batch Self Hosted' --limit 5` と `gh run view 25167631554 --log-failed` で結果を確認する
 
 ## テスト戦略
 
@@ -53,6 +53,13 @@
 - ローカル `9223` の TradingView worker は現時点で不通のまま
 - 既定 config を切り替えるため、以後同 config を使う night batch は新 50-pack を対象にする
 - workflow 起動は self-hosted runner の状態に依存し、queue / stall / failure の可能性がある
+
+## 実行結果
+
+- workflow は `run_id=25167631554` として起動した
+- self-hosted runner 上では `172.31.144.1:9223` の preflight/readiness は通過した
+- ただし smoke phase で `Campaign strategy "emr-breakout-winrate-stopout-anchor-trend-price-above-ema200" not found in strategy catalog` により失敗した
+- したがって今回の失敗要因はローカル `9223` 未接続ではなく、新 campaign 内 strategy 名の typo / catalog 不整合である
 
 ## 範囲外
 
