@@ -110,11 +110,12 @@ run77 の問題意識を直接当てる本命候補:
 
 ## 実装ステップ
 
-- [ ] run77 の上位 / 低勝率 / stop 系 preset を基準に、新 50 本の ID 命名規則を確定する
-- [ ] `docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/` に新規 Pine source 50 本を作成する
-- [ ] `config/backtest/strategy-presets.json` に 50 本を追加し、`source_path` と説明文を整合させる
-- [ ] `config/backtest/campaigns/ema-breakout-winrate-stopout-us40-50pack.json` を追加し、US40 universe / smoke / full 条件を定義する
-- [ ] 可能なら smoke 向けに少数戦略で compile / artifact 生成まで確認する
+- [x] run77 の上位 / 低勝率 / stop 系 preset を基準に、新 50 本の ID 命名規則を確定する
+- [x] `docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/` に新規 Pine source 50 本を作成する
+- [x] `config/backtest/strategy-presets.json` に 50 本を追加し、`source_path` と説明文を整合させる
+- [x] `config/backtest/campaigns/ema-breakout-winrate-stopout-us40-50pack.json` を追加し、US40 universe / smoke / full 条件を定義する
+- [x] JSON 構文、campaign→preset→source_path の参照整合を確認する
+- [ ] smoke 向け compile / artifact 生成確認は試行したが、ローカル TradingView worker port `9223` の preflight 不通で未完了
 - [ ] 必要に応じて次回 run 用の config 参照先をこの campaign に差し替える
 
 ## テスト戦略

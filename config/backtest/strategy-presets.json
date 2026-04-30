@@ -5983,6 +5983,1993 @@
         "ema-macd-rsi-breakout-us40-50pack"
       ],
       "source_path": "../../docs/references/pine/ema-macd-rsi-breakout-us40-50pack/emr-breakout-strength-all-align-and-breakout-5d-high.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-anchor-trend-price-above-ema200",
+      "name": "EMR Winrate Anchor Trend Price Above EMA200",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "trendMode": "price_above_ema200"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "anchor",
+      "theme_notes": "Carry forward the run77 trend-price-above-ema200 winner as a direct baseline.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "anchor",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-anchor-trend-price-above-ema200.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-anchor-confirm-close-above-10d-high",
+      "name": "EMR Winrate Anchor Confirm Close Above 10 Day High",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "anchor",
+      "theme_notes": "Carry forward the run77 confirm-close-above-10d-high runner-up as a direct baseline.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 501,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "anchor",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-anchor-confirm-close-above-10d-high.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-anchor-trend-ema50-above-ema200",
+      "name": "EMR Winrate Anchor Trend EMA50 Above EMA200",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "trendMode": "ema50_above_ema200"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "anchor",
+      "theme_notes": "Carry forward the run77 EMA50-over-EMA200 trend filter as a direct baseline.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 502,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "anchor",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-anchor-trend-ema50-above-ema200.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-anchor-confirm-close-above-5d-high",
+      "name": "EMR Winrate Anchor Confirm Close Above 5 Day High",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 5
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "anchor",
+      "theme_notes": "Keep a lighter five-day breakout confirmation anchor for calibration.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 503,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "anchor",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-anchor-confirm-close-above-5d-high.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-anchor-trend-price-above-ema200-rsi55",
+      "name": "EMR Winrate Anchor Trend EMA200 RSI55",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "trendMode": "price_above_ema200",
+        "strengthRsiMin": 55
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "anchor",
+      "theme_notes": "Keep the EMA200 plus RSI55 trend-strength anchor for calibration.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 504,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "anchor",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-anchor-trend-price-above-ema200-rsi55.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-entry-confirm-close-above-20d-high",
+      "name": "EMR Winrate Entry Confirm Close Above 20 Day High",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 20,
+        "trendMode": "price_above_ema200"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "entry-confirm",
+      "theme_notes": "Stricter breakout close confirmation to reduce weak initial entries.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 505,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "entry-confirm",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-entry-confirm-close-above-20d-high.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-entry-confirm-close-above-20d-high-atr05",
+      "name": "EMR Winrate Entry Confirm 20 Day High Plus ATR Buffer",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 20,
+        "breakoutCloseAtrBufferMult": 0.5,
+        "trendMode": "price_above_ema200"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "entry-confirm",
+      "theme_notes": "Demand extra expansion beyond the breakout level to filter marginal signals.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 506,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "entry-confirm",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-entry-confirm-close-above-20d-high-atr05.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-entry-confirm-volume20x10",
+      "name": "EMR Winrate Entry Confirm Volume Above 20 Day Average",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "breakoutVolumeRatio": 1,
+        "trendMode": "price_above_ema200"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "entry-confirm",
+      "theme_notes": "Use volume confirmation to remove low-participation breakouts.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 507,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "entry-confirm",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-entry-confirm-volume20x10.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-entry-confirm-volume20x15",
+      "name": "EMR Winrate Entry Confirm Volume 1.5x 20 Day Average",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "breakoutVolumeRatio": 1.5,
+        "trendMode": "price_above_ema200"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "entry-confirm",
+      "theme_notes": "Stronger volume confirmation to focus only on expansion breakouts.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 508,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "entry-confirm",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-entry-confirm-volume20x15.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-entry-rsi55-macd-positive",
+      "name": "EMR Winrate Entry RSI55 And MACD Positive",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "strengthRsiMin": 55,
+        "strengthHistPositive": true
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "entry-confirm",
+      "theme_notes": "Stack momentum confirmations to improve hit rate at the cost of frequency.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 509,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "entry-confirm",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-entry-rsi55-macd-positive.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-entry-rsi60-price-above-ema200",
+      "name": "EMR Winrate Entry RSI60 Price Above EMA200",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "strengthRsiMin": 60
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "entry-confirm",
+      "theme_notes": "Push momentum threshold higher to filter weak continuation attempts.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 510,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "entry-confirm",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-entry-rsi60-price-above-ema200.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-entry-delay-1bar-high-break",
+      "name": "EMR Winrate Entry Delay 1 Bar High Break",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "delayBars": 1,
+        "delayRequireSignalHigh": true,
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "entry-confirm",
+      "theme_notes": "Force one-bar follow-through before entry to cut fragile starts.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 511,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "entry-confirm",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-entry-delay-1bar-high-break.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-entry-delay-2bar-high-break",
+      "name": "EMR Winrate Entry Delay 2 Bar High Break",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "delayBars": 2,
+        "delayRequireSignalHigh": true,
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "entry-confirm",
+      "theme_notes": "Demand stronger follow-through after the signal before committing capital.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 512,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "entry-confirm",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-entry-delay-2bar-high-break.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-entry-confirm-10d-high-close-above-fast-ema",
+      "name": "EMR Winrate Entry 10 Day High And Close Above Fast EMA",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "strengthCloseAboveFastEma": true
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "entry-confirm",
+      "theme_notes": "Keep price extended over the fast EMA at entry to avoid immediate fades.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 513,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "entry-confirm",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-entry-confirm-10d-high-close-above-fast-ema.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-entry-confirm-20d-high-close-above-prev-high",
+      "name": "EMR Winrate Entry 20 Day High And Previous High Break",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 20,
+        "requirePrevHighBreak": true,
+        "trendMode": "price_above_ema200"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "entry-confirm",
+      "theme_notes": "Ask for immediate continuation beyond the prior bar to filter stalling breakouts.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 514,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "entry-confirm",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-entry-confirm-20d-high-close-above-prev-high.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-stop-grace-3bar-fixed8",
+      "name": "EMR Winrate Stop Grace 3 Bar Fixed 8",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "stopActivationBars": 3
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "stop-grace",
+      "theme_notes": "Test whether early noise stopouts are suppressing later winners.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 515,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "stop-grace",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-stop-grace-3bar-fixed8.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-stop-grace-5bar-fixed8",
+      "name": "EMR Winrate Stop Grace 5 Bar Fixed 8",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "stopActivationBars": 5
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "stop-grace",
+      "theme_notes": "Give the trade more room before the fixed stop becomes active.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 516,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "stop-grace",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-stop-grace-5bar-fixed8.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-stop-until-plus2pct",
+      "name": "EMR Winrate Stop Until Plus 2 Percent",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "stopActivationProfitPct": 2
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "stop-grace",
+      "theme_notes": "Check whether immediate stopouts should be suppressed until the move proves itself.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 517,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "stop-grace",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-stop-until-plus2pct.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-stop-until-breakout-high",
+      "name": "EMR Winrate Stop Until Breakout High Reclaimed",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "stopActivationUntilBreakoutHigh": true
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "stop-grace",
+      "theme_notes": "Specifically target the pre-breakout stopout problem seen in manual review.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 518,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "stop-grace",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-stop-until-breakout-high.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-stop-signal-low-only-grace3",
+      "name": "EMR Winrate Stop Signal Low Only Grace 3",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "stopActivationBars": 3,
+        "initialStopMode": "signal_low"
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "stop-shape",
+      "theme_notes": "Anchor the stop to structure instead of a fixed percent during the vulnerable opening bars.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 519,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "stop-shape",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-stop-signal-low-only-grace3.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-stop-atr15-grace5",
+      "name": "EMR Winrate Stop ATR 1.5 Grace 5",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "stopActivationBars": 5,
+        "initialStopMode": "atr_from_entry",
+        "initialStopAtrMult": 1.5
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "stop-shape",
+      "theme_notes": "Replace the fixed stop with a volatility-aware stop after a short grace window.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 520,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "stop-shape",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-stop-atr15-grace5.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-stop-atr20-grace5",
+      "name": "EMR Winrate Stop ATR 2.0 Grace 5",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "stopActivationBars": 5,
+        "initialStopMode": "atr_from_entry",
+        "initialStopAtrMult": 2
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "stop-shape",
+      "theme_notes": "Allow more volatility before the first hard stop can exit the trade.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 521,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "stop-shape",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-stop-atr20-grace5.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-stop-swinglow-atr05",
+      "name": "EMR Winrate Stop Swing Low Minus Half ATR",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "initialStopMode": "swing_low_atr",
+        "initialStopAtrMult": 0.5,
+        "initialStopLookback": 10
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "stop-shape",
+      "theme_notes": "Use nearby structure instead of a blunt fixed stop for the first protective level.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 522,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "stop-shape",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-stop-swinglow-atr05.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-stop-signal-low-atr10",
+      "name": "EMR Winrate Stop Signal Low Minus 1 ATR",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "initialStopMode": "signal_low_atr",
+        "initialStopAtrMult": 1
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "stop-shape",
+      "theme_notes": "Give the initial stop room underneath the signal low to avoid shallow shakeouts.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 523,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "stop-shape",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-stop-signal-low-atr10.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-stop-wider-fixed-signal-low-grace3",
+      "name": "EMR Winrate Stop Wider Fixed Or Signal Low Grace 3",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "signalLowBufferStop": true,
+        "stopActivationBars": 3
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "stop-shape",
+      "theme_notes": "Blend fixed and structure-aware stops while shielding the earliest bars from immediate exit.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 524,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "stop-shape",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-stop-wider-fixed-signal-low-grace3.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-reentry-10d-high-10bar",
+      "name": "EMR Winrate Reentry 10 Day High Within 10 Bars",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "reentryMode": "breakout_close",
+        "reentryWindowBars": 10,
+        "reentryBreakoutLen": 10
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "reentry",
+      "theme_notes": "Test whether stopouts can be recovered by waiting for the breakout to prove itself again.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 525,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "complex",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "reentry",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-reentry-10d-high-10bar.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-reentry-20d-high-15bar",
+      "name": "EMR Winrate Reentry 20 Day High Within 15 Bars",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "reentryMode": "breakout_close",
+        "reentryWindowBars": 15,
+        "reentryBreakoutLen": 20
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "reentry",
+      "theme_notes": "Use stricter re-entry confirmation after an initial stopout.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 526,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "complex",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "reentry",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-reentry-20d-high-15bar.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-reentry-fast-ema-reclaim",
+      "name": "EMR Winrate Reentry Fast EMA Reclaim",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "reentryMode": "fast_ema",
+        "reentryWindowBars": 12
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "reentry",
+      "theme_notes": "Check whether simple momentum reclaim is enough to recapture missed winners.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 527,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "complex",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "reentry",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-reentry-fast-ema-reclaim.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-reentry-macd-positive",
+      "name": "EMR Winrate Reentry MACD Positive",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "reentryMode": "macd_positive",
+        "reentryWindowBars": 12
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "reentry",
+      "theme_notes": "Use MACD recovery as the re-entry trigger after an early stopout.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 528,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "complex",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "reentry",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-reentry-macd-positive.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-reentry-rsi55",
+      "name": "EMR Winrate Reentry RSI55",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "reentryMode": "rsi55",
+        "reentryWindowBars": 12
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "reentry",
+      "theme_notes": "Use RSI strength recovery to decide whether the initial stopout was premature.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 529,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "complex",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "reentry",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-reentry-rsi55.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-reentry-breakout-high-close",
+      "name": "EMR Winrate Reentry Breakout High Close",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "reentryMode": "breakout_high",
+        "reentryWindowBars": 15
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "reentry",
+      "theme_notes": "Specifically test whether breakout-high reclaim can recover the missed trend move.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 530,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "complex",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "reentry",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-reentry-breakout-high-close.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-reentry-grace3-plus-10d-high",
+      "name": "EMR Winrate Reentry Grace 3 Plus 10 Day High",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "stopActivationBars": 3,
+        "reentryMode": "breakout_close",
+        "reentryWindowBars": 10,
+        "reentryBreakoutLen": 10
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "reentry",
+      "theme_notes": "Pair early stop suppression with a disciplined re-entry to see which side carries the edge.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 531,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "complex",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "reentry",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-reentry-grace3-plus-10d-high.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-reentry-atr15-plus-breakout-high",
+      "name": "EMR Winrate Reentry ATR 1.5 Plus Breakout High",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "stopActivationBars": 5,
+        "initialStopMode": "atr_from_entry",
+        "initialStopAtrMult": 1.5,
+        "reentryMode": "breakout_high",
+        "reentryWindowBars": 15
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "reentry",
+      "theme_notes": "Test whether wider volatility stops plus breakout reclaim solve the stopout problem better than either alone.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 532,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "complex",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "reentry",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-reentry-atr15-plus-breakout-high.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-reentry-signal-low-trend-only",
+      "name": "EMR Winrate Reentry Signal Low Trend Only",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "initialStopMode": "signal_low",
+        "reentryMode": "breakout_high",
+        "reentryWindowBars": 15,
+        "reentryRequireTrend": true
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "reentry",
+      "theme_notes": "Keep re-entry tightly coupled to the higher-timeframe trend so losers do not recycle blindly.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 533,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "complex",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "reentry",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-reentry-signal-low-trend-only.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-reentry-breakout-high-halfsize",
+      "name": "EMR Winrate Reentry Breakout High Half Size",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "reentryMode": "breakout_high",
+        "reentryWindowBars": 15,
+        "reentryUseHalfSize": true
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "reentry",
+      "theme_notes": "Test a more conservative re-entry sizing model after an early stopout.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 534,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "complex",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "reentry",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-reentry-breakout-high-halfsize.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-exit-breakeven-plus6",
+      "name": "EMR Winrate Exit Breakeven After Plus 6",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "breakevenTriggerPct": 6
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "exit",
+      "theme_notes": "Protect open profits once the trade proves itself without forcing an early full exit.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 535,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "exit",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-exit-breakeven-plus6.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-exit-minus2-after-plus4",
+      "name": "EMR Winrate Exit Minus 2 After Plus 4",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "breakevenTriggerPct": 4,
+        "breakevenLockPct": -2
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "exit",
+      "theme_notes": "Cut the eventual loser sooner after the trade has already shown initial strength.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 536,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "exit",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-exit-minus2-after-plus4.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-exit-half-tp8-ema20",
+      "name": "EMR Winrate Exit Half At 8 Then EMA20 Trail",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "tp1Pct": 8,
+        "tp1Qty": 50,
+        "trailMode": "ema20",
+        "trailActivationPct": 8
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "exit",
+      "theme_notes": "Improve realized hit rate by harvesting partial profits before full trend completion.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 537,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "exit",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-exit-half-tp8-ema20.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-exit-half-tp10-ema20",
+      "name": "EMR Winrate Exit Half At 10 Then EMA20 Trail",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "tp1Pct": 10,
+        "tp1Qty": 50,
+        "trailMode": "ema20",
+        "trailActivationPct": 10
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "exit",
+      "theme_notes": "Push partial profit taking slightly later to preserve upside while still raising hit rate.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 538,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "exit",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-exit-half-tp10-ema20.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-exit-close-below-ema10",
+      "name": "EMR Winrate Exit Close Below EMA10",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "profitProtectMode": "ema10"
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "exit",
+      "theme_notes": "Use a faster profit-protect exit to avoid round-tripping short continuation moves.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 539,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "exit",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-exit-close-below-ema10.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-exit-close-below-ema15",
+      "name": "EMR Winrate Exit Close Below EMA15",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "profitProtectMode": "ema15"
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "exit",
+      "theme_notes": "Use a slightly slower moving-average exit to balance win rate and trend retention.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 540,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "exit",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-exit-close-below-ema15.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-exit-macd-bear-after-plus6",
+      "name": "EMR Winrate Exit MACD Bear After Plus 6",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "profitProtectMode": "macd_bear",
+        "profitProtectTriggerPct": 6
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "exit",
+      "theme_notes": "Only arm the MACD profit-protect once the trade has shown adequate follow-through.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 541,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "exit",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-exit-macd-bear-after-plus6.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-exit-rsi-loss55-after-plus8",
+      "name": "EMR Winrate Exit RSI Loss 55 After Plus 8",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "profitProtectMode": "rsi_loss",
+        "profitProtectTriggerPct": 8
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "exit",
+      "theme_notes": "Use momentum deterioration as the profit-protect trigger once the trend has advanced.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 542,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "exit",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-exit-rsi-loss55-after-plus8.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-exit-trail-atr25",
+      "name": "EMR Winrate Exit ATR 2.5 Trail",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "trailMode": "atr",
+        "trailAtrMult": 2.5
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "exit",
+      "theme_notes": "Swap the blunt fixed stop for a pure volatility trail after entry.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 543,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "exit",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-exit-trail-atr25.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-exit-chandelier25-grace5",
+      "name": "EMR Winrate Exit Chandelier 2.5 Grace 5",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "stopActivationBars": 5,
+        "trailMode": "chandelier",
+        "trailChandelierMult": 2.5
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "exit",
+      "theme_notes": "Delay the first protective action, then hand control to a chandelier trail.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 544,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "exit",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-exit-chandelier25-grace5.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-hybrid-ema200-10dhigh-grace3",
+      "name": "EMR Winrate Hybrid EMA200 10D High Grace 3",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "stopActivationBars": 3
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "hybrid",
+      "theme_notes": "Directly target the manual observation that good trends were cut before they could fully break out.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 545,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "hybrid",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-hybrid-ema200-10dhigh-grace3.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-hybrid-ema200-20dhigh-signal-low-atr",
+      "name": "EMR Winrate Hybrid EMA200 20D High Signal Low ATR",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 20,
+        "trendMode": "price_above_ema200",
+        "initialStopMode": "signal_low_atr",
+        "initialStopAtrMult": 1
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "hybrid",
+      "theme_notes": "Use both stricter entry and structure-aware risk control to raise hit quality.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 546,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "hybrid",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-hybrid-ema200-20dhigh-signal-low-atr.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-hybrid-10dhigh-stopout-breakout-reentry",
+      "name": "EMR Winrate Hybrid 10D High Stopout Breakout Reentry",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "reentryMode": "breakout_high",
+        "reentryWindowBars": 15
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "hybrid",
+      "theme_notes": "Treat the first stopout as a false start and only come back if price proves itself again.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 547,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "complex",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "hybrid",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-hybrid-10dhigh-stopout-breakout-reentry.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-hybrid-ema200-plus6-ema15",
+      "name": "EMR Winrate Hybrid EMA200 Plus 6 EMA15",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "trendMode": "price_above_ema200",
+        "breakevenTriggerPct": 6,
+        "profitProtectMode": "ema15"
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "hybrid",
+      "theme_notes": "Blend trend filtering with profit retention to improve realized win rate.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 548,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "hybrid",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-hybrid-ema200-plus6-ema15.pine"
+    },
+    {
+      "id": "emr-breakout-winrate-stopout-hybrid-ema200-volume15-grace5",
+      "name": "EMR Winrate Hybrid EMA200 Volume 1.5 Grace 5",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 10,
+        "breakoutVolumeRatio": 1.5,
+        "trendMode": "price_above_ema200",
+        "stopActivationBars": 5
+      },
+      "stop_loss": {
+        "type": "custom",
+        "value": 8
+      },
+      "theme_axis": "hybrid",
+      "theme_notes": "Demand participation on the breakout and delay the initial stop so strong moves have room to develop.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout win-rate and stopout recovery variant generated for the US40 50-pack comparison.",
+      "phase": "phase-16",
+      "implementation_stage": "ema-breakout-winrate-stopout-us40-50pack",
+      "priority": 549,
+      "status": "ready",
+      "implementation_difficulty": "high",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "hybrid",
+        "ema-breakout-winrate-stopout-us40-50pack"
+      ],
+      "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-hybrid-ema200-volume15-grace5.pine"
     }
   ]
 }
