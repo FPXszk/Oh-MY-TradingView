@@ -137,6 +137,56 @@ const EXPECTED_LIVE_IDS = [
   'emr-breakout-strength-macd-hist-rising-3bars',
   'emr-breakout-strength-all-align-and-close-above-fast-ema',
   'emr-breakout-strength-all-align-and-breakout-5d-high',
+  'emr-breakout-winrate-stopout-anchor-trend-price-above-ema200',
+  'emr-breakout-winrate-stopout-anchor-confirm-close-above-10d-high',
+  'emr-breakout-winrate-stopout-anchor-trend-ema50-above-ema200',
+  'emr-breakout-winrate-stopout-anchor-confirm-close-above-5d-high',
+  'emr-breakout-winrate-stopout-anchor-trend-price-above-ema200-rsi55',
+  'emr-breakout-winrate-stopout-entry-confirm-close-above-20d-high',
+  'emr-breakout-winrate-stopout-entry-confirm-close-above-20d-high-atr05',
+  'emr-breakout-winrate-stopout-entry-confirm-volume20x10',
+  'emr-breakout-winrate-stopout-entry-confirm-volume20x15',
+  'emr-breakout-winrate-stopout-entry-rsi55-macd-positive',
+  'emr-breakout-winrate-stopout-entry-rsi60-price-above-ema200',
+  'emr-breakout-winrate-stopout-entry-delay-1bar-high-break',
+  'emr-breakout-winrate-stopout-entry-delay-2bar-high-break',
+  'emr-breakout-winrate-stopout-entry-confirm-10d-high-close-above-fast-ema',
+  'emr-breakout-winrate-stopout-entry-confirm-20d-high-close-above-prev-high',
+  'emr-breakout-winrate-stopout-stop-grace-3bar-fixed8',
+  'emr-breakout-winrate-stopout-stop-grace-5bar-fixed8',
+  'emr-breakout-winrate-stopout-stop-until-plus2pct',
+  'emr-breakout-winrate-stopout-stop-until-breakout-high',
+  'emr-breakout-winrate-stopout-stop-signal-low-only-grace3',
+  'emr-breakout-winrate-stopout-stop-atr15-grace5',
+  'emr-breakout-winrate-stopout-stop-atr20-grace5',
+  'emr-breakout-winrate-stopout-stop-swinglow-atr05',
+  'emr-breakout-winrate-stopout-stop-signal-low-atr10',
+  'emr-breakout-winrate-stopout-stop-wider-fixed-signal-low-grace3',
+  'emr-breakout-winrate-stopout-reentry-10d-high-10bar',
+  'emr-breakout-winrate-stopout-reentry-20d-high-15bar',
+  'emr-breakout-winrate-stopout-reentry-fast-ema-reclaim',
+  'emr-breakout-winrate-stopout-reentry-macd-positive',
+  'emr-breakout-winrate-stopout-reentry-rsi55',
+  'emr-breakout-winrate-stopout-reentry-breakout-high-close',
+  'emr-breakout-winrate-stopout-reentry-grace3-plus-10d-high',
+  'emr-breakout-winrate-stopout-reentry-atr15-plus-breakout-high',
+  'emr-breakout-winrate-stopout-reentry-signal-low-trend-only',
+  'emr-breakout-winrate-stopout-reentry-breakout-high-halfsize',
+  'emr-breakout-winrate-stopout-exit-breakeven-plus6',
+  'emr-breakout-winrate-stopout-exit-minus2-after-plus4',
+  'emr-breakout-winrate-stopout-exit-half-tp8-ema20',
+  'emr-breakout-winrate-stopout-exit-half-tp10-ema20',
+  'emr-breakout-winrate-stopout-exit-close-below-ema10',
+  'emr-breakout-winrate-stopout-exit-close-below-ema15',
+  'emr-breakout-winrate-stopout-exit-macd-bear-after-plus6',
+  'emr-breakout-winrate-stopout-exit-rsi-loss55-after-plus8',
+  'emr-breakout-winrate-stopout-exit-trail-atr25',
+  'emr-breakout-winrate-stopout-exit-chandelier25-grace5',
+  'emr-breakout-winrate-stopout-hybrid-ema200-10dhigh-grace3',
+  'emr-breakout-winrate-stopout-hybrid-ema200-20dhigh-signal-low-atr',
+  'emr-breakout-winrate-stopout-hybrid-10dhigh-stopout-breakout-reentry',
+  'emr-breakout-winrate-stopout-hybrid-ema200-plus6-ema15',
+  'emr-breakout-winrate-stopout-hybrid-ema200-volume15-grace5',
 ];
 
 // ---------------------------------------------------------------------------
@@ -207,10 +257,10 @@ describe('validateCatalogIntegrity', () => {
 // getLiveStrategies / getRetiredStrategies
 // ---------------------------------------------------------------------------
 describe('getLiveStrategies / getRetiredStrategies', () => {
-  it('live count is 124', async () => {
+  it('live count is 174', async () => {
     const catalog = await loadCatalog();
     const live = getLiveStrategies(catalog);
-    assert.equal(live.length, 124);
+    assert.equal(live.length, 174);
   });
 
   it('retired count is 2', async () => {

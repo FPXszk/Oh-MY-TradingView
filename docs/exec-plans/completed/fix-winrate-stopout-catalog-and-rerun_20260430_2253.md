@@ -33,10 +33,11 @@
 
 ## 実装ステップ
 
-- [ ] `strategy-catalog.json` と `strategy-presets.json` の差分を確認し、今回不足している live strategy 群を特定する
-- [ ] `config/backtest/strategy-catalog.json` を更新して、新 50-pack の strategy IDs を catalog に反映する
-- [ ] 必要なら `tests/strategy-catalog.test.js` を更新し、catalog と live presets の不整合を確実に検知できるようにする
-- [ ] `node --test tests/strategy-catalog.test.js tests/campaign.test.js tests/night-batch.test.js tests/windows-run-night-batch-self-hosted.test.js` で関連検証を行う
+- [x] `strategy-catalog.json` と `strategy-presets.json` の差分を確認し、今回不足している live strategy 群を特定する
+- [x] `config/backtest/strategy-catalog.json` を更新して、新 50-pack の strategy IDs を catalog に反映する
+- [x] `tests/strategy-catalog.test.js` と `tests/repo-layout.test.js` を更新し、catalog 件数と live projection を現状へ同期する
+- [x] `tests/windows-run-night-batch-self-hosted.test.js` の default campaign 期待値を新 pack に合わせる
+- [x] `node --test tests/strategy-catalog.test.js tests/campaign.test.js tests/repo-layout.test.js` と個別の `tests/windows-run-night-batch-self-hosted.test.js` で関連検証を行う
 - [ ] `gh workflow run 'Night Batch Self Hosted' --ref main --field config_path=config/night_batch/bundle-foreground-reuse-config.json` を再実行する
 - [ ] `gh run list --workflow 'Night Batch Self Hosted' --limit 5` と `gh run view <run-id>` で再実行結果を確認する
 
@@ -58,6 +59,7 @@
 - `strategy-catalog.test.js` は live count / ID 一覧を固定しているため、catalog 更新に伴って期待値更新が必要になる可能性が高い
 - catalog のみ更新しても、別の strategy ID typo が campaign 内に残っていれば再度 smoke で落ちる
 - workflow 再実行は self-hosted runner の混雑や一時エラーに影響される
+- `tests/night-batch.test.js` はこの環境で長時間完了しなかったため、今回は変更直結の個別テストを優先して確認する
 
 ## 範囲外
 

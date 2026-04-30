@@ -211,9 +211,9 @@ describe('.gitattributes', () => {
 describe('foreground bundle config default campaign', () => {
   const config = JSON.parse(readFileSync(BUNDLE_FG_CONFIG_PATH, 'utf8'));
 
-  it('us_campaign defaults to strongest-plus-recovery-reversal-us40-10pack', () => {
-    assert.equal(config.bundle.us_campaign, 'strongest-plus-recovery-reversal-us40-10pack',
-      'bundle-foreground-reuse-config.json must default us_campaign to strongest-plus-recovery-reversal-us40-10pack');
+  it('us_campaign defaults to ema-breakout-winrate-stopout-us40-50pack', () => {
+    assert.equal(config.bundle.us_campaign, 'ema-breakout-winrate-stopout-us40-50pack',
+      'bundle-foreground-reuse-config.json must default us_campaign to ema-breakout-winrate-stopout-us40-50pack');
   });
 
   it('jp_campaign is omitted for the US-only bundle default', () => {
