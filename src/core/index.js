@@ -56,6 +56,7 @@ export {
   buildCampaignFingerprint,
   buildCheckpoint,
   summarizeResults,
+  summarizeFailureReason,
   needsRerun,
   buildPresetFailureBudgetState,
   filterRunsByFailureBudget,

@@ -154,6 +154,7 @@ async function main() {
     buildCheckpoint,
     checkpointMatchesCampaign,
     summarizeResults,
+    summarizeFailureReason,
     isRecoveredSuccess,
     needsRerun,
     findPendingRuns,
@@ -315,7 +316,7 @@ async function main() {
           if (isRecoveredSuccess(entry.result)) {
             process.stdout.write(`OK (${entry.duration_ms} ms)\n`);
           } else {
-            process.stdout.write(`FAIL (${entry.result.error || entry.result.tester_reason_category || 'unknown'})\n`);
+            process.stdout.write(`FAIL (${summarizeFailureReason(entry.result)})\n`);
           }
 
           await queueCheckpoint(false);

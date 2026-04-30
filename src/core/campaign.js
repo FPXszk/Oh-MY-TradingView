@@ -577,6 +577,43 @@ export function summarizeResults(results) {
   return { success, failure, unreadable, total: results.length };
 }
 
+export function summarizeFailureReason(result) {
+  if (!result || typeof result !== 'object') {
+    return 'unknown';
+  }
+
+  if (typeof result.error === 'string' && result.error.trim()) {
+    return result.error.trim();
+  }
+
+  if (Array.isArray(result.compile_errors) && result.compile_errors.length > 0) {
+    const first = result.compile_errors[0];
+    if (first && typeof first.message === 'string' && first.message.trim()) {
+      const line = Number.isInteger(first.line) ? `line ${first.line}: ` : '';
+      return `compile_error (${line}${first.message.trim()})`;
+    }
+    return 'compile_error';
+  }
+
+  if (typeof result.apply_reason === 'string' && result.apply_reason.trim()) {
+    return result.apply_reason.trim();
+  }
+
+  if (typeof result.tester_reason_category === 'string' && result.tester_reason_category.trim()) {
+    return result.tester_reason_category.trim();
+  }
+
+  if (typeof result.tester_reason === 'string' && result.tester_reason.trim()) {
+    return result.tester_reason.trim();
+  }
+
+  if (typeof result.editor_open_reason === 'string' && result.editor_open_reason.trim()) {
+    return result.editor_open_reason.trim();
+  }
+
+  return 'unknown';
+}
+
 export function needsRerun(result) {
   if (!result) {
     return true;
@@ -629,9 +666,7 @@ export function buildPresetFailureBudgetState(completedRuns, maxConsecutiveFailu
     } else {
       current.failures += 1;
       current.consecutiveFailures += 1;
-      current.lastFailureReason = entry?.result?.error
-        || entry?.result?.tester_reason_category
-        || 'unknown';
+      current.lastFailureReason = summarizeFailureReason(entry?.result);
       if (!current.blocked && current.consecutiveFailures >= maxConsecutiveFailures) {
         current.blocked = true;
         current.blockedAt = {

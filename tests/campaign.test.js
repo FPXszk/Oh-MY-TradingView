@@ -16,6 +16,7 @@ import {
   buildCheckpoint,
   checkpointMatchesCampaign,
   summarizeResults,
+  summarizeFailureReason,
   filterRunsToMatrix,
   findPendingRuns,
   selectPhaseSymbols,
@@ -412,6 +413,31 @@ describe('summarizeResults', () => {
   it('returns zeros for empty array', () => {
     const s = summarizeResults([]);
     assert.equal(s.total, 0);
+  });
+});
+
+describe('summarizeFailureReason', () => {
+  it('prefers explicit result.error', () => {
+    assert.equal(summarizeFailureReason({ error: 'Timed out after 1000ms' }), 'Timed out after 1000ms');
+  });
+
+  it('renders compile error details when compile_errors exist', () => {
+    assert.equal(
+      summarizeFailureReason({
+        compile_errors: [{ line: 180, message: 'Mismatched input ?' }],
+      }),
+      'compile_error (line 180: Mismatched input ?)',
+    );
+  });
+
+  it('falls back to apply reason and tester reason when needed', () => {
+    assert.equal(summarizeFailureReason({ apply_reason: 'No strategy is applied' }), 'No strategy is applied');
+    assert.equal(summarizeFailureReason({ tester_reason_category: 'metrics_unreadable' }), 'metrics_unreadable');
+    assert.equal(summarizeFailureReason({ tester_reason: 'Strategy Tester unavailable' }), 'Strategy Tester unavailable');
+  });
+
+  it('returns unknown when no structured reason exists', () => {
+    assert.equal(summarizeFailureReason({ success: false }), 'unknown');
   });
 });
 

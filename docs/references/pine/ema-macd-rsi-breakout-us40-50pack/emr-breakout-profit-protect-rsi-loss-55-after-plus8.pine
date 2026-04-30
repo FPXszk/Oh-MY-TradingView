@@ -176,12 +176,10 @@ baseStop = strategy.position_size > 0 ? entryPrice * (1 - stopPct / 100) : na
 signalLowStop = signalLowBufferStop and strategy.position_size > 0 and not na(entrySignalLow) ? entrySignalLow : na
 effectiveBaseStop = na(baseStop) ? na : (signalLowBufferStop and not na(signalLowStop) ? math.min(baseStop, signalLowStop) : baseStop)
 
-breakevenStop = strategy.position_size > 0 and breakevenTriggerPct > 0 and reachedPct(breakevenTriggerPct)
-    ? entryPrice * (1 + breakevenLockPct / 100)
-    : na
+breakevenStop = strategy.position_size > 0 and breakevenTriggerPct > 0 and reachedPct(breakevenTriggerPct) ? entryPrice * (1 + breakevenLockPct / 100) : na
 
 trailActivationOk = strategy.position_size > 0 and trailMode != "none" and (trailActivationPct <= 0 or reachedPct(trailActivationPct))
-trailingStop = na
+float trailingStop = na
 if trailActivationOk
     if trailMode == "atr" and not na(highestSinceEntry)
         trailingStop := highestSinceEntry - trailAtr * trailAtrMult
@@ -191,7 +189,7 @@ if trailActivationOk
         trailingStop := ema20
 
 profitProtectTriggerReached = profitProtectTriggerPct <= 0 ? strategy.position_size > 0 : reachedPct(profitProtectTriggerPct)
-profitProtectStop = na
+float profitProtectStop = na
 if strategy.position_size > 0 and profitProtectTriggerReached
     if profitProtectMode == "ema10"
         profitProtectStop := ema10
@@ -206,7 +204,7 @@ if strategy.position_size > 0 and profitProtectTriggerReached and profitProtectM
 if strategy.position_size > 0 and profitProtectTriggerReached and profitProtectMode == "rsi_loss" and rsi < profitProtectRsiThreshold and barstate.isconfirmed
     strategy.close("Long", comment="ProfitProtect")
 
-activeStop = na
+float activeStop = na
 if not na(effectiveBaseStop)
     activeStop := effectiveBaseStop
 if not na(breakevenStop)
