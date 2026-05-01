@@ -18,8 +18,13 @@
  *   11. Perf.3M > 10%
  *   12. P/FCF < 50   (calculated: market_cap / free_cash_flow_ttm)
  *
- * Ranking: rank-sum of Perf.3M + ROE + FCF margin (higher = better)
+ * Optional enrichment (enrichWithYahoo: true):
+ *   13. Revenue growth YoY > 20%  (from Yahoo Finance financialData)
+ *
+ * Ranking: rank-sum of Perf.3M + ROE + FCF margin [+ revenueGrowth when enriched]
  */
+
+import { getSymbolFundamentals } from './market-intel.js';
 
 const SCANNER_URL = 'https://scanner.tradingview.com/america/scan';
 const DEFAULT_LIMIT = 10;
@@ -153,15 +158,49 @@ function assignRanks(rows, field) {
   return ranks;
 }
 
-function applyRankSum(rows) {
+function applyRankSum(rows, includeRevenueGrowth = false) {
   const rankPerf = assignRanks(rows, 'perf3m');
   const rankRoe = assignRanks(rows, 'roe');
   const rankFcf = assignRanks(rows, 'fcfMargin');
+  const rankRev = includeRevenueGrowth ? assignRanks(rows, 'revenueGrowth') : null;
 
   return rows.map((row, i) => ({
     ...row,
-    rankScore: rankPerf[i] + rankRoe[i] + rankFcf[i],
+    rankScore: rankPerf[i] + rankRoe[i] + rankFcf[i] + (rankRev ? rankRev[i] : 0),
   }));
+}
+
+const YAHOO_BATCH_SIZE = 5;
+const YAHOO_BATCH_DELAY_MS = 500;
+
+async function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Fetches revenueGrowth (YoY) from Yahoo Finance for each symbol.
+ * Processes in batches of YAHOO_BATCH_SIZE with a delay between batches.
+ * On error, sets revenueGrowth to null (does not throw).
+ */
+async function batchFetchRevenueGrowth(symbols) {
+  const results = {};
+  for (let i = 0; i < symbols.length; i += YAHOO_BATCH_SIZE) {
+    const batch = symbols.slice(i, i + YAHOO_BATCH_SIZE);
+    await Promise.all(
+      batch.map(async (symbol) => {
+        try {
+          const data = await getSymbolFundamentals(symbol);
+          results[symbol] = data.revenueGrowth ?? null;
+        } catch {
+          results[symbol] = null;
+        }
+      }),
+    );
+    if (i + YAHOO_BATCH_SIZE < symbols.length) {
+      await sleep(YAHOO_BATCH_DELAY_MS);
+    }
+  }
+  return results;
 }
 
 function validateLimit(limit) {
@@ -173,7 +212,7 @@ function validateLimit(limit) {
   return n;
 }
 
-export async function runFundamentalScreener({ limit, _deps } = {}) {
+export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _deps } = {}) {
   const effectiveLimit = validateLimit(limit);
   const fetchFn = _deps?.fetch ?? globalThis.fetch;
 
@@ -201,9 +240,38 @@ export async function runFundamentalScreener({ limit, _deps } = {}) {
   const serverFiltered = payload.data.length;
 
   const normalized = payload.data.map(normalizeRow);
-  const clientFiltered = normalized.filter(passesClientFilters);
-  const ranked = applyRankSum(clientFiltered).sort((a, b) => a.rankScore - b.rankScore);
+  let clientFiltered = normalized.filter(passesClientFilters);
+
+  if (enrichWithYahoo && clientFiltered.length > 0) {
+    const symbols = clientFiltered.map((r) => r.symbol);
+    const growthMap = await batchFetchRevenueGrowth(symbols);
+
+    // Attach revenueGrowth and apply revenue growth filter (>20%)
+    clientFiltered = clientFiltered
+      .map((r) => ({ ...r, revenueGrowth: growthMap[r.symbol] ?? null }))
+      .filter((r) => r.revenueGrowth === null || r.revenueGrowth > 0.20);
+  }
+
+  const ranked = applyRankSum(clientFiltered, enrichWithYahoo).sort((a, b) => a.rankScore - b.rankScore);
   const matched = ranked.slice(0, effectiveLimit);
+
+  const criteria = {
+    rsi14_min: 60,
+    market_cap_min_usd: 1_000_000_000,
+    relative_volume_min: 1.2,
+    eps_min: 0,
+    roe_min_pct: 15,
+    gross_margin_min_pct: 40,
+    fcf_margin_min_pct: 10,
+    price_above_sma200: true,
+    price_above_sma50: true,
+    price_pct_of_52wk_high_min: 75,
+    perf3m_min_pct: 10,
+    p_fcf_max: 50,
+  };
+  if (enrichWithYahoo) {
+    criteria.revenue_growth_min_pct = 20;
+  }
 
   return {
     success: true,
@@ -211,22 +279,10 @@ export async function runFundamentalScreener({ limit, _deps } = {}) {
     serverFiltered,
     clientFiltered: clientFiltered.length,
     matched: matched.length,
-    criteria: {
-      rsi14_min: 60,
-      market_cap_min_usd: 1_000_000_000,
-      relative_volume_min: 1.2,
-      eps_min: 0,
-      roe_min_pct: 15,
-      gross_margin_min_pct: 40,
-      fcf_margin_min_pct: 10,
-      price_above_sma200: true,
-      price_above_sma50: true,
-      price_pct_of_52wk_high_min: 75,
-      perf3m_min_pct: 10,
-      p_fcf_max: 50,
-    },
+    enrichedWithYahoo: enrichWithYahoo,
+    criteria,
     results: matched,
     retrieved_at: new Date().toISOString(),
-    source: 'tradingview_scanner',
+    source: enrichWithYahoo ? 'tradingview_scanner+yahoo_finance' : 'tradingview_scanner',
   };
 }
