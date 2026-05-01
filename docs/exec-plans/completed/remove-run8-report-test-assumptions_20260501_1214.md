@@ -25,9 +25,9 @@
 
 ## 実装ステップ
 
-- [ ] `tests/windows-run-night-batch-self-hosted.test.js` の run8 report 依存箇所を最小変更で修正する
-- [ ] `node tests/windows-run-night-batch-self-hosted.test.js` で対象テストの失敗が解消したことを確認する
-- [ ] 計画ファイルを `completed/` へ移動し、関連変更のみを Conventional Commits でコミットして `main` に push する
+- [x] `tests/windows-run-night-batch-self-hosted.test.js` の run8 report 依存箇所を最小変更で修正する
+- [x] `node tests/windows-run-night-batch-self-hosted.test.js` で対象テストの失敗が解消したことを確認する
+- [x] 計画ファイルを `completed/` へ移動し、関連変更のみを Conventional Commits でコミットして `main` に push する
 
 ## テスト戦略
 

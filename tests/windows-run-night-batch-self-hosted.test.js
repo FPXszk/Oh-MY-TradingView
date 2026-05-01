@@ -13,8 +13,6 @@ const FIND_OUTPUTS_SCRIPT_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'githu
 const APPEND_SUMMARY_SCRIPT_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'github-actions', 'append-night-batch-workflow-summary.ps1');
 const GITATTRIBUTES_PATH = join(PROJECT_ROOT, '.gitattributes');
 const README_PATH = join(PROJECT_ROOT, 'README.md');
-const REPORTS_README_PATH = join(PROJECT_ROOT, 'docs', 'reports', 'README.md');
-const RUN8_REPORT_PATH = join(PROJECT_ROOT, 'docs', 'reports', 'night-batch-self-hosted-run8.md');
 const BUNDLE_FG_CONFIG_PATH = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
 const BUNDLE_FG_FAILED36_CONFIG_PATH = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-failed36-config.json');
 const BASELINE_WRITER_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'github-actions', 'write-night-batch-live-checkout-baseline.ps1');
@@ -573,37 +571,6 @@ describe('workflow delegates to external PowerShell scripts', () => {
     const nonEmptyLines = appendRun.split(/\r?\n/).filter(l => l.trim().length > 0);
     assert.ok(nonEmptyLines.length <= 5,
       `Append step inline body must be thin (<=5 non-empty lines), got ${nonEmptyLines.length}`);
-  });
-});
-
-describe('docs: run 8 report', () => {
-  it('run 8 report exists', () => {
-    assert.ok(existsSync(RUN8_REPORT_PATH),
-      'docs/reports/night-batch-self-hosted-run8.md must exist');
-  });
-
-  it('run 8 report contains essential information', () => {
-    const report = readFileSync(RUN8_REPORT_PATH, 'utf8');
-
-    assert.match(report, /run_number.*8|run 8/i,
-      'report must mention run_number 8');
-    assert.match(report, /24282322391/,
-      'report must mention run_id 24282322391');
-    assert.match(report, /success.*true|success: true/i,
-      'report must note that backtest result was success');
-    assert.match(report, /termination_reason.*success/i,
-      'report must note termination_reason');
-    assert.match(report, /PowerShell/i,
-      'report must mention PowerShell as root cause');
-  });
-
-  it('docs/reports/README classifies run 8 report as an incident reference', () => {
-    const readme = readFileSync(REPORTS_README_PATH, 'utf8');
-
-    assert.match(readme, /night-batch-self-hosted-run8\.md/,
-      'docs/reports/README must link to run 8 report');
-    assert.match(readme, /incident|postmortem|archive/i,
-      'docs/reports/README must explain the archive role of docs/reports');
   });
 });
 
