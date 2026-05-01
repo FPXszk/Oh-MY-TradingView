@@ -187,6 +187,53 @@ const EXPECTED_LIVE_IDS = [
   'emr-breakout-winrate-stopout-hybrid-10dhigh-stopout-breakout-reentry',
   'emr-breakout-winrate-stopout-hybrid-ema200-plus6-ema15',
   'emr-breakout-winrate-stopout-hybrid-ema200-volume15-grace5',
+  // emr-next-50pack-us40 (phase-17)
+  'emr-next-vol20x05',
+  'emr-next-vol20x08',
+  'emr-next-vol20x11',
+  'emr-next-vol20x12',
+  'emr-next-vol20x13',
+  'emr-next-vol20x14',
+  'emr-next-vol20x20',
+  'emr-next-stop-until-plus1pct',
+  'emr-next-stop-until-plus3pct',
+  'emr-next-stop-until-plus4pct',
+  'emr-next-stop-until-bkhigh-vol10',
+  'emr-next-stop-until-plus2-vol10',
+  'emr-next-stop-until-plus2-rsi60',
+  'emr-next-stop-fixed10pct',
+  'emr-next-stop-fixed12pct',
+  'emr-next-stop-fixed15pct',
+  'emr-next-stop-atr15x',
+  'emr-next-stop-atr20x',
+  'emr-next-stop-atr25x',
+  'emr-next-stop-swinglow-2bar',
+  'emr-next-stop-swinglow-5bar',
+  'emr-next-entry-hist3-closefa',
+  'emr-next-entry-ema50-200-vol10',
+  'emr-next-entry-rsi55-vol12',
+  'emr-next-entry-rsi55-prevhigh',
+  'emr-next-entry-rsi60-vol12',
+  'emr-next-entry-hist-rsi55-vol10',
+  'emr-next-entry-delay1-prevhigh',
+  'emr-next-entry-closeefa-vol12',
+  'emr-next-entry-20dhigh-rsi55',
+  'emr-next-entry-hist3-rsi55-vol10',
+  'emr-next-exit-trail-atr15-from3',
+  'emr-next-exit-trail-atr25-from5',
+  'emr-next-exit-tp5-trail-atr15',
+  'emr-next-exit-tp8-trail-atr25',
+  'emr-next-exit-tp10-trail-ema20',
+  'emr-next-exit-chandelier22-3atr',
+  'emr-next-exit-ema20-after5',
+  'emr-next-exit-rsi-loss-after8',
+  'emr-next-combo-vol12-bkhigh',
+  'emr-next-combo-vol12-plus2',
+  'emr-next-combo-20dhigh-vol10-trail25',
+  'emr-next-combo-ema50200-vol12-stop12',
+  'emr-next-combo-rsi60-vol10-bkhigh',
+  'emr-next-combo-rsi55-vol10-trail-ema20',
+  'emr-next-combo-ultimate',
 ];
 
 // ---------------------------------------------------------------------------
@@ -257,10 +304,10 @@ describe('validateCatalogIntegrity', () => {
 // getLiveStrategies / getRetiredStrategies
 // ---------------------------------------------------------------------------
 describe('getLiveStrategies / getRetiredStrategies', () => {
-  it('live count is 174', async () => {
+  it('live count is 220', async () => {
     const catalog = await loadCatalog();
     const live = getLiveStrategies(catalog);
-    assert.equal(live.length, 174);
+    assert.equal(live.length, 220);
   });
 
   it('retired count is 2', async () => {

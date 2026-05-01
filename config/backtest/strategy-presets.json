@@ -45,12 +45,12 @@
         "value": 8
       },
       "theme_axis": "deep-pullback-strict-entry-late",
-      "theme_notes": "deep-pullback-strict の exit を固定したまま entry を 60 へ遅らせ、strict 側の質優先をさらに強めたときの残り方を確認する。",
+      "theme_notes": "deep-pullback-strict \u306e exit \u3092\u56fa\u5b9a\u3057\u305f\u307e\u307e entry \u3092 60 \u3078\u9045\u3089\u305b\u3001strict \u5074\u306e\u8cea\u512a\u5148\u3092\u3055\u3089\u306b\u5f37\u3081\u305f\u3068\u304d\u306e\u6b8b\u308a\u65b9\u3092\u78ba\u8a8d\u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "strict anchor がまだ早いかどうかを、entry 遅延だけで見極める。",
+      "mag7_notes": "strict anchor \u304c\u307e\u3060\u65e9\u3044\u304b\u3069\u3046\u304b\u3092\u3001entry \u9045\u5ef6\u3060\u3051\u3067\u898b\u6975\u3081\u308b\u3002",
       "phase": "phase-11",
       "implementation_stage": "round11",
       "priority": 132,
@@ -97,12 +97,12 @@
         "value": 8
       },
       "theme_axis": "strongest-profit-protect-base",
-      "theme_notes": "最強戦略そのままの 60/20・RSP・RSI60 を維持しつつ、30% と 100% の二段階部分利確だけを追加した基準線。",
+      "theme_notes": "\u6700\u5f37\u6226\u7565\u305d\u306e\u307e\u307e\u306e 60/20\u30fbRSP\u30fbRSI60 \u3092\u7dad\u6301\u3057\u3064\u3064\u300130% \u3068 100% \u306e\u4e8c\u6bb5\u968e\u90e8\u5206\u5229\u78ba\u3060\u3051\u3092\u8ffd\u52a0\u3057\u305f\u57fa\u6e96\u7dda\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "最強戦略に含み益保護だけを足した基準版。",
+      "mag7_notes": "\u6700\u5f37\u6226\u7565\u306b\u542b\u307f\u76ca\u4fdd\u8b77\u3060\u3051\u3092\u8db3\u3057\u305f\u57fa\u6e96\u7248\u3002",
       "phase": "phase-12",
       "implementation_stage": "selected-us40-10pack",
       "priority": 201,
@@ -147,12 +147,12 @@
         "value": 8
       },
       "theme_axis": "strongest-profit-protect-tp1-very-early",
-      "theme_notes": "1回目の利確発動を 22% まで前倒しし、最速寄りの保護強度を比較する。",
+      "theme_notes": "1\u56de\u76ee\u306e\u5229\u78ba\u767a\u52d5\u3092 22% \u307e\u3067\u524d\u5012\u3057\u3057\u3001\u6700\u901f\u5bc4\u308a\u306e\u4fdd\u8b77\u5f37\u5ea6\u3092\u6bd4\u8f03\u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "利を急ぎめに確保した時の DD 改善余地を確認する。",
+      "mag7_notes": "\u5229\u3092\u6025\u304e\u3081\u306b\u78ba\u4fdd\u3057\u305f\u6642\u306e DD \u6539\u5584\u4f59\u5730\u3092\u78ba\u8a8d\u3059\u308b\u3002",
       "phase": "phase-12",
       "implementation_stage": "selected-us40-10pack",
       "priority": 202,
@@ -197,12 +197,12 @@
         "value": 8
       },
       "theme_axis": "strongest-profit-protect-tp1-early",
-      "theme_notes": "1回目の利確発動を 25% へ早め、早期保護の効き方を比較する。",
+      "theme_notes": "1\u56de\u76ee\u306e\u5229\u78ba\u767a\u52d5\u3092 25% \u3078\u65e9\u3081\u3001\u65e9\u671f\u4fdd\u8b77\u306e\u52b9\u304d\u65b9\u3092\u6bd4\u8f03\u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "早めの一段目利確が質優先 breakout に合うかを見る。",
+      "mag7_notes": "\u65e9\u3081\u306e\u4e00\u6bb5\u76ee\u5229\u78ba\u304c\u8cea\u512a\u5148 breakout \u306b\u5408\u3046\u304b\u3092\u898b\u308b\u3002",
       "phase": "phase-12",
       "implementation_stage": "selected-us40-10pack",
       "priority": 202,
@@ -247,12 +247,12 @@
         "value": 8
       },
       "theme_axis": "strongest-profit-protect-tp1-near-early",
-      "theme_notes": "1回目の利確発動を 27% に置き、25% と 30% の中間帯を比較する。",
+      "theme_notes": "1\u56de\u76ee\u306e\u5229\u78ba\u767a\u52d5\u3092 27% \u306b\u7f6e\u304d\u300125% \u3068 30% \u306e\u4e2d\u9593\u5e2f\u3092\u6bd4\u8f03\u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "極端に早すぎず遅すぎない帯での保護バランスを見る。",
+      "mag7_notes": "\u6975\u7aef\u306b\u65e9\u3059\u304e\u305a\u9045\u3059\u304e\u306a\u3044\u5e2f\u3067\u306e\u4fdd\u8b77\u30d0\u30e9\u30f3\u30b9\u3092\u898b\u308b\u3002",
       "phase": "phase-12",
       "implementation_stage": "selected-us40-10pack",
       "priority": 204,
@@ -297,12 +297,12 @@
         "value": 8
       },
       "theme_axis": "strongest-profit-protect-tp1-late",
-      "theme_notes": "1回目の利確発動を 35% へ遅らせ、伸びを残す方向の差を比較する。",
+      "theme_notes": "1\u56de\u76ee\u306e\u5229\u78ba\u767a\u52d5\u3092 35% \u3078\u9045\u3089\u305b\u3001\u4f38\u3073\u3092\u6b8b\u3059\u65b9\u5411\u306e\u5dee\u3092\u6bd4\u8f03\u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "一段目を遅らせても DD 改善が残るかを見る。",
+      "mag7_notes": "\u4e00\u6bb5\u76ee\u3092\u9045\u3089\u305b\u3066\u3082 DD \u6539\u5584\u304c\u6b8b\u308b\u304b\u3092\u898b\u308b\u3002",
       "phase": "phase-12",
       "implementation_stage": "selected-us40-10pack",
       "priority": 203,
@@ -347,12 +347,12 @@
         "value": 8
       },
       "theme_axis": "strongest-profit-protect-tp1-early-light",
-      "theme_notes": "1回目の利確発動を 25% に固定しつつ、利確比率だけを 20% に抑えて比較する。",
+      "theme_notes": "1\u56de\u76ee\u306e\u5229\u78ba\u767a\u52d5\u3092 25% \u306b\u56fa\u5b9a\u3057\u3064\u3064\u3001\u5229\u78ba\u6bd4\u7387\u3060\u3051\u3092 20% \u306b\u6291\u3048\u3066\u6bd4\u8f03\u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "早め発動でも軽く切ることで勝ち筋を残せるかを見る。",
+      "mag7_notes": "\u65e9\u3081\u767a\u52d5\u3067\u3082\u8efd\u304f\u5207\u308b\u3053\u3068\u3067\u52dd\u3061\u7b4b\u3092\u6b8b\u305b\u308b\u304b\u3092\u898b\u308b\u3002",
       "phase": "phase-12",
       "implementation_stage": "selected-us40-10pack",
       "priority": 206,
@@ -397,12 +397,12 @@
         "value": 8
       },
       "theme_axis": "strongest-profit-protect-tp1-light",
-      "theme_notes": "1回目の利確比率を 20% に下げ、上振れ余地を残したまま保護できるかを比較する。",
+      "theme_notes": "1\u56de\u76ee\u306e\u5229\u78ba\u6bd4\u7387\u3092 20% \u306b\u4e0b\u3052\u3001\u4e0a\u632f\u308c\u4f59\u5730\u3092\u6b8b\u3057\u305f\u307e\u307e\u4fdd\u8b77\u3067\u304d\u308b\u304b\u3092\u6bd4\u8f03\u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "軽めの部分利確で勝ち筋の伸びを保てるかを見る。",
+      "mag7_notes": "\u8efd\u3081\u306e\u90e8\u5206\u5229\u78ba\u3067\u52dd\u3061\u7b4b\u306e\u4f38\u3073\u3092\u4fdd\u3066\u308b\u304b\u3092\u898b\u308b\u3002",
       "phase": "phase-12",
       "implementation_stage": "selected-us40-10pack",
       "priority": 204,
@@ -447,12 +447,12 @@
         "value": 8
       },
       "theme_axis": "strongest-profit-protect-tp1-heavy",
-      "theme_notes": "1回目の利確比率を 33% に上げ、早期ロックの強さを比較する。",
+      "theme_notes": "1\u56de\u76ee\u306e\u5229\u78ba\u6bd4\u7387\u3092 33% \u306b\u4e0a\u3052\u3001\u65e9\u671f\u30ed\u30c3\u30af\u306e\u5f37\u3055\u3092\u6bd4\u8f03\u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "早めに玉を落とした時の PF / DD 改善余地を見る。",
+      "mag7_notes": "\u65e9\u3081\u306b\u7389\u3092\u843d\u3068\u3057\u305f\u6642\u306e PF / DD \u6539\u5584\u4f59\u5730\u3092\u898b\u308b\u3002",
       "phase": "phase-12",
       "implementation_stage": "selected-us40-10pack",
       "priority": 205,
@@ -497,12 +497,12 @@
         "value": 8
       },
       "theme_axis": "strongest-profit-protect-tp1-early-mid-heavy",
-      "theme_notes": "1回目の利確発動を 25% に固定しつつ、利確比率を 30% へ上げた中間比較版。",
+      "theme_notes": "1\u56de\u76ee\u306e\u5229\u78ba\u767a\u52d5\u3092 25% \u306b\u56fa\u5b9a\u3057\u3064\u3064\u3001\u5229\u78ba\u6bd4\u7387\u3092 30% \u3078\u4e0a\u3052\u305f\u4e2d\u9593\u6bd4\u8f03\u7248\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "25% 到達時にやや厚めに落とした時の守りを比較する。",
+      "mag7_notes": "25% \u5230\u9054\u6642\u306b\u3084\u3084\u539a\u3081\u306b\u843d\u3068\u3057\u305f\u6642\u306e\u5b88\u308a\u3092\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-12",
       "implementation_stage": "selected-us40-10pack",
       "priority": 208,
@@ -547,12 +547,12 @@
         "value": 8
       },
       "theme_axis": "strongest-profit-protect-tp1-early-heavy",
-      "theme_notes": "1回目の利確発動を 25% に固定しつつ、利確比率を 33% に上げて比較する。",
+      "theme_notes": "1\u56de\u76ee\u306e\u5229\u78ba\u767a\u52d5\u3092 25% \u306b\u56fa\u5b9a\u3057\u3064\u3064\u3001\u5229\u78ba\u6bd4\u7387\u3092 33% \u306b\u4e0a\u3052\u3066\u6bd4\u8f03\u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "25% 到達直後のロックを強めた時の PF / DD 改善余地を見る。",
+      "mag7_notes": "25% \u5230\u9054\u76f4\u5f8c\u306e\u30ed\u30c3\u30af\u3092\u5f37\u3081\u305f\u6642\u306e PF / DD \u6539\u5584\u4f59\u5730\u3092\u898b\u308b\u3002",
       "phase": "phase-12",
       "implementation_stage": "selected-us40-10pack",
       "priority": 209,
@@ -597,12 +597,12 @@
         "value": 8
       },
       "theme_axis": "strongest-profit-protect-tp2-early",
-      "theme_notes": "2回目の利確発動を 80% へ前倒しし、急騰の利確圧を強めた比較版。",
+      "theme_notes": "2\u56de\u76ee\u306e\u5229\u78ba\u767a\u52d5\u3092 80% \u3078\u524d\u5012\u3057\u3057\u3001\u6025\u9a30\u306e\u5229\u78ba\u5727\u3092\u5f37\u3081\u305f\u6bd4\u8f03\u7248\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "二段目を早めた時の回転改善を比較する。",
+      "mag7_notes": "\u4e8c\u6bb5\u76ee\u3092\u65e9\u3081\u305f\u6642\u306e\u56de\u8ee2\u6539\u5584\u3092\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-12",
       "implementation_stage": "selected-us40-10pack",
       "priority": 206,
@@ -647,12 +647,12 @@
         "value": 8
       },
       "theme_axis": "strongest-profit-protect-tp2-late",
-      "theme_notes": "2回目の利確発動を 120% へ遅らせ、超大型 winner を残す方向の比較版。",
+      "theme_notes": "2\u56de\u76ee\u306e\u5229\u78ba\u767a\u52d5\u3092 120% \u3078\u9045\u3089\u305b\u3001\u8d85\u5927\u578b winner \u3092\u6b8b\u3059\u65b9\u5411\u306e\u6bd4\u8f03\u7248\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "二段目を遅らせて big winner をどこまで残せるかを見る。",
+      "mag7_notes": "\u4e8c\u6bb5\u76ee\u3092\u9045\u3089\u305b\u3066 big winner \u3092\u3069\u3053\u307e\u3067\u6b8b\u305b\u308b\u304b\u3092\u898b\u308b\u3002",
       "phase": "phase-12",
       "implementation_stage": "selected-us40-10pack",
       "priority": 207,
@@ -697,12 +697,12 @@
         "value": 8
       },
       "theme_axis": "strongest-profit-protect-tp2-light",
-      "theme_notes": "2回目の利確比率を 33% に下げ、後半の追従玉を残す方向の比較版。",
+      "theme_notes": "2\u56de\u76ee\u306e\u5229\u78ba\u6bd4\u7387\u3092 33% \u306b\u4e0b\u3052\u3001\u5f8c\u534a\u306e\u8ffd\u5f93\u7389\u3092\u6b8b\u3059\u65b9\u5411\u306e\u6bd4\u8f03\u7248\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "二段目を軽くして大勝ちの tail を残せるかを見る。",
+      "mag7_notes": "\u4e8c\u6bb5\u76ee\u3092\u8efd\u304f\u3057\u3066\u5927\u52dd\u3061\u306e tail \u3092\u6b8b\u305b\u308b\u304b\u3092\u898b\u308b\u3002",
       "phase": "phase-12",
       "implementation_stage": "selected-us40-10pack",
       "priority": 208,
@@ -747,12 +747,12 @@
         "value": 8
       },
       "theme_axis": "strongest-profit-protect-tp2-heavy",
-      "theme_notes": "2回目の利確比率を 67% に上げ、急騰後のロックを強めた比較版。",
+      "theme_notes": "2\u56de\u76ee\u306e\u5229\u78ba\u6bd4\u7387\u3092 67% \u306b\u4e0a\u3052\u3001\u6025\u9a30\u5f8c\u306e\u30ed\u30c3\u30af\u3092\u5f37\u3081\u305f\u6bd4\u8f03\u7248\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "二段目を強く切った時の守りの強さを比較する。",
+      "mag7_notes": "\u4e8c\u6bb5\u76ee\u3092\u5f37\u304f\u5207\u3063\u305f\u6642\u306e\u5b88\u308a\u306e\u5f37\u3055\u3092\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-12",
       "implementation_stage": "selected-us40-10pack",
       "priority": 209,
@@ -797,12 +797,12 @@
         "value": 8
       },
       "theme_axis": "strongest-profit-protect-tp2-mid",
-      "theme_notes": "2回目の利確発動を 90% に早め、80% と 100% の中間帯を比較する。",
+      "theme_notes": "2\u56de\u76ee\u306e\u5229\u78ba\u767a\u52d5\u3092 90% \u306b\u65e9\u3081\u300180% \u3068 100% \u306e\u4e2d\u9593\u5e2f\u3092\u6bd4\u8f03\u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "二段目を 90% にした時のバランス感を比較する。",
+      "mag7_notes": "\u4e8c\u6bb5\u76ee\u3092 90% \u306b\u3057\u305f\u6642\u306e\u30d0\u30e9\u30f3\u30b9\u611f\u3092\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-12",
       "implementation_stage": "selected-us40-10pack",
       "priority": 210,
@@ -847,12 +847,12 @@
         "value": 8
       },
       "theme_axis": "strongest-profit-protect-tp1-micro-27",
-      "theme_notes": "run68 micro sweep の下側 shoulder。TP1 を 25% で発動しつつ 27% だけ利確して 25/30 の谷間を埋める。",
+      "theme_notes": "run68 micro sweep \u306e\u4e0b\u5074 shoulder\u3002TP1 \u3092 25% \u3067\u767a\u52d5\u3057\u3064\u3064 27% \u3060\u3051\u5229\u78ba\u3057\u3066 25/30 \u306e\u8c37\u9593\u3092\u57cb\u3081\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "25% 利確帯の最小厚み寄りで PF / DD の変化を確認する。",
+      "mag7_notes": "25% \u5229\u78ba\u5e2f\u306e\u6700\u5c0f\u539a\u307f\u5bc4\u308a\u3067 PF / DD \u306e\u5909\u5316\u3092\u78ba\u8a8d\u3059\u308b\u3002",
       "phase": "phase-13",
       "implementation_stage": "tp1-micro-sweep-panic-reversal-us40-11pack",
       "priority": 211,
@@ -897,12 +897,12 @@
         "value": 8
       },
       "theme_axis": "strongest-profit-protect-tp1-micro-28",
-      "theme_notes": "run68 micro sweep の本命下側。28% 利確で 30% 手前の滑らかな改善を確認する。",
+      "theme_notes": "run68 micro sweep \u306e\u672c\u547d\u4e0b\u5074\u300228% \u5229\u78ba\u3067 30% \u624b\u524d\u306e\u6ed1\u3089\u304b\u306a\u6539\u5584\u3092\u78ba\u8a8d\u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "28% の軽め利確で 30% との差を測る。",
+      "mag7_notes": "28% \u306e\u8efd\u3081\u5229\u78ba\u3067 30% \u3068\u306e\u5dee\u3092\u6e2c\u308b\u3002",
       "phase": "phase-13",
       "implementation_stage": "tp1-micro-sweep-panic-reversal-us40-11pack",
       "priority": 212,
@@ -947,12 +947,12 @@
         "value": 8
       },
       "theme_axis": "strongest-profit-protect-tp1-micro-29",
-      "theme_notes": "28% と 30% の間を埋める 29% 利確版。",
+      "theme_notes": "28% \u3068 30% \u306e\u9593\u3092\u57cb\u3081\u308b 29% \u5229\u78ba\u7248\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "30% anchor 直下で PF と net profit のバランスを見る。",
+      "mag7_notes": "30% anchor \u76f4\u4e0b\u3067 PF \u3068 net profit \u306e\u30d0\u30e9\u30f3\u30b9\u3092\u898b\u308b\u3002",
       "phase": "phase-13",
       "implementation_stage": "tp1-micro-sweep-panic-reversal-us40-11pack",
       "priority": 213,
@@ -997,12 +997,12 @@
         "value": 8
       },
       "theme_axis": "strongest-profit-protect-tp1-micro-31",
-      "theme_notes": "30% と 33% の間で立ち上がりを見る 31% 利確版。",
+      "theme_notes": "30% \u3068 33% \u306e\u9593\u3067\u7acb\u3061\u4e0a\u304c\u308a\u3092\u898b\u308b 31% \u5229\u78ba\u7248\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "33% 本命へ向かう改善カーブの入り口を確認する。",
+      "mag7_notes": "33% \u672c\u547d\u3078\u5411\u304b\u3046\u6539\u5584\u30ab\u30fc\u30d6\u306e\u5165\u308a\u53e3\u3092\u78ba\u8a8d\u3059\u308b\u3002",
       "phase": "phase-13",
       "implementation_stage": "tp1-micro-sweep-panic-reversal-us40-11pack",
       "priority": 214,
@@ -1047,12 +1047,12 @@
         "value": 8
       },
       "theme_axis": "strongest-profit-protect-tp1-micro-32",
-      "theme_notes": "33% 本命の直前を埋める 32% 利確版。",
+      "theme_notes": "33% \u672c\u547d\u306e\u76f4\u524d\u3092\u57cb\u3081\u308b 32% \u5229\u78ba\u7248\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "首位候補 33% の直前で飽和するかを測る。",
+      "mag7_notes": "\u9996\u4f4d\u5019\u88dc 33% \u306e\u76f4\u524d\u3067\u98fd\u548c\u3059\u308b\u304b\u3092\u6e2c\u308b\u3002",
       "phase": "phase-13",
       "implementation_stage": "tp1-micro-sweep-panic-reversal-us40-11pack",
       "priority": 215,
@@ -1097,12 +1097,12 @@
         "value": 8
       },
       "theme_axis": "strongest-profit-protect-tp1-micro-34",
-      "theme_notes": "33% 首位候補を少し上回る 34% 利確版。",
+      "theme_notes": "33% \u9996\u4f4d\u5019\u88dc\u3092\u5c11\u3057\u4e0a\u56de\u308b 34% \u5229\u78ba\u7248\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "33% を超えても PF / DD 改善が続くかを見る。",
+      "mag7_notes": "33% \u3092\u8d85\u3048\u3066\u3082 PF / DD \u6539\u5584\u304c\u7d9a\u304f\u304b\u3092\u898b\u308b\u3002",
       "phase": "phase-13",
       "implementation_stage": "tp1-micro-sweep-panic-reversal-us40-11pack",
       "priority": 216,
@@ -1147,12 +1147,12 @@
         "value": 8
       },
       "theme_axis": "strongest-profit-protect-tp1-micro-35",
-      "theme_notes": "run68 上側 anchor の 35% 利確版。",
+      "theme_notes": "run68 \u4e0a\u5074 anchor \u306e 35% \u5229\u78ba\u7248\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "33% 超えの改善が 35% まで続くかを確認する。",
+      "mag7_notes": "33% \u8d85\u3048\u306e\u6539\u5584\u304c 35% \u307e\u3067\u7d9a\u304f\u304b\u3092\u78ba\u8a8d\u3059\u308b\u3002",
       "phase": "phase-13",
       "implementation_stage": "tp1-micro-sweep-panic-reversal-us40-11pack",
       "priority": 217,
@@ -1197,12 +1197,12 @@
         "value": 8
       },
       "theme_axis": "strongest-profit-protect-tp1-micro-36",
-      "theme_notes": "35% 上側の境界確認用 36% 利確版。",
+      "theme_notes": "35% \u4e0a\u5074\u306e\u5883\u754c\u78ba\u8a8d\u7528 36% \u5229\u78ba\u7248\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "trending",
-      "mag7_notes": "35% をさらに重くした時の悪化開始点を探る。",
+      "mag7_notes": "35% \u3092\u3055\u3089\u306b\u91cd\u304f\u3057\u305f\u6642\u306e\u60aa\u5316\u958b\u59cb\u70b9\u3092\u63a2\u308b\u3002",
       "phase": "phase-13",
       "implementation_stage": "tp1-micro-sweep-panic-reversal-us40-11pack",
       "priority": 218,
@@ -1234,12 +1234,12 @@
         "exit_rsi_threshold": 65
       },
       "theme_axis": "panic-reversal-stage1-tv-only",
-      "theme_notes": "RSP・VIX・SPY だけで panic 局面を検出し、SPY RSI(2) の反転で逆張りエントリーして、SMA25 + RSI65 まで長く持つ第1段階版。",
+      "theme_notes": "RSP\u30fbVIX\u30fbSPY \u3060\u3051\u3067 panic \u5c40\u9762\u3092\u691c\u51fa\u3057\u3001SPY RSI(2) \u306e\u53cd\u8ee2\u3067\u9006\u5f35\u308a\u30a8\u30f3\u30c8\u30ea\u30fc\u3057\u3066\u3001SMA25 + RSI65 \u307e\u3067\u9577\u304f\u6301\u3064\u7b2c1\u6bb5\u968e\u7248\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "panic",
-      "mag7_notes": "市場全体の恐怖が強い局面だけを取りに行く長期保有版。",
+      "mag7_notes": "\u5e02\u5834\u5168\u4f53\u306e\u6050\u6016\u304c\u5f37\u3044\u5c40\u9762\u3060\u3051\u3092\u53d6\u308a\u306b\u884c\u304f\u9577\u671f\u4fdd\u6709\u7248\u3002",
       "phase": "phase-13",
       "implementation_stage": "tp1-micro-sweep-panic-reversal-us40-11pack",
       "priority": 219,
@@ -1289,12 +1289,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-core",
-      "theme_notes": "run69 首位 tp25-27 に、RSP 200SMA 以下では VIX peakout で回復局面 entry を足した基準版。",
+      "theme_notes": "run69 \u9996\u4f4d tp25-27 \u306b\u3001RSP 200SMA \u4ee5\u4e0b\u3067\u306f VIX peakout \u3067\u56de\u5fa9\u5c40\u9762 entry \u3092\u8db3\u3057\u305f\u57fa\u6e96\u7248\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "平時 breakout を維持しつつ panic rebound だけを拾う最小 overlay。",
+      "mag7_notes": "\u5e73\u6642 breakout \u3092\u7dad\u6301\u3057\u3064\u3064 panic rebound \u3060\u3051\u3092\u62fe\u3046\u6700\u5c0f overlay\u3002",
       "phase": "phase-14",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-10pack",
       "priority": 220,
@@ -1345,12 +1345,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-vix24",
-      "theme_notes": "panic 判定の VIX 下限を 24 に上げ、弱い反発を減らす比較版。",
+      "theme_notes": "panic \u5224\u5b9a\u306e VIX \u4e0b\u9650\u3092 24 \u306b\u4e0a\u3052\u3001\u5f31\u3044\u53cd\u767a\u3092\u6e1b\u3089\u3059\u6bd4\u8f03\u7248\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "VIX 20 だと早すぎる反発を拾うかを切り分ける。",
+      "mag7_notes": "VIX 20 \u3060\u3068\u65e9\u3059\u304e\u308b\u53cd\u767a\u3092\u62fe\u3046\u304b\u3092\u5207\u308a\u5206\u3051\u308b\u3002",
       "phase": "phase-14",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-10pack",
       "priority": 221,
@@ -1401,12 +1401,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-vix28",
-      "theme_notes": "panic 判定をさらに深い VIX 28 超へ寄せ、暴落色が強い局面だけを拾う版。",
+      "theme_notes": "panic \u5224\u5b9a\u3092\u3055\u3089\u306b\u6df1\u3044 VIX 28 \u8d85\u3078\u5bc4\u305b\u3001\u66b4\u843d\u8272\u304c\u5f37\u3044\u5c40\u9762\u3060\u3051\u3092\u62fe\u3046\u7248\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "本当に深い fear だけに絞ると勝率が上がるかを見る。",
+      "mag7_notes": "\u672c\u5f53\u306b\u6df1\u3044 fear \u3060\u3051\u306b\u7d5e\u308b\u3068\u52dd\u7387\u304c\u4e0a\u304c\u308b\u304b\u3092\u898b\u308b\u3002",
       "phase": "phase-14",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-10pack",
       "priority": 222,
@@ -1457,12 +1457,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-rsi35",
-      "theme_notes": "SPY RSI14 上限を 35 まで絞り、より oversold な時だけ回復 entry する版。",
+      "theme_notes": "SPY RSI14 \u4e0a\u9650\u3092 35 \u307e\u3067\u7d5e\u308a\u3001\u3088\u308a oversold \u306a\u6642\u3060\u3051\u56de\u5fa9 entry \u3059\u308b\u7248\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "浅い調整を避けて panic らしい局面だけを通す。",
+      "mag7_notes": "\u6d45\u3044\u8abf\u6574\u3092\u907f\u3051\u3066 panic \u3089\u3057\u3044\u5c40\u9762\u3060\u3051\u3092\u901a\u3059\u3002",
       "phase": "phase-14",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-10pack",
       "priority": 223,
@@ -1513,12 +1513,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-rsi45",
-      "theme_notes": "SPY RSI14 上限を 45 まで緩め、早い回復局面も許す版。",
+      "theme_notes": "SPY RSI14 \u4e0a\u9650\u3092 45 \u307e\u3067\u7de9\u3081\u3001\u65e9\u3044\u56de\u5fa9\u5c40\u9762\u3082\u8a31\u3059\u7248\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "oversold 条件を緩めた時に回数で勝てるかを確認する。",
+      "mag7_notes": "oversold \u6761\u4ef6\u3092\u7de9\u3081\u305f\u6642\u306b\u56de\u6570\u3067\u52dd\u3066\u308b\u304b\u3092\u78ba\u8a8d\u3059\u308b\u3002",
       "phase": "phase-14",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-10pack",
       "priority": 224,
@@ -1569,12 +1569,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-sma20",
-      "theme_notes": "回復 exit の移動平均を 20 日へ短縮し、利確を早める版。",
+      "theme_notes": "\u56de\u5fa9 exit \u306e\u79fb\u52d5\u5e73\u5747\u3092 20 \u65e5\u3078\u77ed\u7e2e\u3057\u3001\u5229\u78ba\u3092\u65e9\u3081\u308b\u7248\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "回復利確を少し前倒しした時の net / DD 変化を見る。",
+      "mag7_notes": "\u56de\u5fa9\u5229\u78ba\u3092\u5c11\u3057\u524d\u5012\u3057\u3057\u305f\u6642\u306e net / DD \u5909\u5316\u3092\u898b\u308b\u3002",
       "phase": "phase-14",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-10pack",
       "priority": 225,
@@ -1625,12 +1625,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-exitrsi60",
-      "theme_notes": "回復 exit の RSI 閾値を 60 に下げ、少し早く逃がす版。",
+      "theme_notes": "\u56de\u5fa9 exit \u306e RSI \u95be\u5024\u3092 60 \u306b\u4e0b\u3052\u3001\u5c11\u3057\u65e9\u304f\u9003\u304c\u3059\u7248\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "利益確定の速度を上げた時の保守性を比較する。",
+      "mag7_notes": "\u5229\u76ca\u78ba\u5b9a\u306e\u901f\u5ea6\u3092\u4e0a\u3052\u305f\u6642\u306e\u4fdd\u5b88\u6027\u3092\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-14",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-10pack",
       "priority": 226,
@@ -1681,12 +1681,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-rsi2-only",
-      "theme_notes": "回復 entry を VIX peakout ではなく SPY RSI2 の 10 上抜けだけで行う版。",
+      "theme_notes": "\u56de\u5fa9 entry \u3092 VIX peakout \u3067\u306f\u306a\u304f SPY RSI2 \u306e 10 \u4e0a\u629c\u3051\u3060\u3051\u3067\u884c\u3046\u7248\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "既存 panic reversal の底打ち確認を単独で breakout に接続する。",
+      "mag7_notes": "\u65e2\u5b58 panic reversal \u306e\u5e95\u6253\u3061\u78ba\u8a8d\u3092\u5358\u72ec\u3067 breakout \u306b\u63a5\u7d9a\u3059\u308b\u3002",
       "phase": "phase-14",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-10pack",
       "priority": 227,
@@ -1738,12 +1738,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-rsi2-both",
-      "theme_notes": "VIX peakout と SPY RSI2 反転の両方を要求する最も厳しい回復 entry 版。",
+      "theme_notes": "VIX peakout \u3068 SPY RSI2 \u53cd\u8ee2\u306e\u4e21\u65b9\u3092\u8981\u6c42\u3059\u308b\u6700\u3082\u53b3\u3057\u3044\u56de\u5fa9 entry \u7248\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "entry を絞り込んだ時に panic rebound の質が改善するかを見る。",
+      "mag7_notes": "entry \u3092\u7d5e\u308a\u8fbc\u3093\u3060\u6642\u306b panic rebound \u306e\u8cea\u304c\u6539\u5584\u3059\u308b\u304b\u3092\u898b\u308b\u3002",
       "phase": "phase-14",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-10pack",
       "priority": 228,
@@ -1795,12 +1795,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-vix24-rsi40-sma20-exitrsi65",
-      "theme_notes": "50pack 深掘り向けに VIX>24 / SPY RSI14<40 / exit SMA20 / exit RSI65 を揃え、VIX peakout を確認に使う基準系。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>24 / SPY RSI14<40 / exit SMA20 / exit RSI65 \u3092\u63c3\u3048\u3001VIX peakout \u3092\u78ba\u8a8d\u306b\u4f7f\u3046\u57fa\u6e96\u7cfb\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>24 と exit SMA20 / RSI65 の組み合わせで比較する。",
+      "mag7_notes": "\u6700\u5c0f overlay \u306e\u307e\u307e gate \u3068 exit \u306e\u5dee\u3060\u3051\u3092\u898b\u308b\u3002 VIX>24 \u3068 exit SMA20 / RSI65 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 229,
@@ -1851,12 +1851,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-vix28-rsi40-sma20-exitrsi65",
-      "theme_notes": "50pack 深掘り向けに VIX>28 / SPY RSI14<40 / exit SMA20 / exit RSI65 を揃え、VIX peakout を確認に使う基準系。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>28 / SPY RSI14<40 / exit SMA20 / exit RSI65 \u3092\u63c3\u3048\u3001VIX peakout \u3092\u78ba\u8a8d\u306b\u4f7f\u3046\u57fa\u6e96\u7cfb\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>28 と exit SMA20 / RSI65 の組み合わせで比較する。",
+      "mag7_notes": "\u6700\u5c0f overlay \u306e\u307e\u307e gate \u3068 exit \u306e\u5dee\u3060\u3051\u3092\u898b\u308b\u3002 VIX>28 \u3068 exit SMA20 / RSI65 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 230,
@@ -1907,12 +1907,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-vix20-rsi35-sma20-exitrsi65",
-      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<35 / exit SMA20 / exit RSI65 を揃え、VIX peakout を確認に使う基準系。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>20 / SPY RSI14<35 / exit SMA20 / exit RSI65 \u3092\u63c3\u3048\u3001VIX peakout \u3092\u78ba\u8a8d\u306b\u4f7f\u3046\u57fa\u6e96\u7cfb\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>20 と exit SMA20 / RSI65 の組み合わせで比較する。",
+      "mag7_notes": "\u6700\u5c0f overlay \u306e\u307e\u307e gate \u3068 exit \u306e\u5dee\u3060\u3051\u3092\u898b\u308b\u3002 VIX>20 \u3068 exit SMA20 / RSI65 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 231,
@@ -1963,12 +1963,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-vix20-rsi45-sma20-exitrsi65",
-      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<45 / exit SMA20 / exit RSI65 を揃え、VIX peakout を確認に使う基準系。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>20 / SPY RSI14<45 / exit SMA20 / exit RSI65 \u3092\u63c3\u3048\u3001VIX peakout \u3092\u78ba\u8a8d\u306b\u4f7f\u3046\u57fa\u6e96\u7cfb\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>20 と exit SMA20 / RSI65 の組み合わせで比較する。",
+      "mag7_notes": "\u6700\u5c0f overlay \u306e\u307e\u307e gate \u3068 exit \u306e\u5dee\u3060\u3051\u3092\u898b\u308b\u3002 VIX>20 \u3068 exit SMA20 / RSI65 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 232,
@@ -2019,12 +2019,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-vix20-rsi40-sma20-exitrsi60",
-      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA20 / exit RSI60 を揃え、VIX peakout を確認に使う基準系。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>20 / SPY RSI14<40 / exit SMA20 / exit RSI60 \u3092\u63c3\u3048\u3001VIX peakout \u3092\u78ba\u8a8d\u306b\u4f7f\u3046\u57fa\u6e96\u7cfb\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>20 と exit SMA20 / RSI60 の組み合わせで比較する。",
+      "mag7_notes": "\u6700\u5c0f overlay \u306e\u307e\u307e gate \u3068 exit \u306e\u5dee\u3060\u3051\u3092\u898b\u308b\u3002 VIX>20 \u3068 exit SMA20 / RSI60 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 233,
@@ -2075,12 +2075,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-vix24-rsi40-sma20-exitrsi60",
-      "theme_notes": "50pack 深掘り向けに VIX>24 / SPY RSI14<40 / exit SMA20 / exit RSI60 を揃え、VIX peakout を確認に使う基準系。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>24 / SPY RSI14<40 / exit SMA20 / exit RSI60 \u3092\u63c3\u3048\u3001VIX peakout \u3092\u78ba\u8a8d\u306b\u4f7f\u3046\u57fa\u6e96\u7cfb\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>24 と exit SMA20 / RSI60 の組み合わせで比較する。",
+      "mag7_notes": "\u6700\u5c0f overlay \u306e\u307e\u307e gate \u3068 exit \u306e\u5dee\u3060\u3051\u3092\u898b\u308b\u3002 VIX>24 \u3068 exit SMA20 / RSI60 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 234,
@@ -2131,12 +2131,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-vix28-rsi40-sma20-exitrsi60",
-      "theme_notes": "50pack 深掘り向けに VIX>28 / SPY RSI14<40 / exit SMA20 / exit RSI60 を揃え、VIX peakout を確認に使う基準系。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>28 / SPY RSI14<40 / exit SMA20 / exit RSI60 \u3092\u63c3\u3048\u3001VIX peakout \u3092\u78ba\u8a8d\u306b\u4f7f\u3046\u57fa\u6e96\u7cfb\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>28 と exit SMA20 / RSI60 の組み合わせで比較する。",
+      "mag7_notes": "\u6700\u5c0f overlay \u306e\u307e\u307e gate \u3068 exit \u306e\u5dee\u3060\u3051\u3092\u898b\u308b\u3002 VIX>28 \u3068 exit SMA20 / RSI60 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 235,
@@ -2187,12 +2187,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-vix20-rsi35-sma25-exitrsi60",
-      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<35 / exit SMA25 / exit RSI60 を揃え、VIX peakout を確認に使う基準系。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>20 / SPY RSI14<35 / exit SMA25 / exit RSI60 \u3092\u63c3\u3048\u3001VIX peakout \u3092\u78ba\u8a8d\u306b\u4f7f\u3046\u57fa\u6e96\u7cfb\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>20 と exit SMA25 / RSI60 の組み合わせで比較する。",
+      "mag7_notes": "\u6700\u5c0f overlay \u306e\u307e\u307e gate \u3068 exit \u306e\u5dee\u3060\u3051\u3092\u898b\u308b\u3002 VIX>20 \u3068 exit SMA25 / RSI60 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 236,
@@ -2243,12 +2243,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-rsi2only-vix20-rsi40-sma25-exitrsi65",
-      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA25 / exit RSI65 を揃え、SPY RSI2 の 10 上抜け単独で回復 entry する。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>20 / SPY RSI14<40 / exit SMA25 / exit RSI65 \u3092\u63c3\u3048\u3001SPY RSI2 \u306e 10 \u4e0a\u629c\u3051\u5358\u72ec\u3067\u56de\u5fa9 entry \u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "panic reversal 系の confirm を単独接続して比較する。 VIX>20 と exit SMA25 / RSI65 の組み合わせで比較する。",
+      "mag7_notes": "panic reversal \u7cfb\u306e confirm \u3092\u5358\u72ec\u63a5\u7d9a\u3057\u3066\u6bd4\u8f03\u3059\u308b\u3002 VIX>20 \u3068 exit SMA25 / RSI65 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 237,
@@ -2300,12 +2300,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-rsi2only-vix24-rsi40-sma25-exitrsi65",
-      "theme_notes": "50pack 深掘り向けに VIX>24 / SPY RSI14<40 / exit SMA25 / exit RSI65 を揃え、SPY RSI2 の 10 上抜け単独で回復 entry する。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>24 / SPY RSI14<40 / exit SMA25 / exit RSI65 \u3092\u63c3\u3048\u3001SPY RSI2 \u306e 10 \u4e0a\u629c\u3051\u5358\u72ec\u3067\u56de\u5fa9 entry \u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "panic reversal 系の confirm を単独接続して比較する。 VIX>24 と exit SMA25 / RSI65 の組み合わせで比較する。",
+      "mag7_notes": "panic reversal \u7cfb\u306e confirm \u3092\u5358\u72ec\u63a5\u7d9a\u3057\u3066\u6bd4\u8f03\u3059\u308b\u3002 VIX>24 \u3068 exit SMA25 / RSI65 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 238,
@@ -2357,12 +2357,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-rsi2only-vix28-rsi40-sma25-exitrsi65",
-      "theme_notes": "50pack 深掘り向けに VIX>28 / SPY RSI14<40 / exit SMA25 / exit RSI65 を揃え、SPY RSI2 の 10 上抜け単独で回復 entry する。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>28 / SPY RSI14<40 / exit SMA25 / exit RSI65 \u3092\u63c3\u3048\u3001SPY RSI2 \u306e 10 \u4e0a\u629c\u3051\u5358\u72ec\u3067\u56de\u5fa9 entry \u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "panic reversal 系の confirm を単独接続して比較する。 VIX>28 と exit SMA25 / RSI65 の組み合わせで比較する。",
+      "mag7_notes": "panic reversal \u7cfb\u306e confirm \u3092\u5358\u72ec\u63a5\u7d9a\u3057\u3066\u6bd4\u8f03\u3059\u308b\u3002 VIX>28 \u3068 exit SMA25 / RSI65 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 239,
@@ -2414,12 +2414,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-or-rsi2-vix20-rsi40-sma25-exitrsi65",
-      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA25 / exit RSI65 を揃え、VIX peakout または SPY RSI2 10 上抜けのどちらかで回復 entry する。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>20 / SPY RSI14<40 / exit SMA25 / exit RSI65 \u3092\u63c3\u3048\u3001VIX peakout \u307e\u305f\u306f SPY RSI2 10 \u4e0a\u629c\u3051\u306e\u3069\u3061\u3089\u304b\u3067\u56de\u5fa9 entry \u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "confirm を緩めた時に反発取りこぼしが減るかを見る。 VIX>20 と exit SMA25 / RSI65 の組み合わせで比較する。",
+      "mag7_notes": "confirm \u3092\u7de9\u3081\u305f\u6642\u306b\u53cd\u767a\u53d6\u308a\u3053\u307c\u3057\u304c\u6e1b\u308b\u304b\u3092\u898b\u308b\u3002 VIX>20 \u3068 exit SMA25 / RSI65 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 240,
@@ -2471,12 +2471,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-or-rsi2-vix24-rsi40-sma25-exitrsi65",
-      "theme_notes": "50pack 深掘り向けに VIX>24 / SPY RSI14<40 / exit SMA25 / exit RSI65 を揃え、VIX peakout または SPY RSI2 10 上抜けのどちらかで回復 entry する。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>24 / SPY RSI14<40 / exit SMA25 / exit RSI65 \u3092\u63c3\u3048\u3001VIX peakout \u307e\u305f\u306f SPY RSI2 10 \u4e0a\u629c\u3051\u306e\u3069\u3061\u3089\u304b\u3067\u56de\u5fa9 entry \u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "confirm を緩めた時に反発取りこぼしが減るかを見る。 VIX>24 と exit SMA25 / RSI65 の組み合わせで比較する。",
+      "mag7_notes": "confirm \u3092\u7de9\u3081\u305f\u6642\u306b\u53cd\u767a\u53d6\u308a\u3053\u307c\u3057\u304c\u6e1b\u308b\u304b\u3092\u898b\u308b\u3002 VIX>24 \u3068 exit SMA25 / RSI65 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 241,
@@ -2528,12 +2528,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-or-rsi2-vix28-rsi40-sma25-exitrsi65",
-      "theme_notes": "50pack 深掘り向けに VIX>28 / SPY RSI14<40 / exit SMA25 / exit RSI65 を揃え、VIX peakout または SPY RSI2 10 上抜けのどちらかで回復 entry する。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>28 / SPY RSI14<40 / exit SMA25 / exit RSI65 \u3092\u63c3\u3048\u3001VIX peakout \u307e\u305f\u306f SPY RSI2 10 \u4e0a\u629c\u3051\u306e\u3069\u3061\u3089\u304b\u3067\u56de\u5fa9 entry \u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "confirm を緩めた時に反発取りこぼしが減るかを見る。 VIX>28 と exit SMA25 / RSI65 の組み合わせで比較する。",
+      "mag7_notes": "confirm \u3092\u7de9\u3081\u305f\u6642\u306b\u53cd\u767a\u53d6\u308a\u3053\u307c\u3057\u304c\u6e1b\u308b\u304b\u3092\u898b\u308b\u3002 VIX>28 \u3068 exit SMA25 / RSI65 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 242,
@@ -2585,12 +2585,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-and-rsi2-vix20-rsi40-sma25-exitrsi65",
-      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA25 / exit RSI65 を揃え、VIX peakout と SPY RSI2 10 上抜けの両方を要求する。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>20 / SPY RSI14<40 / exit SMA25 / exit RSI65 \u3092\u63c3\u3048\u3001VIX peakout \u3068 SPY RSI2 10 \u4e0a\u629c\u3051\u306e\u4e21\u65b9\u3092\u8981\u6c42\u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "confirm を厳しくした時の DD 改善余地を見る。 VIX>20 と exit SMA25 / RSI65 の組み合わせで比較する。",
+      "mag7_notes": "confirm \u3092\u53b3\u3057\u304f\u3057\u305f\u6642\u306e DD \u6539\u5584\u4f59\u5730\u3092\u898b\u308b\u3002 VIX>20 \u3068 exit SMA25 / RSI65 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 243,
@@ -2642,12 +2642,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-and-rsi2-vix24-rsi40-sma25-exitrsi65",
-      "theme_notes": "50pack 深掘り向けに VIX>24 / SPY RSI14<40 / exit SMA25 / exit RSI65 を揃え、VIX peakout と SPY RSI2 10 上抜けの両方を要求する。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>24 / SPY RSI14<40 / exit SMA25 / exit RSI65 \u3092\u63c3\u3048\u3001VIX peakout \u3068 SPY RSI2 10 \u4e0a\u629c\u3051\u306e\u4e21\u65b9\u3092\u8981\u6c42\u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "confirm を厳しくした時の DD 改善余地を見る。 VIX>24 と exit SMA25 / RSI65 の組み合わせで比較する。",
+      "mag7_notes": "confirm \u3092\u53b3\u3057\u304f\u3057\u305f\u6642\u306e DD \u6539\u5584\u4f59\u5730\u3092\u898b\u308b\u3002 VIX>24 \u3068 exit SMA25 / RSI65 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 244,
@@ -2699,12 +2699,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-and-rsi2-vix28-rsi40-sma25-exitrsi65",
-      "theme_notes": "50pack 深掘り向けに VIX>28 / SPY RSI14<40 / exit SMA25 / exit RSI65 を揃え、VIX peakout と SPY RSI2 10 上抜けの両方を要求する。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>28 / SPY RSI14<40 / exit SMA25 / exit RSI65 \u3092\u63c3\u3048\u3001VIX peakout \u3068 SPY RSI2 10 \u4e0a\u629c\u3051\u306e\u4e21\u65b9\u3092\u8981\u6c42\u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "confirm を厳しくした時の DD 改善余地を見る。 VIX>28 と exit SMA25 / RSI65 の組み合わせで比較する。",
+      "mag7_notes": "confirm \u3092\u53b3\u3057\u304f\u3057\u305f\u6642\u306e DD \u6539\u5584\u4f59\u5730\u3092\u898b\u308b\u3002 VIX>28 \u3068 exit SMA25 / RSI65 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 245,
@@ -2756,12 +2756,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-noconfirm-vix20-rsi40-sma25-exitrsi65",
-      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA25 / exit RSI65 を揃え、weakMarket 条件だけで回復 entry し、confirm を置かない。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>20 / SPY RSI14<40 / exit SMA25 / exit RSI65 \u3092\u63c3\u3048\u3001weakMarket \u6761\u4ef6\u3060\u3051\u3067\u56de\u5fa9 entry \u3057\u3001confirm \u3092\u7f6e\u304b\u306a\u3044\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "confirm を外した時の entry 数増加と DD 悪化を比較する。 VIX>20 と exit SMA25 / RSI65 の組み合わせで比較する。",
+      "mag7_notes": "confirm \u3092\u5916\u3057\u305f\u6642\u306e entry \u6570\u5897\u52a0\u3068 DD \u60aa\u5316\u3092\u6bd4\u8f03\u3059\u308b\u3002 VIX>20 \u3068 exit SMA25 / RSI65 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 246,
@@ -2813,12 +2813,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-noconfirm-vix24-rsi40-sma25-exitrsi65",
-      "theme_notes": "50pack 深掘り向けに VIX>24 / SPY RSI14<40 / exit SMA25 / exit RSI65 を揃え、weakMarket 条件だけで回復 entry し、confirm を置かない。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>24 / SPY RSI14<40 / exit SMA25 / exit RSI65 \u3092\u63c3\u3048\u3001weakMarket \u6761\u4ef6\u3060\u3051\u3067\u56de\u5fa9 entry \u3057\u3001confirm \u3092\u7f6e\u304b\u306a\u3044\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "confirm を外した時の entry 数増加と DD 悪化を比較する。 VIX>24 と exit SMA25 / RSI65 の組み合わせで比較する。",
+      "mag7_notes": "confirm \u3092\u5916\u3057\u305f\u6642\u306e entry \u6570\u5897\u52a0\u3068 DD \u60aa\u5316\u3092\u6bd4\u8f03\u3059\u308b\u3002 VIX>24 \u3068 exit SMA25 / RSI65 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 247,
@@ -2870,12 +2870,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-noconfirm-vix28-rsi40-sma25-exitrsi65",
-      "theme_notes": "50pack 深掘り向けに VIX>28 / SPY RSI14<40 / exit SMA25 / exit RSI65 を揃え、weakMarket 条件だけで回復 entry し、confirm を置かない。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>28 / SPY RSI14<40 / exit SMA25 / exit RSI65 \u3092\u63c3\u3048\u3001weakMarket \u6761\u4ef6\u3060\u3051\u3067\u56de\u5fa9 entry \u3057\u3001confirm \u3092\u7f6e\u304b\u306a\u3044\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "confirm を外した時の entry 数増加と DD 悪化を比較する。 VIX>28 と exit SMA25 / RSI65 の組み合わせで比較する。",
+      "mag7_notes": "confirm \u3092\u5916\u3057\u305f\u6642\u306e entry \u6570\u5897\u52a0\u3068 DD \u60aa\u5316\u3092\u6bd4\u8f03\u3059\u308b\u3002 VIX>28 \u3068 exit SMA25 / RSI65 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 248,
@@ -2927,12 +2927,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-vix20-rsi40-sma15-exitrsi60",
-      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA15 / exit RSI60 を揃え、VIX peakout を確認に使う基準系。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>20 / SPY RSI14<40 / exit SMA15 / exit RSI60 \u3092\u63c3\u3048\u3001VIX peakout \u3092\u78ba\u8a8d\u306b\u4f7f\u3046\u57fa\u6e96\u7cfb\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>20 と exit SMA15 / RSI60 の組み合わせで比較する。",
+      "mag7_notes": "\u6700\u5c0f overlay \u306e\u307e\u307e gate \u3068 exit \u306e\u5dee\u3060\u3051\u3092\u898b\u308b\u3002 VIX>20 \u3068 exit SMA15 / RSI60 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 249,
@@ -2983,12 +2983,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-vix20-rsi40-sma20-exitrsi62",
-      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA20 / exit RSI62 を揃え、VIX peakout を確認に使う基準系。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>20 / SPY RSI14<40 / exit SMA20 / exit RSI62 \u3092\u63c3\u3048\u3001VIX peakout \u3092\u78ba\u8a8d\u306b\u4f7f\u3046\u57fa\u6e96\u7cfb\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>20 と exit SMA20 / RSI62 の組み合わせで比較する。",
+      "mag7_notes": "\u6700\u5c0f overlay \u306e\u307e\u307e gate \u3068 exit \u306e\u5dee\u3060\u3051\u3092\u898b\u308b\u3002 VIX>20 \u3068 exit SMA20 / RSI62 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 250,
@@ -3039,12 +3039,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-vix20-rsi40-sma25-exitrsi62",
-      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA25 / exit RSI62 を揃え、VIX peakout を確認に使う基準系。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>20 / SPY RSI14<40 / exit SMA25 / exit RSI62 \u3092\u63c3\u3048\u3001VIX peakout \u3092\u78ba\u8a8d\u306b\u4f7f\u3046\u57fa\u6e96\u7cfb\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>20 と exit SMA25 / RSI62 の組み合わせで比較する。",
+      "mag7_notes": "\u6700\u5c0f overlay \u306e\u307e\u307e gate \u3068 exit \u306e\u5dee\u3060\u3051\u3092\u898b\u308b\u3002 VIX>20 \u3068 exit SMA25 / RSI62 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 251,
@@ -3095,12 +3095,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-vix20-rsi40-sma15-exitrsi62",
-      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA15 / exit RSI62 を揃え、VIX peakout を確認に使う基準系。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>20 / SPY RSI14<40 / exit SMA15 / exit RSI62 \u3092\u63c3\u3048\u3001VIX peakout \u3092\u78ba\u8a8d\u306b\u4f7f\u3046\u57fa\u6e96\u7cfb\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>20 と exit SMA15 / RSI62 の組み合わせで比較する。",
+      "mag7_notes": "\u6700\u5c0f overlay \u306e\u307e\u307e gate \u3068 exit \u306e\u5dee\u3060\u3051\u3092\u898b\u308b\u3002 VIX>20 \u3068 exit SMA15 / RSI62 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 252,
@@ -3151,12 +3151,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-vix24-rsi40-sma15-exitrsi60",
-      "theme_notes": "50pack 深掘り向けに VIX>24 / SPY RSI14<40 / exit SMA15 / exit RSI60 を揃え、VIX peakout を確認に使う基準系。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>24 / SPY RSI14<40 / exit SMA15 / exit RSI60 \u3092\u63c3\u3048\u3001VIX peakout \u3092\u78ba\u8a8d\u306b\u4f7f\u3046\u57fa\u6e96\u7cfb\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>24 と exit SMA15 / RSI60 の組み合わせで比較する。",
+      "mag7_notes": "\u6700\u5c0f overlay \u306e\u307e\u307e gate \u3068 exit \u306e\u5dee\u3060\u3051\u3092\u898b\u308b\u3002 VIX>24 \u3068 exit SMA15 / RSI60 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 253,
@@ -3207,12 +3207,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-vix24-rsi40-sma15-exitrsi62",
-      "theme_notes": "50pack 深掘り向けに VIX>24 / SPY RSI14<40 / exit SMA15 / exit RSI62 を揃え、VIX peakout を確認に使う基準系。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>24 / SPY RSI14<40 / exit SMA15 / exit RSI62 \u3092\u63c3\u3048\u3001VIX peakout \u3092\u78ba\u8a8d\u306b\u4f7f\u3046\u57fa\u6e96\u7cfb\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>24 と exit SMA15 / RSI62 の組み合わせで比較する。",
+      "mag7_notes": "\u6700\u5c0f overlay \u306e\u307e\u307e gate \u3068 exit \u306e\u5dee\u3060\u3051\u3092\u898b\u308b\u3002 VIX>24 \u3068 exit SMA15 / RSI62 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 234,
@@ -3263,12 +3263,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-vix24-rsi40-sma20-exitrsi62",
-      "theme_notes": "50pack 深掘り向けに VIX>24 / SPY RSI14<40 / exit SMA20 / exit RSI62 を揃え、VIX peakout を確認に使う基準系。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>24 / SPY RSI14<40 / exit SMA20 / exit RSI62 \u3092\u63c3\u3048\u3001VIX peakout \u3092\u78ba\u8a8d\u306b\u4f7f\u3046\u57fa\u6e96\u7cfb\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>24 と exit SMA20 / RSI62 の組み合わせで比較する。",
+      "mag7_notes": "\u6700\u5c0f overlay \u306e\u307e\u307e gate \u3068 exit \u306e\u5dee\u3060\u3051\u3092\u898b\u308b\u3002 VIX>24 \u3068 exit SMA20 / RSI62 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 255,
@@ -3319,12 +3319,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-vix24-rsi40-sma25-exitrsi62",
-      "theme_notes": "50pack 深掘り向けに VIX>24 / SPY RSI14<40 / exit SMA25 / exit RSI62 を揃え、VIX peakout を確認に使う基準系。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>24 / SPY RSI14<40 / exit SMA25 / exit RSI62 \u3092\u63c3\u3048\u3001VIX peakout \u3092\u78ba\u8a8d\u306b\u4f7f\u3046\u57fa\u6e96\u7cfb\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>24 と exit SMA25 / RSI62 の組み合わせで比較する。",
+      "mag7_notes": "\u6700\u5c0f overlay \u306e\u307e\u307e gate \u3068 exit \u306e\u5dee\u3060\u3051\u3092\u898b\u308b\u3002 VIX>24 \u3068 exit SMA25 / RSI62 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 256,
@@ -3375,12 +3375,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-vix28-rsi40-sma15-exitrsi60",
-      "theme_notes": "50pack 深掘り向けに VIX>28 / SPY RSI14<40 / exit SMA15 / exit RSI60 を揃え、VIX peakout を確認に使う基準系。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>28 / SPY RSI14<40 / exit SMA15 / exit RSI60 \u3092\u63c3\u3048\u3001VIX peakout \u3092\u78ba\u8a8d\u306b\u4f7f\u3046\u57fa\u6e96\u7cfb\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>28 と exit SMA15 / RSI60 の組み合わせで比較する。",
+      "mag7_notes": "\u6700\u5c0f overlay \u306e\u307e\u307e gate \u3068 exit \u306e\u5dee\u3060\u3051\u3092\u898b\u308b\u3002 VIX>28 \u3068 exit SMA15 / RSI60 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 257,
@@ -3431,12 +3431,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-vix28-rsi40-sma15-exitrsi62",
-      "theme_notes": "50pack 深掘り向けに VIX>28 / SPY RSI14<40 / exit SMA15 / exit RSI62 を揃え、VIX peakout を確認に使う基準系。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>28 / SPY RSI14<40 / exit SMA15 / exit RSI62 \u3092\u63c3\u3048\u3001VIX peakout \u3092\u78ba\u8a8d\u306b\u4f7f\u3046\u57fa\u6e96\u7cfb\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>28 と exit SMA15 / RSI62 の組み合わせで比較する。",
+      "mag7_notes": "\u6700\u5c0f overlay \u306e\u307e\u307e gate \u3068 exit \u306e\u5dee\u3060\u3051\u3092\u898b\u308b\u3002 VIX>28 \u3068 exit SMA15 / RSI62 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 235,
@@ -3487,12 +3487,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-vix28-rsi40-sma20-exitrsi62",
-      "theme_notes": "50pack 深掘り向けに VIX>28 / SPY RSI14<40 / exit SMA20 / exit RSI62 を揃え、VIX peakout を確認に使う基準系。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>28 / SPY RSI14<40 / exit SMA20 / exit RSI62 \u3092\u63c3\u3048\u3001VIX peakout \u3092\u78ba\u8a8d\u306b\u4f7f\u3046\u57fa\u6e96\u7cfb\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>28 と exit SMA20 / RSI62 の組み合わせで比較する。",
+      "mag7_notes": "\u6700\u5c0f overlay \u306e\u307e\u307e gate \u3068 exit \u306e\u5dee\u3060\u3051\u3092\u898b\u308b\u3002 VIX>28 \u3068 exit SMA20 / RSI62 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 259,
@@ -3543,12 +3543,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-vix28-rsi40-sma25-exitrsi62",
-      "theme_notes": "50pack 深掘り向けに VIX>28 / SPY RSI14<40 / exit SMA25 / exit RSI62 を揃え、VIX peakout を確認に使う基準系。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>28 / SPY RSI14<40 / exit SMA25 / exit RSI62 \u3092\u63c3\u3048\u3001VIX peakout \u3092\u78ba\u8a8d\u306b\u4f7f\u3046\u57fa\u6e96\u7cfb\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "最小 overlay のまま gate と exit の差だけを見る。 VIX>28 と exit SMA25 / RSI62 の組み合わせで比較する。",
+      "mag7_notes": "\u6700\u5c0f overlay \u306e\u307e\u307e gate \u3068 exit \u306e\u5dee\u3060\u3051\u3092\u898b\u308b\u3002 VIX>28 \u3068 exit SMA25 / RSI62 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 260,
@@ -3599,12 +3599,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-rsi2only-vix20-rsi40-sma20-exitrsi65",
-      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA20 / exit RSI65 を揃え、SPY RSI2 の 10 上抜け単独で回復 entry する。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>20 / SPY RSI14<40 / exit SMA20 / exit RSI65 \u3092\u63c3\u3048\u3001SPY RSI2 \u306e 10 \u4e0a\u629c\u3051\u5358\u72ec\u3067\u56de\u5fa9 entry \u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "panic reversal 系の confirm を単独接続して比較する。 VIX>20 と exit SMA20 / RSI65 の組み合わせで比較する。",
+      "mag7_notes": "panic reversal \u7cfb\u306e confirm \u3092\u5358\u72ec\u63a5\u7d9a\u3057\u3066\u6bd4\u8f03\u3059\u308b\u3002 VIX>20 \u3068 exit SMA20 / RSI65 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 261,
@@ -3656,12 +3656,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-and-rsi2-vix20-rsi40-sma20-exitrsi65",
-      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA20 / exit RSI65 を揃え、VIX peakout と SPY RSI2 10 上抜けの両方を要求する。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>20 / SPY RSI14<40 / exit SMA20 / exit RSI65 \u3092\u63c3\u3048\u3001VIX peakout \u3068 SPY RSI2 10 \u4e0a\u629c\u3051\u306e\u4e21\u65b9\u3092\u8981\u6c42\u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "confirm を厳しくした時の DD 改善余地を見る。 VIX>20 と exit SMA20 / RSI65 の組み合わせで比較する。",
+      "mag7_notes": "confirm \u3092\u53b3\u3057\u304f\u3057\u305f\u6642\u306e DD \u6539\u5584\u4f59\u5730\u3092\u898b\u308b\u3002 VIX>20 \u3068 exit SMA20 / RSI65 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 262,
@@ -3713,12 +3713,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-rsi2only-vix20-rsi40-sma25-exitrsi60",
-      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA25 / exit RSI60 を揃え、SPY RSI2 の 10 上抜け単独で回復 entry する。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>20 / SPY RSI14<40 / exit SMA25 / exit RSI60 \u3092\u63c3\u3048\u3001SPY RSI2 \u306e 10 \u4e0a\u629c\u3051\u5358\u72ec\u3067\u56de\u5fa9 entry \u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "panic reversal 系の confirm を単独接続して比較する。 VIX>20 と exit SMA25 / RSI60 の組み合わせで比較する。",
+      "mag7_notes": "panic reversal \u7cfb\u306e confirm \u3092\u5358\u72ec\u63a5\u7d9a\u3057\u3066\u6bd4\u8f03\u3059\u308b\u3002 VIX>20 \u3068 exit SMA25 / RSI60 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 263,
@@ -3770,12 +3770,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-and-rsi2-vix20-rsi40-sma25-exitrsi60",
-      "theme_notes": "50pack 深掘り向けに VIX>20 / SPY RSI14<40 / exit SMA25 / exit RSI60 を揃え、VIX peakout と SPY RSI2 10 上抜けの両方を要求する。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>20 / SPY RSI14<40 / exit SMA25 / exit RSI60 \u3092\u63c3\u3048\u3001VIX peakout \u3068 SPY RSI2 10 \u4e0a\u629c\u3051\u306e\u4e21\u65b9\u3092\u8981\u6c42\u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "confirm を厳しくした時の DD 改善余地を見る。 VIX>20 と exit SMA25 / RSI60 の組み合わせで比較する。",
+      "mag7_notes": "confirm \u3092\u53b3\u3057\u304f\u3057\u305f\u6642\u306e DD \u6539\u5584\u4f59\u5730\u3092\u898b\u308b\u3002 VIX>20 \u3068 exit SMA25 / RSI60 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 264,
@@ -3827,12 +3827,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-rsi2only-vix24-rsi40-sma25-exitrsi60",
-      "theme_notes": "50pack 深掘り向けに VIX>24 / SPY RSI14<40 / exit SMA25 / exit RSI60 を揃え、SPY RSI2 の 10 上抜け単独で回復 entry する。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>24 / SPY RSI14<40 / exit SMA25 / exit RSI60 \u3092\u63c3\u3048\u3001SPY RSI2 \u306e 10 \u4e0a\u629c\u3051\u5358\u72ec\u3067\u56de\u5fa9 entry \u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "panic reversal 系の confirm を単独接続して比較する。 VIX>24 と exit SMA25 / RSI60 の組み合わせで比較する。",
+      "mag7_notes": "panic reversal \u7cfb\u306e confirm \u3092\u5358\u72ec\u63a5\u7d9a\u3057\u3066\u6bd4\u8f03\u3059\u308b\u3002 VIX>24 \u3068 exit SMA25 / RSI60 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 265,
@@ -3884,12 +3884,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-and-rsi2-vix24-rsi40-sma25-exitrsi60",
-      "theme_notes": "50pack 深掘り向けに VIX>24 / SPY RSI14<40 / exit SMA25 / exit RSI60 を揃え、VIX peakout と SPY RSI2 10 上抜けの両方を要求する。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>24 / SPY RSI14<40 / exit SMA25 / exit RSI60 \u3092\u63c3\u3048\u3001VIX peakout \u3068 SPY RSI2 10 \u4e0a\u629c\u3051\u306e\u4e21\u65b9\u3092\u8981\u6c42\u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "confirm を厳しくした時の DD 改善余地を見る。 VIX>24 と exit SMA25 / RSI60 の組み合わせで比較する。",
+      "mag7_notes": "confirm \u3092\u53b3\u3057\u304f\u3057\u305f\u6642\u306e DD \u6539\u5584\u4f59\u5730\u3092\u898b\u308b\u3002 VIX>24 \u3068 exit SMA25 / RSI60 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 266,
@@ -3941,12 +3941,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-rsi2only-vix28-rsi40-sma25-exitrsi60",
-      "theme_notes": "50pack 深掘り向けに VIX>28 / SPY RSI14<40 / exit SMA25 / exit RSI60 を揃え、SPY RSI2 の 10 上抜け単独で回復 entry する。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>28 / SPY RSI14<40 / exit SMA25 / exit RSI60 \u3092\u63c3\u3048\u3001SPY RSI2 \u306e 10 \u4e0a\u629c\u3051\u5358\u72ec\u3067\u56de\u5fa9 entry \u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "panic reversal 系の confirm を単独接続して比較する。 VIX>28 と exit SMA25 / RSI60 の組み合わせで比較する。",
+      "mag7_notes": "panic reversal \u7cfb\u306e confirm \u3092\u5358\u72ec\u63a5\u7d9a\u3057\u3066\u6bd4\u8f03\u3059\u308b\u3002 VIX>28 \u3068 exit SMA25 / RSI60 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 267,
@@ -3998,12 +3998,12 @@
         "value": 8
       },
       "theme_axis": "strongest-recovery-vixpeak-and-rsi2-vix28-rsi40-sma25-exitrsi60",
-      "theme_notes": "50pack 深掘り向けに VIX>28 / SPY RSI14<40 / exit SMA25 / exit RSI60 を揃え、VIX peakout と SPY RSI2 10 上抜けの両方を要求する。",
+      "theme_notes": "50pack \u6df1\u6398\u308a\u5411\u3051\u306b VIX>28 / SPY RSI14<40 / exit SMA25 / exit RSI60 \u3092\u63c3\u3048\u3001VIX peakout \u3068 SPY RSI2 10 \u4e0a\u629c\u3051\u306e\u4e21\u65b9\u3092\u8981\u6c42\u3059\u308b\u3002",
       "recommended_timeframes": [
         "D"
       ],
       "recommended_regime": "mixed",
-      "mag7_notes": "confirm を厳しくした時の DD 改善余地を見る。 VIX>28 と exit SMA25 / RSI60 の組み合わせで比較する。",
+      "mag7_notes": "confirm \u3092\u53b3\u3057\u304f\u3057\u305f\u6642\u306e DD \u6539\u5584\u4f59\u5730\u3092\u898b\u308b\u3002 VIX>28 \u3068 exit SMA25 / RSI60 \u306e\u7d44\u307f\u5408\u308f\u305b\u3067\u6bd4\u8f03\u3059\u308b\u3002",
       "phase": "phase-15",
       "implementation_stage": "strongest-plus-recovery-reversal-us40-50pack",
       "priority": 268,
@@ -7970,6 +7970,1763 @@
         "ema-breakout-winrate-stopout-us40-50pack"
       ],
       "source_path": "../../docs/references/pine/ema-breakout-winrate-stopout-us40-50pack/emr-breakout-winrate-stopout-hybrid-ema200-volume15-grace5.pine"
+    },
+    {
+      "id": "emr-next-vol20x05",
+      "name": "EMR Next Volume 0.5x",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 0.5
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "volume",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "volume"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-vol20x05.pine"
+    },
+    {
+      "id": "emr-next-vol20x08",
+      "name": "EMR Next Volume 0.8x",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 0.8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "volume",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "volume"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-vol20x08.pine"
+    },
+    {
+      "id": "emr-next-vol20x11",
+      "name": "EMR Next Volume 1.1x",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 1.1
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "volume",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "volume"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-vol20x11.pine"
+    },
+    {
+      "id": "emr-next-vol20x12",
+      "name": "EMR Next Volume 1.2x",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 1.2
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "volume",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "volume"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-vol20x12.pine"
+    },
+    {
+      "id": "emr-next-vol20x13",
+      "name": "EMR Next Volume 1.3x",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 1.3
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "volume",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "volume"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-vol20x13.pine"
+    },
+    {
+      "id": "emr-next-vol20x14",
+      "name": "EMR Next Volume 1.4x",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 1.4
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "volume",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "volume"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-vol20x14.pine"
+    },
+    {
+      "id": "emr-next-vol20x20",
+      "name": "EMR Next Volume 2.0x",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 2.0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "volume",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "volume"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-vol20x20.pine"
+    },
+    {
+      "id": "emr-next-stop-until-plus1pct",
+      "name": "EMR Next Stop Until +1%",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "stopActivationProfitPct": 1
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "stop-until",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "stop-until"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-stop-until-plus1pct.pine"
+    },
+    {
+      "id": "emr-next-stop-until-plus3pct",
+      "name": "EMR Next Stop Until +3%",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "stopActivationProfitPct": 3
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "stop-until",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "stop-until"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-stop-until-plus3pct.pine"
+    },
+    {
+      "id": "emr-next-stop-until-plus4pct",
+      "name": "EMR Next Stop Until +4%",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "stopActivationProfitPct": 4
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "stop-until",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "stop-until"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-stop-until-plus4pct.pine"
+    },
+    {
+      "id": "emr-next-stop-until-bkhigh-vol10",
+      "name": "EMR Next Stop Until Breakout High + Vol 1.0x",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "stopActivationUntilBreakoutHigh": true,
+        "breakoutVolumeRatio": 1.0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "stop-until",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "stop-until"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-stop-until-bkhigh-vol10.pine"
+    },
+    {
+      "id": "emr-next-stop-until-plus2-vol10",
+      "name": "EMR Next Stop Until +2% + Vol 1.0x",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "stopActivationProfitPct": 2,
+        "breakoutVolumeRatio": 1.0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "stop-until",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "stop-until"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-stop-until-plus2-vol10.pine"
+    },
+    {
+      "id": "emr-next-stop-until-plus2-rsi60",
+      "name": "EMR Next Stop Until +2% + RSI 60",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "stopActivationProfitPct": 2,
+        "strengthRsiMin": 60
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "stop-until",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "stop-until"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-stop-until-plus2-rsi60.pine"
+    },
+    {
+      "id": "emr-next-stop-fixed10pct",
+      "name": "EMR Next Stop Fixed 10%",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "stopPct": 10
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "stop-expansion",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "stop-expansion"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-stop-fixed10pct.pine"
+    },
+    {
+      "id": "emr-next-stop-fixed12pct",
+      "name": "EMR Next Stop Fixed 12%",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "stopPct": 12
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "stop-expansion",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "stop-expansion"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-stop-fixed12pct.pine"
+    },
+    {
+      "id": "emr-next-stop-fixed15pct",
+      "name": "EMR Next Stop Fixed 15%",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "stopPct": 15
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "stop-expansion",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "stop-expansion"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-stop-fixed15pct.pine"
+    },
+    {
+      "id": "emr-next-stop-atr15x",
+      "name": "EMR Next Stop ATR 1.5x",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "initialStopMode": "atr_from_entry",
+        "initialStopAtrMult": 1.5
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "stop-expansion",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "stop-expansion"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-stop-atr15x.pine"
+    },
+    {
+      "id": "emr-next-stop-atr20x",
+      "name": "EMR Next Stop ATR 2.0x",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "initialStopMode": "atr_from_entry",
+        "initialStopAtrMult": 2.0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "stop-expansion",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "stop-expansion"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-stop-atr20x.pine"
+    },
+    {
+      "id": "emr-next-stop-atr25x",
+      "name": "EMR Next Stop ATR 2.5x",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "initialStopMode": "atr_from_entry",
+        "initialStopAtrMult": 2.5
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "stop-expansion",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "stop-expansion"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-stop-atr25x.pine"
+    },
+    {
+      "id": "emr-next-stop-swinglow-2bar",
+      "name": "EMR Next Stop Swing Low 2bar",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "initialStopMode": "swing_low_atr",
+        "initialStopLookback": 2
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "stop-expansion",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "stop-expansion"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-stop-swinglow-2bar.pine"
+    },
+    {
+      "id": "emr-next-stop-swinglow-5bar",
+      "name": "EMR Next Stop Swing Low 5bar",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "initialStopMode": "swing_low_atr"
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "stop-expansion",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "stop-expansion"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-stop-swinglow-5bar.pine"
+    },
+    {
+      "id": "emr-next-entry-hist3-closefa",
+      "name": "EMR Next Entry Hist3 Close FastEMA",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "strengthHist3": true,
+        "strengthCloseAboveFastEma": true
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "entry",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "entry"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-entry-hist3-closefa.pine"
+    },
+    {
+      "id": "emr-next-entry-ema50-200-vol10",
+      "name": "EMR Next Entry EMA50-200 Vol 1.0x",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "trendMode": "ema50_above_ema200",
+        "breakoutVolumeRatio": 1.0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "entry",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "entry"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-entry-ema50-200-vol10.pine"
+    },
+    {
+      "id": "emr-next-entry-rsi55-vol12",
+      "name": "EMR Next Entry RSI55 Vol 1.2x",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "strengthRsiMin": 55,
+        "breakoutVolumeRatio": 1.2
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "entry",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "entry"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-entry-rsi55-vol12.pine"
+    },
+    {
+      "id": "emr-next-entry-rsi55-prevhigh",
+      "name": "EMR Next Entry RSI55 Prev High",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "strengthRsiMin": 55,
+        "requirePrevHighBreak": true
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "entry",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "entry"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-entry-rsi55-prevhigh.pine"
+    },
+    {
+      "id": "emr-next-entry-rsi60-vol12",
+      "name": "EMR Next Entry RSI60 Vol 1.2x",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "strengthRsiMin": 60,
+        "breakoutVolumeRatio": 1.2
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "entry",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "entry"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-entry-rsi60-vol12.pine"
+    },
+    {
+      "id": "emr-next-entry-hist-rsi55-vol10",
+      "name": "EMR Next Entry Hist Positive RSI55 Vol 1.0x",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "strengthHistPositive": true,
+        "strengthRsiMin": 55,
+        "breakoutVolumeRatio": 1.0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "entry",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "entry"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-entry-hist-rsi55-vol10.pine"
+    },
+    {
+      "id": "emr-next-entry-delay1-prevhigh",
+      "name": "EMR Next Entry Delay 1 Prev High",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "delayBars": 1,
+        "requirePrevHighBreak": true,
+        "delayRequireSignalHigh": true
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "entry",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "entry"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-entry-delay1-prevhigh.pine"
+    },
+    {
+      "id": "emr-next-entry-closeefa-vol12",
+      "name": "EMR Next Entry Close FastEMA Vol 1.2x",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "strengthCloseAboveFastEma": true,
+        "breakoutVolumeRatio": 1.2
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "entry",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "entry"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-entry-closeefa-vol12.pine"
+    },
+    {
+      "id": "emr-next-entry-20dhigh-rsi55",
+      "name": "EMR Next Entry 20D High RSI55",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 20,
+        "strengthRsiMin": 55
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "entry",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "entry"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-entry-20dhigh-rsi55.pine"
+    },
+    {
+      "id": "emr-next-entry-hist3-rsi55-vol10",
+      "name": "EMR Next Entry Hist3 RSI55 Vol 1.0x",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "strengthHist3": true,
+        "strengthRsiMin": 55,
+        "breakoutVolumeRatio": 1.0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "entry",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "entry"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-entry-hist3-rsi55-vol10.pine"
+    },
+    {
+      "id": "emr-next-exit-trail-atr15-from3",
+      "name": "EMR Next Exit Trail ATR 1.5x From 3%",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "trailMode": "atr",
+        "trailAtrMult": 1.5,
+        "trailActivationPct": 3
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "exit",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "exit"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-exit-trail-atr15-from3.pine"
+    },
+    {
+      "id": "emr-next-exit-trail-atr25-from5",
+      "name": "EMR Next Exit Trail ATR 2.5x From 5%",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "trailMode": "atr",
+        "trailAtrMult": 2.5,
+        "trailActivationPct": 5
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "exit",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "exit"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-exit-trail-atr25-from5.pine"
+    },
+    {
+      "id": "emr-next-exit-tp5-trail-atr15",
+      "name": "EMR Next Exit TP5 Trail ATR 1.5x",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "tp1Pct": 5,
+        "tp1Qty": 50,
+        "trailMode": "atr",
+        "trailAtrMult": 1.5,
+        "trailActivationPct": 5
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "exit",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "exit"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-exit-tp5-trail-atr15.pine"
+    },
+    {
+      "id": "emr-next-exit-tp8-trail-atr25",
+      "name": "EMR Next Exit TP8 Trail ATR 2.5x",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "tp1Pct": 8,
+        "tp1Qty": 50,
+        "trailMode": "atr",
+        "trailAtrMult": 2.5,
+        "trailActivationPct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "exit",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "exit"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-exit-tp8-trail-atr25.pine"
+    },
+    {
+      "id": "emr-next-exit-tp10-trail-ema20",
+      "name": "EMR Next Exit TP10 Trail EMA20",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "tp1Pct": 10,
+        "tp1Qty": 50,
+        "trailMode": "ema20",
+        "trailActivationPct": 10
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "exit",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "exit"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-exit-tp10-trail-ema20.pine"
+    },
+    {
+      "id": "emr-next-exit-chandelier22-3atr",
+      "name": "EMR Next Exit Chandelier 22 3ATR",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "trailMode": "chandelier",
+        "trailChandelierMult": 3.0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "exit",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "exit"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-exit-chandelier22-3atr.pine"
+    },
+    {
+      "id": "emr-next-exit-ema20-after5",
+      "name": "EMR Next Exit EMA20 After 5%",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "profitProtectMode": "ema20",
+        "profitProtectTriggerPct": 5
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "exit",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "exit"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-exit-ema20-after5.pine"
+    },
+    {
+      "id": "emr-next-exit-rsi-loss-after8",
+      "name": "EMR Next Exit RSI Loss After 8%",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "profitProtectMode": "rsi_loss",
+        "profitProtectTriggerPct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "exit",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "exit"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-exit-rsi-loss-after8.pine"
+    },
+    {
+      "id": "emr-next-combo-vol12-bkhigh",
+      "name": "EMR Next Combo Vol 1.2x Breakout High",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 1.2,
+        "stopActivationUntilBreakoutHigh": true
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "combo",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "combo"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-combo-vol12-bkhigh.pine"
+    },
+    {
+      "id": "emr-next-combo-vol12-plus2",
+      "name": "EMR Next Combo Vol 1.2x Plus 2%",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 1.2,
+        "stopActivationProfitPct": 2
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "combo",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "combo"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-combo-vol12-plus2.pine"
+    },
+    {
+      "id": "emr-next-combo-20dhigh-vol10-trail25",
+      "name": "EMR Next Combo 20D High Vol Trail 2.5x",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 20,
+        "breakoutVolumeRatio": 1.0,
+        "trailMode": "atr",
+        "trailAtrMult": 2.5,
+        "trailActivationPct": 5
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "combo",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "combo"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-combo-20dhigh-vol10-trail25.pine"
+    },
+    {
+      "id": "emr-next-combo-ema50200-vol12-stop12",
+      "name": "EMR Next Combo EMA50-200 Vol 1.2x Stop 12%",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "trendMode": "ema50_above_ema200",
+        "breakoutVolumeRatio": 1.2,
+        "stopPct": 12
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "combo",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "combo"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-combo-ema50200-vol12-stop12.pine"
+    },
+    {
+      "id": "emr-next-combo-rsi60-vol10-bkhigh",
+      "name": "EMR Next Combo RSI60 Vol 1.0x Breakout High",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "strengthRsiMin": 60,
+        "breakoutVolumeRatio": 1.0,
+        "stopActivationUntilBreakoutHigh": true
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "combo",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "combo"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-combo-rsi60-vol10-bkhigh.pine"
+    },
+    {
+      "id": "emr-next-combo-rsi55-vol10-trail-ema20",
+      "name": "EMR Next Combo RSI55 Vol EMA20 Trail",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "strengthRsiMin": 55,
+        "breakoutVolumeRatio": 1.0,
+        "trailMode": "ema20",
+        "profitProtectMode": "ema20",
+        "profitProtectTriggerPct": 5
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "combo",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "combo"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-combo-rsi55-vol10-trail-ema20.pine"
+    },
+    {
+      "id": "emr-next-combo-ultimate",
+      "name": "EMR Next Combo Ultimate",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutCloseLen": 20,
+        "breakoutVolumeRatio": 1.2,
+        "strengthRsiMin": 60,
+        "stopActivationProfitPct": 2
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "combo",
+      "theme_notes": "emr-next-50pack-us40 strategy.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMA breakout next-gen 50-pack targeting ~35% win rate.",
+      "phase": "phase-17",
+      "implementation_stage": "emr-next-50pack-us40",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-next-50pack-us40",
+        "combo"
+      ],
+      "source_path": "../../docs/references/pine/emr-next-50pack-us40/emr-next-combo-ultimate.pine"
     }
   ]
 }
