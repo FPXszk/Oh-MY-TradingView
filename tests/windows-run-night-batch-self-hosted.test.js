@@ -16,6 +16,7 @@ const README_PATH = join(PROJECT_ROOT, 'README.md');
 const REPORTS_README_PATH = join(PROJECT_ROOT, 'docs', 'reports', 'README.md');
 const RUN8_REPORT_PATH = join(PROJECT_ROOT, 'docs', 'reports', 'night-batch-self-hosted-run8.md');
 const BUNDLE_FG_CONFIG_PATH = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
+const BUNDLE_FG_FAILED36_CONFIG_PATH = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-failed36-config.json');
 const BASELINE_WRITER_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'github-actions', 'write-night-batch-live-checkout-baseline.ps1');
 const WINDOWS_RUNNER_SCRIPT_PATHS = [BOOTSTRAP_PATH, RUNNER_WRAPPER_PATH, AUTOSTART_SCRIPT_PATH];
 
@@ -224,6 +225,26 @@ describe('foreground bundle config default campaign', () => {
   it('config path must not change', () => {
     assert.ok(existsSync(BUNDLE_FG_CONFIG_PATH),
       'config/night_batch/bundle-foreground-reuse-config.json must exist at the canonical path');
+  });
+});
+
+describe('foreground bundle failed36 config', () => {
+  const config = JSON.parse(readFileSync(BUNDLE_FG_FAILED36_CONFIG_PATH, 'utf8'));
+
+  it('targets the failed36 campaign for workflow dispatch', () => {
+    assert.equal(config.bundle.us_campaign, 'ema-breakout-winrate-stopout-failed-us40-pack',
+      'bundle-foreground-reuse-failed36-config.json must target the failed36 campaign');
+  });
+
+  it('keeps foreground smoke and full production phases', () => {
+    assert.equal(config.bundle.smoke_phases, 'smoke');
+    assert.equal(config.bundle.production_phases, 'full');
+    assert.equal(config.runtime.detach_after_smoke, false);
+  });
+
+  it('config path must exist at the dedicated failed36 location', () => {
+    assert.ok(existsSync(BUNDLE_FG_FAILED36_CONFIG_PATH),
+      'config/night_batch/bundle-foreground-reuse-failed36-config.json must exist');
   });
 });
 

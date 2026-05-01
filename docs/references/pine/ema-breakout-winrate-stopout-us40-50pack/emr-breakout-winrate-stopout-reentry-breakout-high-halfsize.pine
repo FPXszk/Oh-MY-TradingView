@@ -83,6 +83,11 @@ rsi    = ta.rsi(close, rsiLen)
 rsiEma = ta.ema(rsi, rsiEmaLen)
 trailAtr = ta.atr(trailAtrPeriod)
 volumeSma20 = ta.sma(volume, 20)
+initialSwingLow = ta.lowest(low, initialStopLookback)
+breakoutCloseLevel = ta.highest(high, math.max(breakoutCloseLen, 1))[1]
+breakoutIntradayLevel = ta.highest(high, math.max(breakoutIntradayLen, 1))[1]
+strengthBreakoutLevel = ta.highest(high, math.max(strengthBreakoutLen, 1))[1]
+reentryBreakoutLevel = ta.highest(high, math.max(reentryBreakoutLen, 1))[1]
 
 emaBullCross = ta.crossover(emaFast, emaSlow)
 emaBearCross = ta.crossunder(emaFast, emaSlow)
@@ -109,15 +114,15 @@ sellRaw = (emaBearCross  and macdAlignBear and rsiAlignBear) or
 
 breakoutCloseOk = true
 if breakoutCloseLen > 0
-    breakoutCloseOk := close > ta.highest(high, breakoutCloseLen)[1] + trailAtr * breakoutCloseAtrBufferMult
+    breakoutCloseOk := close > breakoutCloseLevel + trailAtr * breakoutCloseAtrBufferMult
 
 breakoutIntradayOk = true
 if breakoutIntradayLen > 0
-    breakoutIntradayOk := high > ta.highest(high, breakoutIntradayLen)[1]
+    breakoutIntradayOk := high > breakoutIntradayLevel
 
 strengthBreakoutOk = true
 if strengthBreakoutLen > 0
-    strengthBreakoutOk := close > ta.highest(high, strengthBreakoutLen)[1]
+    strengthBreakoutOk := close > strengthBreakoutLevel
 
 strengthRsiOk = strengthRsiMin <= 0 or (rsi >= strengthRsiMin and rsi > rsiEma)
 strengthHistPositiveOk = not strengthHistPositive or histLine > 0
@@ -163,7 +168,7 @@ if newSignal
             entrySignalHigh := high
             entryBarIndex := bar_index
             entryAtr := trailAtr
-            entrySwingLow := ta.lowest(low, initialStopLookback)
+            entrySwingLow := initialSwingLow
             highestSinceEntry := high
             reentryEligible := false
             reentryExpiryBar := na
@@ -184,7 +189,7 @@ if pendingWindowOk and pendingConfirmOk and inRange and barstate.isconfirmed and
     entrySignalHigh := pendingSignalHigh
     entryBarIndex := bar_index
     entryAtr := trailAtr
-    entrySwingLow := ta.lowest(low, initialStopLookback)
+    entrySwingLow := initialSwingLow
     highestSinceEntry := high
     reentryEligible := false
     reentryExpiryBar := na
@@ -303,7 +308,7 @@ if reentryEligible and not reentryWindowOk
 reentryTriggerOk = false
 if reentryWindowOk
     if reentryMode == "breakout_close"
-        reentryTriggerOk := reentryBreakoutLen > 0 and close > ta.highest(high, reentryBreakoutLen)[1]
+        reentryTriggerOk := reentryBreakoutLen > 0 and close > reentryBreakoutLevel
     else if reentryMode == "fast_ema"
         reentryTriggerOk := close > emaFast and emaAlignBull and macdAlignBull and rsiAlignBull
     else if reentryMode == "macd_positive"
@@ -323,7 +328,7 @@ if reentryFinalOk and inRange and barstate.isconfirmed and strategy.position_siz
     entrySignalHigh := high
     entryBarIndex := bar_index
     entryAtr := trailAtr
-    entrySwingLow := ta.lowest(low, initialStopLookback)
+    entrySwingLow := initialSwingLow
     highestSinceEntry := high
     reentryEligible := false
     reentryExpiryBar := na
