@@ -29,12 +29,12 @@
 
 ## 実装ステップ
 
-- [ ] `#79` artifact の `full/strategy-ranking.json` / `recovered-results.json` を入力として確定し、テンプレート記入に必要な数値を抽出する
-- [ ] `docs/research/TEMPLATE.md` の各セクションに対応する集計値を算出し、未記入サンプル文言が残らないことを確認する
-- [ ] `docs/research/night-batch-self-hosted-run79_20260501.md` を新規作成する
-- [ ] `docs/research/manifest.json` の keep-set を更新する
-- [ ] 文書レビューを行い、テンプレート必須セクション漏れと数値不整合がないことを確認する
-- [ ] 計画ファイルを `completed/` へ移動し、関連変更のみを Conventional Commits でコミットして `main` に push する
+- [x] `#79` artifact の `full/strategy-ranking.json` / `recovered-results.json` を入力として確定し、テンプレート記入に必要な数値を抽出する
+- [x] `docs/research/TEMPLATE.md` の各セクションに対応する集計値を算出し、未記入サンプル文言が残らないことを確認する
+- [x] `docs/research/night-batch-self-hosted-run79_20260501.md` を新規作成する
+- [x] `docs/research/manifest.json` の keep-set を更新する
+- [x] 文書レビューを行い、テンプレート必須セクション漏れと数値不整合がないことを確認する
+- [x] 計画ファイルを `completed/` へ移動し、関連変更のみを Conventional Commits でコミットして `main` に push する
 
 ## テスト戦略
 
