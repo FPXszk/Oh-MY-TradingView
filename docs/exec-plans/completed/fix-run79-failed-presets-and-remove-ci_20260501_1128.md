@@ -35,14 +35,14 @@
 
 ## 実装ステップ
 
-- [ ] run79 の blocked preset 一覧を codebase 上の preset 定義へ対応付け、修正対象 strategy id を確定する
-- [ ] `strategy-presets.json` と必要なら `strategy-catalog.json` の stop_loss 定義を validator 整合へ修正する
-- [ ] `entry-rsi60-price-above-ema200` の smoke failure 原因を確認し、smoke 通過を阻害する設定不整合があれば修正する
-- [ ] 失敗戦略だけを集めた `ema-breakout-winrate-stopout-failed-us40-pack` campaign を新規追加する
-- [ ] preset validation / campaign 構成のテストを追加または更新し、失敗戦略 pack の smoke 行列と stop_loss schema 回帰を固定する
-- [ ] `.github/workflows/ci.yml` を削除する
-- [ ] 関連テストを実行し、必要なら failed-pack campaign の smoke をローカル実行して通過を確認する
-- [ ] 計画ファイルを `completed/` へ移動し、関連変更のみを Conventional Commits でコミットして `main` に push する
+- [x] run79 の blocked preset 一覧を codebase 上の preset 定義へ対応付け、修正対象 strategy id を確定する
+- [x] `strategy-presets.json` と必要なら `strategy-catalog.json` の stop_loss 定義を validator 整合へ修正する
+- [x] `entry-rsi60-price-above-ema200` の smoke failure 原因を確認し、smoke 通過を阻害する設定不整合があれば修正する
+- [x] 失敗戦略だけを集めた `ema-breakout-winrate-stopout-failed-us40-pack` campaign を新規追加する
+- [x] preset validation / campaign 構成のテストを追加または更新し、失敗戦略 pack の smoke 行列と stop_loss schema 回帰を固定する
+- [x] `.github/workflows/ci.yml` を削除する
+- [x] 関連テストを実行し、必要なら failed-pack campaign の smoke をローカル実行して通過を確認する
+- [x] 計画ファイルを `completed/` へ移動し、関連変更のみを Conventional Commits でコミットして `main` に push する
 
 ## テスト戦略
 

@@ -217,6 +217,19 @@ describe('validatePreset — stop_loss', () => {
     assert.equal(result.valid, true);
   });
 
+  it('accepts custom stop loss for raw_source presets', () => {
+    const result = validatePreset({
+      id: 'raw-custom-stop',
+      name: 'Raw Custom Stop',
+      category: 'breakout',
+      builder: 'raw_source',
+      source: '// pine source',
+      parameters: {},
+      stop_loss: { type: 'custom', value: 8 },
+    });
+    assert.equal(result.valid, true);
+  });
+
   it('rejects stop_loss without type', () => {
     const result = validatePreset({
       id: 'no-stop-type',
@@ -267,6 +280,19 @@ describe('validatePreset — stop_loss', () => {
     });
     assert.equal(result.valid, false);
     assert.ok(result.errors.some((e) => /atr_multiplier/.test(e)));
+  });
+
+  it('rejects custom stop loss for non-raw_source presets', () => {
+    const result = validatePreset({
+      id: 'bad-custom-stop',
+      name: 'Bad Custom Stop',
+      category: 'breakout',
+      builder: 'donchian_breakout',
+      parameters: { entry_period: 55, exit_period: 20 },
+      stop_loss: { type: 'custom', value: 8 },
+    });
+    assert.equal(result.valid, false);
+    assert.ok(result.errors.some((e) => /only allowed for raw_source/.test(e)));
   });
 
   it('rejects unknown stop_loss type', () => {

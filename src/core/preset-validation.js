@@ -12,6 +12,7 @@ const VALID_EXIT_OVERLAY_TYPES = [
 const VALID_STOP_LOSS_TYPES = [
   'hard_percent',
   'atr_stop',
+  'custom',
 ];
 
 const VALID_REGIME_FILTER_TYPES = [
@@ -148,6 +149,10 @@ export function validatePreset(preset) {
       errors.push(
         `stop_loss.type must be one of: ${VALID_STOP_LOSS_TYPES.join(', ')}`,
       );
+    } else if (preset.stop_loss.type === 'custom') {
+      if (preset.builder !== 'raw_source') {
+        errors.push('stop_loss.type "custom" is only allowed for raw_source presets');
+      }
     } else if (preset.stop_loss.type === 'hard_percent') {
       if (typeof preset.stop_loss.value !== 'number') {
         errors.push('stop_loss.value is required for hard_percent and must be a number');
