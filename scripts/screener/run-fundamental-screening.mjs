@@ -41,8 +41,6 @@ function buildMarkdown(result) {
     hour: '2-digit', minute: '2-digit',
   }).format(now);
 
-  const enriched = result.enrichedWithYahoo ?? false;
-
   const lines = [
     '# ファンダメンタル × モメンタム スクリーニング 上位10件',
     '',
@@ -56,60 +54,38 @@ function buildMarkdown(result) {
     lines.push('> 本日は条件を満たす銘柄がありませんでした。');
     lines.push('');
   } else {
-    if (enriched) {
-      lines.push('| 順位 | シンボル | 現在値 | RSI | Perf.3M | ROE | FCFマージン | 粗利率 | P/FCF | 売上成長率(YoY) | ネット負債 |');
-      lines.push('|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|');
-      result.results.forEach((r, i) => {
-        const netDebtStr = r.netDebt !== null
-          ? (r.netDebt < 0 ? `**${formatBigNumber(r.netDebt)}**` : formatBigNumber(r.netDebt))
-          : 'N/A';
-        const revGrowth = r.revenueGrowth !== null && r.revenueGrowth !== undefined
-          ? `${(r.revenueGrowth * 100).toFixed(1)}%`
-          : 'N/A';
-        lines.push(
-          `| ${i + 1} | **${r.symbol}** (${r.exchange ?? '-'}) | $${fmt(r.close, 2)} | ${fmt(r.rsi14)} | ${fmt(r.perf3m)}% | ${fmt(r.roe)}% | ${fmt(r.fcfMargin)}% | ${fmt(r.grossMargin)}% | ${fmt(r.pFcf)} | ${revGrowth} | ${netDebtStr} |`,
-        );
-      });
-    } else {
-      lines.push('| 順位 | シンボル | 現在値 | RSI | Perf.3M | ROE | FCFマージン | 粗利率 | P/FCF | ネット負債 |');
-      lines.push('|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|');
-      result.results.forEach((r, i) => {
-        const netDebtStr = r.netDebt !== null
-          ? (r.netDebt < 0 ? `**${formatBigNumber(r.netDebt)}**` : formatBigNumber(r.netDebt))
-          : 'N/A';
-        lines.push(
-          `| ${i + 1} | **${r.symbol}** (${r.exchange ?? '-'}) | $${fmt(r.close, 2)} | ${fmt(r.rsi14)} | ${fmt(r.perf3m)}% | ${fmt(r.roe)}% | ${fmt(r.fcfMargin)}% | ${fmt(r.grossMargin)}% | ${fmt(r.pFcf)} | ${netDebtStr} |`,
-        );
-      });
-    }
+    lines.push('| 順位 | シンボル | 現在値 | RSI | Perf.3M | ROE | FCFマージン | 粗利率 | P/FCF | ネット負債 |');
+    lines.push('|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|');
+    result.results.forEach((r, i) => {
+      const netDebtStr = r.netDebt !== null
+        ? (r.netDebt < 0 ? `**${formatBigNumber(r.netDebt)}**` : formatBigNumber(r.netDebt))
+        : 'N/A';
+      lines.push(
+        `| ${i + 1} | **${r.symbol}** (${r.exchange ?? '-'}) | $${fmt(r.close, 2)} | ${fmt(r.rsi14)} | ${fmt(r.perf3m)}% | ${fmt(r.roe)}% | ${fmt(r.fcfMargin)}% | ${fmt(r.grossMargin)}% | ${fmt(r.pFcf)} | ${netDebtStr} |`,
+      );
+    });
     lines.push('');
   }
 
   lines.push('---');
   lines.push('');
-  const scoreFormula = enriched
-    ? '`rank(Perf.3M) + rank(ROE) + rank(FCFマージン) + rank(売上成長率)`（合計が小さいほど上位）'
-    : '`rank(Perf.3M) + rank(ROE) + rank(FCFマージン)`（合計が小さいほど上位）';
-  lines.push(`**スコア算出:** ${scoreFormula}`);
+  lines.push('**スコア算出:** `rank(Perf.3M) + rank(ROE) + rank(FCFマージン)`（合計が小さいほど上位）');
   lines.push('');
   lines.push('**フィルター条件:**');
   lines.push('- RSI(14) > 60, 時価総額 > $1B, 相対出来高 > 1.2x');
   lines.push('- EPS(TTM) > 0, ROE > 15%, 粗利率(TTM) > 40%, FCFマージン(TTM) > 10%');
   lines.push('- Close > SMA200, Close > SMA50, Close ≥ 52週高値 × 75%');
   lines.push('- Perf.3M > 10%, P/FCF < 50');
-  if (enriched) {
-    lines.push('- 売上成長率(YoY) > 20%（Yahoo Finance）');
-  }
 
   return lines.join('\n');
 }
 
 async function main() {
-  console.log('[screener] Starting fundamental screener (Phase 2: Yahoo Finance enrichment)...');
+  console.log('[screener] Starting fundamental screener...');
 
   let result;
   try {
-    result = await runFundamentalScreener({ limit: 10, enrichWithYahoo: true });
+    result = await runFundamentalScreener({ limit: 10 });
   } catch (err) {
     console.error('[screener] ERROR:', err.message);
     process.exit(1);
