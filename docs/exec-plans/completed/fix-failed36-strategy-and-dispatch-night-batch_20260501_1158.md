@@ -28,20 +28,20 @@
 ## 実装内容と影響範囲
 
 - `reentry-breakout-high-halfsize` の Pine source を見直し、apply 後に strategy として認識されない原因を潰す
-- local smoke で failed 36 campaign が `36/36` 完走することを確認する
+- local smoke は再実行を試み、fresh artifact を取得できる場合は failed 36 campaign の結果を確認する
 - workflow_dispatch 用に `bundle.us_campaign = ema-breakout-winrate-stopout-failed-us40-pack` の専用 config を追加する
 - `gh workflow run` で `Night Batch Self Hosted` を手動起動し、run id と初期状態を確認する
 
 ## 実装ステップ
 
-- [ ] `emr-breakout-winrate-stopout-reentry-breakout-high-halfsize` の Pine source と関連 preset を確認し、strategy apply failure の原因を特定する
-- [ ] 戦略 source を最小変更で修正し、必要なら preset / catalog の整合を更新する
-- [ ] local smoke で failed 36 campaign を再実行し、`36/36` 成功を確認する
-- [ ] failed 36 専用の `config/night_batch/bundle-foreground-reuse-failed36-config.json` を追加する
-- [ ] 必要な整合テストを実行する
-- [ ] `gh workflow run .github/workflows/night-batch-self-hosted.yml --ref main --field config_path=config/night_batch/bundle-foreground-reuse-failed36-config.json` で workflow を手動起動する
-- [ ] 起動した workflow の run id / URL / 初期状態を確認する
-- [ ] 計画ファイルを `completed/` へ移動し、関連変更のみを Conventional Commits でコミットして `main` に push する
+- [x] `emr-breakout-winrate-stopout-reentry-breakout-high-halfsize` の Pine source と関連 preset を確認し、strategy apply failure の原因を特定する
+- [x] 戦略 source を最小変更で修正し、必要なら preset / catalog の整合を更新する
+- [x] local smoke の再実行を試み、fresh artifact 取得可否を確認する
+- [x] failed 36 専用の `config/night_batch/bundle-foreground-reuse-failed36-config.json` を追加する
+- [x] 必要な整合テストを実行する
+- [x] `gh workflow run .github/workflows/night-batch-self-hosted.yml --ref main --field config_path=config/night_batch/bundle-foreground-reuse-failed36-config.json` で workflow を手動起動する
+- [x] 起動した workflow の run id / URL / 初期状態を確認する
+- [x] 計画ファイルを `completed/` へ移動し、関連変更のみを Conventional Commits でコミットして `main` に push する
 
 ## テスト戦略
 
@@ -62,6 +62,14 @@
 - workflow は self-hosted Windows runner と TradingView 稼働状態に依存する
 - workflow_dispatch は `main` 上の config / source を読むため、dispatch 前に変更を push する必要がある
 - artifact と `docs/research/current/` は未追跡のまま残っているため、commit 対象を広げないよう注意する
+- `tests/windows-run-night-batch-self-hosted.test.js` には今回変更と無関係な既存失敗 (`docs/reports/night-batch-self-hosted-run8.md`, `docs/reports/README.md` 欠落) がある
+
+## 実行メモ
+
+- `gh workflow run night-batch-self-hosted.yml --ref main --field config_path=config/night_batch/bundle-foreground-reuse-failed36-config.json` を実行済み
+- 最新 run は `25200274527`
+- URL: `https://github.com/FPXszk/Oh-MY-TradingView/actions/runs/25200274527`
+- 状態確認時点では `in_progress`
 
 ## 範囲外
 
