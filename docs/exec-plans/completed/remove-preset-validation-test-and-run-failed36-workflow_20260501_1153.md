@@ -27,11 +27,11 @@
 
 ## 実装ステップ
 
-- [ ] `tests/preset-validation.test.js` を削除する
-- [ ] 削除影響を受ける参照や test コマンドを確認し、今回必要な範囲だけ整合を取る
-- [ ] failed 36 campaign の実行コマンドを確定し、smoke workflow を起動する
-- [ ] checkpoint / final artifact を確認し、成功件数・失敗件数・失敗戦略を整理する
-- [ ] 計画ファイルを `completed/` へ移動し、関連変更のみを Conventional Commits でコミットして `main` に push する
+- [x] `tests/preset-validation.test.js` を削除する
+- [x] 削除影響を受ける参照や test コマンドを確認し、今回必要な範囲だけ整合を取る
+- [x] failed 36 campaign の実行コマンドを確定し、smoke workflow を起動する
+- [x] checkpoint / final artifact を確認し、成功件数・失敗件数・失敗戦略を整理する
+- [x] 計画ファイルを `completed/` へ移動し、関連変更のみを Conventional Commits でコミットして `main` に push する
 
 ## テスト戦略
 
