@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { jsonResult } from './_format.js';
 import { runMinervinScreener } from '../core/minervini-screener.js';
+import { runFundamentalScreener } from '../core/fundamental-screener.js';
 
 export function registerScreenerTools(server) {
   server.tool(
@@ -12,6 +13,21 @@ export function registerScreenerTools(server) {
     async ({ limit } = {}) => {
       try {
         return jsonResult(await runMinervinScreener({ limit }));
+      } catch (err) {
+        return jsonResult({ success: false, error: err.message }, true);
+      }
+    },
+  );
+
+  server.tool(
+    'market_fundamental_screener',
+    'Screen US stocks by fundamental quality + Minervini momentum: ROE>15%, FCF margin>10%, gross margin>40%, EPS profitable, RSI>60, price>SMA200/SMA50, Perf.3M>10%, P/FCF<50. Ranked by Perf.3M+ROE+FCF margin. No CDP needed.',
+    {
+      limit: z.number().int().min(1).max(200).optional().describe('Max results to return (default 10)'),
+    },
+    async ({ limit } = {}) => {
+      try {
+        return jsonResult(await runFundamentalScreener({ limit }));
       } catch (err) {
         return jsonResult({ success: false, error: err.message }, true);
       }
