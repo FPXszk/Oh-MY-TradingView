@@ -1,4 +1,4 @@
-name: Night Batch Self Hosted
+name: Night Batch Smoke
 
 on:
   workflow_dispatch:
@@ -9,8 +9,8 @@ on:
         default: config/night_batch/bundle-foreground-reuse-config.json
 
 jobs:
-  start-night-batch:
-    timeout-minutes: 540
+  smoke-test:
+    timeout-minutes: 60
     runs-on:
       - self-hosted
       - windows
@@ -25,11 +25,6 @@ jobs:
           for /f "usebackq delims=" %%I in (`wsl.exe wslpath -a "%CD%"`) do set "REPO_WSL=%%I"
           if not defined REPO_WSL exit /b 1
           wsl.exe bash -lc "cd \"%REPO_WSL%\" && npm ci --silent"
-
-      - name: Record live checkout baseline
-        shell: powershell -NoProfile -ExecutionPolicy Bypass -command ". '{0}'"
-        run: |
-          & scripts/windows/github-actions/write-night-batch-live-checkout-baseline.ps1 -RunId 'gha_${{ github.run_id }}_${{ github.run_attempt }}' -RunAttempt '${{ github.run_attempt }}' -BundleConfigPath '${{ inputs.config_path }}'
 
       - name: Ensure TradingView is running
         shell: powershell -NoProfile -ExecutionPolicy Bypass -command ". '{0}'"
@@ -105,83 +100,15 @@ jobs:
           if not defined REPO_WSL exit /b 1
           set "NIGHT_BATCH_CONFIG=${{ inputs.config_path }}"
           if "%NIGHT_BATCH_CONFIG%"=="" set "NIGHT_BATCH_CONFIG=config/night_batch/bundle-foreground-reuse-config.json"
-          echo [connection-gate] Waiting for TradingView connection before smoke-prod
+          echo [connection-gate] Waiting for TradingView connection before smoke
           wsl.exe bash -lc "cd \"%REPO_WSL%\" && node scripts/backtest/wait-for-tradingview-readiness.mjs --config \"%NIGHT_BATCH_CONFIG%\" --timeout-sec 180 --interval-sec 5"
 
-      - name: Run foreground production
+      - name: Run smoke test only
         shell: cmd
         run: |
           set "NIGHT_BATCH_CONFIG=${{ inputs.config_path }}"
-          set "NIGHT_BATCH_RUN_ID=gha_${{ github.run_id }}_${{ github.run_attempt }}"
-          set "NIGHT_BATCH_SKIP_SMOKE=1"
-          if defined NIGHT_BATCH_LIVE_CHECKOUT_BASELINE_PATH (
-            echo [diag] live_checkout_baseline=%NIGHT_BATCH_LIVE_CHECKOUT_BASELINE_PATH%
-          )
-          if "%NIGHT_BATCH_CONFIG%"=="" (
-            if "${{ github.event_name }}"=="workflow_dispatch" (
-              echo [diag] ERROR: workflow_dispatch requires a non-empty config_path
-              exit /b 1
-            )
-            set "NIGHT_BATCH_CONFIG=config/night_batch/bundle-foreground-reuse-config.json"
-          )
+          if "%NIGHT_BATCH_CONFIG%"=="" set "NIGHT_BATCH_CONFIG=config/night_batch/bundle-foreground-reuse-config.json"
           for /f "usebackq delims=" %%I in (`wsl.exe wslpath -a "%CD%"`) do set "REPO_WSL=%%I"
           if not defined REPO_WSL exit /b 1
           echo [diag] config_path=%NIGHT_BATCH_CONFIG%
-          echo [diag] night_batch_run_id=%NIGHT_BATCH_RUN_ID%
-          echo [diag] CD=%CD%
-          if not exist "%NIGHT_BATCH_CONFIG%" (
-            echo [diag] WARNING: config file not found at %NIGHT_BATCH_CONFIG%
-          )
-          wsl.exe bash -lc "cd \"%REPO_WSL%\" && python3 -c \"import json, sys; data = json.load(open(sys.argv[1], encoding='utf-8')); detach = data.get('runtime', {}).get('detach_after_smoke'); sys.exit(0 if detach is not True else 9)\" \"%NIGHT_BATCH_CONFIG%\""
-          set "CONFIG_CHECK_EXIT=%ERRORLEVEL%"
-          if "%CONFIG_CHECK_EXIT%"=="9" (
-            echo [diag] ERROR: workflow requires runtime.detach_after_smoke=false in %NIGHT_BATCH_CONFIG%
-            exit /b 1
-          )
-          if not "%CONFIG_CHECK_EXIT%"=="0" (
-            echo [diag] ERROR: failed to validate night batch config %NIGHT_BATCH_CONFIG%
-            exit /b %CONFIG_CHECK_EXIT%
-          )
-          scripts\windows\run-night-batch-self-hosted.cmd "%NIGHT_BATCH_CONFIG%"
-          set "BATCH_EXIT=%ERRORLEVEL%"
-          echo [diag] wrapper exit code=%BATCH_EXIT%
-          exit /b %BATCH_EXIT%
-
-      - name: Locate night batch outputs
-        if: always()
-        id: night_batch_outputs
-        shell: powershell -NoProfile -ExecutionPolicy Bypass -command ". '{0}'"
-        run: |
-          & scripts/windows/github-actions/find-night-batch-outputs.ps1 -ExpectedRunId 'gha_${{ github.run_id }}_${{ github.run_attempt }}'
-
-      - name: Append night batch workflow summary
-        if: always()
-        shell: powershell -NoProfile -ExecutionPolicy Bypass -command ". '{0}'"
-        run: |
-          & scripts/windows/github-actions/append-night-batch-workflow-summary.ps1 -SummaryJsonPath '${{ steps.night_batch_outputs.outputs.summary_json }}' -SummaryMdPath '${{ steps.night_batch_outputs.outputs.summary_md }}' -RichReportPath '${{ steps.night_batch_outputs.outputs.rich_report }}' -RankingArtifactPath '${{ steps.night_batch_outputs.outputs.ranking_artifact }}' -ProtectionReportPath '${{ steps.night_batch_outputs.outputs.protection_report }}' -CampaignManifestJsonPath '${{ steps.night_batch_outputs.outputs.campaign_manifest_json }}' -CampaignManifestMdPath '${{ steps.night_batch_outputs.outputs.campaign_manifest_md }}'
-
-      - name: Upload night batch artifacts
-        if: always() && steps.night_batch_outputs.outputs.round_dir != ''
-        uses: actions/upload-artifact@v4
-        with:
-          name: night-batch-${{ github.run_id }}-${{ github.run_attempt }}
-          path: |
-            ${{ steps.night_batch_outputs.outputs.round_dir }}
-            ${{ steps.night_batch_outputs.outputs.campaign_artifact_paths }}
-          if-no-files-found: warn
-
-      - name: Archive completed night batch rounds
-        if: always()
-        shell: cmd
-        run: |
-          for /f "usebackq delims=" %%I in (`wsl.exe wslpath -a "%CD%"`) do set "REPO_WSL=%%I"
-          if not defined REPO_WSL exit /b 1
-          wsl.exe bash -lc "cd \"%REPO_WSL%\" && python3 python/night_batch.py archive-rounds"
-
-      - name: Archive stale latest research docs
-        if: always()
-        shell: cmd
-        run: |
-          for /f "usebackq delims=" %%I in (`wsl.exe wslpath -a "%CD%"`) do set "REPO_WSL=%%I"
-          if not defined REPO_WSL exit /b 1
-          wsl.exe bash -lc "cd \"%REPO_WSL%\" && node scripts/docs/archive-stale-latest.mjs"
+          wsl.exe bash -lc "cd \"%REPO_WSL%\" && python3 python/night_batch.py smoke-prod --config \"%NIGHT_BATCH_CONFIG%\" --smoke-only"

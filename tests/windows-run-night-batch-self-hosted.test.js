@@ -329,7 +329,7 @@ describe('night-batch-self-hosted workflow', () => {
     assert.match(workflow, /archive-stale-latest\.mjs/,
       'workflow must invoke the latest-doc cleanup script');
     assert.ok(
-      workflow.indexOf('Ensure TradingView is running') < workflow.indexOf('Run smoke gate and foreground production'),
+      workflow.indexOf('Ensure TradingView is running') < workflow.indexOf('Run foreground production'),
       'workflow must launch TradingView before the WSL smoke run',
     );
     assert.ok(
@@ -657,7 +657,7 @@ describe('docs: next strategy update policy', () => {
   it('baseline step appears before the smoke gate run step', () => {
     const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
     const baselineIdx = workflow.indexOf('write-night-batch-live-checkout-baseline');
-    const runIdx = workflow.indexOf('Run smoke gate and foreground production');
+    const runIdx = workflow.indexOf('Run foreground production');
     assert.ok(baselineIdx > 0, 'baseline step must exist');
     assert.ok(baselineIdx < runIdx, 'baseline step must appear before the run step');
   });
@@ -693,7 +693,7 @@ describe('night-batch-self-hosted workflow readiness diagnostics', () => {
     assert.match(workflow, /Readiness diagnostics/i,
       'workflow must have a readiness diagnostics step');
     const diagIdx = workflow.indexOf('Readiness diagnostics');
-    const runIdx = workflow.indexOf('Run smoke gate and foreground production');
+    const runIdx = workflow.indexOf('Run foreground production');
     assert.ok(diagIdx > 0, 'readiness diagnostics step must exist');
     assert.ok(diagIdx < runIdx,
       'readiness diagnostics must appear before the smoke gate step');
@@ -711,7 +711,7 @@ describe('night-batch-self-hosted workflow readiness diagnostics', () => {
     const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
     const diagSection = workflow.slice(
       workflow.indexOf('Readiness diagnostics'),
-      workflow.indexOf('Run smoke gate and foreground production'),
+      workflow.indexOf('Run foreground production'),
     );
     assert.match(diagSection, /status/,
       'readiness diagnostics must invoke status command');
@@ -721,7 +721,7 @@ describe('night-batch-self-hosted workflow readiness diagnostics', () => {
     const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
     const diagSection = workflow.slice(
       workflow.indexOf('Readiness diagnostics'),
-      workflow.indexOf('Run smoke gate and foreground production'),
+      workflow.indexOf('Run foreground production'),
     );
     assert.doesNotMatch(diagSection, /TV_CDP_HOST=\$\(python3 -c/,
       'readiness diagnostics must not inline host resolution into bash env assignment');
@@ -739,7 +739,7 @@ describe('night-batch-self-hosted workflow readiness diagnostics', () => {
       'required connection gate must fail the workflow instead of continuing');
     assert.ok(
       workflow.indexOf('Wait for TradingView connection (required gate)')
-        < workflow.indexOf('Run smoke gate and foreground production'),
+        < workflow.indexOf('Run foreground production'),
       'required connection gate must run before the smoke gate step',
     );
   });

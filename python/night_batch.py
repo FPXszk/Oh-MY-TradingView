@@ -197,6 +197,7 @@ def build_smoke_prod_fingerprint(settings: dict) -> str:
         'bundle_us_campaign': settings.get('bundle_us_campaign'),
         'production_cli': settings.get('production_cli'),
         'production_mode': settings.get('production_mode'),
+        'skip_smoke': settings.get('skip_smoke'),
         'smoke_cli': settings.get('smoke_cli'),
         'smoke_mode': settings.get('smoke_mode'),
     }
@@ -393,6 +394,8 @@ def build_parser() -> argparse.ArgumentParser:
     smoke_prod.add_argument('--production-timeout-sec', type=int)
     smoke_prod.add_argument('--us-resume', default=None, help='Checkpoint path to resume the US campaign from')
     smoke_prod.add_argument('--jp-resume', default=None, help='Checkpoint path to resume the JP campaign from')
+    smoke_prod.add_argument('--smoke-only', action='store_true', help='Run smoke test only, skip production')
+    smoke_prod.add_argument('--skip-smoke', action='store_true', help='Skip smoke test, run production only')
 
     production_child = subparsers.add_parser(
         'production-child',
@@ -906,6 +909,8 @@ def load_smoke_prod_settings(args, raw_args: list[str]) -> dict:
         'jp_resume': jp_resume,
         'dry_run': args.dry_run,
         'timeout': args.timeout,
+        'smoke_only': getattr(args, 'smoke_only', False),
+        'skip_smoke': getattr(args, 'skip_smoke', False),
     }
 
 
@@ -2072,7 +2077,9 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
         steps.append(make_step_result('launch', ['WORKFLOW_STARTUP_OWNED'], success=True, skipped=True))
         steps.append(make_step_result('preflight', ['GET', preflight_url], success=True, skipped=True))
         smoke_step = build_runtime_step(settings, 'smoke')
-        if resume_smoke:
+        if settings.get('skip_smoke') or resume_smoke:
+            if settings.get('skip_smoke'):
+                logger.info('--skip-smoke specified — skipping smoke step')
             steps.append(make_step_result('smoke', smoke_step['command'], success=True, skipped=True))
         else:
             smoke_result = run_process(
@@ -2085,6 +2092,8 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
                 heartbeat_label='smoke',
             )
             steps.append({**smoke_result, 'name': 'smoke'})
+            if settings.get('smoke_only'):
+                return 0, steps, None
         if settings['detach_after_smoke']:
             production_step = build_runtime_step(settings, 'production')
             if resume_production:
@@ -2181,7 +2190,10 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
         return EXIT_PREFLIGHT_FAILED, steps, None
 
     smoke_step = build_runtime_step(settings, 'smoke')
-    if resume_smoke:
+    if settings.get('skip_smoke'):
+        logger.info('--skip-smoke specified — skipping smoke step')
+        steps.append(make_step_result('smoke', smoke_step['command'], success=True, skipped=True))
+    elif resume_smoke:
         logger.info('Smoke already completed in this round — skipping')
         steps.append(make_step_result('smoke', smoke_step['command'], success=True, skipped=True))
     else:
@@ -2196,6 +2208,8 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
         steps.append({**smoke_result, 'name': 'smoke'})
         if not smoke_result['success']:
             return EXIT_STEP_FAILED, steps, None
+        if settings.get('smoke_only'):
+            return 0, steps, None
 
     # --- live-checkout-guard: check for mid-run protected file changes ---
     baseline_env_path = os.environ.get('NIGHT_BATCH_LIVE_CHECKOUT_BASELINE_PATH')
