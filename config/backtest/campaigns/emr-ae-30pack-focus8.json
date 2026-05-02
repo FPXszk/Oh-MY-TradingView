@@ -1,0 +1,61 @@
+{
+  "id": "emr-ae-30pack-focus8",
+  "name": "EMR A+E 30-Pack Focus-8 (phase-18)",
+  "description": "Group A (volume filter) x Group E (TP exit) cross-combination 30 strategies on 8 focused symbols. Primary hypothesis: vol20x13 x tp10-trail-ema20 (#11). Tests whether combining vol entry filter with partial TP exit raises win rate to 30%+ while maintaining PF >= 2.0.",
+  "universe": "focus-8",
+  "strategy_ids": [
+    "emr-ae-v11-tp5-atr15",
+    "emr-ae-v11-tp8-atr25",
+    "emr-ae-v11-tp10-ema20",
+    "emr-ae-v12-tp5-atr15",
+    "emr-ae-v12-tp8-atr25",
+    "emr-ae-v12-tp10-ema20",
+    "emr-ae-v12-tp12-ema20",
+    "emr-ae-v12-tp15-ema20",
+    "emr-ae-v13-tp5-atr15",
+    "emr-ae-v13-tp8-atr25",
+    "emr-ae-v13-tp10-ema20",
+    "emr-ae-v13-tp10-atr25",
+    "emr-ae-v13-tp12-ema20",
+    "emr-ae-v13-tp15-ema20",
+    "emr-ae-v13-tp10-qty25",
+    "emr-ae-v14-tp5-atr15",
+    "emr-ae-v14-tp8-atr25",
+    "emr-ae-v14-tp10-ema20",
+    "emr-ae-v14-tp12-ema20",
+    "emr-ae-v14-tp15-ema20",
+    "emr-ae-v15-tp5-atr15",
+    "emr-ae-v15-tp8-atr25",
+    "emr-ae-v15-tp10-ema20",
+    "emr-ae-v15-tp12-ema20",
+    "emr-ae-v15-tp15-ema20",
+    "emr-ae-v20-tp5-atr15",
+    "emr-ae-v20-tp8-atr25",
+    "emr-ae-v20-tp10-ema20",
+    "emr-ae-v20-tp12-ema20",
+    "emr-ae-v20-tp15-ema20"
+  ],
+  "date_override": {
+    "from": "2015-01-01",
+    "to": "2026-04-27"
+  },
+  "phases": {
+    "smoke": {
+      "symbols": [
+        "SPY"
+      ]
+    },
+    "full": {
+      "symbol_count": 8
+    }
+  },
+  "execution": {
+    "worker_ports": [
+      9223
+    ],
+    "checkpoint_every": 10,
+    "cooldown_ms": 1000,
+    "max_consecutive_failures": 5,
+    "max_rerun_passes": 2
+  }
+}

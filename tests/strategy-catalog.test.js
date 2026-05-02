@@ -234,6 +234,36 @@ const EXPECTED_LIVE_IDS = [
   'emr-next-combo-rsi60-vol10-bkhigh',
   'emr-next-combo-rsi55-vol10-trail-ema20',
   'emr-next-combo-ultimate',
+  'emr-ae-v11-tp5-atr15',
+  'emr-ae-v11-tp8-atr25',
+  'emr-ae-v11-tp10-ema20',
+  'emr-ae-v12-tp5-atr15',
+  'emr-ae-v12-tp8-atr25',
+  'emr-ae-v12-tp10-ema20',
+  'emr-ae-v12-tp12-ema20',
+  'emr-ae-v12-tp15-ema20',
+  'emr-ae-v13-tp5-atr15',
+  'emr-ae-v13-tp8-atr25',
+  'emr-ae-v13-tp10-ema20',
+  'emr-ae-v13-tp10-atr25',
+  'emr-ae-v13-tp12-ema20',
+  'emr-ae-v13-tp15-ema20',
+  'emr-ae-v13-tp10-qty25',
+  'emr-ae-v14-tp5-atr15',
+  'emr-ae-v14-tp8-atr25',
+  'emr-ae-v14-tp10-ema20',
+  'emr-ae-v14-tp12-ema20',
+  'emr-ae-v14-tp15-ema20',
+  'emr-ae-v15-tp5-atr15',
+  'emr-ae-v15-tp8-atr25',
+  'emr-ae-v15-tp10-ema20',
+  'emr-ae-v15-tp12-ema20',
+  'emr-ae-v15-tp15-ema20',
+  'emr-ae-v20-tp5-atr15',
+  'emr-ae-v20-tp8-atr25',
+  'emr-ae-v20-tp10-ema20',
+  'emr-ae-v20-tp12-ema20',
+  'emr-ae-v20-tp15-ema20',
 ];
 
 // ---------------------------------------------------------------------------
@@ -304,10 +334,10 @@ describe('validateCatalogIntegrity', () => {
 // getLiveStrategies / getRetiredStrategies
 // ---------------------------------------------------------------------------
 describe('getLiveStrategies / getRetiredStrategies', () => {
-  it('live count is 220', async () => {
+  it('live count is 250', async () => {
     const catalog = await loadCatalog();
     const live = getLiveStrategies(catalog);
-    assert.equal(live.length, 220);
+    assert.equal(live.length, 250);
   });
 
   it('retired count is 2', async () => {

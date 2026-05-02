@@ -1,0 +1,15 @@
+{
+  "id": "focus-8",
+  "name": "Focus 8 Symbols",
+  "description": "High-volatility focused universe: top MSTR/NVDA performers, key indices, and BTC for A+E strategy validation.",
+  "symbols": [
+    { "symbol": "MSTR",   "label": "MicroStrategy",    "market": "US",    "bucket": "high-vol" },
+    { "symbol": "NVDA",   "label": "NVIDIA",            "market": "US",    "bucket": "high-vol" },
+    { "symbol": "AAPL",   "label": "Apple",             "market": "US",    "bucket": "stable" },
+    { "symbol": "TSLA",   "label": "Tesla",             "market": "US",    "bucket": "high-vol" },
+    { "symbol": "PLTR",   "label": "Palantir",          "market": "US",    "bucket": "high-vol" },
+    { "symbol": "SPY",    "label": "S&P 500 ETF",       "market": "macro", "bucket": "index" },
+    { "symbol": "QQQ",    "label": "Nasdaq 100 ETF",    "market": "macro", "bucket": "index" },
+    { "symbol": "BTCUSD", "label": "Bitcoin/USD",       "market": "crypto","bucket": "crypto" }
+  ]
+}
