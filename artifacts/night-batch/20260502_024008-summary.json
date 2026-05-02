@@ -1,0 +1,89 @@
+{
+  "success": true,
+  "command": "smoke-prod",
+  "host": "172.31.144.1",
+  "port": 9223,
+  "preflight_required": true,
+  "steps": [
+    {
+      "name": "startup-check",
+      "command": [
+        "GET",
+        "http://127.0.0.1:9222/json/list"
+      ],
+      "success": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "latest_checkpoint": null,
+      "skipped": true
+    },
+    {
+      "name": "launch",
+      "command": [
+        "WORKFLOW_STARTUP_OWNED"
+      ],
+      "success": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "latest_checkpoint": null,
+      "skipped": true
+    },
+    {
+      "name": "preflight",
+      "command": [
+        "GET",
+        "http://172.31.144.1:9223/json/list"
+      ],
+      "success": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "latest_checkpoint": null,
+      "skipped": true
+    },
+    {
+      "success": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "latest_checkpoint": null,
+      "captured_lines": [],
+      "command": [
+        "node",
+        "/home/fpxszk/code/Oh-MY-TradingView/scripts/backtest/run-finetune-bundle.mjs",
+        "--host",
+        "172.31.144.1",
+        "--ports",
+        "9223",
+        "--phases",
+        "smoke",
+        "--us-campaign",
+        "emr-next-50pack-us40"
+      ],
+      "skipped": false,
+      "name": "smoke"
+    },
+    {
+      "success": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "latest_checkpoint": null,
+      "captured_lines": [],
+      "command": [
+        "node",
+        "/home/fpxszk/code/Oh-MY-TradingView/scripts/backtest/run-finetune-bundle.mjs",
+        "--host",
+        "172.31.144.1",
+        "--ports",
+        "9223",
+        "--phases",
+        "full",
+        "--us-campaign",
+        "emr-next-50pack-us40"
+      ],
+      "skipped": false,
+      "name": "production"
+    }
+  ],
+  "failed_step": null,
+  "last_checkpoint": null,
+  "termination_reason": "success"
+}

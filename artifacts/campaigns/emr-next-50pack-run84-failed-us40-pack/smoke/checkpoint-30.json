@@ -1,0 +1,3698 @@
+{
+  "campaign_id": "emr-next-50pack-run84-failed-us40-pack",
+  "phase": "smoke",
+  "campaign_fingerprint": "c31f4a8c302632b1799c2c77f7d6ec3332b431d1",
+  "started_at": "2026-05-02T04:11:22.609Z",
+  "updated_at": "2026-05-02T04:17:21.583Z",
+  "completed": 30,
+  "results": [
+    {
+      "presetId": "emr-next-vol20x05",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:11:22.610Z",
+      "finished_at": "2026-05-02T04:11:35.793Z",
+      "duration_ms": 13183,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 1559.4311399999997,
+          "closed_trades": 14,
+          "percent_profitable": 50,
+          "profit_factor": 1.9399818164106541,
+          "max_drawdown": 970.9500700000008
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-vol20x08",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:11:36.794Z",
+      "finished_at": "2026-05-02T04:11:47.130Z",
+      "duration_ms": 10336,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -283.48222000000305,
+          "closed_trades": 40,
+          "percent_profitable": 10,
+          "profit_factor": 0.8752258740390314,
+          "max_drawdown": 897.1692199999998
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-vol20x11",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:11:48.137Z",
+      "finished_at": "2026-05-02T04:11:58.521Z",
+      "duration_ms": 10384,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 1559.4311399999997,
+          "closed_trades": 14,
+          "percent_profitable": 50,
+          "profit_factor": 1.9399818164106541,
+          "max_drawdown": 970.9500700000008
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-vol20x12",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:11:59.523Z",
+      "finished_at": "2026-05-02T04:12:09.858Z",
+      "duration_ms": 10335,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 1861.8124599999994,
+          "closed_trades": 14,
+          "percent_profitable": 50,
+          "profit_factor": 2.329808490645394,
+          "max_drawdown": 970.9500700000008
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-vol20x13",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:12:10.860Z",
+      "finished_at": "2026-05-02T04:12:21.367Z",
+      "duration_ms": 10507,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -31.745189999999866,
+          "closed_trades": 6,
+          "percent_profitable": 16.67,
+          "profit_factor": 0.9070008966178998,
+          "max_drawdown": 275.15777999999955
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-vol20x14",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:12:22.369Z",
+      "finished_at": "2026-05-02T04:12:37.570Z",
+      "duration_ms": 15201,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -302.0523400000061,
+          "closed_trades": 62,
+          "percent_profitable": 11.29,
+          "profit_factor": 0.9016369932909082,
+          "max_drawdown": 1374.2006700000038
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-vol20x20",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:12:38.572Z",
+      "finished_at": "2026-05-02T04:12:49.066Z",
+      "duration_ms": 10494,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -283.48222000000305,
+          "closed_trades": 40,
+          "percent_profitable": 10,
+          "profit_factor": 0.8752258740390314,
+          "max_drawdown": 897.1692199999998
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-until-plus1pct",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:12:50.066Z",
+      "finished_at": "2026-05-02T04:13:01.049Z",
+      "duration_ms": 10983,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -23.09771000000046,
+          "closed_trades": 16,
+          "percent_profitable": 31.25,
+          "profit_factor": 0.9890794785511772,
+          "max_drawdown": 879.2056900000025
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-until-plus3pct",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:13:02.051Z",
+      "finished_at": "2026-05-02T04:13:08.781Z",
+      "duration_ms": 6730,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": false
+        },
+        "tester_available": false,
+        "apply_failed": true,
+        "apply_reason": "Matching strategy was already on chart before run, and this run could not verify a new or updated attachment",
+        "tester_reason": "Skipped: strategy not applied",
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-until-plus4pct",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:13:09.782Z",
+      "finished_at": "2026-05-02T04:13:20.462Z",
+      "duration_ms": 10680,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -109.5722199999995,
+          "closed_trades": 8,
+          "percent_profitable": 12.5,
+          "profit_factor": 0.7386012024291925,
+          "max_drawdown": 408.9144099999994
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-until-bkhigh-vol10",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:13:21.464Z",
+      "finished_at": "2026-05-02T04:13:31.995Z",
+      "duration_ms": 10531,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -31.745189999999866,
+          "closed_trades": 6,
+          "percent_profitable": 16.67,
+          "profit_factor": 0.9070008966178998,
+          "max_drawdown": 275.15777999999955
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-until-plus2-vol10",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:13:32.997Z",
+      "finished_at": "2026-05-02T04:13:39.563Z",
+      "duration_ms": 6566,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": false
+        },
+        "tester_available": false,
+        "apply_failed": true,
+        "apply_reason": "Matching strategy was already on chart before run, and this run could not verify a new or updated attachment",
+        "tester_reason": "Skipped: strategy not applied",
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-until-plus2-rsi60",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:13:40.564Z",
+      "finished_at": "2026-05-02T04:13:56.736Z",
+      "duration_ms": 16172,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 1497.82337,
+          "closed_trades": 14,
+          "percent_profitable": 50,
+          "profit_factor": 1.8858616690448673,
+          "max_drawdown": 970.950069999999
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-fixed10pct",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:13:57.737Z",
+      "finished_at": "2026-05-02T04:14:08.506Z",
+      "duration_ms": 10769,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -192.65695000000028,
+          "closed_trades": 17,
+          "percent_profitable": 11.76,
+          "profit_factor": 0.8481955267526444,
+          "max_drawdown": 784.8681199999992
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-fixed12pct",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:14:09.508Z",
+      "finished_at": "2026-05-02T04:14:19.963Z",
+      "duration_ms": 10455,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -192.65695000000028,
+          "closed_trades": 17,
+          "percent_profitable": 11.76,
+          "profit_factor": 0.8481955267526444,
+          "max_drawdown": 784.8681199999992
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-fixed15pct",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:14:20.964Z",
+      "finished_at": "2026-05-02T04:14:31.407Z",
+      "duration_ms": 10443,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 2.324309999997695,
+          "closed_trades": 17,
+          "percent_profitable": 11.76,
+          "profit_factor": 1.0020904523686884,
+          "max_drawdown": 934.7494700000025
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-atr15x",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:14:32.409Z",
+      "finished_at": "2026-05-02T04:14:43.116Z",
+      "duration_ms": 10707,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": false
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -192.65695000000028,
+          "closed_trades": 17,
+          "percent_profitable": 11.76,
+          "profit_factor": 0.8481955267526444,
+          "max_drawdown": 784.8681199999992
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-atr20x",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:14:44.118Z",
+      "finished_at": "2026-05-02T04:14:51.128Z",
+      "duration_ms": 7010,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": false
+        },
+        "tester_available": false,
+        "apply_failed": true,
+        "apply_reason": "Matching strategy was already on chart before run, and this run could not verify a new or updated attachment",
+        "tester_reason": "Skipped: strategy not applied",
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-atr25x",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:14:52.129Z",
+      "finished_at": "2026-05-02T04:15:02.788Z",
+      "duration_ms": 10659,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -192.65695000000028,
+          "closed_trades": 17,
+          "percent_profitable": 11.76,
+          "profit_factor": 0.8481955267526444,
+          "max_drawdown": 784.8681199999992
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-swinglow-2bar",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:15:03.790Z",
+      "finished_at": "2026-05-02T04:15:19.287Z",
+      "duration_ms": 15497,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": false
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 367.9275399999991,
+          "closed_trades": 10,
+          "percent_profitable": 20,
+          "profit_factor": 1.4930245530629436,
+          "max_drawdown": 618.17317
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-swinglow-5bar",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:15:20.289Z",
+      "finished_at": "2026-05-02T04:15:30.725Z",
+      "duration_ms": 10436,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -1036.6375199999998,
+          "closed_trades": 18,
+          "percent_profitable": 11.11,
+          "profit_factor": 0.21621492964728833,
+          "max_drawdown": 1050.9219599999997
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-entry-hist3-closefa",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:15:31.727Z",
+      "finished_at": "2026-05-02T04:15:38.856Z",
+      "duration_ms": 7129,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": false
+        },
+        "tester_available": false,
+        "apply_failed": true,
+        "apply_reason": "Matching strategy was already on chart before run, and this run could not verify a new or updated attachment",
+        "tester_reason": "Skipped: strategy not applied",
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-entry-ema50-200-vol10",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:15:39.858Z",
+      "finished_at": "2026-05-02T04:15:52.649Z",
+      "duration_ms": 12791,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": false
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 1157.743939999999,
+          "closed_trades": 15,
+          "percent_profitable": 46.67,
+          "profit_factor": 1.5893288442130629,
+          "max_drawdown": 1173.46349
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-entry-rsi55-vol12",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:15:53.651Z",
+      "finished_at": "2026-05-02T04:16:06.723Z",
+      "duration_ms": 13072,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 1775.4223899999993,
+          "closed_trades": 14,
+          "percent_profitable": 50,
+          "profit_factor": 2.227487158958585,
+          "max_drawdown": 816.7609400000001
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-entry-rsi55-prevhigh",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:16:07.725Z",
+      "finished_at": "2026-05-02T04:16:21.394Z",
+      "duration_ms": 13669,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": "",
+          "closed_trades": null,
+          "percent_profitable": "",
+          "profit_factor": "",
+          "max_drawdown": ""
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-entry-rsi60-vol12",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:16:22.396Z",
+      "finished_at": "2026-05-02T04:16:35.312Z",
+      "duration_ms": 12916,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 98.57763,
+          "closed_trades": 36,
+          "percent_profitable": 27.78,
+          "profit_factor": 1.0985631668408977,
+          "max_drawdown": 694.7766900000006
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-entry-hist-rsi55-vol10",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:16:36.313Z",
+      "finished_at": "2026-05-02T04:16:47.191Z",
+      "duration_ms": 10878,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 122.39150999999936,
+          "closed_trades": 15,
+          "percent_profitable": 13.33,
+          "profit_factor": 1.123403145540543,
+          "max_drawdown": 800.4923400000007
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-entry-delay1-prevhigh",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:16:48.192Z",
+      "finished_at": "2026-05-02T04:16:58.590Z",
+      "duration_ms": 10398,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 2.214470000000574,
+          "closed_trades": 18,
+          "percent_profitable": 11.11,
+          "profit_factor": 1.0015471495875123,
+          "max_drawdown": 844.759329999999
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-entry-closeefa-vol12",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:16:59.592Z",
+      "finished_at": "2026-05-02T04:17:09.904Z",
+      "duration_ms": 10312,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -192.65695000000028,
+          "closed_trades": 17,
+          "percent_profitable": 11.76,
+          "profit_factor": 0.8481955267526444,
+          "max_drawdown": 784.8681199999992
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-entry-20dhigh-rsi55",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:17:10.905Z",
+      "finished_at": "2026-05-02T04:17:21.583Z",
+      "duration_ms": 10678,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -53.046029999999575,
+          "closed_trades": 6,
+          "percent_profitable": 16.67,
+          "profit_factor": 0.8537267559107783,
+          "max_drawdown": 418.5798599999998
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    }
+  ],
+  "effective_results": [
+    {
+      "presetId": "emr-next-vol20x05",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:11:22.610Z",
+      "finished_at": "2026-05-02T04:11:35.793Z",
+      "duration_ms": 13183,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 1559.4311399999997,
+          "closed_trades": 14,
+          "percent_profitable": 50,
+          "profit_factor": 1.9399818164106541,
+          "max_drawdown": 970.9500700000008
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-vol20x08",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:11:36.794Z",
+      "finished_at": "2026-05-02T04:11:47.130Z",
+      "duration_ms": 10336,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -283.48222000000305,
+          "closed_trades": 40,
+          "percent_profitable": 10,
+          "profit_factor": 0.8752258740390314,
+          "max_drawdown": 897.1692199999998
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-vol20x11",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:11:48.137Z",
+      "finished_at": "2026-05-02T04:11:58.521Z",
+      "duration_ms": 10384,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 1559.4311399999997,
+          "closed_trades": 14,
+          "percent_profitable": 50,
+          "profit_factor": 1.9399818164106541,
+          "max_drawdown": 970.9500700000008
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-vol20x12",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:11:59.523Z",
+      "finished_at": "2026-05-02T04:12:09.858Z",
+      "duration_ms": 10335,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 1861.8124599999994,
+          "closed_trades": 14,
+          "percent_profitable": 50,
+          "profit_factor": 2.329808490645394,
+          "max_drawdown": 970.9500700000008
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-vol20x13",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:12:10.860Z",
+      "finished_at": "2026-05-02T04:12:21.367Z",
+      "duration_ms": 10507,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -31.745189999999866,
+          "closed_trades": 6,
+          "percent_profitable": 16.67,
+          "profit_factor": 0.9070008966178998,
+          "max_drawdown": 275.15777999999955
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-vol20x14",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:12:22.369Z",
+      "finished_at": "2026-05-02T04:12:37.570Z",
+      "duration_ms": 15201,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -302.0523400000061,
+          "closed_trades": 62,
+          "percent_profitable": 11.29,
+          "profit_factor": 0.9016369932909082,
+          "max_drawdown": 1374.2006700000038
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-vol20x20",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:12:38.572Z",
+      "finished_at": "2026-05-02T04:12:49.066Z",
+      "duration_ms": 10494,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -283.48222000000305,
+          "closed_trades": 40,
+          "percent_profitable": 10,
+          "profit_factor": 0.8752258740390314,
+          "max_drawdown": 897.1692199999998
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-until-plus1pct",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:12:50.066Z",
+      "finished_at": "2026-05-02T04:13:01.049Z",
+      "duration_ms": 10983,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -23.09771000000046,
+          "closed_trades": 16,
+          "percent_profitable": 31.25,
+          "profit_factor": 0.9890794785511772,
+          "max_drawdown": 879.2056900000025
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-until-plus3pct",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:13:02.051Z",
+      "finished_at": "2026-05-02T04:13:08.781Z",
+      "duration_ms": 6730,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": false
+        },
+        "tester_available": false,
+        "apply_failed": true,
+        "apply_reason": "Matching strategy was already on chart before run, and this run could not verify a new or updated attachment",
+        "tester_reason": "Skipped: strategy not applied",
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-until-plus4pct",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:13:09.782Z",
+      "finished_at": "2026-05-02T04:13:20.462Z",
+      "duration_ms": 10680,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -109.5722199999995,
+          "closed_trades": 8,
+          "percent_profitable": 12.5,
+          "profit_factor": 0.7386012024291925,
+          "max_drawdown": 408.9144099999994
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-until-bkhigh-vol10",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:13:21.464Z",
+      "finished_at": "2026-05-02T04:13:31.995Z",
+      "duration_ms": 10531,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -31.745189999999866,
+          "closed_trades": 6,
+          "percent_profitable": 16.67,
+          "profit_factor": 0.9070008966178998,
+          "max_drawdown": 275.15777999999955
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-until-plus2-vol10",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:13:32.997Z",
+      "finished_at": "2026-05-02T04:13:39.563Z",
+      "duration_ms": 6566,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": false
+        },
+        "tester_available": false,
+        "apply_failed": true,
+        "apply_reason": "Matching strategy was already on chart before run, and this run could not verify a new or updated attachment",
+        "tester_reason": "Skipped: strategy not applied",
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-until-plus2-rsi60",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:13:40.564Z",
+      "finished_at": "2026-05-02T04:13:56.736Z",
+      "duration_ms": 16172,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 1497.82337,
+          "closed_trades": 14,
+          "percent_profitable": 50,
+          "profit_factor": 1.8858616690448673,
+          "max_drawdown": 970.950069999999
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-fixed10pct",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:13:57.737Z",
+      "finished_at": "2026-05-02T04:14:08.506Z",
+      "duration_ms": 10769,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 0,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -192.65695000000028,
+          "closed_trades": 17,
+          "percent_profitable": 11.76,
+          "profit_factor": 0.8481955267526444,
+          "max_drawdown": 784.8681199999992
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-fixed12pct",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:14:09.508Z",
+      "finished_at": "2026-05-02T04:14:19.963Z",
+      "duration_ms": 10455,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -192.65695000000028,
+          "closed_trades": 17,
+          "percent_profitable": 11.76,
+          "profit_factor": 0.8481955267526444,
+          "max_drawdown": 784.8681199999992
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-fixed15pct",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:14:20.964Z",
+      "finished_at": "2026-05-02T04:14:31.407Z",
+      "duration_ms": 10443,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 2.324309999997695,
+          "closed_trades": 17,
+          "percent_profitable": 11.76,
+          "profit_factor": 1.0020904523686884,
+          "max_drawdown": 934.7494700000025
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-atr15x",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:14:32.409Z",
+      "finished_at": "2026-05-02T04:14:43.116Z",
+      "duration_ms": 10707,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": false
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -192.65695000000028,
+          "closed_trades": 17,
+          "percent_profitable": 11.76,
+          "profit_factor": 0.8481955267526444,
+          "max_drawdown": 784.8681199999992
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-atr20x",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:14:44.118Z",
+      "finished_at": "2026-05-02T04:14:51.128Z",
+      "duration_ms": 7010,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": false
+        },
+        "tester_available": false,
+        "apply_failed": true,
+        "apply_reason": "Matching strategy was already on chart before run, and this run could not verify a new or updated attachment",
+        "tester_reason": "Skipped: strategy not applied",
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-atr25x",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:14:52.129Z",
+      "finished_at": "2026-05-02T04:15:02.788Z",
+      "duration_ms": 10659,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -192.65695000000028,
+          "closed_trades": 17,
+          "percent_profitable": 11.76,
+          "profit_factor": 0.8481955267526444,
+          "max_drawdown": 784.8681199999992
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-swinglow-2bar",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:15:03.790Z",
+      "finished_at": "2026-05-02T04:15:19.287Z",
+      "duration_ms": 15497,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": false
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 367.9275399999991,
+          "closed_trades": 10,
+          "percent_profitable": 20,
+          "profit_factor": 1.4930245530629436,
+          "max_drawdown": 618.17317
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-stop-swinglow-5bar",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:15:20.289Z",
+      "finished_at": "2026-05-02T04:15:30.725Z",
+      "duration_ms": 10436,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -1036.6375199999998,
+          "closed_trades": 18,
+          "percent_profitable": 11.11,
+          "profit_factor": 0.21621492964728833,
+          "max_drawdown": 1050.9219599999997
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-entry-hist3-closefa",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:15:31.727Z",
+      "finished_at": "2026-05-02T04:15:38.856Z",
+      "duration_ms": 7129,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": false
+        },
+        "tester_available": false,
+        "apply_failed": true,
+        "apply_reason": "Matching strategy was already on chart before run, and this run could not verify a new or updated attachment",
+        "tester_reason": "Skipped: strategy not applied",
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-entry-ema50-200-vol10",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:15:39.858Z",
+      "finished_at": "2026-05-02T04:15:52.649Z",
+      "duration_ms": 12791,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": false
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 1157.743939999999,
+          "closed_trades": 15,
+          "percent_profitable": 46.67,
+          "profit_factor": 1.5893288442130629,
+          "max_drawdown": 1173.46349
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-entry-rsi55-vol12",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:15:53.651Z",
+      "finished_at": "2026-05-02T04:16:06.723Z",
+      "duration_ms": 13072,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 1775.4223899999993,
+          "closed_trades": 14,
+          "percent_profitable": 50,
+          "profit_factor": 2.227487158958585,
+          "max_drawdown": 816.7609400000001
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-entry-rsi55-prevhigh",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:16:07.725Z",
+      "finished_at": "2026-05-02T04:16:21.394Z",
+      "duration_ms": 13669,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": "",
+          "closed_trades": null,
+          "percent_profitable": "",
+          "profit_factor": "",
+          "max_drawdown": ""
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-entry-rsi60-vol12",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:16:22.396Z",
+      "finished_at": "2026-05-02T04:16:35.312Z",
+      "duration_ms": 12916,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 98.57763,
+          "closed_trades": 36,
+          "percent_profitable": 27.78,
+          "profit_factor": 1.0985631668408977,
+          "max_drawdown": 694.7766900000006
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-entry-hist-rsi55-vol10",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:16:36.313Z",
+      "finished_at": "2026-05-02T04:16:47.191Z",
+      "duration_ms": 10878,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "チャートに追加",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 122.39150999999936,
+          "closed_trades": 15,
+          "percent_profitable": 13.33,
+          "profit_factor": 1.123403145540543,
+          "max_drawdown": 800.4923400000007
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-entry-delay1-prevhigh",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:16:48.192Z",
+      "finished_at": "2026-05-02T04:16:58.590Z",
+      "duration_ms": 10398,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": 2.214470000000574,
+          "closed_trades": 18,
+          "percent_profitable": 11.11,
+          "profit_factor": 1.0015471495875123,
+          "max_drawdown": 844.759329999999
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-entry-closeefa-vol12",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:16:59.592Z",
+      "finished_at": "2026-05-02T04:17:09.904Z",
+      "duration_ms": 10312,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -192.65695000000028,
+          "closed_trades": 17,
+          "percent_profitable": 11.76,
+          "profit_factor": 0.8481955267526444,
+          "max_drawdown": 784.8681199999992
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    },
+    {
+      "presetId": "emr-next-entry-20dhigh-rsi55",
+      "symbol": "SPY",
+      "market": "macro",
+      "bucket": "index",
+      "label": "S&P 500 ETF",
+      "attempt": "primary",
+      "worker": "worker1",
+      "port": 9223,
+      "started_at": "2026-05-02T04:17:10.905Z",
+      "finished_at": "2026-05-02T04:17:21.583Z",
+      "duration_ms": 10678,
+      "exit_code": 0,
+      "result": {
+        "success": true,
+        "symbol": "BATS:SPY",
+        "compile_detail": {
+          "success": true,
+          "button_clicked": "keyboard_shortcut",
+          "has_errors": false,
+          "error_count": 0,
+          "warning_count": 4,
+          "info_count": 0,
+          "errors": [],
+          "warnings": [
+            {
+              "line": 1,
+              "column": 3,
+              "message": "Pine Script®のバージョン5は旧バージョンです。最新のバージョン6のご利用を推奨します。",
+              "severity": 4
+            },
+            {
+              "line": 166,
+              "column": 30,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 187,
+              "column": 22,
+              "message": "The function 'ta.lowest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            },
+            {
+              "line": 253,
+              "column": 25,
+              "message": "The function 'ta.highest' should be called on each calculation for consistency. It is recommended to extract the call from this scope",
+              "severity": 4
+            }
+          ],
+          "infos": [],
+          "study_added": true
+        },
+        "tester_available": true,
+        "apply_failed": false,
+        "metrics": {
+          "net_profit": -53.046029999999575,
+          "closed_trades": 6,
+          "percent_profitable": 16.67,
+          "profit_factor": 0.8537267559107783,
+          "max_drawdown": 418.5798599999998
+        },
+        "restore_policy": "skip",
+        "restore_success": true,
+        "restore_skipped": true
+      }
+    }
+  ],
+  "summary": {
+    "success": 26,
+    "failure": 4,
+    "unreadable": 0,
+    "total": 30
+  }
+}

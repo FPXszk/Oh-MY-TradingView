@@ -1,0 +1,14 @@
+{
+  "status": "completed",
+  "mode": "foreground",
+  "command": "smoke-prod",
+  "run_id": "20260502_024008",
+  "updated_at": "2026-05-02T02:40:08.031749+00:00",
+  "latest_checkpoint": null,
+  "current_step": "production",
+  "summary_path": "artifacts/night-batch/20260502_024008-summary.json",
+  "termination_reason": "success",
+  "failed_step": null,
+  "success": true,
+  "finished_at": "2026-05-02T02:40:08.031757+00:00"
+}

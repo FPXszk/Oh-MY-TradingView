@@ -1,0 +1,471 @@
+{
+  "campaign_id": "emr-next-50pack-run84-failed-us40-pack",
+  "phase": "smoke",
+  "generated_at": "2026-05-02T04:22:34.075Z",
+  "source_run_id": null,
+  "source_kind": "manual",
+  "source_results_path": "artifacts/campaigns/emr-next-50pack-run84-failed-us40-pack/smoke/recovered-results.json",
+  "strategy_count": 46,
+  "rows": [
+    {
+      "rank": 1,
+      "presetId": "emr-next-vol20x12",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 1861.81,
+      "avg_profit_factor": 2.3298,
+      "avg_max_drawdown": 970.95,
+      "avg_percent_profitable": 50
+    },
+    {
+      "rank": 2,
+      "presetId": "emr-next-stop-until-plus2-vol10",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 1861.81,
+      "avg_profit_factor": 2.3298,
+      "avg_max_drawdown": 970.95,
+      "avg_percent_profitable": 50
+    },
+    {
+      "rank": 3,
+      "presetId": "emr-next-entry-rsi55-vol12",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 1775.42,
+      "avg_profit_factor": 2.2275,
+      "avg_max_drawdown": 816.76,
+      "avg_percent_profitable": 50
+    },
+    {
+      "rank": 4,
+      "presetId": "emr-next-combo-rsi55-vol10-trail-ema20",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 1775.42,
+      "avg_profit_factor": 2.2275,
+      "avg_max_drawdown": 816.76,
+      "avg_percent_profitable": 50
+    },
+    {
+      "rank": 5,
+      "presetId": "emr-next-vol20x05",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 1559.43,
+      "avg_profit_factor": 1.94,
+      "avg_max_drawdown": 970.95,
+      "avg_percent_profitable": 50
+    },
+    {
+      "rank": 6,
+      "presetId": "emr-next-vol20x11",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 1559.43,
+      "avg_profit_factor": 1.94,
+      "avg_max_drawdown": 970.95,
+      "avg_percent_profitable": 50
+    },
+    {
+      "rank": 7,
+      "presetId": "emr-next-stop-until-plus3pct",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 1559.43,
+      "avg_profit_factor": 1.94,
+      "avg_max_drawdown": 970.95,
+      "avg_percent_profitable": 50
+    },
+    {
+      "rank": 8,
+      "presetId": "emr-next-stop-until-plus2-rsi60",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 1497.82,
+      "avg_profit_factor": 1.8859,
+      "avg_max_drawdown": 970.95,
+      "avg_percent_profitable": 50
+    },
+    {
+      "rank": 9,
+      "presetId": "emr-next-exit-tp10-trail-ema20",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 473.86,
+      "avg_profit_factor": 1.7071,
+      "avg_max_drawdown": 438.97,
+      "avg_percent_profitable": 14.29
+    },
+    {
+      "rank": 10,
+      "presetId": "emr-next-entry-ema50-200-vol10",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 1157.74,
+      "avg_profit_factor": 1.5893,
+      "avg_max_drawdown": 1173.46,
+      "avg_percent_profitable": 46.67
+    },
+    {
+      "rank": 11,
+      "presetId": "emr-next-stop-swinglow-2bar",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 367.93,
+      "avg_profit_factor": 1.493,
+      "avg_max_drawdown": 618.17,
+      "avg_percent_profitable": 20
+    },
+    {
+      "rank": 12,
+      "presetId": "emr-next-entry-hist3-rsi55-vol10",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 367.93,
+      "avg_profit_factor": 1.493,
+      "avg_max_drawdown": 618.17,
+      "avg_percent_profitable": 20
+    },
+    {
+      "rank": 13,
+      "presetId": "emr-next-combo-ultimate",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 367.93,
+      "avg_profit_factor": 1.493,
+      "avg_max_drawdown": 618.17,
+      "avg_percent_profitable": 20
+    },
+    {
+      "rank": 14,
+      "presetId": "emr-next-entry-hist-rsi55-vol10",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 122.39,
+      "avg_profit_factor": 1.1234,
+      "avg_max_drawdown": 800.49,
+      "avg_percent_profitable": 13.33
+    },
+    {
+      "rank": 15,
+      "presetId": "emr-next-stop-atr20x",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 127.21,
+      "avg_profit_factor": 1.1024,
+      "avg_max_drawdown": 1478.38,
+      "avg_percent_profitable": 57.14
+    },
+    {
+      "rank": 16,
+      "presetId": "emr-next-entry-rsi60-vol12",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 98.58,
+      "avg_profit_factor": 1.0986,
+      "avg_max_drawdown": 694.78,
+      "avg_percent_profitable": 27.78
+    },
+    {
+      "rank": 17,
+      "presetId": "emr-next-exit-tp8-trail-atr25",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 98.58,
+      "avg_profit_factor": 1.0986,
+      "avg_max_drawdown": 694.78,
+      "avg_percent_profitable": 27.78
+    },
+    {
+      "rank": 18,
+      "presetId": "emr-next-exit-rsi-loss-after8",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 98.58,
+      "avg_profit_factor": 1.0986,
+      "avg_max_drawdown": 694.78,
+      "avg_percent_profitable": 27.78
+    },
+    {
+      "rank": 19,
+      "presetId": "emr-next-combo-ema50200-vol12-stop12",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 13.78,
+      "avg_profit_factor": 1.0061,
+      "avg_max_drawdown": 1073.65,
+      "avg_percent_profitable": 33.33
+    },
+    {
+      "rank": 20,
+      "presetId": "emr-next-stop-fixed15pct",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 2.32,
+      "avg_profit_factor": 1.0021,
+      "avg_max_drawdown": 934.75,
+      "avg_percent_profitable": 11.76
+    },
+    {
+      "rank": 21,
+      "presetId": "emr-next-entry-delay1-prevhigh",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": 2.21,
+      "avg_profit_factor": 1.0015,
+      "avg_max_drawdown": 844.76,
+      "avg_percent_profitable": 11.11
+    },
+    {
+      "rank": 22,
+      "presetId": "emr-next-stop-until-plus1pct",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": -23.1,
+      "avg_profit_factor": 0.9891,
+      "avg_max_drawdown": 879.21,
+      "avg_percent_profitable": 31.25
+    },
+    {
+      "rank": 23,
+      "presetId": "emr-next-combo-rsi60-vol10-bkhigh",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": -112.19,
+      "avg_profit_factor": 0.9207,
+      "avg_max_drawdown": 831.19,
+      "avg_percent_profitable": 11.11
+    },
+    {
+      "rank": 24,
+      "presetId": "emr-next-vol20x13",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": -31.75,
+      "avg_profit_factor": 0.907,
+      "avg_max_drawdown": 275.16,
+      "avg_percent_profitable": 16.67
+    },
+    {
+      "rank": 25,
+      "presetId": "emr-next-stop-until-bkhigh-vol10",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": -31.75,
+      "avg_profit_factor": 0.907,
+      "avg_max_drawdown": 275.16,
+      "avg_percent_profitable": 16.67
+    },
+    {
+      "rank": 26,
+      "presetId": "emr-next-vol20x14",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": -302.05,
+      "avg_profit_factor": 0.9016,
+      "avg_max_drawdown": 1374.2,
+      "avg_percent_profitable": 11.29
+    },
+    {
+      "rank": 27,
+      "presetId": "emr-next-vol20x08",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": -283.48,
+      "avg_profit_factor": 0.8752,
+      "avg_max_drawdown": 897.17,
+      "avg_percent_profitable": 10
+    },
+    {
+      "rank": 28,
+      "presetId": "emr-next-vol20x20",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": -283.48,
+      "avg_profit_factor": 0.8752,
+      "avg_max_drawdown": 897.17,
+      "avg_percent_profitable": 10
+    },
+    {
+      "rank": 29,
+      "presetId": "emr-next-entry-20dhigh-rsi55",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": -53.05,
+      "avg_profit_factor": 0.8537,
+      "avg_max_drawdown": 418.58,
+      "avg_percent_profitable": 16.67
+    },
+    {
+      "rank": 30,
+      "presetId": "emr-next-stop-fixed10pct",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": -192.66,
+      "avg_profit_factor": 0.8482,
+      "avg_max_drawdown": 784.87,
+      "avg_percent_profitable": 11.76
+    },
+    {
+      "rank": 31,
+      "presetId": "emr-next-stop-fixed12pct",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": -192.66,
+      "avg_profit_factor": 0.8482,
+      "avg_max_drawdown": 784.87,
+      "avg_percent_profitable": 11.76
+    },
+    {
+      "rank": 32,
+      "presetId": "emr-next-stop-atr15x",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": -192.66,
+      "avg_profit_factor": 0.8482,
+      "avg_max_drawdown": 784.87,
+      "avg_percent_profitable": 11.76
+    },
+    {
+      "rank": 33,
+      "presetId": "emr-next-stop-atr25x",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": -192.66,
+      "avg_profit_factor": 0.8482,
+      "avg_max_drawdown": 784.87,
+      "avg_percent_profitable": 11.76
+    },
+    {
+      "rank": 34,
+      "presetId": "emr-next-entry-closeefa-vol12",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": -192.66,
+      "avg_profit_factor": 0.8482,
+      "avg_max_drawdown": 784.87,
+      "avg_percent_profitable": 11.76
+    },
+    {
+      "rank": 35,
+      "presetId": "emr-next-exit-ema20-after5",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": -192.66,
+      "avg_profit_factor": 0.8482,
+      "avg_max_drawdown": 784.87,
+      "avg_percent_profitable": 11.76
+    },
+    {
+      "rank": 36,
+      "presetId": "emr-next-combo-vol12-plus2",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": -192.66,
+      "avg_profit_factor": 0.8482,
+      "avg_max_drawdown": 784.87,
+      "avg_percent_profitable": 11.76
+    },
+    {
+      "rank": 37,
+      "presetId": "emr-next-entry-hist3-closefa",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": -207.56,
+      "avg_profit_factor": 0.8261,
+      "avg_max_drawdown": 1418.32,
+      "avg_percent_profitable": 50
+    },
+    {
+      "rank": 38,
+      "presetId": "emr-next-stop-until-plus4pct",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": -109.57,
+      "avg_profit_factor": 0.7386,
+      "avg_max_drawdown": 408.91,
+      "avg_percent_profitable": 12.5
+    },
+    {
+      "rank": 39,
+      "presetId": "emr-next-exit-trail-atr25-from5",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": -109.57,
+      "avg_profit_factor": 0.7386,
+      "avg_max_drawdown": 408.91,
+      "avg_percent_profitable": 12.5
+    },
+    {
+      "rank": 40,
+      "presetId": "emr-next-combo-vol12-bkhigh",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": -239.15,
+      "avg_profit_factor": 0.5642,
+      "avg_max_drawdown": 539.12,
+      "avg_percent_profitable": 12.5
+    },
+    {
+      "rank": 41,
+      "presetId": "emr-next-exit-trail-atr15-from3",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": -447.6,
+      "avg_profit_factor": 0.4726,
+      "avg_max_drawdown": 716.62,
+      "avg_percent_profitable": 7.14
+    },
+    {
+      "rank": 42,
+      "presetId": "emr-next-combo-20dhigh-vol10-trail25",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": -447.6,
+      "avg_profit_factor": 0.4726,
+      "avg_max_drawdown": 716.62,
+      "avg_percent_profitable": 7.14
+    },
+    {
+      "rank": 43,
+      "presetId": "emr-next-exit-chandelier22-3atr",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": -836.18,
+      "avg_profit_factor": 0.3721,
+      "avg_max_drawdown": 892.57,
+      "avg_percent_profitable": 11.11
+    },
+    {
+      "rank": 44,
+      "presetId": "emr-next-exit-tp5-trail-atr15",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": -528.27,
+      "avg_profit_factor": 0.3695,
+      "avg_max_drawdown": 705.72,
+      "avg_percent_profitable": 7.14
+    },
+    {
+      "rank": 45,
+      "presetId": "emr-next-stop-swinglow-5bar",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": -1036.64,
+      "avg_profit_factor": 0.2162,
+      "avg_max_drawdown": 1050.92,
+      "avg_percent_profitable": 11.11
+    },
+    {
+      "rank": 46,
+      "presetId": "emr-next-entry-rsi55-prevhigh",
+      "run_count": 1,
+      "success_count": 1,
+      "avg_net_profit": null,
+      "avg_profit_factor": null,
+      "avg_max_drawdown": null,
+      "avg_percent_profitable": null
+    }
+  ]
+}
