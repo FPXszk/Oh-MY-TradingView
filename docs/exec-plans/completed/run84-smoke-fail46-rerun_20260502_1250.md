@@ -34,10 +34,10 @@
 
 ## 実装ステップ
 
-- [ ] `#84` artifact の smoke summary / recovered-results を再確認し、46 preset リストを最終固定する
-- [ ] failed-only campaign / config / session log / テスト文言がその根拠と矛盾していないか確認し、必要な最小修正を入れる
-- [ ] 対象テストを実行して green を確認する
-- [ ] session log に canceled run `25242230444` を誤起動として記録する
+- [x] `#84` artifact の smoke summary / recovered-results を再確認し、46 preset リストを最終固定する
+- [x] failed-only campaign / config / session log / テスト文言がその根拠と矛盾していないか確認し、必要な最小修正を入れる
+- [x] 対象テストを実行して green を確認する
+- [x] session log に canceled run `25242230444` を誤起動として記録する
 - [ ] 計画完了後、計画を `completed/` へ移動して commit / push する
 - [ ] `gh workflow run night-batch-self-hosted.yml --field config_path=config/night_batch/emr-next-50pack-run84-failed-us40-config.json` を実行する
 - [ ] 新しい run ID / 起動状態を確認する
@@ -67,3 +67,11 @@
 - 46 failed preset 自体の Pine 修正
 - `#84` の research レポート新規作成
 - self-hosted runner / TradingView 環境そのものの恒久修正
+
+## 実績メモ
+
+- run84 smoke の正本は `recovered-summary.json` の `4 / 50 success`, `46 / 50 failure`
+- failed-only campaign / config 自体は既存差分をそのまま採用可能で、今回の追加修正は session log への canceled run `25242230444` 記録
+- テスト結果:
+  - `node --test tests/campaign.test.js`
+  - `node --test tests/windows-run-night-batch-self-hosted.test.js`

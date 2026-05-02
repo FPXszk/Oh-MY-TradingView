@@ -11,6 +11,9 @@
 - workflow conclusion was `success`, but the smoke campaign result was `4 / 50 success`, `46 / 50 failure`
 - the 46 failed presets were recorded as `apply_failed=true` and `tester_reason="Skipped: strategy not applied"`
 - the failed-only rerun target should be the 46 smoke-failed presets, not the 230 failed full runs
+- canceled rerun to ignore: `25242230444`
+  - this run was triggered before the smoke failure count was re-verified from `recovered-summary.json`
+  - it was canceled after confirming that `#84` smoke had not passed
 
 ## Changes
 
