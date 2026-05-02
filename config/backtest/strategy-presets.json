@@ -9826,7 +9826,8 @@
         "tp1Pct": 10,
         "tp1Qty": 50,
         "trailMode": "ema20",
-        "trailActivationPct": 10
+        "trailActivationPct": 10,
+        "trailAtrMult": 0
       },
       "stop_loss": {
         "type": "hard_percent",
@@ -9957,7 +9958,8 @@
         "tp1Pct": 10,
         "tp1Qty": 50,
         "trailMode": "ema20",
-        "trailActivationPct": 10
+        "trailActivationPct": 10,
+        "trailAtrMult": 0
       },
       "stop_loss": {
         "type": "hard_percent",
@@ -10000,7 +10002,8 @@
         "tp1Pct": 12,
         "tp1Qty": 50,
         "trailMode": "ema20",
-        "trailActivationPct": 12
+        "trailActivationPct": 12,
+        "trailAtrMult": 0
       },
       "stop_loss": {
         "type": "hard_percent",
@@ -10043,7 +10046,8 @@
         "tp1Pct": 15,
         "tp1Qty": 50,
         "trailMode": "ema20",
-        "trailActivationPct": 15
+        "trailActivationPct": 15,
+        "trailAtrMult": 0
       },
       "stop_loss": {
         "type": "hard_percent",
@@ -10174,7 +10178,8 @@
         "tp1Pct": 10,
         "tp1Qty": 50,
         "trailMode": "ema20",
-        "trailActivationPct": 10
+        "trailActivationPct": 10,
+        "trailAtrMult": 0
       },
       "stop_loss": {
         "type": "hard_percent",
@@ -10261,7 +10266,8 @@
         "tp1Pct": 12,
         "tp1Qty": 50,
         "trailMode": "ema20",
-        "trailActivationPct": 12
+        "trailActivationPct": 12,
+        "trailAtrMult": 0
       },
       "stop_loss": {
         "type": "hard_percent",
@@ -10304,7 +10310,8 @@
         "tp1Pct": 15,
         "tp1Qty": 50,
         "trailMode": "ema20",
-        "trailActivationPct": 15
+        "trailActivationPct": 15,
+        "trailAtrMult": 0
       },
       "stop_loss": {
         "type": "hard_percent",
@@ -10347,7 +10354,8 @@
         "tp1Pct": 10,
         "tp1Qty": 25,
         "trailMode": "ema20",
-        "trailActivationPct": 10
+        "trailActivationPct": 10,
+        "trailAtrMult": 0
       },
       "stop_loss": {
         "type": "hard_percent",
@@ -10478,7 +10486,8 @@
         "tp1Pct": 10,
         "tp1Qty": 50,
         "trailMode": "ema20",
-        "trailActivationPct": 10
+        "trailActivationPct": 10,
+        "trailAtrMult": 0
       },
       "stop_loss": {
         "type": "hard_percent",
@@ -10521,7 +10530,8 @@
         "tp1Pct": 12,
         "tp1Qty": 50,
         "trailMode": "ema20",
-        "trailActivationPct": 12
+        "trailActivationPct": 12,
+        "trailAtrMult": 0
       },
       "stop_loss": {
         "type": "hard_percent",
@@ -10564,7 +10574,8 @@
         "tp1Pct": 15,
         "tp1Qty": 50,
         "trailMode": "ema20",
-        "trailActivationPct": 15
+        "trailActivationPct": 15,
+        "trailAtrMult": 0
       },
       "stop_loss": {
         "type": "hard_percent",
@@ -10695,7 +10706,8 @@
         "tp1Pct": 10,
         "tp1Qty": 50,
         "trailMode": "ema20",
-        "trailActivationPct": 10
+        "trailActivationPct": 10,
+        "trailAtrMult": 0
       },
       "stop_loss": {
         "type": "hard_percent",
@@ -10738,7 +10750,8 @@
         "tp1Pct": 12,
         "tp1Qty": 50,
         "trailMode": "ema20",
-        "trailActivationPct": 12
+        "trailActivationPct": 12,
+        "trailAtrMult": 0
       },
       "stop_loss": {
         "type": "hard_percent",
@@ -10781,7 +10794,8 @@
         "tp1Pct": 15,
         "tp1Qty": 50,
         "trailMode": "ema20",
-        "trailActivationPct": 15
+        "trailActivationPct": 15,
+        "trailAtrMult": 0
       },
       "stop_loss": {
         "type": "hard_percent",
@@ -10912,7 +10926,8 @@
         "tp1Pct": 10,
         "tp1Qty": 50,
         "trailMode": "ema20",
-        "trailActivationPct": 10
+        "trailActivationPct": 10,
+        "trailAtrMult": 0
       },
       "stop_loss": {
         "type": "hard_percent",
@@ -10955,7 +10970,8 @@
         "tp1Pct": 12,
         "tp1Qty": 50,
         "trailMode": "ema20",
-        "trailActivationPct": 12
+        "trailActivationPct": 12,
+        "trailAtrMult": 0
       },
       "stop_loss": {
         "type": "hard_percent",
@@ -10998,7 +11014,8 @@
         "tp1Pct": 15,
         "tp1Qty": 50,
         "trailMode": "ema20",
-        "trailActivationPct": 15
+        "trailActivationPct": 15,
+        "trailAtrMult": 0
       },
       "stop_loss": {
         "type": "hard_percent",

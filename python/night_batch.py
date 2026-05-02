@@ -2042,6 +2042,38 @@ def write_live_checkout_protection_report(output_dir: Path, run_id: str, report:
     return report_path
 
 
+def _check_smoke_campaign_results(settings: dict, logger: logging.Logger) -> int:
+    """Return EXIT_STEP_FAILED if any strategy failed in the smoke run, 0 otherwise.
+
+    The Node.js campaign runner exits 0 even when strategies fail validation, so
+    we must check the recovered-summary.json to catch content-level failures.
+    """
+    campaign_id = settings.get('bundle_us_campaign') or settings.get('bundle_jp_campaign')
+    if not campaign_id:
+        return 0
+    summary_path = CAMPAIGN_RESULTS_DIR / campaign_id / 'smoke' / 'recovered-summary.json'
+    if not summary_path.exists():
+        logger.warning('Smoke summary not found at %s — cannot verify strategy results', summary_path)
+        return 0
+    try:
+        with open(summary_path, encoding='utf-8') as f:
+            summary = json.load(f)
+        failures = summary.get('failure', 0)
+        total = summary.get('total', 0)
+        successes = summary.get('success', 0)
+        if failures > 0:
+            logger.error(
+                'Smoke validation failed: %d/%d strategies failed (success=%d, failure=%d, total=%d)',
+                failures, total, successes, failures, total,
+            )
+            return EXIT_STEP_FAILED
+        logger.info('Smoke validation passed: %d/%d strategies succeeded', successes, total)
+        return 0
+    except Exception as exc:
+        logger.error('Failed to read smoke summary %s: %s', summary_path, exc)
+        return EXIT_STEP_FAILED
+
+
 def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, output_dir: Path = RESULTS_DIR) -> tuple[int, list[dict], dict | None]:
     steps: list[dict] = []
     startup_url = f'http://{settings["startup_check_host"]}:{settings["startup_check_port"]}/json/list'
@@ -2209,7 +2241,8 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
         if not smoke_result['success']:
             return EXIT_STEP_FAILED, steps, None
         if settings.get('smoke_only'):
-            return 0, steps, None
+            exit_code = _check_smoke_campaign_results(settings, logger)
+            return exit_code, steps, None
 
     # --- live-checkout-guard: check for mid-run protected file changes ---
     baseline_env_path = os.environ.get('NIGHT_BATCH_LIVE_CHECKOUT_BASELINE_PATH')
