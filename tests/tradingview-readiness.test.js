@@ -1,3 +1,6 @@
+import { mkdtemp, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
@@ -48,6 +51,34 @@ describe('classifyReadinessFailure', () => {
     const { classifyReadinessFailure } = await import('../src/core/tradingview-readiness.js');
     const result = classifyReadinessFailure(new Error('MCP server is unhealthy'));
     assert.equal(result.category, 'mcp-unhealthy');
+  });
+});
+
+describe('shouldAttemptReadinessRecovery', () => {
+  it('returns true when bridge is reachable but chart/api are still unavailable', async () => {
+    const { shouldAttemptReadinessRecovery } = await import('../src/core/night-batch-connection-gate.js');
+    const result = shouldAttemptReadinessRecovery({
+      bridge: { reachable: true, chartReachable: false },
+      status: {
+        success: false,
+        apiAvailable: false,
+        failureCategory: 'api-unavailable',
+      },
+    });
+    assert.equal(result, true);
+  });
+
+  it('returns false when the bridge itself is unreachable', async () => {
+    const { shouldAttemptReadinessRecovery } = await import('../src/core/night-batch-connection-gate.js');
+    const result = shouldAttemptReadinessRecovery({
+      bridge: { reachable: false, chartReachable: false },
+      status: {
+        success: false,
+        apiAvailable: false,
+        failureCategory: 'bridge-unreachable',
+      },
+    });
+    assert.equal(result, false);
   });
 });
 
@@ -566,6 +597,111 @@ describe('night-batch connection gate helpers', () => {
     assert.equal(result.success, false);
     assert.match(result.summary, /bridge unreachable/);
     assert.ok(result.attempts >= 2);
+  });
+
+  it('runs one recovery attempt for stalled readiness and then succeeds', async () => {
+    const { waitForConnection, shouldAttemptReadinessRecovery } = await import('../src/core/night-batch-connection-gate.js');
+    const events = [];
+    const probes = [
+      {
+        success: false,
+        bridge: { reachable: true, chartReachable: false },
+        status: {
+          success: false,
+          apiAvailable: false,
+          failureCategory: 'api-unavailable',
+        },
+        summary: 'bridge reachable but no chart target; tv status failed',
+      },
+      {
+        success: true,
+        startupReachable: true,
+        bridgeReachable: true,
+        statusReady: true,
+        bridge: { reachable: true, chartReachable: true },
+        status: {
+          success: true,
+          apiAvailable: true,
+          failureCategory: null,
+        },
+        summary: 'ready',
+      },
+    ];
+    const result = await waitForConnection({
+      timeoutMs: 60,
+      intervalMs: 10,
+      probe: async () => probes.shift(),
+      shouldRecover: (probeResult) => shouldAttemptReadinessRecovery(probeResult),
+      recover: async () => {
+        events.push('recover');
+      },
+      maxRecoveryAttempts: 1,
+      sleep: async () => {},
+      now: (() => {
+        let tick = 0;
+        return () => {
+          tick += 10;
+          return tick;
+        };
+      })(),
+      log: (message) => events.push(`log:${message}`),
+    });
+    assert.equal(result.success, true);
+    assert.deepEqual(events.filter((entry) => entry === 'recover'), ['recover']);
+  });
+
+  it('does not run recovery when the failure is bridge unreachable', async () => {
+    const { waitForConnection, shouldAttemptReadinessRecovery } = await import('../src/core/night-batch-connection-gate.js');
+    const events = [];
+    const result = await waitForConnection({
+      timeoutMs: 20,
+      intervalMs: 5,
+      probe: async () => ({
+        success: false,
+        bridge: { reachable: false, chartReachable: false },
+        status: {
+          success: false,
+          apiAvailable: false,
+          failureCategory: 'bridge-unreachable',
+        },
+        summary: 'bridge unreachable; tv status failed',
+      }),
+      shouldRecover: (probeResult) => shouldAttemptReadinessRecovery(probeResult),
+      recover: async () => {
+        events.push('recover');
+      },
+      maxRecoveryAttempts: 1,
+      sleep: async () => {},
+      now: (() => {
+        let tick = 0;
+        return () => {
+          tick += 10;
+          return tick;
+        };
+      })(),
+    });
+    assert.equal(result.success, false);
+    assert.deepEqual(events, []);
+  });
+
+  it('loads launch_wait_sec from the night batch config', async () => {
+    const { loadNightBatchConnectionConfig } = await import('../src/core/night-batch-connection-gate.js');
+    const tempDir = await mkdtemp(join(tmpdir(), 'night-batch-config-'));
+    const configPath = join(tempDir, 'config.json');
+    await writeFile(configPath, JSON.stringify({
+      runtime: {
+        startup_check_host: '127.0.0.1',
+        startup_check_port: 9222,
+        host: '172.31.144.1',
+        port: 9223,
+        launch_wait_sec: 37,
+      },
+    }), 'utf8');
+
+    const result = await loadNightBatchConnectionConfig(configPath);
+    assert.equal(result.launchWaitSec, 37);
+    assert.equal(result.startupPort, 9222);
+    assert.equal(result.port, 9223);
   });
 
   it('treats startup_check as diagnostic-only when bridge and tv status are ready', async () => {

@@ -70,9 +70,26 @@ export function parseStatusPayload({ exitCode, stdout, stderr }) {
   return {
     success,
     apiAvailable: payload?.api_available === true,
+    failureCategory: typeof payload?.failure_category === 'string' ? payload.failure_category : null,
     payload,
     summary: detailParts.join(' '),
   };
+}
+
+export function shouldAttemptReadinessRecovery(result) {
+  if (!result || typeof result !== 'object') {
+    return false;
+  }
+  if (!result.bridge?.reachable || result.bridge?.chartReachable) {
+    return false;
+  }
+  if (result.status?.success) {
+    return false;
+  }
+  return (
+    result.status?.failureCategory === 'api-unavailable' ||
+    result.status?.apiAvailable === false
+  );
 }
 
 async function fetchJson(url, { fetchImpl = fetch, timeoutMs = DEFAULT_HTTP_TIMEOUT_MS } = {}) {
@@ -198,6 +215,9 @@ export async function waitForConnection({
   timeoutMs = DEFAULT_TIMEOUT_MS,
   intervalMs = DEFAULT_INTERVAL_MS,
   probe,
+  shouldRecover = () => false,
+  recover = async () => {},
+  maxRecoveryAttempts = 0,
   sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
   now = () => Date.now(),
   log = () => {},
@@ -205,6 +225,7 @@ export async function waitForConnection({
   const startedAt = now();
   const deadline = startedAt + timeoutMs;
   let attempts = 0;
+  let recoveryAttempts = 0;
   let lastResult = null;
 
   while (true) {
@@ -225,8 +246,14 @@ export async function waitForConnection({
         ...lastResult,
         success: false,
         attempts,
+        recoveryAttempts,
         elapsedMs: currentTime - startedAt,
       };
+    }
+    if (recoveryAttempts < maxRecoveryAttempts && shouldRecover(lastResult, recoveryAttempts + 1)) {
+      recoveryAttempts += 1;
+      await recover(lastResult, recoveryAttempts);
+      continue;
     }
     await sleep(intervalMs);
   }
@@ -241,6 +268,7 @@ export async function loadNightBatchConnectionConfig(configPath) {
     startupPort: Number(runtime.startup_check_port || 9222),
     host: String(runtime.host || '172.31.144.1'),
     port: Number(runtime.port || 9223),
+    launchWaitSec: Number(runtime.launch_wait_sec || 25),
   };
 }
 

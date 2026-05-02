@@ -1,15 +1,49 @@
 #!/usr/bin/env node
 
+import { execFile } from 'node:child_process';
 import { resolve } from 'node:path';
+import { promisify } from 'node:util';
 import {
   connectionGateDefaults,
   loadNightBatchConnectionConfig,
   probeConnection,
+  shouldAttemptReadinessRecovery,
   waitForConnection,
 } from '../../src/core/night-batch-connection-gate.js';
+import { launchDesktop } from '../../src/core/launch.js';
+
+const execFileAsync = promisify(execFile);
 
 function writeLine(message, stream = process.stdout) {
   stream.write(`${message}\n`);
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function killTradingViewProcess() {
+  try {
+    await execFileAsync('taskkill.exe', ['/F', '/IM', 'TradingView.exe']);
+  } catch (error) {
+    const detail = `${error?.stdout || ''}\n${error?.stderr || ''}\n${error?.message || ''}`;
+    if (/not found|no running instance|見つかりません|見当たりません/i.test(detail)) {
+      return;
+    }
+    throw error;
+  }
+}
+
+async function restartTradingView(connection, log) {
+  log('stalled readiness detected; restarting TradingView once');
+  await killTradingViewProcess();
+  const launched = await launchDesktop({ port: connection.startupPort });
+  log(`relaunch requested (pid=${launched.pid ?? 'unknown'} port=${launched.port})`);
+  const waitMs = Math.max(0, connection.launchWaitSec) * 1000;
+  if (waitMs > 0) {
+    log(`waiting ${Math.ceil(waitMs / 1000)}s for TradingView relaunch`);
+    await sleep(waitMs);
+  }
 }
 
 function parseArgs(argv) {
@@ -70,6 +104,9 @@ async function main(argv) {
     timeoutMs: args.timeoutSec * 1000,
     intervalMs: args.intervalSec * 1000,
     probe: () => probeConnection(connection),
+    shouldRecover: (probeResult) => shouldAttemptReadinessRecovery(probeResult),
+    recover: async () => restartTradingView(connection, (message) => writeLine(`[connection-gate] ${message}`)),
+    maxRecoveryAttempts: 1,
     log: (message) => writeLine(`[connection-gate] ${message}`),
   });
 
