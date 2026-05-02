@@ -35,12 +35,12 @@
 
 ## 実装ステップ
 
-- [ ] `#84` artifact から smoke failed preset 46本を抽出し、固定リストを確認する
-- [ ] failed-only campaign JSON を追加し、phase / universe / execution 設定を既存 50pack 運用と整合させる
-- [ ] night batch 用 config を追加し、failed-only campaign を参照させる
-- [ ] campaign / workflow まわりのテストを更新して新 campaign と config の存在を固定する
-- [ ] 対象テストを実行して green を確認する
-- [ ] session log を残す
+- [x] `#84` artifact から smoke failed preset 46本を抽出し、固定リストを確認する
+- [x] failed-only campaign JSON を追加し、phase / universe / execution 設定を既存 50pack 運用と整合させる
+- [x] night batch 用 config を追加し、failed-only campaign を参照させる
+- [x] campaign / workflow まわりのテストを更新して新 campaign と config の存在を固定する
+- [x] 対象テストを実行して green を確認する
+- [x] session log を残す
 - [ ] `gh workflow run night-batch-self-hosted.yml --field config_path=config/night_batch/emr-next-50pack-run84-failed-us40-config.json` を実行する
 - [ ] dispatch 後に run ID と起動状態を確認する
 
@@ -75,3 +75,12 @@
 - smoke failed presets: 46
 - smoke successful presets: 4
 - failed-only campaign はこの 46 preset だけを含める
+
+## 実績メモ
+
+- 追加 campaign: `config/backtest/campaigns/emr-next-50pack-run84-failed-us40-pack.json`
+- 追加 config: `config/night_batch/emr-next-50pack-run84-failed-us40-config.json`
+- 追加 session log: `docs/sessions/run84-failed-strategies-rerun_20260502.md`
+- テスト結果:
+  - `node --test tests/campaign.test.js`
+  - `node --test tests/windows-run-night-batch-self-hosted.test.js`

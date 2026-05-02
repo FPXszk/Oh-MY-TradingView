@@ -975,6 +975,31 @@ describe('public library top10 US40 campaign', () => {
     assert.equal(campaign.totalRuns, 36);
   });
 
+  it('loads emr-next-50pack-run84-failed-us40-pack config with a 40 x 46 matrix', async () => {
+    const campaign = await loadCampaign('emr-next-50pack-run84-failed-us40-pack');
+
+    assert.equal(campaign.config.id, 'emr-next-50pack-run84-failed-us40-pack');
+    assert.equal(campaign.config.universe, 'public-top10-us-40');
+    assert.equal(campaign.config.strategy_ids.length, 46);
+    assert.equal(campaign.symbols.length, 40);
+    assert.equal(campaign.strategies.length, 46);
+    assert.equal(campaign.matrix.length, 1840);
+    assert.equal(campaign.totalRuns, 1840);
+    assert.equal(campaign.defaults.date_range.from, '2015-01-01');
+    assert.equal(campaign.defaults.date_range.to, '2026-04-27');
+    assert.equal(campaign.strategies[0].id, 'emr-next-vol20x05');
+  });
+
+  it('uses SPY-only smoke for emr-next-50pack-run84-failed-us40-pack so each strategy is checked once', async () => {
+    const campaign = await loadCampaign('emr-next-50pack-run84-failed-us40-pack', { phase: 'smoke' });
+
+    assert.deepEqual(campaign.config.phases.smoke.symbols, ['SPY']);
+    assert.equal(campaign.symbols.length, 1);
+    assert.equal(campaign.strategies.length, 46);
+    assert.equal(campaign.matrix.length, 46);
+    assert.equal(campaign.totalRuns, 46);
+  });
+
   it('loads deep-pullback-plus-recovery-us40-50pack config with a 40 x 50 matrix', async () => {
     const campaign = await loadCampaign('deep-pullback-plus-recovery-us40-50pack');
 
