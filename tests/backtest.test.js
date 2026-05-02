@@ -20,6 +20,7 @@ import {
   prepareBacktestPineSource,
   RESTORE_POLICY,
   loadPreset,
+  extractStrategyTitleFromSource,
   probeStrategySourceShape,
   deriveMetricsFromTrades,
 } from '../src/core/backtest.js';
@@ -1278,6 +1279,20 @@ describe('loadPreset', () => {
     assert.ok(source.includes('//@version=6'));
     assert.ok(source.includes(preset.name));
     assert.equal(source, buildResearchStrategySource(preset, defaults));
+  });
+
+  it('extracts the executable strategy title from generated raw_source presets', async () => {
+    const { preset, source } = await loadPreset('emr-next-vol20x05');
+    assert.equal(preset.name, 'EMR Next Volume 0.5x');
+    assert.equal(
+      extractStrategyTitleFromSource(source),
+      'EMR Winrate Entry Confirm Volume Above 20 Day Average',
+    );
+  });
+
+  it('extracts the strategy title from positional strategy declarations', () => {
+    const source = buildNvdaMaSource();
+    assert.equal(extractStrategyTitleFromSource(source), 'NVDA 5/20 MA Cross');
   });
 
   it('throws for presets whose builder is unsupported by the repo CLI generator', async () => {

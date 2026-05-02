@@ -205,6 +205,23 @@ async function ensurePineEditorReady({ attempts = 3, delayMs = 1000 } = {}) {
   return false;
 }
 
+async function focusPineEditor() {
+  return evaluate(`
+    (function() {
+      var m = ${FIND_MONACO};
+      if (m && m.editor && typeof m.editor.focus === 'function') {
+        m.editor.focus();
+      }
+      var textarea = document.querySelector('.inputarea.monaco-mouse-cursor-text, textarea.inputarea');
+      if (textarea && typeof textarea.focus === 'function') {
+        textarea.focus();
+        return true;
+      }
+      return m !== null;
+    })()
+  `);
+}
+
 // -- Offline static analysis --
 
 export function analyze({ source }) {
@@ -594,6 +611,7 @@ export async function compile({ preferSaveAndAdd = false } = {}) {
   const clicked = await clickPreferredApplyButton({ preferSaveAndAdd });
 
   if (!clicked) {
+    await focusPineEditor();
     const c = await getClient();
     await c.Input.dispatchKeyEvent({
       type: 'keyDown', modifiers: 2, key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13,
@@ -658,6 +676,7 @@ export async function smartCompile({ preferSaveAndAdd = false } = {}) {
   const buttonClicked = await clickPreferredApplyButton({ preferSaveAndAdd });
 
   if (!buttonClicked) {
+    await focusPineEditor();
     const c = await getClient();
     await c.Input.dispatchKeyEvent({
       type: 'keyDown', modifiers: 2, key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13,
@@ -1312,7 +1331,7 @@ export async function clickApplyButtonByLabel(targetLabel) {
   return evaluate(`
     (function() {
       var target = ${labelJson}.toLowerCase();
-      var btns = document.querySelectorAll('button');
+      var btns = document.querySelectorAll('button,[role="button"]');
       for (var i = 0; i < btns.length; i++) {
         var text = (btns[i].textContent || '').trim().toLowerCase();
         var title = (btns[i].title || '').trim().toLowerCase();
@@ -1330,7 +1349,7 @@ export async function clickApplyButtonByLabel(targetLabel) {
 async function clickButtonByIndex(targetIndex) {
   return evaluate(`
     (function() {
-      var btns = document.querySelectorAll('button');
+      var btns = document.querySelectorAll('button,[role="button"]');
       var btn = btns[${JSON.stringify(targetIndex)}];
       if (!btn) return false;
       btn.click();
@@ -1342,7 +1361,7 @@ async function clickButtonByIndex(targetIndex) {
 async function clickPreferredApplyButton({ preferSaveAndAdd = false } = {}) {
   const buttons = await evaluate(`
     (function() {
-      return Array.from(document.querySelectorAll('button'))
+      return Array.from(document.querySelectorAll('button,[role="button"]'))
         .map(function(btn) {
           return {
             text: (btn.textContent || '').trim(),

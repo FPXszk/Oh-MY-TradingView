@@ -83,6 +83,24 @@ export const RESTORE_POLICY = Object.freeze({
   SKIP: 'skip',
 });
 
+export function extractStrategyTitleFromSource(source) {
+  if (typeof source !== 'string' || source.length === 0) {
+    return null;
+  }
+
+  const namedTitle = source.match(/strategy\s*\(\s*[\s\S]*?\btitle\s*=\s*"([^"]+)"/i);
+  if (namedTitle?.[1]) {
+    return namedTitle[1];
+  }
+
+  const positionalTitle = source.match(/strategy\s*\(\s*"([^"]+)"/i);
+  if (positionalTitle?.[1]) {
+    return positionalTitle[1];
+  }
+
+  return null;
+}
+
 function calculateSma(values, period, index) {
   if (index < period - 1) return null;
   let sum = 0;
@@ -908,6 +926,50 @@ async function clearChartStudies() {
   await new Promise((r) => setTimeout(r, 1500));
 }
 
+function buildApplyFailureReason(verifyReason) {
+  return verifyReason === 'preexisting_matching_strategy_only'
+    ? 'Matching strategy was already on chart before run, and this run could not verify a new or updated attachment'
+    : 'Strategy not verified in chart studies after compile + retry';
+}
+
+async function retryCompileFromCleanSlate({ source, strategyTitle }) {
+  await dismissTransientDialogs();
+  await clearChartStudies();
+  const studiesBeforeCompile = await fetchChartStudies();
+  await prepareBacktestPineSource(source);
+
+  const compileResult = await smartCompile();
+  if (compileResult.has_errors) {
+    return {
+      attempted: true,
+      compileResult,
+      strategyAttached: false,
+      verifyReason: 'compile_errors_after_clean_retry',
+    };
+  }
+
+  const studiesAfterCompile = await fetchChartStudies();
+  const verifyResult = verifyStrategyAttachmentChange(
+    studiesBeforeCompile,
+    studiesAfterCompile,
+    strategyTitle,
+    compileResult.study_added,
+  );
+
+  let strategyAttached = verifyResult.attached;
+  if (!strategyAttached) {
+    const retryResult = await retryApplyStrategy(strategyTitle);
+    strategyAttached = retryResult.applied;
+  }
+
+  return {
+    attempted: true,
+    compileResult,
+    strategyAttached,
+    verifyReason: verifyResult.reason,
+  };
+}
+
 async function snapshotChartStudyTemplate() {
   const snapshot = await evaluate(`
     (function() {
@@ -1261,14 +1323,28 @@ export async function runNvdaMaBacktest() {
       compileResult.study_added,
     );
     strategyAttached = verifyResult.attached;
-    let applyFailureReason =
-      verifyResult.reason === 'preexisting_matching_strategy_only'
-        ? 'Matching strategy was already on chart before run, and this run could not verify a new or updated attachment'
-        : 'Strategy not verified in chart studies after compile + retry';
+    let applyFailureReason = buildApplyFailureReason(verifyResult.reason);
 
     if (!strategyAttached) {
       const retryResult = await retryApplyStrategy(STRATEGY_TITLE);
       strategyAttached = retryResult.applied;
+    }
+
+    if (!strategyAttached && verifyResult.reason === 'preexisting_matching_strategy_only') {
+      const cleanRetry = await retryCompileFromCleanSlate({ source, strategyTitle: STRATEGY_TITLE });
+      if (cleanRetry.attempted) {
+        compileResult = cleanRetry.compileResult;
+        if (compileResult.has_errors) {
+          result = buildResult({
+            compileSuccess: false,
+            compileErrors: compileResult.errors,
+            symbol: chartSymbol,
+          });
+          return result;
+        }
+        strategyAttached = cleanRetry.strategyAttached;
+        applyFailureReason = buildApplyFailureReason(cleanRetry.verifyReason);
+      }
     }
 
     if (!strategyAttached) {
@@ -1284,10 +1360,7 @@ export async function runNvdaMaBacktest() {
           return result;
         }
         strategyAttached = recovery.strategyAttached;
-        applyFailureReason =
-          recovery.verifyReason === 'preexisting_matching_strategy_only'
-            ? 'Matching strategy was already on chart before run, and this run could not verify a new or updated attachment'
-            : 'Strategy not verified in chart studies after compile + retry';
+        applyFailureReason = buildApplyFailureReason(recovery.verifyReason);
       }
     }
 
@@ -1481,7 +1554,7 @@ export async function loadPreset(presetId, { dateOverride } = {}) {
 // ---------------------------------------------------------------------------
 export async function runPresetBacktest({ presetId, symbol = 'NVDA', dateOverride } = {}) {
   const { preset, source } = await loadPreset(presetId, { dateOverride });
-  const strategyTitle = preset.name;
+  const strategyTitle = extractStrategyTitleFromSource(source) || preset.name;
   let originalSymbol = null;
   let originalSource = null;
   let originalStudies = [];
@@ -1543,14 +1616,28 @@ export async function runPresetBacktest({ presetId, symbol = 'NVDA', dateOverrid
       compileResult.study_added,
     );
     strategyAttached = verifyResult.attached;
-    let applyFailureReason =
-      verifyResult.reason === 'preexisting_matching_strategy_only'
-        ? 'Matching strategy was already on chart before run, and this run could not verify a new or updated attachment'
-        : 'Strategy not verified in chart studies after compile + retry';
+    let applyFailureReason = buildApplyFailureReason(verifyResult.reason);
 
     if (!strategyAttached) {
       const retryResult = await retryApplyStrategy(strategyTitle);
       strategyAttached = retryResult.applied;
+    }
+
+    if (!strategyAttached && verifyResult.reason === 'preexisting_matching_strategy_only') {
+      const cleanRetry = await retryCompileFromCleanSlate({ source, strategyTitle });
+      if (cleanRetry.attempted) {
+        compileResult = cleanRetry.compileResult;
+        if (compileResult.has_errors) {
+          result = buildResult({
+            compileSuccess: false,
+            compileErrors: compileResult.errors,
+            symbol: chartSymbol,
+          });
+          return result;
+        }
+        strategyAttached = cleanRetry.strategyAttached;
+        applyFailureReason = buildApplyFailureReason(cleanRetry.verifyReason);
+      }
     }
 
     if (!strategyAttached) {
@@ -1566,10 +1653,7 @@ export async function runPresetBacktest({ presetId, symbol = 'NVDA', dateOverrid
           return result;
         }
         strategyAttached = recovery.strategyAttached;
-        applyFailureReason =
-          recovery.verifyReason === 'preexisting_matching_strategy_only'
-            ? 'Matching strategy was already on chart before run, and this run could not verify a new or updated attachment'
-            : 'Strategy not verified in chart studies after compile + retry';
+        applyFailureReason = buildApplyFailureReason(recovery.verifyReason);
       }
     }
 
