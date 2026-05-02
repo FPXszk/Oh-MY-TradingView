@@ -1,6 +1,6 @@
 ---
 name: tradingview-operator-playbook
-description: TradingView 操作の decision tree。market_* / reach_* / workspace_* / observe の使い分けと anti-pattern を明示する。
+description: TradingView 操作の decision tree。market_* / reach_* / workspace_* / observe / alert / pine / backtest の使い分けと anti-pattern を明示する。
 tags:
   - tradingview
   - operator
@@ -31,7 +31,10 @@ intelligence を runtime に増やすのではなく、skill markdown に judgme
 │
 ├─ 銘柄をランキング・比較したい
 │   ├─ TA 指標でランク → tv market ta-rank / market_ta_rank
-│   └─ Confluence スコアで総合ランク → tv market confluence-rank / market_confluence_rank
+│   ├─ Confluence スコアで総合ランク → tv market confluence-rank / market_confluence_rank
+│   ├─ スクリーナー（フィルタリング） → tv market screener / market_screener
+│   ├─ Minervini 基準スクリーナー → market_minervini_screener
+│   └─ ファンダメンタル・スクリーナー → market_fundamental_screener
 │
 ├─ ファンダメンタルズを確認したい
 │   ├─ 単一銘柄 → tv market fundamentals / market_fundamentals
@@ -43,42 +46,116 @@ intelligence を runtime に増やすのではなく、skill markdown に judgme
 ├─ 外部情報を収集したい
 │   ├─ Web ページ → tv reach web / reach_read_web
 │   ├─ RSS フィード → tv reach rss / reach_read_rss
-│   ├─ Reddit → tv reach reddit-search / reach_search_reddit
+│   ├─ Reddit 検索 → tv reach reddit-search / reach_search_reddit
+│   ├─ Reddit 個別投稿 → tv reach reddit-post / reach_read_reddit_post
 │   └─ YouTube → tv reach youtube / reach_read_youtube
 │
 ├─ X/Twitter の情報を確認したい
 │   ├─ ポスト検索 → tv x search / x_search_posts
+│   ├─ ユーザープロフィール → tv x user / x_user_profile
 │   ├─ ユーザーの投稿 → tv x user-posts / x_user_posts
 │   └─ 個別ツイート → tv x tweet / x_tweet_detail
 │
 ├─ TradingView Desktop を操作したい
+│   ├─ CDP 接続チェック → tv status / tv_health_check
 │   ├─ チャートの状態確認 → tv observe snapshot / tv_observe_snapshot
-│   ├─ ウォッチリスト管理 → tv workspace watchlist-*
-│   ├─ ペイン操作 → tv workspace pane-list / pane-focus
-│   ├─ タブ操作 → tv workspace tab-list / tab-switch
-│   └─ スクリーンショット → tv capture / tv_capture_screenshot
+│   ├─ スクリーンショット → tv capture / tv_capture_screenshot
+│   ├─ ウォッチリスト一覧 → tv workspace watchlist-list / tv_watchlist_list
+│   ├─ ウォッチリスト追加 → tv workspace watchlist-add / tv_watchlist_add
+│   ├─ ウォッチリスト削除 → tv workspace watchlist-remove / tv_watchlist_remove
+│   ├─ ペイン操作 → tv workspace pane-list / tv_pane_list / pane-focus / tv_pane_focus
+│   ├─ タブ操作 → tv workspace tab-list / tv_tab_list / tab-switch / tv_tab_switch
+│   └─ レイアウト操作 → tv workspace layout-apply / tv_layout_apply
+│
+├─ アラートを管理したい
+│   ├─ 一覧 → tv_alert_list
+│   ├─ 価格アラート作成 → tv alert create-price / tv_alert_create_price
+│   └─ アラート削除 → tv alert delete / tv_alert_delete
 │
 └─ Pine Script を開発したい
-    ├─ コンパイル → tv pine compile / pine_compile
-    ├─ エラー分析 → tv pine analyze / pine_analyze
-    └─ バックテスト → tv backtest / tv_backtest_*
+    ├─ ソース取得 → tv pine get / pine_get_source
+    ├─ ソース設定 → tv pine set / pine_set_source
+    ├─ スマートコンパイル → tv pine compile / pine_smart_compile
+    ├─ コンパイルエラー確認 → tv pine errors / pine_get_errors
+    ├─ オフライン静的解析 → tv pine analyze / pine_analyze
+    └─ バックテスト実行
+        ├─ プリセット駆動 → tv backtest preset / tv_backtest_preset
+        └─ 固定テスト（NVDA SMA） → tv backtest sma-crossover / tv_backtest_nvda_ma_5_20
 ```
 
 ## Tool 名の対応表
 
-| CLI コマンド | MCP Tool 名 | CDP 必要 |
-|---|---|---|
-| `tv market quote` | `market_quote` | No |
-| `tv market analysis` | `market_symbol_analysis` | No |
-| `tv market confluence-rank` | `market_confluence_rank` | No |
-| `tv reach web` | `reach_read_web` | No |
-| `tv reach rss` | `reach_read_rss` | No |
-| `tv reach reddit-search` | `reach_search_reddit` | No |
-| `tv reach youtube` | `reach_read_youtube` | No |
-| `tv x search` | `x_search_posts` | No |
-| `tv x user-posts` | `x_user_posts` | No |
-| `tv observe snapshot` | `tv_observe_snapshot` | Yes |
-| `tv capture` | `tv_capture_screenshot` | Yes |
+### Market Intelligence（CDP 不要）
+
+| CLI コマンド | MCP Tool 名 |
+|---|---|
+| `tv market quote` | `market_quote` |
+| `tv market snapshot` | `market_snapshot` |
+| `tv market fundamentals` | `market_fundamentals` |
+| `tv market financials` | `market_financials` |
+| `tv market news` | `market_news` |
+| `tv market screener` | `market_screener` |
+| `tv market ta-summary` | `market_ta_summary` |
+| `tv market ta-rank` | `market_ta_rank` |
+| `tv market analysis` | `market_symbol_analysis` |
+| `tv market confluence-rank` | `market_confluence_rank` |
+| ―（MCP 直接） | `market_minervini_screener` |
+| ―（MCP 直接） | `market_fundamental_screener` |
+
+### Reach / External（CDP 不要）
+
+| CLI コマンド | MCP Tool 名 |
+|---|---|
+| `tv reach web` | `reach_read_web` |
+| `tv reach rss` | `reach_read_rss` |
+| `tv reach reddit-search` | `reach_search_reddit` |
+| `tv reach reddit-post` | `reach_read_reddit_post` |
+| `tv reach youtube` | `reach_read_youtube` |
+
+### X / Twitter（CDP 不要）
+
+| CLI コマンド | MCP Tool 名 |
+|---|---|
+| `tv x search` | `x_search_posts` |
+| `tv x user` | `x_user_profile` |
+| `tv x user-posts` | `x_user_posts` |
+| `tv x tweet` | `x_tweet_detail` |
+
+### Pine Script（CDP 必要）
+
+| CLI コマンド | MCP Tool 名 |
+|---|---|
+| `tv pine get` | `pine_get_source` |
+| `tv pine set` | `pine_set_source` |
+| `tv pine compile` | `pine_smart_compile` |
+| `tv pine errors` | `pine_get_errors` |
+| `tv pine analyze` | `pine_analyze` |
+
+### Backtest（CDP 必要）
+
+| CLI コマンド | MCP Tool 名 |
+|---|---|
+| `tv backtest preset` | `tv_backtest_preset` |
+| `tv backtest sma-crossover` | `tv_backtest_nvda_ma_5_20` |
+
+### Workspace / Desktop（CDP 必要）
+
+| CLI コマンド | MCP Tool 名 |
+|---|---|
+| `tv status` | `tv_health_check` |
+| `tv observe snapshot` | `tv_observe_snapshot` |
+| `tv capture` | `tv_capture_screenshot` |
+| `tv workspace watchlist-list` | `tv_watchlist_list` |
+| `tv workspace watchlist-add` | `tv_watchlist_add` |
+| `tv workspace watchlist-remove` | `tv_watchlist_remove` |
+| `tv workspace pane-list` | `tv_pane_list` |
+| `tv workspace pane-focus` | `tv_pane_focus` |
+| `tv workspace tab-list` | `tv_tab_list` |
+| `tv workspace tab-switch` | `tv_tab_switch` |
+| `tv workspace layout-apply` | `tv_layout_apply` |
+| `tv alert create-price` | `tv_alert_create_price` |
+| `tv alert delete` | `tv_alert_delete` |
+| ―（MCP 直接） | `tv_alert_list` |
 
 ## Anti-Patterns
 
