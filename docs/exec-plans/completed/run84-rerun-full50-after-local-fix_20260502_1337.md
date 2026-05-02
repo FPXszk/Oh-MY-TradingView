@@ -35,11 +35,11 @@
 
 ## 実装ステップ
 
-- [ ] `run_id=25243768798` を cancel し、`canceled` へ遷移したことを確認する
-- [ ] `#84` smoke success 4 本と failed-only 46 本の和集合が `emr-next-50pack-us40` と一致することを確認する
-- [ ] session log に rerun 方針変更、cancel 済み run、新規 dispatch 対象 config を記録する
-- [ ] `config/night_batch/emr-next-50pack-us40-config.json` で workflow を dispatch し、新 run ID / 起動状態を確認する
-- [ ] 計画完了後、計画を `completed/` へ移動して commit / push する
+- [x] `run_id=25243768798` を cancel し、`completed / cancelled` へ遷移したことを確認する
+- [x] `#84` smoke success 4 本と failed-only 46 本の和集合が `emr-next-50pack-us40` と一致することを確認する
+- [x] session log に rerun 方針変更、cancel 済み run、新規 dispatch 対象 config を記録する
+- [x] `config/night_batch/emr-next-50pack-us40-config.json` で workflow を dispatch し、新 run ID / 起動状態を確認する
+- [x] 計画完了後、計画を `completed/` へ移動して commit / push する
 
 ## テスト戦略
 

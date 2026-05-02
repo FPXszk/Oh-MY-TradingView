@@ -50,3 +50,20 @@
 
 - workflow to run:
   `gh workflow run night-batch-self-hosted.yml --field config_path=config/night_batch/emr-next-50pack-run84-failed-us40-config.json`
+
+## Full 50 Rerun
+
+- local-fix 後の failed-only rerun `25243768798` は、ユーザー指示により full 50 rerun へ切り替えるため cancel した
+  - final status: `completed`
+  - final conclusion: `cancelled`
+- `#84` smoke success 4 本
+  - `emr-breakout-winrate-stopout-entry-confirm-volume20x10`
+  - `emr-breakout-winrate-stopout-entry-confirm-volume20x15`
+  - `emr-breakout-winrate-stopout-stop-until-breakout-high`
+  - `emr-breakout-winrate-stopout-stop-until-plus2pct`
+- failed-only pack 46 本との和集合をローカルで照合し、`config/backtest/campaigns/emr-next-50pack-us40.json` の既存 50 本と `missing=[]`, `extra=[]` で完全一致を確認した
+- そのため full rerun は新規 campaign を追加せず、既存 config `config/night_batch/emr-next-50pack-us40-config.json` を再使用する
+- new full-50 rerun dispatched at `2026-05-02 13:39 JST`
+  - config: `config/night_batch/emr-next-50pack-us40-config.json`
+  - run id: `25243935585`
+  - initial status: `queued`
