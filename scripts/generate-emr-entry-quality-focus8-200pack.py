@@ -773,28 +773,12 @@ PINE_TEMPLATE = textwrap.dedent(
     rsiAlignBull = rsi > rsiEma
     rsiAlignBear = rsi < rsiEma
 
-    buyRaw = (
-        (emaBullCross  and macdAlignBull and rsiAlignBull) or
-        (macdBullCross and emaAlignBull  and rsiAlignBull) or
-        (rsiBullCross  and emaAlignBull  and macdAlignBull)
-    )
+    buyRaw = ((emaBullCross and macdAlignBull and rsiAlignBull) or (macdBullCross and emaAlignBull and rsiAlignBull) or (rsiBullCross and emaAlignBull and macdAlignBull))
 
-    sellRaw = (
-        (emaBearCross  and macdAlignBear and rsiAlignBear) or
-        (macdBearCross and emaAlignBear  and rsiAlignBear) or
-        (rsiBearCross  and emaAlignBear  and macdAlignBear)
-    )
+    sellRaw = ((emaBearCross and macdAlignBear and rsiAlignBear) or (macdBearCross and emaAlignBear and rsiAlignBear) or (rsiBearCross and emaAlignBear and macdAlignBear))
 
-    bullScore = (
-        (emaAlignBull ? 1 : 0) + (macdAlignBull ? 1 : 0) + (rsiAlignBull ? 1 : 0) +
-        (rsi > rsiLevel ? 1 : 0) + (histLine > 0 ? 1 : 0) + (close > emaFast ? 1 : 0) +
-        (close > emaSlow ? 1 : 0)
-    )
-    bearScore = (
-        (emaAlignBear ? 1 : 0) + (macdAlignBear ? 1 : 0) + (rsiAlignBear ? 1 : 0) +
-        (rsi < rsiLevel ? 1 : 0) + (histLine < 0 ? 1 : 0) + (close < emaFast ? 1 : 0) +
-        (close < emaSlow ? 1 : 0)
-    )
+    bullScore = ((emaAlignBull ? 1 : 0) + (macdAlignBull ? 1 : 0) + (rsiAlignBull ? 1 : 0) + (rsi > rsiLevel ? 1 : 0) + (histLine > 0 ? 1 : 0) + (close > emaFast ? 1 : 0) + (close > emaSlow ? 1 : 0))
+    bearScore = ((emaAlignBear ? 1 : 0) + (macdAlignBear ? 1 : 0) + (rsiAlignBear ? 1 : 0) + (rsi < rsiLevel ? 1 : 0) + (histLine < 0 ? 1 : 0) + (close < emaFast ? 1 : 0) + (close < emaSlow ? 1 : 0))
 
     breakoutCloseOk = breakoutCloseLen <= 0 or close > ta.highest(high, breakoutCloseLen)[1]
     breakoutIntradayOk = breakoutIntradayLen <= 0 or high > ta.highest(high, breakoutIntradayLen)[1]
@@ -893,13 +877,7 @@ PINE_TEMPLATE = textwrap.dedent(
 
     barsSincePending = pendingLong and not na(pendingSignalBar) ? bar_index - pendingSignalBar : na
     pendingWindowOk = pendingLong and not na(barsSincePending) and barsSincePending > 0 and barsSincePending <= delayBars
-    pendingConfirmOk = (
-        entryFiltersOk and emaAlignBull and macdAlignBull and rsiAlignBull and
-        (not delayRequireSignalHigh or close > pendingSignalHigh) and
-        (not delayRequireFastEma or close > emaFast) and
-        (not delayRequireSlowEma or close > emaSlow) and
-        (not delayRequireHistRising or histLine > histLine[1])
-    )
+    pendingConfirmOk = (entryFiltersOk and emaAlignBull and macdAlignBull and rsiAlignBull and (not delayRequireSignalHigh or close > pendingSignalHigh) and (not delayRequireFastEma or close > emaFast) and (not delayRequireSlowEma or close > emaSlow) and (not delayRequireHistRising or histLine > histLine[1]))
 
     if pendingWindowOk and pendingConfirmOk and inRange and barstate.isconfirmed and strategy.position_size <= 0 and posState != 1
         strategy.entry("Long", strategy.long)
