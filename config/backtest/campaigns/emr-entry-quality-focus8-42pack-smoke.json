@@ -1,0 +1,73 @@
+{
+  "id": "emr-entry-quality-focus8-42pack-smoke",
+  "name": "EMA + MACD + RSI Entry Quality Focus-8 42-Pack Smoke (phase-21)",
+  "description": "Representative 42-pack subset from the focus-8 entry-quality 200-pack. One strategy is selected from each subgroup to validate wiring and smoke execution breadth before running the full pack.",
+  "universe": "focus-8",
+  "strategy_ids": [
+    "ema-macd-rsi-sl-baseline",
+    "emr-entry-base-ema10-24",
+    "emr-entry-base-macd8-21-5",
+    "emr-entry-base-rsi55",
+    "emr-entry-conf-score3-rsi55",
+    "emr-entry-conf-score4-rsi55",
+    "emr-entry-conf-score4hist-rsi55",
+    "emr-entry-conf-score4closefast-rsi55",
+    "emr-entry-conf-score5histclose-rsi55",
+    "emr-entry-delay-1barhigh-rsi55",
+    "emr-entry-delay-1barhighfast-rsi55",
+    "emr-entry-delay-2barhigh-rsi55",
+    "emr-entry-delay-2barfasthist-rsi55",
+    "emr-entry-delay-3barfastslowhist-rsi55",
+    "emr-entry-struct-close5-rsi55",
+    "emr-entry-struct-close10-rsi55",
+    "emr-entry-struct-intraday20-rsi55",
+    "emr-entry-struct-swing20-rsi55",
+    "emr-entry-struct-donchian55compress-rsi55",
+    "emr-entry-trend-priceema200-firm",
+    "emr-entry-trend-ema50over200-firm",
+    "emr-entry-trend-ema200rising-firm",
+    "emr-entry-trend-adxtrend-firm",
+    "emr-entry-vol-sma-03",
+    "emr-entry-vol-rel-03",
+    "emr-entry-vol-spike-obv-03",
+    "emr-entry-vol-cmf-mfi-03",
+    "emr-entry-volq-atrband-03",
+    "emr-entry-volq-bbwidth-03",
+    "emr-entry-volq-squeeze-03",
+    "emr-entry-volq-range-03",
+    "emr-entry-momo-adx-dmi-03",
+    "emr-entry-momo-stoch-cci-roc-03",
+    "emr-entry-fake-wick-03",
+    "emr-entry-fake-gap-03",
+    "emr-entry-fake-runup-03",
+    "emr-entry-fake-clv-03",
+    "emr-entry-fake-failedbreak-03",
+    "emr-entry-pull-fast-03",
+    "emr-entry-pull-slow-03",
+    "emr-entry-pull-retest-03",
+    "emr-entry-pull-fast-hold-03"
+  ],
+  "date_override": {
+    "from": "2015-01-01",
+    "to": "2026-04-27"
+  },
+  "phases": {
+    "smoke": {
+      "symbols": [
+        "SPY"
+      ]
+    },
+    "full": {
+      "symbol_count": 8
+    }
+  },
+  "execution": {
+    "worker_ports": [
+      9223
+    ],
+    "checkpoint_every": 10,
+    "cooldown_ms": 1000,
+    "max_consecutive_failures": 5,
+    "max_rerun_passes": 2
+  }
+}
