@@ -652,6 +652,46 @@ Windows Command Prompt からは次で同じ config を使えます。
 scripts\windows\run-night-batch-self-hosted.cmd config\night_batch\bundle-foreground-reuse-config.json
 ```
 
+#### ローカル smoke / backtest 検証手順
+
+workflow に送る前に、落ちた preset だけを手元で再確認したいときは、まず単発 preset backtest を使います。
+
+```bash
+node src/cli/index.js backtest preset emr-ae-v13-tp20-q20-notrail --symbol SPY
+node src/cli/index.js backtest preset emr-ae-v13-tp35-q40-notrail --symbol SPY
+```
+
+- `apply_failed: false`
+- `tester_available: true`
+- `compile_detail.study_added: true`
+
+この 3 つが揃えば、その preset は少なくともローカルの実 backtest 経路では通っています。
+
+campaign 単位の smoke をローカルで見たい場合は、WSL から `python/night_batch.py` を使います。
+
+```bash
+python3 python/night_batch.py campaign emr-ae-tpqty-100pack-focus8 --phase smoke --host 172.31.144.1 --port 9223
+```
+
+局所確認では「まず preset 単発」「必要なら smoke phase 全体」の順に切り分けるのが安全です。100戦略 campaign を毎回フルで流すより速く、compile / apply 系の取りこぼしも見つけやすくなります。
+
+#### Full workflow dispatch
+
+smoke 相当の確認が済んだら、本番の 8銘柄 × 100戦略は GitHub Actions `Night Batch Self Hosted` で起動します。
+
+```bash
+gh workflow run "Night Batch Self Hosted" --ref main --field config_path=config/night_batch/emr-ae-tpqty-100pack-focus8-config.json
+gh run list --workflow "Night Batch Self Hosted" --limit 5
+```
+
+必要なら run 作成直後に詳細を確認します。
+
+```bash
+gh run view <run-id>
+```
+
+今回の TP/QTY 100pack は `config/night_batch/emr-ae-tpqty-100pack-focus8-config.json` を使います。workflow 側では foreground production を走らせるため、run は長時間になります。
+
 `.github/workflows/night-batch-self-hosted.yml` は **self-hosted Windows runner** 前提です。runner が online であれば動作し、service 常駐は前提としません。既定の cron は **毎日 00:00 JST**（`0 15 * * *` UTC）で、既定 config は `config/night_batch/bundle-foreground-reuse-config.json` です。workflow は smoke と production を **完了まで監視**し、GitHub Actions 上の success/failure が production の完了結果と一致するようにします。workflow では `actions/checkout` を **`clean: false`** にしつつ、終了時に **`GITHUB_STEP_SUMMARY`** へ要約を追記し、`actions/upload-artifact` で最新 round の成果物を回収し、完了後に `artifacts/night-batch/archive/roundN/` へ退避します。round artifact には `gha_<run_id>_<attempt>-campaign-artifacts.json/.md` も入り、campaign の `final-results` / `recovered-results` / `strategy-ranking` への repo 相対パスを WSL 側から辿れます。**00:00 JST の起動窓を外れた stale scheduled run は skip** します。
 
 workflow / manual wrapper の foreground 実行経路では `--round-mode` を使うため、state file は `artifacts/night-batch/roundN/bundle-foreground-state.json` に配置され、完了後に `artifacts/night-batch/archive/roundN/` へ退避されます。state の `updated_at` が heartbeat、summary JSON の `termination_reason` / `failed_step` / `last_checkpoint` が GitHub 側の切り分け根拠になります。campaign ごとの主要出力を見たいときは、同じ round directory にある `gha_<run_id>_<attempt>-campaign-artifacts.md` を先に開くと、Windows 側の絶対パスを追わずに済みます。hard reboot / power loss では最後の summary / artifact upload が完了しない可能性は残ります。
