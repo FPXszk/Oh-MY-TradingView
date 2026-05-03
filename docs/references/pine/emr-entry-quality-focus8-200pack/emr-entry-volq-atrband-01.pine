@@ -124,13 +124,13 @@ typicalPrice = hlc3
 rawMoneyFlow = typicalPrice * volume
 positiveFlow = typicalPrice > typicalPrice[1] ? rawMoneyFlow : 0.0
 negativeFlow = typicalPrice < typicalPrice[1] ? rawMoneyFlow : 0.0
-positiveMoney = ta.sum(positiveFlow, mfiLen)
-negativeMoney = ta.sum(negativeFlow, mfiLen)
+positiveMoney = math.sum(positiveFlow, mfiLen)
+negativeMoney = math.sum(negativeFlow, mfiLen)
 moneyRatio = negativeMoney == 0 ? 1000000.0 : positiveMoney / negativeMoney
 mfi = 100 - (100 / (1 + moneyRatio))
 
 mfMultiplier = high != low ? ((close - low) - (high - close)) / (high - low) : 0.0
-cmf = ta.sum(mfMultiplier * volume, cmfLen) / math.max(ta.sum(volume, cmfLen), 1.0)
+cmf = math.sum(mfMultiplier * volume, cmfLen) / math.max(math.sum(volume, cmfLen), 1.0)
 
 rsiLowest = ta.lowest(rsi, stochRsiLen)
 rsiHighest = ta.highest(rsi, stochRsiLen)
