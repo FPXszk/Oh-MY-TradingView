@@ -15547,6 +15547,857 @@
         "notrail"
       ],
       "source_path": "../../docs/references/pine/emr-ae-tpqty-100pack/emr-ae-v13-tp35-q60-notrail.pine"
+    },
+    {
+      "id": "emr-ae-v13-tp8-q0-notrail",
+      "name": "EMR A+E V13-TP8-Q0-NOTRAIL",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 1.3,
+        "tp1Pct": 8,
+        "tp1Qty": 0,
+        "trailMode": "none",
+        "trailActivationPct": 0,
+        "trailAtrMult": 0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "combo",
+      "theme_notes": "A+E TP/QTY focused sweep vol=1.3x, TP8, qty0, no trail",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMR A+E TP/QTY focused 54-pack: focus-8 sweep without EMA20 trail.",
+      "phase": "phase-20",
+      "implementation_stage": "emr-ae-tpqty-54pack-plus-baseline-focus8",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-ae-tpqty-54pack",
+        "volume",
+        "exit",
+        "tp",
+        "notrail"
+      ],
+      "source_path": "../../docs/references/pine/emr-ae-tpqty-54pack-focus8/emr-ae-v13-tp8-q0-notrail.pine"
+    },
+    {
+      "id": "emr-ae-v13-tp8-q33-notrail",
+      "name": "EMR A+E V13-TP8-Q33-NOTRAIL",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 1.3,
+        "tp1Pct": 8,
+        "tp1Qty": 33,
+        "trailMode": "none",
+        "trailActivationPct": 0,
+        "trailAtrMult": 0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "combo",
+      "theme_notes": "A+E TP/QTY focused sweep vol=1.3x, TP8, qty33, no trail",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMR A+E TP/QTY focused 54-pack: focus-8 sweep without EMA20 trail.",
+      "phase": "phase-20",
+      "implementation_stage": "emr-ae-tpqty-54pack-plus-baseline-focus8",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-ae-tpqty-54pack",
+        "volume",
+        "exit",
+        "tp",
+        "notrail"
+      ],
+      "source_path": "../../docs/references/pine/emr-ae-tpqty-54pack-focus8/emr-ae-v13-tp8-q33-notrail.pine"
+    },
+    {
+      "id": "emr-ae-v13-tp8-q100-notrail",
+      "name": "EMR A+E V13-TP8-Q100-NOTRAIL",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 1.3,
+        "tp1Pct": 8,
+        "tp1Qty": 100,
+        "trailMode": "none",
+        "trailActivationPct": 0,
+        "trailAtrMult": 0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "combo",
+      "theme_notes": "A+E TP/QTY focused sweep vol=1.3x, TP8, qty100, no trail",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMR A+E TP/QTY focused 54-pack: focus-8 sweep without EMA20 trail.",
+      "phase": "phase-20",
+      "implementation_stage": "emr-ae-tpqty-54pack-plus-baseline-focus8",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-ae-tpqty-54pack",
+        "volume",
+        "exit",
+        "tp",
+        "notrail"
+      ],
+      "source_path": "../../docs/references/pine/emr-ae-tpqty-54pack-focus8/emr-ae-v13-tp8-q100-notrail.pine"
+    },
+    {
+      "id": "emr-ae-v13-tp10-q0-notrail",
+      "name": "EMR A+E V13-TP10-Q0-NOTRAIL",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 1.3,
+        "tp1Pct": 10,
+        "tp1Qty": 0,
+        "trailMode": "none",
+        "trailActivationPct": 0,
+        "trailAtrMult": 0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "combo",
+      "theme_notes": "A+E TP/QTY focused sweep vol=1.3x, TP10, qty0, no trail",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMR A+E TP/QTY focused 54-pack: focus-8 sweep without EMA20 trail.",
+      "phase": "phase-20",
+      "implementation_stage": "emr-ae-tpqty-54pack-plus-baseline-focus8",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-ae-tpqty-54pack",
+        "volume",
+        "exit",
+        "tp",
+        "notrail"
+      ],
+      "source_path": "../../docs/references/pine/emr-ae-tpqty-54pack-focus8/emr-ae-v13-tp10-q0-notrail.pine"
+    },
+    {
+      "id": "emr-ae-v13-tp10-q33-notrail",
+      "name": "EMR A+E V13-TP10-Q33-NOTRAIL",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 1.3,
+        "tp1Pct": 10,
+        "tp1Qty": 33,
+        "trailMode": "none",
+        "trailActivationPct": 0,
+        "trailAtrMult": 0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "combo",
+      "theme_notes": "A+E TP/QTY focused sweep vol=1.3x, TP10, qty33, no trail",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMR A+E TP/QTY focused 54-pack: focus-8 sweep without EMA20 trail.",
+      "phase": "phase-20",
+      "implementation_stage": "emr-ae-tpqty-54pack-plus-baseline-focus8",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-ae-tpqty-54pack",
+        "volume",
+        "exit",
+        "tp",
+        "notrail"
+      ],
+      "source_path": "../../docs/references/pine/emr-ae-tpqty-54pack-focus8/emr-ae-v13-tp10-q33-notrail.pine"
+    },
+    {
+      "id": "emr-ae-v13-tp10-q100-notrail",
+      "name": "EMR A+E V13-TP10-Q100-NOTRAIL",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 1.3,
+        "tp1Pct": 10,
+        "tp1Qty": 100,
+        "trailMode": "none",
+        "trailActivationPct": 0,
+        "trailAtrMult": 0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "combo",
+      "theme_notes": "A+E TP/QTY focused sweep vol=1.3x, TP10, qty100, no trail",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMR A+E TP/QTY focused 54-pack: focus-8 sweep without EMA20 trail.",
+      "phase": "phase-20",
+      "implementation_stage": "emr-ae-tpqty-54pack-plus-baseline-focus8",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-ae-tpqty-54pack",
+        "volume",
+        "exit",
+        "tp",
+        "notrail"
+      ],
+      "source_path": "../../docs/references/pine/emr-ae-tpqty-54pack-focus8/emr-ae-v13-tp10-q100-notrail.pine"
+    },
+    {
+      "id": "emr-ae-v13-tp12-q0-notrail",
+      "name": "EMR A+E V13-TP12-Q0-NOTRAIL",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 1.3,
+        "tp1Pct": 12,
+        "tp1Qty": 0,
+        "trailMode": "none",
+        "trailActivationPct": 0,
+        "trailAtrMult": 0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "combo",
+      "theme_notes": "A+E TP/QTY focused sweep vol=1.3x, TP12, qty0, no trail",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMR A+E TP/QTY focused 54-pack: focus-8 sweep without EMA20 trail.",
+      "phase": "phase-20",
+      "implementation_stage": "emr-ae-tpqty-54pack-plus-baseline-focus8",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-ae-tpqty-54pack",
+        "volume",
+        "exit",
+        "tp",
+        "notrail"
+      ],
+      "source_path": "../../docs/references/pine/emr-ae-tpqty-54pack-focus8/emr-ae-v13-tp12-q0-notrail.pine"
+    },
+    {
+      "id": "emr-ae-v13-tp12-q33-notrail",
+      "name": "EMR A+E V13-TP12-Q33-NOTRAIL",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 1.3,
+        "tp1Pct": 12,
+        "tp1Qty": 33,
+        "trailMode": "none",
+        "trailActivationPct": 0,
+        "trailAtrMult": 0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "combo",
+      "theme_notes": "A+E TP/QTY focused sweep vol=1.3x, TP12, qty33, no trail",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMR A+E TP/QTY focused 54-pack: focus-8 sweep without EMA20 trail.",
+      "phase": "phase-20",
+      "implementation_stage": "emr-ae-tpqty-54pack-plus-baseline-focus8",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-ae-tpqty-54pack",
+        "volume",
+        "exit",
+        "tp",
+        "notrail"
+      ],
+      "source_path": "../../docs/references/pine/emr-ae-tpqty-54pack-focus8/emr-ae-v13-tp12-q33-notrail.pine"
+    },
+    {
+      "id": "emr-ae-v13-tp12-q100-notrail",
+      "name": "EMR A+E V13-TP12-Q100-NOTRAIL",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 1.3,
+        "tp1Pct": 12,
+        "tp1Qty": 100,
+        "trailMode": "none",
+        "trailActivationPct": 0,
+        "trailAtrMult": 0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "combo",
+      "theme_notes": "A+E TP/QTY focused sweep vol=1.3x, TP12, qty100, no trail",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMR A+E TP/QTY focused 54-pack: focus-8 sweep without EMA20 trail.",
+      "phase": "phase-20",
+      "implementation_stage": "emr-ae-tpqty-54pack-plus-baseline-focus8",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-ae-tpqty-54pack",
+        "volume",
+        "exit",
+        "tp",
+        "notrail"
+      ],
+      "source_path": "../../docs/references/pine/emr-ae-tpqty-54pack-focus8/emr-ae-v13-tp12-q100-notrail.pine"
+    },
+    {
+      "id": "emr-ae-v13-tp15-q0-notrail",
+      "name": "EMR A+E V13-TP15-Q0-NOTRAIL",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 1.3,
+        "tp1Pct": 15,
+        "tp1Qty": 0,
+        "trailMode": "none",
+        "trailActivationPct": 0,
+        "trailAtrMult": 0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "combo",
+      "theme_notes": "A+E TP/QTY focused sweep vol=1.3x, TP15, qty0, no trail",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMR A+E TP/QTY focused 54-pack: focus-8 sweep without EMA20 trail.",
+      "phase": "phase-20",
+      "implementation_stage": "emr-ae-tpqty-54pack-plus-baseline-focus8",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-ae-tpqty-54pack",
+        "volume",
+        "exit",
+        "tp",
+        "notrail"
+      ],
+      "source_path": "../../docs/references/pine/emr-ae-tpqty-54pack-focus8/emr-ae-v13-tp15-q0-notrail.pine"
+    },
+    {
+      "id": "emr-ae-v13-tp15-q33-notrail",
+      "name": "EMR A+E V13-TP15-Q33-NOTRAIL",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 1.3,
+        "tp1Pct": 15,
+        "tp1Qty": 33,
+        "trailMode": "none",
+        "trailActivationPct": 0,
+        "trailAtrMult": 0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "combo",
+      "theme_notes": "A+E TP/QTY focused sweep vol=1.3x, TP15, qty33, no trail",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMR A+E TP/QTY focused 54-pack: focus-8 sweep without EMA20 trail.",
+      "phase": "phase-20",
+      "implementation_stage": "emr-ae-tpqty-54pack-plus-baseline-focus8",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-ae-tpqty-54pack",
+        "volume",
+        "exit",
+        "tp",
+        "notrail"
+      ],
+      "source_path": "../../docs/references/pine/emr-ae-tpqty-54pack-focus8/emr-ae-v13-tp15-q33-notrail.pine"
+    },
+    {
+      "id": "emr-ae-v13-tp15-q100-notrail",
+      "name": "EMR A+E V13-TP15-Q100-NOTRAIL",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 1.3,
+        "tp1Pct": 15,
+        "tp1Qty": 100,
+        "trailMode": "none",
+        "trailActivationPct": 0,
+        "trailAtrMult": 0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "combo",
+      "theme_notes": "A+E TP/QTY focused sweep vol=1.3x, TP15, qty100, no trail",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMR A+E TP/QTY focused 54-pack: focus-8 sweep without EMA20 trail.",
+      "phase": "phase-20",
+      "implementation_stage": "emr-ae-tpqty-54pack-plus-baseline-focus8",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-ae-tpqty-54pack",
+        "volume",
+        "exit",
+        "tp",
+        "notrail"
+      ],
+      "source_path": "../../docs/references/pine/emr-ae-tpqty-54pack-focus8/emr-ae-v13-tp15-q100-notrail.pine"
+    },
+    {
+      "id": "emr-ae-v13-tp18-q0-notrail",
+      "name": "EMR A+E V13-TP18-Q0-NOTRAIL",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 1.3,
+        "tp1Pct": 18,
+        "tp1Qty": 0,
+        "trailMode": "none",
+        "trailActivationPct": 0,
+        "trailAtrMult": 0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "combo",
+      "theme_notes": "A+E TP/QTY focused sweep vol=1.3x, TP18, qty0, no trail",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMR A+E TP/QTY focused 54-pack: focus-8 sweep without EMA20 trail.",
+      "phase": "phase-20",
+      "implementation_stage": "emr-ae-tpqty-54pack-plus-baseline-focus8",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-ae-tpqty-54pack",
+        "volume",
+        "exit",
+        "tp",
+        "notrail"
+      ],
+      "source_path": "../../docs/references/pine/emr-ae-tpqty-54pack-focus8/emr-ae-v13-tp18-q0-notrail.pine"
+    },
+    {
+      "id": "emr-ae-v13-tp18-q33-notrail",
+      "name": "EMR A+E V13-TP18-Q33-NOTRAIL",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 1.3,
+        "tp1Pct": 18,
+        "tp1Qty": 33,
+        "trailMode": "none",
+        "trailActivationPct": 0,
+        "trailAtrMult": 0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "combo",
+      "theme_notes": "A+E TP/QTY focused sweep vol=1.3x, TP18, qty33, no trail",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMR A+E TP/QTY focused 54-pack: focus-8 sweep without EMA20 trail.",
+      "phase": "phase-20",
+      "implementation_stage": "emr-ae-tpqty-54pack-plus-baseline-focus8",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-ae-tpqty-54pack",
+        "volume",
+        "exit",
+        "tp",
+        "notrail"
+      ],
+      "source_path": "../../docs/references/pine/emr-ae-tpqty-54pack-focus8/emr-ae-v13-tp18-q33-notrail.pine"
+    },
+    {
+      "id": "emr-ae-v13-tp18-q100-notrail",
+      "name": "EMR A+E V13-TP18-Q100-NOTRAIL",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 1.3,
+        "tp1Pct": 18,
+        "tp1Qty": 100,
+        "trailMode": "none",
+        "trailActivationPct": 0,
+        "trailAtrMult": 0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "combo",
+      "theme_notes": "A+E TP/QTY focused sweep vol=1.3x, TP18, qty100, no trail",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMR A+E TP/QTY focused 54-pack: focus-8 sweep without EMA20 trail.",
+      "phase": "phase-20",
+      "implementation_stage": "emr-ae-tpqty-54pack-plus-baseline-focus8",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-ae-tpqty-54pack",
+        "volume",
+        "exit",
+        "tp",
+        "notrail"
+      ],
+      "source_path": "../../docs/references/pine/emr-ae-tpqty-54pack-focus8/emr-ae-v13-tp18-q100-notrail.pine"
+    },
+    {
+      "id": "emr-ae-v13-tp25-q0-notrail",
+      "name": "EMR A+E V13-TP25-Q0-NOTRAIL",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 1.3,
+        "tp1Pct": 25,
+        "tp1Qty": 0,
+        "trailMode": "none",
+        "trailActivationPct": 0,
+        "trailAtrMult": 0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "combo",
+      "theme_notes": "A+E TP/QTY focused sweep vol=1.3x, TP25, qty0, no trail",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMR A+E TP/QTY focused 54-pack: focus-8 sweep without EMA20 trail.",
+      "phase": "phase-20",
+      "implementation_stage": "emr-ae-tpqty-54pack-plus-baseline-focus8",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-ae-tpqty-54pack",
+        "volume",
+        "exit",
+        "tp",
+        "notrail"
+      ],
+      "source_path": "../../docs/references/pine/emr-ae-tpqty-54pack-focus8/emr-ae-v13-tp25-q0-notrail.pine"
+    },
+    {
+      "id": "emr-ae-v13-tp25-q33-notrail",
+      "name": "EMR A+E V13-TP25-Q33-NOTRAIL",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 1.3,
+        "tp1Pct": 25,
+        "tp1Qty": 33,
+        "trailMode": "none",
+        "trailActivationPct": 0,
+        "trailAtrMult": 0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "combo",
+      "theme_notes": "A+E TP/QTY focused sweep vol=1.3x, TP25, qty33, no trail",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMR A+E TP/QTY focused 54-pack: focus-8 sweep without EMA20 trail.",
+      "phase": "phase-20",
+      "implementation_stage": "emr-ae-tpqty-54pack-plus-baseline-focus8",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-ae-tpqty-54pack",
+        "volume",
+        "exit",
+        "tp",
+        "notrail"
+      ],
+      "source_path": "../../docs/references/pine/emr-ae-tpqty-54pack-focus8/emr-ae-v13-tp25-q33-notrail.pine"
+    },
+    {
+      "id": "emr-ae-v13-tp25-q100-notrail",
+      "name": "EMR A+E V13-TP25-Q100-NOTRAIL",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "breakoutVolumeRatio": 1.3,
+        "tp1Pct": 25,
+        "tp1Qty": 100,
+        "trailMode": "none",
+        "trailActivationPct": 0,
+        "trailAtrMult": 0
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "combo",
+      "theme_notes": "A+E TP/QTY focused sweep vol=1.3x, TP25, qty100, no trail",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "trending",
+      "mag7_notes": "EMR A+E TP/QTY focused 54-pack: focus-8 sweep without EMA20 trail.",
+      "phase": "phase-20",
+      "implementation_stage": "emr-ae-tpqty-54pack-plus-baseline-focus8",
+      "priority": 500,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "moderate",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "breakout",
+        "winrate",
+        "stopout",
+        "emr-ae-tpqty-54pack",
+        "volume",
+        "exit",
+        "tp",
+        "notrail"
+      ],
+      "source_path": "../../docs/references/pine/emr-ae-tpqty-54pack-focus8/emr-ae-v13-tp25-q100-notrail.pine"
+    },
+    {
+      "id": "ema-macd-rsi-sl-baseline",
+      "name": "EMA + MACD + RSI Strategy + SL",
+      "category": "breakout",
+      "builder": "raw_source",
+      "parameters": {
+        "ema_fast": 9,
+        "ema_slow": 20,
+        "macd_fast": 12,
+        "macd_slow": 26,
+        "macd_signal": 9,
+        "rsi_level": 50,
+        "stop_pct": 8
+      },
+      "stop_loss": {
+        "type": "hard_percent",
+        "value": 8
+      },
+      "theme_axis": "baseline",
+      "theme_notes": "Original EMA + MACD + RSI Strategy + SL file used as comparison baseline for the TP/QTY 54-pack.",
+      "recommended_timeframes": [
+        "D"
+      ],
+      "recommended_regime": "mixed",
+      "mag7_notes": "Standalone baseline added to the focus-8 TP/QTY comparison pack.",
+      "phase": "phase-20",
+      "implementation_stage": "emr-ae-tpqty-54pack-plus-baseline-focus8",
+      "priority": 300,
+      "status": "ready",
+      "implementation_difficulty": "medium",
+      "pine_complexity": "simple",
+      "tags": [
+        "ema",
+        "macd",
+        "rsi",
+        "baseline",
+        "hard-stop",
+        "tp-compare"
+      ],
+      "source_path": "../../docs/references/pine/EMA + MACD + RSI Strategy + SL/EMA + MACD + RSI Strategy + SL.pine"
     }
   ]
 }

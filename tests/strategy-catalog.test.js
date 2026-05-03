@@ -364,6 +364,25 @@ const EXPECTED_LIVE_IDS = [
   'emr-ae-v13-tp35-q40-notrail',
   'emr-ae-v13-tp35-q50-notrail',
   'emr-ae-v13-tp35-q60-notrail',
+  'emr-ae-v13-tp8-q0-notrail',
+  'emr-ae-v13-tp8-q33-notrail',
+  'emr-ae-v13-tp8-q100-notrail',
+  'emr-ae-v13-tp10-q0-notrail',
+  'emr-ae-v13-tp10-q33-notrail',
+  'emr-ae-v13-tp10-q100-notrail',
+  'emr-ae-v13-tp12-q0-notrail',
+  'emr-ae-v13-tp12-q33-notrail',
+  'emr-ae-v13-tp12-q100-notrail',
+  'emr-ae-v13-tp15-q0-notrail',
+  'emr-ae-v13-tp15-q33-notrail',
+  'emr-ae-v13-tp15-q100-notrail',
+  'emr-ae-v13-tp18-q0-notrail',
+  'emr-ae-v13-tp18-q33-notrail',
+  'emr-ae-v13-tp18-q100-notrail',
+  'emr-ae-v13-tp25-q0-notrail',
+  'emr-ae-v13-tp25-q33-notrail',
+  'emr-ae-v13-tp25-q100-notrail',
+  'ema-macd-rsi-sl-baseline',
 ];
 
 // ---------------------------------------------------------------------------
@@ -434,10 +453,10 @@ describe('validateCatalogIntegrity', () => {
 // getLiveStrategies / getRetiredStrategies
 // ---------------------------------------------------------------------------
 describe('getLiveStrategies / getRetiredStrategies', () => {
-  it('live count is 350', async () => {
+  it('live count is 369', async () => {
     const catalog = await loadCatalog();
     const live = getLiveStrategies(catalog);
-    assert.equal(live.length, 350);
+    assert.equal(live.length, 369);
   });
 
   it('retired count is 2', async () => {

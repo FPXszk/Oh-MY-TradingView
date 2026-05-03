@@ -1,0 +1,86 @@
+{
+  "id": "emr-ae-tpqty-54pack-plus-baseline-focus8",
+  "name": "EMR A+E TP/QTY 54-Pack Plus Baseline Focus-8 (phase-20)",
+  "description": "Focused TP/QTY sweep on focus-8 using tp1Pct 8/10/12/15/18/25 and tp1Qty 0/5/10/15/20/25/33/50/100, plus the original EMA + MACD + RSI Strategy + SL baseline.",
+  "universe": "focus-8",
+  "strategy_ids": [
+    "emr-ae-v13-tp8-q0-notrail",
+    "emr-ae-v13-tp8-q5-notrail",
+    "emr-ae-v13-tp8-q10-notrail",
+    "emr-ae-v13-tp8-q15-notrail",
+    "emr-ae-v13-tp8-q20-notrail",
+    "emr-ae-v13-tp8-q25-notrail",
+    "emr-ae-v13-tp8-q33-notrail",
+    "emr-ae-v13-tp8-q50-notrail",
+    "emr-ae-v13-tp8-q100-notrail",
+    "emr-ae-v13-tp10-q0-notrail",
+    "emr-ae-v13-tp10-q5-notrail",
+    "emr-ae-v13-tp10-q10-notrail",
+    "emr-ae-v13-tp10-q15-notrail",
+    "emr-ae-v13-tp10-q20-notrail",
+    "emr-ae-v13-tp10-q25-notrail",
+    "emr-ae-v13-tp10-q33-notrail",
+    "emr-ae-v13-tp10-q50-notrail",
+    "emr-ae-v13-tp10-q100-notrail",
+    "emr-ae-v13-tp12-q0-notrail",
+    "emr-ae-v13-tp12-q5-notrail",
+    "emr-ae-v13-tp12-q10-notrail",
+    "emr-ae-v13-tp12-q15-notrail",
+    "emr-ae-v13-tp12-q20-notrail",
+    "emr-ae-v13-tp12-q25-notrail",
+    "emr-ae-v13-tp12-q33-notrail",
+    "emr-ae-v13-tp12-q50-notrail",
+    "emr-ae-v13-tp12-q100-notrail",
+    "emr-ae-v13-tp15-q0-notrail",
+    "emr-ae-v13-tp15-q5-notrail",
+    "emr-ae-v13-tp15-q10-notrail",
+    "emr-ae-v13-tp15-q15-notrail",
+    "emr-ae-v13-tp15-q20-notrail",
+    "emr-ae-v13-tp15-q25-notrail",
+    "emr-ae-v13-tp15-q33-notrail",
+    "emr-ae-v13-tp15-q50-notrail",
+    "emr-ae-v13-tp15-q100-notrail",
+    "emr-ae-v13-tp18-q0-notrail",
+    "emr-ae-v13-tp18-q5-notrail",
+    "emr-ae-v13-tp18-q10-notrail",
+    "emr-ae-v13-tp18-q15-notrail",
+    "emr-ae-v13-tp18-q20-notrail",
+    "emr-ae-v13-tp18-q25-notrail",
+    "emr-ae-v13-tp18-q33-notrail",
+    "emr-ae-v13-tp18-q50-notrail",
+    "emr-ae-v13-tp18-q100-notrail",
+    "emr-ae-v13-tp25-q0-notrail",
+    "emr-ae-v13-tp25-q5-notrail",
+    "emr-ae-v13-tp25-q10-notrail",
+    "emr-ae-v13-tp25-q15-notrail",
+    "emr-ae-v13-tp25-q20-notrail",
+    "emr-ae-v13-tp25-q25-notrail",
+    "emr-ae-v13-tp25-q33-notrail",
+    "emr-ae-v13-tp25-q50-notrail",
+    "emr-ae-v13-tp25-q100-notrail",
+    "ema-macd-rsi-sl-baseline"
+  ],
+  "date_override": {
+    "from": "2015-01-01",
+    "to": "2026-04-27"
+  },
+  "phases": {
+    "smoke": {
+      "symbols": [
+        "SPY"
+      ]
+    },
+    "full": {
+      "symbol_count": 8
+    }
+  },
+  "execution": {
+    "worker_ports": [
+      9223
+    ],
+    "checkpoint_every": 10,
+    "cooldown_ms": 1000,
+    "max_consecutive_failures": 5,
+    "max_rerun_passes": 2
+  }
+}
