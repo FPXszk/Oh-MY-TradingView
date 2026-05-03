@@ -16,6 +16,7 @@ const README_PATH = join(PROJECT_ROOT, 'README.md');
 const BUNDLE_FG_CONFIG_PATH = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
 const BUNDLE_FG_FAILED36_CONFIG_PATH = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-failed36-config.json');
 const EMR_NEXT_RUN84_FAILED_CONFIG_PATH = join(PROJECT_ROOT, 'config', 'night_batch', 'emr-next-50pack-run84-failed-us40-config.json');
+const EMR_AE_TPQTY_100PACK_CONFIG_PATH = join(PROJECT_ROOT, 'config', 'night_batch', 'emr-ae-tpqty-100pack-focus8-config.json');
 const BASELINE_WRITER_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'github-actions', 'write-night-batch-live-checkout-baseline.ps1');
 const WINDOWS_RUNNER_SCRIPT_PATHS = [BOOTSTRAP_PATH, RUNNER_WRAPPER_PATH, AUTOSTART_SCRIPT_PATH];
 
@@ -264,6 +265,26 @@ describe('emr-next run84 failed config', () => {
   it('config path must exist at the dedicated run84 failed location', () => {
     assert.ok(existsSync(EMR_NEXT_RUN84_FAILED_CONFIG_PATH),
       'config/night_batch/emr-next-50pack-run84-failed-us40-config.json must exist');
+  });
+});
+
+describe('emr-ae tpqty 100pack config', () => {
+  const config = JSON.parse(readFileSync(EMR_AE_TPQTY_100PACK_CONFIG_PATH, 'utf8'));
+
+  it('targets the tpqty 100pack focus-8 campaign for workflow dispatch', () => {
+    assert.equal(config.bundle.us_campaign, 'emr-ae-tpqty-100pack-focus8',
+      'emr-ae-tpqty-100pack-focus8-config.json must target the tpqty 100pack campaign');
+  });
+
+  it('keeps foreground smoke and full production phases', () => {
+    assert.equal(config.bundle.smoke_phases, 'smoke');
+    assert.equal(config.bundle.production_phases, 'full');
+    assert.equal(config.runtime.detach_after_smoke, false);
+  });
+
+  it('config path must exist at the dedicated tpqty 100pack location', () => {
+    assert.ok(existsSync(EMR_AE_TPQTY_100PACK_CONFIG_PATH),
+      'config/night_batch/emr-ae-tpqty-100pack-focus8-config.json must exist');
   });
 });
 
