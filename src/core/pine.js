@@ -611,16 +611,20 @@ export async function compile({ preferSaveAndAdd = false } = {}) {
   const clicked = await clickPreferredApplyButton({ preferSaveAndAdd });
 
   if (!clicked) {
-    await focusPineEditor();
-    const c = await getClient();
-    await c.Input.dispatchKeyEvent({
-      type: 'keyDown', modifiers: 2, key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13,
-    });
-    await c.Input.dispatchKeyEvent({ type: 'keyUp', key: 'Enter', code: 'Enter' });
+    await triggerCompileShortcut();
   }
 
   await new Promise(r => setTimeout(r, 2000));
   return { success: true, button_clicked: clicked || 'keyboard_shortcut' };
+}
+
+async function triggerCompileShortcut() {
+  await focusPineEditor();
+  const c = await getClient();
+  await c.Input.dispatchKeyEvent({
+    type: 'keyDown', modifiers: 2, key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13,
+  });
+  await c.Input.dispatchKeyEvent({ type: 'keyUp', key: 'Enter', code: 'Enter' });
 }
 
 export async function getErrors() {
@@ -676,12 +680,7 @@ export async function smartCompile({ preferSaveAndAdd = false } = {}) {
   const buttonClicked = await clickPreferredApplyButton({ preferSaveAndAdd });
 
   if (!buttonClicked) {
-    await focusPineEditor();
-    const c = await getClient();
-    await c.Input.dispatchKeyEvent({
-      type: 'keyDown', modifiers: 2, key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13,
-    });
-    await c.Input.dispatchKeyEvent({ type: 'keyUp', key: 'Enter', code: 'Enter' });
+    await triggerCompileShortcut();
   }
 
   await new Promise(r => setTimeout(r, 2500));
@@ -715,12 +714,34 @@ export async function smartCompile({ preferSaveAndAdd = false } = {}) {
   `);
 
   const classified = classifyMarkers(errors);
-  const studyAdded =
+  let studyAdded =
     studiesBefore !== null && studiesAfter !== null ? studiesAfter > studiesBefore : null;
+  let effectiveButtonClicked = buttonClicked || 'keyboard_shortcut';
+
+  if (buttonClicked && classified.errors.length === 0 && studyAdded === false) {
+    await triggerCompileShortcut();
+    await new Promise(r => setTimeout(r, 2500));
+
+    const retryStudiesAfter = await evaluate(`
+      (function() {
+        try {
+          var chart = window.TradingViewApi._activeChartWidgetWV.value();
+          if (chart && typeof chart.getAllStudies === 'function') return chart.getAllStudies().length;
+        } catch(e) {}
+        return null;
+      })()
+    `);
+
+    studyAdded =
+      studiesBefore !== null && retryStudiesAfter !== null ? retryStudiesAfter > studiesBefore : studyAdded;
+    if (studyAdded) {
+      effectiveButtonClicked = 'keyboard_shortcut';
+    }
+  }
 
   return {
     success: true,
-    button_clicked: buttonClicked || 'keyboard_shortcut',
+    button_clicked: effectiveButtonClicked,
     has_errors: classified.errors.length > 0,
     error_count: classified.errors.length,
     warning_count: classified.warnings.length,
