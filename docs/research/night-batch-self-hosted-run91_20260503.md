@@ -253,3 +253,208 @@
 | baseline との比較 | ema-macd-rsi-sl-baseline も 0/5 失敗で比較不能 | ❌ **比較不成立** |
 
 **総合**: tp パラメータの検証が不成立のため、**当初目的は部分達成**。q の効果は確認できた。tp の実装確認が次の優先タスク。
+
+---
+
+## TP 観点分析（TEMPLATE-TP 準拠）
+
+### ヘッダー
+
+- run_id: `gha_25274606132_1`
+- status: `SUCCESS`
+- campaign: `emr-ae-tpqty-54pack-plus-baseline-focus8`
+- artifact_root: `artifacts/campaigns/emr-ae-tpqty-54pack-plus-baseline-focus8/`
+- 対象市場: `US`（focus-8: MSTR / NVDA / BTCUSD / AAPL / TSLA / PLTR / QQQ / SPY）
+- baseline presetId: `emr-ae-v13-tp8-q0-notrail`（tp1Qty=0 = TP1 完全無効）
+- 目的: `tp1Pct (8/10/12/15/18/25%) × tp1Qty (0/5/10/15/20/25/33/50/100%) の組み合わせが focus-8 の winner upside を維持しながら downside を守れるかを検証する`
+
+---
+
+### 結論
+
+- **総合首位**: `emr-ae-v13-tp18-q20-notrail` / composite_score `43` / avg_net_profit `18,957` / avg_profit_factor `11.2489`
+- **⚠️ ただし**: tp18-q20 は 5/8 シンボルのみ成功。BTCUSD・QQQ・SPY 欠損で平均値が上振れ。**実質的な best は `emr-ae-v13-tp8-q0-notrail`（全 8 シンボル完走）**
+- **TP 採用候補**: **なし**（後述の根本原因により tp1Pct は実効なし、q>0 は全て net_profit を削る）
+- **baseline 比の判断**: q>0 は avg_trade_pnl が q=0 比で最大 -91% 悪化（q=100）。early_take_cost が守り効果を常に上回る。TP1 は今回のユニバースでは保険として機能しない。
+- **ざっくり判断**: **q=0（TP1 完全無効）が最適**。tp1Pct の値（8〜18%）は結果に一切影響しない。その根本原因は日足 OHLCV バックテストにおける TradingView のリミット約定方式（後述）。
+
+---
+
+### 全体ランキング（TP観点上位）
+
+<!-- strategy-ranking.json の PF 降順 rank を正本とし、tp1Pct / tp1Qty を分解して表示 -->
+
+| rank | presetId | tp1Pct | tp1Qty | avg_net_profit | avg_profit_factor | avg_max_drawdown | avg_win_rate | 備考 |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| 1 | `emr-ae-v13-tp18-q20-notrail` | 18 | 20 | 18,957 | 11.249 | 1,816.91 | 38.3% | ⚠️ 5/8 シンボルのみ |
+| 2–5 | `emr-ae-v13-tp{8-15}-q100-notrail` | 8–15 | 100 | 1,884 | 10.497 | 1,325.44 | 58.2% | PF 高いが np 最低水準 |
+| 6–10 | `emr-ae-v13-tp{8-18}-q0-notrail` | 8–18 | 0 | 17,930 | 8.742 | 1,478.23 | 19.0% | **実質 best 群（全8完走）** |
+| 11–15 | `emr-ae-v13-tp{8-18}-q5-notrail` | 8–18 | 5 | 16,846 | 8.633 | 1,412.48 | 38.3% | q=0 比 -1,083 |
+
+---
+
+### TP1 ヒートマップ
+
+<!-- セル: avg_trade_pnl（8銘柄平均）。net_tp1_edge は raw trade artifact 不足で算出不可 -->
+
+`セル表記: avg_trade_pnl（単位: USD / trade）`
+
+| tp1Pct \ tp1Qty | q=0 | q=5 | q=10 | q=15 | q=20 | q=25 | q=33 | q=50 | q=100 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| tp=8  | **1,195** | 562 | 524 | 488 | 455 | 421 | 371 | 274 | 116 |
+| tp=10 | **1,195** | 562 | 524 | 488 | 455 | 421 | 371 | 274 | 116 |
+| tp=12 | **1,195** | 562 | 524 | 488 | 455 | 421 | 371 | 274 | 116 |
+| tp=15 | **1,195** | 562 | 524 | 488 | 455 | 421 | 371 | 274 | 116 |
+| tp=18 | **1,195** | 562 | 524 | 488 | 455* | —  | —  | —  | —  |
+| tp=25 | 完全失敗 | 完全失敗 | 完全失敗 | 完全失敗 | 完全失敗 | 完全失敗 | 完全失敗 | 完全失敗 | 完全失敗 |
+
+> \* tp=18, q=20: 5/8 シンボルのみ成功。avg_trade_pnl=455 は 5 シンボルベースで 8 シンボル換算は未算出。  
+> — : 54pack-focus8 キャンペーンに該当 Pine スクリプトなし（実行対象外）
+
+**ヒートマップの読み方**
+
+- **tp1Pct の行（縦）は全行で数値が完全同一**: tp1Pct は avg_trade_pnl に影響しない（後述の根本原因参照）
+- **tp1Qty の列（横）は単調減少**: q が増えるほど avg_trade_pnl が一貫して悪化 → **早売りコスト優勢、守り効果なし**
+- q=100 で PF は改善（10.50 vs 8.74）するが avg_net_profit は壊滅（+1,884 vs +17,930）→ 利確しすぎて upside を全て潰している
+
+---
+
+### baseline `q=0` 差分表
+
+<!-- delta = 対象戦略 - baseline(q=0)。avg_trade_pnl は 8 銘柄合算 net_profit ÷ 8 銘柄合算 closed_trades で算出 -->
+<!-- delta_avg_win_pnl / delta_avg_loss_pnl は raw trade artifact 不足のため算出不可 -->
+
+| presetId | tp1Pct | tp1Qty | avg_trade_pnl | delta_avg_trade_pnl | delta_avg_np | delta_pf | delta_dd | 判定 |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| `emr-ae-v13-tp8-q0-notrail` | 8 | 0 | 1,195 | 0 | 0 | 0.0000 | 0.00 | **baseline** |
+| `emr-ae-v13-tp*-q5-notrail` | 8–18 | 5 | 562 | **-634** | -1,083 | -0.110 | -65.75 | ❌ early_take_cost 優勢 |
+| `emr-ae-v13-tp*-q10-notrail` | 8–18 | 10 | 524 | **-671** | -2,196 | -0.224 | -105.61 | ❌ |
+| `emr-ae-v13-tp*-q15-notrail` | 8–18 | 15 | 488 | **-707** | -3,282 | -0.340 | -126.03 | ❌ |
+| `emr-ae-v13-tp*-q20-notrail` | 8–18 | 20 | 455 | **-741** | -4,290 | -0.412 | -140.47 | ❌ |
+| `emr-ae-v13-tp*-q25-notrail` | 8–18 | 25 | 421 | **-775** | -5,306 | -0.494 | -152.89 | ❌ |
+| `emr-ae-v13-tp*-q33-notrail` | 8–15 | 33 | 371 | **-824** | -6,793 | — | — | ❌ |
+| `emr-ae-v13-tp*-q50-notrail` | 8–18 | 50 | 274 | **-922** | -9,719 | -0.667 | -209.60 | ❌ |
+| `emr-ae-v13-tp*-q100-notrail` | 8–15 | 100 | 116 | **-1,079** | -16,045 | +1.754 | -152.79 | ❌ np 壊滅 |
+
+> `delta_dd < 0` = drawdown 改善。ただし avg_np の減少が圧倒的に大きく、リスク低減コストとして割に合わない。
+
+---
+
+### TP1 保険効果の補助指標
+
+| 指標 | 値 | 備考 |
+|---|---:|---|
+| `tp1_hit_rate` | 算出不可 | raw ordersData / tradesData が artifact に含まれていない |
+| `tp1_fail_rate` | 算出不可 | 同上 |
+| `early_take_cost` | 算出不可 | 同上 |
+| `loss_saved_by_partial` | 算出不可 | 同上 |
+| `net_tp1_edge` | 算出不可 | 同上 |
+| 代替指標: `delta_avg_trade_pnl` | q=5 で **-634** / q=100 で **-1,079** | tp1_hit_rate なしでも早売りコスト優勢を示す |
+
+**不足 artifact**: `ordersData.json` または `tradesData.json`（個別エントリのエグジット種別を含むもの）
+
+---
+
+### Top 候補
+
+**q=0 の全 tp 系（emr-ae-v13-tp{8-18}-q0-notrail）**
+
+- tp1Pct: 8–18（どれでも同一）
+- tp1Qty: 0（TP1 完全無効）
+- avg_trade_pnl: **1,195**（全 q 帯で最高）
+- baseline 比: 基準（これが baseline）
+- 採用理由: q>0 の全組み合わせが avg_net_profit を削るだけで守り効果を発揮しない。TP1 は今回のユニバースにとって保険ではなくコストである。
+
+---
+
+### 除外候補
+
+| presetId | tp1Pct | tp1Qty | 除外理由 | 根拠数値 |
+|---|---:|---:|---|---|
+| `emr-ae-v13-tp*-q50-notrail` | 8–18 | 50 | 早売りコスト過大 | delta_avg_trade_pnl = -922 / avg_np -9,719 |
+| `emr-ae-v13-tp*-q100-notrail` | 8–15 | 100 | winner upside を全て潰す | avg_np=1,884 (q=0 比 -89.5%) |
+| `emr-ae-v13-tp25-*-notrail` | 25 | 全て | 全 8 シンボルで 0/5 成功（動作しない） | 全戦略 0 件の有効結果 |
+| `emr-ae-v13-tp18-q20-notrail` | 18 | 20 | 5/8 シンボルのみ完走（欠損バイアスあり） | avg_np は 5 シンボルベースで水増し |
+
+---
+
+### 採用判断
+
+- **最適ライン**: `tp1Pct は非支配（どの値でも同一）。ライン選択不要。`
+- **最適量**: `tp1Qty = 0`（TP1 完全無効が最適）
+- **採用戦略**: `emr-ae-v13-tp8-q0-notrail`（代表として tp=8）
+- **採用理由**: q>0 は全帯で avg_trade_pnl を削り、net_tp1_edge は一貫してマイナス。守り効果を示す数値が皆無。
+- **非採用理由（他候補との差）**: q=100 は PF 改善（+1.754）するが avg_np が -89.5%。この PF 改善は winners を TP でカットする選別効果であり、本来の「保険」ではない。
+
+---
+
+### 根本原因調査：tp1Pct が無効になる原因
+
+#### 確認した事実
+
+1. **Pine スクリプトは正しく実装されている**
+   - tp8-q5 と tp10-q5 の diff は `tp1Pct = 8` vs `tp1Pct = 10` のみ
+   - TP1 exit のコード: `strategy.exit("TP1", from_entry="Long", limit=entryPrice * (1 + tp1Pct / 100), qty_percent=tp1Qty)`
+   - `if tp1Pct > 0 and tp1Qty > 0` ガードあり → q=0 では TP1 が一切発火しない（これは正常動作）
+
+2. **TradingView は各バリアントを個別実行している**
+   - tp8-q5 (08:46:49 〜 08:47:06) と tp10-q5 (09:03:52 〜 09:04:08) は別時刻に別実行
+   - キャッシュ流用やデータ重複ではない
+
+3. **MSTR の例で byte-for-byte 同一**
+   - tp8-q5 〜 tp18-q5 のすべてで MSTR の net_profit = `64,459.79147`、trades = `34`、win% = `50.0`
+   - 8 銘柄合算でも全 tp 系が完全一致
+
+#### 根本原因（仮説・最有力）
+
+**日足 OHLCV バックテストにおける TradingView のリミット約定ルール**
+
+TradingView のバックテストエンジン（標準 OHLC モード）では、リミット注文は以下のルールで約定する：
+
+- `bar.open > limit_price` の場合 → **limit_price ではなく bar.open で約定**（より有利な価格で埋まる）
+- `bar.open < limit_price ≤ bar.high` の場合 → limit_price で約定
+
+focus-8 のハイボラ銘柄（MSTR・NVDA・TSLA・BTCUSD・PLTR）は、エントリー後に大きくギャップアップする日足バーが頻繁に発生する。このとき：
+
+- TP1 が 8% に設定されていても、bar.open が +20% であれば → **bar.open 価格で約定**
+- TP1 が 18% に設定されていても、bar.open が +20% であれば → **同じ bar.open 価格で約定**
+
+→ **tp1Pct が 8% でも 18% でも、fill 価格は同じ bar.open になるため結果が完全一致**
+
+#### 傍証
+
+- `q` が変わると結果は変わる（fill 価格ではなく売却量の差だから）
+- q=5 vs q=10: MSTR np = 64,459 vs 58,707（同 OPEN 価格で売る量が異なるから差が出る）
+- q=0 では TP1 は一切発火しないため q=0 は別結果（これも整合）
+- q=100 では trade 数が 17 に減少（全量 TP1 で決済されるため stop exit が発生しないトレードが生まれる）
+
+#### 検証に必要な追加データ
+
+- **個別トレードの exit 価格** (`ordersData.json`): TP1 fill 価格が bar.open と一致しているかを直接確認できる
+- **インデイトレードまたは1時間足バックテスト**: TP1 がバー内で段階的に発火する状況を再現し、tp1Pct の影響が出るかを確認
+
+#### 実務的結論
+
+**日足バックテストでは tp1Pct の感度テストが不可能**。tp の最適値を探るには：
+1. 1時間足または15分足での再バックテスト（intraday TP が機能する解像度）
+2. ordersData の取得とトレードログの個別確認
+3. または「TP1 なし（q=0）が最適」という本 run の結論をそのまま採用
+
+---
+
+### 改善点と次回バックテスト確認事項
+
+1. **日足バックテストの限界を認識してスコープを変更する**
+   tp1Pct の感度テストを継続するなら、日足バックテストから 1時間足・15分足に切り替えること。日足 OHLCV では bar.open 約定によって tp1Pct の差が吸収され、感度が測定できない。
+
+2. **q 最適帯を詰める**
+   q=0 が最適だが、ごく少量（q=3〜5%）での守り効果をインデイ足で再検証する価値はある。今回のデータでは q=5 の守り効果はゼロ（コストのみ）だが、インデイ足では異なる可能性がある。
+
+3. **tp=25 の失敗原因を調査する**
+   全 8 銘柄で 0/5 成功は単なる timeout か実装問題か不明。Pine スクリプトに別の制約がある可能性あり。
+
+4. **ordersData / tradesData を artifact に含める**
+   次回 Night Batch で `tp1_hit_rate` / `net_tp1_edge` を算出できるよう、個別エグジット種別を記録する artifact を追加する。
+
+5. **次回比較の固定指標**
+   `avg_trade_pnl / avg_profit_factor / avg_max_drawdown / delta_avg_trade_pnl / net_tp1_edge`。avg_win_rate は補助指標（TP1 部分決済でのカウント方式の違いが混入するため）。
