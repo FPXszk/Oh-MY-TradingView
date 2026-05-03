@@ -29,7 +29,7 @@
 
 | ファイル | 役割 |
 |---|---|
-| `docs/references/pine/emr-entry-quality-focus8-200pack/*.pine` | 200 戦略の raw_source Pine |
+| `docs/references/pine/emr-entry-quality-focus8-200pack/*.pine` | 199 本の新規 raw_source Pine（baseline は既存 source を流用） |
 | `config/backtest/campaigns/emr-entry-quality-focus8-200pack.json` | focus-8 × 200 strategies の実行定義 |
 | `scripts/generate-emr-entry-quality-focus8-200pack.py` | 200 戦略の Pine / catalog / presets / campaign 生成補助 |
 | `docs/exec-plans/active/emr-entry-quality-focus8-200pack_20260503_2155.md` | この計画 |
@@ -175,17 +175,17 @@ EMA / MACD / RSI だけでは拾うダマシを別指標で落とす。
 ## 実装ステップ
 
 - [x] baseline・既存 pack・catalog / campaign / test 配線を調査
-- [ ] 10 family の方向性と 200 本配分を承認してもらう
-- [ ] 200 戦略の最終 naming を固める
-- [ ] 生成スクリプトを追加する
-- [ ] `docs/references/pine/emr-entry-quality-focus8-200pack/` に 200 本の Pine を生成する
-- [ ] `config/backtest/strategy-catalog.json` を更新する
-- [ ] `config/backtest/strategy-presets.json` を更新する
-- [ ] `config/backtest/campaigns/emr-entry-quality-focus8-200pack.json` を追加する
-- [ ] `tests/campaign.test.js` を更新する
-- [ ] `tests/strategy-catalog.test.js` を更新する
-- [ ] `tests/repo-layout.test.js` を更新する
-- [ ] 既存テストを実行して配線を確認する
+- [x] 10 family の方向性と 200 本配分を承認してもらう
+- [x] 200 戦略の最終 naming を固める
+- [x] 生成スクリプトを追加する
+- [x] `docs/references/pine/emr-entry-quality-focus8-200pack/` に 199 本の新規 Pine を生成する
+- [x] `config/backtest/strategy-catalog.json` を更新する
+- [x] `config/backtest/strategy-presets.json` を更新する
+- [x] `config/backtest/campaigns/emr-entry-quality-focus8-200pack.json` を追加する
+- [x] `tests/campaign.test.js` を更新する
+- [x] `tests/strategy-catalog.test.js` を更新する
+- [x] `tests/repo-layout.test.js` を更新する
+- [x] 既存テストを実行して配線を確認する
 - [ ] plan を `docs/exec-plans/completed/` に移動してコミット / push する
 
 ## テスト戦略

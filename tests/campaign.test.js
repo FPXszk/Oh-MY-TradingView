@@ -950,6 +950,33 @@ describe('public library top10 US40 campaign', () => {
     assert.equal(campaign.totalRuns, 50);
   });
 
+
+
+it('loads emr-entry-quality-focus8-200pack config with an 8 x 200 matrix', async () => {
+  const campaign = await loadCampaign('emr-entry-quality-focus8-200pack');
+
+  assert.equal(campaign.config.id, 'emr-entry-quality-focus8-200pack');
+  assert.equal(campaign.config.universe, 'focus-8');
+  assert.equal(campaign.config.strategy_ids.length, 200);
+  assert.equal(campaign.symbols.length, 8);
+  assert.equal(campaign.strategies.length, 200);
+  assert.equal(campaign.matrix.length, 1600);
+  assert.equal(campaign.totalRuns, 1600);
+  assert.equal(campaign.defaults.date_range.from, '2015-01-01');
+  assert.equal(campaign.defaults.date_range.to, '2026-04-27');
+  assert.equal(campaign.strategies[0].id, 'ema-macd-rsi-sl-baseline');
+});
+
+it('uses SPY-only smoke for emr-entry-quality-focus8-200pack so each strategy is checked once', async () => {
+  const campaign = await loadCampaign('emr-entry-quality-focus8-200pack', { phase: 'smoke' });
+
+  assert.deepEqual(campaign.config.phases.smoke.symbols, ['SPY']);
+  assert.equal(campaign.symbols.length, 1);
+  assert.equal(campaign.strategies.length, 200);
+  assert.equal(campaign.matrix.length, 200);
+  assert.equal(campaign.totalRuns, 200);
+});
+
   it('loads ema-breakout-winrate-stopout-failed-us40-pack config with a 40 x 36 matrix', async () => {
     const campaign = await loadCampaign('ema-breakout-winrate-stopout-failed-us40-pack');
 

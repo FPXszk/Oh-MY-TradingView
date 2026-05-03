@@ -1,0 +1,310 @@
+//@version=5
+strategy(
+     title             = "EMR Entry Wick Guard 04",
+     overlay           = true,
+     initial_capital   = 10000,
+     currency          = currency.USD,
+     default_qty_type  = strategy.percent_of_equity,
+     default_qty_value = 100,
+     commission_type   = strategy.commission.percent,
+     commission_value  = 0.1
+ )
+
+// Fixed backtest range
+startDate = timestamp(2015, 1, 1, 0, 0)
+endDate   = timestamp(2026, 4, 27, 0, 0)
+inRange   = time >= startDate and time <= endDate
+
+// Variant metadata
+variantId   = "emr-entry-fake-wick-04"
+variantNote = "Reject entries when the upper wick exceeds 0.33x the candle body."
+
+// Fixed parameters for this variant
+emaFastLen                   = 9
+emaSlowLen                   = 20
+macdFast                     = 12
+macdSlow                     = 26
+macdSignal                   = 9
+rsiLen                       = 14
+rsiEmaLen                    = 14
+rsiLevel                     = 50
+stopPct                      = 8
+minBullScore                 = 0
+strengthRsiMin               = 0
+strengthHistPositive         = false
+strengthHist3                = false
+strengthCloseAboveFastEma    = false
+strengthCloseAboveSlowEma    = false
+delayBars                    = 0
+delayRequireSignalHigh       = false
+delayRequireFastEma          = false
+delayRequireSlowEma          = false
+delayRequireHistRising       = false
+breakoutCloseLen             = 0
+breakoutIntradayLen          = 0
+swingHighLookback            = 0
+requireCloseAbovePrevHigh    = false
+compressionLookback          = 0
+compressionMaxRangePct       = 0
+trendMode                    = "none"
+volumeSmaLen                 = 20
+volumeRatioMin               = 0
+volumeSpikeMult              = 0
+obvRisingBars                = 0
+mfiLen                       = 14
+mfiMin                       = 0
+cmfLen                       = 20
+cmfMin                       = 0
+atrLen                       = 14
+atrPctMin                    = 0
+atrPctMax                    = 0
+bbLen                        = 20
+bbMult                       = 2
+bbWidthMin                   = 0
+bbWidthMax                   = 0
+requireSqueezeRelease        = false
+barBodyAtrMin                = 0
+rangeExpLookback             = 0
+rangeExpRatioMin             = 0
+dmiLen                       = 14
+adxSmooth                    = 14
+adxMin                       = 0
+requirePlusDiOverMinusDi     = false
+stochRsiLen                  = 14
+stochRsiMin                  = 0
+cciLen                       = 20
+cciMin                       = 0
+rocLen                       = 10
+rocMin                       = 0
+maxUpperWickBodyRatio        = 0.33
+maxGapPct                    = 0
+recentRunupLookback          = 0
+maxRecentRunupPct            = 0
+minClv                       = -2
+failedBreakoutLookback       = 0
+pullbackMode                 = "none"
+pullbackLookback             = 0
+pullbackRequireRsiHold       = false
+pullbackRequireMacdHold      = false
+pullbackRequireBullClose     = false
+
+// Core calculations
+emaFast = ta.ema(close, emaFastLen)
+emaSlow = ta.ema(close, emaSlowLen)
+ema50   = ta.ema(close, 50)
+ema200  = ta.ema(close, 200)
+[macdLine, signalLine, histLine] = ta.macd(close, macdFast, macdSlow, macdSignal)
+rsi    = ta.rsi(close, rsiLen)
+rsiEma = ta.ema(rsi, rsiEmaLen)
+atr    = ta.atr(atrLen)
+[plusDi, minusDi, adx] = ta.dmi(dmiLen, adxSmooth)
+cci = ta.cci(hlc3, cciLen)
+roc = ta.roc(close, rocLen)
+
+bbBasis = ta.sma(close, bbLen)
+bbDev = ta.stdev(close, bbLen) * bbMult
+bbUpper = bbBasis + bbDev
+bbLower = bbBasis - bbDev
+bbWidthPct = bbBasis != 0 ? (bbUpper - bbLower) / bbBasis * 100 : 0
+
+kcBasis = ta.ema(close, bbLen)
+kcRange = ta.atr(bbLen) * 1.5
+kcUpper = kcBasis + kcRange
+kcLower = kcBasis - kcRange
+squeezeOn = bbUpper < kcUpper and bbLower > kcLower
+squeezeRelease = squeezeOn[1] and not squeezeOn and close > bbBasis
+
+volumeSma = ta.sma(volume, volumeSmaLen)
+relVolume = volumeSma > 0 ? volume / volumeSma : 0
+
+var float obv = na
+obv := na(obv[1]) ? volume : close > close[1] ? obv[1] + volume : close < close[1] ? obv[1] - volume : obv[1]
+
+typicalPrice = hlc3
+rawMoneyFlow = typicalPrice * volume
+positiveFlow = typicalPrice > typicalPrice[1] ? rawMoneyFlow : 0.0
+negativeFlow = typicalPrice < typicalPrice[1] ? rawMoneyFlow : 0.0
+positiveMoney = ta.sum(positiveFlow, mfiLen)
+negativeMoney = ta.sum(negativeFlow, mfiLen)
+moneyRatio = negativeMoney == 0 ? 1000000.0 : positiveMoney / negativeMoney
+mfi = 100 - (100 / (1 + moneyRatio))
+
+mfMultiplier = high != low ? ((close - low) - (high - close)) / (high - low) : 0.0
+cmf = ta.sum(mfMultiplier * volume, cmfLen) / math.max(ta.sum(volume, cmfLen), 1.0)
+
+rsiLowest = ta.lowest(rsi, stochRsiLen)
+rsiHighest = ta.highest(rsi, stochRsiLen)
+stochRsi = (rsiHighest - rsiLowest) == 0 ? 0.0 : (rsi - rsiLowest) / (rsiHighest - rsiLowest) * 100
+
+emaBullCross = ta.crossover(emaFast, emaSlow)
+emaBearCross = ta.crossunder(emaFast, emaSlow)
+emaAlignBull = emaFast > emaSlow
+emaAlignBear = emaFast < emaSlow
+
+macdBullCross = ta.crossover(macdLine, signalLine)
+macdBearCross = ta.crossunder(macdLine, signalLine)
+macdAlignBull = macdLine > signalLine
+macdAlignBear = macdLine < signalLine
+
+rsiBullCross = ta.crossover(rsi, rsiEma)
+rsiBearCross = ta.crossunder(rsi, rsiEma)
+rsiAlignBull = rsi > rsiEma
+rsiAlignBear = rsi < rsiEma
+
+buyRaw  = (emaBullCross  and macdAlignBull and rsiAlignBull) or
+          (macdBullCross and emaAlignBull  and rsiAlignBull) or
+          (rsiBullCross  and emaAlignBull  and macdAlignBull)
+
+sellRaw = (emaBearCross  and macdAlignBear and rsiAlignBear) or
+          (macdBearCross and emaAlignBear  and rsiAlignBear) or
+          (rsiBearCross  and emaAlignBear  and macdAlignBear)
+
+bullScore = (emaAlignBull ? 1 : 0) + (macdAlignBull ? 1 : 0) + (rsiAlignBull ? 1 : 0) +
+            (rsi > rsiLevel ? 1 : 0) + (histLine > 0 ? 1 : 0) + (close > emaFast ? 1 : 0) +
+            (close > emaSlow ? 1 : 0)
+bearScore = (emaAlignBear ? 1 : 0) + (macdAlignBear ? 1 : 0) + (rsiAlignBear ? 1 : 0) +
+            (rsi < rsiLevel ? 1 : 0) + (histLine < 0 ? 1 : 0) + (close < emaFast ? 1 : 0) +
+            (close < emaSlow ? 1 : 0)
+
+breakoutCloseOk = breakoutCloseLen <= 0 or close > ta.highest(high, breakoutCloseLen)[1]
+breakoutIntradayOk = breakoutIntradayLen <= 0 or high > ta.highest(high, breakoutIntradayLen)[1]
+swingHighOk = swingHighLookback <= 0 or close > ta.highest(high, swingHighLookback)[1]
+prevHighOk = not requireCloseAbovePrevHigh or close > high[1]
+compressionRangePct = compressionLookback > 0 ? (ta.highest(high, compressionLookback) - ta.lowest(low, compressionLookback)) / close * 100 : na
+compressionOk = compressionLookback <= 0 or (not na(compressionRangePct) and compressionRangePct <= compressionMaxRangePct)
+
+bullScoreOk = minBullScore <= 0 or bullScore >= minBullScore
+strengthRsiOk = strengthRsiMin <= 0 or (rsi >= strengthRsiMin and rsi > rsiEma)
+strengthHistPositiveOk = not strengthHistPositive or histLine > 0
+strengthHist3Ok = not strengthHist3 or (histLine > histLine[1] and histLine[1] > histLine[2])
+strengthCloseFastOk = not strengthCloseAboveFastEma or close > emaFast
+strengthCloseSlowOk = not strengthCloseAboveSlowEma or close > emaSlow
+confluenceOk = bullScoreOk and strengthRsiOk and strengthHistPositiveOk and strengthHist3Ok and strengthCloseFastOk and strengthCloseSlowOk
+
+trendOk = switch trendMode
+    "price_above_ema200" => close > ema200
+    "ema50_above_ema200" => ema50 > ema200
+    "ema200_rising_20"   => ema200 > ema200[20]
+    "emaSlow_rising_10"  => emaSlow > emaSlow[10]
+    "adx_trend"          => adx >= math.max(adxMin, 20) and plusDi > minusDi
+    => true
+
+volumeRatioOk = volumeRatioMin <= 0 or relVolume >= volumeRatioMin
+volumeSpikeOk = volumeSpikeMult <= 0 or (not na(volume[1]) and volume >= volume[1] * volumeSpikeMult)
+obvOk = obvRisingBars <= 0 or (not na(obv[obvRisingBars]) and obv > obv[obvRisingBars])
+mfiOk = mfiMin <= 0 or mfi >= mfiMin
+cmfOk = cmfMin <= 0 or cmf >= cmfMin
+volumeOk = volumeRatioOk and volumeSpikeOk and obvOk and mfiOk and cmfOk
+
+atrPct = close != 0 ? atr / close * 100 : 0
+atrMinOk = atrPctMin <= 0 or atrPct >= atrPctMin
+atrMaxOk = atrPctMax <= 0 or atrPct <= atrPctMax
+bbWidthMinOk = bbWidthMin <= 0 or bbWidthPct >= bbWidthMin
+bbWidthMaxOk = bbWidthMax <= 0 or bbWidthPct <= bbWidthMax
+bodyAtrOk = barBodyAtrMin <= 0 or (math.abs(close - open) / math.max(atr, syminfo.mintick)) >= barBodyAtrMin
+avgRange = rangeExpLookback > 0 ? ta.sma(high - low, rangeExpLookback) : na
+rangeExpRatio = rangeExpLookback > 0 and not na(avgRange) and avgRange != 0 ? (high - low) / avgRange : na
+rangeExpOk = rangeExpLookback <= 0 or (not na(rangeExpRatio) and rangeExpRatio >= rangeExpRatioMin)
+squeezeOk = not requireSqueezeRelease or squeezeRelease
+volatilityOk = atrMinOk and atrMaxOk and bbWidthMinOk and bbWidthMaxOk and bodyAtrOk and rangeExpOk and squeezeOk
+
+adxOk = adxMin <= 0 or adx >= adxMin
+plusDiOk = not requirePlusDiOverMinusDi or plusDi > minusDi
+stochOk = stochRsiMin <= 0 or stochRsi >= stochRsiMin
+cciOk = cciMin <= 0 or cci >= cciMin
+rocOk = rocMin <= 0 or roc >= rocMin
+momentumOk = adxOk and plusDiOk and stochOk and cciOk and rocOk
+
+bodySize = math.abs(close - open)
+upperWick = high - math.max(open, close)
+upperWickRatio = bodySize == 0 ? (upperWick > 0 ? 999.0 : 0.0) : upperWick / bodySize
+wickOk = maxUpperWickBodyRatio <= 0 or upperWickRatio <= maxUpperWickBodyRatio
+gapPct = close[1] != 0 ? math.max(open - close[1], 0) / close[1] * 100 : 0
+gapOk = maxGapPct <= 0 or gapPct <= maxGapPct
+recentLow = recentRunupLookback > 0 ? ta.lowest(low, recentRunupLookback)[1] : na
+recentRunupPct = recentRunupLookback <= 0 or na(recentLow) or recentLow <= 0 ? 0 : (close / recentLow - 1) * 100
+runupOk = maxRecentRunupPct <= 0 or recentRunupPct <= maxRecentRunupPct
+clv = high != low ? ((close - low) - (high - close)) / (high - low) : 0
+clvOk = minClv <= -1 or clv >= minClv
+failedRef = failedBreakoutLookback > 0 ? ta.highest(high, failedBreakoutLookback)[1] : na
+failedBreakoutBar = failedBreakoutLookback > 0 and not na(failedRef) and high > failedRef and close < failedRef
+failedBreakoutRecent = failedBreakoutLookback > 0 and not na(ta.barssince(failedBreakoutBar)) and ta.barssince(failedBreakoutBar) < failedBreakoutLookback
+failedBreakoutOk = failedBreakoutLookback <= 0 or not failedBreakoutRecent
+fakeoutOk = wickOk and gapOk and runupOk and clvOk and failedBreakoutOk
+
+barsSinceBuyRaw = ta.barssince(buyRaw)
+recentBuyContext = pullbackLookback > 0 and not na(barsSinceBuyRaw) and barsSinceBuyRaw > 0 and barsSinceBuyRaw <= pullbackLookback
+retestLevel = pullbackLookback > 0 ? ta.highest(high, pullbackLookback)[1] : na
+pullbackFastOk = pullbackMode == "fast_ema" and recentBuyContext and low <= emaFast and close > emaFast
+pullbackSlowOk = pullbackMode == "slow_ema" and recentBuyContext and low <= emaSlow and close > emaFast
+pullbackBreakoutOk = pullbackMode == "breakout_retest" and recentBuyContext and not na(retestLevel) and low <= retestLevel and close > retestLevel
+pullbackMomentumOk = (not pullbackRequireRsiHold or rsi >= 50) and (not pullbackRequireMacdHold or (macdAlignBull and histLine > 0)) and (not pullbackRequireBullClose or close > open)
+pullbackEntryRaw = pullbackMode != "none" and pullbackMomentumOk and (pullbackFastOk or pullbackSlowOk or pullbackBreakoutOk)
+entrySeed = pullbackMode == "none" ? buyRaw : pullbackEntryRaw
+
+entryFiltersOk = confluenceOk and breakoutCloseOk and breakoutIntradayOk and swingHighOk and prevHighOk and compressionOk and trendOk and volumeOk and volatilityOk and momentumOk and fakeoutOk
+
+var int posState = 0
+var bool pendingLong = false
+var float pendingSignalHigh = na
+var float pendingSignalLow = na
+var int pendingSignalBar = na
+
+newSignal = inRange and barstate.isconfirmed and entrySeed and entryFiltersOk and strategy.position_size <= 0 and not pendingLong and posState != 1
+if newSignal
+    if delayBars == 0
+        strategy.entry("Long", strategy.long)
+        posState := 1
+    else
+        pendingLong := true
+        pendingSignalHigh := high
+        pendingSignalLow := low
+        pendingSignalBar := bar_index
+
+barsSincePending = pendingLong and not na(pendingSignalBar) ? bar_index - pendingSignalBar : na
+pendingWindowOk = pendingLong and not na(barsSincePending) and barsSincePending > 0 and barsSincePending <= delayBars
+pendingConfirmOk = entryFiltersOk and emaAlignBull and macdAlignBull and rsiAlignBull and
+    (not delayRequireSignalHigh or close > pendingSignalHigh) and
+    (not delayRequireFastEma or close > emaFast) and
+    (not delayRequireSlowEma or close > emaSlow) and
+    (not delayRequireHistRising or histLine > histLine[1])
+
+if pendingWindowOk and pendingConfirmOk and inRange and barstate.isconfirmed and strategy.position_size <= 0 and posState != 1
+    strategy.entry("Long", strategy.long)
+    posState := 1
+    pendingLong := false
+    pendingSignalHigh := na
+    pendingSignalLow := na
+    pendingSignalBar := na
+
+if pendingLong and (sellRaw or (not na(barsSincePending) and barsSincePending > delayBars))
+    pendingLong := false
+    pendingSignalHigh := na
+    pendingSignalLow := na
+    pendingSignalBar := na
+
+if inRange and sellRaw and barstate.isconfirmed
+    pendingLong := false
+    pendingSignalHigh := na
+    pendingSignalLow := na
+    pendingSignalBar := na
+    posState := -1
+    if strategy.position_size > 0
+        strategy.close("Long", comment="SELL")
+
+stopLossPrice = strategy.position_avg_price * (1 - stopPct / 100)
+if strategy.position_size > 0
+    strategy.exit("StopLoss", from_entry="Long", stop=stopLossPrice)
+
+bullTrans = bullScore >= 6 ? 12 : bullScore >= 5 ? 26 : bullScore >= 4 ? 42 : 82
+bearTrans = bearScore >= 6 ? 12 : bearScore >= 5 ? 26 : bearScore >= 4 ? 42 : 82
+ribbonColor = bullScore > bearScore ? color.new(color.lime, bullTrans) : bearScore > bullScore ? color.new(color.red, bearTrans) : color.new(color.gray, 92)
+
+p1 = plot(emaFast, "Fast EMA", color=color.new(color.aqua, 0), linewidth=1)
+p2 = plot(emaSlow, "Slow EMA", color=color.new(color.orange, 0), linewidth=1)
+plot(ema200, "EMA 200", color=color.new(color.gray, 45), linewidth=1)
+fill(p1, p2, color=ribbonColor, title="Confluence Ribbon")
+
+plotshape(inRange and newSignal and delayBars == 0 and barstate.isconfirmed, title="BUY", style=shape.labelup, location=location.belowbar, color=color.new(color.lime, 10), textcolor=color.black, text="BUY", size=size.tiny)
+plotshape(inRange and pendingWindowOk and pendingConfirmOk and barstate.isconfirmed, title="BUY Delay", style=shape.labelup, location=location.belowbar, color=color.new(color.green, 10), textcolor=color.black, text="BUY", size=size.tiny)
+plotshape(inRange and sellRaw and barstate.isconfirmed, title="SELL", style=shape.labeldown, location=location.abovebar, color=color.new(color.red, 10), textcolor=color.white, text="SELL", size=size.tiny)
