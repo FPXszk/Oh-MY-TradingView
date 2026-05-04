@@ -7,12 +7,14 @@ param(
     [string]$WslRepoPath,
 
     [Parameter(Mandatory = $true)]
-    [string]$CommitMessage
+    [string]$CommitMessage,
+
+    [string]$ReportPath = 'docs/reports/screener/daily-ranking.md',
+
+    [string]$MetadataPath = 'docs/reports/screener/daily-ranking-run.json'
 )
 
 $ErrorActionPreference = 'Stop'
-$ReportPath = 'docs/reports/screener/daily-ranking.md'
-$MetadataPath = 'docs/reports/screener/daily-ranking-run.json'
 
 function Assert-NoSingleQuote {
     param(
@@ -86,7 +88,7 @@ Invoke-WslStrict -Command "cd '$resolvedWslRepo' && git pull --ff-only origin ma
 Invoke-WslStrict -Command "mkdir -p '$resolvedWslRepo/docs/reports/screener'"
 Invoke-WslStrict -Command "cp '$reportSourceWsl' '$resolvedWslRepo/$ReportPath'"
 Invoke-WslStrict -Command "cp '$metadataSourceWsl' '$resolvedWslRepo/$MetadataPath'"
-Invoke-WslStrict -Command "cd '$resolvedWslRepo' && git add -- docs/reports/screener/daily-ranking.md docs/reports/screener/daily-ranking-run.json"
+Invoke-WslStrict -Command "cd '$resolvedWslRepo' && git add -- '$ReportPath' '$MetadataPath'"
 Invoke-WslStrict -Command "cd '$resolvedWslRepo' && git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m '$CommitMessage'"
 Invoke-WslStrict -Command "cd '$resolvedWslRepo' && git push origin main"
 

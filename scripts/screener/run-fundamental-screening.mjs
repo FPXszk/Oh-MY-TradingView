@@ -12,7 +12,9 @@ import { runFundamentalScreener } from '../../src/core/fundamental-screener.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(__dirname, '..', '..');
-const REPORT_PATH = join(REPO_ROOT, 'docs', 'reports', 'screener', 'daily-ranking.md');
+const DEFAULT_REPORT_PATH = join(REPO_ROOT, 'docs', 'reports', 'screener', 'daily-ranking.md');
+const DEFAULT_TITLE = 'ファンダメンタル × モメンタム スクリーニング 上位20件';
+const DEFAULT_CURRENCY_SYMBOL = '$';
 
 function fmt(val, digits = 1, suffix = '') {
   if (val === null || val === undefined) return 'N/A';
@@ -75,7 +77,33 @@ function buildMarketLines(label, entries) {
   return `- ${label}: ${entries.map((entry) => `${entry.name} ${entry.count}件`).join(', ')}`;
 }
 
-export function buildMarkdown(result) {
+function parseExchangeAllowlist(value) {
+  if (!value) return null;
+  const exchanges = value.split(',').map((entry) => entry.trim()).filter(Boolean);
+  return exchanges.length > 0 ? exchanges : null;
+}
+
+function getRuntimeConfig() {
+  return {
+    reportPath: process.env.SCREENER_REPORT_PATH ? join(REPO_ROOT, process.env.SCREENER_REPORT_PATH) : DEFAULT_REPORT_PATH,
+    title: process.env.SCREENER_REPORT_TITLE || DEFAULT_TITLE,
+    currencySymbol: process.env.SCREENER_CURRENCY_SYMBOL || DEFAULT_CURRENCY_SYMBOL,
+    workflowLabel: process.env.SCREENER_WORKFLOW_LABEL || 'daily-screener',
+    screenerOptions: {
+      market: process.env.SCREENER_MARKET || 'america',
+      exchangeAllowlist: parseExchangeAllowlist(process.env.SCREENER_EXCHANGES),
+      grossMarginMinPct: process.env.SCREENER_GROSS_MARGIN_MIN_PCT
+        ? Number(process.env.SCREENER_GROSS_MARGIN_MIN_PCT)
+        : undefined,
+      symbolAllowlistKey: process.env.SCREENER_SYMBOL_ALLOWLIST_KEY || undefined,
+      scopeLabel: process.env.SCREENER_SCOPE_LABEL || undefined,
+    },
+  };
+}
+
+export function buildMarkdown(result, options = {}) {
+  const title = options.title ?? DEFAULT_TITLE;
+  const currencySymbol = options.currencySymbol ?? DEFAULT_CURRENCY_SYMBOL;
   const now = new Date(result.retrieved_at);
   const jst = new Intl.DateTimeFormat('ja-JP', {
     timeZone: 'Asia/Tokyo',
@@ -85,7 +113,7 @@ export function buildMarkdown(result) {
   const topFive = result.results.slice(0, 5);
 
   const lines = [
-    '# ファンダメンタル × モメンタム スクリーニング 上位20件',
+    `# ${title}`,
     '',
     `更新: ${result.retrieved_at}（JST ${jst}）`,
     '',
@@ -113,7 +141,7 @@ export function buildMarkdown(result) {
     lines.push('|:---:|:---|:---|:---:|---:|---:|---:|---:|---:|---:|');
     result.results.forEach((r, i) => {
       lines.push(
-        `| ${i + 1} | **${r.symbol}** | ${r.sector ?? 'N/A'} | ${r.exchange ?? '-'} | $${fmt(r.close, 2)} | ${fmt(r.perf3m)}% | ${fmt(r.roe)}% | ${fmt(r.fcfMargin)}% | ${r.revenueGrowth === null || r.revenueGrowth === undefined ? 'N/A' : fmt(r.revenueGrowth * 100)}% | ${r.rankScore} |`,
+        `| ${i + 1} | **${r.symbol}** | ${r.sector ?? 'N/A'} | ${r.exchange ?? '-'} | ${currencySymbol}${fmt(r.close, 2)} | ${fmt(r.perf3m)}% | ${fmt(r.roe)}% | ${fmt(r.fcfMargin)}% | ${r.revenueGrowth === null || r.revenueGrowth === undefined ? 'N/A' : fmt(r.revenueGrowth * 100)}% | ${r.rankScore} |`,
       );
     });
     lines.push('');
@@ -137,6 +165,9 @@ export function buildMarkdown(result) {
   lines.push('## 市場カバレッジ');
   lines.push('');
   lines.push(`- スキャンスコープ: TradingView Scanner API の \`${result.scannerScope.market}\` 市場、対象は \`${result.scannerScope.instrumentTypes.join(', ')}\``);
+  if (result.scannerScope.scopeLabel) {
+    lines.push(`- ユニバース追加条件: ${result.scannerScope.scopeLabel}`);
+  }
   lines.push(`- 観測レンジ: 今回は最大 ${result.scannerScope.serverLimit} 件まで取得し、その範囲で市場別内訳を集計`);
   lines.push(buildMarketLines('サーバーフィルター通過', result.marketBreakdown?.serverFiltered));
   lines.push(buildMarketLines('クライアントフィルター通過', result.marketBreakdown?.clientFiltered));
@@ -159,10 +190,16 @@ export function buildMarkdown(result) {
   lines.push(`**スコア算出:** \`rank(${result.rankingFormula.join(') + rank(')})\`（合計が小さいほど上位）`);
   lines.push('');
   lines.push('**フィルター条件:**');
-  lines.push('- RSI(14) > 60, 時価総額 > $1B, 相対出来高 > 1.2x');
-  lines.push('- EPS(TTM) > 0, ROE > 15%, 粗利率(TTM) > 40%, FCFマージン(TTM) > 10%');
-  lines.push('- Close > SMA200, Close > SMA50, Close ≥ 52週高値 × 75%');
-  lines.push('- Perf.3M > 10%, P/FCF < 50');
+  lines.push(`- RSI(14) > ${result.criteria.rsi14_min}, 時価総額 > $1B, 相対出来高 > ${result.criteria.relative_volume_min}x`);
+  lines.push(`- EPS(TTM) > ${result.criteria.eps_min}, ROE > ${result.criteria.roe_min_pct}%, 粗利率(TTM) > ${result.criteria.gross_margin_min_pct}%, FCFマージン(TTM) > ${result.criteria.fcf_margin_min_pct}%`);
+  lines.push(`- Close > SMA200, Close > SMA50, Close ≥ 52週高値 × ${result.criteria.price_pct_of_52wk_high_min}%`);
+  lines.push(`- Perf.3M > ${result.criteria.perf3m_min_pct}%, P/FCF < ${result.criteria.p_fcf_max}`);
+  if (result.criteria.allowed_exchanges) {
+    lines.push(`- 取引所限定: ${result.criteria.allowed_exchanges.join(', ')}`);
+  }
+  if (result.criteria.symbol_allowlist_key) {
+    lines.push(`- 銘柄ユニバース限定: ${result.criteria.symbol_allowlist_key}`);
+  }
   if (result.enrichedWithYahoo) {
     lines.push('- Yahoo Finance 補完あり: 売上成長率 YoY > 20%');
   }
@@ -172,10 +209,15 @@ export function buildMarkdown(result) {
 
 async function main() {
   console.log('[screener] Starting fundamental screener...');
+  const runtime = getRuntimeConfig();
 
   let result;
   try {
-    result = await runFundamentalScreener({ limit: 20, enrichWithYahoo: true });
+    result = await runFundamentalScreener({
+      limit: 20,
+      enrichWithYahoo: true,
+      _deps: runtime.screenerOptions,
+    });
   } catch (err) {
     console.error('[screener] ERROR:', err.message);
     process.exit(1);
@@ -183,10 +225,13 @@ async function main() {
 
   console.log(`[screener] totalScanned=${result.totalScanned} serverFiltered=${result.serverFiltered} clientFiltered=${result.clientFiltered} matched=${result.matched}`);
 
-  const md = buildMarkdown(result);
-  mkdirSync(dirname(REPORT_PATH), { recursive: true });
-  writeFileSync(REPORT_PATH, md, 'utf8');
-  console.log(`[screener] Report written to ${REPORT_PATH}`);
+  const md = buildMarkdown(result, {
+    title: runtime.title,
+    currencySymbol: runtime.currencySymbol,
+  });
+  mkdirSync(dirname(runtime.reportPath), { recursive: true });
+  writeFileSync(runtime.reportPath, md, 'utf8');
+  console.log(`[screener] Report written to ${runtime.reportPath}`);
 }
 
 if (process.argv[1] && process.argv[1] === fileURLToPath(import.meta.url)) {

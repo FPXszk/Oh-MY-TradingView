@@ -1,6 +1,6 @@
 /**
  * Fundamental + Momentum stock screener — queries TradingView's scanner API
- * for US stocks passing financial quality × Minervini momentum conditions.
+ * for stocks passing financial quality × Minervini momentum conditions.
  *
  * Server-side filters (7 conditions):
  *   1. RSI(14) >= 60
@@ -24,12 +24,20 @@
  * Ranking: rank-sum of Perf.3M + ROE + FCF margin [+ revenueGrowth when enriched]
  */
 
+import { readFileSync } from 'node:fs';
 import { getSymbolFundamentals } from './market-intel.js';
 
-const SCANNER_URL = 'https://scanner.tradingview.com/america/scan';
+const DEFAULT_MARKET = 'america';
+const DEFAULT_GROSS_MARGIN_MIN_PCT = 40;
 const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 200;
 const DEFAULT_TIMEOUT_MS = 15000;
+const BUILTIN_SYMBOL_ALLOWLISTS = new Map([
+  [
+    'jpx-prime',
+    new Set(JSON.parse(readFileSync(new URL('../../config/screener/jpx-prime-symbols.json', import.meta.url), 'utf8')).symbols),
+  ],
+]);
 
 const COLUMNS = [
   'name',
@@ -54,7 +62,7 @@ const COLUMNS = [
 
 const COL = Object.fromEntries(COLUMNS.map((col, i) => [col, i]));
 
-function buildRequestBody(serverLimit) {
+function buildRequestBody(serverLimit, { market, grossMarginMinPct }) {
   return {
     filter: [
       { left: 'RSI', operation: 'egreater', right: 60 },
@@ -62,11 +70,11 @@ function buildRequestBody(serverLimit) {
       { left: 'relative_volume_10d_calc', operation: 'egreater', right: 1.2 },
       { left: 'earnings_per_share_diluted_ttm', operation: 'egreater', right: 0 },
       { left: 'return_on_equity', operation: 'egreater', right: 15 },
-      { left: 'gross_margin_ttm', operation: 'egreater', right: 40 },
+      { left: 'gross_margin_ttm', operation: 'egreater', right: grossMarginMinPct },
       { left: 'free_cash_flow_margin_ttm', operation: 'egreater', right: 10 },
     ],
     options: { lang: 'en' },
-    markets: ['america'],
+    markets: [market],
     symbols: { query: { types: ['stock'] }, tickers: [] },
     columns: COLUMNS,
     sort: { sortBy: 'market_cap_basic', sortOrder: 'desc' },
@@ -145,6 +153,27 @@ function passesClientFilters(row) {
   if (perf3m !== null && perf3m <= 10) return false;
   if (pFcf !== null && pFcf >= 50) return false;
 
+  return true;
+}
+
+function resolveSymbolAllowlist(symbolAllowlistKey, customAllowlists) {
+  if (!symbolAllowlistKey) return null;
+
+  const allowlists = customAllowlists
+    ? new Map(Object.entries(customAllowlists).map(([key, value]) => [key, value instanceof Set ? value : new Set(value)]))
+    : BUILTIN_SYMBOL_ALLOWLISTS;
+  const allowlist = allowlists.get(symbolAllowlistKey);
+
+  if (!allowlist) {
+    throw new Error(`Unknown symbolAllowlistKey: ${symbolAllowlistKey}`);
+  }
+
+  return allowlist;
+}
+
+function passesScopeFilters(row, { exchangeAllowlist, symbolAllowlist }) {
+  if (exchangeAllowlist && !exchangeAllowlist.includes(row.exchange)) return false;
+  if (symbolAllowlist && !symbolAllowlist.has(row.symbol)) return false;
   return true;
 }
 
@@ -289,14 +318,21 @@ function validateLimit(limit) {
 export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _deps } = {}) {
   const effectiveLimit = validateLimit(limit);
   const fetchFn = _deps?.fetch ?? globalThis.fetch;
+  const market = _deps?.market ?? DEFAULT_MARKET;
+  const exchangeAllowlist = _deps?.exchangeAllowlist ?? null;
+  const grossMarginMinPct = _deps?.grossMarginMinPct ?? DEFAULT_GROSS_MARGIN_MIN_PCT;
+  const symbolAllowlistKey = _deps?.symbolAllowlistKey ?? null;
+  const symbolAllowlist = resolveSymbolAllowlist(symbolAllowlistKey, _deps?.symbolAllowlistByKey);
+  const scopeLabel = _deps?.scopeLabel ?? null;
+  const scannerUrl = `https://scanner.tradingview.com/${market}/scan`;
 
   // Fetch more candidates than needed so client filters have enough to work with
   const serverLimit = Math.min(effectiveLimit * 8, 400);
 
-  const response = await fetchFn(SCANNER_URL, {
+  const response = await fetchFn(scannerUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(buildRequestBody(serverLimit)),
+    body: JSON.stringify(buildRequestBody(serverLimit, { market, grossMarginMinPct })),
     signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
   });
 
@@ -311,10 +347,9 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   }
 
   const totalCount = payload.totalCount ?? payload.data.length;
-  const serverFiltered = payload.data.length;
-
   const normalized = payload.data.map(normalizeRow);
-  let clientFiltered = normalized.filter(passesClientFilters);
+  const scopeFiltered = normalized.filter((row) => passesScopeFilters(row, { exchangeAllowlist, symbolAllowlist }));
+  let clientFiltered = scopeFiltered.filter(passesClientFilters);
 
   if (enrichWithYahoo && clientFiltered.length > 0) {
     const symbols = clientFiltered.map((r) => r.symbol);
@@ -336,7 +371,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     relative_volume_min: 1.2,
     eps_min: 0,
     roe_min_pct: 15,
-    gross_margin_min_pct: 40,
+    gross_margin_min_pct: grossMarginMinPct,
     fcf_margin_min_pct: 10,
     price_above_sma200: true,
     price_above_sma50: true,
@@ -344,6 +379,12 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     perf3m_min_pct: 10,
     p_fcf_max: 50,
   };
+  if (exchangeAllowlist) {
+    criteria.allowed_exchanges = exchangeAllowlist;
+  }
+  if (symbolAllowlistKey) {
+    criteria.symbol_allowlist_key = symbolAllowlistKey;
+  }
   if (enrichWithYahoo) {
     criteria.revenue_growth_min_pct = 20;
   }
@@ -351,7 +392,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   return {
     success: true,
     totalScanned: totalCount,
-    serverFiltered,
+    serverFiltered: scopeFiltered.length,
     clientFiltered: clientFiltered.length,
     matched: matched.length,
     enrichedWithYahoo: enrichWithYahoo,
@@ -360,14 +401,17 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       ? ['perf3m', 'roe', 'fcfMargin', 'revenueGrowth']
       : ['perf3m', 'roe', 'fcfMargin'],
     scannerScope: {
-      market: 'america',
+      market,
       instrumentTypes: ['stock'],
       serverLimit,
       totalCandidatesReported: totalCount,
-      note: 'TradingView Scanner API returns the filtered stock universe for the america market scope; exchange counts below are based on the returned candidates for this run.',
+      scopeLabel,
+      note: exchangeAllowlist || symbolAllowlistKey
+        ? 'TradingView Scanner API returns the filtered stock candidates for the selected market scope; exchange and symbol-universe filters below are additionally applied locally for this run.'
+        : `TradingView Scanner API returns the filtered stock universe for the ${market} market scope; exchange counts below are based on the returned candidates for this run.`,
     },
     marketBreakdown: {
-      serverFiltered: countBy(normalized, 'exchange'),
+      serverFiltered: countBy(scopeFiltered, 'exchange'),
       clientFiltered: countBy(clientFiltered, 'exchange'),
       matched: countBy(matched, 'exchange'),
     },
