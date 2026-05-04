@@ -54,13 +54,13 @@
 
 ## 実装ステップ
 
-- [ ] `.github/workflows/daily-screener.yml` を self-hosted / manual-only へ変更する
-- [ ] `scripts/screener/run-fundamental-screening.mjs` から git 操作を削除する
-- [ ] 既存テストへの影響を確認し、必要なら workflow / layout 関連テストを調整する
-- [ ] `tests/daily-screener-report.test.js` など関連テストを更新する
-- [ ] 対象テストを実行する
-- [ ] 必要範囲で `npm test` を実行し、今回変更に直接関係する回帰がないことを確認する
-- [ ] 計画を `completed/` に移し、Conventional Commit でコミットする
+- [x] `.github/workflows/daily-screener.yml` を self-hosted / manual-only へ変更する
+- [x] `scripts/screener/run-fundamental-screening.mjs` から git 操作を削除する
+- [x] 既存テストへの影響を確認し、必要なら workflow / layout 関連テストを調整する
+- [x] `tests/daily-screener-report.test.js` など関連テストを更新する
+- [x] 対象テストを実行する
+- [x] 必要範囲で `npm test` を実行し、今回変更に直接関係する回帰がないことを確認する
+- [x] 計画を `completed/` に移し、Conventional Commit でコミットする
 
 ## テスト戦略
 
@@ -120,3 +120,9 @@ npm test
 
 - active plan は `repo-structure-align-and-archive-rules_20260424_2015.md` と `run-night-batch_20260429_2344.md`
 - 今回の daily screener 実行基盤変更とは直接競合しない
+
+## 実施メモ
+
+- 関連テスト `tests/daily-screener-report.test.js` と `tests/fundamental-screener.test.js` は通過
+- `npm test` は今回も既存の `tests/capture.test.js` / `tests/devinit.test.js` / `tests/night-batch.test.js` / `tests/strategy-live-retired-diff.test.js` で失敗または cancel が残る
+- 上記 4 件は今回変更ファイルとは無関係で、今回の workflow / local-only 変更に起因する新規失敗は確認されていない

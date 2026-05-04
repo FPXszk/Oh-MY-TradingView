@@ -1,15 +1,13 @@
 name: Daily Fundamental Screener
 
 on:
-  schedule:
-    - cron: '0 3 * * *'   # JST 12:00 = UTC 03:00
   workflow_dispatch:
 
 jobs:
   run-screener:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    runs-on:
+      - self-hosted
+      - windows
 
     steps:
       - uses: actions/checkout@v4

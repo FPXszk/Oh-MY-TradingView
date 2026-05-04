@@ -1,18 +1,13 @@
 #!/usr/bin/env node
 /**
- * GitHub Actions entry point for the daily fundamental screener.
- * Calls runFundamentalScreener, writes docs/reports/screener/daily-ranking.md,
- * then commits and pushes via git.
- *
- * Expected env vars (GitHub Actions sets these):
- *   GITHUB_ACTOR  – used for git author
- *   GITHUB_WORKSPACE (optional) – used to locate repo root
+ * Report generator for the fundamental screener.
+ * Calls runFundamentalScreener and writes docs/reports/screener/daily-ranking.md
+ * into the current checkout. No git operations are performed.
  */
 
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { execSync } from 'node:child_process';
 import { runFundamentalScreener } from '../../src/core/fundamental-screener.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -192,26 +187,6 @@ async function main() {
   mkdirSync(dirname(REPORT_PATH), { recursive: true });
   writeFileSync(REPORT_PATH, md, 'utf8');
   console.log(`[screener] Report written to ${REPORT_PATH}`);
-
-  // Git commit and push
-  try {
-    execSync('git config user.name "github-actions[bot]"', { cwd: REPO_ROOT });
-    execSync('git config user.email "github-actions[bot]@users.noreply.github.com"', { cwd: REPO_ROOT });
-    execSync(`git add "${REPORT_PATH}"`, { cwd: REPO_ROOT });
-
-    const status = execSync('git status --porcelain', { cwd: REPO_ROOT }).toString().trim();
-    if (!status) {
-      console.log('[screener] No changes to commit.');
-      return;
-    }
-
-    execSync('git commit -m "chore: update daily screener ranking [skip ci]"', { cwd: REPO_ROOT });
-    execSync('git push', { cwd: REPO_ROOT });
-    console.log('[screener] Committed and pushed.');
-  } catch (err) {
-    console.error('[screener] Git error:', err.message);
-    process.exit(1);
-  }
 }
 
 if (process.argv[1] && process.argv[1] === fileURLToPath(import.meta.url)) {
