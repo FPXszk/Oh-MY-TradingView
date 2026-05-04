@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { execFile } from 'node:child_process';
+import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
@@ -8,6 +9,13 @@ import { parseArgs } from 'node:util';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const PROJECT_ROOT = join(__dirname, '..', '..');
+const REQUIRED_SMOKE_METRICS = [
+  'net_profit',
+  'profit_factor',
+  'max_drawdown',
+  'percent_profitable',
+  'closed_trades',
+];
 
 /** Patterns that indicate a recoverable TradingView crash (mirrors night_batch.py). */
 const RECOVERABLE_PATTERN = /EPIPE|broken pipe|process.*(not found|missing|gone|exited|crashed)/i;
@@ -104,7 +112,8 @@ async function runStatus(host, port) {
 }
 
 async function runCampaignPhase({ campaignId, phase, host, ports, dryRun, resume = null }) {
-  const args = [join(PROJECT_ROOT, 'scripts', 'backtest', 'run-long-campaign.mjs'), campaignId, '--phase', phase, '--host', host, '--ports', ports.join(',')];
+  const runner = process.env.RUN_FINETUNE_CAMPAIGN_RUNNER || join(PROJECT_ROOT, 'scripts', 'backtest', 'run-long-campaign.mjs');
+  const args = [runner, campaignId, '--phase', phase, '--host', host, '--ports', ports.join(',')];
   if (dryRun) {
     args.push('--dry-run');
   }
@@ -112,6 +121,65 @@ async function runCampaignPhase({ campaignId, phase, host, ports, dryRun, resume
     args.push('--resume', resume);
   }
   return runNode(args);
+}
+
+function isFiniteMetric(value) {
+  return typeof value === 'number' && Number.isFinite(value);
+}
+
+function findSmokeMetricFailures(runs) {
+  if (!Array.isArray(runs) || runs.length === 0) {
+    return [{ presetId: 'n/a', symbol: 'n/a', reason: 'smoke recovered-results is empty' }];
+  }
+
+  const failures = [];
+  for (const run of runs) {
+    const result = run?.result || {};
+    const metrics = result.metrics || {};
+    const missingMetrics = REQUIRED_SMOKE_METRICS.filter((key) => !isFiniteMetric(metrics[key]));
+    if (
+      result.success !== true ||
+      result.apply_failed === true ||
+      result.tester_available !== true ||
+      result.tester_reason_category ||
+      missingMetrics.length > 0
+    ) {
+      failures.push({
+        presetId: run?.presetId || 'n/a',
+        symbol: run?.symbol || 'n/a',
+        reason: result.tester_reason_category ||
+          result.tester_reason ||
+          (result.apply_failed ? 'apply_failed' : '') ||
+          (missingMetrics.length > 0 ? `missing metrics: ${missingMetrics.join(',')}` : 'unknown smoke validation failure'),
+      });
+    }
+  }
+  return failures;
+}
+
+async function validateSmokeMetrics(campaignId, phase) {
+  const resultsPath = join(PROJECT_ROOT, 'artifacts', 'campaigns', campaignId, phase, 'recovered-results.json');
+  let runs;
+  try {
+    runs = JSON.parse(await readFile(resultsPath, 'utf8'));
+  } catch (error) {
+    throw new Error(`Smoke metrics gate failed: cannot read ${resultsPath}: ${error.message}`);
+  }
+
+  const failures = findSmokeMetricFailures(runs);
+  if (failures.length > 0) {
+    const examples = failures
+      .slice(0, 10)
+      .map((failure) => `${failure.presetId}/${failure.symbol}: ${failure.reason}`)
+      .join('; ');
+    throw new Error(
+      `Smoke metrics gate failed for ${campaignId}/${phase}: ` +
+      `${failures.length}/${Array.isArray(runs) ? runs.length : 0} runs lack direct Strategy Tester metrics. ` +
+      `Examples: ${examples}`,
+    );
+  }
+
+  process.stdout.write(`[smoke-metrics-gate] ${campaignId}/${phase}: ${runs.length}/${runs.length} runs have direct Strategy Tester metrics\n`);
 }
 
 async function main() {
@@ -224,6 +292,9 @@ async function main() {
         }
 
         if (result.success) {
+          if (!values['dry-run'] && phase === 'smoke') {
+            await validateSmokeMetrics(campaign.id, phase);
+          }
           campaignSucceeded = true;
           break;
         }

@@ -70,6 +70,41 @@ function runPython(args, options = {}) {
   });
 }
 
+function runNodeScript(args, options = {}) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, args, {
+      cwd: PROJECT_ROOT,
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: {
+        ...process.env,
+        ...(options.env || {}),
+      },
+    });
+
+    let stdout = '';
+    let stderr = '';
+    const timeoutMs = options.timeoutMs ?? 30000;
+    const timer = setTimeout(() => {
+      child.kill('SIGKILL');
+      reject(new Error(`node command timed out after ${timeoutMs}ms: ${args.join(' ')}`));
+    }, timeoutMs);
+    child.stdout.on('data', (chunk) => {
+      stdout += String(chunk);
+    });
+    child.stderr.on('data', (chunk) => {
+      stderr += String(chunk);
+    });
+    child.on('error', (error) => {
+      clearTimeout(timer);
+      reject(error);
+    });
+    child.on('close', (code) => {
+      clearTimeout(timer);
+      resolve({ status: code, stdout, stderr });
+    });
+  });
+}
+
 function writeRoundFixture(roundNumber, { completed = false } = {}) {
   const roundDir = join(RESULTS_DIR, `round${roundNumber}`);
   mkdirSync(roundDir, { recursive: true });
@@ -1125,6 +1160,125 @@ exit 0
     assert.doesNotMatch(loggedCommands[0], /next-long-run-jp|jp-campaign/i);
     assert.match(loggedCommands[1], /run-finetune-bundle\.mjs/);
     assert.match(loggedCommands[1], /selected-us40-10pack/);
+  });
+
+  it('run-finetune smoke gate fails when Strategy Tester metrics are unreadable', async () => {
+    const campaignId = `smoke-gate-unreadable-${tempDir.split('/').pop()}`;
+    const campaignDir = join(PROJECT_ROOT, 'artifacts', 'campaigns', campaignId);
+    const fakeRunnerPath = join(tempDir, 'fake-run-long-campaign.mjs');
+    writeFileSync(
+      fakeRunnerPath,
+      `
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+
+const campaignId = process.argv[2];
+const phase = process.argv[process.argv.indexOf('--phase') + 1];
+const outDir = join(process.cwd(), 'artifacts', 'campaigns', campaignId, phase);
+mkdirSync(outDir, { recursive: true });
+writeFileSync(join(outDir, 'recovered-results.json'), JSON.stringify([
+  {
+    presetId: 'runtime-error-preset',
+    symbol: 'SPY',
+    result: {
+      success: true,
+      compile_detail: { success: true },
+      apply_failed: false,
+      tester_available: false,
+      tester_reason_category: 'metrics_unreadable',
+      tester_reason: 'Strategy Tester opened but metrics could not be read from internal API or DOM'
+    }
+  }
+], null, 2));
+process.stdout.write('fake smoke complete\\n');
+`,
+      'utf8',
+    );
+
+    try {
+      const result = await runNodeScript([
+        'scripts/backtest/run-finetune-bundle.mjs',
+        '--skip-preflight',
+        '--host',
+        '127.0.0.1',
+        '--ports',
+        String(port),
+        '--phases',
+        'smoke',
+        '--us-campaign',
+        campaignId,
+      ], {
+        env: { RUN_FINETUNE_CAMPAIGN_RUNNER: fakeRunnerPath },
+      });
+
+      assert.notEqual(result.status, 0);
+      assert.match(result.stderr, /Smoke metrics gate failed/);
+      assert.match(result.stderr, /runtime-error-preset\/SPY/);
+      assert.match(result.stderr, /metrics_unreadable/);
+    } finally {
+      rmSync(campaignDir, { recursive: true, force: true });
+    }
+  });
+
+  it('run-finetune smoke gate passes when all smoke runs have direct metrics', async () => {
+    const campaignId = `smoke-gate-readable-${tempDir.split('/').pop()}`;
+    const campaignDir = join(PROJECT_ROOT, 'artifacts', 'campaigns', campaignId);
+    const fakeRunnerPath = join(tempDir, 'fake-run-long-campaign-readable.mjs');
+    writeFileSync(
+      fakeRunnerPath,
+      `
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+
+const campaignId = process.argv[2];
+const phase = process.argv[process.argv.indexOf('--phase') + 1];
+const outDir = join(process.cwd(), 'artifacts', 'campaigns', campaignId, phase);
+mkdirSync(outDir, { recursive: true });
+writeFileSync(join(outDir, 'recovered-results.json'), JSON.stringify([
+  {
+    presetId: 'readable-preset',
+    symbol: 'SPY',
+    result: {
+      success: true,
+      compile_detail: { success: true },
+      apply_failed: false,
+      tester_available: true,
+      metrics: {
+        net_profit: 100,
+        profit_factor: 1.8,
+        max_drawdown: 20,
+        percent_profitable: 50,
+        closed_trades: 4
+      }
+    }
+  }
+], null, 2));
+process.stdout.write('fake smoke complete\\n');
+`,
+      'utf8',
+    );
+
+    try {
+      const result = await runNodeScript([
+        'scripts/backtest/run-finetune-bundle.mjs',
+        '--skip-preflight',
+        '--host',
+        '127.0.0.1',
+        '--ports',
+        String(port),
+        '--phases',
+        'smoke',
+        '--us-campaign',
+        campaignId,
+      ], {
+        env: { RUN_FINETUNE_CAMPAIGN_RUNNER: fakeRunnerPath },
+      });
+
+      assert.equal(result.status, 0, result.stderr || result.stdout);
+      assert.match(result.stdout, /smoke-metrics-gate/);
+    } finally {
+      rmSync(campaignDir, { recursive: true, force: true });
+    }
   });
 
   it('smoke-prod can detach the full bundle phase after a smoke bundle gate', async () => {
