@@ -6,6 +6,12 @@ network = "enabled"
 
 [projects."/home/fpxszk/code/Oh-MY-TradingView"]
 trust_level = "trusted"
+writable_roots = [
+"/home/fpxszk/code/Oh-MY-TradingView",
+"/home/fpxszk/code/Oh-MY-TradingView/.git",
+"/tmp",
+"/home/fpxszk/.codex/memories",
+]
 
 [projects."/mnt/c/actions-runner/_work"]
 trust_level = "trusted"

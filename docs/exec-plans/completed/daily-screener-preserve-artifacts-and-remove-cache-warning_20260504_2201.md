@@ -26,7 +26,7 @@
 |---|---|---|
 | `.github/workflows/daily-screener.yml` | MODIFY | `actions/checkout@v4` に `clean: false` を追加し、`actions/setup-node@v4` から `cache: 'npm'` を削除する |
 | `tests/daily-screener-report.test.js` | MODIFY | daily screener workflow が `clean: false` を使い、npm cache を使わないことを固定する |
-| `docs/exec-plans/active/daily-screener-preserve-artifacts-and-remove-cache-warning_20260504_2201.md` | CREATE | 本計画 |
+| `docs/exec-plans/completed/daily-screener-preserve-artifacts-and-remove-cache-warning_20260504_2201.md` | MOVE | 完了済みの本計画 |
 
 ## Scope
 
@@ -45,15 +45,15 @@ Out of scope:
 
 ## Implementation Steps
 
-- [ ] `tests/daily-screener-report.test.js` に workflow 設定テストを追加する
+- [x] `tests/daily-screener-report.test.js` に workflow 設定テストを追加する
   - 確認: 現状の `.github/workflows/daily-screener.yml` で `clean: false` 未指定と npm cache 指定により RED になる
-- [ ] `.github/workflows/daily-screener.yml` の checkout に `clean: false` を追加する
+- [x] `.github/workflows/daily-screener.yml` の checkout に `clean: false` を追加する
   - 確認: `C:\actions-runner\_work\Oh-MY-TradingView\Oh-MY-TradingView\artifacts` 配下の未追跡ファイルを checkout が削除しない設定になる
-- [ ] `.github/workflows/daily-screener.yml` の setup-node から `cache: 'npm'` を削除する
+- [x] `.github/workflows/daily-screener.yml` の setup-node から `cache: 'npm'` を削除する
   - 確認: `Post Run actions/setup-node@v4` の npm cache 保存処理が発生しない設定になる
-- [ ] 対象テストを実行する
+- [x] 対象テストを実行する
   - 確認: `node --test tests/daily-screener-report.test.js`
-- [ ] workflow 設定を目視レビューする
+- [x] workflow 設定を目視レビューする
   - 確認: night batch / smoke の既存 `clean: false` には触れていない
 
 ## Validation Commands

@@ -1,7 +1,23 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 import { buildMarkdown } from '../scripts/screener/run-fundamental-screening.mjs';
+
+const PROJECT_ROOT = process.cwd();
+const WORKFLOW_PATH = join(PROJECT_ROOT, '.github', 'workflows', 'daily-screener.yml');
+
+describe('Daily Fundamental Screener workflow', () => {
+  it('preserves local self-hosted artifacts and avoids npm cache save warnings', () => {
+    const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
+
+    assert.match(workflow, /actions\/checkout@v4[\s\S]*?with:[\s\S]*?clean:\s+false/,
+      'workflow checkout must not delete untracked local artifacts');
+    assert.doesNotMatch(workflow, /cache:\s+['"]?npm['"]?/,
+      'workflow must not enable setup-node npm cache on the Windows self-hosted runner');
+  });
+});
 
 describe('buildMarkdown', () => {
   it('renders top 20 heading, top 5 explanations, sector ranking, and market coverage', () => {
