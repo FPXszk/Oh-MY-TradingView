@@ -160,7 +160,7 @@ start_commands() {
 
   gh auth status >/dev/null 2>&1 || gh auth login --hostname github.com --git-protocol ssh --web
 
-  agent_cmd="cd $(escape "${ROOT_DIR}") && codex --sandbox workspace-write --ask-for-approval never --cd $(escape "${ROOT_DIR}") --add-dir $(escape "${ROOT_DIR}")"
+  agent_cmd="cd $(escape "${ROOT_DIR}") && codex --cd $(escape "${ROOT_DIR}") --add-dir $(escape "${ROOT_DIR}")"
   logs_cmd="cd ${ROOT_DIR} && touch $(escape "${LOG_FILE}") && tail -F $(escape "${LOG_FILE}")"
   git_cmd="cd ${ROOT_DIR} && echo 'Launching lazygit...' && lazygit"
   keepalive_cmd="nice -n 19 bash -c 'while true; do sleep 300; done'"

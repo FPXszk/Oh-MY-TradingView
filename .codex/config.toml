@@ -1,7 +1,14 @@
-model = "gpt-5.4"
+model = "gpt-5.5"
 model_reasoning_effort = "medium"
+approval_policy = "never"
 sandbox_mode = "workspace-write"
-approval_policy = "on-request"
+network = "enabled"
+
+[projects."/home/fpxszk/code/Oh-MY-TradingView"]
+trust_level = "trusted"
+
+[projects."/mnt/c/actions-runner/_work"]
+trust_level = "trusted"
 
 [plugins."github@openai-curated"]
 enabled = true
