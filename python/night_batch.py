@@ -1911,12 +1911,12 @@ def resolve_live_checkout_protection_targets(settings: dict) -> list[dict]:
     ]
     if us_campaign:
         targets.append({
-            'path': canonical_repo_path(PROJECT_ROOT / 'config' / 'backtest' / 'campaigns' / 'current' / f'{us_campaign}.json'),
+            'path': canonical_repo_path(PROJECT_ROOT / 'config' / 'backtest' / 'campaigns' / f'{us_campaign}.json'),
             'role': 'campaign_current',
         })
     if jp_campaign:
         targets.append({
-            'path': canonical_repo_path(PROJECT_ROOT / 'config' / 'backtest' / 'campaigns' / 'current' / f'{jp_campaign}.json'),
+            'path': canonical_repo_path(PROJECT_ROOT / 'config' / 'backtest' / 'campaigns' / f'{jp_campaign}.json'),
             'role': 'campaign_current',
         })
     return targets

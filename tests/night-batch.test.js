@@ -1,5 +1,6 @@
 import { beforeEach, afterEach, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import {
   chmodSync,
   existsSync,
@@ -19,9 +20,47 @@ const PROJECT_ROOT = join(process.cwd());
 const SCRIPT_PATH = join(PROJECT_ROOT, 'python', 'night_batch.py');
 let RESULTS_DIR = join(PROJECT_ROOT, 'results', 'night-batch');
 const ROUND_MODE_COMMANDS = new Set(['bundle', 'campaign', 'recover', 'nightly', 'smoke-prod']);
+const FOREGROUND_BUNDLE_CONFIG_PATH = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
 
 function toRepoRelativePath(path) {
   return relative(PROJECT_ROOT, path).replaceAll('\\', '/');
+}
+
+function readJson(filePath) {
+  return JSON.parse(readFileSync(filePath, 'utf8'));
+}
+
+function sha256Of(filePath) {
+  return createHash('sha256').update(readFileSync(filePath)).digest('hex');
+}
+
+function resolveForegroundBundleInputs() {
+  const bundleConfigPath = FOREGROUND_BUNDLE_CONFIG_PATH;
+  const bundleConfig = readJson(bundleConfigPath);
+  const strategyPresetsPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-presets.json');
+  const strategyCatalogPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-catalog.json');
+  const currentCampaignIds = [bundleConfig.bundle?.us_campaign, bundleConfig.bundle?.jp_campaign]
+    .filter((id) => typeof id === 'string' && id.length > 0);
+
+  assert.ok(currentCampaignIds.length >= 1, 'foreground bundle config must resolve at least one current campaign');
+
+  return {
+    bundleConfigPath,
+    strategyPresetsPath,
+    strategyCatalogPath,
+    currentCampaigns: currentCampaignIds.map((id) => ({
+      id,
+      path: join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', `${id}.json`),
+    })),
+  };
+}
+
+function createCurrentCampaignBaselineFiles(currentCampaigns, overrides = {}) {
+  return currentCampaigns.map(({ id, path }) => ({
+    path: toRepoRelativePath(path),
+    role: 'campaign_current',
+    sha256: overrides[id] ?? (existsSync(path) ? sha256Of(path) : null),
+  }));
 }
 
 function runPython(args, options = {}) {
@@ -812,11 +851,12 @@ exit 0
   });
 
   it('smoke-prod dry-run with foreground bundle config succeeds even when no checkpoints exist yet', async () => {
+    const { currentCampaigns } = resolveForegroundBundleInputs();
     const result = await runPython([
       SCRIPT_PATH,
       'smoke-prod',
       '--config',
-      join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json'),
+      FOREGROUND_BUNDLE_CONFIG_PATH,
       '--host',
       '127.0.0.1',
       '--port',
@@ -829,8 +869,9 @@ exit 0
     ]);
 
     assert.equal(result.status, 0, result.stderr || result.stdout);
-    assert.match(result.stdout, /next-long-run-us-12x10/);
-    assert.match(result.stdout, /next-long-run-jp-12x10/);
+    for (const { id } of currentCampaigns) {
+      assert.match(result.stdout, new RegExp(id));
+    }
     assert.doesNotMatch(result.stderr, /NoneType/);
   });
 
@@ -1858,17 +1899,15 @@ exit 0
   });
 
   it('baseline + bundle config hash mismatch blocks production', async () => {
-    const { createHash } = await import('node:crypto');
-    const bundleConfigPath = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
-    const strategyPresetsPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-presets.json');
-    const strategyCatalogPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-catalog.json');
-    const usCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'current', 'next-long-run-us-12x10.json');
-    const jpCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'current', 'next-long-run-jp-12x10.json');
+    const {
+      bundleConfigPath,
+      strategyPresetsPath,
+      strategyCatalogPath,
+      currentCampaigns,
+    } = resolveForegroundBundleInputs();
 
-    const strategyHash = createHash('sha256').update(readFileSync(strategyPresetsPath)).digest('hex');
-    const catalogHash = createHash('sha256').update(readFileSync(strategyCatalogPath)).digest('hex');
-    const usHash = createHash('sha256').update(readFileSync(usCampaignPath)).digest('hex');
-    const jpHash = createHash('sha256').update(readFileSync(jpCampaignPath)).digest('hex');
+    const strategyHash = sha256Of(strategyPresetsPath);
+    const catalogHash = sha256Of(strategyCatalogPath);
 
     const baselinePath = join(tempDir, 'baseline.json');
     writeFileSync(baselinePath, JSON.stringify({
@@ -1881,8 +1920,7 @@ exit 0
         { path: toRepoRelativePath(bundleConfigPath), role: 'bundle_config', sha256: 'wrong_hash_to_trigger_block' },
         { path: toRepoRelativePath(strategyPresetsPath), role: 'strategy_presets', sha256: strategyHash },
         { path: toRepoRelativePath(strategyCatalogPath), role: 'strategy_catalog', sha256: catalogHash },
-        { path: toRepoRelativePath(usCampaignPath), role: 'campaign_current', sha256: usHash },
-        { path: toRepoRelativePath(jpCampaignPath), role: 'campaign_current', sha256: jpHash },
+        ...createCurrentCampaignBaselineFiles(currentCampaigns),
       ],
       aggregate_fingerprint: 'dummy',
     }), 'utf8');
@@ -1912,17 +1950,15 @@ exit 0
   });
 
   it('baseline + strategy-presets hash mismatch produces warning but run succeeds', async () => {
-    const { createHash } = await import('node:crypto');
-    const bundleConfigPath = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
-    const strategyPresetsPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-presets.json');
-    const strategyCatalogPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-catalog.json');
-    const usCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'current', 'next-long-run-us-12x10.json');
-    const jpCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'current', 'next-long-run-jp-12x10.json');
+    const {
+      bundleConfigPath,
+      strategyPresetsPath,
+      strategyCatalogPath,
+      currentCampaigns,
+    } = resolveForegroundBundleInputs();
 
-    const bundleHash = createHash('sha256').update(readFileSync(bundleConfigPath)).digest('hex');
-    const catalogHash = createHash('sha256').update(readFileSync(strategyCatalogPath)).digest('hex');
-    const usHash = createHash('sha256').update(readFileSync(usCampaignPath)).digest('hex');
-    const jpHash = createHash('sha256').update(readFileSync(jpCampaignPath)).digest('hex');
+    const bundleHash = sha256Of(bundleConfigPath);
+    const catalogHash = sha256Of(strategyCatalogPath);
 
     const baselinePath = join(tempDir, 'baseline-warn.json');
     writeFileSync(baselinePath, JSON.stringify({
@@ -1935,8 +1971,7 @@ exit 0
         { path: toRepoRelativePath(bundleConfigPath), role: 'bundle_config', sha256: bundleHash },
         { path: toRepoRelativePath(strategyPresetsPath), role: 'strategy_presets', sha256: 'wrong_hash_for_warning' },
         { path: toRepoRelativePath(strategyCatalogPath), role: 'strategy_catalog', sha256: catalogHash },
-        { path: toRepoRelativePath(usCampaignPath), role: 'campaign_current', sha256: usHash },
-        { path: toRepoRelativePath(jpCampaignPath), role: 'campaign_current', sha256: jpHash },
+        ...createCurrentCampaignBaselineFiles(currentCampaigns),
       ],
       aggregate_fingerprint: 'dummy',
     }), 'utf8');
@@ -1969,17 +2004,17 @@ exit 0
   });
 
   it('baseline + campaign latest hash mismatch produces warning but run succeeds', async () => {
-    const { createHash } = await import('node:crypto');
-    const bundleConfigPath = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
-    const strategyPresetsPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-presets.json');
-    const strategyCatalogPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-catalog.json');
-    const usCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'current', 'next-long-run-us-12x10.json');
-    const jpCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'current', 'next-long-run-jp-12x10.json');
+    const {
+      bundleConfigPath,
+      strategyPresetsPath,
+      strategyCatalogPath,
+      currentCampaigns,
+    } = resolveForegroundBundleInputs();
 
-    const bundleHash = createHash('sha256').update(readFileSync(bundleConfigPath)).digest('hex');
-    const strategyHash = createHash('sha256').update(readFileSync(strategyPresetsPath)).digest('hex');
-    const catalogHash = createHash('sha256').update(readFileSync(strategyCatalogPath)).digest('hex');
-    const jpHash = createHash('sha256').update(readFileSync(jpCampaignPath)).digest('hex');
+    const bundleHash = sha256Of(bundleConfigPath);
+    const strategyHash = sha256Of(strategyPresetsPath);
+    const catalogHash = sha256Of(strategyCatalogPath);
+    const targetCampaignId = currentCampaigns[0].id;
 
     const baselinePath = join(tempDir, 'baseline-campaign.json');
     writeFileSync(baselinePath, JSON.stringify({
@@ -1992,8 +2027,9 @@ exit 0
         { path: toRepoRelativePath(bundleConfigPath), role: 'bundle_config', sha256: bundleHash },
         { path: toRepoRelativePath(strategyPresetsPath), role: 'strategy_presets', sha256: strategyHash },
         { path: toRepoRelativePath(strategyCatalogPath), role: 'strategy_catalog', sha256: catalogHash },
-        { path: toRepoRelativePath(usCampaignPath), role: 'campaign_current', sha256: 'wrong_campaign_hash' },
-        { path: toRepoRelativePath(jpCampaignPath), role: 'campaign_current', sha256: jpHash },
+        ...createCurrentCampaignBaselineFiles(currentCampaigns, {
+          [targetCampaignId]: 'wrong_campaign_hash',
+        }),
       ],
       aggregate_fingerprint: 'dummy',
     }), 'utf8');
@@ -2027,17 +2063,15 @@ exit 0
   });
 
   it('baseline + strategy-catalog hash mismatch produces warning but run succeeds', async () => {
-    const { createHash } = await import('node:crypto');
-    const bundleConfigPath = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
-    const strategyPresetsPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-presets.json');
-    const strategyCatalogPath = join(PROJECT_ROOT, 'config', 'backtest', 'strategy-catalog.json');
-    const usCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'current', 'next-long-run-us-12x10.json');
-    const jpCampaignPath = join(PROJECT_ROOT, 'config', 'backtest', 'campaigns', 'current', 'next-long-run-jp-12x10.json');
+    const {
+      bundleConfigPath,
+      strategyPresetsPath,
+      strategyCatalogPath,
+      currentCampaigns,
+    } = resolveForegroundBundleInputs();
 
-    const bundleHash = createHash('sha256').update(readFileSync(bundleConfigPath)).digest('hex');
-    const strategyHash = createHash('sha256').update(readFileSync(strategyPresetsPath)).digest('hex');
-    const usHash = createHash('sha256').update(readFileSync(usCampaignPath)).digest('hex');
-    const jpHash = createHash('sha256').update(readFileSync(jpCampaignPath)).digest('hex');
+    const bundleHash = sha256Of(bundleConfigPath);
+    const strategyHash = sha256Of(strategyPresetsPath);
 
     const baselinePath = join(tempDir, 'baseline-catalog.json');
     writeFileSync(baselinePath, JSON.stringify({
@@ -2050,8 +2084,7 @@ exit 0
         { path: toRepoRelativePath(bundleConfigPath), role: 'bundle_config', sha256: bundleHash },
         { path: toRepoRelativePath(strategyPresetsPath), role: 'strategy_presets', sha256: strategyHash },
         { path: toRepoRelativePath(strategyCatalogPath), role: 'strategy_catalog', sha256: 'wrong_catalog_hash' },
-        { path: toRepoRelativePath(usCampaignPath), role: 'campaign_current', sha256: usHash },
-        { path: toRepoRelativePath(jpCampaignPath), role: 'campaign_current', sha256: jpHash },
+        ...createCurrentCampaignBaselineFiles(currentCampaigns),
       ],
       aggregate_fingerprint: 'dummy',
     }), 'utf8');
@@ -2088,7 +2121,7 @@ exit 0
       SCRIPT_PATH,
       'smoke-prod',
       '--config',
-      join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json'),
+      FOREGROUND_BUNDLE_CONFIG_PATH,
       '--host', '127.0.0.1',
       '--port', String(port),
       '--startup-check-host', '127.0.0.1',
@@ -2115,7 +2148,7 @@ exit 0
       SCRIPT_PATH,
       'smoke-prod',
       '--config',
-      join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json'),
+      FOREGROUND_BUNDLE_CONFIG_PATH,
       '--host', '127.0.0.1',
       '--port', String(port),
       '--startup-check-host', '127.0.0.1',
