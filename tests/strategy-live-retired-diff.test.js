@@ -21,8 +21,10 @@ describe('computeFamilyDiff', () => {
 
     const totalLive = families.reduce((sum, f) => sum + f.live_count, 0);
     const totalRetired = families.reduce((sum, f) => sum + f.retired_count, 0);
-    assert.equal(totalLive, 350);
-    assert.equal(totalRetired, 2);
+    const liveCount = catalog.strategies.filter((strategy) => strategy.lifecycle?.status === 'live').length;
+    const retiredCount = catalog.strategies.filter((strategy) => strategy.lifecycle?.status === 'retired').length;
+    assert.equal(totalLive, liveCount);
+    assert.equal(totalRetired, retiredCount);
   });
 
   it('every entry has family_id, live_count, retired_count', async () => {
@@ -67,7 +69,8 @@ describe('buildRetiredLedger', () => {
   it('returns all retired entries', async () => {
     const catalog = await loadCatalog();
     const ledger = buildRetiredLedger(catalog);
-    assert.equal(ledger.length, 2);
+    const retiredCount = catalog.strategies.filter((strategy) => strategy.lifecycle?.status === 'retired').length;
+    assert.equal(ledger.length, retiredCount);
   });
 
   it('every entry has presetId, retire_reason, last_strong_generation, replacement_family', async () => {
@@ -89,10 +92,12 @@ describe('buildDiffArtifact', () => {
   it('includes expected structure', async () => {
     const catalog = await loadCatalog();
     const artifact = buildDiffArtifact(catalog);
+    const liveCount = catalog.strategies.filter((strategy) => strategy.lifecycle?.status === 'live').length;
+    const retiredCount = catalog.strategies.filter((strategy) => strategy.lifecycle?.status === 'retired').length;
     assert.ok(artifact.generated_at);
-    assert.equal(artifact.live_count, 350);
-    assert.equal(artifact.retired_count, 2);
-    assert.equal(artifact.total_count, 352);
+    assert.equal(artifact.live_count, liveCount);
+    assert.equal(artifact.retired_count, retiredCount);
+    assert.equal(artifact.total_count, catalog.strategies.length);
     assert.ok(Array.isArray(artifact.family_diff));
     assert.ok(Array.isArray(artifact.retired_ledger));
   });
@@ -107,8 +112,8 @@ describe('formatDiffSummarySection', () => {
     const artifact = buildDiffArtifact(catalog);
     const markdown = formatDiffSummarySection(artifact);
     assert.ok(markdown.includes('## Live / Retired diff'));
-    assert.ok(markdown.includes('live_count: 350'));
-    assert.ok(markdown.includes('retired_count: 2'));
+    assert.ok(markdown.includes(`live_count: ${artifact.live_count}`));
+    assert.ok(markdown.includes(`retired_count: ${artifact.retired_count}`));
     assert.ok(markdown.includes('| family |'));
   });
 

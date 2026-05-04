@@ -103,29 +103,16 @@ printf '%s\n' "\${PS_TEST_OUTPUT:-}"
     it('launches pane 0 directly with codex instead of a wrapper script', () => {
       assert.match(
         script,
-        /agent_cmd=.*\bcodex --full-auto\b/,
+        /agent_cmd=.*\bcodex\b/,
         'devinit.sh must launch pane 0 with a direct codex command',
       );
-      assert.match(
-        script,
-        /--sandbox workspace-write/,
-        'direct codex launch must keep workspace-write sandbox',
-      );
-      assert.match(
-        script,
-        /--ask-for-approval never/,
-        'direct codex launch must keep ask-for-approval never',
-      );
-      assert.match(
-        script,
-        /--cd/,
-        'direct codex launch must keep --cd',
-      );
-      assert.match(
-        script,
-        /--add-dir/,
-        'direct codex launch must keep --add-dir',
-      );
+      for (const expectedFlag of ['--sandbox workspace-write', '--ask-for-approval never', '--cd', '--add-dir']) {
+        assert.match(
+          script,
+          new RegExp(expectedFlag.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')),
+          `direct codex launch must keep ${expectedFlag}`,
+        );
+      }
       assert.doesNotMatch(
         script,
         /run-codex-pane\.sh/,
@@ -135,6 +122,11 @@ printf '%s\n' "\${PS_TEST_OUTPUT:-}"
         script,
         /run-copilot-pane\.sh/,
         'devinit.sh must not route copilot through a wrapper either',
+      );
+      assert.doesNotMatch(
+        script,
+        /\bcodex --full-auto\b/,
+        'devinit.sh should follow the current direct codex invocation without forcing the deprecated --full-auto flag',
       );
     });
 

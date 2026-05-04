@@ -55,14 +55,14 @@
 
 ## 実装ステップ
 
-- [ ] `devinit.sh` と `tests/devinit.test.js` のズレを確認する
-- [ ] `tests/devinit.test.js` を現行 repo 構成に合わせて修正する
-- [ ] `tests/strategy-live-retired-diff.test.js` の固定値依存を見直す
-- [ ] `tests/capture.test.js` の pending promise 原因を確認し、必要なら修正する
-- [ ] `tests/night-batch.test.js` の pending promise 原因を確認し、必要なら修正する
-- [ ] 対象 4 テストを個別実行して安定通過を確認する
-- [ ] `npm test` を再実行して恒常失敗が消えたことを確認する
-- [ ] 計画を `completed/` に移してコミット・プッシュする
+- [x] `devinit.sh` と `tests/devinit.test.js` のズレを確認する
+- [x] `tests/devinit.test.js` を現行 repo 構成に合わせて修正する
+- [x] `tests/strategy-live-retired-diff.test.js` の固定値依存を見直す
+- [x] `tests/capture.test.js` の pending promise 原因を確認し、必要なら修正する
+- [x] `tests/night-batch.test.js` の pending promise 原因を確認し、必要なら修正する
+- [x] 対象 4 テストを個別実行して安定通過を確認する
+- [x] `npm test` を再実行して恒常失敗が消えたことを確認する
+- [x] 計画を `completed/` に移してコミット・プッシュする
 
 ## テスト戦略
 
@@ -115,3 +115,10 @@ npm test
 
 - active plan は `repo-structure-align-and-archive-rules_20260424_2015.md` と `run-night-batch_20260429_2344.md`
 - 今回のテスト安定化作業とは直接競合しない
+
+## 実施メモ
+
+- `tests/devinit.test.js` は `codex --full-auto` を前提にした古い assertion を、現行 `devinit.sh` の直接起動形に更新して解消
+- `tests/strategy-live-retired-diff.test.js` は live 件数 `350` などの古い固定値をやめ、catalog 実数に追随する assertion に変更して解消
+- `tests/capture.test.js` は個別実行で通過。今回の恒常失敗原因ではなく、全体実行時の長時間セッション都合による cancel 表示と判断
+- `tests/night-batch.test.js` も個別実行で通過。今回の恒常失敗原因ではなく、全体実行時の長時間セッション都合による cancel 表示と判断
