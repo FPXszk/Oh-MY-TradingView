@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -32,6 +32,7 @@ import { buildNextLongRunLiveIds } from './strategy-expansion-fixtures.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const PROJECT_ROOT = join(__dirname, '..');
 
 // ---------------------------------------------------------------------------
 // validateDateRange
@@ -291,6 +292,20 @@ describe('selectPhaseSymbols', () => {
   it('returns explicit symbol count for configured phase', () => {
     const phaseSymbols = selectPhaseSymbols(symbols, 'smoke', { smoke: { symbol_count: 5 } });
     assert.equal(phaseSymbols.length, 5);
+  });
+});
+
+describe('entry-quality generated Pine runtime safety', () => {
+  it('does not pass disabled zero lookbacks directly into length-based TA functions', async () => {
+    const pineDir = join(PROJECT_ROOT, 'docs', 'references', 'pine', 'emr-entry-quality-focus8-200pack');
+    const files = (await readdir(pineDir)).filter((file) => file.endsWith('.pine'));
+    const unsafePattern = /ta\.(?:highest|lowest|sma)\([^,\n]+,\s*(?:breakoutCloseLen|breakoutIntradayLen|swingHighLookback|compressionLookback|recentRunupLookback|failedBreakoutLookback|pullbackLookback|rangeExpLookback)\)/;
+
+    assert.equal(files.length, 199);
+    for (const file of files) {
+      const source = await readFile(join(pineDir, file), 'utf8');
+      assert.doesNotMatch(source, unsafePattern, `${file} passes a raw optional lookback into a length-based TA function`);
+    }
   });
 });
 

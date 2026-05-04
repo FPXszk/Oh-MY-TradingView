@@ -158,11 +158,15 @@ sellRaw = ((emaBearCross and macdAlignBear and rsiAlignBear) or (macdBearCross a
 bullScore = ((emaAlignBull ? 1 : 0) + (macdAlignBull ? 1 : 0) + (rsiAlignBull ? 1 : 0) + (rsi > rsiLevel ? 1 : 0) + (histLine > 0 ? 1 : 0) + (close > emaFast ? 1 : 0) + (close > emaSlow ? 1 : 0))
 bearScore = ((emaAlignBear ? 1 : 0) + (macdAlignBear ? 1 : 0) + (rsiAlignBear ? 1 : 0) + (rsi < rsiLevel ? 1 : 0) + (histLine < 0 ? 1 : 0) + (close < emaFast ? 1 : 0) + (close < emaSlow ? 1 : 0))
 
-breakoutCloseOk = breakoutCloseLen <= 0 or close > ta.highest(high, breakoutCloseLen)[1]
-breakoutIntradayOk = breakoutIntradayLen <= 0 or high > ta.highest(high, breakoutIntradayLen)[1]
-swingHighOk = swingHighLookback <= 0 or close > ta.highest(high, swingHighLookback)[1]
+safeBreakoutCloseLen = math.max(breakoutCloseLen, 1)
+safeBreakoutIntradayLen = math.max(breakoutIntradayLen, 1)
+safeSwingHighLookback = math.max(swingHighLookback, 1)
+safeCompressionLookback = math.max(compressionLookback, 1)
+breakoutCloseOk = breakoutCloseLen <= 0 or close > ta.highest(high, safeBreakoutCloseLen)[1]
+breakoutIntradayOk = breakoutIntradayLen <= 0 or high > ta.highest(high, safeBreakoutIntradayLen)[1]
+swingHighOk = swingHighLookback <= 0 or close > ta.highest(high, safeSwingHighLookback)[1]
 prevHighOk = not requireCloseAbovePrevHigh or close > high[1]
-compressionRangePct = compressionLookback > 0 ? (ta.highest(high, compressionLookback) - ta.lowest(low, compressionLookback)) / close * 100 : na
+compressionRangePct = compressionLookback > 0 ? (ta.highest(high, safeCompressionLookback) - ta.lowest(low, safeCompressionLookback)) / close * 100 : na
 compressionOk = compressionLookback <= 0 or (not na(compressionRangePct) and compressionRangePct <= compressionMaxRangePct)
 
 bullScoreOk = minBullScore <= 0 or bullScore >= minBullScore
@@ -194,7 +198,8 @@ atrMaxOk = atrPctMax <= 0 or atrPct <= atrPctMax
 bbWidthMinOk = bbWidthMin <= 0 or bbWidthPct >= bbWidthMin
 bbWidthMaxOk = bbWidthMax <= 0 or bbWidthPct <= bbWidthMax
 bodyAtrOk = barBodyAtrMin <= 0 or (math.abs(close - open) / math.max(atr, syminfo.mintick)) >= barBodyAtrMin
-avgRange = rangeExpLookback > 0 ? ta.sma(high - low, rangeExpLookback) : na
+safeRangeExpLookback = math.max(rangeExpLookback, 1)
+avgRange = rangeExpLookback > 0 ? ta.sma(high - low, safeRangeExpLookback) : na
 rangeExpRatio = rangeExpLookback > 0 and not na(avgRange) and avgRange != 0 ? (high - low) / avgRange : na
 rangeExpOk = rangeExpLookback <= 0 or (not na(rangeExpRatio) and rangeExpRatio >= rangeExpRatioMin)
 squeezeOk = not requireSqueezeRelease or squeezeRelease
@@ -213,12 +218,15 @@ upperWickRatio = bodySize == 0 ? (upperWick > 0 ? 999.0 : 0.0) : upperWick / bod
 wickOk = maxUpperWickBodyRatio <= 0 or upperWickRatio <= maxUpperWickBodyRatio
 gapPct = close[1] != 0 ? math.max(open - close[1], 0) / close[1] * 100 : 0
 gapOk = maxGapPct <= 0 or gapPct <= maxGapPct
-recentLow = recentRunupLookback > 0 ? ta.lowest(low, recentRunupLookback)[1] : na
+safeRecentRunupLookback = math.max(recentRunupLookback, 1)
+safeFailedBreakoutLookback = math.max(failedBreakoutLookback, 1)
+safePullbackLookback = math.max(pullbackLookback, 1)
+recentLow = recentRunupLookback > 0 ? ta.lowest(low, safeRecentRunupLookback)[1] : na
 recentRunupPct = recentRunupLookback <= 0 or na(recentLow) or recentLow <= 0 ? 0 : (close / recentLow - 1) * 100
 runupOk = maxRecentRunupPct <= 0 or recentRunupPct <= maxRecentRunupPct
 clv = high != low ? ((close - low) - (high - close)) / (high - low) : 0
 clvOk = minClv <= -1 or clv >= minClv
-failedRef = failedBreakoutLookback > 0 ? ta.highest(high, failedBreakoutLookback)[1] : na
+failedRef = failedBreakoutLookback > 0 ? ta.highest(high, safeFailedBreakoutLookback)[1] : na
 failedBreakoutBar = failedBreakoutLookback > 0 and not na(failedRef) and high > failedRef and close < failedRef
 failedBreakoutRecent = failedBreakoutLookback > 0 and not na(ta.barssince(failedBreakoutBar)) and ta.barssince(failedBreakoutBar) < failedBreakoutLookback
 failedBreakoutOk = failedBreakoutLookback <= 0 or not failedBreakoutRecent
@@ -226,7 +234,7 @@ fakeoutOk = wickOk and gapOk and runupOk and clvOk and failedBreakoutOk
 
 barsSinceBuyRaw = ta.barssince(buyRaw)
 recentBuyContext = pullbackLookback > 0 and not na(barsSinceBuyRaw) and barsSinceBuyRaw > 0 and barsSinceBuyRaw <= pullbackLookback
-retestLevel = pullbackLookback > 0 ? ta.highest(high, pullbackLookback)[1] : na
+retestLevel = pullbackLookback > 0 ? ta.highest(high, safePullbackLookback)[1] : na
 pullbackFastOk = pullbackMode == "fast_ema" and recentBuyContext and low <= emaFast and close > emaFast
 pullbackSlowOk = pullbackMode == "slow_ema" and recentBuyContext and low <= emaSlow and close > emaFast
 pullbackBreakoutOk = pullbackMode == "breakout_retest" and recentBuyContext and not na(retestLevel) and low <= retestLevel and close > retestLevel

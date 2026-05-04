@@ -29,21 +29,21 @@
 
 ## 実装ステップ
 
-- [ ] 生成 Pine の length 0 危険箇所を特定する
+- [x] 生成 Pine の length 0 危険箇所を特定する
   - 確認: `breakoutCloseLen` / `breakoutIntradayLen` / `swingHighLookback` / `compressionLookback` / `recentRunupLookback` / `failedBreakoutLookback` / `pullbackLookback` の使用箇所を確認する。
-- [ ] 生成スクリプトを修正する
+- [x] 生成スクリプトを修正する
   - 確認: length 必須関数には safe length だけを渡し、無効化ロジック自体は変えない。
-- [ ] 199 本の派生 Pine を再生成する
+- [x] 199 本の派生 Pine を再生成する
   - 確認: 既存 ID・ファイル数・campaign 参照が変わらない。
-- [ ] 静的検証を追加または実行する
+- [x] 静的検証を追加または実行する
   - 確認: `ta.highest(high, breakoutCloseLen)` など raw length を直接渡す危険パターンが消えている。
-- [ ] 既存 unit tests を実行する
+- [x] 既存 unit tests を実行する
   - 確認: `node --test tests/campaign.test.js tests/strategy-catalog.test.js tests/repo-layout.test.js` を実行する。
-- [ ] 42本 smoke を実行する
+- [x] 42本 smoke を実行する
   - 確認: `Night Batch Smoke` 相当の config `config/night_batch/emr-entry-quality-focus8-42pack-smoke-config.json` で smoke を実行し、強化済み smoke gate が metrics 取得まで成功することを確認する。
-- [ ] 結果をレビューする
+- [x] 結果をレビューする
   - 確認: compile 成功だけでなく、42本すべてで Strategy Tester metrics が取得できていることを確認する。
-- [ ] plan を completed に移動してコミット・プッシュする
+- [x] plan を completed に移動してコミット・プッシュする
   - 確認: Conventional Commit 形式で main に push する。
 
 ## テスト戦略
@@ -68,6 +68,12 @@
 - `math.max(length, 1)` により計算値自体は常に作られるが、`length <= 0` のときの filter 無効化条件は維持するため、戦略意図への影響は最小。
 - 42本 smoke は self-hosted TradingView / CDP 接続に依存する。環境要因で実行不能な場合は、local unit / static checks まで完了し、実機 smoke 未実行理由を明記する。
 - active plan は `repo-structure-align-and-archive-rules_20260424_2015.md` と `run-night-batch_20260429_2344.md` のみで、今回の Pine runtime error 修正とは直接競合しない。
+
+## 実行結果メモ
+
+- local unit/static checks は成功。
+- local 42本 smoke は sandbox から self-hosted TradingView/CDP へ接続できず、Pine 実行前に環境要因で停止。
+- 修正を push 後、`Night Batch Smoke` workflow で `config/night_batch/emr-entry-quality-focus8-42pack-smoke-config.json` を実行して実機 smoke を確認する。
 
 ## 成功基準
 
