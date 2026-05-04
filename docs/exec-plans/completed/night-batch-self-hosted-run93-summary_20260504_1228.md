@@ -22,23 +22,23 @@ Night Batch Self Hosted `#93` の GitHub Actions artifact を取得し、`docs/r
 
 ## 実装ステップ
 
-- [ ] GHA run #93 を特定する
+- [x] GHA run #93 を特定する
   - 確認: `Night Batch Self Hosted` の `run_number == 93`、status、run_id、実行日時、campaign_id を確認する。
-- [ ] run #93 の artifact を取得して展開する
+- [x] run #93 の artifact を取得して展開する
   - 確認: `strategy-ranking.json` と `recovered-results.json` が存在し、`result.metrics` から銘柄別メトリクスを読めることを確認する。
-- [ ] Composite Score を再計算する
+- [x] Composite Score を再計算する
   - 確認: `avg_net_profit` 降順、`avg_profit_factor` 降順、`avg_max_drawdown` 昇順の rank 合算で全戦略を並べ、artifact の PF ランクと混同しない。
-- [ ] TEMPLATE 準拠のレポートを作成する
+- [x] TEMPLATE 準拠のレポートを作成する
   - 確認: `docs/research/TEMPLATE.md` の主要セクションを満たし、サンプル文言や `例:` を残さない。
-- [ ] Top 戦略の銘柄集中度と失敗・欠損を確認する
+- [x] Top 戦略の銘柄集中度と失敗・欠損を確認する
   - 確認: rank-1 と上位戦略の per-symbol breakdown、最大利益銘柄集中度、top3 集中度、成功件数を明記する。
-- [ ] 今回目的の達成可否と有望グループを結論づける
+- [x] 今回目的の達成可否と有望グループを結論づける
   - 確認: パラメータまたは戦略グループ別に、収益・PF・DD・成功率・集中リスクを比較し、採用候補と除外候補を分ける。
-- [ ] `docs/research/manifest.json` を更新する
+- [x] `docs/research/manifest.json` を更新する
   - 確認: `night-batch-self-hosted-run93_20260504.md` が `keep` に含まれる。
-- [ ] 変更内容をレビューする
+- [x] 変更内容をレビューする
   - 確認: 数値の整合性、過剰な解釈、TEMPLATE 逸脱、不要なファイル変更がないことを確認する。
-- [ ] 計画ファイルを completed に移してコミット・プッシュする
+- [x] 計画ファイルを completed に移してコミット・プッシュする
   - 確認: Conventional Commit 形式で main にコミットし、origin/main にプッシュする。
 
 ## 成功基準
