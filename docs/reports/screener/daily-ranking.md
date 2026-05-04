@@ -1,6 +1,6 @@
 # ファンダメンタル × モメンタム スクリーニング 上位20件
 
-更新: 2026-05-04T16:50:01.025Z（JST 2026/05/05 01:50）
+更新: 2026-05-04T16:58:15.872Z（JST 2026/05/05 01:58）
 
 スキャン対象: 7 銘柄 → サーバーフィルター通過: 7 → クライアントフィルター通過: 5 → 上位: 5
 
@@ -36,7 +36,7 @@
 | 順位 | シンボル | セクター | 市場 | 現在値 | Perf.3M | ROE | FCFマージン | 売上成長 | 総合点 |
 |:---:|:---|:---|:---:|---:|---:|---:|---:|---:|---:|
 | 1 | **GMWKF** | Consumer Durables | OTC | $275.04 | 16.5% | 67.9% | 39.4% | N/A% | 6 |
-| 2 | **EBAY** | Retail Trade | NASDAQ | $108.77 | 16.3% | 42.8% | 18.0% | N/A% | 9 |
+| 2 | **EBAY** | Retail Trade | NASDAQ | $108.89 | 16.5% | 42.8% | 18.0% | N/A% | 9 |
 | 3 | **MFRVF** | Non-Energy Minerals | OTC | $0.54 | 11.5% | 22.8% | 23.2% | N/A% | 13 |
 | 4 | **WLYB** | Consumer Services | NYSE | $41.20 | 28.1% | 21.5% | 11.8% | N/A% | 15 |
 | 5 | **VAIAF** | Electronic Technology | OTC | $60.10 | 14.5% | 20.6% | 12.1% | N/A% | 17 |
@@ -47,7 +47,7 @@
 |:---:|:---|---:|---:|---:|:---|
 | 1 | Consumer Services | 1 | 28.1% | 15.0 | WLYB |
 | 2 | Consumer Durables | 1 | 16.5% | 6.0 | GMWKF |
-| 3 | Retail Trade | 1 | 16.3% | 9.0 | EBAY |
+| 3 | Retail Trade | 1 | 16.5% | 9.0 | EBAY |
 | 4 | Electronic Technology | 1 | 14.5% | 17.0 | VAIAF |
 | 5 | Non-Energy Minerals | 1 | 11.5% | 13.0 | MFRVF |
 
