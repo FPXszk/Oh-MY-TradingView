@@ -8,6 +8,8 @@ jobs:
     runs-on:
       - self-hosted
       - windows
+    env:
+      WSL_REPO_PATH: /home/fpxszk/code/Oh-MY-TradingView
 
     steps:
       - uses: actions/checkout@v4
@@ -25,10 +27,49 @@ jobs:
       - name: Run fundamental screener
         run: node scripts/screener/run-fundamental-screening.mjs
 
+      - name: Validate screener report output
+        shell: pwsh
+        run: |
+          if (-not (Test-Path 'docs/reports/screener/daily-ranking.md')) {
+            throw 'docs/reports/screener/daily-ranking.md was not created by the screener step'
+          }
+
+      - name: Write screener run metadata
+        shell: pwsh
+        run: |
+          $metadataPath = 'docs/reports/screener/daily-ranking-run.json'
+          $metadataDir = Split-Path -Parent $metadataPath
+          if (-not (Test-Path $metadataDir)) {
+            New-Item -ItemType Directory -Path $metadataDir -Force | Out-Null
+          }
+
+          $metadata = [ordered]@{
+            workflow = 'daily-screener'
+            report_path = 'docs/reports/screener/daily-ranking.md'
+            run_id = '${{ github.run_id }}'
+            run_attempt = '${{ github.run_attempt }}'
+            run_number = '${{ github.run_number }}'
+            ref_name = '${{ github.ref_name }}'
+            sha = '${{ github.sha }}'
+            generated_at = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
+          }
+
+          $metadata | ConvertTo-Json -Depth 4 | Out-File -FilePath $metadataPath -Encoding utf8
+
       - name: Upload report artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: screener-report-${{ github.run_id }}
-          path: docs/reports/screener/daily-ranking.md
+          path: |
+            docs/reports/screener/daily-ranking.md
+            docs/reports/screener/daily-ranking-run.json
           if-no-files-found: warn
+
+      - name: Publish screener report to WSL main
+        if: success()
+        shell: pwsh
+        run: |
+          powershell -NoProfile -ExecutionPolicy Bypass -File scripts/windows/github-actions/sync-daily-screener-report-to-wsl.ps1 `
+            -WslRepoPath "${{ env.WSL_REPO_PATH }}" `
+            -CommitMessage "docs: daily screener report run ${{ github.run_id }}-${{ github.run_attempt }}"

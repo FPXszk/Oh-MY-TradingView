@@ -7,6 +7,7 @@ import { buildMarkdown } from '../scripts/screener/run-fundamental-screening.mjs
 
 const PROJECT_ROOT = process.cwd();
 const WORKFLOW_PATH = join(PROJECT_ROOT, '.github', 'workflows', 'daily-screener.yml');
+const SYNC_SCRIPT_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'github-actions', 'sync-daily-screener-report-to-wsl.ps1');
 
 describe('Daily Fundamental Screener workflow', () => {
   it('preserves local self-hosted artifacts and avoids npm cache save warnings', () => {
@@ -16,6 +17,38 @@ describe('Daily Fundamental Screener workflow', () => {
       'workflow checkout must not delete untracked local artifacts');
     assert.doesNotMatch(workflow, /cache:\s+['"]?npm['"]?/,
       'workflow must not enable setup-node npm cache on the Windows self-hosted runner');
+  });
+
+  it('publishes the report into the WSL checkout and uploads run metadata', () => {
+    const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
+
+    assert.match(workflow, /name:\s+Publish screener report to WSL main/,
+      'workflow must run a dedicated WSL publish step after report generation');
+    assert.match(workflow, /name:\s+Validate screener report output/,
+      'workflow must fail fast if the screener did not emit the markdown report');
+    assert.match(workflow, /sync-daily-screener-report-to-wsl\.ps1/,
+      'workflow must call the WSL sync PowerShell script');
+    assert.match(workflow, /docs\/reports\/screener\/daily-ranking-run\.json/,
+      'workflow must generate and handle per-run metadata');
+    assert.match(workflow, /actions\/upload-artifact@v4[\s\S]*?path:\s*\|[\s\S]*?docs\/reports\/screener\/daily-ranking\.md[\s\S]*?docs\/reports\/screener\/daily-ranking-run\.json/,
+      'artifact upload must keep both the report and the run metadata');
+  });
+});
+
+describe('daily screener WSL publish script', () => {
+  it('copies only screener report files into WSL and pushes main', () => {
+    const script = readFileSync(SYNC_SCRIPT_PATH, 'utf8');
+
+    assert.match(script, /wsl\.exe/,
+      'publish script must use WSL to reach the live checkout');
+    assert.match(script, /daily-ranking\.md/,
+      'publish script must sync the screener markdown report');
+    assert.match(script, /daily-ranking-run\.json/,
+      'publish script must sync the per-run metadata file');
+    assert.match(script, /git add -- docs\/reports\/screener\/daily-ranking\.md docs\/reports\/screener\/daily-ranking-run\.json/,
+      'publish script must stage only the screener report files');
+    assert.match(script, /git push origin main/,
+      'publish script must push the WSL checkout to main');
   });
 });
 
