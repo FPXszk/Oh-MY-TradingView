@@ -86,17 +86,17 @@
 
 ## 実装ステップ
 
-- [ ] `src/core/fundamental-screener.js` の現行返却値を拡張する
-- [ ] 個別順位内訳と explanation 用補助データを追加する
-- [ ] `sector` / `industry` / `exchange` 集計を追加する
-- [ ] `scripts/screener/run-fundamental-screening.mjs` の Markdown 構成を更新する
-- [ ] 上位20件表 + 上位5件解説 + セクター順位 + 市場説明 + 財務指標メモを追加する
-- [ ] CLI / MCP の説明文・デフォルト件数表記を更新する
-- [ ] `tests/fundamental-screener.test.js` を追加する
-- [ ] `tests/daily-screener-report.test.js` を追加する
-- [ ] `package.json` の test script に新規テストを追加する
-- [ ] `npm test` を実行して既存回帰がないことを確認する
-- [ ] 必要なら `node scripts/screener/run-fundamental-screening.mjs` 相当のローカル dry-run で出力確認する
+- [x] `src/core/fundamental-screener.js` の現行返却値を拡張する
+- [x] 個別順位内訳と explanation 用補助データを追加する
+- [x] `sector` / `industry` / `exchange` 集計を追加する
+- [x] `scripts/screener/run-fundamental-screening.mjs` の Markdown 構成を更新する
+- [x] 上位20件表 + 上位5件解説 + セクター順位 + 市場説明 + 財務指標メモを追加する
+- [x] CLI / MCP の説明文・デフォルト件数表記を更新する
+- [x] `tests/fundamental-screener.test.js` を追加する
+- [x] `tests/daily-screener-report.test.js` を追加する
+- [x] `package.json` の test script に新規テストを追加する
+- [x] `npm test` を実行して既存回帰がないことを確認する
+- [x] 必要なら `node scripts/screener/run-fundamental-screening.mjs` 相当のローカル dry-run で出力確認する
 
 ## テスト戦略
 

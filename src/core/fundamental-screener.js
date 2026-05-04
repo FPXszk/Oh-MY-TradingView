@@ -33,6 +33,8 @@ const DEFAULT_TIMEOUT_MS = 15000;
 
 const COLUMNS = [
   'name',
+  'sector',
+  'industry',
   'close',
   'RSI',
   'SMA200',
@@ -80,6 +82,9 @@ function normalizeRow(row) {
   const symbol = colonIdx !== -1 ? rawSymbol.slice(colonIdx + 1) : rawSymbol;
 
   const close = d[COL['close']] ?? null;
+  const companyName = d[COL['name']] ?? null;
+  const sector = d[COL['sector']] ?? null;
+  const industry = d[COL['industry']] ?? null;
   const rsi14 = d[COL['RSI']] ?? null;
   const sma200 = d[COL['SMA200']] ?? null;
   const sma50 = d[COL['SMA50']] ?? null;
@@ -108,7 +113,10 @@ function normalizeRow(row) {
 
   return {
     symbol,
+    companyName,
     exchange,
+    sector,
+    industry,
     close,
     rsi14,
     sma200,
@@ -166,8 +174,74 @@ function applyRankSum(rows, includeRevenueGrowth = false) {
 
   return rows.map((row, i) => ({
     ...row,
+    rankBreakdown: {
+      perf3m: rankPerf[i],
+      roe: rankRoe[i],
+      fcfMargin: rankFcf[i],
+      ...(rankRev ? { revenueGrowth: rankRev[i] } : {}),
+    },
     rankScore: rankPerf[i] + rankRoe[i] + rankFcf[i] + (rankRev ? rankRev[i] : 0),
   }));
+}
+
+function countBy(rows, field) {
+  const counts = new Map();
+  for (const row of rows) {
+    const key = row[field] ?? 'Unknown';
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  return Array.from(counts.entries())
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+}
+
+function summarizeSectors(rows) {
+  const grouped = new Map();
+  for (const row of rows) {
+    const key = row.sector ?? 'Unknown';
+    if (!grouped.has(key)) {
+      grouped.set(key, {
+        sector: key,
+        count: 0,
+        totalPerf3m: 0,
+        perf3mCount: 0,
+        totalRankScore: 0,
+        topSymbol: null,
+        topRankScore: null,
+      });
+    }
+    const entry = grouped.get(key);
+    entry.count += 1;
+    entry.totalRankScore += row.rankScore ?? 0;
+    if (row.perf3m !== null && row.perf3m !== undefined) {
+      entry.totalPerf3m += row.perf3m;
+      entry.perf3mCount += 1;
+    }
+    if (entry.topRankScore === null || (row.rankScore ?? Infinity) < entry.topRankScore) {
+      entry.topRankScore = row.rankScore ?? null;
+      entry.topSymbol = row.symbol;
+    }
+  }
+
+  return Array.from(grouped.values())
+    .map((entry) => ({
+      sector: entry.sector,
+      count: entry.count,
+      averagePerf3m: entry.perf3mCount > 0
+        ? Number((entry.totalPerf3m / entry.perf3mCount).toFixed(1))
+        : null,
+      averageRankScore: entry.count > 0
+        ? Number((entry.totalRankScore / entry.count).toFixed(1))
+        : null,
+      topSymbol: entry.topSymbol,
+    }))
+    .sort((a, b) => {
+      if (b.averagePerf3m !== a.averagePerf3m) {
+        return (b.averagePerf3m ?? -Infinity) - (a.averagePerf3m ?? -Infinity);
+      }
+      if (b.count !== a.count) return b.count - a.count;
+      return (a.averageRankScore ?? Infinity) - (b.averageRankScore ?? Infinity);
+    });
 }
 
 const YAHOO_BATCH_SIZE = 5;
@@ -254,6 +328,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
 
   const ranked = applyRankSum(clientFiltered, enrichWithYahoo).sort((a, b) => a.rankScore - b.rankScore);
   const matched = ranked.slice(0, effectiveLimit);
+  const sectorRanking = summarizeSectors(ranked);
 
   const criteria = {
     rsi14_min: 60,
@@ -281,6 +356,22 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     matched: matched.length,
     enrichedWithYahoo: enrichWithYahoo,
     criteria,
+    rankingFormula: enrichWithYahoo
+      ? ['perf3m', 'roe', 'fcfMargin', 'revenueGrowth']
+      : ['perf3m', 'roe', 'fcfMargin'],
+    scannerScope: {
+      market: 'america',
+      instrumentTypes: ['stock'],
+      serverLimit,
+      totalCandidatesReported: totalCount,
+      note: 'TradingView Scanner API returns the filtered stock universe for the america market scope; exchange counts below are based on the returned candidates for this run.',
+    },
+    marketBreakdown: {
+      serverFiltered: countBy(normalized, 'exchange'),
+      clientFiltered: countBy(clientFiltered, 'exchange'),
+      matched: countBy(matched, 'exchange'),
+    },
+    sectorRanking,
     results: matched,
     retrieved_at: new Date().toISOString(),
     source: enrichWithYahoo ? 'tradingview_scanner+yahoo_finance' : 'tradingview_scanner',
