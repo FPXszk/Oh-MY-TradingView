@@ -40,9 +40,10 @@ export async function writeScreenshotFile(buffer, outputPath, baseDir = SCREENSH
  * Capture a screenshot of the current TradingView Desktop page via CDP.
  * Returns { success, format, dataLength } and optionally writes to file.
  */
-export async function captureScreenshot({ outputPath, format, quality, fullPage } = {}) {
+export async function captureScreenshot({ outputPath, format, quality, fullPage, _deps } = {}) {
   const effectiveFormat = format === 'jpeg' ? 'jpeg' : 'png';
   const opts = { format: effectiveFormat };
+  const getClientImpl = _deps?.getClient ?? getClient;
   if (effectiveFormat === 'jpeg') {
     opts.quality = Math.min(100, Math.max(0, Number(quality) || 80));
   }
@@ -50,7 +51,7 @@ export async function captureScreenshot({ outputPath, format, quality, fullPage 
     opts.captureBeyondViewport = true;
   }
 
-  const client = await getClient();
+  const client = await getClientImpl();
   const { data } = await client.Page.captureScreenshot(opts);
 
   if (!data) {

@@ -64,11 +64,17 @@ describe('captureScreenshot', () => {
   });
 
   it('rejects when CDP is not connected', async () => {
-    // Without TradingView running, getClient will fail
     await assert.rejects(
-      () => captureScreenshot({ format: 'png' }),
+      () => captureScreenshot({
+        format: 'png',
+        _deps: {
+          getClient: async () => {
+            throw new Error('CDP unavailable');
+          },
+        },
+      }),
       (err) => {
-        assert.ok(err.message.length > 0);
+        assert.match(err.message, /CDP unavailable/);
         return true;
       },
     );
@@ -76,9 +82,17 @@ describe('captureScreenshot', () => {
 
   it('rejects when CDP is not connected even with jpeg format', async () => {
     await assert.rejects(
-      () => captureScreenshot({ format: 'jpeg', quality: 50 }),
+      () => captureScreenshot({
+        format: 'jpeg',
+        quality: 50,
+        _deps: {
+          getClient: async () => {
+            throw new Error('CDP unavailable');
+          },
+        },
+      }),
       (err) => {
-        assert.ok(err.message.length > 0);
+        assert.match(err.message, /CDP unavailable/);
         return true;
       },
     );
