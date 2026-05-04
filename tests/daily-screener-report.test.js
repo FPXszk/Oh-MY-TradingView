@@ -41,6 +41,10 @@ describe('daily screener WSL publish script', () => {
 
     assert.match(script, /wsl\.exe/,
       'publish script must use WSL to reach the live checkout');
+    assert.match(script, /\$normalizedWindowsPath\s*=\s*\$WindowsPath\s*-replace\s+'\\\\',\s*'\/'/,
+      'publish script must normalize Windows backslashes before invoking wslpath');
+    assert.match(script, /wsl\.exe wslpath -a \$normalizedWindowsPath/,
+      'publish script must convert the normalized Windows path through wslpath');
     assert.match(script, /daily-ranking\.md/,
       'publish script must sync the screener markdown report');
     assert.match(script, /daily-ranking-run\.json/,

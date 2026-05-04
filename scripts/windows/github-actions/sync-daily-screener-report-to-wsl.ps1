@@ -37,7 +37,8 @@ function Invoke-WslStrict {
 function Convert-WindowsPathToWsl {
     param([Parameter(Mandatory = $true)][string]$WindowsPath)
 
-    $converted = & wsl.exe wslpath -a $WindowsPath
+    $normalizedWindowsPath = $WindowsPath -replace '\\', '/'
+    $converted = & wsl.exe wslpath -a $normalizedWindowsPath
     if ($LASTEXITCODE -ne 0) {
         throw "Failed to convert Windows path to WSL path: $WindowsPath"
     }
