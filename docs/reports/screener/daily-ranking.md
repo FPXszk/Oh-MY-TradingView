@@ -1,8 +1,8 @@
 # ファンダメンタル × モメンタム スクリーニング 上位20件
 
-更新: 2026-05-05T04:45:09.730Z（JST 2026/05/05 13:45）
+更新: 2026-05-05T06:04:40.909Z（JST 2026/05/05 15:04）
 
-スキャン対象: 33 銘柄 → スコープ通過: 29 → Phase1 セクターフィルター通過: 14 → クライアントフィルター通過: 4 → 上位: 4
+Phase2候補取得: 16 銘柄 → スコープ通過: 13 → Phase1 選択セクター通過: 13 → クライアントフィルター通過: 8 → 上位: 8
 
 ## Phase1 セクターランキング
 
@@ -27,54 +27,63 @@
 
 ## 上位5件の選定理由
 
-### 1位 SNDK (NASDAQ)
-- 総合点: 6
-- 内訳: 3M 1位 / ROE 2位 / FCF 2位 / 売上成長 1位
-- 理由: 3か月モメンタムが候補群で1位、売上成長率も1位、ADEAより総合点が3点良い。
+### 1位 ADEA (NASDAQ)
+- 総合点: 13
+- 内訳: 3M 2位 / ROE 6位 / FCF 2位 / 売上成長 3位
+- 理由: 3か月モメンタムが候補群で2位、FCFマージンも2位、SNDKより総合点が0点良い、一方でROEは6位で弱点。
 
-### 2位 ADEA (NASDAQ)
-- 総合点: 9
-- 内訳: 3M 2位 / ROE 3位 / FCF 1位 / 売上成長 3位
-- 理由: FCFマージンが候補群で1位、3か月モメンタムも2位、EBAYより総合点が1点良い。
+### 2位 SNDK (NASDAQ)
+- 総合点: 13
+- 内訳: 3M 1位 / ROE 4位 / FCF 3位 / 売上成長 5位
+- 理由: 3か月モメンタムが候補群で1位、FCFマージンも3位、FTNTより総合点が1点良い、一方で売上成長率は5位で弱点。
 
-### 3位 EBAY (NASDAQ)
-- 総合点: 10
-- 内訳: 3M 4位 / ROE 1位 / FCF 3位 / 売上成長 2位
-- 理由: ROEが候補群で1位、売上成長率も2位、WLYBより総合点が5点良い、一方で3か月モメンタムは4位で弱点。
+### 3位 FTNT (NASDAQ)
+- 総合点: 14
+- 内訳: 3M 8位 / ROE 1位 / FCF 4位 / 売上成長 1位
+- 理由: ROEが候補群で1位、売上成長率も1位、ZMより総合点が3点良い、一方で3か月モメンタムは8位で弱点。
 
-### 4位 WLYB (NYSE)
-- 総合点: 15
-- 内訳: 3M 3位 / ROE 4位 / FCF 4位 / 売上成長 4位
-- 理由: 3か月モメンタムが候補群で3位、ROEも4位、EBAYとの差は総合点で5点、一方で売上成長率は4位で弱点。
+### 4位 ZM (NASDAQ)
+- 総合点: 17
+- 内訳: 3M 6位 / ROE 8位 / FCF 1位 / 売上成長 2位
+- 理由: FCFマージンが候補群で1位、売上成長率も2位、MUより総合点が0点良い、一方でROEは8位で弱点。
+
+### 5位 MU (NASDAQ)
+- 総合点: 17
+- 内訳: 3M 3位 / ROE 3位 / FCF 7位 / 売上成長 4位
+- 理由: 3か月モメンタムが候補群で3位、ROEも3位、ZMとの差は総合点で0点、一方でFCFマージンは7位で弱点。
 
 ## 銘柄ランキング
 
 | 順位 | シンボル | セクター | 市場 | 現在値 | Perf.3M | ROE | FCFマージン | 売上成長 | 総合点 |
 |:---:|:---|:---|:---:|---:|---:|---:|---:|---:|---:|
-| 1 | **SNDK** | Electronic Technology | NASDAQ | $1255.86 | 80.9% | 39.3% | 33.8% | N/A% | 6 |
-| 2 | **ADEA** | Technology Services | NASDAQ | $33.63 | 78.9% | 25.3% | 35.2% | N/A% | 9 |
-| 3 | **EBAY** | Retail Trade | NASDAQ | $109.33 | 16.9% | 42.8% | 18.0% | N/A% | 10 |
-| 4 | **WLYB** | Consumer Services | NYSE | $41.20 | 28.1% | 21.5% | 11.8% | N/A% | 15 |
+| 1 | **ADEA** | Technology Services | NASDAQ | $33.63 | 78.9% | 25.3% | 35.2% | N/A% | 13 |
+| 2 | **SNDK** | Electronic Technology | NASDAQ | $1255.86 | 80.9% | 39.3% | 33.8% | N/A% | 13 |
+| 3 | **FTNT** | Technology Services | NASDAQ | $89.24 | 10.2% | 135.7% | 32.7% | N/A% | 14 |
+| 4 | **ZM** | Technology Services | NASDAQ | $106.63 | 15.4% | 20.3% | 39.5% | N/A% | 17 |
+| 5 | **MU** | Electronic Technology | NASDAQ | $576.45 | 30.4% | 39.8% | 17.7% | N/A% | 17 |
+| 6 | **EBAY** | Retail Trade | NASDAQ | $109.33 | 16.9% | 42.8% | 18.0% | N/A% | 21 |
+| 7 | **QCOM** | Electronic Technology | NASDAQ | $168.38 | 11.7% | 36.1% | 28.1% | N/A% | 23 |
+| 8 | **WLYB** | Consumer Services | NYSE | $41.20 | 28.1% | 21.5% | 11.8% | N/A% | 26 |
 
 ## Phase2 通過銘柄のセクター内訳
 
 | 順位 | セクター | 通過銘柄数 | 平均Perf.3M | 平均総合点 | 代表銘柄 |
 |:---:|:---|---:|---:|---:|:---|
-| 1 | Electronic Technology | 1 | 80.9% | 6.0 | SNDK |
-| 2 | Technology Services | 1 | 78.9% | 9.0 | ADEA |
-| 3 | Consumer Services | 1 | 28.1% | 15.0 | WLYB |
-| 4 | Retail Trade | 1 | 16.9% | 10.0 | EBAY |
+| 1 | Electronic Technology | 3 | 41.0% | 17.7 | SNDK |
+| 2 | Technology Services | 3 | 34.8% | 14.7 | ADEA |
+| 3 | Consumer Services | 1 | 28.1% | 26.0 | WLYB |
+| 4 | Retail Trade | 1 | 16.9% | 21.0 | EBAY |
 
 ## 市場カバレッジ
 
 - スキャンスコープ: TradingView Scanner API の `america` 市場、対象は `stock`
 - ユニバース追加条件: NASDAQ + NYSE stocks only (OTC excluded)
-- 観測レンジ: 今回は最大 160 件まで取得し、その範囲で市場別内訳を集計
-- スコープ通過: NASDAQ 22件, NYSE 7件
-- Phase1 セクターフィルター通過: NASDAQ 12件, NYSE 2件
-- クライアントフィルター通過: NASDAQ 3件, NYSE 1件
-- 最終採用: NASDAQ 3件, NYSE 1件
-- 補足: TradingView Scanner API returns the filtered stock candidates for the selected market scope; exchange and symbol-universe filters below are additionally applied locally for this run. Phase1 then selected Technology, Semiconductors, Consumer Discretionary before the Phase2 stock filters were applied.
+- 観測レンジ: 今回は 7 件のプロファイルスキャンを行い、各リクエスト最大 160 件まで取得
+- スコープ通過: NASDAQ 12件, NYSE 1件
+- Phase1 選択セクター通過: NASDAQ 12件, NYSE 1件
+- クライアントフィルター通過: NASDAQ 7件, NYSE 1件
+- 最終採用: NASDAQ 7件, NYSE 1件
+- 補足: TradingView Scanner API was queried with sector-specific profile filters, then exchange and symbol-universe filters were applied locally. Phase1 selected Technology, Semiconductors, Consumer Discretionary, and Phase2 excluded no sectors.
 
 ## 見ている指標と追加候補
 
@@ -90,9 +99,9 @@
 **スコア算出:** `rank(perf3m) + rank(roe) + rank(fcfMargin) + rank(revenueGrowth)`（合計が小さいほど上位）
 
 **フィルター条件:**
-- RSI(14) > 60, 時価総額 > $1B, 相対出来高 > 1.2x
-- EPS(TTM) > 0, ROE > 15%, 粗利率(TTM) > 30%, FCFマージン(TTM) > 10%
-- Close > SMA200, Close > SMA50, Close ≥ 52週高値 × 75%
-- Perf.3M > 10%, P/FCF < 50
+- 共通条件: 時価総額 > $1B, EPS(TTM) > 0, Close > SMA200, Close > SMA50, Close ≥ 52週高値 × 75%
+- Technology: RSI > 60, 相対出来高 > 1.00x, ROE > 20%, 粗利率 > 40%, FCFマージン > 15%, Perf.3M > 10%, P/FCF < 50
+- Semiconductors: RSI > 60, 相対出来高 > 0.90x, ROE > 15%, 粗利率 > 30%, FCFマージン > 5%, Perf.3M > 10%, P/FCF < 50 (fabless), 100 (IDM/foundry)
+- Consumer Discretionary: RSI > 60, 相対出来高 > 1.00x, ROE > 12%, 粗利率 > 25%, FCFマージン > 8%, Perf.3M > 15%, P/FCF < 50
 - 取引所限定: NASDAQ, NYSE
-- Yahoo Finance 補完あり: 売上成長率 YoY > 20%
+- Yahoo Finance 補完あり: 売上成長率 YoY はプロファイル別閾値を適用し、null は通過
