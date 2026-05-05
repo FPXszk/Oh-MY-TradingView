@@ -551,3 +551,313 @@
 - このプロジェクトにどう活かしたか: SPXC / POWL / AZZ / ATKR / PLPC の時価総額を補完し、単一ウォッチリストの並び順を最後まで確定させた。
 - 採用したもの: 銘柄ごとの market cap 補完ソースとしての限定利用。
 - 採用しなかったもの: valuation / analyst estimate など、今回の並び順に不要な周辺データの採用。
+
+---
+
+## 55：Jegadeesh and Titman momentum papers
+
+- URL: https://www.jstor.org/stable/2328882 , https://doi.org/10.1111/0022-1082.00342
+- 参考にした理由: 中期モメンタムを日次スクリーナーの中核指標に置く根拠を確認するため。
+- このプロジェクトにどう活かしたか: `Perf.3M` を維持しつつ、`Perf.6M`、`Perf.Y`、12-1 momentum を追加候補の最上位にした。
+- 採用したもの: winner continuation を横断 rank の中心に置く設計。
+- 採用しなかったもの: 直近1カ月を無視した raw 12カ月リターンだけで完結させること。
+
+---
+
+## 56：Short-term reversal papers
+
+- URL: https://www.jstor.org/stable/2328818 , https://www.jstor.org/stable/2937819
+- 参考にした理由: `Perf.1M` や短期 RSI を rank 中核に置くリスクを確認するため。
+- このプロジェクトにどう活かしたか: `Perf.1M` を Phase1 補助に残し、個別銘柄の中核 rank からは降格する判断に使った。
+- 採用したもの: 短期指標は confirmation として扱う方針。
+- 採用しなかったもの: 1カ月騰落率を最重要 momentum とみなすこと。
+
+---
+
+## 57：Moskowitz and Grinblatt industry momentum
+
+- URL: https://doi.org/10.1111/0022-1082.00146
+- 参考にした理由: 現行 Phase1 の sector / industry momentum 選択の妥当性を検証するため。
+- このプロジェクトにどう活かしたか: `src/core/sector-momentum.js` の Phase1 を維持し、セクター/業種 RS を P0 指標にした。
+- 採用したもの: まず強い業種を選び、その中で個別銘柄を rank する構造。
+- 採用しなかったもの: 業種効果を無視した全銘柄一律 rank。
+
+---
+
+## 58：George and Hwang 52-week high momentum
+
+- URL: https://doi.org/10.1111/j.1540-6261.2004.00695.x
+- 参考にした理由: 52週高値比率を単なる price filter ではなく rank 候補にできるか確認するため。
+- このプロジェクトにどう活かしたか: `close / price_52_week_high` と新高値 flag を P0 追加候補にした。
+- 採用したもの: 52週高値への接近を winner continuation の補助指標にすること。
+- 採用しなかったもの: 52週高値だけでファンダメンタルを置き換えること。
+
+---
+
+## 59：Asness, Moskowitz and Pedersen value and momentum everywhere
+
+- URL: https://doi.org/10.1111/jofi.12021 , https://pages.stern.nyu.edu/~lpederse/papers/ValMomEverywhere.pdf
+- 参考にした理由: value と momentum を同時に使う設計の妥当性を確認するため。
+- このプロジェクトにどう活かしたか: momentum 中核を維持しつつ、P/FCF、EV/EBITDA、FCF yield を valuation guard として整理した。
+- 採用したもの: momentum と valuation/quality を組み合わせる方針。
+- 採用しなかったもの: value 単独スクリーナーへの転換。
+
+---
+
+## 60：Residual and time-series momentum papers
+
+- URL: https://doi.org/10.1016/j.jempfin.2011.01.003 , https://doi.org/10.1016/j.jfineco.2011.11.003
+- 参考にした理由: raw momentum 以外の momentum 指標の優先順位を決めるため。
+- このプロジェクトにどう活かしたか: residual momentum は有望だが実装コスト高、time-series momentum は gate として有用と評価した。
+- 採用したもの: sector / beta 由来でない固有 momentum を将来候補にすること。
+- 採用しなかったもの: 初回実装で回帰モデルを導入すること。
+
+---
+
+## 61：Momentum crash and volatility-managed momentum
+
+- URL: https://doi.org/10.1016/j.jfineco.2015.12.002 , https://doi.org/10.1016/j.jfineco.2014.11.005
+- 参考にした理由: 強い momentum 銘柄が急落しやすい局面への対処を確認するため。
+- このプロジェクトにどう活かしたか: `ATR`、`beta_1_year`、volatility adjustment を alpha rank ではなく risk overlay として追加推奨した。
+- 採用したもの: momentum を risk 管理なしで増やさない方針。
+- 採用しなかったもの: volatility timing だけで銘柄選択を置き換えること。
+
+---
+
+## 62：Trading volume and momentum papers
+
+- URL: https://doi.org/10.1111/0022-1082.00280 , https://doi.org/10.1111/0022-1082.00349
+- 参考にした理由: 相対出来高を日次ブレイクアウト確認として残す根拠を確認するため。
+- このプロジェクトにどう活かしたか: `relative_volume_10d_calc` を P1 confirmation として維持した。
+- 採用したもの: 出来高ショックを資金流入と注目度の補助情報として使うこと。
+- 採用しなかったもの: 出来高だけで quality や valuation を置き換えること。
+
+---
+
+## 63：Novy-Marx gross profitability
+
+- URL: https://doi.org/10.1016/j.jfineco.2013.01.003 , https://mysimon.rochester.edu/novy-marx/research/OSoV.pdf
+- 参考にした理由: 現行の `gross_margin_ttm` が quality 指標として十分か確認するため。
+- このプロジェクトにどう活かしたか: 粗利率より `gross_profit_ttm / total_assets` を優先追加候補にした。
+- 採用したもの: gross profitability を quality 中核に置くこと。
+- 採用しなかったもの: 粗利率を全セクター共通の最上位指標にすること。
+
+---
+
+## 64：Fama-French five-factor model and data library
+
+- URL: https://doi.org/10.1016/j.jfineco.2014.10.010 , https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html
+- 参考にした理由: profitability と momentum factor の公開定義を確認するため。
+- このプロジェクトにどう活かしたか: operating profitability、ROIC、momentum 12-1 の候補整理に使った。
+- 採用したもの: profitability を独立ブロックとして rank に入れる設計。
+- 採用しなかったもの: この repo の日次スクリーナーで完全なファクターポートフォリオを再現すること。
+
+---
+
+## 65：Piotroski F-score
+
+- URL: https://doi.org/10.2307/2672906
+- 参考にした理由: 財務健全性の複合スコアを momentum スクリーナーに入れるべきか確認するため。
+- このプロジェクトにどう活かしたか: F-score は value basket 用の P2 候補とし、初回実装からは外した。
+- 採用したもの: 複合 quality score の考え方。
+- 採用しなかったもの: 9項目を最初から全て実装すること。
+
+---
+
+## 66：Accruals and earnings quality papers
+
+- URL: https://doi.org/10.2307/2491429 , https://www.jstor.org/stable/248303
+- 参考にした理由: FCF margin と cash conversion を quality 指標として使う根拠を確認するため。
+- このプロジェクトにどう活かしたか: `free_cash_flow_margin_ttm` を P0 維持し、cash conversion / accruals を P1 候補にした。
+- 採用したもの: 利益の現金化を quality block に入れる方針。
+- 採用しなかったもの: 会計 accruals の細かな分解を初回実装へ入れること。
+
+---
+
+## 67：Post-earnings announcement drift and surprise papers
+
+- URL: https://doi.org/10.2307/2490232 , https://doi.org/10.2307/2491062 , https://www.jstor.org/stable/247060
+- 参考にした理由: EPS acceleration、SUE、earnings surprise を growth block に入れるべきか確認するため。
+- このプロジェクトにどう活かしたか: SUE/PEAD は根拠が強いが外部データが必要な P1 候補と整理した。
+- 採用したもの: 決算後ドリフトを growth confirmation として重視すること。
+- 採用しなかったもの: 現行データ経路で取得できない surprise を即実装すること。
+
+---
+
+## 68：Jegadeesh and Livnat revenue surprises
+
+- URL: https://doi.org/10.1016/j.jacceco.2005.10.003
+- 参考にした理由: 現行 Yahoo 補完の `revenueGrowth` をどう評価するか確認するため。
+- このプロジェクトにどう活かしたか: 売上成長を残しつつ、revenue acceleration と EPS/FCF 成長を組み合わせる方針にした。
+- 採用したもの: revenue surprise / revenue growth を growth confirmation として使うこと。
+- 採用しなかったもの: 売上成長率単独で rank の主役にすること。
+
+---
+
+## 69：Greenblatt magic formula
+
+- URL: https://www.wiley.com/en-us/The+Little+Book+That+Still+Beats+the+Market-p-9780470624159
+- 参考にした理由: quality と valuation を同時に見る実務的枠組みを確認するため。
+- このプロジェクトにどう活かしたか: ROIC と FCF/EV 系 valuation を同時に見る推奨へ接続した。
+- 採用したもの: capital return と valuation をペアにする考え方。
+- 採用しなかったもの: magic formula をそのまま戦略本体にすること。
+
+---
+
+## 70：Enterprise multiple and valuation papers
+
+- URL: https://www.cambridge.org/core/journals/journal-of-financial-and-quantitative-analysis/article/new-evidence-on-the-relation-between-the-enterprise-multiple-and-average-stock-returns/5CD22A12A06AFCDC5233E477757FB659 , https://doi.org/10.2308/accr.2004.79.1.73 , https://doi.org/10.2469/faj.v52.n2.1980 , https://doi.org/10.1111/j.1540-6261.1996.tb05205.x
+- 参考にした理由: P/FCF、EV/EBITDA、PEG、P/S、forward 指標の優先順位を決めるため。
+- このプロジェクトにどう活かしたか: EV/EBITDA と P/FCF を P1、PEG/Forward P/E/P/S を条件付きにした。
+- 採用したもの: セクター別 valuation guard。
+- 採用しなかったもの: analyst forecast 依存の指標を初回中核へ入れること。
+
+---
+
+## 71：Technical analysis evidence
+
+- URL: https://doi.org/10.1111/j.1540-6261.1992.tb04681.x , https://doi.org/10.1111/j.1467-6419.2007.00519.x
+- 参考にした理由: SMA、MACD、Bollinger、VWAP をどう扱うか確認するため。
+- このプロジェクトにどう活かしたか: SMA200/SMA50 は gate 維持、MACD/BB/VWAP は後回しにした。
+- 採用したもの: trend filter としての移動平均。
+- 採用しなかったもの: technical indicator を fundamentals より上に置くこと。
+
+---
+
+## 72：Wilder technical indicators
+
+- URL: https://www.worldcat.org/title/18452439
+- 参考にした理由: RSI、ADX、ATR の定義元を確認するため。
+- このプロジェクトにどう活かしたか: RSI/ADX は confirmation、ATR は risk overlay として整理した。
+- 採用したもの: technical 指標を役割別に分ける設計。
+- 採用しなかったもの: RSI 高値だけを強いファンダメンタルの代替とすること。
+
+---
+
+## 73：DuPont and asset turnover evidence
+
+- URL: https://doi.org/10.2308/accr.2008.83.3.823
+- 参考にした理由: asset turnover を profitability block へ入れるべきか確認するため。
+- このプロジェクトにどう活かしたか: asset turnover は P2 とし、初回は ROIC / gross profitability を優先した。
+- 採用したもの: ROE を分解して見る観点。
+- 採用しなかったもの: 業種差が大きい asset turnover を全銘柄共通 rank にすること。
+
+---
+
+## 74：Low beta and beta anomaly papers
+
+- URL: https://doi.org/10.1016/j.jfineco.2013.10.005 , https://doi.org/10.2469/faj.v67.n1.4
+- 参考にした理由: beta を強い momentum 銘柄の risk guard として使うべきか確認するため。
+- このプロジェクトにどう活かしたか: `beta_1_year` を rank 中核ではなく risk overlay として追加候補にした。
+- 採用したもの: 高 beta 過多を抑える視点。
+- 採用しなかったもの: low beta 戦略への転換。
+
+---
+
+## 75：Distress risk papers
+
+- URL: https://doi.org/10.1111/j.1540-6261.1968.tb00843.x , https://doi.org/10.1111/j.1540-6261.2008.01416.x
+- 参考にした理由: Altman Z-score、D/E、interest coverage の扱いを確認するため。
+- このプロジェクトにどう活かしたか: D/E と net debt を先に使い、Altman Z-score は P2 とした。
+- 採用したもの: 財務 distress を winner selection から除く考え方。
+- 採用しなかったもの: 破綻予測モデルを初回実装の中心にすること。
+
+---
+
+## 76：Short interest evidence
+
+- URL: https://doi.org/10.1016/j.jfineco.2004.08.002 , https://doi.org/10.1111/j.1540-6261.2008.01344.x
+- 参考にした理由: short interest を momentum スクリーナーに入れるべきか確認するため。
+- このプロジェクトにどう活かしたか: 根拠はあるが外部データが必要な P2 候補とした。
+- 採用したもの: 高 short を警戒指標として扱う方針。
+- 採用しなかったもの: 高 short を一律除外または squeeze 狙いで採用すること。
+
+---
+
+## 77：Institutional ownership evidence
+
+- URL: https://doi.org/10.1162/003355301753265589 , https://doi.org/10.1086/504874
+- 参考にした理由: institutional ownership change を日次スクリーナーへ入れるべきか確認するため。
+- このプロジェクトにどう活かしたか: 13F の遅れが大きいため、日次 screening では P2 とした。
+- 採用したもの: 機関投資家の累積買いを補助情報として見る観点。
+- 採用しなかったもの: 13F だけで日次 entry を決めること。
+
+---
+
+## 78：International and Japan momentum evidence
+
+- URL: https://doi.org/10.1016/j.jfineco.2011.10.011 , https://doi.org/10.1111/j.1540-6261.2010.01532.x , https://doi.org/10.1111/1540-6261.00578
+- 参考にした理由: 米国中心の指標を日本株にもそのまま適用できるか確認するため。
+- このプロジェクトにどう活かしたか: 日本株では業種内 rank、流動性、出来高 confirmation を重視する補足を入れた。
+- 採用したもの: 国際市場でも momentum を見るが、市場差を明記する方針。
+- 採用しなかったもの: 米国閾値を日本株へ無調整で移植すること。
+
+---
+
+## 79：AQR data library and factor material
+
+- URL: https://www.aqr.com/Insights/Datasets
+- 参考にした理由: momentum、value、quality、beta 系 factor の実務定義を確認するため。
+- このプロジェクトにどう活かしたか: 12-1 momentum、value x momentum、beta guard の整理に使った。
+- 採用したもの: 公開 factor 定義を日次スクリーナーの指標名へ翻訳すること。
+- 採用しなかったもの: AQR の factor portfolio をそのまま複製すること。
+
+---
+
+## 80：Alpha Architect factor research
+
+- URL: https://alphaarchitect.com/
+- 参考にした理由: momentum / value / trend following の実務的な使い分けを確認するため。
+- このプロジェクトにどう活かしたか: 論文根拠を実装優先度へ落とす際の補助資料にした。
+- 採用したもの: momentum と value/quality を組み合わせる実務観点。
+- 採用しなかったもの: ブログ投稿を査読論文より強い根拠として扱うこと。
+
+---
+
+## 81：Quantpedia factor summaries
+
+- URL: https://quantpedia.com/
+- 参考にした理由: stock momentum、factor momentum、reversal などの実務分類を確認するため。
+- このプロジェクトにどう活かしたか: 指標候補40項目の分類と説明を補助した。
+- 採用したもの: factor taxonomy の整理。
+- 採用しなかったもの: 個別記事の performance 数値をこの repo の期待値として転用すること。
+
+---
+
+## 82：Robeco residual momentum
+
+- URL: https://www.robeco.com/en-int/insights/2011/02/residual-momentum
+- 参考にした理由: residual momentum を追加候補に入れるべきか確認するため。
+- このプロジェクトにどう活かしたか: 残差モメンタムは有望だが外部計算が必要な P1 と整理した。
+- 採用したもの: raw momentum から market/sector/beta 成分を除く考え方。
+- 採用しなかったもの: 初回実装で回帰ベースの残差推定を入れること。
+
+---
+
+## 83：X/Twitter factor posts
+
+- URL: https://x.com/alphaarchitect , https://x.com/quantpedia
+- 参考にした理由: 2026年時点の実務家コミュニティで momentum / factor investing がどう議論されているか確認するため。
+- このプロジェクトにどう活かしたか: Alpha Architect と Quantpedia の投稿を補助情報として扱い、主判断は論文と公開 factor data に置いた。
+- 採用したもの: 実務者が momentum、trend following、factor momentum を継続的に扱っている観測。
+- 採用しなかったもの: SNS 投稿を単独根拠にした指標採用。
+
+---
+
+## 84：Reddit multibagger / Yartseva discussion
+
+- URL: https://www.reddit.com/r/ValueInvesting/comments/1ro1gmd/the_only_statistical_study_on_multibaggers_find/
+- 参考にした理由: `deep-research-instruction.md` にある Yartseva (2025) 周辺の言及を確認するため。
+- このプロジェクトにどう活かしたか: FCF yield、margin expansion、reinvestment への関心は補助情報として反映した。
+- 採用したもの: FCF と収益性改善を multibagger 候補の観点として見ること。
+- 採用しなかったもの: 一次資料の確認が弱い研究名を主要根拠にすること。
+
+---
+
+## 85：Substack and GitHub factor implementation survey
+
+- URL: https://substack.com/search/momentum%20quality%20factor , https://github.com/search?q=tradingview+screener+momentum+quality&type=repositories
+- 参考にした理由: quality momentum / residual momentum / TradingView screener 実装の周辺例を確認するため。
+- このプロジェクトにどう活かしたか: 実装順はシンプルな TradingView columns 追加から始め、複雑なモデルは後段に回す方針を確認した。
+- 採用したもの: 実務実装では取得しやすい列から ablation する考え方。
+- 採用しなかったもの: 外部 repo の設計や Substack 仮説を未検証で移植すること。

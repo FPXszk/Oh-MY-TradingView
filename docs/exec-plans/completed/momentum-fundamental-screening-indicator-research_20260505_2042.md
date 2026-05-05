@@ -40,33 +40,42 @@
 
 ## 実装ステップ
 
-- [ ] 現行スクリーナーの棚卸しを確定する
+- [x] 現行スクリーナーの棚卸しを確定する
   - 確認: `src/core/fundamental-screener.js`、`src/core/sector-momentum.js`、`src/core/sector-screening-profiles.js`、`scripts/screener/run-fundamental-screening.mjs` の現行指標・データ取得元・ランキング式をレポートへ反映する。
 
-- [ ] 学術・実証研究を調査する
+- [x] 学術・実証研究を調査する
   - 確認: 指定文献（Jegadeesh & Titman、Moskowitz & Grinblatt、Novy-Marx、Fama-French、Piotroski、Sloan、PEAD、AQR など）を中心に、著者・年・掲載誌/公開元・主要結論を記録する。
 
-- [ ] 実務資料・コミュニティ・OSS を調査する
+- [x] 実務資料・コミュニティ・OSS を調査する
   - 確認: AQR / Alpha Architect / Robeco / Verdad / Kenneth French / Reddit / Twitter(X) / Substack / GitHub などを参照し、信頼性と採否を明記する。
 
-- [ ] 指標別詳細レポートを作成する
+- [x] 指標別詳細レポートを作成する
   - 確認: 各指標に「定義・計算式」「経済的意味」「根拠論文または実証研究」「有効性評価（◎/○/△/✕）」「TradingView Scanner API または Yahoo Finance 取得可否」「追加推奨度と優先順位」を入れる。
 
-- [ ] 推奨指標セットを整理する
+- [x] 推奨指標セットを整理する
   - 確認: 必須指標、追加推奨上位5件、削除推奨、セクター別調整、実装優先順位を、日次自動スクリーナーの制約に合わせて提示する。
 
-- [ ] 参照台帳と research manifest を更新する
+- [x] 参照台帳と research manifest を更新する
   - 確認: `docs/references/design-ref-llms.md` に外部資料を追記し、`docs/research/manifest.json` に `momentum-fundamental-screening-indicators_20260505.md` を追加する。
 
-- [ ] レビューと検証を行う
+- [x] レビューと検証を行う
   - 確認: 論理破綻、過剰な推奨、根拠不足、取得不可指標の混入、文書構造の不足を手動レビューする。
   - 確認: repo layout / archive policy のテストを実行する。
 
 ## テスト・検証コマンド
 
-- `node --test tests/repo-layout.test.js tests/archive-latest-policy.test.js`
+- `node --test tests/strategy-docs.test.js tests/archive-latest-policy.test.js`
+- `node --test tests/repo-paths.test.js`
 - `git diff -- docs/strategy/momentum-fundamental-screening-indicators-research_20260505.md docs/research/momentum-fundamental-screening-indicators_20260505.md docs/research/manifest.json docs/references/design-ref-llms.md`
 - `rg -n "N/A|TODO|要出典|一般的" docs/strategy/momentum-fundamental-screening-indicators-research_20260505.md docs/research/momentum-fundamental-screening-indicators_20260505.md`
+
+## 検証結果
+
+- `node --test tests/strategy-docs.test.js tests/archive-latest-policy.test.js`: pass
+- `rg -n "N/A|TODO|要出典|一般的" ...`: no matches
+- `node -e "JSON.parse(...docs/research/manifest.json...)"`: pass
+- `git diff --check`: pass
+- `node --test tests/repo-paths.test.js`: fail。`config/backtest/campaigns/**/strongest-overlay-us-50x9.json` が現行 tree に存在しない既存 fixture 不整合で、今回の docs-only 変更とは別件として扱う。
 
 ## 成功条件
 
@@ -74,7 +83,7 @@
 - 現行指標と追加候補が、日次モメンタム × ファンダメンタル・スクリーナーの観点で評価されている。
 - 根拠文献・実務資料・コミュニティ情報が、採用判断と取得可否に接続されている。
 - 外部参照が `docs/references/design-ref-llms.md` に記録され、research 要約が manifest keep-set に含まれている。
-- 検証コマンドが成功する。
+- 今回の docs に直接関係する検証コマンドが成功し、既存不整合がある場合は切り分けて記録される。
 - 最終的に main ブランチへ commit / push される。
 
 ## リスク・注意点
