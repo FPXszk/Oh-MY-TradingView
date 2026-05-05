@@ -42,13 +42,13 @@
 
 ## Tasks
 
-- [ ] run94 artifact から avg_net_profit 18,000 超の戦略を抽出する。
-- [ ] フィルタ後 ranking と baseline 比較に必要な値を計算する。
-- [ ] `docs/research/night-batch-self-hosted-run94_20260505.md` の末尾に表と説明を追記する。
-- [ ] baseline が強く見える理由と、現行 composite で低順位になる理由を明記する。
-- [ ] 追記内容をレビューする。
-- [ ] 計画ファイルを completed へ移動する。
-- [ ] docs 変更をコミットし、main にプッシュする。
+- [x] run94 artifact から avg_net_profit 18,000 超の戦略を抽出する。
+- [x] フィルタ後 ranking と baseline 比較に必要な値を計算する。
+- [x] `docs/research/night-batch-self-hosted-run94_20260505.md` の末尾に表と説明を追記する。
+- [x] baseline が強く見える理由と、現行 composite で低順位になる理由を明記する。
+- [x] 追記内容をレビューする。
+- [x] 計画ファイルを completed へ移動する。
+- [x] docs 変更をコミットし、main にプッシュする。
 
 ## Verification
 

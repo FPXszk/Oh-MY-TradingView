@@ -430,3 +430,61 @@ composite_score は avg_net_profit 降順 / avg_profit_factor 降順 / avg_max_d
 
 5. **run 93 からの修正効果を固定確認にする**
    metrics 読み取り成功率 100% は今回の重要な改善点。次回 night batch でも `metrics_unreadable = 0` を最低条件にし、欠損が出た場合は戦略評価より先に読み取り側を修正する。
+
+---
+
+## avg_net_profit 18,000 超フィルタ後ランキング
+
+ユーザー判断基準として、`avg_net_profit <= 18,000` の戦略は baseline の利益水準に追随できていないため除外する。残った 12 戦略だけで、同じ composite score（net_profit 降順 + PF 降順 + DD 昇順）を再計算した。
+
+| filtered rank | raw profit rank | original rank | presetId | filtered composite | avg_net_profit | avg_profit_factor | avg_max_drawdown | avg_win_rate | net rank | PF rank | DD rank | 判断 |
+|---:|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| 1 | 3 | 2 | `emr-entry-vol-rel-03` | 7 | 24,198.16 | 6.507 | 2,457.22 | 13.99% | 3 | 1 | 3 | 利益・PF・DDのバランスが最良 |
+| 2 | 4 | 1 | `emr-entry-volq-range-05` | 7 | 22,389.15 | 6.489 | 1,876.65 | 13.58% | 4 | 2 | 1 | DD最小。ただしNVDA集中が強い |
+| 3 | 6 | 3 | `emr-entry-volq-range-04` | 13 | 22,081.67 | 4.587 | 2,350.02 | 11.56% | 6 | 5 | 2 | range系の中では次点 |
+| 4 | 7 | 10 | `emr-entry-vol-sma-03` | 16 | 21,989.89 | 4.957 | 2,950.61 | 11.98% | 7 | 3 | 6 | Volume系。PF良好 |
+| 5 | 7 | 9 | `emr-entry-vol-rel-02` | 16 | 21,989.89 | 4.957 | 2,950.61 | 11.98% | 7 | 3 | 6 | Volume系。vol-sma-03と同値 |
+| 6 | 9 | 11 | `emr-entry-volq-range-03` | 20 | 19,714.27 | 3.727 | 2,756.88 | 11.40% | 9 | 6 | 5 | 利益は残るが上位rangeより弱い |
+| 7 | 11 | 12 | `emr-entry-volq-range-02` | 22 | 18,589.07 | 3.725 | 2,693.88 | 10.86% | 11 | 7 | 4 | 18,000超の下限寄り |
+| 8 | 1 | 134 | `ema-macd-rsi-sl-baseline` | 23 | 534,109.93 | 1.905 | 184,211.31 | 36.99% | 1 | 10 | 12 | raw profit最強。ただしDDと集中が極端 |
+| 9 | 2 | 156 | `emr-entry-base-ema12-26` | 25 | 36,614.35 | 1.460 | 5,142.69 | 6.36% | 2 | 12 | 11 | 利益は高いがPFが即除外水準 |
+| 10 | 5 | 137 | `emr-entry-pull-retest-03` | 26 | 22,326.84 | 1.782 | 4,640.83 | 5.82% | 5 | 11 | 10 | 利益はあるがPF/DDが弱い |
+| 11 | 10 | 25 | `emr-entry-volq-range-01` | 26 | 19,003.25 | 3.348 | 3,357.05 | 9.85% | 10 | 8 | 8 | range系の弱め設定 |
+| 12 | 12 | 44 | `emr-entry-fake-failedbreak-02` | 30 | 18,188.39 | 3.006 | 3,542.13 | 9.98% | 12 | 9 | 9 | 18,000超だが下限ギリギリ |
+
+**raw profit 優先で見る場合**: baseline は明確に1位。`avg_net_profit 534,109.93` は2位の `emr-entry-base-ema12-26`（36,614.35）の約14.6倍で、派生戦略とは桁が違う。
+
+**composite で baseline が落ちる理由**: baseline は `avg_max_drawdown 184,211.31` がフィルタ後12本の中で最大。フィルタ後1位 `emr-entry-vol-rel-03` の DD `2,457.22` と比べて約75.0倍大きい。また利益の `84.7%` が BTCUSD 由来で、top3 銘柄集中度も `95.5%`。つまり「最も稼いだ」のは事実だが、「低DDで広く再現した」とは言いにくい。
+
+**現時点の判断**: 目的を「とにかく raw profit 最大」に置くなら baseline が最有力。目的を「entry を絞って低DD・高PFの候補を探す」に置くなら、`emr-entry-vol-rel-03` と `emr-entry-volq-range-05` が上位候補。ただしこの2本も NVDA 集中があるため、baseline と同じく銘柄依存の分離が必要。
+
+### フィルタ通過戦略の内容と言語化
+
+| presetId | 何を試した戦略か | baseline との差分 | 読み方 |
+|---|---|---|---|
+| `ema-macd-rsi-sl-baseline` | 元の EMA + MACD + RSI + 8% SL | 追加フィルタなし。EMA 9/20、MACD 12/26/9、RSI 50、stop 8% の基準戦略 | 強い銘柄を長く取りに行くため利益は最大。ただしBTCUSDと大きなDDに依存 |
+| `emr-entry-base-ema12-26` | EMA ペアだけを遅くする感度テスト | EMA 9/20 を EMA 12/26 に変更し、より大きな転換だけで入る | raw profitは高いがPF 1.460で効率が悪い |
+| `emr-entry-vol-rel-03` | 相対出来高フィルタ | baseline条件に「出来高が20本平均の1.30倍以上」を追加。MACDヒストグラム陽性も要求 | 出来高を伴う上昇だけに絞る。利益・PF・DDのバランスが最良 |
+| `emr-entry-volq-range-05` | 値幅拡大フィルタ | baseline条件に「当日レンジが15本平均の1.50倍以上」を追加 | 強いブレイク日だけに絞る。DDは小さいがNVDA集中が強い |
+| `emr-entry-pull-retest-03` | ブレイク後の押し目復帰待ち | buy signal 後、7本以内の breakout retest と recovery close を待つ | 利益は残るがPFが低く、絞り方が効率改善につながっていない |
+| `emr-entry-volq-range-04` | 値幅拡大フィルタ | baseline条件に「当日レンジが10本平均の1.35倍以上」を追加 | range-05より少し緩い。利益は高いが集中リスクあり |
+| `emr-entry-vol-sma-03` | 出来高倍率フィルタ | baseline条件に「出来高が20本平均の1.20倍以上」を追加 | 出来高増加だけを見るシンプルな絞り込み。PFは良好 |
+| `emr-entry-vol-rel-02` | 相対出来高フィルタ | baseline条件に「出来高が20本平均の1.20倍以上」を追加。MACDヒストグラム陽性も要求 | `vol-sma-03` と同値。出来高条件の実装差はあるが今回結果は同じ |
+| `emr-entry-volq-range-03` | 値幅拡大フィルタ | baseline条件に「当日レンジが10本平均の1.20倍以上」を追加 | range系の中では中間設定。利益は19,000台まで低下 |
+| `emr-entry-volq-range-01` | 値幅拡大フィルタ | baseline条件に「当日レンジが5本平均の1.10倍以上」を追加 | 条件が緩く、range上位よりPF・利益が落ちる |
+| `emr-entry-volq-range-02` | 値幅拡大フィルタ | baseline条件に「当日レンジが5本平均の1.20倍以上」を追加 | 18,000超には残るが、上位range系には届かない |
+| `emr-entry-fake-failedbreak-02` | フェイクアウト回避 | baseline条件に「直近10本で failed breakout があれば入らない」を追加 | ダマシ回避狙い。18,000超には残るが下限ギリギリ |
+
+### baseline をどう扱うべきか
+
+baseline を「弱い」と見る必要はない。むしろ raw profit と win_rate だけなら、この run では baseline が一番強い。前段の composite は、baseline を落とすための指標ではなく、`利益 / PF / DD` を同時に見たときに「巨大な利益と巨大なDDをどう扱うか」を機械的に反映している。
+
+したがって次の比較は、baseline を除外するのではなく、以下の2軸で分けるのが妥当。
+
+1. **raw profit 代表**: `ema-macd-rsi-sl-baseline`
+   - 目的: 利益最大化候補として保持。
+   - 確認: BTCUSD除外、NVDA除外、BTCUSD単独で再集計し、利益の源泉を分解する。
+
+2. **entry quality 代表**: `emr-entry-vol-rel-03` / `emr-entry-volq-range-05`
+   - 目的: 低DD・高PFの絞り込み候補として保持。
+   - 確認: 18,000超フィルタ後でも baseline との差が大きいため、銘柄別採用か、baselineに出来高・値幅フィルタを部分導入したA/Bテストを行う。
