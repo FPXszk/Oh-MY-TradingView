@@ -38,53 +38,48 @@ function formatSectorMomentumApproach(sectorMomentum) {
   }
 }
 
-function findStrengths(row) {
-  const breakdown = Object.entries(row.rankBreakdown ?? {});
-  const sorted = breakdown.sort((a, b) => a[1] - b[1]);
-  return {
-    strongest: sorted[0] ?? null,
-    second: sorted[1] ?? null,
-    weakest: sorted[sorted.length - 1] ?? null,
-  };
-}
-
-function formatRankField(field) {
-  switch (field) {
-    case 'perf3m':
-      return '3か月モメンタム';
-    case 'roe':
-      return 'ROE';
-    case 'fcfMargin':
-      return 'FCFマージン';
-    case 'revenueGrowth':
-      return '売上成長率';
-    default:
-      return field;
-  }
+function getBlock(row, key) {
+  return row.rankBreakdown?.[key] ?? null;
 }
 
 function buildExplanation(row, index, rows) {
-  const { strongest, second, weakest } = findStrengths(row);
   const previous = index > 0 ? rows[index - 1] : null;
   const next = index < rows.length - 1 ? rows[index + 1] : null;
+  const blocks = Object.entries(row.rankBreakdown ?? {}).sort((a, b) => a[1].rank - b[1].rank);
+  const strongest = blocks[0] ?? null;
+  const weakest = blocks[blocks.length - 1] ?? null;
   const parts = [];
 
   if (strongest) {
-    parts.push(`${formatRankField(strongest[0])}が候補群で${strongest[1]}位`);
-  }
-  if (second && second[0] !== strongest?.[0]) {
-    parts.push(`${formatRankField(second[0])}も${second[1]}位`);
+    parts.push(`${strongest[1].label} が候補群内 ${strongest[1].rank} 位相当`);
   }
   if (next) {
-    parts.push(`${next.symbol}より総合点が${next.rankScore - row.rankScore}点良い`);
+    parts.push(`${next.symbol}より総合点が${fmt(next.rankScore - row.rankScore, 2)}点良い`);
   } else if (previous) {
-    parts.push(`${previous.symbol}との差は総合点で${row.rankScore - previous.rankScore}点`);
+    parts.push(`${previous.symbol}との差は総合点で${fmt(row.rankScore - previous.rankScore, 2)}点`);
   }
-  if (weakest && weakest[1] > 3) {
-    parts.push(`一方で${formatRankField(weakest[0])}は${weakest[1]}位で弱点`);
+  if (weakest && weakest[1].rank > 3) {
+    parts.push(`弱点は ${weakest[1].label} の ${weakest[1].rank} 位相当`);
   }
 
   return parts.join('、') + '。';
+}
+
+function buildRiskNote(row) {
+  const notes = [];
+  if (row.atrPct !== null && row.atrPct !== undefined && row.atrPct > 6) {
+    notes.push(`ATR ${fmt(row.atrPct)}%`);
+  }
+  if (row.beta1y !== null && row.beta1y !== undefined && row.beta1y > 1.5) {
+    notes.push(`β ${fmt(row.beta1y, 2)}`);
+  }
+  if (row.debtToEquity !== null && row.debtToEquity !== undefined && row.debtToEquity > 150) {
+    notes.push(`D/E ${fmt(row.debtToEquity)}%`);
+  }
+  if (row.pFcf !== null && row.pFcf !== undefined && row.pFcf > 60) {
+    notes.push(`P/FCF ${fmt(row.pFcf, 1)}倍`);
+  }
+  return notes.length > 0 ? notes.join('、') : '目立つ過熱/財務リスクなし';
 }
 
 function buildMarketLines(label, entries) {
@@ -99,7 +94,13 @@ function buildProfileConditionLine(profile) {
   const relativeVolume = thresholds.relative_volume_min === undefined
     ? 'N/A'
     : Number(thresholds.relative_volume_min).toFixed(2);
-  return `- ${profile.label}: RSI > ${thresholds.rsi14_min}, 相対出来高 > ${relativeVolume}x, ROE > ${thresholds.roe_min_pct}%, 粗利率 > ${thresholds.gross_margin_min_pct}%, FCFマージン > ${thresholds.fcf_margin_min_pct}%, Perf.3M > ${thresholds.perf_3m_min_pct}%, P/FCF < ${thresholds.p_fcf_max}`;
+  return `- ${profile.label}: hard gate は Perf.3M > ${thresholds.perf_3m_min_pct}% / P/FCF < ${thresholds.p_fcf_max}。RSI ${thresholds.rsi14_min}+、相対出来高 ${relativeVolume}x+、ROE ${thresholds.roe_min_pct}%+、粗利率 ${thresholds.gross_margin_min_pct}%+、FCFマージン ${thresholds.fcf_margin_min_pct}%+ は scoring で評価`;
+}
+
+function formatBlockWeights(result) {
+  return (result.rankingBlocks ?? [])
+    .map((block) => `${block.label} ${block.weight}%`)
+    .join(' / ');
 }
 
 function parseExchangeAllowlist(value) {
@@ -155,11 +156,11 @@ export function buildMarkdown(result, options = {}) {
     lines.push(`- 採用セクター: ${result.sectorMomentum.selectedSectors.map((entry) => `${entry.label}${entry.proxySymbol ? ` (${entry.proxySymbol})` : ''}`).join(', ')}`);
     lines.push(`- Phase1 ソース候補数: ${result.sectorMomentum.coverage?.scopedCandidates ?? 'N/A'} / reported ${result.sectorMomentum.coverage?.totalCandidatesReported ?? 'N/A'}`);
     lines.push('');
-    lines.push('| 順位 | セクター | 1M | 3M | RSI | 相対出来高 | 出来高/構成数 | 総合点 |');
-    lines.push('|:---:|:---|---:|---:|---:|---:|:---|---:|');
+    lines.push('| 順位 | セクター | 12M | 6M | 3M | 1M | RSI | 相対出来高 | 出来高/構成数 | 総合点 |');
+    lines.push('|:---:|:---|---:|---:|---:|---:|---:|---:|:---|---:|');
     result.sectorMomentum.rankings.forEach((entry, index) => {
       lines.push(
-        `| ${index + 1} | ${entry.sector} | ${fmt(entry.perf1m)}% | ${fmt(entry.perf3m)}% | ${fmt(entry.rsi14)} | ${fmt(entry.relativeVolume, 2)}x | ${fmtCountOrVolume(entry)} | ${entry.rankScore} |`,
+        `| ${index + 1} | ${entry.sector} | ${fmt(entry.perfY)}% | ${fmt(entry.perf6m)}% | ${fmt(entry.perf3m)}% | ${fmt(entry.perf1m)}% | ${fmt(entry.rsi14)} | ${fmt(entry.relativeVolume, 2)}x | ${fmtCountOrVolume(entry)} | ${entry.rankScore} |`,
       );
     });
   }
@@ -173,19 +174,21 @@ export function buildMarkdown(result, options = {}) {
     lines.push('');
     topFive.forEach((row, index) => {
       lines.push(`### ${index + 1}位 ${row.symbol} (${row.exchange ?? '-'})`);
-      lines.push(`- 総合点: ${row.rankScore}`);
-      lines.push(`- 内訳: 3M ${row.rankBreakdown?.perf3m ?? 'N/A'}位 / ROE ${row.rankBreakdown?.roe ?? 'N/A'}位 / FCF ${row.rankBreakdown?.fcfMargin ?? 'N/A'}位${row.rankBreakdown?.revenueGrowth ? ` / 売上成長 ${row.rankBreakdown.revenueGrowth}位` : ''}`);
+      lines.push(`- 総合点: ${fmt(row.rankScore, 2)}（低いほど良い）`);
+      lines.push(`- ブロック: 価格 ${fmt(getBlock(row, 'priceMomentum')?.rank, 2)} / セクター ${fmt(getBlock(row, 'sectorStrength')?.rank, 2)} / 品質 ${fmt(getBlock(row, 'quality')?.rank, 2)} / 成長 ${fmt(getBlock(row, 'growth')?.rank, 2)} / リスク・割安 ${fmt(getBlock(row, 'riskValue')?.rank, 2)}`);
+      lines.push(`- 主要指標: 12M ${fmt(row.perfY)}% / 6M ${fmt(row.perf6m)}% / 3M ${fmt(row.perf3m)}% / ROIC ${fmt(row.roic)}% / GP/A ${fmt(row.grossProfitToAssets)}% / FCF ${fmt(row.fcfMargin)}%`);
+      lines.push(`- リスク確認: ${buildRiskNote(row)}`);
       lines.push(`- 理由: ${buildExplanation(row, index, topFive)}`);
       lines.push('');
     });
 
     lines.push('## 銘柄ランキング');
     lines.push('');
-    lines.push('| 順位 | シンボル | セクター | 市場 | 現在値 | Perf.3M | ROE | FCFマージン | 売上成長 | 総合点 |');
-    lines.push('|:---:|:---|:---|:---:|---:|---:|---:|---:|---:|---:|');
+    lines.push('| 順位 | シンボル | セクター | 市場 | 現在値 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | EPS YoY | P/FCF | ATR% | 総合点 |');
+    lines.push('|:---:|:---|:---|:---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|');
     result.results.forEach((r, i) => {
       lines.push(
-        `| ${i + 1} | **${r.symbol}** | ${r.sector ?? 'N/A'} | ${r.exchange ?? '-'} | ${currencySymbol}${fmt(r.close, 2)} | ${fmt(r.perf3m)}% | ${fmt(r.roe)}% | ${fmt(r.fcfMargin)}% | ${r.revenueGrowth === null || r.revenueGrowth === undefined ? 'N/A' : fmt(r.revenueGrowth * 100)}% | ${r.rankScore} |`,
+        `| ${i + 1} | **${r.symbol}** | ${r.sector ?? 'N/A'} | ${r.exchange ?? '-'} | ${currencySymbol}${fmt(r.close, 2)} | ${fmt(r.perfY)}% | ${fmt(r.perf6m)}% | ${fmt(r.perf3m)}% | ${fmt(r.pctOf52wHigh)}% | ${fmt(r.roic)}% | ${fmt(r.grossProfitToAssets)}% | ${fmt(r.fcfMargin)}% | ${fmt(r.revenueGrowthTtm)}% | ${fmt(r.epsGrowthTtm)}% | ${fmt(r.pFcf, 1)} | ${fmt(r.atrPct)}% | ${fmt(r.rankScore, 2)} |`,
       );
     });
     lines.push('');
@@ -220,22 +223,32 @@ export function buildMarkdown(result, options = {}) {
   lines.push(`- 補足: ${result.scannerScope.note}`);
   lines.push('');
 
-  lines.push('## 見ている指標と追加候補');
+  lines.push('## 採用した P0 / P1 指標');
   lines.push('');
-  lines.push('- 現在の主指標: RSI、3か月リターン、相対出来高、52週高値比率、ROE、粗利率、FCFマージン、EPS、P/FCF、売上成長率');
-  lines.push('- 追加候補: `debtToEquity` は財務レバレッジ確認に有効。高ROEが負債依存かを切り分けられる');
-  lines.push('- 追加候補: `earningsGrowth` は売上成長だけでは見えない利益成長の質を補える');
-  lines.push('- 追加候補: `profitMargins` は粗利率より下流の収益性を見られるので、営業効率の確認に向く');
-  lines.push('- 追加候補: `forwardPE` や `price_book_fq` は過熱感チェックに使えるが、成長株を早く切りすぎる副作用がある');
-  lines.push('- 追加候補: `dividendYield` は本スクリーナーの性格上は優先度低め。高配当より成長・効率の説明力を優先した方が整合的');
+  lines.push(`- ブロック重み: ${formatBlockWeights(result)}`);
+  lines.push('- Price momentum: `Perf.3M`, `Perf.6M`, `Perf.Y`, 52週高値比率');
+  lines.push('- Sector strength: Phase1 sector ETF rank、sector 12M/6M/3M momentum');
+  lines.push('- Profitability / quality: ROIC、gross profit/assets、operating margin、FCF margin、cash conversion');
+  lines.push('- Growth confirmation: 売上 YoY、EPS YoY、FCF YoY、Yahoo revenue growth');
+  lines.push('- Risk / value guard: P/FCF、EV/EBITDA、ATR%、beta、D/E');
+  lines.push('');
+  lines.push('## 今後改善できそうな点');
+  lines.push('');
+  lines.push('- 12-1 momentum: OHLC 履歴を使い、直近1カ月を除外した標準 momentum を計算する');
+  lines.push('- SUE / earnings surprise: 決算サプライズの外部データを追加し、EPS YoY proxy を置き換える');
+  lines.push('- Residual momentum: sector / beta を除いた固有 momentum を別スコアとして検証する');
+  lines.push('- 閾値 ablation: P/FCF、ATR%、D/E は hard filter ではなく、通過率と上位銘柄の質を見ながら閾値を調整する');
   lines.push('');
 
   lines.push('---');
   lines.push('');
-  lines.push(`**スコア算出:** \`rank(${result.rankingFormula.join(') + rank(')})\`（合計が小さいほど上位）`);
+  lines.push(`**スコア算出:** weighted block rank-sum: ${formatBlockWeights(result)}（合計が小さいほど上位）`);
   lines.push('');
-  lines.push('**フィルター条件:**');
+  lines.push('**フィルター条件と scoring guide:**');
   lines.push(`- 共通条件: 時価総額 > $1B, EPS(TTM) > ${result.criteria.eps_min}, Close > SMA200, Close > SMA50, Close ≥ 52週高値 × ${result.criteria.price_pct_of_52wk_high_min}%`);
+  if (result.criteria.data_quality_guards) {
+    lines.push(`- データ品質 guard: Perf.6M ≤ ${result.criteria.data_quality_guards.perf_6m_max_pct}%, Perf.Y ≤ ${result.criteria.data_quality_guards.perf_y_max_pct}%（split / corporate-action 系の外れ値を除外）`);
+  }
   if (result.criteria.profile_summaries?.length) {
     result.criteria.profile_summaries.forEach((profile) => {
       lines.push(buildProfileConditionLine(profile));

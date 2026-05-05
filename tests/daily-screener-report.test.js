@@ -79,6 +79,24 @@ describe('daily screener WSL publish script', () => {
 });
 
 describe('buildMarkdown', () => {
+  const rankingBlocks = [
+    { key: 'priceMomentum', label: 'Price momentum', weight: 35 },
+    { key: 'sectorStrength', label: 'Sector strength', weight: 20 },
+    { key: 'quality', label: 'Profitability / quality', weight: 25 },
+    { key: 'growth', label: 'Growth confirmation', weight: 10 },
+    { key: 'riskValue', label: 'Risk / value guard', weight: 10 },
+  ];
+
+  function rankBreakdown(rank) {
+    return {
+      priceMomentum: { label: 'Price momentum', weight: 35, rank, fields: { perf3m: rank } },
+      sectorStrength: { label: 'Sector strength', weight: 20, rank, fields: { phase1SectorRankScore: rank } },
+      quality: { label: 'Profitability / quality', weight: 25, rank, fields: { fcfMargin: rank } },
+      growth: { label: 'Growth confirmation', weight: 10, rank, fields: { revenueGrowthTtm: rank } },
+      riskValue: { label: 'Risk / value guard', weight: 10, rank, fields: { pFcf: rank } },
+    };
+  }
+
   it('renders phase1 sector ranking, phase2 sector breakdown, and market coverage', () => {
     const result = {
       retrieved_at: '2026-05-04T03:00:00.000Z',
@@ -88,7 +106,8 @@ describe('buildMarkdown', () => {
       clientFiltered: 14,
       matched: 6,
       enrichedWithYahoo: true,
-      rankingFormula: ['perf3m', 'roe', 'fcfMargin', 'revenueGrowth'],
+      rankingFormula: rankingBlocks.map((block) => block.key),
+      rankingBlocks,
       scannerScope: {
         market: 'america',
         instrumentTypes: ['stock'],
@@ -145,13 +164,15 @@ describe('buildMarkdown', () => {
           { key: 'financials', label: 'Financials', proxySymbol: 'XLF' },
         ],
         selectedStockSectors: ['Electronic Technology', 'Technology Services', 'Finance'],
-        rankingFormula: ['perf3m', 'perf1m', 'rsi14', 'relativeVolume'],
+        rankingFormula: ['perfY', 'perf6m', 'perf3m', 'relativeVolume', 'rsi14'],
         coverage: { totalCandidatesReported: 12, scopedCandidates: 12, serverLimit: 12 },
         rankings: [
           {
             sector: 'Technology',
             perf1m: 22.8,
             perf3m: 11.1,
+            perf6m: 18.4,
+            perfY: 44.2,
             rsi14: 73.7,
             relativeVolume: 1.04,
             volume: 10739960,
@@ -168,72 +189,120 @@ describe('buildMarkdown', () => {
           exchange: 'NASDAQ',
           sector: 'Technology Services',
           close: 100,
+          perfY: 80,
+          perf6m: 55,
           perf3m: 40,
+          pctOf52wHigh: 98,
           roe: 30,
+          roic: 32,
+          grossProfitToAssets: 42,
           fcfMargin: 25,
-          revenueGrowth: 0.35,
+          revenueGrowthTtm: 35,
+          epsGrowthTtm: 30,
+          pFcf: 28,
+          atrPct: 3.2,
           rankScore: 4,
-          rankBreakdown: { perf3m: 1, roe: 2, fcfMargin: 1, revenueGrowth: 1 },
+          rankBreakdown: rankBreakdown(1),
         },
         {
           symbol: 'BBB',
           exchange: 'NASDAQ',
           sector: 'Technology Services',
           close: 90,
+          perfY: 70,
+          perf6m: 50,
           perf3m: 35,
+          pctOf52wHigh: 95,
           roe: 29,
+          roic: 31,
+          grossProfitToAssets: 40,
           fcfMargin: 21,
-          revenueGrowth: 0.3,
+          revenueGrowthTtm: 30,
+          epsGrowthTtm: 28,
+          pFcf: 35,
+          atrPct: 3.5,
           rankScore: 5,
-          rankBreakdown: { perf3m: 2, roe: 1, fcfMargin: 2, revenueGrowth: 2 },
+          rankBreakdown: rankBreakdown(2),
         },
         {
           symbol: 'CCC',
           exchange: 'NYSE',
           sector: 'Consumer Non-Durables',
           close: 80,
+          perfY: 55,
+          perf6m: 36,
           perf3m: 25,
+          pctOf52wHigh: 90,
           roe: 24,
+          roic: 22,
+          grossProfitToAssets: 30,
           fcfMargin: 19,
-          revenueGrowth: 0.28,
+          revenueGrowthTtm: 28,
+          epsGrowthTtm: 22,
+          pFcf: 25,
+          atrPct: 2.8,
           rankScore: 8,
-          rankBreakdown: { perf3m: 3, roe: 3, fcfMargin: 3, revenueGrowth: 3 },
+          rankBreakdown: rankBreakdown(3),
         },
         {
           symbol: 'DDD',
           exchange: 'NYSE',
           sector: 'Finance',
           close: 70,
+          perfY: 45,
+          perf6m: 30,
           perf3m: 20,
+          pctOf52wHigh: 88,
           roe: 18,
+          roic: 18,
+          grossProfitToAssets: 20,
           fcfMargin: 18,
-          revenueGrowth: 0.25,
+          revenueGrowthTtm: 25,
+          epsGrowthTtm: 18,
+          pFcf: 22,
+          atrPct: 2.5,
           rankScore: 11,
-          rankBreakdown: { perf3m: 4, roe: 4, fcfMargin: 4, revenueGrowth: 4 },
+          rankBreakdown: rankBreakdown(4),
         },
         {
           symbol: 'EEE',
           exchange: 'NASDAQ',
           sector: 'Health Technology',
           close: 60,
+          perfY: 35,
+          perf6m: 24,
           perf3m: 18,
+          pctOf52wHigh: 82,
           roe: 17,
+          roic: 17,
+          grossProfitToAssets: 18,
           fcfMargin: 14,
-          revenueGrowth: 0.22,
+          revenueGrowthTtm: 22,
+          epsGrowthTtm: 16,
+          pFcf: 50,
+          atrPct: 5.5,
           rankScore: 14,
-          rankBreakdown: { perf3m: 5, roe: 5, fcfMargin: 5, revenueGrowth: 5 },
+          rankBreakdown: rankBreakdown(5),
         },
         {
           symbol: 'FFF',
           exchange: 'NYSE',
           sector: 'Retail Trade',
           close: 50,
+          perfY: 30,
+          perf6m: 20,
           perf3m: 15,
+          pctOf52wHigh: 80,
           roe: 16,
+          roic: 16,
+          grossProfitToAssets: 16,
           fcfMargin: 13,
-          revenueGrowth: null,
+          revenueGrowthTtm: null,
+          epsGrowthTtm: 14,
+          pFcf: 55,
+          atrPct: 6.5,
           rankScore: 17,
-          rankBreakdown: { perf3m: 6, roe: 6, fcfMargin: 6, revenueGrowth: 6 },
+          rankBreakdown: rankBreakdown(6),
         },
       ],
     };
@@ -251,11 +320,13 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /ユニバース追加条件: NASDAQ \+ NYSE stocks only \(OTC excluded\)/);
     assert.match(markdown, /スコープ通過: NASDAQ 10件, NYSE 4件/);
     assert.match(markdown, /Phase1 選択セクター通過: NASDAQ 6件, NYSE 3件/);
-    assert.match(markdown, /Technology: RSI > 60, 相対出来高 > 1\.00x, ROE > 20%/);
-    assert.match(markdown, /Semiconductors: RSI > 60, 相対出来高 > 0\.90x, ROE > 15%/);
+    assert.match(markdown, /Technology: hard gate は Perf\.3M > 10% \/ P\/FCF < 50/);
+    assert.match(markdown, /Semiconductors: hard gate は Perf\.3M > 10% \/ P\/FCF < 50 \(fabless\), 100 \(IDM\/foundry\)/);
     assert.match(markdown, /Phase2 除外セクター: Financials/);
     assert.match(markdown, /取引所限定: NASDAQ, NYSE/);
-    assert.match(markdown, /## 見ている指標と追加候補/);
+    assert.match(markdown, /## 採用した P0 \/ P1 指標/);
+    assert.match(markdown, /Price momentum 35%/);
+    assert.match(markdown, /## 今後改善できそうな点/);
     assert.match(markdown, /Yahoo Finance 補完あり: 売上成長率 YoY はプロファイル別閾値を適用し、null は通過/);
   });
 
@@ -268,7 +339,8 @@ describe('buildMarkdown', () => {
       clientFiltered: 2,
       matched: 2,
       enrichedWithYahoo: true,
-      rankingFormula: ['perf3m', 'roe', 'fcfMargin', 'revenueGrowth'],
+      rankingFormula: rankingBlocks.map((block) => block.key),
+      rankingBlocks,
       scannerScope: {
         market: 'japan',
         instrumentTypes: ['stock'],
@@ -312,13 +384,15 @@ describe('buildMarkdown', () => {
           { key: 'Finance', label: 'Finance', memberCount: 8 },
         ],
         selectedStockSectors: ['Finance'],
-        rankingFormula: ['perf3m', 'perf1m', 'rsi14', 'pctRsiAbove60', 'relativeVolume'],
+        rankingFormula: ['perfY', 'perf6m', 'perf3m', 'relativeVolume', 'rsi14', 'pctRsiAbove60'],
         coverage: { totalCandidatesReported: 1200, scopedCandidates: 420, serverLimit: 2000 },
         rankings: [
           {
             sector: 'Finance',
             perf1m: 7.2,
             perf3m: 11.8,
+            perf6m: 20.1,
+            perfY: 32.5,
             rsi14: 62.5,
             relativeVolume: 1.21,
             memberCount: 8,
@@ -333,12 +407,20 @@ describe('buildMarkdown', () => {
           exchange: 'TSE',
           sector: 'Consumer Durables',
           close: 3000,
+          perfY: 30,
+          perf6m: 20,
           perf3m: 12,
+          pctOf52wHigh: 86,
           roe: 18,
+          roic: 17,
+          grossProfitToAssets: 16,
           fcfMargin: 11,
-          revenueGrowth: 0.22,
+          revenueGrowthTtm: 22,
+          epsGrowthTtm: 18,
+          pFcf: 18,
+          atrPct: 2.4,
           rankScore: 4,
-          rankBreakdown: { perf3m: 1, roe: 1, fcfMargin: 1, revenueGrowth: 1 },
+          rankBreakdown: rankBreakdown(1),
         },
       ],
     };

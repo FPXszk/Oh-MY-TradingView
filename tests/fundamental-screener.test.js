@@ -16,13 +16,29 @@ function buildPhase2Row(symbol, values) {
       values.sma50,
       values.high52w,
       values.perf3m,
+      values.perf6m ?? null,
+      values.perfY ?? null,
       values.relativeVolume,
+      values.atr ?? null,
+      values.beta1y ?? null,
       values.marketCap,
       values.eps,
+      values.epsGrowthTtm ?? null,
       values.roe,
+      values.roic ?? values.roe,
       values.grossMargin,
+      values.grossProfitTtm ?? null,
+      values.totalAssets ?? null,
+      values.operatingMargin ?? null,
       values.fcfMargin,
       values.fcfTtm,
+      values.fcfGrowthTtm ?? null,
+      values.cashFromOperationsTtm ?? null,
+      values.netIncomeTtm ?? null,
+      values.revenueGrowthTtm ?? null,
+      values.evEbitda ?? null,
+      values.pFcfDirect ?? null,
+      values.debtToEquity ?? null,
       values.netDebt,
       values.volume,
     ],
@@ -37,6 +53,8 @@ function buildPhase1FundRow(symbol, values) {
       values.description,
       values.perf1m,
       values.perf3m,
+      values.perf6m ?? null,
+      values.perfY ?? null,
       values.rsi,
       values.relativeVolume,
       values.volume,
@@ -52,6 +70,8 @@ function buildPhase1StockRow(symbol, values) {
       values.sector,
       values.perf1m,
       values.perf3m,
+      values.perf6m ?? null,
+      values.perfY ?? null,
       values.rsi,
       values.relativeVolume,
       values.marketCap,
@@ -280,7 +300,10 @@ describe('runFundamentalScreener', () => {
     assert.equal(result.serverFiltered, 6);
     assert.equal(result.phase1Filtered, 6);
     assert.equal(result.clientFiltered, 5);
-    assert.deepEqual(result.results.map((row) => row.symbol), ['ADEA', 'QCOM', 'AAPL', 'MU', 'SNDK']);
+    assert.deepEqual(result.results.map((row) => row.symbol), ['ADEA', 'AAPL', 'QCOM', 'MU', 'SNDK']);
+    assert.ok(result.results[0].rankBreakdown.priceMomentum);
+    assert.ok(result.results[0].rankBreakdown.quality);
+    assert.equal(result.results[0].roic, 29);
     assert.deepEqual(result.criteria.profile_summaries.map((profile) => profile.label), [
       'Technology',
       'Semiconductors',
@@ -551,6 +574,7 @@ describe('runFundamentalScreener', () => {
 
     assert.deepEqual(result.results.map((row) => row.symbol), ['ADEA']);
     assert.equal(result.criteria.revenue_growth_policy, 'profile-specific minimum, null passes');
-    assert.deepEqual(result.rankingFormula, ['perf3m', 'roe', 'fcfMargin', 'revenueGrowth']);
+    assert.deepEqual(result.rankingFormula, ['priceMomentum', 'sectorStrength', 'quality', 'growth', 'riskValue']);
+    assert.deepEqual(result.rankingBlocks.map((block) => block.key), result.rankingFormula);
   });
 });

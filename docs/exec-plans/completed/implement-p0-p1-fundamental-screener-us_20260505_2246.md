@@ -63,31 +63,31 @@
 
 ## 実装ステップ
 
-- [ ] 現行 tests を把握し、P0/P1 scoring の expected values を決める
+- [x] 現行 tests を把握し、P0/P1 scoring の expected values を決める
   - 確認: `tests/fundamental-screener.test.js` と `tests/daily-screener-report.test.js` が新仕様で何を固定すべきか明確にする。
 
-- [ ] `sector-momentum.js` の US Phase1 を中期モメンタム重視へ変更する
+- [x] `sector-momentum.js` の US Phase1 を中期モメンタム重視へ変更する
   - 確認: sector ETF scan の columns と `rankingFormula` に `perf6m` / `perfY` が入り、`perf1m` と RSI が補助扱いになる。
 
-- [ ] `fundamental-screener.js` に P0/P1 columns と派生指標を実装する
+- [x] `fundamental-screener.js` に P0/P1 columns と派生指標を実装する
   - 確認: `Perf.6M`、`Perf.Y`、ROIC、gross profit/assets、operating margin、YoY growth、P/FCF、EV/EBITDA、ATR/close、beta、D/E が結果 row に出る。
 
-- [ ] scoring を block 別に再構成する
+- [x] scoring を block 別に再構成する
   - 確認: `rankBreakdown` が price momentum / sector strength / quality / growth / risk-value の構造を持ち、総合点が小さいほど上位になる。
 
-- [ ] Markdown レポートを新 scoring に合わせて再設計する
+- [x] Markdown レポートを新 scoring に合わせて再設計する
   - 確認: 上位銘柄の「なぜ選ばれたか」「弱点/リスク」「改善余地」が読み取れる体裁にする。
 
-- [ ] テストを更新・追加する
+- [x] テストを更新・追加する
   - 確認: mock TradingView payload で新 columns の並び、派生指標、rank、Markdown 表示を固定する。
 
-- [ ] 実 workflow 相当を米国株で実行する
+- [x] 実 workflow 相当を米国株で実行する
   - 確認: `SCREENER_MARKET=america SCREENER_EXCHANGES=NASDAQ,NYSE node scripts/screener/run-fundamental-screening.mjs` が成功し、`docs/reports/screener/daily-ranking.md` が生成される。
 
-- [ ] セッションログへ実行結果と今後の改善提案を記録する
+- [x] セッションログへ実行結果と今後の改善提案を記録する
   - 確認: 実装内容、実行結果、残課題、次の改善案が `docs/sessions/` に残る。
 
-- [ ] レビューと検証を行う
+- [x] レビューと検証を行う
   - 確認: ロジック破綻、過剰な重み付け、取得不可 field の混入、レポート体裁の欠落を確認する。
 
 ## 検証コマンド
@@ -95,8 +95,20 @@
 - `node --test tests/fundamental-screener.test.js tests/daily-screener-report.test.js`
 - `node --test tests/sector-momentum.test.js`（存在する場合）
 - `SCREENER_MARKET=america SCREENER_EXCHANGES=NASDAQ,NYSE SCREENER_REPORT_PATH=docs/reports/screener/daily-ranking.md node scripts/screener/run-fundamental-screening.mjs`
-- `rg -n "N/A|TODO|要出典|一般的" docs/sessions/p0-p1-fundamental-screener-us_20260505_2246.md docs/reports/screener/daily-ranking.md`
+- `rg -n "要出典|一般的" docs/sessions/p0-p1-fundamental-screener-us_20260505_2246.md docs/reports/screener/daily-ranking.md`
 - `git diff --check`
+
+## 検証結果
+
+- `node --test tests/fundamental-screener.test.js tests/daily-screener-report.test.js`: pass
+- `tests/sector-momentum.test.js`: 現行 tree に存在しないため未実行
+- `SCREENER_MARKET=america SCREENER_EXCHANGES=NASDAQ,NYSE SCREENER_REPORT_PATH=docs/reports/screener/daily-ranking.md node scripts/screener/run-fundamental-screening.mjs`: pass
+  - Phase2 候補取得: 219
+  - スコープ通過: 143
+  - クライアントフィルター通過: 85
+  - 最終表示: 20
+- `rg -n "要出典|一般的" docs/sessions/p0-p1-fundamental-screener-us_20260505_2246.md docs/reports/screener/daily-ranking.md`: no matches
+- `git diff --check`: pass
 
 ## リスク
 

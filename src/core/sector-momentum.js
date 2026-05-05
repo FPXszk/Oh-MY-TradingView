@@ -87,6 +87,8 @@ const FUND_COLUMNS = [
   'description',
   'Perf.1M',
   'Perf.3M',
+  'Perf.6M',
+  'Perf.Y',
   'RSI',
   'relative_volume_10d_calc',
   'volume',
@@ -97,6 +99,8 @@ const STOCK_COLUMNS = [
   'sector',
   'Perf.1M',
   'Perf.3M',
+  'Perf.6M',
+  'Perf.Y',
   'RSI',
   'relative_volume_10d_calc',
   'market_cap_basic',
@@ -230,6 +234,8 @@ function normalizeFundRow(row) {
     description: row.d[FUND_COL['description']] ?? null,
     perf1m: row.d[FUND_COL['Perf.1M']] ?? null,
     perf3m: row.d[FUND_COL['Perf.3M']] ?? null,
+    perf6m: row.d[FUND_COL['Perf.6M']] ?? null,
+    perfY: row.d[FUND_COL['Perf.Y']] ?? null,
     rsi14: row.d[FUND_COL['RSI']] ?? null,
     relativeVolume: row.d[FUND_COL['relative_volume_10d_calc']] ?? null,
     volume: row.d[FUND_COL['volume']] ?? null,
@@ -247,6 +253,8 @@ function normalizeStockRow(row) {
     sector: row.d[STOCK_COL['sector']] ?? 'Unknown',
     perf1m: row.d[STOCK_COL['Perf.1M']] ?? null,
     perf3m: row.d[STOCK_COL['Perf.3M']] ?? null,
+    perf6m: row.d[STOCK_COL['Perf.6M']] ?? null,
+    perfY: row.d[STOCK_COL['Perf.Y']] ?? null,
     rsi14: row.d[STOCK_COL['RSI']] ?? null,
     relativeVolume: row.d[STOCK_COL['relative_volume_10d_calc']] ?? null,
     marketCapUsd: row.d[STOCK_COL['market_cap_basic']] ?? null,
@@ -280,7 +288,7 @@ async function runUsSectorFunds({ fetchFn, selectedSectorCount }) {
   );
 
   const normalized = payload.data.map(normalizeFundRow).filter(Boolean);
-  const rankingFormula = ['perf3m', 'perf1m', 'rsi14', 'relativeVolume'];
+  const rankingFormula = ['perfY', 'perf6m', 'perf3m', 'relativeVolume', 'rsi14'];
   const rankings = applyRankSum(normalized, rankingFormula);
   const { selected, selectedStockSectors, selectedFilterRules } = buildSelection(rankings, selectedSectorCount);
 
@@ -336,6 +344,10 @@ async function runStockAggregation({
         perf1mCount: 0,
         totalPerf3m: 0,
         perf3mCount: 0,
+        totalPerf6m: 0,
+        perf6mCount: 0,
+        totalPerfY: 0,
+        perfYCount: 0,
         totalRsi14: 0,
         rsi14Count: 0,
         totalRelativeVolume: 0,
@@ -353,6 +365,14 @@ async function runStockAggregation({
     if (row.perf3m !== null && row.perf3m !== undefined) {
       entry.totalPerf3m += row.perf3m;
       entry.perf3mCount += 1;
+    }
+    if (row.perf6m !== null && row.perf6m !== undefined) {
+      entry.totalPerf6m += row.perf6m;
+      entry.perf6mCount += 1;
+    }
+    if (row.perfY !== null && row.perfY !== undefined) {
+      entry.totalPerfY += row.perfY;
+      entry.perfYCount += 1;
     }
     if (row.rsi14 !== null && row.rsi14 !== undefined) {
       entry.totalRsi14 += row.rsi14;
@@ -372,6 +392,8 @@ async function runStockAggregation({
     memberCount: entry.memberCount,
     perf1m: average(entry.totalPerf1m, entry.perf1mCount),
     perf3m: average(entry.totalPerf3m, entry.perf3mCount),
+    perf6m: average(entry.totalPerf6m, entry.perf6mCount),
+    perfY: average(entry.totalPerfY, entry.perfYCount),
     rsi14: average(entry.totalRsi14, entry.rsi14Count),
     relativeVolume: average(entry.totalRelativeVolume, entry.relativeVolumeCount, 2),
     pctRsiAbove60: entry.memberCount > 0
@@ -379,7 +401,7 @@ async function runStockAggregation({
       : null,
   }));
 
-  const rankingFormula = ['perf3m', 'perf1m', 'rsi14', 'pctRsiAbove60', 'relativeVolume'];
+  const rankingFormula = ['perfY', 'perf6m', 'perf3m', 'relativeVolume', 'rsi14', 'pctRsiAbove60'];
   const rankings = applyRankSum(summarized, rankingFormula);
   const { selected, selectedStockSectors, selectedFilterRules } = buildSelection(rankings, selectedSectorCount);
 
