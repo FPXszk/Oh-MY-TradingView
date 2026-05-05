@@ -35,3 +35,6 @@ approval_mode = "approve"
 
 [mcp_servers.oh-my-tradingview.tools.tv_backtest_preset]
 approval_mode = "approve"
+
+[sandbox_workspace_write]
+network_access = true
