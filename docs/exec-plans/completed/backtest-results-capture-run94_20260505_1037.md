@@ -37,15 +37,15 @@ Night Batch Self Hosted run 94 の GitHub Actions artifact を取得し、`docs/
 
 ## Tasks
 
-- [ ] run 94 の run id と artifact id を確認する。
-- [ ] artifact を `/tmp` にダウンロードして展開する。
-- [ ] ranking と recovered results の構造を確認する。
-- [ ] composite score と per-symbol breakdown を計算する。
-- [ ] TEMPLATE 準拠の research document を作成する。
-- [ ] manifest を更新する。
-- [ ] 内容をレビューし、今回の目的が確認できたか判断する。
-- [ ] 計画ファイルを completed へ移動する。
-- [ ] docs 変更をコミットし、main にプッシュする。
+- [x] run 94 の run id と artifact id を確認する。
+- [x] artifact を `/tmp` にダウンロードして展開する。
+- [x] ranking と recovered results の構造を確認する。
+- [x] composite score と per-symbol breakdown を計算する。
+- [x] TEMPLATE 準拠の research document を作成する。
+- [x] manifest を更新する。
+- [x] 内容をレビューし、今回の目的が確認できたか判断する。
+- [x] 計画ファイルを completed へ移動する。
+- [x] docs 変更をコミットし、main にプッシュする。
 
 ## Verification
 
