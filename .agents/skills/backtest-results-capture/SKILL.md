@@ -1,6 +1,6 @@
 ---
 name: backtest-results-capture
-description: Night Batch Self Hosted の GHA 実行結果を docs/research/ にまとめるワークフロー。GHA run 特定→artifact DL→composite_score 計算→TEMPLATE.md 形式で作成→manifest 更新→push。
+description: Night Batch Self Hosted の GHA 実行結果を docs/research/ にまとめるワークフロー。GHA run 特定→artifact DL→TEMPLATE.md 準拠で集計→manifest 更新→push。
 tags:
   - backtest
   - research
@@ -102,22 +102,21 @@ unzip -o /tmp/artifact-{run_number}.zip -d /tmp/artifact-{run_number}/
 ```
 **注意**: `result.metrics` がキー（`result.stats` ではない）。
 
-### Step 5: Composite Score の計算
+### Step 5: TEMPLATE.md に必要な集計値を揃える
 
-`strategy-ranking.json` の rows を使い、以下の合成スコアを計算する。
+`docs/research/TEMPLATE.md` を開き、今回のテンプレートで要求されている表・比較列・記入指示を先に確認する。
 
-```
-composite_score = rank(net_profit, desc) + rank(profit_factor, desc) + rank(max_drawdown, asc)
-```
-- **小さいほど優秀**（全指標で 1 位 = スコア 3）
-- `strategy-ranking.json` の `rank` フィールドは PF 降順ランクのみ。composite_score とは別物。
+- baseline / control 戦略がある場合は、その `presetId` を特定する。
+- `strategy-ranking.json` から template の集計表に必要な `avg_net_profit / avg_profit_factor / avg_max_drawdown / avg_percent_profitable / run_count / success_count` を取得する。
+- `recovered-results.json` から baseline / control 戦略の symbol 別 `result.metrics` を抜き、template の Baseline 結果セクションを埋められる状態にする。
 
-### Step 6: Per-symbol Breakdown（rank-1 戦略）
+### Step 6: TEMPLATE.md 準拠でスコアと比較欄を埋める
 
-`recovered-results.json` から composite rank-1 戦略のエントリを抽出し、symbol 別に net_profit 降順で並べる。
-上位 5〜10 銘柄と下位 5 銘柄を確認し、集中リスク（MSTR・NVDA 等への偏り）を計算する。
+`docs/research/TEMPLATE.md` を source of truth として、その時点の見出し・表・コメント指示に従って必要なスコアと比較欄を埋める。
 
-**集中度の目安**: 上位 3 銘柄の net_profit 合計 ÷ 全体合計 ≥ 50% → 要注意
+- 例: `profit_follow_rate`, `PF vs baseline`, `dd_to_profit`, `DD ratio vs baseline`, `win_rate vs baseline`
+- 固定の評価式をこのスキルに複写せず、テンプレート側の列定義・判断基準・比較前提を優先する。
+- テンプレート内に実例値が入っている場合は、そのまま残さず対象 run の実データへ置き換える。
 
 ### Step 7: 出力ファイルの作成
 
@@ -126,14 +125,9 @@ composite_score = rank(net_profit, desc) + rank(profit_factor, desc) + rank(max_
 
 `docs/research/TEMPLATE.md` の構造に従って記述する。
 
-**主要セクション（TEMPLATE.md 参照）**:
-1. 実行概要（run 番号、campaign_id、実行日時、成功率）
-2. Composite Score ランキング（全戦略の表）
-3. PF ランキング（strategy-ranking.json の公式順序）
-4. Rank-1 戦略の per-symbol breakdown
-5. 上位 4 戦略の集中度チェック
-6. 除外候補（max_drawdown が極端に大きい等）
-7. 結論・次のアクション
+- `docs/research/TEMPLATE.md` の見出し順・表の列順・コメント指示に合わせて出力ファイルを作る。
+- TEMPLATE にある placeholder / 実例値 / 補助コメントは、対象 run の実データと解釈に置き換える。
+- Step 5 と Step 6 で集めた baseline 集計、銘柄別 metrics、比較スコアを各セクションへ反映する。
 
 ### Step 8: manifest.json の更新
 
@@ -167,9 +161,6 @@ git push origin main
 
 | Anti-Pattern | 正しいアプローチ |
 |---|---|
-| PF ランクだけで「最優秀戦略」を判断する | composite_score（net_profit + PF + DD の合算）で評価する |
 | `result.stats` キーでメトリクスを読む | `result.metrics` が正しいキー |
 | manifest.json を更新せずにファイルを追加する | Step 8 で必ず同時に更新する |
 | win_rate が低いことを自動で除外候補にする | このキャンペーン戦略群は構造的に win_rate < 35% が正常。除外根拠にしない |
-| artifact の `rank` フィールドを composite_score と混同する | `rank` は PF 降順のみ。composite_score は別途計算が必要 |
-| 集中リスクを確認せずに結論を書く | 必ず上位 4 戦略の symbol 別集中度（特に MSTR・NVDA）を確認する |

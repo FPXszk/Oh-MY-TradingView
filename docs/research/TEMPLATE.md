@@ -78,23 +78,31 @@
   - baseline / control 戦略を recovered-results.json から銘柄別に確認する。
   - baseline が今回の8銘柄・対象市場でどれだけ稼ぎ、どれだけDDを出したかを書く。
   - 以降の戦略評価は、この baseline に対する追随率・改善点・悪化点として書く。
+  - 下の数値は run94 の `ema-macd-rsi-sl-baseline`（composite 134位）を使った実例。新しい run を書くときは必ず置き換える。
 -->
 
 | presetId | avg_net_profit | avg_profit_factor | avg_max_drawdown | dd_to_profit | avg_win_rate | run_count | success_count |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| `<baselinePresetId>` | 0.00 | 0.000 | 0.00 | 0.0% | 0.00% | 0 | 0 |
+| `ema-macd-rsi-sl-baseline` | 534,109.93 | 1.905 | 184,211.31 | 34.5% | 36.99% | 8 | 8 |
 
 **Baseline 銘柄別成績**
 
 | 銘柄 | net_profit | profit_factor | max_drawdown | dd_to_profit | win_rate | trades |
 |---|---:|---:|---:|---:|---:|---:|
-| `SYMBOL` | 0.00 | 0.000 | 0.00 | 0.0% | 0.00% | 0 |
+| `BTCUSD` | 3,618,443.02 | 1.934 | 1,167,801.68 | 32.3% | 43.94% | 66 |
+| `NVDA` | 328,029.39 | 1.947 | 125,726.33 | 38.3% | 37.04% | 54 |
+| `MSTR` | 133,365.61 | 2.209 | 46,974.17 | 35.2% | 27.42% | 62 |
+| `TSLA` | 122,888.86 | 1.570 | 110,243.02 | 89.7% | 29.09% | 55 |
+| `AAPL` | 39,824.70 | 1.917 | 10,391.54 | 26.1% | 49.02% | 51 |
+| `QQQ` | 16,802.90 | 2.054 | 5,580.25 | 33.2% | 43.14% | 51 |
+| `SPY` | 9,494.65 | 2.319 | 2,120.83 | 22.3% | 47.06% | 51 |
+| `PLTR` | 4,030.34 | 1.289 | 4,852.66 | 120.4% | 19.23% | 26 |
 
 **Baseline の読み方**
 
-- raw profit の強さ: `...`
-- DD対利益比率の評価: `...`
-- 派生戦略が超えるべき最低ライン: `...`
+- raw profit の強さ: `run94 の baseline は avg_net_profit 534,109.93 と raw profit が突出しており、特に BTCUSD が平均値を大きく押し上げている。`
+- DD対利益比率の評価: `aggregate の dd_to_profit は 34.5% で「要注意」寄り。TSLA 89.7%、PLTR 120.4% のように銘柄単位では悪化もあるため、baseline 超えは利益だけでなく DD 比率改善もセットで見る。`
+- 派生戦略が超えるべき最低ライン: `baseline を比較対象にするなら、avg_net_profit の追随率に加えて PF 1.905 超え、dd_to_profit 34.5% 未満、avg_win_rate 36.99% 前後をどこまで改善したかを並べて判断する。`
 
 ---
 
