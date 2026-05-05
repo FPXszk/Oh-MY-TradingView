@@ -26,6 +26,7 @@
 
 import { readFileSync } from 'node:fs';
 import { getSymbolFundamentals } from './market-intel.js';
+import { runSectorMomentumScan } from './sector-momentum.js';
 
 const DEFAULT_MARKET = 'america';
 const DEFAULT_GROSS_MARGIN_MIN_PCT = 40;
@@ -177,6 +178,20 @@ function passesScopeFilters(row, { exchangeAllowlist, symbolAllowlist }) {
   return true;
 }
 
+function passesSelectedSectorFilter(row, selectedFilterRules) {
+  if (!selectedFilterRules || selectedFilterRules.length === 0) return true;
+  const industry = row.industry ?? '';
+  return selectedFilterRules.some((rule) => {
+    const sectorMatch = !rule.stockSectors || rule.stockSectors.length === 0
+      ? true
+      : rule.stockSectors.includes(row.sector ?? 'Unknown');
+    if (!sectorMatch) return false;
+    if (rule.industryPattern && !rule.industryPattern.test(industry)) return false;
+    if (rule.industryExcludePattern && rule.industryExcludePattern.test(industry)) return false;
+    return true;
+  });
+}
+
 /**
  * Assign rank positions (1 = best) for a numeric field across rows.
  * Rows with null values get rank = rows.length + 1 (last).
@@ -325,6 +340,13 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   const symbolAllowlist = resolveSymbolAllowlist(symbolAllowlistKey, _deps?.symbolAllowlistByKey);
   const scopeLabel = _deps?.scopeLabel ?? null;
   const scannerUrl = `https://scanner.tradingview.com/${market}/scan`;
+  const sectorMomentumScan = await runSectorMomentumScan({
+    market,
+    exchangeAllowlist,
+    symbolAllowlist,
+    fetch: fetchFn,
+  });
+  const { selectedFilterRules, ...sectorMomentum } = sectorMomentumScan;
 
   // Fetch more candidates than needed so client filters have enough to work with
   const serverLimit = Math.min(effectiveLimit * 8, 400);
@@ -349,7 +371,8 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   const totalCount = payload.totalCount ?? payload.data.length;
   const normalized = payload.data.map(normalizeRow);
   const scopeFiltered = normalized.filter((row) => passesScopeFilters(row, { exchangeAllowlist, symbolAllowlist }));
-  let clientFiltered = scopeFiltered.filter(passesClientFilters);
+  const phase1Filtered = scopeFiltered.filter((row) => passesSelectedSectorFilter(row, selectedFilterRules));
+  let clientFiltered = phase1Filtered.filter(passesClientFilters);
 
   if (enrichWithYahoo && clientFiltered.length > 0) {
     const symbols = clientFiltered.map((r) => r.symbol);
@@ -364,6 +387,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   const ranked = applyRankSum(clientFiltered, enrichWithYahoo).sort((a, b) => a.rankScore - b.rankScore);
   const matched = ranked.slice(0, effectiveLimit);
   const sectorRanking = summarizeSectors(ranked);
+  const selectedSectorLabels = sectorMomentum.selectedSectors.map((entry) => entry.label);
 
   const criteria = {
     rsi14_min: 60,
@@ -393,6 +417,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     success: true,
     totalScanned: totalCount,
     serverFiltered: scopeFiltered.length,
+    phase1Filtered: phase1Filtered.length,
     clientFiltered: clientFiltered.length,
     matched: matched.length,
     enrichedWithYahoo: enrichWithYahoo,
@@ -406,15 +431,17 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       serverLimit,
       totalCandidatesReported: totalCount,
       scopeLabel,
-      note: exchangeAllowlist || symbolAllowlistKey
+      note: `${exchangeAllowlist || symbolAllowlistKey
         ? 'TradingView Scanner API returns the filtered stock candidates for the selected market scope; exchange and symbol-universe filters below are additionally applied locally for this run.'
-        : `TradingView Scanner API returns the filtered stock universe for the ${market} market scope; exchange counts below are based on the returned candidates for this run.`,
+        : `TradingView Scanner API returns the filtered stock universe for the ${market} market scope; exchange counts below are based on the returned candidates for this run.`} Phase1 then selected ${selectedSectorLabels.join(', ') || 'no sectors'} before the Phase2 stock filters were applied.`,
     },
     marketBreakdown: {
       serverFiltered: countBy(scopeFiltered, 'exchange'),
+      phase1Filtered: countBy(phase1Filtered, 'exchange'),
       clientFiltered: countBy(clientFiltered, 'exchange'),
       matched: countBy(matched, 'exchange'),
     },
+    sectorMomentum,
     sectorRanking,
     results: matched,
     retrieved_at: new Date().toISOString(),

@@ -79,11 +79,12 @@ describe('daily screener WSL publish script', () => {
 });
 
 describe('buildMarkdown', () => {
-  it('renders top 20 heading, top 5 explanations, sector ranking, and market coverage', () => {
+  it('renders phase1 sector ranking, phase2 sector breakdown, and market coverage', () => {
     const result = {
       retrieved_at: '2026-05-04T03:00:00.000Z',
       totalScanned: 26,
       serverFiltered: 26,
+      phase1Filtered: 14,
       clientFiltered: 14,
       matched: 6,
       enrichedWithYahoo: true,
@@ -97,6 +98,7 @@ describe('buildMarkdown', () => {
       },
       marketBreakdown: {
         serverFiltered: [{ name: 'NASDAQ', count: 10 }, { name: 'NYSE', count: 4 }],
+        phase1Filtered: [{ name: 'NASDAQ', count: 6 }, { name: 'NYSE', count: 3 }],
         clientFiltered: [{ name: 'NASDAQ', count: 5 }, { name: 'NYSE', count: 2 }],
         matched: [{ name: 'NASDAQ', count: 4 }, { name: 'NYSE', count: 2 }],
       },
@@ -111,6 +113,30 @@ describe('buildMarkdown', () => {
         perf3m_min_pct: 10,
         p_fcf_max: 50,
         allowed_exchanges: ['NASDAQ', 'NYSE'],
+      },
+      sectorMomentum: {
+        approach: 'us-sector-etfs',
+        approachLabel: 'US sector ETF momentum',
+        selectedCount: 3,
+        selectedSectors: [
+          { key: 'technology', label: 'Technology', proxySymbol: 'XLK' },
+          { key: 'semiconductors', label: 'Semiconductors', proxySymbol: 'SMH' },
+          { key: 'financials', label: 'Financials', proxySymbol: 'XLF' },
+        ],
+        selectedStockSectors: ['Electronic Technology', 'Technology Services', 'Finance'],
+        rankingFormula: ['perf3m', 'perf1m', 'rsi14', 'relativeVolume'],
+        coverage: { totalCandidatesReported: 12, scopedCandidates: 12, serverLimit: 12 },
+        rankings: [
+          {
+            sector: 'Technology',
+            perf1m: 22.8,
+            perf3m: 11.1,
+            rsi14: 73.7,
+            relativeVolume: 1.04,
+            volume: 10739960,
+            rankScore: 5,
+          },
+        ],
       },
       sectorRanking: [
         { sector: 'Technology Services', count: 3, averagePerf3m: 32.4, averageRankScore: 5.3, topSymbol: 'AAA' },
@@ -189,22 +215,25 @@ describe('buildMarkdown', () => {
           rankBreakdown: { perf3m: 6, roe: 6, fcfMargin: 6, revenueGrowth: 6 },
         },
       ],
-      };
+    };
 
-      const markdown = buildMarkdown(result);
+    const markdown = buildMarkdown(result);
 
     assert.match(markdown, /# ファンダメンタル × モメンタム スクリーニング 上位20件/);
+    assert.match(markdown, /## Phase1 セクターランキング/);
+    assert.match(markdown, /採用セクター: Technology \(XLK\), Semiconductors \(SMH\), Financials \(XLF\)/);
     assert.match(markdown, /## 上位5件の選定理由/);
-      assert.match(markdown, /### 1位 AAA \(NASDAQ\)/);
-      assert.match(markdown, /## 銘柄ランキング/);
-      assert.match(markdown, /## セクターランキング/);
-      assert.match(markdown, /## 市場カバレッジ/);
-      assert.match(markdown, /ユニバース追加条件: NASDAQ \+ NYSE stocks only \(OTC excluded\)/);
-      assert.match(markdown, /サーバーフィルター通過: NASDAQ 10件, NYSE 4件/);
-      assert.match(markdown, /粗利率\(TTM\) > 30%/);
-      assert.match(markdown, /取引所限定: NASDAQ, NYSE/);
-      assert.match(markdown, /## 見ている指標と追加候補/);
-      assert.match(markdown, /Yahoo Finance 補完あり: 売上成長率 YoY > 20%/);
+    assert.match(markdown, /### 1位 AAA \(NASDAQ\)/);
+    assert.match(markdown, /## 銘柄ランキング/);
+    assert.match(markdown, /## Phase2 通過銘柄のセクター内訳/);
+    assert.match(markdown, /## 市場カバレッジ/);
+    assert.match(markdown, /ユニバース追加条件: NASDAQ \+ NYSE stocks only \(OTC excluded\)/);
+    assert.match(markdown, /スコープ通過: NASDAQ 10件, NYSE 4件/);
+    assert.match(markdown, /Phase1 セクターフィルター通過: NASDAQ 6件, NYSE 3件/);
+    assert.match(markdown, /粗利率\(TTM\) > 30%/);
+    assert.match(markdown, /取引所限定: NASDAQ, NYSE/);
+    assert.match(markdown, /## 見ている指標と追加候補/);
+    assert.match(markdown, /Yahoo Finance 補完あり: 売上成長率 YoY > 20%/);
   });
 
   it('supports a Japan-specific title and currency symbol', () => {
@@ -212,6 +241,7 @@ describe('buildMarkdown', () => {
       retrieved_at: '2026-05-04T03:00:00.000Z',
       totalScanned: 10,
       serverFiltered: 2,
+      phase1Filtered: 2,
       clientFiltered: 2,
       matched: 2,
       enrichedWithYahoo: true,
@@ -225,6 +255,7 @@ describe('buildMarkdown', () => {
       },
       marketBreakdown: {
         serverFiltered: [{ name: 'TSE', count: 2 }],
+        phase1Filtered: [{ name: 'TSE', count: 2 }],
         clientFiltered: [{ name: 'TSE', count: 2 }],
         matched: [{ name: 'TSE', count: 2 }],
       },
@@ -240,6 +271,28 @@ describe('buildMarkdown', () => {
         p_fcf_max: 50,
         allowed_exchanges: ['TSE'],
         symbol_allowlist_key: 'jpx-prime',
+      },
+      sectorMomentum: {
+        approach: 'stock-aggregation',
+        approachLabel: 'japan stock aggregation',
+        selectedCount: 3,
+        selectedSectors: [
+          { key: 'Finance', label: 'Finance', memberCount: 8 },
+        ],
+        selectedStockSectors: ['Finance'],
+        rankingFormula: ['perf3m', 'perf1m', 'rsi14', 'pctRsiAbove60', 'relativeVolume'],
+        coverage: { totalCandidatesReported: 1200, scopedCandidates: 420, serverLimit: 2000 },
+        rankings: [
+          {
+            sector: 'Finance',
+            perf1m: 7.2,
+            perf3m: 11.8,
+            rsi14: 62.5,
+            relativeVolume: 1.21,
+            memberCount: 8,
+            rankScore: 4,
+          },
+        ],
       },
       sectorRanking: [],
       results: [
@@ -264,6 +317,8 @@ describe('buildMarkdown', () => {
     });
 
     assert.match(markdown, /# 日本株 ファンダメンタル × モメンタム スクリーニング 上位20件/);
+    assert.match(markdown, /## Phase1 セクターランキング/);
+    assert.match(markdown, /アプローチ: 銘柄集計/);
     assert.match(markdown, /¥3000\.00/);
     assert.match(markdown, /取引所限定: TSE/);
     assert.match(markdown, /銘柄ユニバース限定: jpx-prime/);

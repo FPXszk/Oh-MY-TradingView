@@ -21,6 +21,23 @@ function fmt(val, digits = 1, suffix = '') {
   return Number(val).toFixed(digits) + suffix;
 }
 
+function fmtCountOrVolume(entry) {
+  if (entry.memberCount !== null && entry.memberCount !== undefined) return `${entry.memberCount}銘柄`;
+  if (entry.volume !== null && entry.volume !== undefined) return Number(entry.volume).toLocaleString('en-US');
+  return 'N/A';
+}
+
+function formatSectorMomentumApproach(sectorMomentum) {
+  switch (sectorMomentum?.approach) {
+    case 'us-sector-etfs':
+      return '米国 sector ETF proxy';
+    case 'stock-aggregation':
+      return '銘柄集計';
+    default:
+      return sectorMomentum?.approachLabel ?? 'N/A';
+  }
+}
+
 function findStrengths(row) {
   const breakdown = Object.entries(row.rankBreakdown ?? {});
   const sorted = breakdown.sort((a, b) => a[1] - b[1]);
@@ -117,9 +134,28 @@ export function buildMarkdown(result, options = {}) {
     '',
     `更新: ${result.retrieved_at}（JST ${jst}）`,
     '',
-    `スキャン対象: ${result.totalScanned.toLocaleString()} 銘柄 → サーバーフィルター通過: ${result.serverFiltered} → クライアントフィルター通過: ${result.clientFiltered} → 上位: ${result.matched}`,
+    `スキャン対象: ${result.totalScanned.toLocaleString()} 銘柄 → スコープ通過: ${result.serverFiltered} → Phase1 セクターフィルター通過: ${result.phase1Filtered ?? result.serverFiltered} → クライアントフィルター通過: ${result.clientFiltered} → 上位: ${result.matched}`,
     '',
   ];
+
+  lines.push('## Phase1 セクターランキング');
+  lines.push('');
+  if (!result.sectorMomentum || !result.sectorMomentum.rankings || result.sectorMomentum.rankings.length === 0) {
+    lines.push('- Phase1 セクター順位は算出できませんでした。');
+  } else {
+    lines.push(`- アプローチ: ${formatSectorMomentumApproach(result.sectorMomentum)}`);
+    lines.push(`- 採用セクター: ${result.sectorMomentum.selectedSectors.map((entry) => `${entry.label}${entry.proxySymbol ? ` (${entry.proxySymbol})` : ''}`).join(', ')}`);
+    lines.push(`- Phase1 ソース候補数: ${result.sectorMomentum.coverage?.scopedCandidates ?? 'N/A'} / reported ${result.sectorMomentum.coverage?.totalCandidatesReported ?? 'N/A'}`);
+    lines.push('');
+    lines.push('| 順位 | セクター | 1M | 3M | RSI | 相対出来高 | 出来高/構成数 | 総合点 |');
+    lines.push('|:---:|:---|---:|---:|---:|---:|:---|---:|');
+    result.sectorMomentum.rankings.forEach((entry, index) => {
+      lines.push(
+        `| ${index + 1} | ${entry.sector} | ${fmt(entry.perf1m)}% | ${fmt(entry.perf3m)}% | ${fmt(entry.rsi14)} | ${fmt(entry.relativeVolume, 2)}x | ${fmtCountOrVolume(entry)} | ${entry.rankScore} |`,
+      );
+    });
+  }
+  lines.push('');
 
   if (result.results.length === 0) {
     lines.push('> 本日は条件を満たす銘柄がありませんでした。');
@@ -147,10 +183,10 @@ export function buildMarkdown(result, options = {}) {
     lines.push('');
   }
 
-  lines.push('## セクターランキング');
+  lines.push('## Phase2 通過銘柄のセクター内訳');
   lines.push('');
   if (!result.sectorRanking || result.sectorRanking.length === 0) {
-    lines.push('- 条件通過銘柄がないため、セクター順位は算出できませんでした。');
+    lines.push('- 条件通過銘柄がないため、Phase2 のセクター内訳は算出できませんでした。');
   } else {
     lines.push('| 順位 | セクター | 通過銘柄数 | 平均Perf.3M | 平均総合点 | 代表銘柄 |');
     lines.push('|:---:|:---|---:|---:|---:|:---|');
@@ -169,7 +205,8 @@ export function buildMarkdown(result, options = {}) {
     lines.push(`- ユニバース追加条件: ${result.scannerScope.scopeLabel}`);
   }
   lines.push(`- 観測レンジ: 今回は最大 ${result.scannerScope.serverLimit} 件まで取得し、その範囲で市場別内訳を集計`);
-  lines.push(buildMarketLines('サーバーフィルター通過', result.marketBreakdown?.serverFiltered));
+  lines.push(buildMarketLines('スコープ通過', result.marketBreakdown?.serverFiltered));
+  lines.push(buildMarketLines('Phase1 セクターフィルター通過', result.marketBreakdown?.phase1Filtered));
   lines.push(buildMarketLines('クライアントフィルター通過', result.marketBreakdown?.clientFiltered));
   lines.push(buildMarketLines('最終採用', result.marketBreakdown?.matched));
   lines.push(`- 補足: ${result.scannerScope.note}`);
@@ -223,7 +260,7 @@ async function main() {
     process.exit(1);
   }
 
-  console.log(`[screener] totalScanned=${result.totalScanned} serverFiltered=${result.serverFiltered} clientFiltered=${result.clientFiltered} matched=${result.matched}`);
+  console.log(`[screener] totalScanned=${result.totalScanned} serverFiltered=${result.serverFiltered} phase1Filtered=${result.phase1Filtered} clientFiltered=${result.clientFiltered} matched=${result.matched}`);
 
   const md = buildMarkdown(result, {
     title: runtime.title,
