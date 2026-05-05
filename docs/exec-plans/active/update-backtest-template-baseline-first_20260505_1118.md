@@ -51,12 +51,14 @@
 
 ## Tasks
 
-- [ ] `docs/research/TEMPLATE.md` を baseline-first 構造へ更新する。
+- [x] `docs/research/TEMPLATE.md` を baseline-first 構造へ更新する。
 - [ ] `backtest-results-capture` スキルの runbook を新テンプレートに合わせて更新する。
-- [ ] `docs/sessions/session_20260505_1118.md` を作成する。
-- [ ] 変更内容をレビューし、composite score 前提や銘柄集中必須の記述が残っていないか確認する。
+  - Blocked: `.agents/skills/backtest-results-capture/SKILL.md` が `EROFS: read-only file system` で書き込み不可。
+- [x] `docs/sessions/session_20260505_1118.md` を作成する。
+- [x] 変更内容をレビューし、composite score 前提や銘柄集中必須の記述が残っていないか確認する。
 - [ ] 計画ファイルを completed へ移動する。
-- [ ] docs / skill 変更をコミットし、main にプッシュする。
+  - Blocked: スキル更新が未完了のため active に残す。
+- [x] docs 変更をコミットし、main にプッシュする。
 
 ## Verification
 

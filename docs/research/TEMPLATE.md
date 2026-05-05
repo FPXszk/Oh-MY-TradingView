@@ -2,155 +2,188 @@
 <!--
 【このテンプレートの使い方 — AIへの指示】
 
-入力ファイル（以下を必ず読んでから記入すること）:
-  - 戦略別集計 : artifacts/campaigns/{campaign_name}/full/strategy-ranking.json
+入力ファイル:
+  - 戦略別集計: artifacts/campaigns/{campaign_name}/full/strategy-ranking.json
+  - 銘柄別生データ: artifacts/campaigns/{campaign_name}/full/recovered-results.json
 
-入力ファイル (もし必要であれば以下を読む)
-  - 銘柄別生データ : artifacts/campaigns/{campaign_name}/full/recovered-results.json
-  
-記入手順:
-  1. ヘッダー（run_id〜目的）を埋める
-  2. 市場別に平均値を計算する（計算基準は下記「判断基準」を参照）
-  3. 全戦略スコア一覧テーブルをコピーする
-  4. Top 3 / 除外候補を「平均との差」で記述する
-  5. 銘柄集中チェックを行い結果を記録する
-  6. 改善点を「今回の数値から導いた検証タスク」に書き換える
+記入方針:
+  1. baseline / control 戦略を最初に特定する。
+     - 明示的な baseline がある場合はそれを使う。
+     - baseline がない場合は「baselineなし」と書き、比較対象にした control / 既存代表戦略を明記する。
+  2. 以降の評価は composite score ではなく、baseline にどれだけ追随・改善できたかで書く。
+  3. DD は固定金額ではなく、利益に対する DD 比率を見る。
+     - dd_to_profit = avg_max_drawdown / avg_net_profit
+     - avg_net_profit <= 0 の戦略は dd_to_profit を n/a とし、原則除外候補にする。
+  4. Top 戦略は「利益は baseline にどれだけ届いたか」「PF は改善したか」「DD対利益比率は改善したか」「勝率はどう変わったか」を数値で説明する。
+  5. 銘柄集中チェックは標準セクションとしては不要。必要な場合だけ観察メモに書く。
 
-注意: セクション内の「例:」と書かれた行はすべてサンプルであり、必ず今回の値に置き換えること。
-      「例:」が残っているセクションは未記入とみなす。
+注意:
+  - セクション内にサンプル値を残さないこと。
+  - 「強い」「弱い」だけで終わらせず、baseline 差分を数値で書くこと。
+  - baseline が raw profit で強い場合、それを無理に否定しない。目的が利益最大化か、低DD・高PF化かを分けて結論を書くこと。
 -->
 
 ---
 
 ## ヘッダー
 
-- run_id: `YYYYMMDD_HHMMSS`
+- run_id: `...`
+- GHA run_number: `...`
+- GHA run_id: `...`
 - status: `SUCCESS / FAILED`
+- 実行日時: `...`
 - 対象市場: `US / JP / US+JP`
-- 目的: `例: ドンチャン期間とRSI閾値の違いが収益性に与える影響を検証する`
+- campaign_id: `...`
+- 目的: `...`
+- 戦略数: `...`
+- 実行件数: `...`
+- compile/apply 成功: `... / ...`
+- metrics 読み取り成功: `... / ...`
+- metrics_unreadable: `... / ...`
 
 ---
 
 ## 結論
 
-- **総合首位**: `presetId` / composite_score `xx` / avg_net_profit `x` / avg_profit_factor `x`
-- **US 本命**: `presetId` / avg_net_profit `x` / avg_profit_factor `x`
-- **JP 本命**: `presetId` / avg_net_profit `x` / avg_profit_factor `x`
-- **ざっくり判断**: `例: US首位はPF・DDともに判断基準の「優秀」を満たし採用推奨。JP首位はPFが2.0超で優秀だがDD大きめ。`
+- **baseline / control**: `presetId` / avg_net_profit `...` / avg_profit_factor `...` / dd_to_profit `...%` / avg_win_rate `...%`
+- **raw profit 最有力**: `presetId` / baseline比 `...%` / avg_net_profit `...`
+- **risk/reward 最有力**: `presetId` / PF `...` / dd_to_profit `...%`
+- **除外基準にかかった主なグループ**: `...`
+- **ざっくり判断**: `利益最大化なら...。低DD・高PF化を優先するなら...。次は...を検証する。`
 
 ---
 
-## 判断基準（固定値 — AIは変更しないこと）
-
-<!--
-閾値の根拠:
-  - avg_profit_factor : 全戦略の四分位数 P25=1.83, P50=1.85, P75=1.98 を参考に設定。
-                        トレンドフォロー戦略として PF 2.0 以上を「優秀」の最低水準とする。
-                        1.5 未満は損益効率として許容しにくい下限とする。
-  - avg_max_drawdown  : 全体の P25=5,600, P75=6,200 に対し、±20% を許容幅として設定。
-                        5,000 未満は安心して運用できる水準。7,000 超は資金管理上のリスクが大きい。
-  - avg_win_rate      : 全体 P25=42.3%, P75=43.8% と非常に狭い分布のため、
-                        閾値として意味を持つのは外れ値への警戒（40%未満）と高水準判定（45%以上）のみ。
-  - 銘柄集中度        : 1銘柄のnet_profitが全体合計の50%超は「特定銘柄依存」と定義する。
-                        （実績値: 上位戦略のAAPL依存度が 67〜73% に達するため特に注意が必要）
--->
+## 判断基準
 
 | 指標 | 優秀 | 許容 | 要注意 | 即除外 |
 |---|---|---|---|---|
-| avg_profit_factor | ≥ 2.0 | 1.7〜2.0 | 1.5〜1.7 | < 1.5 |
-| avg_max_drawdown | < 5,000 | 5,000〜6,200 | 6,200〜7,000 | > 7,000 |
-| avg_win_rate | ≥ 45% | 40〜45% | 35〜40% | < 35% |
-| 銘柄集中度 | 最大1銘柄 < 30% | 30〜50% | 50〜70% | ≥ 70% |
+| avg_profit_factor | >= 2.0 | 1.7〜2.0 | 1.5〜1.7 | < 1.5 |
+| dd_to_profit | < 15% | 15〜30% | 30〜50% | >= 50% |
+| avg_win_rate | >= 40% | 35〜40% | 30〜35% | < 30% |
+| profit_follow_rate | >= 80% | 50〜80% | 25〜50% | < 25% |
 
-**市場別 平均値（比較の基準として使う）**
+**指標定義**
 
-<!--
-【AIへの指示】
-  - 「平均」は「同一 markets の全戦略」の算術平均を指す（US専用戦略とJP専用戦略は別々に計算する）
-  - 差の表記は「絶対値 (+/-X) と割合 (+/-X%)」の両方を書く
-    例: avg_net_profit が US平均(18,662)より +5,876 (+31%) 高い
-  - 下表を今回の run 結果で毎回上書きすること
--->
-
-| 市場 | 戦略数 | avg_net_profit 平均 | avg_profit_factor 平均 | avg_max_drawdown 平均 |
-|---|---|---|---|---|
-| US 専用 | - | - | - | - |
-| JP 専用 | - | - | - | - |
-| US+JP 両対応 | - | - | - | - |
+- `profit_follow_rate = avg_net_profit / baseline avg_net_profit`
+- `dd_to_profit = avg_max_drawdown / avg_net_profit`
+- `avg_net_profit <= 0` の場合、`dd_to_profit` は `n/a` とする。
+- `profit_follow_rate` は baseline が存在する場合のみ使う。baseline がない場合は control 戦略またはユーザー指定の比較対象を明記する。
 
 ---
 
-## 全戦略スコア一覧
-
-<!--
-composite_score の計算方法:
-  avg_net_profit 降順 / avg_profit_factor 降順 / avg_max_drawdown 昇順 の市場別順位を合算した deterministic score
--->
-
-| rank | presetId | composite_score | avg_net_profit | avg_profit_factor | avg_max_drawdown | avg_win_rate | markets |
-| ---: | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| 1 | `preset-id` | 0 | 0.00 | 0.000 | 0.00 | 0.00 | `US` |
-| 2 | `preset-id` | 0 | 0.00 | 0.000 | 0.00 | 0.00 | `JP` |
-
----
-
-## Top 3 戦略
+## Baseline 結果（比較の大前提）
 
 <!--
 【AIへの指示】
-  「他と比べて強かった点」は必ず以下の形式で書くこと:
-    - {指標名} が {比較対象}平均({平均値}) より {+/-絶対値} ({+/-%}) {高い/低い}
-  定性コメントのみの記述は不可。必ず数値を伴わせること。
+  - baseline / control 戦略を recovered-results.json から銘柄別に確認する。
+  - baseline が今回の8銘柄・対象市場でどれだけ稼ぎ、どれだけDDを出したかを書く。
+  - 以降の戦略評価は、この baseline に対する追随率・改善点・悪化点として書く。
+-->
+
+| presetId | avg_net_profit | avg_profit_factor | avg_max_drawdown | dd_to_profit | avg_win_rate | run_count | success_count |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `<baselinePresetId>` | 0.00 | 0.000 | 0.00 | 0.0% | 0.00% | 0 | 0 |
+
+**Baseline 銘柄別成績**
+
+| 銘柄 | net_profit | profit_factor | max_drawdown | dd_to_profit | win_rate | trades |
+|---|---:|---:|---:|---:|---:|---:|
+| `SYMBOL` | 0.00 | 0.000 | 0.00 | 0.0% | 0.00% | 0 |
+
+**Baseline の読み方**
+
+- raw profit の強さ: `...`
+- DD対利益比率の評価: `...`
+- 派生戦略が超えるべき最低ライン: `...`
+
+---
+
+## 全戦略一覧（baseline 比較）
+
+<!--
+【AIへの指示】
+  - 原則として avg_net_profit 降順で並べる。
+  - baseline と比較して、利益追随率・PF差分・DD対利益比率差分・勝率差分を書く。
+  - composite_score は使わない。
+-->
+
+| rank | presetId | avg_net_profit | profit_follow_rate | avg_profit_factor | PF vs baseline | avg_max_drawdown | dd_to_profit | DD ratio vs baseline | avg_win_rate | win_rate vs baseline | 判断 |
+|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| 1 | `<presetId>` | 0.00 | 0.0% | 0.000 | +0.000 | 0.00 | 0.0% | -0.0pt | 0.00% | +0.00pt | `...` |
+
+---
+
+## Top 戦略
+
+<!--
+【AIへの指示】
+  - Top は目的別に選ぶ。raw profit上位、risk/reward上位、baseline改善候補など。
+  - 「他と比べて」ではなく、baseline と比べて何が勝っていて何が負けているかを書く。
 -->
 
 ### 1位: `presetId`
 
-- composite_score: `x` / markets: `US/JP/US+JP`
-- avg_net_profit: `x` / avg_profit_factor: `x` / avg_max_drawdown: `x`
+- 選定理由: `raw profit / risk-reward / PF改善 / DD改善 / その他`
+- avg_net_profit: `...` / baseline比: `...%`
+- avg_profit_factor: `...` / baseline差: `+/-...`
+- avg_max_drawdown: `...` / dd_to_profit: `...%` / baseline差: `+/-...pt`
+- avg_win_rate: `...%` / baseline差: `+/-...pt`
 
-**全銘柄の成績**
+**baseline と比べて優秀だった点**
 
-<!--
-【AIへの指示】
-  ### 1位のみ recovered-results.json から該当 presetId の銘柄別データを読み取り、下表を埋めること。
-  net_profit の降順で並べる。
--->
+- `...`
 
-| 銘柄 | net_profit | profit_factor | max_drawdown | win_rate | trades |
-|---|---:|---:|---:|---:|---:|
-| `AAPL` | 0.00 | 0.000 | 0.00 | 0.00% | 0 |
-| `MSFT` | 0.00 | 0.000 | 0.00 | 0.00% | 0 |
+**baseline と比べて弱かった点**
 
-**他と比べて強かった点（同一市場の平均との差で書く）**
+- `...`
 
-- `例: avg_net_profit が US平均(18,662)より +5,877 (+31%) 高い`
-- `例: avg_profit_factor が 1.83 で判断基準「許容」に分類される`
-- `例: avg_max_drawdown が US平均(5,383)より -763 (-14%) 小さい`
-- `例: 銘柄集中度 — AAPLが全利益の67%を占めており「要注意（50〜70%）」に分類される`
+**採用判断**
+
+- `利益最大化候補 / risk-reward候補 / 継続観察 / 除外候補`
 
 ---
 
 ### 2位: `presetId`
 
-- composite_score: `x` / markets: `US/JP/US+JP`
-- avg_net_profit: `x` / avg_profit_factor: `x` / avg_max_drawdown: `x`
+- 選定理由: `...`
+- avg_net_profit: `...` / baseline比: `...%`
+- avg_profit_factor: `...` / baseline差: `+/-...`
+- avg_max_drawdown: `...` / dd_to_profit: `...%` / baseline差: `+/-...pt`
+- avg_win_rate: `...%` / baseline差: `+/-...pt`
 
-**他と比べて強かった点（同一市場の平均との差で書く）**
+**baseline と比べて優秀だった点**
 
-- `例: avg_profit_factor が JP平均(2.15)より +0.34 (+16%) 高く、判断基準「優秀」を満たす`
-- `例: avg_max_drawdown が JP平均(6,114)より -764 (-12%) 小さい`
-- `例: 銘柄集中度 — 最大1銘柄が全利益の33%で「許容（30〜50%）」に分類される`
+- `...`
+
+**baseline と比べて弱かった点**
+
+- `...`
+
+**採用判断**
+
+- `...`
 
 ---
 
 ### 3位: `presetId`
 
-- composite_score: `x` / markets: `US/JP/US+JP`
-- avg_net_profit: `x` / avg_profit_factor: `x` / avg_max_drawdown: `x`
+- 選定理由: `...`
+- avg_net_profit: `...` / baseline比: `...%`
+- avg_profit_factor: `...` / baseline差: `+/-...`
+- avg_max_drawdown: `...` / dd_to_profit: `...%` / baseline差: `+/-...pt`
+- avg_win_rate: `...%` / baseline差: `+/-...pt`
 
-**他と比べて強かった点（同一市場の平均との差で書く）**
+**baseline と比べて優秀だった点**
 
-- `ここに書く（形式は上記と同じ）`
+- `...`
+
+**baseline と比べて弱かった点**
+
+- `...`
+
+**採用判断**
+
+- `...`
 
 ---
 
@@ -158,53 +191,58 @@ composite_score の計算方法:
 
 <!--
 【AIへの指示】
-  - 判断基準の「即除外」または「要注意」かつ他指標も平均以下の戦略を対象とする
-  - 全戦略が「即除外」条件を満たさない場合は「除外候補なし」と明記してよい
-  - 弱かった点も「平均との差」で記述すること
+  - baseline に対して弱すぎる戦略を除外候補にする。
+  - 典型パターン:
+    - profit_follow_rate < 25%
+    - avg_profit_factor < 1.5
+    - dd_to_profit >= 50%
+    - avg_net_profit <= 0
+  - win_rate は補助指標。win_rate 単独で除外しない。
 -->
 
-| presetId | 分類 | 弱かった指標（平均との差） | 判断 |
-|---|---|---|---|
-| `例: preset-id` | `例: 要注意` | `例: avg_profit_factor が全体平均より -0.37 (-19%) 低く「要注意」` | `除外候補 / 継続観察` |
+| presetId | 除外理由 | baseline比 | PF | dd_to_profit | 判断 |
+|---|---|---:|---:|---:|---|
+| `<presetId>` | `利益追随率が低い / PF不足 / DD対利益比率が過大 / net_profit <= 0` | 0.0% | 0.000 | 0.0% | `除外候補 / 継続観察` |
 
 ---
 
-## 銘柄集中チェック
+## 今回の振り返り
 
 <!--
-【AIへの指示】
-  各Top戦略について以下を計算して記録する:
-    集中度(%) = max(銘柄別net_profit) / sum(全銘柄net_profit) × 100
-  マイナス銘柄はsumから除外しないこと（除外すると集中度が過大評価される）。
-  集中度が50%超の場合は「依存銘柄名」を明記すること。
+【次のAIへの指示】
+  - 今回の戦略群を振り返って、何が有効だったか、何が意味が薄かったかを書く。
+  - baseline を上回れなかった場合は、単に「失敗」とせず、何を犠牲にして何が改善したかを書く。
+  - 低利益でもPFやDDが改善した戦略は、銘柄限定・条件合成の材料として残せるか判断する。
 -->
 
-| presetId | 最大利益銘柄 | 集中度(%) | 判断基準分類 |
-|---|---|---|---|
-| `例: donchian-60-...` | `例: AAPL (127,990)` | `例: 67.7%` | `例: 要注意（50〜70%）` |
+### わかったこと
+
+1. `...`
+
+### 意味が薄かったこと
+
+1. `...`
+
+### もう少し確認したいこと
+
+1. `...`
 
 ---
 
-## 改善点と次回バックテスト確認事項
+## 次回バックテスト確認事項
 
 <!--
-【AIへの指示】
-  - 以下の「例:」はすべてサンプル。必ず今回の数値から導いた検証タスクに書き換えること。
-  - 「〜を確認する」だけでなく「何を変えて / 何と比較して / 何が分かれば完了か」まで書くこと。
-  - 今回の結果に関係ない項目は削除してよい。
+【次のAIへの指示】
+  - 次に何を変えて、何と比較して、何が分かれば完了かを書く。
+  - baseline を継続比較対象にする。
+  - 最後に「今後どの方針で進めるのがよいか」を明記する。
 -->
 
-1. **上位戦略の優位性の原因特定**
-   `例: US1位(avg_profit=20,670)と3位(avg_profit=20,203)のpresetIdはentry timingのみ異なる。donchian期間固定でentry conditionだけ変えたA/Bテストを実施し、差分 +467 の帰属を確認する。`
+1. **検証タスク名**
+   `何を変える / 何と比較する / 完了条件`
 
-2. **銘柄集中リスクの解消検証**
-   `例: AAPL依存度67〜73%は要注意ライン。AAPLを除いたサブセットで再集計したとき avg_net_profit がどう変化するかを確認し、戦略の汎化性を評価する。`
+2. **検証タスク名**
+   `何を変える / 何と比較する / 完了条件`
 
-3. **DDの許容ライン再評価**
-   `例: JP戦略のavg_max_drawdown平均が6,114で「許容」上限（6,200）に近い。次回はDD > 6,000 の戦略を「継続観察」フラグとして記録し、2回連続で超えた場合に除外基準を下げることを検討する。`
-
-4. **パラメータ分解検証**
-   `例: regime閾値（48/50/55/57/60）の違いによる影響を切り離すため、donchian期間=55固定・stop=8%固定でregime閾値のみ変えた系列でavg_profit_factorの変化を比較する。`
-
-5. **次回比較の固定指標**
-   `例: 次回 run との比較は avg_net_profit / avg_profit_factor / avg_max_drawdown / 銘柄集中度(%) の4指標のみで行い、composite_score は参考値とする。`
+3. **今後の方針**
+   `利益最大化を優先するのか、低DD・高PF化を優先するのか、銘柄別採用に寄せるのかを書く。`
