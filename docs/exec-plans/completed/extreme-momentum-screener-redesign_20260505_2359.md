@@ -40,19 +40,19 @@ Redesign the US fundamental momentum screener so extreme winners such as `LITE` 
 
 ## Implementation Steps
 
-- [ ] Change the client filter so extreme 6M/12M performance is no longer a hard reject.
-- [ ] Add extreme-momentum metadata on normalized rows or public rows.
-- [ ] Update report text and risk notes to flag extreme performance instead of hiding it.
-- [ ] Extend tests for `Perf.Y > 1000` and `Perf.6M > 600` eligibility.
-- [ ] Regenerate `docs/reports/screener/daily-ranking.md` and confirm whether `LITE` / `SNDK` appear or, if not, identify the remaining scoring reason.
-- [ ] Run unit tests and diff checks.
+- [x] Change the client filter so extreme 6M/12M performance is no longer a hard reject.
+- [x] Add extreme-momentum metadata on normalized rows or public rows.
+- [x] Update report text and risk notes to flag extreme performance instead of hiding it.
+- [x] Extend tests for `Perf.Y > 1000` and `Perf.6M > 600` eligibility.
+- [x] Regenerate `docs/reports/screener/daily-ranking.md` and confirm whether `LITE` / `SNDK` appear or, if not, identify the remaining scoring reason.
+- [x] Run unit tests and diff checks.
 
 ## Review Checklist
 
-- [ ] LITE-like rows with very high 12M momentum are no longer excluded by data-quality guards.
-- [ ] SNDK-like rows with very high 12M momentum are no longer excluded by data-quality guards.
-- [ ] Reports still warn about extreme momentum, negative/unknown FCF, and leverage through risk text.
-- [ ] The implementation remains simple and avoids symbol-specific hacks.
+- [x] LITE-like rows with very high 12M momentum are no longer excluded by data-quality guards.
+- [x] SNDK-like rows with very high 12M momentum are no longer excluded by data-quality guards.
+- [x] Reports still warn about extreme momentum, negative/unknown FCF, and leverage through risk text.
+- [x] The implementation remains simple and avoids symbol-specific hacks.
 
 ## Validation Commands
 

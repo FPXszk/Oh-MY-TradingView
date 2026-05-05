@@ -80,20 +80,20 @@ describe('daily screener WSL publish script', () => {
 
 describe('buildMarkdown', () => {
   const rankingBlocks = [
-    { key: 'priceMomentum', label: 'Price momentum', weight: 35 },
-    { key: 'sectorStrength', label: 'Sector strength', weight: 20 },
-    { key: 'quality', label: 'Profitability / quality', weight: 25 },
-    { key: 'growth', label: 'Growth confirmation', weight: 10 },
-    { key: 'riskValue', label: 'Risk / value guard', weight: 10 },
+    { key: 'priceMomentum', label: 'Price momentum', weight: 70 },
+    { key: 'sectorStrength', label: 'Sector strength', weight: 10 },
+    { key: 'quality', label: 'Profitability / quality', weight: 10 },
+    { key: 'growth', label: 'Growth confirmation', weight: 5 },
+    { key: 'riskValue', label: 'Risk / value guard', weight: 5 },
   ];
 
   function rankBreakdown(rank) {
     return {
-      priceMomentum: { label: 'Price momentum', weight: 35, rank, fields: { perf3m: rank } },
-      sectorStrength: { label: 'Sector strength', weight: 20, rank, fields: { phase1SectorRankScore: rank } },
-      quality: { label: 'Profitability / quality', weight: 25, rank, fields: { fcfMargin: rank } },
-      growth: { label: 'Growth confirmation', weight: 10, rank, fields: { revenueGrowthTtm: rank } },
-      riskValue: { label: 'Risk / value guard', weight: 10, rank, fields: { pFcf: rank } },
+      priceMomentum: { label: 'Price momentum', weight: 70, rank, fields: { perf3m: rank } },
+      sectorStrength: { label: 'Sector strength', weight: 10, rank, fields: { phase1SectorRankScore: rank } },
+      quality: { label: 'Profitability / quality', weight: 10, rank, fields: { fcfMargin: rank } },
+      growth: { label: 'Growth confirmation', weight: 5, rank, fields: { revenueGrowthTtm: rank } },
+      riskValue: { label: 'Risk / value guard', weight: 5, rank, fields: { pFcf: rank } },
     };
   }
 
@@ -155,6 +155,11 @@ describe('buildMarkdown', () => {
         ],
         excluded_phase2_sectors: [],
         allowed_exchanges: ['NASDAQ', 'NYSE'],
+        extreme_momentum_policy: {
+          perf_6m_extreme_pct: 600,
+          perf_y_extreme_pct: 1000,
+          action: 'retain_and_flag',
+        },
       },
       sectorMomentum: {
         approach: 'stock-aggregation',
@@ -191,7 +196,7 @@ describe('buildMarkdown', () => {
           exchange: 'NASDAQ',
           sector: 'Technology Services',
           close: 100,
-          perfY: 80,
+          perfY: 1200,
           perf6m: 55,
           perf3m: 40,
           pctOf52wHigh: 98,
@@ -203,6 +208,10 @@ describe('buildMarkdown', () => {
           epsGrowthTtm: 30,
           pFcf: 28,
           atrPct: 3.2,
+          extremeMomentum: {
+            isExtreme: true,
+            flags: ['perfY_gt_1000'],
+          },
           rankScore: 4,
           rankBreakdown: rankBreakdown(1),
         },
@@ -318,6 +327,8 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /## 上位5件の選定理由/);
     assert.match(markdown, /### 1位 AAA \(NASDAQ\)/);
     assert.match(markdown, /## 銘柄ランキング/);
+    assert.match(markdown, /## 超急騰候補/);
+    assert.match(markdown, /\| 1 \| \*\*AAA\*\* \| Technology Services \| 1200\.0%/);
     assert.match(markdown, /## Phase2 通過銘柄のセクター内訳/);
     assert.match(markdown, /## 市場カバレッジ/);
     assert.match(markdown, /ユニバース追加条件: NASDAQ \+ NYSE stocks only \(OTC excluded\)/);
@@ -325,9 +336,11 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /Phase1 選択セクター通過: NASDAQ 6件, NYSE 3件/);
     assert.match(markdown, /Technology Services: scope は Technology Services。hard gate は Perf\.3M > 10% \/ P\/FCF < 50/);
     assert.match(markdown, /Electronic Technology \/ Semiconductors: scope は Electronic Technology。hard gate は Perf\.3M > 10% \/ P\/FCF < 50 \(fabless\), 100 \(IDM\/foundry\)/);
+    assert.match(markdown, /超急騰ポリシー: Perf\.6M > 600% または Perf\.Y > 1000% でも除外せず/);
+    assert.match(markdown, /12M 1200\.0%の超急騰/);
     assert.match(markdown, /取引所限定: NASDAQ, NYSE/);
     assert.match(markdown, /## 採用した P0 \/ P1 指標/);
-    assert.match(markdown, /Price momentum 35%/);
+    assert.match(markdown, /Price momentum 70%/);
     assert.match(markdown, /## 今後改善できそうな点/);
     assert.match(markdown, /Yahoo Finance 補完あり: 売上成長率 YoY はプロファイル別閾値を適用し、null は通過/);
   });

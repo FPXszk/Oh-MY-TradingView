@@ -72,7 +72,7 @@ const RANK_BLOCKS = [
   {
     key: 'priceMomentum',
     label: 'Price momentum',
-    weight: 35,
+    weight: 70,
     fields: [
       { key: 'perfY', label: '12M momentum', direction: 'desc' },
       { key: 'perf6m', label: '6M momentum', direction: 'desc' },
@@ -83,7 +83,7 @@ const RANK_BLOCKS = [
   {
     key: 'sectorStrength',
     label: 'Sector strength',
-    weight: 20,
+    weight: 10,
     fields: [
       { key: 'phase1SectorRankScore', label: 'Phase1 sector rank', direction: 'asc' },
       { key: 'phase1SectorPerfY', label: 'Sector 12M momentum', direction: 'desc' },
@@ -94,7 +94,7 @@ const RANK_BLOCKS = [
   {
     key: 'quality',
     label: 'Profitability / quality',
-    weight: 25,
+    weight: 10,
     fields: [
       { key: 'roic', label: 'ROIC', direction: 'desc' },
       { key: 'grossProfitToAssets', label: 'Gross profit / assets', direction: 'desc' },
@@ -106,7 +106,7 @@ const RANK_BLOCKS = [
   {
     key: 'growth',
     label: 'Growth confirmation',
-    weight: 10,
+    weight: 5,
     fields: [
       { key: 'revenueGrowthTtm', label: 'Revenue YoY growth', direction: 'desc' },
       { key: 'epsGrowthTtm', label: 'EPS YoY growth', direction: 'desc' },
@@ -117,7 +117,7 @@ const RANK_BLOCKS = [
   {
     key: 'riskValue',
     label: 'Risk / value guard',
-    weight: 10,
+    weight: 5,
     fields: [
       { key: 'pFcf', label: 'P/FCF', direction: 'asc' },
       { key: 'evEbitda', label: 'EV/EBITDA', direction: 'asc' },
@@ -296,8 +296,6 @@ function passesProfileClientFilters(row) {
     sma50,
     pctOf52wHigh,
     perf3m,
-    perf6m,
-    perfY,
     pFcf,
     screeningThresholds,
     screeningPfcfMax,
@@ -307,11 +305,24 @@ function passesProfileClientFilters(row) {
   if (screeningThresholds.priceAboveSma50 && close !== null && sma50 !== null && close <= sma50) return false;
   if (pctOf52wHigh !== null && pctOf52wHigh < screeningThresholds.pricePctOf52wHighMin) return false;
   if (perf3m !== null && perf3m <= screeningThresholds.perf3mMinPct) return false;
-  if (perf6m !== null && perf6m > 600) return false;
-  if (perfY !== null && perfY > 1000) return false;
   if (pFcf !== null && pFcf >= screeningPfcfMax) return false;
 
   return true;
+}
+
+function buildExtremeMomentum(row) {
+  const flags = [];
+  if (row.perf6m !== null && row.perf6m !== undefined && row.perf6m > 600) {
+    flags.push('perf6m_gt_600');
+  }
+  if (row.perfY !== null && row.perfY !== undefined && row.perfY > 1000) {
+    flags.push('perfY_gt_1000');
+  }
+
+  return {
+    isExtreme: flags.length > 0,
+    flags,
+  };
 }
 
 function dedupeRows(rows) {
@@ -571,6 +582,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
         screeningThresholds: profile.thresholds,
         screeningPfcfMax: profile.getPfcfMax ? profile.getPfcfMax(row) : profile.thresholds.pFcfMax,
         screeningRevenueGrowthMinPct: profile.thresholds.revenueGrowthMinPct,
+        extremeMomentum: buildExtremeMomentum(row),
       }))),
   );
   const phase1Filtered = scopeFiltered;
@@ -596,9 +608,10 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     price_above_sma200: true,
     price_above_sma50: true,
     price_pct_of_52wk_high_min: 75,
-    data_quality_guards: {
-      perf_6m_max_pct: 600,
-      perf_y_max_pct: 1000,
+    extreme_momentum_policy: {
+      perf_6m_extreme_pct: 600,
+      perf_y_extreme_pct: 1000,
+      action: 'retain_and_flag',
     },
     profile_summaries: profileSummaries,
     excluded_phase2_sectors: excludedSelectedSectors,

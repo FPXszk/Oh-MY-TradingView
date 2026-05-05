@@ -247,6 +247,8 @@ describe('runFundamentalScreener', () => {
                   sma50: 50,
                   high52w: 60,
                   perf3m: 17,
+                  perf6m: 580,
+                  perfY: 1400,
                   relativeVolume: 1.0,
                   marketCap: 1_400_000_000,
                   eps: 2,
@@ -312,6 +314,8 @@ describe('runFundamentalScreener', () => {
                   sma50: 80,
                   high52w: 100,
                   perf3m: 35,
+                  perf6m: 650,
+                  perfY: 1500,
                   relativeVolume: 1.0,
                   marketCap: 1_700_000_000,
                   eps: 1.4,
@@ -334,6 +338,14 @@ describe('runFundamentalScreener', () => {
     assert.equal(result.phase1Filtered, 7);
     assert.equal(result.clientFiltered, 6);
     assert.ok(result.results.some((row) => row.symbol === 'LITE'));
+    assert.ok(result.results.some((row) => row.symbol === 'SNDK'));
+    assert.deepEqual(result.results.find((row) => row.symbol === 'LITE').extremeMomentum.flags, [
+      'perf6m_gt_600',
+      'perfY_gt_1000',
+    ]);
+    assert.deepEqual(result.results.find((row) => row.symbol === 'SNDK').extremeMomentum.flags, [
+      'perfY_gt_1000',
+    ]);
     assert.ok(result.results[0].rankBreakdown.priceMomentum);
     assert.ok(result.results[0].rankBreakdown.quality);
     assert.deepEqual(result.criteria.profile_summaries.map((profile) => profile.label), [

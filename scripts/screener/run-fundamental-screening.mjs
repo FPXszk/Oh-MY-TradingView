@@ -79,6 +79,12 @@ function buildRiskNote(row) {
   if (row.pFcf !== null && row.pFcf !== undefined && row.pFcf > 60) {
     notes.push(`P/FCF ${fmt(row.pFcf, 1)}倍`);
   }
+  if (row.extremeMomentum?.flags?.includes('perfY_gt_1000')) {
+    notes.push(`12M ${fmt(row.perfY)}%の超急騰`);
+  }
+  if (row.extremeMomentum?.flags?.includes('perf6m_gt_600')) {
+    notes.push(`6M ${fmt(row.perf6m)}%の超急騰`);
+  }
   return notes.length > 0 ? notes.join('、') : '目立つ過熱/財務リスクなし';
 }
 
@@ -192,6 +198,19 @@ export function buildMarkdown(result, options = {}) {
       );
     });
     lines.push('');
+
+    const extremeRows = result.results.filter((row) => row.extremeMomentum?.isExtreme);
+    if (extremeRows.length > 0) {
+      lines.push('## 超急騰候補');
+      lines.push('');
+      lines.push('| 順位 | シンボル | セクター | 12M | 6M | 3M | リスク確認 |');
+      lines.push('|:---:|:---|:---|---:|---:|---:|:---|');
+      extremeRows.forEach((row) => {
+        const rank = result.results.findIndex((entry) => entry.symbol === row.symbol && entry.exchange === row.exchange) + 1;
+        lines.push(`| ${rank} | **${row.symbol}** | ${row.sector ?? 'N/A'} | ${fmt(row.perfY)}% | ${fmt(row.perf6m)}% | ${fmt(row.perf3m)}% | ${buildRiskNote(row)} |`);
+      });
+      lines.push('');
+    }
   }
 
   lines.push('## Phase2 通過銘柄のセクター内訳');
@@ -246,8 +265,8 @@ export function buildMarkdown(result, options = {}) {
   lines.push('');
   lines.push('**フィルター条件と scoring guide:**');
   lines.push(`- 共通条件: 時価総額 > $1B, EPS(TTM) > ${result.criteria.eps_min}, Close > SMA200, Close > SMA50, Close ≥ 52週高値 × ${result.criteria.price_pct_of_52wk_high_min}%`);
-  if (result.criteria.data_quality_guards) {
-    lines.push(`- データ品質 guard: Perf.6M ≤ ${result.criteria.data_quality_guards.perf_6m_max_pct}%, Perf.Y ≤ ${result.criteria.data_quality_guards.perf_y_max_pct}%（split / corporate-action 系の外れ値を除外）`);
+  if (result.criteria.extreme_momentum_policy) {
+    lines.push(`- 超急騰ポリシー: Perf.6M > ${result.criteria.extreme_momentum_policy.perf_6m_extreme_pct}% または Perf.Y > ${result.criteria.extreme_momentum_policy.perf_y_extreme_pct}% でも除外せず、超急騰としてリスク確認に表示`);
   }
   if (result.criteria.profile_summaries?.length) {
     result.criteria.profile_summaries.forEach((profile) => {
