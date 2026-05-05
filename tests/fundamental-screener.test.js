@@ -59,13 +59,6 @@ function buildPhase1StockRow(symbol, values) {
   };
 }
 
-function createMockFetch(handler) {
-  return async (_url, options) => ({
-    ok: true,
-    json: async () => handler(JSON.parse(options.body)),
-  });
-}
-
 function isFundRequest(body) {
   return body.symbols?.query?.types?.includes('fund');
 }
@@ -74,386 +67,490 @@ function isPhase2StockRequest(body) {
   return body.columns?.includes('earnings_per_share_diluted_ttm');
 }
 
+function getFilterValue(body, left) {
+  return body.filter?.find((entry) => entry.left === left)?.right ?? null;
+}
+
+function createMockFetch({ phase1Payload, phase2PayloadsBySector, stockBodies }) {
+  return async (_url, options) => {
+    const body = JSON.parse(options.body);
+    if (isFundRequest(body) || !isPhase2StockRequest(body)) {
+      return {
+        ok: true,
+        json: async () => phase1Payload,
+      };
+    }
+
+    stockBodies.push(body);
+    const sector = getFilterValue(body, 'sector');
+
+    return {
+      ok: true,
+      json: async () => phase2PayloadsBySector[sector] ?? { totalCount: 0, data: [] },
+    };
+  };
+}
+
 describe('runFundamentalScreener', () => {
-  it('returns US ETF-based sector momentum, phase1 filtering, and phase2 rankings', async () => {
-    const phase1Payload = {
-      totalCount: 5,
-      data: [
-        buildPhase1FundRow('AMEX:XLK', {
-          name: 'XLK',
-          description: 'Technology Select Sector SPDR ETF',
-          perf1m: 22,
-          perf3m: 14,
-          rsi: 72,
-          relativeVolume: 1.1,
-          volume: 10_000_000,
-        }),
-        buildPhase1FundRow('NASDAQ:SMH', {
-          name: 'SMH',
-          description: 'VanEck Semiconductor ETF',
-          perf1m: 28,
-          perf3m: 20,
-          rsi: 75,
-          relativeVolume: 0.9,
-          volume: 7_000_000,
-        }),
-        buildPhase1FundRow('AMEX:XLF', {
-          name: 'XLF',
-          description: 'Financial Select Sector SPDR ETF',
-          perf1m: 11,
-          perf3m: 9,
-          rsi: 63,
-          relativeVolume: 1.3,
-          volume: 40_000_000,
-        }),
-        buildPhase1FundRow('AMEX:XLV', {
-          name: 'XLV',
-          description: 'Health Care Select Sector SPDR ETF',
-          perf1m: 6,
-          perf3m: 5,
-          rsi: 59,
-          relativeVolume: 1.2,
-          volume: 12_000_000,
-        }),
-        buildPhase1FundRow('AMEX:XLE', {
-          name: 'XLE',
-          description: 'Energy Select Sector SPDR ETF',
-          perf1m: -2,
-          perf3m: 1,
-          rsi: 48,
-          relativeVolume: 0.9,
-          volume: 36_000_000,
-        }),
-      ],
-    };
-
-    const phase2Payload = {
-      totalCount: 5,
-      data: [
-        buildPhase2Row('NASDAQ:NVDA', {
-          name: 'NVIDIA',
-          sector: 'Electronic Technology',
-          industry: 'Semiconductors',
-          close: 100,
-          rsi: 70,
-          sma200: 90,
-          sma50: 95,
-          high52w: 110,
-          perf3m: 40,
-          relativeVolume: 2,
-          marketCap: 2_500_000_000,
-          eps: 4,
-          roe: 28,
-          grossMargin: 65,
-          fcfMargin: 30,
-          fcfTtm: 100_000_000,
-          netDebt: -50_000_000,
-          volume: 1_000_000,
-        }),
-        buildPhase2Row('NASDAQ:AAPL', {
-          name: 'Apple',
-          sector: 'Electronic Technology',
-          industry: 'Telecommunications Equipment',
-          close: 90,
-          rsi: 67,
-          sma200: 80,
-          sma50: 85,
-          high52w: 100,
-          perf3m: 25,
-          relativeVolume: 1.6,
-          marketCap: 2_200_000_000,
-          eps: 5,
-          roe: 24,
-          grossMargin: 55,
-          fcfMargin: 24,
-          fcfTtm: 100_000_000,
-          netDebt: -40_000_000,
-          volume: 900_000,
-        }),
-        buildPhase2Row('NYSE:JPM', {
-          name: 'JPMorgan',
-          sector: 'Finance',
-          industry: 'Major Banks',
-          close: 80,
-          rsi: 65,
-          sma200: 70,
-          sma50: 75,
-          high52w: 90,
-          perf3m: 18,
-          relativeVolume: 1.4,
-          marketCap: 1_800_000_000,
-          eps: 4,
-          roe: 18,
-          grossMargin: 48,
-          fcfMargin: 18,
-          fcfTtm: 100_000_000,
-          netDebt: 10_000_000,
-          volume: 800_000,
-        }),
-        buildPhase2Row('NYSE:UNH', {
-          name: 'UnitedHealth',
-          sector: 'Health Services',
-          industry: 'Managed Health Care',
-          close: 70,
-          rsi: 64,
-          sma200: 60,
-          sma50: 65,
-          high52w: 85,
-          perf3m: 16,
-          relativeVolume: 1.3,
-          marketCap: 1_700_000_000,
-          eps: 4,
-          roe: 21,
-          grossMargin: 50,
-          fcfMargin: 22,
-          fcfTtm: 100_000_000,
-          netDebt: 5_000_000,
-          volume: 700_000,
-        }),
-        buildPhase2Row('NYSE:XOM', {
-          name: 'Exxon Mobil',
-          sector: 'Energy Minerals',
-          industry: 'Integrated Oil',
-          close: 60,
-          rsi: 63,
-          sma200: 55,
-          sma50: 58,
-          high52w: 70,
-          perf3m: 20,
-          relativeVolume: 1.5,
-          marketCap: 1_600_000_000,
-          eps: 3,
-          roe: 20,
-          grossMargin: 47,
-          fcfMargin: 20,
-          fcfTtm: 100_000_000,
-          netDebt: 10_000_000,
-          volume: 600_000,
-        }),
-      ],
-    };
-
+  it('uses sector-specific US profiles and excludes unsupported phase2 sectors', async () => {
+    const stockBodies = [];
     const result = await runFundamentalScreener({
-      limit: 20,
+      limit: 10,
       _deps: {
-        fetch: createMockFetch((body) => {
-          if (isFundRequest(body)) return phase1Payload;
-          if (isPhase2StockRequest(body)) return phase2Payload;
-          assert.fail(`Unexpected request body: ${JSON.stringify(body)}`);
+        fetch: createMockFetch({
+          stockBodies,
+          phase1Payload: {
+            totalCount: 4,
+            data: [
+              buildPhase1FundRow('NASDAQ:SMH', {
+                name: 'SMH',
+                description: 'VanEck Semiconductor ETF',
+                perf1m: 26,
+                perf3m: 19,
+                rsi: 73,
+                relativeVolume: 0.9,
+                volume: 7_000_000,
+              }),
+              buildPhase1FundRow('AMEX:XLK', {
+                name: 'XLK',
+                description: 'Technology Select Sector SPDR ETF',
+                perf1m: 20,
+                perf3m: 15,
+                rsi: 69,
+                relativeVolume: 1.0,
+                volume: 10_000_000,
+              }),
+              buildPhase1FundRow('AMEX:XLF', {
+                name: 'XLF',
+                description: 'Financial Select Sector SPDR ETF',
+                perf1m: 14,
+                perf3m: 11,
+                rsi: 63,
+                relativeVolume: 1.1,
+                volume: 18_000_000,
+              }),
+              buildPhase1FundRow('AMEX:XLV', {
+                name: 'XLV',
+                description: 'Health Care Select Sector SPDR ETF',
+                perf1m: 2,
+                perf3m: 1,
+                rsi: 49,
+                relativeVolume: 1.0,
+                volume: 8_000_000,
+              }),
+            ],
+          },
+          phase2PayloadsBySector: {
+            'Technology Services': {
+              totalCount: 1,
+              data: [
+                buildPhase2Row('NASDAQ:ADEA', {
+                  name: 'Adeia',
+                  sector: 'Technology Services',
+                  industry: 'Packaged Software',
+                  close: 13,
+                  rsi: 66,
+                  sma200: 10,
+                  sma50: 11,
+                  high52w: 14,
+                  perf3m: 25,
+                  relativeVolume: 1.4,
+                  marketCap: 1_500_000_000,
+                  eps: 1.2,
+                  roe: 29,
+                  grossMargin: 72,
+                  fcfMargin: 29,
+                  fcfTtm: 90_000_000,
+                  netDebt: 0,
+                  volume: 300_000,
+                }),
+              ],
+            },
+            'Electronic Technology': {
+              totalCount: 5,
+              data: [
+                buildPhase2Row('NASDAQ:QCOM', {
+                  name: 'Qualcomm',
+                  sector: 'Electronic Technology',
+                  industry: 'Semiconductors',
+                  close: 170,
+                  rsi: 64,
+                  sma200: 150,
+                  sma50: 160,
+                  high52w: 180,
+                  perf3m: 18,
+                  relativeVolume: 0.95,
+                  marketCap: 2_200_000_000,
+                  eps: 7,
+                  roe: 22,
+                  grossMargin: 56,
+                  fcfMargin: 26,
+                  fcfTtm: 70_000_000,
+                  netDebt: -5_000_000,
+                  volume: 800_000,
+                }),
+                buildPhase2Row('NASDAQ:MU', {
+                  name: 'Micron',
+                  sector: 'Electronic Technology',
+                  industry: 'Semiconductors',
+                  close: 110,
+                  rsi: 63,
+                  sma200: 90,
+                  sma50: 100,
+                  high52w: 120,
+                  perf3m: 15,
+                  relativeVolume: 1.0,
+                  marketCap: 2_000_000_000,
+                  eps: 5,
+                  roe: 18,
+                  grossMargin: 35,
+                  fcfMargin: 10,
+                  fcfTtm: 30_000_000,
+                  netDebt: 0,
+                  volume: 700_000,
+                }),
+                buildPhase2Row('NASDAQ:SNDK', {
+                  name: 'Sandisk',
+                  sector: 'Electronic Technology',
+                  industry: 'Computer Peripherals',
+                  close: 55,
+                  rsi: 65,
+                  sma200: 48,
+                  sma50: 50,
+                  high52w: 60,
+                  perf3m: 17,
+                  relativeVolume: 1.0,
+                  marketCap: 1_400_000_000,
+                  eps: 2,
+                  roe: 17,
+                  grossMargin: 31,
+                  fcfMargin: 8,
+                  fcfTtm: 20_000_000,
+                  netDebt: 0,
+                  volume: 500_000,
+                }),
+                buildPhase2Row('NASDAQ:AAPL', {
+                  name: 'Apple',
+                  sector: 'Electronic Technology',
+                  industry: 'Telecommunications Equipment',
+                  close: 190,
+                  rsi: 65,
+                  sma200: 170,
+                  sma50: 180,
+                  high52w: 200,
+                  perf3m: 16,
+                  relativeVolume: 1.1,
+                  marketCap: 2_500_000_000,
+                  eps: 6,
+                  roe: 24,
+                  grossMargin: 45,
+                  fcfMargin: 24,
+                  fcfTtm: 95_000_000,
+                  netDebt: -10_000_000,
+                  volume: 900_000,
+                }),
+                buildPhase2Row('NASDAQ:INTC', {
+                  name: 'Intel',
+                  sector: 'Electronic Technology',
+                  industry: 'Semiconductors',
+                  close: 30,
+                  rsi: 62,
+                  sma200: 27,
+                  sma50: 29,
+                  high52w: 35,
+                  perf3m: 10,
+                  relativeVolume: 0.95,
+                  marketCap: 1_800_000_000,
+                  eps: 1.5,
+                  roe: 16,
+                  grossMargin: 48,
+                  fcfMargin: 8,
+                  fcfTtm: 25_000_000,
+                  netDebt: 15_000_000,
+                  volume: 850_000,
+                }),
+              ],
+            },
+          },
         }),
       },
     });
 
-    assert.equal(result.serverFiltered, 5);
-    assert.equal(result.phase1Filtered, 3);
-    assert.equal(result.clientFiltered, 3);
-    assert.equal(result.results.length, 3);
-    assert.equal(result.results[0].symbol, 'NVDA');
-    assert.equal(result.sectorMomentum.approach, 'us-sector-etfs');
-    assert.deepEqual(result.sectorMomentum.selectedSectors.map((entry) => entry.label), [
-      'Semiconductors',
+    assert.equal(result.totalScanned, 6);
+    assert.equal(result.serverFiltered, 6);
+    assert.equal(result.phase1Filtered, 6);
+    assert.equal(result.clientFiltered, 5);
+    assert.deepEqual(result.results.map((row) => row.symbol), ['ADEA', 'QCOM', 'AAPL', 'MU', 'SNDK']);
+    assert.deepEqual(result.criteria.profile_summaries.map((profile) => profile.label), [
       'Technology',
-      'Financials',
+      'Semiconductors',
     ]);
-    assert.deepEqual(result.sectorMomentum.selectedStockSectors, [
-      'Electronic Technology',
-      'Technology Services',
-      'Finance',
-    ]);
-    assert.deepEqual(result.marketBreakdown.serverFiltered, [
-      { name: 'NYSE', count: 3 },
-      { name: 'NASDAQ', count: 2 },
-    ]);
-    assert.deepEqual(result.marketBreakdown.phase1Filtered, [
-      { name: 'NASDAQ', count: 2 },
-      { name: 'NYSE', count: 1 },
-    ]);
-    assert.deepEqual(result.sectorRanking[0], {
-      sector: 'Electronic Technology',
-      count: 2,
-      averagePerf3m: 32.5,
-      averageRankScore: 4.5,
-      topSymbol: 'NVDA',
-    });
-    assert.match(result.scannerScope.note, /Phase1 then selected Semiconductors, Technology, Financials/);
+    assert.deepEqual(result.criteria.excluded_phase2_sectors, ['Financials']);
+    assert.equal(result.scannerScope.profileRequestCount, 3);
+    assert.deepEqual(
+      stockBodies.map((body) => getFilterValue(body, 'sector')),
+      ['Technology Services', 'Electronic Technology', 'Electronic Technology'],
+    );
+    assert.ok(stockBodies.every((body) => getFilterValue(body, 'sector') !== 'Finance'));
   });
 
-  it('applies exchange allowlist and symbol allowlist to Japan sector aggregation before phase2 filtering', async () => {
-    const phase1Payload = {
-      totalCount: 5,
-      data: [
-        buildPhase1StockRow('TSE:9984', {
-          name: 'SoftBank Group',
-          sector: 'Communications',
-          perf1m: 12,
-          perf3m: 24,
-          rsi: 68,
-          relativeVolume: 1.4,
-          marketCap: 3_000_000_000,
-        }),
-        buildPhase1StockRow('TSE:8306', {
-          name: 'Mitsubishi UFJ',
-          sector: 'Finance',
-          perf1m: 7,
-          perf3m: 12,
-          rsi: 61,
-          relativeVolume: 1.1,
-          marketCap: 2_800_000_000,
-        }),
-        buildPhase1StockRow('TSE:7203', {
-          name: 'Toyota',
-          sector: 'Producer Manufacturing',
-          perf1m: 6,
-          perf3m: 10,
-          rsi: 60,
-          relativeVolume: 1.2,
-          marketCap: 3_200_000_000,
-        }),
-        buildPhase1StockRow('NAG:7203', {
-          name: 'Toyota duplicate venue',
-          sector: 'Producer Manufacturing',
-          perf1m: 8,
-          perf3m: 15,
-          rsi: 63,
-          relativeVolume: 0.5,
-          marketCap: 3_200_000_000,
-        }),
-        buildPhase1StockRow('TSE:9999', {
-          name: 'Non Prime',
-          sector: 'Retail Trade',
-          perf1m: 15,
-          perf3m: 30,
-          rsi: 72,
-          relativeVolume: 1.6,
-          marketCap: 1_500_000_000,
-        }),
-      ],
-    };
-
-    const phase2Payload = {
-      totalCount: 4,
-      data: [
-        buildPhase2Row('TSE:9984', {
-          name: 'SoftBank Group',
-          sector: 'Communications',
-          industry: 'Wireless Telecommunications',
-          close: 9000,
-          rsi: 68,
-          sma200: 8000,
-          sma50: 8500,
-          high52w: 9500,
-          perf3m: 24,
-          relativeVolume: 1.4,
-          marketCap: 3_000_000_000,
-          eps: 10,
-          roe: 22,
-          grossMargin: 40,
-          fcfMargin: 20,
-          fcfTtm: 100_000_000,
-          netDebt: 50_000_000,
-          volume: 700_000,
-        }),
-        buildPhase2Row('TSE:8306', {
-          name: 'Mitsubishi UFJ',
-          sector: 'Finance',
-          industry: 'Major Banks',
-          close: 1800,
-          rsi: 64,
-          sma200: 1600,
-          sma50: 1700,
-          high52w: 2000,
-          perf3m: 12,
-          relativeVolume: 1.2,
-          marketCap: 2_800_000_000,
-          eps: 5,
-          roe: 18,
-          grossMargin: 35,
-          fcfMargin: 14,
-          fcfTtm: 100_000_000,
-          netDebt: 10_000_000,
-          volume: 650_000,
-        }),
-        buildPhase2Row('TSE:7203', {
-          name: 'Toyota',
-          sector: 'Producer Manufacturing',
-          industry: 'Motor Vehicles',
-          close: 3000,
-          rsi: 62,
-          sma200: 2700,
-          sma50: 2850,
-          high52w: 3200,
-          perf3m: 10,
-          relativeVolume: 1.3,
-          marketCap: 3_200_000_000,
-          eps: 6,
-          roe: 16,
-          grossMargin: 33,
-          fcfMargin: 12,
-          fcfTtm: 100_000_000,
-          netDebt: 20_000_000,
-          volume: 600_000,
-        }),
-        buildPhase2Row('TSE:9999', {
-          name: 'Non Prime',
-          sector: 'Retail Trade',
-          industry: 'Retail',
-          close: 1500,
-          rsi: 70,
-          sma200: 1300,
-          sma50: 1400,
-          high52w: 1700,
-          perf3m: 30,
-          relativeVolume: 1.6,
-          marketCap: 1_500_000_000,
-          eps: 4,
-          roe: 19,
-          grossMargin: 38,
-          fcfMargin: 15,
-          fcfTtm: 100_000_000,
-          netDebt: 5_000_000,
-          volume: 300_000,
-        }),
-      ],
-    };
-
+  it('applies Japan-specific profiles and skips finance even when phase1 selects it', async () => {
+    const stockBodies = [];
     const result = await runFundamentalScreener({
-      limit: 20,
+      limit: 10,
       _deps: {
         market: 'japan',
         exchangeAllowlist: ['TSE'],
-        grossMarginMinPct: 30,
         symbolAllowlistKey: 'jp-prime-mini',
         symbolAllowlistByKey: {
-          'jp-prime-mini': ['7203', '8306', '9984'],
+          'jp-prime-mini': ['8035', '4063', '8306'],
         },
         scopeLabel: 'JPX Prime domestic stocks snapshot',
-        fetch: createMockFetch((body) => {
-          if (isPhase2StockRequest(body)) return phase2Payload;
-          return phase1Payload;
+        fetch: createMockFetch({
+          stockBodies,
+          phase1Payload: {
+            totalCount: 4,
+            data: [
+              buildPhase1StockRow('TSE:8035', {
+                name: 'Tokyo Electron',
+                sector: 'Electronic Technology',
+                perf1m: 12,
+                perf3m: 24,
+                rsi: 68,
+                relativeVolume: 1.1,
+                marketCap: 3_500_000_000,
+              }),
+              buildPhase1StockRow('TSE:4063', {
+                name: 'Shin-Etsu Chemical',
+                sector: 'Process Industries',
+                perf1m: 8,
+                perf3m: 18,
+                rsi: 63,
+                relativeVolume: 1.0,
+                marketCap: 2_900_000_000,
+              }),
+              buildPhase1StockRow('TSE:8306', {
+                name: 'Mitsubishi UFJ',
+                sector: 'Finance',
+                perf1m: 7,
+                perf3m: 15,
+                rsi: 62,
+                relativeVolume: 1.1,
+                marketCap: 2_800_000_000,
+              }),
+              buildPhase1StockRow('TSE:7203', {
+                name: 'Toyota',
+                sector: 'Consumer Durables',
+                perf1m: 2,
+                perf3m: 4,
+                rsi: 49,
+                relativeVolume: 0.8,
+                marketCap: 3_100_000_000,
+              }),
+            ],
+          },
+          phase2PayloadsBySector: {
+            'Electronic Technology': {
+              totalCount: 2,
+              data: [
+                buildPhase2Row('TSE:8035', {
+                  name: 'Tokyo Electron',
+                  sector: 'Electronic Technology',
+                  industry: 'Electronic Production Equipment',
+                  close: 22000,
+                  rsi: 58,
+                  sma200: 20000,
+                  sma50: 21000,
+                  high52w: 24000,
+                  perf3m: 12,
+                  relativeVolume: 0.9,
+                  marketCap: 3_500_000_000,
+                  eps: 10,
+                  roe: 18,
+                  grossMargin: 60,
+                  fcfMargin: 35,
+                  fcfTtm: 54_000_000,
+                  netDebt: -10_000_000,
+                  volume: 400_000,
+                }),
+                buildPhase2Row('TSE:6857', {
+                  name: 'Advantest',
+                  sector: 'Electronic Technology',
+                  industry: 'Electronic Production Equipment',
+                  close: 7000,
+                  rsi: 51,
+                  sma200: 7100,
+                  sma50: 7050,
+                  high52w: 9000,
+                  perf3m: 4,
+                  relativeVolume: 0.6,
+                  marketCap: 2_400_000_000,
+                  eps: 7,
+                  roe: 15,
+                  grossMargin: 52,
+                  fcfMargin: 18,
+                  fcfTtm: 45_000_000,
+                  netDebt: -5_000_000,
+                  volume: 350_000,
+                }),
+              ],
+            },
+            'Process Industries': {
+              totalCount: 2,
+              data: [
+                buildPhase2Row('TSE:4063', {
+                  name: 'Shin-Etsu Chemical',
+                  sector: 'Process Industries',
+                  industry: 'Chemicals: Specialty',
+                  close: 6200,
+                  rsi: 60,
+                  sma200: 5600,
+                  sma50: 5900,
+                  high52w: 7000,
+                  perf3m: 7,
+                  relativeVolume: 1.0,
+                  marketCap: 2_900_000_000,
+                  eps: 9,
+                  roe: 11,
+                  grossMargin: 34,
+                  fcfMargin: 12,
+                  fcfTtm: 95_000_000,
+                  netDebt: -10_000_000,
+                  volume: 500_000,
+                }),
+                buildPhase2Row('TSE:8001', {
+                  name: 'Itochu',
+                  sector: 'Distribution Services',
+                  industry: 'Trading Companies',
+                  close: 7800,
+                  rsi: 48,
+                  sma200: 7300,
+                  sma50: 7600,
+                  high52w: 8200,
+                  perf3m: 3,
+                  relativeVolume: 0.7,
+                  marketCap: 2_600_000_000,
+                  eps: 8,
+                  roe: 14,
+                  grossMargin: 18,
+                  fcfMargin: 10,
+                  fcfTtm: 120_000_000,
+                  netDebt: 10_000_000,
+                  volume: 450_000,
+                }),
+              ],
+            },
+          },
         }),
       },
     });
 
-    assert.equal(result.serverFiltered, 3);
-    assert.equal(result.phase1Filtered, 3);
+    assert.equal(result.totalScanned, 4);
+    assert.equal(result.serverFiltered, 2);
+    assert.equal(result.phase1Filtered, 2);
     assert.equal(result.clientFiltered, 2);
-    assert.equal(result.sectorMomentum.approach, 'stock-aggregation');
-    assert.deepEqual(result.sectorMomentum.selectedSectors.map((entry) => entry.label), [
-      'Communications',
-      'Finance',
-      'Producer Manufacturing',
+    assert.deepEqual(result.results.map((row) => row.symbol), ['8035', '4063']);
+    assert.deepEqual(result.criteria.profile_summaries.map((profile) => profile.label), [
+      'Japan Manufacturing',
+      'Japan Materials & Trading',
     ]);
-    assert.deepEqual(result.sectorMomentum.selectedStockSectors, [
-      'Communications',
-      'Finance',
-      'Producer Manufacturing',
-    ]);
-    assert.deepEqual(result.marketBreakdown.serverFiltered, [
-      { name: 'TSE', count: 3 },
-    ]);
-    assert.deepEqual(result.results.map((row) => row.symbol), ['9984', '8306']);
-    assert.equal(result.criteria.symbol_allowlist_key, 'jp-prime-mini');
+    assert.deepEqual(result.criteria.excluded_phase2_sectors, ['Finance']);
     assert.equal(result.scannerScope.market, 'japan');
     assert.equal(result.scannerScope.scopeLabel, 'JPX Prime domestic stocks snapshot');
+    assert.ok(stockBodies.every((body) => getFilterValue(body, 'sector') !== 'Finance'));
+  });
+
+  it('applies profile-specific Yahoo revenue growth thresholds', async () => {
+    const result = await runFundamentalScreener({
+      limit: 10,
+      enrichWithYahoo: true,
+      _deps: {
+        getSymbolFundamentals: async (symbol) => ({
+          revenueGrowth: symbol === 'MU' ? 0.12 : 0.12,
+        }),
+        fetch: createMockFetch({
+          stockBodies: [],
+          phase1Payload: {
+            totalCount: 2,
+            data: [
+              buildPhase1FundRow('NASDAQ:SMH', {
+                name: 'SMH',
+                description: 'VanEck Semiconductor ETF',
+                perf1m: 25,
+                perf3m: 19,
+                rsi: 73,
+                relativeVolume: 1.0,
+                volume: 7_000_000,
+              }),
+              buildPhase1FundRow('AMEX:XLK', {
+                name: 'XLK',
+                description: 'Technology Select Sector SPDR ETF',
+                perf1m: 20,
+                perf3m: 15,
+                rsi: 69,
+                relativeVolume: 1.0,
+                volume: 10_000_000,
+              }),
+            ],
+          },
+          phase2PayloadsBySector: {
+            'Technology Services': {
+              totalCount: 1,
+              data: [
+                buildPhase2Row('NASDAQ:ADEA', {
+                  name: 'Adeia',
+                  sector: 'Technology Services',
+                  industry: 'Packaged Software',
+                  close: 13,
+                  rsi: 66,
+                  sma200: 10,
+                  sma50: 11,
+                  high52w: 14,
+                  perf3m: 25,
+                  relativeVolume: 1.4,
+                  marketCap: 1_500_000_000,
+                  eps: 1.2,
+                  roe: 29,
+                  grossMargin: 72,
+                  fcfMargin: 29,
+                  fcfTtm: 90_000_000,
+                  netDebt: 0,
+                  volume: 300_000,
+                }),
+              ],
+            },
+            'Electronic Technology': {
+              totalCount: 1,
+              data: [
+                buildPhase2Row('NASDAQ:MU', {
+                  name: 'Micron',
+                  sector: 'Electronic Technology',
+                  industry: 'Semiconductors',
+                  close: 110,
+                  rsi: 63,
+                  sma200: 90,
+                  sma50: 100,
+                  high52w: 120,
+                  perf3m: 15,
+                  relativeVolume: 1.0,
+                  marketCap: 2_000_000_000,
+                  eps: 5,
+                  roe: 18,
+                  grossMargin: 35,
+                  fcfMargin: 10,
+                  fcfTtm: 30_000_000,
+                  netDebt: 0,
+                  volume: 700_000,
+                }),
+              ],
+            },
+          },
+        }),
+      },
+    });
+
+    assert.deepEqual(result.results.map((row) => row.symbol), ['ADEA']);
+    assert.equal(result.criteria.revenue_growth_policy, 'profile-specific minimum, null passes');
+    assert.deepEqual(result.rankingFormula, ['perf3m', 'roe', 'fcfMargin', 'revenueGrowth']);
   });
 });

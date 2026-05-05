@@ -2,24 +2,12 @@
  * Fundamental + Momentum stock screener — queries TradingView's scanner API
  * for stocks passing financial quality × Minervini momentum conditions.
  *
- * Server-side filters (7 conditions):
- *   1. RSI(14) >= 60
- *   2. Market cap >= $1B
- *   3. Relative volume >= 1.2x
- *   4. EPS (TTM, diluted) > 0        (profitable)
- *   5. ROE > 15%
- *   6. Gross margin (TTM) > 40%
- *   7. FCF margin (TTM) > 10%
- *
- * Client-side filters (5 conditions):
- *   8.  Close > SMA200
- *   9.  Close > SMA50
- *   10. Close >= 75% of 52-week high
- *   11. Perf.3M > 10%
- *   12. P/FCF < 50   (calculated: market_cap / free_cash_flow_ttm)
+ * Phase2 now uses sector-specific screening profiles rather than one
+ * global filter stack. Each profile applies its own server-side quality /
+ * momentum thresholds plus shared client-side price-structure checks.
  *
  * Optional enrichment (enrichWithYahoo: true):
- *   13. Revenue growth YoY > 20%  (from Yahoo Finance financialData)
+ *   - Revenue growth YoY threshold is profile-specific (null stays eligible)
  *
  * Ranking: rank-sum of Perf.3M + ROE + FCF margin [+ revenueGrowth when enriched]
  */
@@ -27,9 +15,9 @@
 import { readFileSync } from 'node:fs';
 import { getSymbolFundamentals } from './market-intel.js';
 import { runSectorMomentumScan } from './sector-momentum.js';
+import { getSectorScreeningPlan } from './sector-screening-profiles.js';
 
 const DEFAULT_MARKET = 'america';
-const DEFAULT_GROSS_MARGIN_MIN_PCT = 40;
 const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 200;
 const DEFAULT_TIMEOUT_MS = 15000;
@@ -63,16 +51,20 @@ const COLUMNS = [
 
 const COL = Object.fromEntries(COLUMNS.map((col, i) => [col, i]));
 
-function buildRequestBody(serverLimit, { market, grossMarginMinPct }) {
+function buildRequestBody(serverLimit, { market, profile, scope }) {
+  const thresholds = profile.thresholds;
   return {
     filter: [
-      { left: 'RSI', operation: 'egreater', right: 60 },
-      { left: 'market_cap_basic', operation: 'egreater', right: 1_000_000_000 },
-      { left: 'relative_volume_10d_calc', operation: 'egreater', right: 1.2 },
-      { left: 'earnings_per_share_diluted_ttm', operation: 'egreater', right: 0 },
-      { left: 'return_on_equity', operation: 'egreater', right: 15 },
-      { left: 'gross_margin_ttm', operation: 'egreater', right: grossMarginMinPct },
-      { left: 'free_cash_flow_margin_ttm', operation: 'egreater', right: 10 },
+      { left: 'sector', operation: 'equal', right: scope.sector },
+      { left: 'RSI', operation: 'egreater', right: thresholds.rsiMin },
+      { left: 'market_cap_basic', operation: 'egreater', right: thresholds.marketCapMinUsd },
+      { left: 'relative_volume_10d_calc', operation: 'egreater', right: thresholds.relativeVolumeMin },
+      { left: 'earnings_per_share_diluted_ttm', operation: 'egreater', right: thresholds.epsMin },
+      { left: 'return_on_equity', operation: 'egreater', right: thresholds.roeMinPct },
+      { left: 'gross_margin_ttm', operation: 'egreater', right: thresholds.grossMarginMinPct },
+      { left: 'free_cash_flow_margin_ttm', operation: 'egreater', right: thresholds.fcfMarginMinPct },
+      { left: 'Perf.3M', operation: 'egreater', right: thresholds.perf3mMinPct },
+      ...(scope.industry ? [{ left: 'industry', operation: 'equal', right: scope.industry }] : []),
     ],
     options: { lang: 'en' },
     markets: [market],
@@ -145,18 +137,6 @@ function normalizeRow(row) {
   };
 }
 
-function passesClientFilters(row) {
-  const { close, sma200, sma50, pctOf52wHigh, perf3m, pFcf } = row;
-
-  if (close !== null && sma200 !== null && close <= sma200) return false;
-  if (close !== null && sma50 !== null && close <= sma50) return false;
-  if (pctOf52wHigh !== null && pctOf52wHigh < 75) return false;
-  if (perf3m !== null && perf3m <= 10) return false;
-  if (pFcf !== null && pFcf >= 50) return false;
-
-  return true;
-}
-
 function resolveSymbolAllowlist(symbolAllowlistKey, customAllowlists) {
   if (!symbolAllowlistKey) return null;
 
@@ -178,18 +158,52 @@ function passesScopeFilters(row, { exchangeAllowlist, symbolAllowlist }) {
   return true;
 }
 
-function passesSelectedSectorFilter(row, selectedFilterRules) {
-  if (!selectedFilterRules || selectedFilterRules.length === 0) return true;
-  const industry = row.industry ?? '';
-  return selectedFilterRules.some((rule) => {
-    const sectorMatch = !rule.stockSectors || rule.stockSectors.length === 0
-      ? true
-      : rule.stockSectors.includes(row.sector ?? 'Unknown');
-    if (!sectorMatch) return false;
-    if (rule.industryPattern && !rule.industryPattern.test(industry)) return false;
-    if (rule.industryExcludePattern && rule.industryExcludePattern.test(industry)) return false;
-    return true;
-  });
+function passesProfileScope(row, profile) {
+  if (profile.includeRow && !profile.includeRow(row)) return false;
+  if (profile.excludeRow && profile.excludeRow(row)) return false;
+  return true;
+}
+
+function passesProfileClientFilters(row) {
+  const {
+    close,
+    sma200,
+    sma50,
+    pctOf52wHigh,
+    perf3m,
+    pFcf,
+    screeningThresholds,
+    screeningPfcfMax,
+  } = row;
+
+  if (screeningThresholds.priceAboveSma200 && close !== null && sma200 !== null && close <= sma200) return false;
+  if (screeningThresholds.priceAboveSma50 && close !== null && sma50 !== null && close <= sma50) return false;
+  if (pctOf52wHigh !== null && pctOf52wHigh < screeningThresholds.pricePctOf52wHighMin) return false;
+  if (perf3m !== null && perf3m <= screeningThresholds.perf3mMinPct) return false;
+  if (pFcf !== null && pFcf >= screeningPfcfMax) return false;
+
+  return true;
+}
+
+function dedupeRows(rows) {
+  const deduped = new Map();
+  for (const row of rows) {
+    const key = `${row.exchange ?? ''}:${row.symbol}`;
+    if (!deduped.has(key)) {
+      deduped.set(key, row);
+    }
+  }
+  return [...deduped.values()];
+}
+
+function stripInternalFields(row) {
+  const {
+    screeningThresholds,
+    screeningPfcfMax,
+    screeningRevenueGrowthMinPct,
+    ...publicRow
+  } = row;
+  return publicRow;
 }
 
 /**
@@ -300,14 +314,14 @@ async function sleep(ms) {
  * Processes in batches of YAHOO_BATCH_SIZE with a delay between batches.
  * On error, sets revenueGrowth to null (does not throw).
  */
-async function batchFetchRevenueGrowth(symbols) {
+async function batchFetchRevenueGrowth(symbols, getFundamentals = getSymbolFundamentals) {
   const results = {};
   for (let i = 0; i < symbols.length; i += YAHOO_BATCH_SIZE) {
     const batch = symbols.slice(i, i + YAHOO_BATCH_SIZE);
     await Promise.all(
       batch.map(async (symbol) => {
         try {
-          const data = await getSymbolFundamentals(symbol);
+          const data = await getFundamentals(symbol);
           results[symbol] = data.revenueGrowth ?? null;
         } catch {
           results[symbol] = null;
@@ -335,10 +349,10 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   const fetchFn = _deps?.fetch ?? globalThis.fetch;
   const market = _deps?.market ?? DEFAULT_MARKET;
   const exchangeAllowlist = _deps?.exchangeAllowlist ?? null;
-  const grossMarginMinPct = _deps?.grossMarginMinPct ?? DEFAULT_GROSS_MARGIN_MIN_PCT;
   const symbolAllowlistKey = _deps?.symbolAllowlistKey ?? null;
   const symbolAllowlist = resolveSymbolAllowlist(symbolAllowlistKey, _deps?.symbolAllowlistByKey);
   const scopeLabel = _deps?.scopeLabel ?? null;
+  const getFundamentals = _deps?.getSymbolFundamentals ?? getSymbolFundamentals;
   const scannerUrl = `https://scanner.tradingview.com/${market}/scan`;
   const sectorMomentumScan = await runSectorMomentumScan({
     market,
@@ -346,62 +360,84 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     symbolAllowlist,
     fetch: fetchFn,
   });
-  const { selectedFilterRules, ...sectorMomentum } = sectorMomentumScan;
+  const sectorMomentum = sectorMomentumScan;
+  const selectedSectorLabels = sectorMomentum.selectedSectors.map((entry) => entry.label);
+  const { activeProfiles, excludedSelectedSectors, profileSummaries } = getSectorScreeningPlan({
+    market,
+    selectedSectors: selectedSectorLabels,
+  });
 
   // Fetch more candidates than needed so client filters have enough to work with
   const serverLimit = Math.min(effectiveLimit * 8, 400);
+  const requestPlans = activeProfiles.flatMap((profile) => profile.requestScopes.map((scope) => ({ profile, scope })));
+  const phase2Responses = await Promise.all(
+    requestPlans.map(async ({ profile, scope }) => {
+      const response = await fetchFn(scannerUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildRequestBody(serverLimit, { market, profile, scope })),
+        signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
+      });
 
-  const response = await fetchFn(scannerUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(buildRequestBody(serverLimit, { market, grossMarginMinPct })),
-    signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
-  });
+      if (!response.ok) {
+        throw new Error(`TradingView scanner request failed: HTTP ${response.status}`);
+      }
 
-  if (!response.ok) {
-    throw new Error(`TradingView scanner request failed: HTTP ${response.status}`);
-  }
+      const payload = await response.json();
 
-  const payload = await response.json();
+      if (!Array.isArray(payload?.data)) {
+        throw new Error('TradingView scanner returned unexpected response format');
+      }
 
-  if (!Array.isArray(payload?.data)) {
-    throw new Error('TradingView scanner returned unexpected response format');
-  }
+      return {
+        profile,
+        scope,
+        totalCount: payload.totalCount ?? payload.data.length,
+        rows: payload.data.map(normalizeRow),
+      };
+    }),
+  );
 
-  const totalCount = payload.totalCount ?? payload.data.length;
-  const normalized = payload.data.map(normalizeRow);
-  const scopeFiltered = normalized.filter((row) => passesScopeFilters(row, { exchangeAllowlist, symbolAllowlist }));
-  const phase1Filtered = scopeFiltered.filter((row) => passesSelectedSectorFilter(row, selectedFilterRules));
-  let clientFiltered = phase1Filtered.filter(passesClientFilters);
+  const totalScanned = dedupeRows(phase2Responses.flatMap((entry) => entry.rows)).length;
+  const scopeFiltered = dedupeRows(
+    phase2Responses.flatMap(({ profile, rows }) => rows
+      .filter((row) => passesScopeFilters(row, { exchangeAllowlist, symbolAllowlist }))
+      .filter((row) => passesProfileScope(row, profile))
+      .map((row) => ({
+        ...row,
+        screeningProfileId: profile.id,
+        screeningProfileLabel: profile.label,
+        screeningThresholds: profile.thresholds,
+        screeningPfcfMax: profile.getPfcfMax ? profile.getPfcfMax(row) : profile.thresholds.pFcfMax,
+        screeningRevenueGrowthMinPct: profile.thresholds.revenueGrowthMinPct,
+      }))),
+  );
+  const phase1Filtered = scopeFiltered;
+  let clientFiltered = phase1Filtered.filter(passesProfileClientFilters);
 
   if (enrichWithYahoo && clientFiltered.length > 0) {
     const symbols = clientFiltered.map((r) => r.symbol);
-    const growthMap = await batchFetchRevenueGrowth(symbols);
+    const growthMap = await batchFetchRevenueGrowth(symbols, getFundamentals);
 
-    // Attach revenueGrowth and apply revenue growth filter (>20%)
     clientFiltered = clientFiltered
       .map((r) => ({ ...r, revenueGrowth: growthMap[r.symbol] ?? null }))
-      .filter((r) => r.revenueGrowth === null || r.revenueGrowth > 0.20);
+      .filter((r) => r.revenueGrowth === null
+        || r.revenueGrowth > (r.screeningRevenueGrowthMinPct / 100));
   }
 
   const ranked = applyRankSum(clientFiltered, enrichWithYahoo).sort((a, b) => a.rankScore - b.rankScore);
-  const matched = ranked.slice(0, effectiveLimit);
+  const matched = ranked.slice(0, effectiveLimit).map(stripInternalFields);
   const sectorRanking = summarizeSectors(ranked);
-  const selectedSectorLabels = sectorMomentum.selectedSectors.map((entry) => entry.label);
 
   const criteria = {
-    rsi14_min: 60,
     market_cap_min_usd: 1_000_000_000,
-    relative_volume_min: 1.2,
     eps_min: 0,
-    roe_min_pct: 15,
-    gross_margin_min_pct: grossMarginMinPct,
-    fcf_margin_min_pct: 10,
     price_above_sma200: true,
     price_above_sma50: true,
     price_pct_of_52wk_high_min: 75,
-    perf3m_min_pct: 10,
-    p_fcf_max: 50,
+    profile_summaries: profileSummaries,
+    excluded_phase2_sectors: excludedSelectedSectors,
+    phase1_selected_sectors: selectedSectorLabels,
   };
   if (exchangeAllowlist) {
     criteria.allowed_exchanges = exchangeAllowlist;
@@ -410,12 +446,12 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     criteria.symbol_allowlist_key = symbolAllowlistKey;
   }
   if (enrichWithYahoo) {
-    criteria.revenue_growth_min_pct = 20;
+    criteria.revenue_growth_policy = 'profile-specific minimum, null passes';
   }
 
   return {
     success: true,
-    totalScanned: totalCount,
+    totalScanned,
     serverFiltered: scopeFiltered.length,
     phase1Filtered: phase1Filtered.length,
     clientFiltered: clientFiltered.length,
@@ -429,11 +465,12 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       market,
       instrumentTypes: ['stock'],
       serverLimit,
-      totalCandidatesReported: totalCount,
+      totalCandidatesReported: phase2Responses.reduce((sum, entry) => sum + entry.totalCount, 0),
+      profileRequestCount: requestPlans.length,
       scopeLabel,
       note: `${exchangeAllowlist || symbolAllowlistKey
-        ? 'TradingView Scanner API returns the filtered stock candidates for the selected market scope; exchange and symbol-universe filters below are additionally applied locally for this run.'
-        : `TradingView Scanner API returns the filtered stock universe for the ${market} market scope; exchange counts below are based on the returned candidates for this run.`} Phase1 then selected ${selectedSectorLabels.join(', ') || 'no sectors'} before the Phase2 stock filters were applied.`,
+        ? 'TradingView Scanner API was queried with sector-specific profile filters, then exchange and symbol-universe filters were applied locally.'
+        : `TradingView Scanner API was queried with sector-specific profile filters for the ${market} market scope.`} Phase1 selected ${selectedSectorLabels.join(', ') || 'no sectors'}, and Phase2 excluded ${excludedSelectedSectors.join(', ') || 'no sectors'}.`,
     },
     marketBreakdown: {
       serverFiltered: countBy(scopeFiltered, 'exchange'),

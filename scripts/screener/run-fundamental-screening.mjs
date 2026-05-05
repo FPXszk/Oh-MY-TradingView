@@ -94,6 +94,14 @@ function buildMarketLines(label, entries) {
   return `- ${label}: ${entries.map((entry) => `${entry.name} ${entry.count}件`).join(', ')}`;
 }
 
+function buildProfileConditionLine(profile) {
+  const thresholds = profile.thresholds ?? {};
+  const relativeVolume = thresholds.relative_volume_min === undefined
+    ? 'N/A'
+    : Number(thresholds.relative_volume_min).toFixed(2);
+  return `- ${profile.label}: RSI > ${thresholds.rsi14_min}, 相対出来高 > ${relativeVolume}x, ROE > ${thresholds.roe_min_pct}%, 粗利率 > ${thresholds.gross_margin_min_pct}%, FCFマージン > ${thresholds.fcf_margin_min_pct}%, Perf.3M > ${thresholds.perf_3m_min_pct}%, P/FCF < ${thresholds.p_fcf_max}`;
+}
+
 function parseExchangeAllowlist(value) {
   if (!value) return null;
   const exchanges = value.split(',').map((entry) => entry.trim()).filter(Boolean);
@@ -134,7 +142,7 @@ export function buildMarkdown(result, options = {}) {
     '',
     `更新: ${result.retrieved_at}（JST ${jst}）`,
     '',
-    `スキャン対象: ${result.totalScanned.toLocaleString()} 銘柄 → スコープ通過: ${result.serverFiltered} → Phase1 セクターフィルター通過: ${result.phase1Filtered ?? result.serverFiltered} → クライアントフィルター通過: ${result.clientFiltered} → 上位: ${result.matched}`,
+    `Phase2候補取得: ${result.totalScanned.toLocaleString()} 銘柄 → スコープ通過: ${result.serverFiltered} → Phase1 選択セクター通過: ${result.phase1Filtered ?? result.serverFiltered} → クライアントフィルター通過: ${result.clientFiltered} → 上位: ${result.matched}`,
     '',
   ];
 
@@ -204,9 +212,9 @@ export function buildMarkdown(result, options = {}) {
   if (result.scannerScope.scopeLabel) {
     lines.push(`- ユニバース追加条件: ${result.scannerScope.scopeLabel}`);
   }
-  lines.push(`- 観測レンジ: 今回は最大 ${result.scannerScope.serverLimit} 件まで取得し、その範囲で市場別内訳を集計`);
+  lines.push(`- 観測レンジ: 今回は ${result.scannerScope.profileRequestCount ?? 1} 件のプロファイルスキャンを行い、各リクエスト最大 ${result.scannerScope.serverLimit} 件まで取得`);
   lines.push(buildMarketLines('スコープ通過', result.marketBreakdown?.serverFiltered));
-  lines.push(buildMarketLines('Phase1 セクターフィルター通過', result.marketBreakdown?.phase1Filtered));
+  lines.push(buildMarketLines('Phase1 選択セクター通過', result.marketBreakdown?.phase1Filtered));
   lines.push(buildMarketLines('クライアントフィルター通過', result.marketBreakdown?.clientFiltered));
   lines.push(buildMarketLines('最終採用', result.marketBreakdown?.matched));
   lines.push(`- 補足: ${result.scannerScope.note}`);
@@ -227,10 +235,17 @@ export function buildMarkdown(result, options = {}) {
   lines.push(`**スコア算出:** \`rank(${result.rankingFormula.join(') + rank(')})\`（合計が小さいほど上位）`);
   lines.push('');
   lines.push('**フィルター条件:**');
-  lines.push(`- RSI(14) > ${result.criteria.rsi14_min}, 時価総額 > $1B, 相対出来高 > ${result.criteria.relative_volume_min}x`);
-  lines.push(`- EPS(TTM) > ${result.criteria.eps_min}, ROE > ${result.criteria.roe_min_pct}%, 粗利率(TTM) > ${result.criteria.gross_margin_min_pct}%, FCFマージン(TTM) > ${result.criteria.fcf_margin_min_pct}%`);
-  lines.push(`- Close > SMA200, Close > SMA50, Close ≥ 52週高値 × ${result.criteria.price_pct_of_52wk_high_min}%`);
-  lines.push(`- Perf.3M > ${result.criteria.perf3m_min_pct}%, P/FCF < ${result.criteria.p_fcf_max}`);
+  lines.push(`- 共通条件: 時価総額 > $1B, EPS(TTM) > ${result.criteria.eps_min}, Close > SMA200, Close > SMA50, Close ≥ 52週高値 × ${result.criteria.price_pct_of_52wk_high_min}%`);
+  if (result.criteria.profile_summaries?.length) {
+    result.criteria.profile_summaries.forEach((profile) => {
+      lines.push(buildProfileConditionLine(profile));
+    });
+  } else {
+    lines.push('- セクター別プロファイル条件はありません。');
+  }
+  if (result.criteria.excluded_phase2_sectors?.length) {
+    lines.push(`- Phase2 除外セクター: ${result.criteria.excluded_phase2_sectors.join(', ')}`);
+  }
   if (result.criteria.allowed_exchanges) {
     lines.push(`- 取引所限定: ${result.criteria.allowed_exchanges.join(', ')}`);
   }
@@ -238,7 +253,7 @@ export function buildMarkdown(result, options = {}) {
     lines.push(`- 銘柄ユニバース限定: ${result.criteria.symbol_allowlist_key}`);
   }
   if (result.enrichedWithYahoo) {
-    lines.push('- Yahoo Finance 補完あり: 売上成長率 YoY > 20%');
+    lines.push('- Yahoo Finance 補完あり: 売上成長率 YoY はプロファイル別閾値を適用し、null は通過');
   }
 
   return lines.join('\n');

@@ -93,6 +93,7 @@ describe('buildMarkdown', () => {
         market: 'america',
         instrumentTypes: ['stock'],
         serverLimit: 160,
+        profileRequestCount: 3,
         scopeLabel: 'NASDAQ + NYSE stocks only (OTC excluded)',
         note: 'filtered candidates for this run',
       },
@@ -103,15 +104,35 @@ describe('buildMarkdown', () => {
         matched: [{ name: 'NASDAQ', count: 4 }, { name: 'NYSE', count: 2 }],
       },
       criteria: {
-        rsi14_min: 60,
-        relative_volume_min: 1.2,
         eps_min: 0,
-        roe_min_pct: 15,
-        gross_margin_min_pct: 30,
-        fcf_margin_min_pct: 10,
         price_pct_of_52wk_high_min: 75,
-        perf3m_min_pct: 10,
-        p_fcf_max: 50,
+        profile_summaries: [
+          {
+            label: 'Technology',
+            thresholds: {
+              rsi14_min: 60,
+              relative_volume_min: 1.0,
+              roe_min_pct: 20,
+              gross_margin_min_pct: 40,
+              fcf_margin_min_pct: 15,
+              perf_3m_min_pct: 10,
+              p_fcf_max: 50,
+            },
+          },
+          {
+            label: 'Semiconductors',
+            thresholds: {
+              rsi14_min: 60,
+              relative_volume_min: 0.9,
+              roe_min_pct: 15,
+              gross_margin_min_pct: 30,
+              fcf_margin_min_pct: 5,
+              perf_3m_min_pct: 10,
+              p_fcf_max: '50 (fabless), 100 (IDM/foundry)',
+            },
+          },
+        ],
+        excluded_phase2_sectors: ['Financials'],
         allowed_exchanges: ['NASDAQ', 'NYSE'],
       },
       sectorMomentum: {
@@ -229,11 +250,13 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /## 市場カバレッジ/);
     assert.match(markdown, /ユニバース追加条件: NASDAQ \+ NYSE stocks only \(OTC excluded\)/);
     assert.match(markdown, /スコープ通過: NASDAQ 10件, NYSE 4件/);
-    assert.match(markdown, /Phase1 セクターフィルター通過: NASDAQ 6件, NYSE 3件/);
-    assert.match(markdown, /粗利率\(TTM\) > 30%/);
+    assert.match(markdown, /Phase1 選択セクター通過: NASDAQ 6件, NYSE 3件/);
+    assert.match(markdown, /Technology: RSI > 60, 相対出来高 > 1\.00x, ROE > 20%/);
+    assert.match(markdown, /Semiconductors: RSI > 60, 相対出来高 > 0\.90x, ROE > 15%/);
+    assert.match(markdown, /Phase2 除外セクター: Financials/);
     assert.match(markdown, /取引所限定: NASDAQ, NYSE/);
     assert.match(markdown, /## 見ている指標と追加候補/);
-    assert.match(markdown, /Yahoo Finance 補完あり: 売上成長率 YoY > 20%/);
+    assert.match(markdown, /Yahoo Finance 補完あり: 売上成長率 YoY はプロファイル別閾値を適用し、null は通過/);
   });
 
   it('supports a Japan-specific title and currency symbol', () => {
@@ -250,6 +273,7 @@ describe('buildMarkdown', () => {
         market: 'japan',
         instrumentTypes: ['stock'],
         serverLimit: 160,
+        profileRequestCount: 2,
         scopeLabel: 'JPX Prime domestic stocks snapshot (2026-03-31)',
         note: 'filtered candidates for this run',
       },
@@ -260,15 +284,23 @@ describe('buildMarkdown', () => {
         matched: [{ name: 'TSE', count: 2 }],
       },
       criteria: {
-        rsi14_min: 60,
-        relative_volume_min: 1.2,
         eps_min: 0,
-        roe_min_pct: 15,
-        gross_margin_min_pct: 30,
-        fcf_margin_min_pct: 10,
         price_pct_of_52wk_high_min: 75,
-        perf3m_min_pct: 10,
-        p_fcf_max: 50,
+        profile_summaries: [
+          {
+            label: 'Japan Manufacturing',
+            thresholds: {
+              rsi14_min: 55,
+              relative_volume_min: 0.8,
+              roe_min_pct: 12,
+              gross_margin_min_pct: 25,
+              fcf_margin_min_pct: 5,
+              perf_3m_min_pct: 8,
+              p_fcf_max: 80,
+            },
+          },
+        ],
+        excluded_phase2_sectors: ['Finance'],
         allowed_exchanges: ['TSE'],
         symbol_allowlist_key: 'jpx-prime',
       },
