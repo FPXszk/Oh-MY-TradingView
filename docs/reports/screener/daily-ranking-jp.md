@@ -1,8 +1,8 @@
 # 日本株 ファンダメンタル × モメンタム スクリーニング 上位20件
 
-更新: 2026-05-05T04:50:00.074Z（JST 2026/05/05 13:50）
+更新: 2026-05-05T06:05:20.071Z（JST 2026/05/05 15:05）
 
-スキャン対象: 2 銘柄 → スコープ通過: 1 → Phase1 セクターフィルター通過: 1 → クライアントフィルター通過: 0 → 上位: 0
+Phase2候補取得: 9 銘柄 → スコープ通過: 8 → Phase1 選択セクター通過: 8 → クライアントフィルター通過: 8 → 上位: 8
 
 ## Phase1 セクターランキング
 
@@ -32,22 +32,65 @@
 | 18 | Retail Trade | -3.9% | -4.0% | 39.3 | 0.97x | 92銘柄 | 80 |
 | 19 | Health Services | -3.7% | -3.6% | 39.0 | 0.92x | 5銘柄 | 84 |
 
-> 本日は条件を満たす銘柄がありませんでした。
+## 上位5件の選定理由
+
+### 1位 6101 (TSE)
+- 総合点: 10
+- 内訳: 3M 1位 / ROE 3位 / FCF 3位 / 売上成長 3位
+- 理由: 3か月モメンタムが候補群で1位、ROEも3位、6920より総合点が2点良い。
+
+### 2位 6920 (TSE)
+- 総合点: 12
+- 内訳: 3M 6位 / ROE 1位 / FCF 1位 / 売上成長 4位
+- 理由: ROEが候補群で1位、FCFマージンも1位、8035より総合点が2点良い、一方で3か月モメンタムは6位で弱点。
+
+### 3位 8035 (TSE)
+- 総合点: 14
+- 内訳: 3M 5位 / ROE 2位 / FCF 6位 / 売上成長 1位
+- 理由: 売上成長率が候補群で1位、ROEも2位、4021より総合点が3点良い、一方でFCFマージンは6位で弱点。
+
+### 4位 4021 (TSE)
+- 総合点: 17
+- 内訳: 3M 3位 / ROE 4位 / FCF 4位 / 売上成長 6位
+- 理由: 3か月モメンタムが候補群で3位、ROEも4位、4063より総合点が3点良い、一方で売上成長率は6位で弱点。
+
+### 5位 4063 (TSE)
+- 総合点: 20
+- 内訳: 3M 2位 / ROE 8位 / FCF 5位 / 売上成長 5位
+- 理由: 3か月モメンタムが候補群で2位、FCFマージンも5位、4021との差は総合点で3点、一方でROEは8位で弱点。
+
+## 銘柄ランキング
+
+| 順位 | シンボル | セクター | 市場 | 現在値 | Perf.3M | ROE | FCFマージン | 売上成長 | 総合点 |
+|:---:|:---|:---|:---:|---:|---:|---:|---:|---:|---:|
+| 1 | **6101** | Producer Manufacturing | TSE | ¥4785.00 | 55.9% | 22.0% | 17.6% | N/A% | 10 |
+| 2 | **6920** | Electronic Technology | TSE | ¥42930.00 | 15.4% | 44.1% | 27.4% | N/A% | 12 |
+| 3 | **8035** | Producer Manufacturing | TSE | ¥47450.00 | 15.7% | 29.3% | 13.5% | N/A% | 14 |
+| 4 | **4021** | Process Industries | TSE | ¥6750.00 | 28.7% | 19.8% | 17.0% | N/A% | 17 |
+| 5 | **4063** | Process Industries | TSE | ¥7104.00 | 42.3% | 10.4% | 13.9% | N/A% | 20 |
+| 6 | **4368** | Process Industries | TSE | ¥3160.00 | 27.4% | 12.2% | 24.2% | N/A% | 20 |
+| 7 | **6454** | Producer Manufacturing | TSE | ¥1796.00 | 9.5% | 12.6% | 11.8% | N/A% | 22 |
+| 8 | **8053** | Distribution Services | TSE | ¥6840.00 | 8.2% | 12.9% | 9.6% | N/A% | 29 |
 
 ## Phase2 通過銘柄のセクター内訳
 
-- 条件通過銘柄がないため、Phase2 のセクター内訳は算出できませんでした。
+| 順位 | セクター | 通過銘柄数 | 平均Perf.3M | 平均総合点 | 代表銘柄 |
+|:---:|:---|---:|---:|---:|:---|
+| 1 | Process Industries | 3 | 32.8% | 19.0 | 4021 |
+| 2 | Producer Manufacturing | 3 | 27.0% | 15.3 | 6101 |
+| 3 | Electronic Technology | 1 | 15.4% | 12.0 | 6920 |
+| 4 | Distribution Services | 1 | 8.2% | 29.0 | 8053 |
 
 ## 市場カバレッジ
 
 - スキャンスコープ: TradingView Scanner API の `japan` 市場、対象は `stock`
 - ユニバース追加条件: JPX Prime domestic stocks snapshot (2026-03-31)
-- 観測レンジ: 今回は最大 160 件まで取得し、その範囲で市場別内訳を集計
-- スコープ通過: TSE 1件
-- Phase1 セクターフィルター通過: TSE 1件
-- クライアントフィルター通過: データなし
-- 最終採用: データなし
-- 補足: TradingView Scanner API returns the filtered stock candidates for the selected market scope; exchange and symbol-universe filters below are additionally applied locally for this run. Phase1 then selected Producer Manufacturing, Electronic Technology, Process Industries before the Phase2 stock filters were applied.
+- 観測レンジ: 今回は 5 件のプロファイルスキャンを行い、各リクエスト最大 160 件まで取得
+- スコープ通過: TSE 8件
+- Phase1 選択セクター通過: TSE 8件
+- クライアントフィルター通過: TSE 8件
+- 最終採用: TSE 8件
+- 補足: TradingView Scanner API was queried with sector-specific profile filters, then exchange and symbol-universe filters were applied locally. Phase1 selected Producer Manufacturing, Electronic Technology, Process Industries, and Phase2 excluded no sectors.
 
 ## 見ている指標と追加候補
 
@@ -63,10 +106,9 @@
 **スコア算出:** `rank(perf3m) + rank(roe) + rank(fcfMargin) + rank(revenueGrowth)`（合計が小さいほど上位）
 
 **フィルター条件:**
-- RSI(14) > 60, 時価総額 > $1B, 相対出来高 > 1.2x
-- EPS(TTM) > 0, ROE > 15%, 粗利率(TTM) > 30%, FCFマージン(TTM) > 10%
-- Close > SMA200, Close > SMA50, Close ≥ 52週高値 × 75%
-- Perf.3M > 10%, P/FCF < 50
+- 共通条件: 時価総額 > $1B, EPS(TTM) > 0, Close > SMA200, Close > SMA50, Close ≥ 52週高値 × 75%
+- Japan Manufacturing: RSI > 55, 相対出来高 > 0.80x, ROE > 12%, 粗利率 > 25%, FCFマージン > 5%, Perf.3M > 8%, P/FCF < 80
+- Japan Materials & Trading: RSI > 55, 相対出来高 > 0.80x, ROE > 10%, 粗利率 > 15%, FCFマージン > 4%, Perf.3M > 5%, P/FCF < 40
 - 取引所限定: TSE
 - 銘柄ユニバース限定: jpx-prime
-- Yahoo Finance 補完あり: 売上成長率 YoY > 20%
+- Yahoo Finance 補完あり: 売上成長率 YoY はプロファイル別閾値を適用し、null は通過
