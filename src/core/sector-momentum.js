@@ -1,98 +1,9 @@
 const DEFAULT_TIMEOUT_MS = 15000;
 const DEFAULT_SELECTED_SECTOR_COUNT = 3;
-const STOCK_RANGE_LIMIT = 2000;
+const DEFAULT_US_SELECTED_SECTOR_COUNT = 20;
+const STOCK_PAGE_SIZE = 1000;
 const MARKET_CAP_MIN_USD = 1_000_000_000;
-
-const US_SECTOR_FUNDS = [
-  {
-    key: 'technology',
-    sector: 'Technology',
-    ticker: 'AMEX:XLK',
-    stockSectors: ['Electronic Technology', 'Technology Services'],
-    industryExcludePattern: /Semiconductors/i,
-  },
-  {
-    key: 'consumer-discretionary',
-    sector: 'Consumer Discretionary',
-    ticker: 'AMEX:XLY',
-    stockSectors: ['Consumer Durables', 'Consumer Services', 'Retail Trade', 'Distribution Services'],
-  },
-  {
-    key: 'energy',
-    sector: 'Energy',
-    ticker: 'AMEX:XLE',
-    stockSectors: ['Energy Minerals'],
-  },
-  {
-    key: 'health-care',
-    sector: 'Health Care',
-    ticker: 'AMEX:XLV',
-    stockSectors: ['Health Technology', 'Health Services'],
-  },
-  {
-    key: 'financials',
-    sector: 'Financials',
-    ticker: 'AMEX:XLF',
-    stockSectors: ['Finance'],
-    industryExcludePattern: /REIT|Real Estate/i,
-  },
-  {
-    key: 'communication-services',
-    sector: 'Communication Services',
-    ticker: 'AMEX:XLC',
-    stockSectors: ['Communications'],
-  },
-  {
-    key: 'industrials',
-    sector: 'Industrials',
-    ticker: 'AMEX:XLI',
-    stockSectors: ['Producer Manufacturing', 'Industrial Services', 'Transportation', 'Commercial Services'],
-  },
-  {
-    key: 'materials',
-    sector: 'Materials',
-    ticker: 'AMEX:XLB',
-    stockSectors: ['Process Industries', 'Non-Energy Minerals'],
-  },
-  {
-    key: 'real-estate',
-    sector: 'Real Estate',
-    ticker: 'AMEX:XLRE',
-    stockSectors: ['Finance'],
-    industryPattern: /REIT|Real Estate/i,
-  },
-  {
-    key: 'consumer-staples',
-    sector: 'Consumer Staples',
-    ticker: 'AMEX:XLP',
-    stockSectors: ['Consumer Non-Durables'],
-  },
-  {
-    key: 'utilities',
-    sector: 'Utilities',
-    ticker: 'AMEX:XLU',
-    stockSectors: ['Utilities'],
-  },
-  {
-    key: 'semiconductors',
-    sector: 'Semiconductors',
-    ticker: 'NASDAQ:SMH',
-    stockSectors: ['Electronic Technology'],
-    industryPattern: /Semiconductors/i,
-  },
-];
-
-const FUND_COLUMNS = [
-  'name',
-  'description',
-  'Perf.1M',
-  'Perf.3M',
-  'Perf.6M',
-  'Perf.Y',
-  'RSI',
-  'relative_volume_10d_calc',
-  'volume',
-];
+const MAX_SELECTED_STOCK_SECTOR_COUNT = 20;
 
 const STOCK_COLUMNS = [
   'name',
@@ -106,7 +17,6 @@ const STOCK_COLUMNS = [
   'market_cap_basic',
 ];
 
-const FUND_COL = Object.fromEntries(FUND_COLUMNS.map((col, index) => [col, index]));
 const STOCK_COL = Object.fromEntries(STOCK_COLUMNS.map((col, index) => [col, index]));
 
 function normalizeSymbol(rawSymbol) {
@@ -117,11 +27,11 @@ function normalizeSymbol(rawSymbol) {
   };
 }
 
-function validateSelectedSectorCount(value) {
-  if (value === undefined || value === null) return DEFAULT_SELECTED_SECTOR_COUNT;
+function validateSelectedSectorCount(value, { max = MAX_SELECTED_STOCK_SECTOR_COUNT, defaultValue = DEFAULT_SELECTED_SECTOR_COUNT } = {}) {
+  if (value === undefined || value === null) return defaultValue;
   const n = Number(value);
-  if (!Number.isInteger(n) || n < 1 || n > US_SECTOR_FUNDS.length) {
-    throw new Error(`selectedSectorCount must be an integer between 1 and ${US_SECTOR_FUNDS.length}`);
+  if (!Number.isInteger(n) || n < 1 || n > max) {
+    throw new Error(`selectedSectorCount must be an integer between 1 and ${max}`);
   }
   return n;
 }
@@ -183,22 +93,7 @@ function buildSelection(rankings, selectedCount) {
   };
 }
 
-function buildUsFundRequestBody() {
-  return {
-    filter: [],
-    options: { lang: 'en' },
-    markets: ['america'],
-    symbols: {
-      query: { types: ['fund'] },
-      tickers: US_SECTOR_FUNDS.map((entry) => entry.ticker),
-    },
-    columns: FUND_COLUMNS,
-    sort: { sortBy: 'Perf.3M', sortOrder: 'desc' },
-    range: [0, US_SECTOR_FUNDS.length],
-  };
-}
-
-function buildStockAggregationRequestBody(market) {
+function buildStockAggregationRequestBody(market, rangeStart, rangeEnd) {
   return {
     filter: [
       { left: 'market_cap_basic', operation: 'egreater', right: MARKET_CAP_MIN_USD },
@@ -208,7 +103,7 @@ function buildStockAggregationRequestBody(market) {
     symbols: { query: { types: ['stock'] }, tickers: [] },
     columns: STOCK_COLUMNS,
     sort: { sortBy: 'market_cap_basic', sortOrder: 'desc' },
-    range: [0, STOCK_RANGE_LIMIT],
+    range: [rangeStart, rangeEnd],
   };
 }
 
@@ -216,33 +111,6 @@ function passesScopeFilters(row, { exchangeAllowlist, symbolAllowlist }) {
   if (exchangeAllowlist && !exchangeAllowlist.includes(row.exchange)) return false;
   if (symbolAllowlist && !symbolAllowlist.has(row.symbol)) return false;
   return true;
-}
-
-function normalizeFundRow(row) {
-  const ticker = row.s || '';
-  const config = US_SECTOR_FUNDS.find((entry) => entry.ticker === ticker);
-  if (!config) return null;
-
-  const { exchange, symbol } = normalizeSymbol(ticker);
-  return {
-    sectorKey: config.key,
-    sector: config.sector,
-    ticker,
-    exchange,
-    proxySymbol: symbol,
-    proxyName: row.d[FUND_COL['name']] ?? symbol,
-    description: row.d[FUND_COL['description']] ?? null,
-    perf1m: row.d[FUND_COL['Perf.1M']] ?? null,
-    perf3m: row.d[FUND_COL['Perf.3M']] ?? null,
-    perf6m: row.d[FUND_COL['Perf.6M']] ?? null,
-    perfY: row.d[FUND_COL['Perf.Y']] ?? null,
-    rsi14: row.d[FUND_COL['RSI']] ?? null,
-    relativeVolume: row.d[FUND_COL['relative_volume_10d_calc']] ?? null,
-    volume: row.d[FUND_COL['volume']] ?? null,
-    stockSectors: config.stockSectors,
-    industryPattern: config.industryPattern ?? null,
-    industryExcludePattern: config.industryExcludePattern ?? null,
-  };
 }
 
 function normalizeStockRow(row) {
@@ -280,40 +148,6 @@ async function requestScanner(url, body, fetchFn) {
   return payload;
 }
 
-async function runUsSectorFunds({ fetchFn, selectedSectorCount }) {
-  const payload = await requestScanner(
-    'https://scanner.tradingview.com/america/scan',
-    buildUsFundRequestBody(),
-    fetchFn,
-  );
-
-  const normalized = payload.data.map(normalizeFundRow).filter(Boolean);
-  const rankingFormula = ['perfY', 'perf6m', 'perf3m', 'relativeVolume', 'rsi14'];
-  const rankings = applyRankSum(normalized, rankingFormula);
-  const { selected, selectedStockSectors, selectedFilterRules } = buildSelection(rankings, selectedSectorCount);
-
-  return {
-    approach: 'us-sector-etfs',
-    approachLabel: 'US sector ETF momentum',
-    selectedCount: selectedSectorCount,
-    rankingFormula,
-    selectedSectors: selected.map((entry) => ({
-      key: entry.sectorKey,
-      label: entry.sector,
-      proxySymbol: entry.proxySymbol,
-      stockSectors: entry.stockSectors,
-    })),
-    selectedStockSectors,
-    selectedFilterRules,
-    rankings,
-    coverage: {
-      totalCandidatesReported: payload.totalCount ?? normalized.length,
-      scopedCandidates: normalized.length,
-      serverLimit: US_SECTOR_FUNDS.length,
-    },
-  };
-}
-
 async function runStockAggregation({
   market,
   exchangeAllowlist,
@@ -321,13 +155,24 @@ async function runStockAggregation({
   fetchFn,
   selectedSectorCount,
 }) {
-  const payload = await requestScanner(
-    `https://scanner.tradingview.com/${market}/scan`,
-    buildStockAggregationRequestBody(market),
-    fetchFn,
-  );
+  const scannerUrl = `https://scanner.tradingview.com/${market}/scan`;
+  const payloads = [];
+  let rangeStart = 0;
+  let totalCandidatesReported = null;
+  while (totalCandidatesReported === null || rangeStart < totalCandidatesReported) {
+    const payload = await requestScanner(
+      scannerUrl,
+      buildStockAggregationRequestBody(market, rangeStart, rangeStart + STOCK_PAGE_SIZE),
+      fetchFn,
+    );
+    payloads.push(payload);
+    totalCandidatesReported = payload.totalCount ?? (rangeStart + payload.data.length);
+    if (payload.data.length === 0) break;
+    rangeStart += STOCK_PAGE_SIZE;
+  }
 
-  const normalized = payload.data
+  const rawRows = payloads.flatMap((payload) => payload.data);
+  const normalized = rawRows
     .map(normalizeStockRow)
     .filter((row) => passesScopeFilters(row, { exchangeAllowlist, symbolAllowlist }));
 
@@ -407,7 +252,9 @@ async function runStockAggregation({
 
   return {
     approach: 'stock-aggregation',
-    approachLabel: `${market} stock aggregation`,
+    approachLabel: market === 'america'
+      ? 'US TradingView stock-sector aggregation'
+      : `${market} stock aggregation`,
     selectedCount: selectedSectorCount,
     rankingFormula,
     selectedSectors: selected.map((entry) => ({
@@ -420,9 +267,9 @@ async function runStockAggregation({
     selectedFilterRules,
     rankings,
     coverage: {
-      totalCandidatesReported: payload.totalCount ?? payload.data.length,
+      totalCandidatesReported: totalCandidatesReported ?? rawRows.length,
       scopedCandidates: normalized.length,
-      serverLimit: STOCK_RANGE_LIMIT,
+      serverLimit: rawRows.length,
     },
   };
 }
@@ -435,10 +282,15 @@ export async function runSectorMomentumScan({
   fetch,
 }) {
   const fetchFn = fetch ?? globalThis.fetch;
-  const effectiveSelectedSectorCount = validateSelectedSectorCount(selectedSectorCount);
+  const effectiveSelectedSectorCount = validateSelectedSectorCount(selectedSectorCount, {
+    defaultValue: market === 'america' ? DEFAULT_US_SELECTED_SECTOR_COUNT : DEFAULT_SELECTED_SECTOR_COUNT,
+  });
 
   if (market === 'america') {
-    return runUsSectorFunds({
+    return runStockAggregation({
+      market,
+      exchangeAllowlist,
+      symbolAllowlist,
       fetchFn,
       selectedSectorCount: effectiveSelectedSectorCount,
     });

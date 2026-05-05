@@ -43,20 +43,20 @@ This should make symbols such as `LITE` (`Producer Manufacturing`) eligible for 
 
 ## Implementation Steps
 
-- [ ] Update `sector-momentum.js` so `market === "america"` uses stock aggregation and validates selected sector count against the TradingView sector universe.
-- [ ] Update US sector profiles to activate from TradingView stock-sector labels directly.
-- [ ] Preserve semiconductor special handling without blocking non-semiconductor `Electronic Technology` names from a sensible profile.
-- [ ] Adjust report labels/condition text for stock-sector aggregation.
-- [ ] Update tests to cover the new US Phase1 behavior and `Producer Manufacturing` activation.
-- [ ] Regenerate `docs/reports/screener/daily-ranking.md` with the new 20-sector premise.
+- [x] Update `sector-momentum.js` so `market === "america"` uses stock aggregation and validates selected sector count against the TradingView sector universe.
+- [x] Update US sector profiles to activate from TradingView stock-sector labels directly.
+- [x] Preserve semiconductor special handling without blocking non-semiconductor `Electronic Technology` names from a sensible profile.
+- [x] Adjust report labels/condition text for stock-sector aggregation.
+- [x] Update tests to cover the new US Phase1 behavior and `Producer Manufacturing` activation.
+- [x] Regenerate `docs/reports/screener/daily-ranking.md` with the new 20-sector premise.
 
 ## Review Checklist
 
-- [ ] Phase1 rankings list TradingView stock sectors, not ETF bucket labels.
-- [ ] Phase2 request scopes are derived from selected TradingView sectors.
-- [ ] `Producer Manufacturing` can be selected and screened when its Phase1 rank is high.
-- [ ] Existing semiconductor `SNDK`/`MU` handling remains compatible.
-- [ ] The report explains the new premise clearly.
+- [x] Phase1 rankings list TradingView stock sectors, not ETF bucket labels.
+- [x] Phase2 request scopes are derived from selected TradingView sectors.
+- [x] `Producer Manufacturing` can be selected and screened when its Phase1 rank is high.
+- [x] Existing semiconductor `SNDK`/`MU` handling remains compatible.
+- [x] The report explains the new premise clearly.
 
 ## Validation Commands
 

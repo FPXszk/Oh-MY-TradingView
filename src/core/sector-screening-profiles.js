@@ -35,194 +35,142 @@ function profileSummary(profile) {
   };
 }
 
-const US_PHASE2_EXCLUDED = new Set(['Financials', 'Real Estate', 'Utilities']);
+const US_PHASE2_EXCLUDED = new Set();
 const JP_PHASE2_EXCLUDED = new Set(['Finance', 'Utilities']);
 
+function usSectorProfile(id, sector, thresholds, extra = {}) {
+  return {
+    id: `us-${id}`,
+    label: extra.label ?? sector,
+    phase1Labels: [sector],
+    requestScopes: [
+      { sector },
+    ],
+    thresholds: {
+      ...COMMON_LIMITS,
+      ...thresholds,
+    },
+    ...extra,
+  };
+}
+
+const US_TECH_THRESHOLDS = {
+  rsiMin: 60,
+  relativeVolumeMin: 1.0,
+  grossMarginMinPct: 40,
+  fcfMarginMinPct: 15,
+  roeMinPct: 20,
+  perf3mMinPct: 10,
+  revenueGrowthMinPct: 10,
+  pFcfMax: 50,
+};
+
+const US_SEMICONDUCTOR_THRESHOLDS = {
+  rsiMin: 60,
+  relativeVolumeMin: 0.9,
+  grossMarginMinPct: 30,
+  fcfMarginMinPct: 5,
+  roeMinPct: 15,
+  perf3mMinPct: 10,
+  revenueGrowthMinPct: 15,
+  pFcfMax: 50,
+};
+
+const US_CYCLICAL_THRESHOLDS = {
+  rsiMin: 60,
+  relativeVolumeMin: 1.0,
+  grossMarginMinPct: 25,
+  fcfMarginMinPct: 8,
+  roeMinPct: 12,
+  perf3mMinPct: 15,
+  revenueGrowthMinPct: 8,
+  pFcfMax: 50,
+};
+
+const US_INDUSTRIAL_THRESHOLDS = {
+  rsiMin: 60,
+  relativeVolumeMin: 0.9,
+  grossMarginMinPct: 25,
+  fcfMarginMinPct: 5,
+  roeMinPct: 12,
+  perf3mMinPct: 10,
+  revenueGrowthMinPct: 8,
+  pFcfMax: 50,
+};
+
+const US_MATERIALS_THRESHOLDS = {
+  rsiMin: 60,
+  relativeVolumeMin: 1.0,
+  grossMarginMinPct: 20,
+  fcfMarginMinPct: 5,
+  roeMinPct: 12,
+  perf3mMinPct: 15,
+  revenueGrowthMinPct: 5,
+  pFcfMax: 20,
+};
+
+const US_ENERGY_THRESHOLDS = {
+  rsiMin: 60,
+  relativeVolumeMin: 1.0,
+  grossMarginMinPct: 20,
+  fcfMarginMinPct: 5,
+  roeMinPct: 12,
+  perf3mMinPct: 15,
+  revenueGrowthMinPct: 5,
+  pFcfMax: 20,
+};
+
+const US_DEFENSIVE_THRESHOLDS = {
+  rsiMin: 55,
+  relativeVolumeMin: 0.9,
+  grossMarginMinPct: 30,
+  fcfMarginMinPct: 8,
+  roeMinPct: 12,
+  perf3mMinPct: 5,
+  revenueGrowthMinPct: 3,
+  pFcfMax: 30,
+};
+
+const US_BROAD_THRESHOLDS = {
+  rsiMin: 55,
+  relativeVolumeMin: 0.9,
+  grossMarginMinPct: 20,
+  fcfMarginMinPct: 5,
+  roeMinPct: 10,
+  perf3mMinPct: 5,
+  revenueGrowthMinPct: 3,
+  pFcfMax: 50,
+};
+
 const US_PROFILES = [
-  {
-    id: 'us-technology',
-    label: 'Technology',
-    phase1Labels: ['Technology'],
-    requestScopes: [
-      { sector: 'Technology Services' },
-      { sector: 'Electronic Technology' },
-    ],
-    thresholds: {
-      ...COMMON_LIMITS,
-      rsiMin: 60,
-      relativeVolumeMin: 1.0,
-      grossMarginMinPct: 40,
-      fcfMarginMinPct: 15,
-      roeMinPct: 20,
-      perf3mMinPct: 10,
-      revenueGrowthMinPct: 10,
-      pFcfMax: 50,
-    },
+  usSectorProfile('technology-services', 'Technology Services', US_TECH_THRESHOLDS),
+  usSectorProfile('electronic-technology', 'Electronic Technology', US_TECH_THRESHOLDS, {
     excludeRow: (row) => isSemiconductorLike(row),
-  },
-  {
-    id: 'us-communication-services',
-    label: 'Communication Services',
-    phase1Labels: ['Communication Services'],
-    requestScopes: [
-      { sector: 'Communications' },
-    ],
-    thresholds: {
-      ...COMMON_LIMITS,
-      rsiMin: 60,
-      relativeVolumeMin: 1.0,
-      grossMarginMinPct: 40,
-      fcfMarginMinPct: 15,
-      roeMinPct: 20,
-      perf3mMinPct: 10,
-      revenueGrowthMinPct: 10,
-      pFcfMax: 50,
-    },
-  },
-  {
-    id: 'us-semiconductors',
-    label: 'Semiconductors',
-    phase1Labels: ['Semiconductors'],
-    requestScopes: [
-      { sector: 'Electronic Technology' },
-    ],
-    thresholds: {
-      ...COMMON_LIMITS,
-      rsiMin: 60,
-      relativeVolumeMin: 0.9,
-      grossMarginMinPct: 30,
-      fcfMarginMinPct: 5,
-      roeMinPct: 15,
-      perf3mMinPct: 10,
-      revenueGrowthMinPct: 15,
-      pFcfMax: 50,
-    },
+  }),
+  usSectorProfile('electronic-technology-semiconductors', 'Electronic Technology', US_SEMICONDUCTOR_THRESHOLDS, {
+    label: 'Electronic Technology / Semiconductors',
     pFcfMaxLabel: '50 (fabless), 100 (IDM/foundry)',
     includeRow: (row) => isSemiconductorLike(row),
     getPfcfMax: (row) => getSemiconductorPfcfMax(row.symbol),
-  },
-  {
-    id: 'us-consumer-discretionary',
-    label: 'Consumer Discretionary',
-    phase1Labels: ['Consumer Discretionary'],
-    requestScopes: [
-      { sector: 'Consumer Durables' },
-      { sector: 'Consumer Services' },
-      { sector: 'Retail Trade' },
-      { sector: 'Distribution Services' },
-    ],
-    thresholds: {
-      ...COMMON_LIMITS,
-      rsiMin: 60,
-      relativeVolumeMin: 1.0,
-      grossMarginMinPct: 25,
-      fcfMarginMinPct: 8,
-      roeMinPct: 12,
-      perf3mMinPct: 15,
-      revenueGrowthMinPct: 8,
-      pFcfMax: 50,
-    },
-  },
-  {
-    id: 'us-industrials',
-    label: 'Industrials',
-    phase1Labels: ['Industrials'],
-    requestScopes: [
-      { sector: 'Producer Manufacturing' },
-      { sector: 'Industrial Services' },
-      { sector: 'Transportation' },
-      { sector: 'Commercial Services' },
-    ],
-    thresholds: {
-      ...COMMON_LIMITS,
-      rsiMin: 60,
-      relativeVolumeMin: 0.9,
-      grossMarginMinPct: 25,
-      fcfMarginMinPct: 5,
-      roeMinPct: 12,
-      perf3mMinPct: 10,
-      revenueGrowthMinPct: 8,
-      pFcfMax: 50,
-    },
-  },
-  {
-    id: 'us-materials',
-    label: 'Materials',
-    phase1Labels: ['Materials'],
-    requestScopes: [
-      { sector: 'Process Industries' },
-      { sector: 'Non-Energy Minerals' },
-    ],
-    thresholds: {
-      ...COMMON_LIMITS,
-      rsiMin: 60,
-      relativeVolumeMin: 1.0,
-      grossMarginMinPct: 20,
-      fcfMarginMinPct: 5,
-      roeMinPct: 12,
-      perf3mMinPct: 15,
-      revenueGrowthMinPct: 5,
-      pFcfMax: 20,
-    },
-  },
-  {
-    id: 'us-energy',
-    label: 'Energy',
-    phase1Labels: ['Energy'],
-    requestScopes: [
-      { sector: 'Energy Minerals' },
-    ],
-    thresholds: {
-      ...COMMON_LIMITS,
-      rsiMin: 60,
-      relativeVolumeMin: 1.0,
-      grossMarginMinPct: 20,
-      fcfMarginMinPct: 5,
-      roeMinPct: 12,
-      perf3mMinPct: 15,
-      revenueGrowthMinPct: 5,
-      pFcfMax: 20,
-    },
-  },
-  {
-    id: 'us-health-care',
-    label: 'Health Care',
-    phase1Labels: ['Health Care'],
-    requestScopes: [
-      { sector: 'Health Technology' },
-      { sector: 'Health Services' },
-    ],
-    thresholds: {
-      ...COMMON_LIMITS,
-      rsiMin: 55,
-      relativeVolumeMin: 0.9,
-      grossMarginMinPct: 30,
-      fcfMarginMinPct: 8,
-      roeMinPct: 12,
-      perf3mMinPct: 5,
-      revenueGrowthMinPct: 3,
-      pFcfMax: 30,
-    },
-  },
-  {
-    id: 'us-consumer-staples',
-    label: 'Consumer Staples',
-    phase1Labels: ['Consumer Staples'],
-    requestScopes: [
-      { sector: 'Consumer Non-Durables' },
-    ],
-    thresholds: {
-      ...COMMON_LIMITS,
-      rsiMin: 55,
-      relativeVolumeMin: 0.9,
-      grossMarginMinPct: 30,
-      fcfMarginMinPct: 8,
-      roeMinPct: 12,
-      perf3mMinPct: 5,
-      revenueGrowthMinPct: 3,
-      pFcfMax: 30,
-    },
-  },
+  }),
+  usSectorProfile('communications', 'Communications', US_TECH_THRESHOLDS),
+  usSectorProfile('consumer-durables', 'Consumer Durables', US_CYCLICAL_THRESHOLDS),
+  usSectorProfile('consumer-services', 'Consumer Services', US_CYCLICAL_THRESHOLDS),
+  usSectorProfile('retail-trade', 'Retail Trade', US_CYCLICAL_THRESHOLDS),
+  usSectorProfile('distribution-services', 'Distribution Services', US_CYCLICAL_THRESHOLDS),
+  usSectorProfile('producer-manufacturing', 'Producer Manufacturing', US_INDUSTRIAL_THRESHOLDS),
+  usSectorProfile('industrial-services', 'Industrial Services', US_INDUSTRIAL_THRESHOLDS),
+  usSectorProfile('transportation', 'Transportation', US_INDUSTRIAL_THRESHOLDS),
+  usSectorProfile('commercial-services', 'Commercial Services', US_INDUSTRIAL_THRESHOLDS),
+  usSectorProfile('process-industries', 'Process Industries', US_MATERIALS_THRESHOLDS),
+  usSectorProfile('non-energy-minerals', 'Non-Energy Minerals', US_MATERIALS_THRESHOLDS),
+  usSectorProfile('energy-minerals', 'Energy Minerals', US_ENERGY_THRESHOLDS),
+  usSectorProfile('health-technology', 'Health Technology', US_DEFENSIVE_THRESHOLDS),
+  usSectorProfile('health-services', 'Health Services', US_DEFENSIVE_THRESHOLDS),
+  usSectorProfile('consumer-non-durables', 'Consumer Non-Durables', US_DEFENSIVE_THRESHOLDS),
+  usSectorProfile('utilities', 'Utilities', US_DEFENSIVE_THRESHOLDS),
+  usSectorProfile('finance', 'Finance', US_BROAD_THRESHOLDS),
+  usSectorProfile('miscellaneous', 'Miscellaneous', US_BROAD_THRESHOLDS),
 ];
 
 const JP_PROFILES = [

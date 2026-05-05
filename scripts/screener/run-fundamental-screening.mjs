@@ -29,10 +29,10 @@ function fmtCountOrVolume(entry) {
 
 function formatSectorMomentumApproach(sectorMomentum) {
   switch (sectorMomentum?.approach) {
-    case 'us-sector-etfs':
-      return '米国 sector ETF proxy';
     case 'stock-aggregation':
-      return '銘柄集計';
+      return sectorMomentum?.approachLabel?.includes('US')
+        ? '米国 TradingView stock sector 集計'
+        : '銘柄集計';
     default:
       return sectorMomentum?.approachLabel ?? 'N/A';
   }
@@ -94,7 +94,7 @@ function buildProfileConditionLine(profile) {
   const relativeVolume = thresholds.relative_volume_min === undefined
     ? 'N/A'
     : Number(thresholds.relative_volume_min).toFixed(2);
-  return `- ${profile.label}: hard gate は Perf.3M > ${thresholds.perf_3m_min_pct}% / P/FCF < ${thresholds.p_fcf_max}。RSI ${thresholds.rsi14_min}+、相対出来高 ${relativeVolume}x+、ROE ${thresholds.roe_min_pct}%+、粗利率 ${thresholds.gross_margin_min_pct}%+、FCFマージン ${thresholds.fcf_margin_min_pct}%+ は scoring で評価`;
+  return `- ${profile.label}: scope は ${profile.scope_labels?.join(', ') || profile.label}。hard gate は Perf.3M > ${thresholds.perf_3m_min_pct}% / P/FCF < ${thresholds.p_fcf_max}。RSI ${thresholds.rsi14_min}+、相対出来高 ${relativeVolume}x+、ROE ${thresholds.roe_min_pct}%+、粗利率 ${thresholds.gross_margin_min_pct}%+、FCFマージン ${thresholds.fcf_margin_min_pct}%+ は scoring で評価`;
 }
 
 function formatBlockWeights(result) {
@@ -227,7 +227,7 @@ export function buildMarkdown(result, options = {}) {
   lines.push('');
   lines.push(`- ブロック重み: ${formatBlockWeights(result)}`);
   lines.push('- Price momentum: `Perf.3M`, `Perf.6M`, `Perf.Y`, 52週高値比率');
-  lines.push('- Sector strength: Phase1 sector ETF rank、sector 12M/6M/3M momentum');
+  lines.push('- Sector strength: Phase1 TradingView stock sector rank、sector 12M/6M/3M momentum');
   lines.push('- Profitability / quality: ROIC、gross profit/assets、operating margin、FCF margin、cash conversion');
   lines.push('- Growth confirmation: 売上 YoY、EPS YoY、FCF YoY、Yahoo revenue growth');
   lines.push('- Risk / value guard: P/FCF、EV/EBITDA、ATR%、beta、D/E');

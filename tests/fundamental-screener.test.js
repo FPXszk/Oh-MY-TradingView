@@ -112,7 +112,7 @@ function createMockFetch({ phase1Payload, phase2PayloadsBySector, stockBodies })
 }
 
 describe('runFundamentalScreener', () => {
-  it('uses sector-specific US profiles and excludes unsupported phase2 sectors', async () => {
+  it('uses TradingView stock-sector US profiles and activates producer manufacturing', async () => {
     const stockBodies = [];
     const result = await runFundamentalScreener({
       limit: 10,
@@ -122,41 +122,49 @@ describe('runFundamentalScreener', () => {
           phase1Payload: {
             totalCount: 4,
             data: [
-              buildPhase1FundRow('NASDAQ:SMH', {
-                name: 'SMH',
-                description: 'VanEck Semiconductor ETF',
+              buildPhase1StockRow('NASDAQ:NVDA', {
+                name: 'Nvidia',
+                sector: 'Electronic Technology',
                 perf1m: 26,
                 perf3m: 19,
+                perf6m: 40,
+                perfY: 80,
                 rsi: 73,
                 relativeVolume: 0.9,
-                volume: 7_000_000,
+                marketCap: 3_000_000_000,
               }),
-              buildPhase1FundRow('AMEX:XLK', {
-                name: 'XLK',
-                description: 'Technology Select Sector SPDR ETF',
+              buildPhase1StockRow('NYSE:CAT', {
+                name: 'Caterpillar',
+                sector: 'Producer Manufacturing',
+                perf1m: 21,
+                perf3m: 17,
+                perf6m: 38,
+                perfY: 78,
+                rsi: 70,
+                relativeVolume: 1.0,
+                marketCap: 2_600_000_000,
+              }),
+              buildPhase1StockRow('NASDAQ:MSFT', {
+                name: 'Microsoft',
+                sector: 'Technology Services',
                 perf1m: 20,
                 perf3m: 15,
+                perf6m: 35,
+                perfY: 70,
                 rsi: 69,
-                relativeVolume: 1.0,
-                volume: 10_000_000,
-              }),
-              buildPhase1FundRow('AMEX:XLF', {
-                name: 'XLF',
-                description: 'Financial Select Sector SPDR ETF',
-                perf1m: 14,
-                perf3m: 11,
-                rsi: 63,
                 relativeVolume: 1.1,
-                volume: 18_000_000,
+                marketCap: 2_500_000_000,
               }),
-              buildPhase1FundRow('AMEX:XLV', {
-                name: 'XLV',
-                description: 'Health Care Select Sector SPDR ETF',
+              buildPhase1StockRow('NYSE:JPM', {
+                name: 'JPMorgan Chase',
+                sector: 'Finance',
                 perf1m: 2,
                 perf3m: 1,
+                perf6m: 5,
+                perfY: 10,
                 rsi: 49,
                 relativeVolume: 1.0,
-                volume: 8_000_000,
+                marketCap: 2_400_000_000,
               }),
             ],
           },
@@ -225,7 +233,7 @@ describe('runFundamentalScreener', () => {
                   roe: 18,
                   grossMargin: 35,
                   fcfMargin: 10,
-                  fcfTtm: 30_000_000,
+                  fcfTtm: 50_000_000,
                   netDebt: 0,
                   volume: 700_000,
                 }),
@@ -291,30 +299,56 @@ describe('runFundamentalScreener', () => {
                 }),
               ],
             },
+            'Producer Manufacturing': {
+              totalCount: 1,
+              data: [
+                buildPhase2Row('NASDAQ:LITE', {
+                  name: 'Lumentum',
+                  sector: 'Producer Manufacturing',
+                  industry: 'Electrical Products',
+                  close: 90,
+                  rsi: 66,
+                  sma200: 70,
+                  sma50: 80,
+                  high52w: 100,
+                  perf3m: 35,
+                  relativeVolume: 1.0,
+                  marketCap: 1_700_000_000,
+                  eps: 1.4,
+                  roe: 14,
+                  grossMargin: 31,
+                  fcfMargin: 7,
+                  fcfTtm: 50_000_000,
+                  netDebt: 10_000_000,
+                  volume: 600_000,
+                }),
+              ],
+            },
           },
         }),
       },
     });
 
-    assert.equal(result.totalScanned, 6);
-    assert.equal(result.serverFiltered, 6);
-    assert.equal(result.phase1Filtered, 6);
-    assert.equal(result.clientFiltered, 5);
-    assert.deepEqual(result.results.map((row) => row.symbol), ['ADEA', 'AAPL', 'QCOM', 'MU', 'SNDK']);
+    assert.equal(result.totalScanned, 7);
+    assert.equal(result.serverFiltered, 7);
+    assert.equal(result.phase1Filtered, 7);
+    assert.equal(result.clientFiltered, 6);
+    assert.ok(result.results.some((row) => row.symbol === 'LITE'));
     assert.ok(result.results[0].rankBreakdown.priceMomentum);
     assert.ok(result.results[0].rankBreakdown.quality);
-    assert.equal(result.results[0].roic, 29);
     assert.deepEqual(result.criteria.profile_summaries.map((profile) => profile.label), [
-      'Technology',
-      'Semiconductors',
+      'Technology Services',
+      'Electronic Technology',
+      'Electronic Technology / Semiconductors',
+      'Producer Manufacturing',
+      'Finance',
     ]);
-    assert.deepEqual(result.criteria.excluded_phase2_sectors, ['Financials']);
-    assert.equal(result.scannerScope.profileRequestCount, 3);
+    assert.deepEqual(result.criteria.excluded_phase2_sectors, []);
+    assert.equal(result.scannerScope.profileRequestCount, 5);
     assert.deepEqual(
       stockBodies.map((body) => getFilterValue(body, 'sector')),
-      ['Technology Services', 'Electronic Technology', 'Electronic Technology'],
+      ['Technology Services', 'Electronic Technology', 'Electronic Technology', 'Producer Manufacturing', 'Finance'],
     );
-    assert.ok(stockBodies.every((body) => getFilterValue(body, 'sector') !== 'Finance'));
   });
 
   it('applies Japan-specific profiles and skips finance even when phase1 selects it', async () => {
@@ -496,23 +530,27 @@ describe('runFundamentalScreener', () => {
           phase1Payload: {
             totalCount: 2,
             data: [
-              buildPhase1FundRow('NASDAQ:SMH', {
-                name: 'SMH',
-                description: 'VanEck Semiconductor ETF',
+              buildPhase1StockRow('NASDAQ:NVDA', {
+                name: 'Nvidia',
+                sector: 'Electronic Technology',
                 perf1m: 25,
                 perf3m: 19,
+                perf6m: 40,
+                perfY: 80,
                 rsi: 73,
                 relativeVolume: 1.0,
-                volume: 7_000_000,
+                marketCap: 3_000_000_000,
               }),
-              buildPhase1FundRow('AMEX:XLK', {
-                name: 'XLK',
-                description: 'Technology Select Sector SPDR ETF',
+              buildPhase1StockRow('NASDAQ:MSFT', {
+                name: 'Microsoft',
+                sector: 'Technology Services',
                 perf1m: 20,
                 perf3m: 15,
+                perf6m: 35,
+                perfY: 70,
                 rsi: 69,
                 relativeVolume: 1.0,
-                volume: 10_000_000,
+                marketCap: 2_500_000_000,
               }),
             ],
           },

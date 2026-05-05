@@ -127,7 +127,8 @@ describe('buildMarkdown', () => {
         price_pct_of_52wk_high_min: 75,
         profile_summaries: [
           {
-            label: 'Technology',
+            label: 'Technology Services',
+            scope_labels: ['Technology Services'],
             thresholds: {
               rsi14_min: 60,
               relative_volume_min: 1.0,
@@ -139,7 +140,8 @@ describe('buildMarkdown', () => {
             },
           },
           {
-            label: 'Semiconductors',
+            label: 'Electronic Technology / Semiconductors',
+            scope_labels: ['Electronic Technology'],
             thresholds: {
               rsi14_min: 60,
               relative_volume_min: 0.9,
@@ -151,31 +153,31 @@ describe('buildMarkdown', () => {
             },
           },
         ],
-        excluded_phase2_sectors: ['Financials'],
+        excluded_phase2_sectors: [],
         allowed_exchanges: ['NASDAQ', 'NYSE'],
       },
       sectorMomentum: {
-        approach: 'us-sector-etfs',
-        approachLabel: 'US sector ETF momentum',
+        approach: 'stock-aggregation',
+        approachLabel: 'US TradingView stock-sector aggregation',
         selectedCount: 3,
         selectedSectors: [
-          { key: 'technology', label: 'Technology', proxySymbol: 'XLK' },
-          { key: 'semiconductors', label: 'Semiconductors', proxySymbol: 'SMH' },
-          { key: 'financials', label: 'Financials', proxySymbol: 'XLF' },
+          { key: 'Technology Services', label: 'Technology Services', memberCount: 3 },
+          { key: 'Electronic Technology', label: 'Electronic Technology', memberCount: 4 },
+          { key: 'Finance', label: 'Finance', memberCount: 2 },
         ],
-        selectedStockSectors: ['Electronic Technology', 'Technology Services', 'Finance'],
-        rankingFormula: ['perfY', 'perf6m', 'perf3m', 'relativeVolume', 'rsi14'],
-        coverage: { totalCandidatesReported: 12, scopedCandidates: 12, serverLimit: 12 },
+        selectedStockSectors: ['Technology Services', 'Electronic Technology', 'Finance'],
+        rankingFormula: ['perfY', 'perf6m', 'perf3m', 'relativeVolume', 'rsi14', 'pctRsiAbove60'],
+        coverage: { totalCandidatesReported: 20, scopedCandidates: 20, serverLimit: 20 },
         rankings: [
           {
-            sector: 'Technology',
+            sector: 'Technology Services',
+            memberCount: 3,
             perf1m: 22.8,
             perf3m: 11.1,
             perf6m: 18.4,
             perfY: 44.2,
             rsi14: 73.7,
             relativeVolume: 1.04,
-            volume: 10739960,
             rankScore: 5,
           },
         ],
@@ -311,7 +313,8 @@ describe('buildMarkdown', () => {
 
     assert.match(markdown, /# ファンダメンタル × モメンタム スクリーニング 上位20件/);
     assert.match(markdown, /## Phase1 セクターランキング/);
-    assert.match(markdown, /採用セクター: Technology \(XLK\), Semiconductors \(SMH\), Financials \(XLF\)/);
+    assert.match(markdown, /アプローチ: 米国 TradingView stock sector 集計/);
+    assert.match(markdown, /採用セクター: Technology Services, Electronic Technology, Finance/);
     assert.match(markdown, /## 上位5件の選定理由/);
     assert.match(markdown, /### 1位 AAA \(NASDAQ\)/);
     assert.match(markdown, /## 銘柄ランキング/);
@@ -320,9 +323,8 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /ユニバース追加条件: NASDAQ \+ NYSE stocks only \(OTC excluded\)/);
     assert.match(markdown, /スコープ通過: NASDAQ 10件, NYSE 4件/);
     assert.match(markdown, /Phase1 選択セクター通過: NASDAQ 6件, NYSE 3件/);
-    assert.match(markdown, /Technology: hard gate は Perf\.3M > 10% \/ P\/FCF < 50/);
-    assert.match(markdown, /Semiconductors: hard gate は Perf\.3M > 10% \/ P\/FCF < 50 \(fabless\), 100 \(IDM\/foundry\)/);
-    assert.match(markdown, /Phase2 除外セクター: Financials/);
+    assert.match(markdown, /Technology Services: scope は Technology Services。hard gate は Perf\.3M > 10% \/ P\/FCF < 50/);
+    assert.match(markdown, /Electronic Technology \/ Semiconductors: scope は Electronic Technology。hard gate は Perf\.3M > 10% \/ P\/FCF < 50 \(fabless\), 100 \(IDM\/foundry\)/);
     assert.match(markdown, /取引所限定: NASDAQ, NYSE/);
     assert.match(markdown, /## 採用した P0 \/ P1 指標/);
     assert.match(markdown, /Price momentum 35%/);
