@@ -1,39 +1,36 @@
 //@version=6
-indicator("Multi MA + BB14 Overlay", overlay=true)
+indicator("Signal 5EMA 25EMA 50EMA 100EMA 200SMA BBHI BBLO ATR14", overlay=true)
 
-maType = input.string("SMA", "MA Type", options=["SMA", "EMA"])
-source = input.source(close, "Source")
+source = input.source(close, "Source", display=display.none)
 showMa5 = input.bool(true, "Show MA 5")
 showMa25 = input.bool(true, "Show MA 25")
 showMa50 = input.bool(true, "Show MA 50")
 showMa100 = input.bool(true, "Show MA 100")
 showMa200 = input.bool(true, "Show MA 200")
-bbLength = input.int(14, "BB Length", minval=1)
-bbMult = input.float(2.0, "BB StdDev", minval=0.1, step=0.1)
+bbLength = input.int(14, "BB Length", minval=1, display=display.none)
+bbMult = input.float(2.0, "BB StdDev", minval=0.1, step=0.1, display=display.none)
 showBb = input.bool(true, "Show Bollinger Bands")
 
-ma(series, length) =>
-    maType == "EMA" ? ta.ema(series, length) : ta.sma(series, length)
+ma5 = ta.ema(source, 5)
+ma25 = ta.ema(source, 25)
+ma50 = ta.ema(source, 50)
+ma100 = ta.ema(source, 100)
+ma200 = ta.sma(source, 200)
 
-ma5 = ma(source, 5)
-ma25 = ma(source, 25)
-ma50 = ma(source, 50)
-ma100 = ma(source, 100)
-ma200 = ma(source, 200)
+atr14 = ta.atr(14)
 
 bbBasis = ta.sma(source, bbLength)
 bbDev = ta.stdev(source, bbLength) * bbMult
 bbUpper = bbBasis + bbDev
 bbLower = bbBasis - bbDev
 
-plot(showMa5 ? ma5 : na, "MA 5", color=color.new(color.aqua, 0), linewidth=2)
-plot(showMa25 ? ma25 : na, "MA 25", color=color.new(color.orange, 0), linewidth=2)
-plot(showMa50 ? ma50 : na, "MA 50", color=color.new(color.yellow, 0), linewidth=2)
-plot(showMa100 ? ma100 : na, "MA 100", color=color.new(color.fuchsia, 0), linewidth=2)
-plot(showMa200 ? ma200 : na, "MA 200", color=color.new(color.blue, 0), linewidth=2)
+plot(showMa5 ? ma5 : na, "MA 5", color=#FFF59D, linewidth=2, force_overlay=true)
+plot(showMa25 ? ma25 : na, "MA 25", color=color.new(color.fuchsia, 0), linewidth=2, force_overlay=true)
+plot(showMa50 ? ma50 : na, "MA 50", color=color.new(color.blue, 0), linewidth=2, force_overlay=true)
+plot(showMa100 ? ma100 : na, "MA 100", color=color.new(color.orange, 0), linewidth=2, force_overlay=true)
+plot(showMa200 ? ma200 : na, "MA 200", color=color.new(color.red, 0), linewidth=2, force_overlay=true)
 
-bbBasisPlot = plot(showBb ? bbBasis : na, "BB Basis 14", color=color.new(color.gray, 0), linewidth=1)
-bbUpperPlot = plot(showBb ? bbUpper : na, "BB Upper 14", color=color.new(color.green, 0), linewidth=1)
-bbLowerPlot = plot(showBb ? bbLower : na, "BB Lower 14", color=color.new(color.red, 0), linewidth=1)
+bbUpperPlot = plot(showBb ? bbUpper : na, "BB Upper 14", color=color.new(color.green, 0), linewidth=1, force_overlay=true)
+bbLowerPlot = plot(showBb ? bbLower : na, "BB Lower 14", color=color.new(color.green, 0), linewidth=1, force_overlay=true)
 
-fill(bbUpperPlot, bbLowerPlot, color=color.new(color.silver, 90), title="BB Fill")
+plot(atr14, "ATR14", color=color.new(color.orange, 0), display=display.status_line)

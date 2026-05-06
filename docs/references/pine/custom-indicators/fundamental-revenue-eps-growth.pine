@@ -1,0 +1,10 @@
+//@version=6
+indicator("Fundamental Revenue Growth EPS Growth", overlay=false)
+
+revenueGrowth = request.financial(syminfo.tickerid, "REVENUE_ONE_YEAR_GROWTH", "TTM")
+epsGrowth = request.financial(syminfo.tickerid, "EARNINGS_PER_SHARE_BASIC_ONE_YEAR_GROWTH", "TTM")
+
+hline(0, "Zero", color=color.new(color.gray, 60))
+
+plot(revenueGrowth, "Revenue Growth", color=color.new(color.blue, 0), linewidth=2, style=plot.style_stepline)
+plot(epsGrowth, "EPS Growth", color=color.new(color.orange, 0), linewidth=2, style=plot.style_stepline)
