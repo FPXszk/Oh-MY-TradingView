@@ -1,10 +1,10 @@
 {
   "workflow": "daily-screener",
   "report_path": "docs/reports/screener/daily-ranking.md",
-  "run_id": "25360600295",
+  "run_id": "25562571501",
   "run_attempt": "1",
-  "run_number": "11",
+  "run_number": "12",
   "ref_name": "main",
-  "sha": "2951cb452a9f123884e80da8e41e9976a63470c2",
-  "generated_at": "2026-05-05T06:04:41Z"
+  "sha": "492f3f10438c50768c2aa8d8923047dd073de3d2",
+  "generated_at": "2026-05-08T14:57:42Z"
 }
