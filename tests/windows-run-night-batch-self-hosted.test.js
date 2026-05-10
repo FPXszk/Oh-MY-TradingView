@@ -184,6 +184,21 @@ describe('register-self-hosted-runner-autostart.cmd', () => {
       'autostart script must avoid nested cmd.exe /c quoting in schtasks');
   });
 
+  it('generated launcher best-effort starts OpenD before the runner wrapper', () => {
+    const script = readFileSync(AUTOSTART_SCRIPT_PATH, 'utf8');
+
+    assert.match(script, /OPEND_EXE=%%APPDATA%%\\moomoo_OpenD\\moomoo_OpenD\.exe/i,
+      'autostart launcher must resolve OpenD from the runner user APPDATA path');
+    assert.match(script, /start "" "%%OPEND_EXE%%"/i,
+      'autostart launcher must best-effort start OpenD when it exists');
+    assert.match(script, /OpenD not found at %%OPEND_EXE%%/i,
+      'autostart launcher must log when OpenD is missing instead of failing');
+    assert.ok(
+      script.indexOf('start "" "%%OPEND_EXE%%"') < script.indexOf('call "%WRAPPER_COPY%" "%RUNNER_DIR%"'),
+      'autostart launcher must attempt OpenD before starting the runner wrapper',
+    );
+  });
+
   it('stages self-contained startup scripts under the runner directory', () => {
     const script = readFileSync(AUTOSTART_SCRIPT_PATH, 'utf8');
 

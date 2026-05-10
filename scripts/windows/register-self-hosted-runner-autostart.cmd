@@ -107,7 +107,15 @@ exit /b 0
 :write_launcher
 > "%AUTOSTART_LAUNCHER%" echo @echo off
 >> "%AUTOSTART_LAUNCHER%" echo setlocal
->> "%AUTOSTART_LAUNCHER%" echo call "%WRAPPER_COPY%" "%RUNNER_DIR%" ^>^> "%AUTOSTART_LOG%" 2^>^&1
+>> "%AUTOSTART_LAUNCHER%" echo set "AUTOSTART_LOG=%AUTOSTART_LOG%"
+>> "%AUTOSTART_LAUNCHER%" echo set "OPEND_EXE=%%APPDATA%%\moomoo_OpenD\moomoo_OpenD.exe"
+>> "%AUTOSTART_LAUNCHER%" echo if exist "%%OPEND_EXE%%" ^(
+>> "%AUTOSTART_LAUNCHER%" echo   echo [runner-autostart] Starting OpenD from %%OPEND_EXE%% ^>^> "%%AUTOSTART_LOG%%"
+>> "%AUTOSTART_LAUNCHER%" echo   start "" "%%OPEND_EXE%%"
+>> "%AUTOSTART_LAUNCHER%" echo ^) else ^(
+>> "%AUTOSTART_LAUNCHER%" echo   echo [runner-autostart] OpenD not found at %%OPEND_EXE%% ^>^> "%%AUTOSTART_LOG%%"
+>> "%AUTOSTART_LAUNCHER%" echo ^)
+>> "%AUTOSTART_LAUNCHER%" echo call "%WRAPPER_COPY%" "%RUNNER_DIR%" ^>^> "%%AUTOSTART_LOG%%" 2^>^&1
 >> "%AUTOSTART_LAUNCHER%" echo exit /b %%ERRORLEVEL%%
 if errorlevel 1 exit /b 1
 exit /b 0

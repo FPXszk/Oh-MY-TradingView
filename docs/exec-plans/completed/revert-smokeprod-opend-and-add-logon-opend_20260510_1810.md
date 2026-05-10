@@ -43,11 +43,11 @@
 
 ## 実装ステップ
 
-- [ ] `smoke-prod` OpenD 起動ロジックと関連テスト/README 記述を戻す
-- [ ] `register-self-hosted-runner-autostart.cmd` の generated launcher に OpenD best-effort 起動を追加する
-- [ ] `tests/windows-run-night-batch-self-hosted.test.js` に ONLOGON launcher の OpenD 起動契約を追加する
-- [ ] README を現在の責務分離に合わせて更新する
-- [ ] `npm run test:night-batch` と `npm test` を実行して影響範囲を確認する
+- [x] `smoke-prod` OpenD 起動ロジックと関連テスト/README 記述を戻す
+- [x] `register-self-hosted-runner-autostart.cmd` の generated launcher に OpenD best-effort 起動を追加する
+- [x] `tests/windows-run-night-batch-self-hosted.test.js` に ONLOGON launcher の OpenD 起動契約を追加する
+- [x] README を現在の責務分離に合わせて更新する
+- [x] `npm run test:night-batch` と `npm test` を実行して影響範囲を確認する
 
 ## テスト戦略
 
@@ -73,6 +73,14 @@
 - Windows ONLOGON autostart launcher が OpenD を先に best-effort 起動する
 - runner 起動は従来どおり bootstrap → run.cmd の順で継続する
 - README とテストが新しい責務分離を表す
+
+## 実施結果
+
+- `python/night_batch.py` から OpenD readiness / launch 導線と関連 CLI option を削除し、`smoke-prod` の責務を TradingView startup-check + preflight に戻した
+- `tests/night-batch.test.js` から OpenD 固有ケースを外し、OpenD を `smoke-prod` が扱わない契約に戻した
+- `register-self-hosted-runner-autostart.cmd` が生成する `runner-autostart-launch.cmd` に、`%APPDATA%\moomoo_OpenD\moomoo_OpenD.exe` の best-effort 起動を追加した
+- `tests/windows-run-night-batch-self-hosted.test.js` と README を、ONLOGON launcher が OpenD を先に起動し `smoke-prod` は起動しない責務分離へ更新した
+- `npm test` は通過。`npm run test:night-batch` には今回と無関係の既存 fail が残る一方、変更対象の autostart script test は通過した
 
 ---
 

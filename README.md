@@ -297,8 +297,8 @@ Windows（current default: `9222`）:
 
 現在この環境で検証済みの startup-first 手順:
 
-1. 先に Windows local の `moomoo_OpenD` (`127.0.0.1:11111`) を best-effort で確認し、必要なら起動を試みる
-2. Windows local `9222` を確認する
+1. Windows local `9222` を先に確認する
+2. 応答しなければ `C:\TradingView\TradingView.exe - ショートカット.lnk` で起動する
 3. その後に WSL から `172.31.144.1:9223` を確認する
 
 Windows local の確認:
@@ -605,7 +605,7 @@ python3 python/night_batch.py report \
 
 `config/night_batch/nightly.default.json` は single-backtest ベースのサンプルです。日中に戦略案を差し替えたいときは、この JSON の `strategies.smoke.cli` / `strategies.production.cli` を更新するか、CLI override を使います。
 
-`smoke-prod` は最初に **Windows local の `moomoo_OpenD` (`127.0.0.1:11111`) を best-effort で確認し、未起動なら起動を試みます**。そのうえで **Windows local `9222` の startup check** を行い、TradingView chart target が見えているときだけ workflow-owned launch を skip して **WSL `9223` の preflight** に進みます。`detach_after_smoke: false` なら production を foreground で最後まで監視し、`bundle-foreground-state.json` の `updated_at` を heartbeat として更新します。`detach_after_smoke: true` のときだけ detached child を使います。
+`smoke-prod` は **Windows local `9222` の startup check** を先に行い、TradingView chart target が見つからなければ current verified shortcut `C:\TradingView\TradingView.exe - ショートカット.lnk` を使って launch します。その後に **WSL `9223` の preflight** を通し、smoke backtest を実行します。config の `detach_after_smoke: false` なら production を foreground で最後まで監視し、`bundle-foreground-state.json` の `updated_at` を heartbeat として更新します。`detach_after_smoke: true` のときだけ detached child を使います。
 
 Python スクリプトは `artifacts/night-batch/` に run summary / log / state を残します。`bundle` / `campaign` / `recover` / `report` / `nightly` / `smoke-prod` をサポートし、CDP が必要なコマンドでは 9223 preflight が通らない限り停止します。summary JSON / Markdown には `termination_reason`、`failed_step`、`last_checkpoint` が含まれます。
 
@@ -632,6 +632,7 @@ scripts\windows\register-self-hosted-runner-autostart.cmd C:\actions-runner
 ```
 
 - 登録先は `run.cmd` 直呼びではなく、生成される `C:\actions-runner\_diag\runner-autostart-launch.cmd`
+- launcher は runner wrapper の前に `%APPDATA%\moomoo_OpenD\moomoo_OpenD.exe` を best-effort で起動する
 - launcher の中から `C:\actions-runner\_diag\run-self-hosted-runner-with-bootstrap.cmd` を呼ぶ
 - bootstrap も `C:\actions-runner\_diag\bootstrap-self-hosted-runner.cmd` に複製して live checkout 非依存にする
 - trigger は **Task Scheduler / ONLOGON / 30 秒 delay**
