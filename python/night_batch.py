@@ -50,6 +50,9 @@ DEFAULT_STARTUP_CHECK_HOST = '127.0.0.1'
 DEFAULT_STARTUP_CHECK_PORT = 9222
 DEFAULT_SHORTCUT_PATH = r'C:\TradingView\TradingView.exe - ショートカット.lnk'
 DEFAULT_LAUNCH_WAIT_SEC = 20
+DEFAULT_OPEND_CHECK_PORT = 11111
+DEFAULT_OPEND_PROCESS_NAME = 'moomoo_OpenD'
+DEFAULT_OPEND_LAUNCH_WAIT_SEC = 15
 DEFAULT_PHASES = 'smoke,full'
 DEFAULT_TIMEOUT = 4 * 60 * 60
 DEFAULT_US_CAMPAIGN = 'next-long-run-us-12x10'
@@ -384,6 +387,11 @@ def build_parser() -> argparse.ArgumentParser:
     smoke_prod.add_argument('--startup-check-port', type=int, default=DEFAULT_STARTUP_CHECK_PORT)
     smoke_prod.add_argument('--shortcut-path', default=DEFAULT_SHORTCUT_PATH)
     smoke_prod.add_argument('--launch-command')
+    smoke_prod.add_argument('--opend-path')
+    smoke_prod.add_argument('--opend-check-command')
+    smoke_prod.add_argument('--opend-launch-command')
+    smoke_prod.add_argument('--opend-check-port', type=int, default=DEFAULT_OPEND_CHECK_PORT)
+    smoke_prod.add_argument('--opend-launch-wait-sec', type=int, default=DEFAULT_OPEND_LAUNCH_WAIT_SEC)
     smoke_prod.add_argument('--launch-wait-sec', type=int, default=DEFAULT_LAUNCH_WAIT_SEC)
     smoke_prod.add_argument('--smoke-cli', default=DEFAULT_SMOKE_CLI)
     smoke_prod.add_argument('--production-cli', default=DEFAULT_PRODUCTION_CLI)
@@ -436,6 +444,208 @@ def has_tradingview_chart_target(payload: list[dict]) -> bool:
         if 'tradingview' in url.lower() and '/chart' in url.lower():
             return True
     return False
+
+
+def resolve_windows_shell() -> str | None:
+    for candidate in ('powershell.exe', 'pwsh.exe'):
+        resolved = shutil.which(candidate)
+        if resolved:
+            return resolved
+    return None
+
+
+def run_optional_command(command: str, *, timeout_sec: int) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        shlex.split(command),
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+        timeout=timeout_sec,
+    )
+
+
+def run_windows_powershell(script: str, *, timeout_sec: int) -> subprocess.CompletedProcess[str] | None:
+    shell_bin = resolve_windows_shell()
+    if not shell_bin:
+        return None
+    return subprocess.run(
+        [shell_bin, '-NoProfile', '-Command', '-'],
+        cwd=PROJECT_ROOT,
+        input=script,
+        capture_output=True,
+        text=True,
+        timeout=timeout_sec,
+    )
+
+
+def probe_opend_status(settings: dict) -> dict:
+    custom_check = settings.get('opend_check_command')
+    if custom_check:
+        try:
+            result = run_optional_command(custom_check, timeout_sec=5)
+        except (OSError, subprocess.TimeoutExpired) as error:
+            return {
+                'supported': False,
+                'ready': False,
+                'detail': f'OpenD custom check failed: {error}',
+            }
+        return {
+            'supported': True,
+            'ready': result.returncode == 0,
+            'detail': (result.stdout or result.stderr or '').strip(),
+        }
+
+    port = settings['opend_check_port']
+    process_name = settings['opend_process_name']
+    script = f"""
+$listen = @(Get-NetTCPConnection -State Listen -LocalPort {port} -ErrorAction SilentlyContinue)
+$proc = Get-Process '{process_name}' -ErrorAction SilentlyContinue | Select-Object -First 1
+$result = [pscustomobject]@{{
+  process = $null -ne $proc
+  listening = $listen.Count -gt 0
+  local_addresses = @($listen | ForEach-Object {{ $_.LocalAddress }})
+}}
+$result | ConvertTo-Json -Compress
+"""
+    try:
+        proc = run_windows_powershell(script, timeout_sec=10)
+    except (OSError, subprocess.TimeoutExpired) as error:
+        return {
+            'supported': False,
+            'ready': False,
+            'detail': f'OpenD probe failed: {error}',
+        }
+    if proc is None:
+        return {
+            'supported': False,
+            'ready': False,
+            'detail': 'Windows PowerShell is unavailable',
+        }
+    if proc.returncode != 0:
+        return {
+            'supported': False,
+            'ready': False,
+            'detail': (proc.stderr or proc.stdout or '').strip() or 'OpenD probe failed',
+        }
+    try:
+        payload = json.loads(proc.stdout.strip() or '{}')
+    except (json.JSONDecodeError, ValueError):
+        return {
+            'supported': False,
+            'ready': False,
+            'detail': f'OpenD probe returned invalid JSON: {(proc.stdout or "").strip()}',
+        }
+    listening = payload.get('listening') is True
+    process_running = payload.get('process') is True
+    local_addresses = payload.get('local_addresses') or []
+    detail = f'process={process_running} listening={listening} local_addresses={local_addresses}'
+    return {
+        'supported': True,
+        'ready': listening,
+        'detail': detail,
+    }
+
+
+def launch_opend(settings: dict) -> dict:
+    custom_launch = settings.get('opend_launch_command')
+    if custom_launch:
+        try:
+            result = run_optional_command(custom_launch, timeout_sec=15)
+        except (OSError, subprocess.TimeoutExpired) as error:
+            return {
+                'supported': False,
+                'invoked': False,
+                'detail': f'OpenD custom launch failed: {error}',
+                'command': shlex.split(custom_launch),
+            }
+        detail = (result.stdout or result.stderr or '').strip()
+        return {
+            'supported': True,
+            'invoked': result.returncode == 0,
+            'detail': detail or custom_launch,
+            'command': shlex.split(custom_launch),
+        }
+
+    configured_path = settings.get('opend_path')
+    configured_literal = json.dumps(configured_path) if configured_path else '$null'
+    script = f"""
+$candidates = @()
+if ({configured_literal} -ne $null -and {configured_literal}.Length -gt 0) {{
+  $candidates += {configured_literal}
+}}
+$candidates += (Join-Path $env:APPDATA 'moomoo_OpenD\\moomoo_OpenD.exe')
+$uniqueCandidates = $candidates | Where-Object {{ $_ }} | Select-Object -Unique
+foreach ($candidate in $uniqueCandidates) {{
+  if (Test-Path $candidate) {{
+    Start-Process -FilePath $candidate -WorkingDirectory (Split-Path $candidate)
+    Write-Output $candidate
+    exit 0
+  }}
+}}
+Write-Error 'moomoo_OpenD executable not found'
+exit 1
+"""
+    try:
+        proc = run_windows_powershell(script, timeout_sec=15)
+    except (OSError, subprocess.TimeoutExpired) as error:
+        return {
+            'supported': False,
+            'invoked': False,
+            'detail': f'OpenD launch failed: {error}',
+            'command': ['MOOMOO_OPEND_SKIP'],
+        }
+    if proc is None:
+        return {
+            'supported': False,
+            'invoked': False,
+            'detail': 'Windows PowerShell is unavailable',
+            'command': ['MOOMOO_OPEND_SKIP'],
+        }
+    detail = (proc.stdout or proc.stderr or '').strip()
+    command = ['powershell', 'Start-Process', detail or (configured_path or '%APPDATA%\\moomoo_OpenD\\moomoo_OpenD.exe')]
+    return {
+        'supported': True,
+        'invoked': proc.returncode == 0,
+        'detail': detail or 'moomoo_OpenD launch failed',
+        'command': command,
+    }
+
+
+def ensure_opend_ready(settings: dict, logger: logging.Logger) -> dict:
+    probe = probe_opend_status(settings)
+    if not probe.get('supported'):
+        logger.info('Skipping OpenD autostart: %s', probe.get('detail'))
+        return make_step_result('opend-startup', ['MOOMOO_OPEND_SKIP', str(probe.get('detail') or 'unsupported')], success=True, skipped=True)
+    if probe.get('ready'):
+        logger.info('OpenD already ready before TradingView startup: %s', probe.get('detail'))
+        return make_step_result('opend-startup', ['MOOMOO_OPEND_READY', str(settings['opend_check_port'])], success=True)
+
+    logger.info('OpenD not ready yet; attempting autostart (%s)', probe.get('detail'))
+    launched = launch_opend(settings)
+    if not launched.get('supported'):
+        logger.warning('Skipping OpenD autostart: %s', launched.get('detail'))
+        return make_step_result('opend-startup', ['MOOMOO_OPEND_SKIP', str(launched.get('detail') or 'unsupported')], success=True, skipped=True)
+    if not launched.get('invoked'):
+        logger.warning('OpenD autostart command failed: %s', launched.get('detail'))
+        return make_step_result('opend-startup', [*(launched.get('command') or ['MOOMOO_OPEND_AUTOSTART']), 'BEST_EFFORT_FAILED'], success=True)
+
+    deadline = time.monotonic() + settings['opend_launch_wait_sec']
+    while time.monotonic() <= deadline:
+        retry_probe = probe_opend_status(settings)
+        if retry_probe.get('ready'):
+            logger.info('OpenD became ready after autostart: %s', retry_probe.get('detail'))
+            return make_step_result('opend-startup', launched.get('command') or ['MOOMOO_OPEND_AUTOSTART'], success=True)
+        time.sleep(1)
+
+    logger.warning(
+        'OpenD autostart was invoked but readiness was not observed within %ss',
+        settings['opend_launch_wait_sec'],
+    )
+    return make_step_result(
+        'opend-startup',
+        [*(launched.get('command') or ['MOOMOO_OPEND_AUTOSTART']), 'BEST_EFFORT_TIMEOUT'],
+        success=True,
+    )
 
 
 def preflight_visible_session(host: str, port: int, logger: logging.Logger) -> dict:
@@ -780,6 +990,41 @@ def load_smoke_prod_settings(args, raw_args: list[str]) -> dict:
         launch.get('launch_command'),
         None,
     )
+    opend_path = resolve_option(
+        raw_args,
+        '--opend-path',
+        getattr(args, 'opend_path', None),
+        launch.get('opend_path'),
+        None,
+    )
+    opend_check_command = resolve_option(
+        raw_args,
+        '--opend-check-command',
+        getattr(args, 'opend_check_command', None),
+        launch.get('opend_check_command'),
+        None,
+    )
+    opend_launch_command = resolve_option(
+        raw_args,
+        '--opend-launch-command',
+        getattr(args, 'opend_launch_command', None),
+        launch.get('opend_launch_command'),
+        None,
+    )
+    opend_check_port = resolve_int_option(
+        raw_args,
+        '--opend-check-port',
+        getattr(args, 'opend_check_port', None),
+        runtime.get('opend_check_port'),
+        DEFAULT_OPEND_CHECK_PORT,
+    )
+    opend_launch_wait_sec = resolve_int_option(
+        raw_args,
+        '--opend-launch-wait-sec',
+        getattr(args, 'opend_launch_wait_sec', None),
+        runtime.get('opend_launch_wait_sec'),
+        DEFAULT_OPEND_LAUNCH_WAIT_SEC,
+    )
     launch_wait_sec = resolve_int_option(
         raw_args,
         '--launch-wait-sec',
@@ -889,6 +1134,12 @@ def load_smoke_prod_settings(args, raw_args: list[str]) -> dict:
         'startup_check_port': startup_check_port,
         'shortcut_path': shortcut_path,
         'launch_command': launch_command,
+        'opend_path': opend_path,
+        'opend_check_command': opend_check_command,
+        'opend_launch_command': opend_launch_command,
+        'opend_check_port': opend_check_port,
+        'opend_launch_wait_sec': max(1, opend_launch_wait_sec),
+        'opend_process_name': DEFAULT_OPEND_PROCESS_NAME,
         'launch_wait_sec': launch_wait_sec,
         'smoke_cli': smoke_cli,
         'production_cli': production_cli,
@@ -2105,6 +2356,7 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
                     skipped=True,
                 )
             )
+        steps.append(make_step_result('opend-startup', ['MOOMOO_OPEND_AUTOSTART'], success=True, skipped=True))
         steps.append(make_step_result('startup-check', ['GET', startup_url], success=True, skipped=True))
         steps.append(make_step_result('launch', ['WORKFLOW_STARTUP_OWNED'], success=True, skipped=True))
         steps.append(make_step_result('preflight', ['GET', preflight_url], success=True, skipped=True))
@@ -2179,6 +2431,8 @@ def execute_smoke_prod(settings: dict, logger: logging.Logger, run_id: str, outp
             current_step='startup-check',
             started_at=foreground_started_at,
         )
+
+    steps.append(ensure_opend_ready(settings, logger))
 
     try:
         preflight_visible_session(settings['startup_check_host'], settings['startup_check_port'], logger)

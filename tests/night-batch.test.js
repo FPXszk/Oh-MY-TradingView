@@ -627,6 +627,163 @@ exit 0
     assert.equal(launchStep.success, true);
   });
 
+  it('smoke-prod skips OpenD launch when the custom readiness check already passes', async () => {
+    const fakeNodePath = join(tempDir, 'fake-node.sh');
+    const opendLaunchMarker = join(tempDir, 'opend-launch-marker.txt');
+    const opendCheckScript = join(tempDir, 'opend-check.sh');
+    const opendLaunchScript = join(tempDir, 'opend-launch.sh');
+    writeExecutable(
+      fakeNodePath,
+      `#!/bin/sh
+${STATUS_OK_SNIPPET}exit 0
+`,
+    );
+    writeExecutable(
+      opendCheckScript,
+      `#!/bin/sh
+exit 0
+`,
+    );
+    writeExecutable(
+      opendLaunchScript,
+      `#!/bin/sh
+printf 'launched\n' > "${opendLaunchMarker}"
+exit 0
+`,
+    );
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--host',
+      '127.0.0.1',
+      '--port',
+      String(port),
+      '--startup-check-host',
+      '127.0.0.1',
+      '--startup-check-port',
+      String(port),
+      '--opend-check-command',
+      opendCheckScript,
+      '--opend-launch-command',
+      opendLaunchScript,
+      '--node-bin',
+      fakeNodePath,
+    ]);
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.equal(existsSync(opendLaunchMarker), false);
+
+    const summary = readSummaryFromResult(result);
+    const opendStep = summary.steps.find((step) => step.name === 'opend-startup');
+    assert.equal(opendStep.success, true);
+    assert.equal(opendStep.skipped, false);
+    assert.deepEqual(opendStep.command, ['MOOMOO_OPEND_READY', '11111']);
+  });
+
+  it('smoke-prod launches OpenD when the custom readiness check fails first', async () => {
+    const fakeNodePath = join(tempDir, 'fake-node.sh');
+    const opendReadyMarker = join(tempDir, 'opend-ready.txt');
+    const opendLaunchMarker = join(tempDir, 'opend-launch-marker.txt');
+    const opendCheckScript = join(tempDir, 'opend-check.sh');
+    const opendLaunchScript = join(tempDir, 'opend-launch.sh');
+    writeExecutable(
+      fakeNodePath,
+      `#!/bin/sh
+${STATUS_OK_SNIPPET}exit 0
+`,
+    );
+    writeExecutable(
+      opendCheckScript,
+      `#!/bin/sh
+if [ -f "${opendReadyMarker}" ]; then
+  exit 0
+fi
+exit 1
+`,
+    );
+    writeExecutable(
+      opendLaunchScript,
+      `#!/bin/sh
+printf 'launched\n' > "${opendLaunchMarker}"
+printf 'ready\n' > "${opendReadyMarker}"
+exit 0
+`,
+    );
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--host',
+      '127.0.0.1',
+      '--port',
+      String(port),
+      '--startup-check-host',
+      '127.0.0.1',
+      '--startup-check-port',
+      String(port),
+      '--opend-check-command',
+      opendCheckScript,
+      '--opend-launch-command',
+      opendLaunchScript,
+      '--node-bin',
+      fakeNodePath,
+    ]);
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.equal(existsSync(opendLaunchMarker), true);
+    assert.equal(existsSync(opendReadyMarker), true);
+
+    const summary = readSummaryFromResult(result);
+    const opendStep = summary.steps.find((step) => step.name === 'opend-startup');
+    assert.equal(opendStep.success, true);
+    assert.equal(opendStep.skipped, false);
+    assert.deepEqual(opendStep.command, [opendLaunchScript]);
+  });
+
+  it('smoke-prod keeps running when the OpenD readiness check times out', async () => {
+    const fakeNodePath = join(tempDir, 'fake-node.sh');
+    const opendCheckScript = join(tempDir, 'opend-check-timeout.sh');
+    writeExecutable(
+      fakeNodePath,
+      `#!/bin/sh
+${STATUS_OK_SNIPPET}exit 0
+`,
+    );
+    writeExecutable(
+      opendCheckScript,
+      `#!/bin/sh
+sleep 6
+exit 0
+`,
+    );
+
+    const result = await runPython([
+      SCRIPT_PATH,
+      'smoke-prod',
+      '--host',
+      '127.0.0.1',
+      '--port',
+      String(port),
+      '--startup-check-host',
+      '127.0.0.1',
+      '--startup-check-port',
+      String(port),
+      '--opend-check-command',
+      opendCheckScript,
+      '--node-bin',
+      fakeNodePath,
+    ]);
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+
+    const summary = readSummaryFromResult(result);
+    const opendStep = summary.steps.find((step) => step.name === 'opend-startup');
+    assert.equal(opendStep.success, true);
+    assert.equal(opendStep.skipped, true);
+    assert.match(opendStep.command[1], /timed out/i);
+  });
+
   it('smoke-prod fails without launching when startup check fails', async () => {
     const fakeNodePath = join(tempDir, 'fake-node.sh');
     const launchMarker = join(tempDir, 'launch-marker.txt');

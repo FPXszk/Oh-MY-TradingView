@@ -10,7 +10,7 @@
 
 ## 変更ファイル（作成/変更予定）
 
-- docs/exec-plans/active/moomoo-opend-autostart-with-tradingview_20260510_1526.md
+- docs/exec-plans/completed/moomoo-opend-autostart-with-tradingview_20260510_1526.md
 - python/night_batch.py
 - tests/night-batch.test.js
 - README.md
@@ -40,11 +40,11 @@
 
 ## 実装ステップ
 
-- [ ] 既存 `smoke-prod` の startup-check / launch 導線を読み、OpenD を差し込む最小ポイントを特定する
-- [ ] OpenD の起動判定・起動処理・待機処理を `python/night_batch.py` に追加する
-- [ ] night-batch テストを追加/更新して、TradingView launch を壊さず OpenD 起動が組み込まれていることを固定化する
-- [ ] README の startup-first 手順を更新する
-- [ ] 既存テストを実行し、必要なら plan を completed へ移してコミットする
+- [x] 既存 `smoke-prod` の startup-check / launch 導線を読み、OpenD を差し込む最小ポイントを特定する
+- [x] OpenD の起動判定・起動処理・待機処理を `python/night_batch.py` に追加する
+- [x] night-batch テストを追加/更新して、TradingView launch を壊さず OpenD 起動が組み込まれていることを固定化する
+- [x] README の startup-first 手順を更新する
+- [x] 既存テストを実行し、必要なら plan を completed へ移してコミットする
 
 ## テスト戦略
 
@@ -69,6 +69,12 @@
 - night-batch の startup 導線で OpenD 未起動時に自動起動を試みる
 - TradingView 側の既存 startup-first 挙動が維持される
 - README に OpenD 同時起動の運用が記録される
+
+## 実施結果
+
+- `smoke-prod` の最初に `opend-startup` step を追加し、OpenD の readiness 確認と best-effort autostart を組み込んだ
+- custom check / launch command と既定の PowerShell 起動経路を CLI/config から上書きできるようにした
+- OpenD readiness pass / launch / timeout non-fatal を night-batch テストで固定し、README の startup-first 手順も更新した
 
 ---
 
