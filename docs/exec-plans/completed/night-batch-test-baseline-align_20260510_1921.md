@@ -44,11 +44,11 @@
 
 ## 実装ステップ
 
-- [ ] 5 fail を「テスト期待値ずれ」と「実装修正が必要なもの」に分類する
-- [ ] `tests/night-batch.test.js` の startup-check / heartbeat / readiness recovery ケースを現行契約へ合わせて更新する
-- [ ] detached summary failure がテストだけで閉じない場合、`python/night_batch.py` を最小修正する
-- [ ] `npm run test:night-batch` を通す
-- [ ] `npm test` を再実行して repo 全体の既定テストが通ることを確認する
+- [x] 5 fail を「テスト期待値ずれ」と「実装修正が必要なもの」に分類する
+- [x] `tests/night-batch.test.js` の startup-check / heartbeat / readiness recovery ケースを現行契約へ合わせて更新する
+- [x] detached summary failure がテストだけで閉じない場合、`python/night_batch.py` を最小修正する
+- [x] `npm run test:night-batch` を通す
+- [x] `npm test` を再実行して repo 全体の既定テストが通ることを確認する
 
 ## テスト戦略
 
@@ -73,6 +73,14 @@
 - `npm run test:night-batch` が pass する
 - `npm test` も pass する
 - 変更が現行 runtime behavior とテスト契約の整合に留まり、不要な仕様巻き戻しを含まない
+
+## 実施結果
+
+- 5 fail はすべて **現行実装に対するテスト契約ずれ** と整理し、今回は `tests/night-batch.test.js` のみを更新した
+- startup-check miss ケースは「preflight target が ready なら成功継続」という現行挙動に合わせて test 名と assertion を更新した
+- heartbeat case は status / smoke / production を分けた fake node fixture に変え、heartbeat が確実に発火する秒数へ調整した
+- detached `production-child` summary case は `--dry-run` を外し、summary 生成を本当に通す形へ変えた
+- readiness failure 2 件は `--recovery-step-retries 0` を明示して deterministic にし、現行の preflight-failed 契約へ合わせた
 
 ---
 

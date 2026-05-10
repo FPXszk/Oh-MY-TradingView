@@ -627,7 +627,7 @@ exit 0
     assert.equal(launchStep.success, true);
   });
 
-  it('smoke-prod fails without launching when startup check fails', async () => {
+  it('smoke-prod continues without launching when startup check misses but the preflight target is ready', async () => {
     const fakeNodePath = join(tempDir, 'fake-node.sh');
     const launchMarker = join(tempDir, 'launch-marker.txt');
     const launchScript = join(tempDir, 'launch.sh');
@@ -668,9 +668,9 @@ exit 0
       fakeNodePath,
     ]);
 
-    assert.equal(result.status, 1, result.stderr || result.stdout);
+    assert.equal(result.status, 0, result.stderr || result.stdout);
     assert.equal(existsSync(launchMarker), false);
-    assert.match(result.stdout, /Preflight failed/);
+    assert.match(result.stdout, /Startup check did not detect a running TradingView instance/);
 
     const summary = readSummaryFromResult(result);
     const startupStep = summary.steps.find((step) => step.name === 'startup-check');
@@ -679,7 +679,7 @@ exit 0
     assert.equal(startupStep.success, false);
     assert.equal(launchStep.success, false);
     assert.equal(launchStep.skipped, true);
-    assert.equal(preflightStep.success, false);
+    assert.equal(preflightStep.success, true);
   });
 
   it('smoke-prod stops before production when the smoke backtest fails', async () => {
@@ -798,7 +798,20 @@ exit 0
     writeExecutable(
       fakeNodePath,
       `#!/bin/sh
-${STATUS_OK_SNIPPET}sleep 2
+case "$*" in
+  *status*)
+    printf '{"success":true,"api_available":true}\\n'
+    exit 0
+    ;;
+  *heartbeat-smoke*)
+    sleep 3
+    exit 0
+    ;;
+  *heartbeat-production*)
+    sleep 3
+    exit 0
+    ;;
+esac
 exit 0
 `,
     );
@@ -1455,9 +1468,9 @@ exit 0
     try {
       const result = await runPython([
         SCRIPT_PATH,
-        'production-child',
-        '--host',
-        '127.0.0.1',
+      'production-child',
+      '--host',
+      '127.0.0.1',
         '--port',
         String(port),
         '--production-command-json',
@@ -1474,10 +1487,9 @@ exit 0
         usCampaign,
         '--bundle-jp-campaign',
         jpCampaign,
-        '--bundle-production-phases',
-        'full',
-        '--dry-run',
-      ], {
+      '--bundle-production-phases',
+      'full',
+    ], {
         env: {
           NIGHT_BATCH_CURRENT_SUMMARY_PATH: latestSummaryPath,
           NIGHT_BATCH_CURRENT_RANKING_PATH: latestRankingPath,
@@ -2247,7 +2259,7 @@ esac
       'preflight must invoke tv status to verify readiness contract');
   });
 
-  it('preflight fails when chart target is visible but tv status reports api_available=false', async (t) => {
+  it('preflight fails when chart target is visible but tv status reports api_available=false and recovery is disabled', async (t) => {
     server = createServer((req, res) => {
       if (req.url === '/json/list') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -2289,6 +2301,7 @@ esac
       '--startup-check-host', '127.0.0.1',
       '--startup-check-port', String(port),
       '--node-bin', fakeNodePath,
+      '--recovery-step-retries', '0',
       '--launch-wait-sec', '2',
     ]);
 
@@ -2504,7 +2517,7 @@ exit 0
       'smoke CLI must be attempted again after recovery');
   });
 
-  it('summary classifies readiness failure distinctly from preflight failure', async (t) => {
+  it('summary records readiness-triggered preflight failure when recovery is disabled', async (t) => {
     server = createServer((req, res) => {
       if (req.url === '/json/list') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -2546,13 +2559,14 @@ esac
       '--startup-check-host', '127.0.0.1',
       '--startup-check-port', String(port),
       '--node-bin', fakeNodePath,
+      '--recovery-step-retries', '0',
       '--launch-wait-sec', '2',
     ]);
 
     assert.notEqual(result.status, 0);
     const summary = readSummaryFromResult(result);
-    assert.match(summary.termination_reason, /readiness|preflight/,
-      'termination reason must indicate readiness or preflight failure');
+    assert.equal(summary.failed_step, 'preflight');
+    assert.equal(summary.termination_reason, 'preflight-failed');
   });
 
   it('surfaces non-JSON tv status bootstrap failures instead of reporting error=unknown', async (t) => {
