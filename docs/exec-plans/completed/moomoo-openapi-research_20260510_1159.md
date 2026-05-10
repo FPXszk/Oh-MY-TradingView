@@ -61,14 +61,21 @@
 
 ## 実装ステップ
 
-- [ ] 既存リポジトリ構成と関連ドキュメントを確認し、`docs/strategy/` の配置方針を固める
-- [ ] ユーザー確認が必要な前提条件を順番に解消する
-- [ ] `moomoo-api` と OpenD 接続の環境確認を行い、`00_environment.md` を作成する
-- [ ] Quote API 10項目をサンプル実装・実行し、`01_quote_api.md` に記録する
-- [ ] Trade API 7項目を SIMULATE 限定で実装・実行し、`02_trade_api.md` に記録する
-- [ ] MCP 統合案と自動化サンプルを作成し、`03_mcp_integration.md` に記録する
-- [ ] 全調査結果を `docs/strategy/README.md` に統合する
-- [ ] 既存テストと作成サンプルの整合性を確認し、最終レビュー後に plan を completed へ移動してコミットする
+- [x] 既存リポジトリ構成と関連ドキュメントを確認し、`docs/strategy/` の配置方針を固める
+- [x] ユーザー確認が必要な前提条件を順番に解消する
+- [x] `moomoo-api` と OpenD 接続の環境確認を行い、`00_environment.md` を作成する
+- [x] Quote API 10項目をサンプル実装・実行し、`01_quote_api.md` に記録する
+- [x] Trade API 7項目を SIMULATE 限定で実装・実行し、`02_trade_api.md` に記録する
+- [x] MCP 統合案と自動化サンプルを作成し、`03_mcp_integration.md` に記録する
+- [x] 全調査結果を `docs/strategy/README.md` に統合する
+- [x] 既存テストと作成サンプルの整合性を確認し、最終レビュー後に plan を completed へ移動してコミットする
+
+## 実施結果メモ
+
+- OpenD は Windows 側で `127.0.0.1:11111` bind だったため、WSL からは `172.31.144.1:11112` の Windows portproxy 経由で接続した
+- Quote API は 10 項目すべてについて、成功 / 部分成功 / 制約確認を根拠付きで記録した
+- Trade API は `SIMULATE` + `US.AAPL` 前提で、口座/ポジション/残高/発注/注文照会/取消/制約を確認した
+- `deal_list_query()` は paper trading では非対応であることを確認した
 
 ## テスト戦略
 

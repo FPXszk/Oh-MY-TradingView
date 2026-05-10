@@ -861,3 +861,43 @@
 - このプロジェクトにどう活かしたか: 実装順はシンプルな TradingView columns 追加から始め、複雑なモデルは後段に回す方針を確認した。
 - 採用したもの: 実務実装では取得しやすい列から ablation する考え方。
 - 採用しなかったもの: 外部 repo の設計や Substack 仮説を未検証で移植すること。
+
+---
+
+## 86：Litash/moomoo-api-mcp
+
+- URL: https://github.com/Litash/moomoo-api-mcp
+- 参考にした理由: moomoo OpenD を MCP server 化した先行実装として、tool surface と安全ガードを確認するため。
+- このプロジェクトにどう活かしたか: `check_health` / account / trade / market data をどう分けるか、SIMULATE-only fallback をどう見せるかの参考にした。
+- 採用したもの: health check を独立 tool にすること、paper/simulate を安全デフォルトとして扱う設計観点。
+- 採用しなかったもの: REAL account をデフォルト前提にする運用思想。
+
+---
+
+## 87：linboxin/moomoo-mcp-server
+
+- URL: https://github.com/linboxin/moomoo-mcp-server
+- 参考にした理由: paper trading を含む moomoo MCP server の別実装として、tool naming と diagnostics の置き方を比較するため。
+- このプロジェクトにどう活かしたか: `moomoo_*` namespace で read-only / account / trading を分ける統合案と、diagnostics 的なヘルスチェック案に反映した。
+- 採用したもの: paper mode を明示する構成、diagnostics を用意する発想。
+- 採用しなかったもの: repo 本体を Python 単独サーバーへ全面移行すること。
+
+---
+
+## 88：shuizhengqi1/futu-stock-mcp-server
+
+- URL: https://github.com/shuizhengqi1/futu-stock-mcp-server
+- 参考にした理由: Futu 系 OpenAPI を MCP へ広く露出している実装として、market / subscription / account / trading の切り方を確認するため。
+- このプロジェクトにどう活かしたか: quote / subscription / account / trading を別カテゴリで整理した `docs/strategy/03_mcp_integration.md` の下敷きにした。
+- 採用したもの: API surface をカテゴリごとに整理する観点。
+- 採用しなかったもの: そのままの機能数や構成を本 repo に移植すること。
+
+---
+
+## 89：moomoo OpenD download page
+
+- URL: https://www.moomoo.com/download/opend
+- 参考にした理由: OpenD が Windows 側 prerequisite であることと、導入案内の一次 URL を明示するため。
+- このプロジェクトにどう活かしたか: `docs/strategy/00_environment.md` と `docs/strategy/03_mcp_integration.md` で、最初のブロッカーが OpenD 導入であることを明確にした。
+- 採用したもの: OpenD を前提条件として明示すること。
+- 採用しなかったもの: OpenD 未導入のまま API 実査を進めること。
