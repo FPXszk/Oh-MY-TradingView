@@ -18,11 +18,11 @@
 
 ## 実装ステップ
 
-- [ ] セッションログの記載内容を整理する
-- [ ] `docs/sessions/opend-autostart-session-log_20260511_1002.md` を作成する
-- [ ] 差分を確認し、不要なコード変更がないことを確認する
-- [ ] 計画を `docs/exec-plans/completed/` へ移動する
-- [ ] Conventional Commits で commit し、`main` へ push する
+- [x] セッションログの記載内容を整理する
+- [x] `docs/sessions/opend-autostart-session-log_20260511_1002.md` を作成する
+- [x] 差分を確認し、不要なコード変更がないことを確認する
+- [x] 計画を `docs/exec-plans/completed/` へ移動する
+- [x] Conventional Commits で commit し、`main` へ push する
 
 ## 検証
 
@@ -40,3 +40,9 @@
 - セッションログが `docs/sessions/` に追加されている
 - exec-plan が `docs/exec-plans/completed/` に移動している
 - `main` に commit / push 済み
+
+## 実施結果
+
+- `docs/sessions/opend-autostart-session-log_20260511_1002.md` を追加し、OpenD autostart 未反映の原因、実機復旧手順、Task Scheduler 再登録結果を記録した。
+- コードや runner script 本体の repo 内変更は行わなかった。
+- 実機側では `C:\actions-runner\_autostart-register\` から管理者 cmd で Task Scheduler 再登録が完了した。
