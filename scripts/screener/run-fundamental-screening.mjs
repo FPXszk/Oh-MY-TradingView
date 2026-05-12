@@ -111,6 +111,14 @@ function buildProfileConditionLine(profile) {
   return `- ${profile.label}: scope は ${profile.scope_labels?.join(', ') || profile.label}。hard gate は Perf.3M > ${thresholds.perf_3m_min_pct}% / P/FCF < ${thresholds.p_fcf_max}。RSI ${thresholds.rsi14_min}+、相対出来高 ${relativeVolume}x+、ROE ${thresholds.roe_min_pct}%+、粗利率 ${thresholds.gross_margin_min_pct}%+、FCFマージン ${thresholds.fcf_margin_min_pct}%+ は scoring で評価`;
 }
 
+function buildProfileGuideRow(profile) {
+  const thresholds = profile.thresholds ?? {};
+  const relativeVolume = thresholds.relative_volume_min === undefined
+    ? 'N/A'
+    : Number(thresholds.relative_volume_min).toFixed(2);
+  return `| セクタープロファイル | ${profile.label} | scope: ${profile.scope_labels?.join(', ') || profile.label} / hard gate: Perf.3M > ${thresholds.perf_3m_min_pct}% / P/FCF < ${thresholds.p_fcf_max} / scoring: RSI ${thresholds.rsi14_min}+、相対出来高 ${relativeVolume}x+、ROE ${thresholds.roe_min_pct}%+、粗利率 ${thresholds.gross_margin_min_pct}%+、FCFマージン ${thresholds.fcf_margin_min_pct}%+ |`;
+}
+
 function formatBlockWeights(result) {
   return (result.rankingBlocks ?? [])
     .map((block) => `${block.label} ${block.weight}%`)
@@ -145,6 +153,40 @@ function buildHeadlineSummary(result) {
     `ランキング対象 ${result.clientFiltered}銘柄`,
     `レポート掲載 ${result.matched}銘柄`,
   ].join(' → ');
+}
+
+function buildGuideRows(result) {
+  const rows = [
+    `| 共通条件 | ベース条件 | 時価総額 > $1B / EPS(TTM) > ${result.criteria.eps_min} / Close > SMA200 / Close > SMA50 / Close ≥ 52週高値 × ${result.criteria.price_pct_of_52wk_high_min}% |`,
+  ];
+
+  if (result.criteria.extreme_momentum_policy) {
+    rows.push(`| 補助ポリシー | 超急騰 | Perf.6M > ${result.criteria.extreme_momentum_policy.perf_6m_extreme_pct}% または Perf.Y > ${result.criteria.extreme_momentum_policy.perf_y_extreme_pct}% でも除外せず、リスク確認へ表示 |`);
+  }
+  if (result.criteria.rule_of_40_policy) {
+    rows.push(`| 補助ポリシー | Rule of 40 | ${result.criteria.rule_of_40_policy.scope} / ${result.criteria.rule_of_40_policy.formula} / ${result.criteria.rule_of_40_policy.pass_badge_min}+ を badge / ${result.criteria.rule_of_40_policy.warning_below} 未満を warning / hard filter なし |`);
+  }
+  if (result.criteria.allowed_exchanges) {
+    rows.push(`| ユニバース | 取引所 | ${result.criteria.allowed_exchanges.join(', ')} |`);
+  }
+  if (result.criteria.symbol_allowlist_key) {
+    rows.push(`| ユニバース | 銘柄ユニバース | ${result.criteria.symbol_allowlist_key} |`);
+  }
+  if (result.enrichedWithYahoo) {
+    rows.push('| 補助ポリシー | Yahoo Finance 補完 | 売上成長率 YoY はプロファイル別閾値を適用し、null は通過 |');
+  }
+  if (result.criteria.excluded_phase2_sectors?.length) {
+    rows.push(`| ユニバース | Phase2 除外セクター | ${result.criteria.excluded_phase2_sectors.join(', ')} |`);
+  }
+  if (result.criteria.profile_summaries?.length) {
+    result.criteria.profile_summaries.forEach((profile) => {
+      rows.push(buildProfileGuideRow(profile));
+    });
+  } else {
+    rows.push('| セクタープロファイル | なし | セクター別プロファイル条件はありません |');
+  }
+
+  return rows;
 }
 
 function parseExchangeAllowlist(value) {
@@ -261,71 +303,15 @@ export function buildMarkdown(result, options = {}) {
   }
   lines.push('');
 
-  lines.push('## 市場カバレッジ');
-  lines.push('');
-  lines.push(`- スキャンスコープ: TradingView Scanner API の \`${result.scannerScope.market}\` 市場、対象は \`${result.scannerScope.instrumentTypes.join(', ')}\``);
-  if (result.scannerScope.scopeLabel) {
-    lines.push(`- ユニバース追加条件: ${result.scannerScope.scopeLabel}`);
-  }
-  lines.push(`- 観測レンジ: 今回は ${result.scannerScope.profileRequestCount ?? 1} 件のプロファイルスキャンを行い、各リクエスト最大 ${result.scannerScope.serverLimit} 件まで取得`);
-  lines.push(buildMarketLines('スコープ通過', result.marketBreakdown?.serverFiltered));
-  lines.push(buildMarketLines('Phase1 選択セクター通過', result.marketBreakdown?.phase1Filtered));
-  lines.push(buildMarketLines('クライアントフィルター通過', result.marketBreakdown?.clientFiltered));
-  lines.push(buildMarketLines('最終採用', result.marketBreakdown?.matched));
-  lines.push(`- 補足: ${result.scannerScope.note}`);
-  lines.push('');
-
-  lines.push('## 採用した P0 / P1 指標');
-  lines.push('');
-  lines.push(`- ブロック重み: ${formatBlockWeights(result)}`);
-  lines.push('- Price momentum: `Perf.3M`, `Perf.6M`, `Perf.Y`, 52週高値比率');
-  lines.push('- Sector strength: Phase1 TradingView stock sector rank、sector 12M/6M/3M momentum');
-  lines.push('- Profitability / quality: ROIC、gross profit/assets、operating margin、FCF margin、cash conversion');
-  lines.push('- Growth confirmation: 売上 YoY、EPS YoY、FCF YoY、Yahoo revenue growth');
-  lines.push('- Risk / value guard: P/FCF、EV/EBITDA、ATR%、beta、D/E');
-  if (result.criteria.rule_of_40_policy) {
-    lines.push('- Rule of 40: US Technology Services の Software 系 industry に限り、売上 YoY + FCF margin を補助 rank として評価。40以上は badge、20未満は warning。hard filter にはしない');
-  }
-  lines.push('');
-  lines.push('## 今後改善できそうな点');
-  lines.push('');
-  lines.push('- 12-1 momentum: OHLC 履歴を使い、直近1カ月を除外した標準 momentum を計算する');
-  lines.push('- SUE / earnings surprise: 決算サプライズの外部データを追加し、EPS YoY proxy を置き換える');
-  lines.push('- Residual momentum: sector / beta を除いた固有 momentum を別スコアとして検証する');
-  lines.push('- 閾値 ablation: P/FCF、ATR%、D/E は hard filter ではなく、通過率と上位銘柄の質を見ながら閾値を調整する');
-  lines.push('');
-
   lines.push('---');
   lines.push('');
   lines.push(`**スコア算出:** weighted block rank-sum: ${formatBlockWeights(result)}（合計が小さいほど上位）`);
   lines.push('');
   lines.push('**フィルター条件と scoring guide:**');
-  lines.push(`- 共通条件: 時価総額 > $1B, EPS(TTM) > ${result.criteria.eps_min}, Close > SMA200, Close > SMA50, Close ≥ 52週高値 × ${result.criteria.price_pct_of_52wk_high_min}%`);
-  if (result.criteria.extreme_momentum_policy) {
-    lines.push(`- 超急騰ポリシー: Perf.6M > ${result.criteria.extreme_momentum_policy.perf_6m_extreme_pct}% または Perf.Y > ${result.criteria.extreme_momentum_policy.perf_y_extreme_pct}% でも除外せず、超急騰としてリスク確認に表示`);
-  }
-  if (result.criteria.rule_of_40_policy) {
-    lines.push(`- Rule of 40: ${result.criteria.rule_of_40_policy.scope}。${result.criteria.rule_of_40_policy.formula} を補助 scoring に使い、${result.criteria.rule_of_40_policy.pass_badge_min}+ を badge、${result.criteria.rule_of_40_policy.warning_below} 未満を warning 表示。hard filter なし`);
-  }
-  if (result.criteria.profile_summaries?.length) {
-    result.criteria.profile_summaries.forEach((profile) => {
-      lines.push(buildProfileConditionLine(profile));
-    });
-  } else {
-    lines.push('- セクター別プロファイル条件はありません。');
-  }
-  if (result.criteria.excluded_phase2_sectors?.length) {
-    lines.push(`- Phase2 除外セクター: ${result.criteria.excluded_phase2_sectors.join(', ')}`);
-  }
-  if (result.criteria.allowed_exchanges) {
-    lines.push(`- 取引所限定: ${result.criteria.allowed_exchanges.join(', ')}`);
-  }
-  if (result.criteria.symbol_allowlist_key) {
-    lines.push(`- 銘柄ユニバース限定: ${result.criteria.symbol_allowlist_key}`);
-  }
-  if (result.enrichedWithYahoo) {
-    lines.push('- Yahoo Finance 補完あり: 売上成長率 YoY はプロファイル別閾値を適用し、null は通過');
-  }
+  lines.push('');
+  lines.push('| 区分 | 項目 | 条件・説明 |');
+  lines.push('|:---|:---|:---|');
+  buildGuideRows(result).forEach((row) => lines.push(row));
 
   return lines.join('\n');
 }

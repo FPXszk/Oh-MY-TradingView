@@ -1,6 +1,6 @@
 # スクリーニング結果 2026/05/12（火）
 
-更新: 20:20 JST
+更新: 20:32 JST
 
 セクター別取得候補 843銘柄 → ユニバース条件通過 492銘柄 → ランキング対象 319銘柄 → レポート掲載 20銘柄
 
@@ -126,61 +126,37 @@
 | 19 | Utilities | 10 | 15.7% | 197.2 | ENLT |
 | 20 | Finance | 79 | 14.2% | 194.5 | AAMI |
 
-## 市場カバレッジ
-
-- スキャンスコープ: TradingView Scanner API の `america` 市場、対象は `stock`
-- 観測レンジ: 今回は 21 件のプロファイルスキャンを行い、各リクエスト最大 160 件まで取得
-- スコープ通過: NYSE 270件, NASDAQ 222件
-- Phase1 選択セクター通過: NYSE 270件, NASDAQ 222件
-- クライアントフィルター通過: NYSE 188件, NASDAQ 131件
-- 最終採用: NASDAQ 12件, NYSE 8件
-- 補足: TradingView Scanner API was queried with sector-specific profile filters, then exchange and symbol-universe filters were applied locally. Phase1 selected Electronic Technology, Non-Energy Minerals, Industrial Services, Producer Manufacturing, Technology Services, Communications, Health Services, Process Industries, Health Technology, Miscellaneous, Transportation, Energy Minerals, Distribution Services, Consumer Services, Finance, Retail Trade, Consumer Durables, Utilities, Commercial Services, Consumer Non-Durables, and Phase2 excluded no sectors.
-
-## 採用した P0 / P1 指標
-
-- ブロック重み: Price momentum 67% / Sector strength 10% / Profitability / quality 10% / Growth confirmation 5% / Risk / value guard 5% / Rule of 40 (US software) 3%
-- Price momentum: `Perf.3M`, `Perf.6M`, `Perf.Y`, 52週高値比率
-- Sector strength: Phase1 TradingView stock sector rank、sector 12M/6M/3M momentum
-- Profitability / quality: ROIC、gross profit/assets、operating margin、FCF margin、cash conversion
-- Growth confirmation: 売上 YoY、EPS YoY、FCF YoY、Yahoo revenue growth
-- Risk / value guard: P/FCF、EV/EBITDA、ATR%、beta、D/E
-- Rule of 40: US Technology Services の Software 系 industry に限り、売上 YoY + FCF margin を補助 rank として評価。40以上は badge、20未満は warning。hard filter にはしない
-
-## 今後改善できそうな点
-
-- 12-1 momentum: OHLC 履歴を使い、直近1カ月を除外した標準 momentum を計算する
-- SUE / earnings surprise: 決算サプライズの外部データを追加し、EPS YoY proxy を置き換える
-- Residual momentum: sector / beta を除いた固有 momentum を別スコアとして検証する
-- 閾値 ablation: P/FCF、ATR%、D/E は hard filter ではなく、通過率と上位銘柄の質を見ながら閾値を調整する
-
 ---
 
 **スコア算出:** weighted block rank-sum: Price momentum 67% / Sector strength 10% / Profitability / quality 10% / Growth confirmation 5% / Risk / value guard 5% / Rule of 40 (US software) 3%（合計が小さいほど上位）
 
 **フィルター条件と scoring guide:**
-- 共通条件: 時価総額 > $1B, EPS(TTM) > 0, Close > SMA200, Close > SMA50, Close ≥ 52週高値 × 75%
-- 超急騰ポリシー: Perf.6M > 600% または Perf.Y > 1000% でも除外せず、超急騰としてリスク確認に表示
-- Rule of 40: US Technology Services software-like industries only。total_revenue_yoy_growth_ttm + free_cash_flow_margin_ttm を補助 scoring に使い、40+ を badge、20 未満を warning 表示。hard filter なし
-- Technology Services: scope は Technology Services。hard gate は Perf.3M > 10% / P/FCF < 50。RSI 60+、相対出来高 1.00x+、ROE 20%+、粗利率 40%+、FCFマージン 15%+ は scoring で評価
-- Electronic Technology: scope は Electronic Technology。hard gate は Perf.3M > 10% / P/FCF < 50。RSI 60+、相対出来高 1.00x+、ROE 20%+、粗利率 40%+、FCFマージン 15%+ は scoring で評価
-- Electronic Technology / Semiconductors: scope は Electronic Technology。hard gate は Perf.3M > 10% / P/FCF < 50 (fabless), 100 (IDM/foundry)。RSI 60+、相対出来高 0.90x+、ROE 15%+、粗利率 30%+、FCFマージン 5%+ は scoring で評価
-- Communications: scope は Communications。hard gate は Perf.3M > 10% / P/FCF < 50。RSI 60+、相対出来高 1.00x+、ROE 20%+、粗利率 40%+、FCFマージン 15%+ は scoring で評価
-- Consumer Durables: scope は Consumer Durables。hard gate は Perf.3M > 15% / P/FCF < 50。RSI 60+、相対出来高 1.00x+、ROE 12%+、粗利率 25%+、FCFマージン 8%+ は scoring で評価
-- Consumer Services: scope は Consumer Services。hard gate は Perf.3M > 15% / P/FCF < 50。RSI 60+、相対出来高 1.00x+、ROE 12%+、粗利率 25%+、FCFマージン 8%+ は scoring で評価
-- Retail Trade: scope は Retail Trade。hard gate は Perf.3M > 15% / P/FCF < 50。RSI 60+、相対出来高 1.00x+、ROE 12%+、粗利率 25%+、FCFマージン 8%+ は scoring で評価
-- Distribution Services: scope は Distribution Services。hard gate は Perf.3M > 15% / P/FCF < 50。RSI 60+、相対出来高 1.00x+、ROE 12%+、粗利率 25%+、FCFマージン 8%+ は scoring で評価
-- Producer Manufacturing: scope は Producer Manufacturing。hard gate は Perf.3M > 10% / P/FCF < 50。RSI 60+、相対出来高 0.90x+、ROE 12%+、粗利率 25%+、FCFマージン 5%+ は scoring で評価
-- Industrial Services: scope は Industrial Services。hard gate は Perf.3M > 10% / P/FCF < 50。RSI 60+、相対出来高 0.90x+、ROE 12%+、粗利率 25%+、FCFマージン 5%+ は scoring で評価
-- Transportation: scope は Transportation。hard gate は Perf.3M > 10% / P/FCF < 50。RSI 60+、相対出来高 0.90x+、ROE 12%+、粗利率 25%+、FCFマージン 5%+ は scoring で評価
-- Commercial Services: scope は Commercial Services。hard gate は Perf.3M > 10% / P/FCF < 50。RSI 60+、相対出来高 0.90x+、ROE 12%+、粗利率 25%+、FCFマージン 5%+ は scoring で評価
-- Process Industries: scope は Process Industries。hard gate は Perf.3M > 15% / P/FCF < 20。RSI 60+、相対出来高 1.00x+、ROE 12%+、粗利率 20%+、FCFマージン 5%+ は scoring で評価
-- Non-Energy Minerals: scope は Non-Energy Minerals。hard gate は Perf.3M > 15% / P/FCF < 20。RSI 60+、相対出来高 1.00x+、ROE 12%+、粗利率 20%+、FCFマージン 5%+ は scoring で評価
-- Energy Minerals: scope は Energy Minerals。hard gate は Perf.3M > 15% / P/FCF < 20。RSI 60+、相対出来高 1.00x+、ROE 12%+、粗利率 20%+、FCFマージン 5%+ は scoring で評価
-- Health Technology: scope は Health Technology。hard gate は Perf.3M > 5% / P/FCF < 30。RSI 55+、相対出来高 0.90x+、ROE 12%+、粗利率 30%+、FCFマージン 8%+ は scoring で評価
-- Health Services: scope は Health Services。hard gate は Perf.3M > 5% / P/FCF < 30。RSI 55+、相対出来高 0.90x+、ROE 12%+、粗利率 30%+、FCFマージン 8%+ は scoring で評価
-- Consumer Non-Durables: scope は Consumer Non-Durables。hard gate は Perf.3M > 5% / P/FCF < 30。RSI 55+、相対出来高 0.90x+、ROE 12%+、粗利率 30%+、FCFマージン 8%+ は scoring で評価
-- Utilities: scope は Utilities。hard gate は Perf.3M > 5% / P/FCF < 30。RSI 55+、相対出来高 0.90x+、ROE 12%+、粗利率 30%+、FCFマージン 8%+ は scoring で評価
-- Finance: scope は Finance。hard gate は Perf.3M > 5% / P/FCF < 50。RSI 55+、相対出来高 0.90x+、ROE 10%+、粗利率 20%+、FCFマージン 5%+ は scoring で評価
-- Miscellaneous: scope は Miscellaneous。hard gate は Perf.3M > 5% / P/FCF < 50。RSI 55+、相対出来高 0.90x+、ROE 10%+、粗利率 20%+、FCFマージン 5%+ は scoring で評価
-- 取引所限定: NASDAQ, NYSE
-- Yahoo Finance 補完あり: 売上成長率 YoY はプロファイル別閾値を適用し、null は通過
+
+| 区分 | 項目 | 条件・説明 |
+|:---|:---|:---|
+| 共通条件 | ベース条件 | 時価総額 > $1B / EPS(TTM) > 0 / Close > SMA200 / Close > SMA50 / Close ≥ 52週高値 × 75% |
+| 補助ポリシー | 超急騰 | Perf.6M > 600% または Perf.Y > 1000% でも除外せず、リスク確認へ表示 |
+| 補助ポリシー | Rule of 40 | US Technology Services software-like industries only / total_revenue_yoy_growth_ttm + free_cash_flow_margin_ttm / 40+ を badge / 20 未満を warning / hard filter なし |
+| ユニバース | 取引所 | NASDAQ, NYSE |
+| 補助ポリシー | Yahoo Finance 補完 | 売上成長率 YoY はプロファイル別閾値を適用し、null は通過 |
+| セクタープロファイル | Technology Services | scope: Technology Services / hard gate: Perf.3M > 10% / P/FCF < 50 / scoring: RSI 60+、相対出来高 1.00x+、ROE 20%+、粗利率 40%+、FCFマージン 15%+ |
+| セクタープロファイル | Electronic Technology | scope: Electronic Technology / hard gate: Perf.3M > 10% / P/FCF < 50 / scoring: RSI 60+、相対出来高 1.00x+、ROE 20%+、粗利率 40%+、FCFマージン 15%+ |
+| セクタープロファイル | Electronic Technology / Semiconductors | scope: Electronic Technology / hard gate: Perf.3M > 10% / P/FCF < 50 (fabless), 100 (IDM/foundry) / scoring: RSI 60+、相対出来高 0.90x+、ROE 15%+、粗利率 30%+、FCFマージン 5%+ |
+| セクタープロファイル | Communications | scope: Communications / hard gate: Perf.3M > 10% / P/FCF < 50 / scoring: RSI 60+、相対出来高 1.00x+、ROE 20%+、粗利率 40%+、FCFマージン 15%+ |
+| セクタープロファイル | Consumer Durables | scope: Consumer Durables / hard gate: Perf.3M > 15% / P/FCF < 50 / scoring: RSI 60+、相対出来高 1.00x+、ROE 12%+、粗利率 25%+、FCFマージン 8%+ |
+| セクタープロファイル | Consumer Services | scope: Consumer Services / hard gate: Perf.3M > 15% / P/FCF < 50 / scoring: RSI 60+、相対出来高 1.00x+、ROE 12%+、粗利率 25%+、FCFマージン 8%+ |
+| セクタープロファイル | Retail Trade | scope: Retail Trade / hard gate: Perf.3M > 15% / P/FCF < 50 / scoring: RSI 60+、相対出来高 1.00x+、ROE 12%+、粗利率 25%+、FCFマージン 8%+ |
+| セクタープロファイル | Distribution Services | scope: Distribution Services / hard gate: Perf.3M > 15% / P/FCF < 50 / scoring: RSI 60+、相対出来高 1.00x+、ROE 12%+、粗利率 25%+、FCFマージン 8%+ |
+| セクタープロファイル | Producer Manufacturing | scope: Producer Manufacturing / hard gate: Perf.3M > 10% / P/FCF < 50 / scoring: RSI 60+、相対出来高 0.90x+、ROE 12%+、粗利率 25%+、FCFマージン 5%+ |
+| セクタープロファイル | Industrial Services | scope: Industrial Services / hard gate: Perf.3M > 10% / P/FCF < 50 / scoring: RSI 60+、相対出来高 0.90x+、ROE 12%+、粗利率 25%+、FCFマージン 5%+ |
+| セクタープロファイル | Transportation | scope: Transportation / hard gate: Perf.3M > 10% / P/FCF < 50 / scoring: RSI 60+、相対出来高 0.90x+、ROE 12%+、粗利率 25%+、FCFマージン 5%+ |
+| セクタープロファイル | Commercial Services | scope: Commercial Services / hard gate: Perf.3M > 10% / P/FCF < 50 / scoring: RSI 60+、相対出来高 0.90x+、ROE 12%+、粗利率 25%+、FCFマージン 5%+ |
+| セクタープロファイル | Process Industries | scope: Process Industries / hard gate: Perf.3M > 15% / P/FCF < 20 / scoring: RSI 60+、相対出来高 1.00x+、ROE 12%+、粗利率 20%+、FCFマージン 5%+ |
+| セクタープロファイル | Non-Energy Minerals | scope: Non-Energy Minerals / hard gate: Perf.3M > 15% / P/FCF < 20 / scoring: RSI 60+、相対出来高 1.00x+、ROE 12%+、粗利率 20%+、FCFマージン 5%+ |
+| セクタープロファイル | Energy Minerals | scope: Energy Minerals / hard gate: Perf.3M > 15% / P/FCF < 20 / scoring: RSI 60+、相対出来高 1.00x+、ROE 12%+、粗利率 20%+、FCFマージン 5%+ |
+| セクタープロファイル | Health Technology | scope: Health Technology / hard gate: Perf.3M > 5% / P/FCF < 30 / scoring: RSI 55+、相対出来高 0.90x+、ROE 12%+、粗利率 30%+、FCFマージン 8%+ |
+| セクタープロファイル | Health Services | scope: Health Services / hard gate: Perf.3M > 5% / P/FCF < 30 / scoring: RSI 55+、相対出来高 0.90x+、ROE 12%+、粗利率 30%+、FCFマージン 8%+ |
+| セクタープロファイル | Consumer Non-Durables | scope: Consumer Non-Durables / hard gate: Perf.3M > 5% / P/FCF < 30 / scoring: RSI 55+、相対出来高 0.90x+、ROE 12%+、粗利率 30%+、FCFマージン 8%+ |
+| セクタープロファイル | Utilities | scope: Utilities / hard gate: Perf.3M > 5% / P/FCF < 30 / scoring: RSI 55+、相対出来高 0.90x+、ROE 12%+、粗利率 30%+、FCFマージン 8%+ |
+| セクタープロファイル | Finance | scope: Finance / hard gate: Perf.3M > 5% / P/FCF < 50 / scoring: RSI 55+、相対出来高 0.90x+、ROE 10%+、粗利率 20%+、FCFマージン 5%+ |
+| セクタープロファイル | Miscellaneous | scope: Miscellaneous / hard gate: Perf.3M > 5% / P/FCF < 50 / scoring: RSI 55+、相対出来高 0.90x+、ROE 10%+、粗利率 20%+、FCFマージン 5%+ |

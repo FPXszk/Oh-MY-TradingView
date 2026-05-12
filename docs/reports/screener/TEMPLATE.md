@@ -32,33 +32,17 @@
 
 - 通過銘柄数、平均 Perf.3M、平均総合点、代表銘柄
 
-## 市場カバレッジ
-
-- スキャンスコープ
-- ユニバース追加条件
-- 観測レンジ
-- 取引所別件数
-- 補足
-
-## 採用した P0 / P1 指標
-
-- ブロック重み
-- Price momentum
-- Sector strength
-- Profitability / quality
-- Growth confirmation
-- Risk / value guard
-- Rule of 40
-
-## 今後改善できそうな点
-
-- 次の改善候補
-
 ---
 
 **スコア算出:** weighted block rank-sum
 
 **フィルター条件と scoring guide:**
-- 共通条件
-- 補助ポリシー
-- セクター別プロファイル条件
+| 区分 | 項目 | 条件・説明 |
+|:---|:---|:---|
+| 共通条件 | ベース条件 | 時価総額 / EPS / SMA / 52週高値条件 |
+| 補助ポリシー | 超急騰 | 超急騰時の扱い |
+| 補助ポリシー | Rule of 40 | 対象範囲、式、badge / warning 条件 |
+| ユニバース | 取引所 | NASDAQ, NYSE など |
+| ユニバース | 銘柄ユニバース | allowlist がある場合のみ |
+| 補助ポリシー | Yahoo Finance 補完 | null 許容などの扱い |
+| セクタープロファイル | Technology Services | hard gate と scoring 条件 |

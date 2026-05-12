@@ -348,21 +348,19 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /## 超急騰候補/);
     assert.match(markdown, /\| 1 \| \*\*AAA\*\* \| Technology Services \| 1200\.0%/);
     assert.match(markdown, /## Phase2 通過銘柄のセクター内訳/);
-    assert.match(markdown, /## 市場カバレッジ/);
-    assert.match(markdown, /ユニバース追加条件: NASDAQ \+ NYSE stocks only \(OTC excluded\)/);
-    assert.match(markdown, /スコープ通過: NASDAQ 10件, NYSE 4件/);
-    assert.match(markdown, /Phase1 選択セクター通過: NASDAQ 6件, NYSE 3件/);
-    assert.match(markdown, /Technology Services: scope は Technology Services。hard gate は Perf\.3M > 10% \/ P\/FCF < 50/);
-    assert.match(markdown, /Electronic Technology \/ Semiconductors: scope は Electronic Technology。hard gate は Perf\.3M > 10% \/ P\/FCF < 50 \(fabless\), 100 \(IDM\/foundry\)/);
-    assert.match(markdown, /超急騰ポリシー: Perf\.6M > 600% または Perf\.Y > 1000% でも除外せず/);
-    assert.match(markdown, /Rule of 40: US Technology Services software-like industries only。total_revenue_yoy_growth_ttm \+ free_cash_flow_margin_ttm を補助 scoring に使い、40\+ を badge、20 未満を warning 表示。hard filter なし/);
+    assert.doesNotMatch(markdown, /## 市場カバレッジ/);
+    assert.match(markdown, /\| 区分 \| 項目 \| 条件・説明 \|/);
+    assert.match(markdown, /\| 共通条件 \| ベース条件 \| 時価総額 > \$1B \/ EPS\(TTM\) > 0 \/ Close > SMA200 \/ Close > SMA50 \/ Close ≥ 52週高値 × 75% \|/);
+    assert.match(markdown, /\| 補助ポリシー \| 超急騰 \| Perf\.6M > 600% または Perf\.Y > 1000% でも除外せず、リスク確認へ表示 \|/);
+    assert.match(markdown, /\| 補助ポリシー \| Rule of 40 \| US Technology Services software-like industries only \/ total_revenue_yoy_growth_ttm \+ free_cash_flow_margin_ttm \/ 40\+ を badge \/ 20 未満を warning \/ hard filter なし \|/);
+    assert.match(markdown, /\| ユニバース \| 取引所 \| NASDAQ, NYSE \|/);
+    assert.match(markdown, /\| 補助ポリシー \| Yahoo Finance 補完 \| 売上成長率 YoY はプロファイル別閾値を適用し、null は通過 \|/);
+    assert.match(markdown, /\| セクタープロファイル \| Technology Services \| scope: Technology Services \/ hard gate: Perf\.3M > 10% \/ P\/FCF < 50/);
+    assert.match(markdown, /\| セクタープロファイル \| Electronic Technology \/ Semiconductors \| scope: Electronic Technology \/ hard gate: Perf\.3M > 10% \/ P\/FCF < 50 \(fabless\), 100 \(IDM\/foundry\)/);
     assert.match(markdown, /12M 1200\.0%の超急騰/);
-    assert.match(markdown, /取引所限定: NASDAQ, NYSE/);
-    assert.match(markdown, /## 採用した P0 \/ P1 指標/);
+    assert.doesNotMatch(markdown, /## 採用した P0 \/ P1 指標/);
+    assert.doesNotMatch(markdown, /## 今後改善できそうな点/);
     assert.match(markdown, /Price momentum 67%/);
-    assert.match(markdown, /Rule of 40 \(US software\) 3%/);
-    assert.match(markdown, /## 今後改善できそうな点/);
-    assert.match(markdown, /Yahoo Finance 補完あり: 売上成長率 YoY はプロファイル別閾値を適用し、null は通過/);
   });
 
   it('supports a Japan-specific title and currency symbol', () => {
@@ -470,8 +468,8 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /## Phase1 セクターランキング/);
     assert.match(markdown, /アプローチ: 銘柄集計/);
     assert.match(markdown, /¥3000\.00/);
-    assert.match(markdown, /取引所限定: TSE/);
-    assert.match(markdown, /銘柄ユニバース限定: jpx-prime/);
+    assert.match(markdown, /\| ユニバース \| 取引所 \| TSE \|/);
+    assert.match(markdown, /\| ユニバース \| 銘柄ユニバース \| jpx-prime \|/);
   });
 });
 
@@ -483,5 +481,9 @@ describe('daily screener template', () => {
     assert.match(template, /更新: HH:MM JST/);
     assert.match(template, /セクター別取得候補 XXX銘柄 → ユニバース条件通過 XXX銘柄 → ランキング対象 XXX銘柄 → レポート掲載 XX銘柄/);
     assert.match(template, /実際の出力ロジックの正本は/);
+    assert.doesNotMatch(template, /## 市場カバレッジ/);
+    assert.doesNotMatch(template, /## 採用した P0 \/ P1 指標/);
+    assert.doesNotMatch(template, /## 今後改善できそうな点/);
+    assert.match(template, /\| 区分 \| 項目 \| 条件・説明 \|/);
   });
 });

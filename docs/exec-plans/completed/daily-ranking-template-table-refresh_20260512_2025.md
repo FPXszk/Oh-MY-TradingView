@@ -24,13 +24,13 @@
 
 ## 実装ステップ
 
-- [ ] テンプレートから不要セクションを外し、guide 表の雛形を定義する。
-- [ ] `buildMarkdown()` を更新して guide を表形式で出力する。
-- [ ] テストを更新する。
-- [ ] `node --test tests/daily-screener-report.test.js tests/fundamental-screener.test.js` を実行する。
-- [ ] `SCREENER_MARKET=america SCREENER_EXCHANGES=NASDAQ,NYSE node scripts/screener/run-fundamental-screening.mjs` を実行してレポートを再生成する。
-- [ ] `git diff --check` を実行する。
-- [ ] 計画を completed へ移動し、変更をコミット・push する。
+- [x] テンプレートから不要セクションを外し、guide 表の雛形を定義する。
+- [x] `buildMarkdown()` を更新して guide を表形式で出力する。
+- [x] テストを更新する。
+- [x] `node --test tests/daily-screener-report.test.js tests/fundamental-screener.test.js` を実行する。
+- [x] `SCREENER_MARKET=america SCREENER_EXCHANGES=NASDAQ,NYSE node scripts/screener/run-fundamental-screening.mjs` を実行してレポートを再生成する。
+- [x] `git diff --check` を実行する。
+- [x] 計画を completed へ移動し、変更をコミット・push する。
 
 ## 検証
 
