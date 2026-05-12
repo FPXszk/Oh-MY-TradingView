@@ -54,9 +54,9 @@ function buildExplanation(row, index, rows) {
     parts.push(`${strongest[1].label} が候補群内 ${strongest[1].rank} 位相当`);
   }
   if (next) {
-    parts.push(`${next.symbol}より総合点が${fmt(next.rankScore - row.rankScore, 2)}点良い`);
+    parts.push(`${next.symbol}より総合点が${fmt(row.rankScore - next.rankScore, 2)}点高い`);
   } else if (previous) {
-    parts.push(`${previous.symbol}との差は総合点で${fmt(row.rankScore - previous.rankScore, 2)}点`);
+    parts.push(`${previous.symbol}との差は総合点で${fmt(previous.rankScore - row.rankScore, 2)}点`);
   }
   if (weakest && weakest[1].rank > 3) {
     parts.push(`弱点は ${weakest[1].label} の ${weakest[1].rank} 位相当`);
@@ -185,9 +185,6 @@ function buildGuideRows(result) {
     `| 共通条件 | ベース条件 | 時価総額 > $1B / EPS(TTM) > ${result.criteria.eps_min} / Close > SMA200 / Close > SMA50 / Close ≥ 52週高値 × ${result.criteria.price_pct_of_52wk_high_min}% |`,
   ];
 
-  if (result.criteria.extreme_momentum_policy) {
-    rows.push(`| 補助ポリシー | 超急騰 | Perf.6M > ${result.criteria.extreme_momentum_policy.perf_6m_extreme_pct}% または Perf.Y > ${result.criteria.extreme_momentum_policy.perf_y_extreme_pct}% でも除外せず、リスク確認へ表示 |`);
-  }
   if (result.criteria.rule_of_40_policy) {
     rows.push(`| 補助ポリシー | Rule of 40 | ${result.criteria.rule_of_40_policy.scope} / ${result.criteria.rule_of_40_policy.formula} / ${result.criteria.rule_of_40_policy.pass_badge_min}+ を badge / ${result.criteria.rule_of_40_policy.warning_below} 未満を warning / hard filter なし |`);
   }
@@ -260,7 +257,7 @@ export function buildMarkdown(result, options = {}) {
   } else {
     lines.push(`- Phase1 ソース候補数: ${result.sectorMomentum.coverage?.scopedCandidates ?? 'N/A'} / reported ${result.sectorMomentum.coverage?.totalCandidatesReported ?? 'N/A'}`);
     lines.push('');
-    lines.push('| 順位 | セクター | 12M | 6M | 3M | 1M | RSI | 相対出来高 | 出来高/構成数 | 総合点 |');
+    lines.push('| 順位 | セクター | 12M | 6M | 3M | 1M | RSI | 相対出来高 | 出来高/構成数 | 順位合計 |');
     lines.push('|:---:|:---|---:|---:|---:|---:|---:|---:|:---|---:|');
     result.sectorMomentum.rankings.forEach((entry, index) => {
       lines.push(
@@ -289,7 +286,7 @@ export function buildMarkdown(result, options = {}) {
     lines.push('');
     topFive.forEach((row, index) => {
       lines.push(`### ${index + 1}位 ${row.symbol} (${row.exchange ?? '-'})`);
-      lines.push(`- 総合点: ${fmt(row.rankScore, 2)}（低いほど良い）`);
+      lines.push(`- 総合点: ${fmt(row.rankScore, 2)}`);
       lines.push(`- ブロック: 価格 ${fmt(getBlock(row, 'priceMomentum')?.rank, 2)} / セクター ${fmt(getBlock(row, 'sectorStrength')?.rank, 2)} / 品質 ${fmt(getBlock(row, 'quality')?.rank, 2)} / 成長 ${fmt(getBlock(row, 'growth')?.rank, 2)} / リスク・割安 ${fmt(getBlock(row, 'riskValue')?.rank, 2)} / Rule40 ${fmt(getBlock(row, 'ruleOf40')?.rank, 2)}`);
       lines.push(`- 主要指標: 12M ${fmt(row.perfY)}% / 6M ${fmt(row.perf6m)}% / 3M ${fmt(row.perf3m)}% / ROIC ${fmt(row.roic)}% / GP/A ${fmt(row.grossProfitToAssets)}% / FCF ${fmt(row.fcfMargin)}% / Rule40 ${buildRuleOf40Note(row)}`);
       lines.push(`- リスク確認: ${buildRiskNote(row)}`);
@@ -297,18 +294,6 @@ export function buildMarkdown(result, options = {}) {
       lines.push('');
     });
 
-    const extremeRows = result.results.filter((row) => row.extremeMomentum?.isExtreme);
-    if (extremeRows.length > 0) {
-      lines.push('## 超急騰候補');
-      lines.push('');
-      lines.push('| 順位 | シンボル | セクター | 12M | 6M | 3M | リスク確認 |');
-      lines.push('|:---:|:---|:---|---:|---:|---:|:---|');
-      extremeRows.forEach((row) => {
-        const rank = result.results.findIndex((entry) => entry.symbol === row.symbol && entry.exchange === row.exchange) + 1;
-        lines.push(`| ${rank} | **${row.symbol}** | ${row.sector ?? 'N/A'} | ${fmt(row.perfY)}% | ${fmt(row.perf6m)}% | ${fmt(row.perf3m)}% | ${buildRiskNote(row)} |`);
-      });
-      lines.push('');
-    }
   }
 
   lines.push('## Phase2 通過銘柄のセクター内訳');

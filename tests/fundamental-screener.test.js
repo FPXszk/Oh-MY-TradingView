@@ -111,6 +111,12 @@ function createMockFetch({ phase1Payload, phase2PayloadsBySector, stockBodies })
   };
 }
 
+function assertRankScoresDescending(rows) {
+  for (let i = 1; i < rows.length; i += 1) {
+    assert.ok(rows[i - 1].rankScore >= rows[i].rankScore);
+  }
+}
+
 describe('runFundamentalScreener', () => {
   it('uses TradingView stock-sector US profiles and activates producer manufacturing', async () => {
     const stockBodies = [];
@@ -349,6 +355,8 @@ describe('runFundamentalScreener', () => {
     ]);
     assert.ok(result.results[0].rankBreakdown.priceMomentum);
     assert.ok(result.results[0].rankBreakdown.quality);
+    assertRankScoresDescending(result.results);
+    assert.ok(result.results[0].rankScore > result.results[result.results.length - 1].rankScore);
     assert.equal(result.results.find((row) => row.symbol === 'ADEA').ruleOf40, 45);
     assert.equal(result.results.find((row) => row.symbol === 'MU').ruleOf40, null);
     assert.deepEqual(result.criteria.profile_summaries.map((profile) => profile.label), [
@@ -523,6 +531,8 @@ describe('runFundamentalScreener', () => {
     assert.equal(result.phase1Filtered, 2);
     assert.equal(result.clientFiltered, 2);
     assert.deepEqual(result.results.map((row) => row.symbol), ['8035', '4063']);
+    assertRankScoresDescending(result.results);
+    assert.ok(result.results[0].rankScore > result.results[1].rankScore);
     assert.deepEqual(result.criteria.profile_summaries.map((profile) => profile.label), [
       'Japan Manufacturing',
       'Japan Materials & Trading',

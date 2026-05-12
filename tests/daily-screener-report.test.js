@@ -258,7 +258,7 @@ describe('buildMarkdown', () => {
         ],
       },
       sectorRanking: [
-        { sector: 'Technology Services', count: 3, averagePerf3m: 32.4, averageRankScore: 5.3, topSymbol: 'AAA' },
+        { sector: 'Technology Services', count: 3, averagePerf3m: 32.4, averageRankScore: 91.7, topSymbol: 'AAA' },
       ],
       results: [
         {
@@ -283,7 +283,7 @@ describe('buildMarkdown', () => {
             isExtreme: true,
             flags: ['perfY_gt_1000'],
           },
-          rankScore: 4,
+          rankScore: 96,
           rankBreakdown: rankBreakdown(1),
         },
         {
@@ -304,7 +304,7 @@ describe('buildMarkdown', () => {
           epsGrowthTtm: 28,
           pFcf: 35,
           atrPct: 3.5,
-          rankScore: 5,
+          rankScore: 91,
           rankBreakdown: rankBreakdown(2),
         },
         {
@@ -324,7 +324,7 @@ describe('buildMarkdown', () => {
           epsGrowthTtm: 22,
           pFcf: 25,
           atrPct: 2.8,
-          rankScore: 8,
+          rankScore: 78,
           rankBreakdown: rankBreakdown(3),
         },
         {
@@ -344,7 +344,7 @@ describe('buildMarkdown', () => {
           epsGrowthTtm: 18,
           pFcf: 22,
           atrPct: 2.5,
-          rankScore: 11,
+          rankScore: 64,
           rankBreakdown: rankBreakdown(4),
         },
         {
@@ -364,7 +364,7 @@ describe('buildMarkdown', () => {
           epsGrowthTtm: 16,
           pFcf: 50,
           atrPct: 5.5,
-          rankScore: 14,
+          rankScore: 42,
           rankBreakdown: rankBreakdown(5),
         },
         {
@@ -384,7 +384,7 @@ describe('buildMarkdown', () => {
           epsGrowthTtm: 14,
           pFcf: 55,
           atrPct: 6.5,
-          rankScore: 17,
+          rankScore: 28,
           rankBreakdown: rankBreakdown(6),
         },
       ],
@@ -403,15 +403,16 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /## 上位5件の選定理由/);
     assert.ok(markdown.indexOf('## 銘柄ランキング') < markdown.indexOf('## 上位5件の選定理由'));
     assert.match(markdown, /### 1位 AAA \(NASDAQ\)/);
+    assert.match(markdown, /- 総合点: 96\.00/);
+    assert.doesNotMatch(markdown, /低いほど良い/);
     assert.match(markdown, /Rule40/);
     assert.match(markdown, /60\.0（Rule 40\+）/);
-    assert.match(markdown, /## 超急騰候補/);
-    assert.match(markdown, /\| 1 \| \*\*AAA\*\* \| Technology Services \| 1200\.0%/);
+    assert.doesNotMatch(markdown, /## 超急騰候補/);
     assert.match(markdown, /## Phase2 通過銘柄のセクター内訳/);
     assert.doesNotMatch(markdown, /## 市場カバレッジ/);
     assert.match(markdown, /\| 区分 \| 項目 \| 条件・説明 \|/);
     assert.match(markdown, /\| 共通条件 \| ベース条件 \| 時価総額 > \$1B \/ EPS\(TTM\) > 0 \/ Close > SMA200 \/ Close > SMA50 \/ Close ≥ 52週高値 × 75% \|/);
-    assert.match(markdown, /\| 補助ポリシー \| 超急騰 \| Perf\.6M > 600% または Perf\.Y > 1000% でも除外せず、リスク確認へ表示 \|/);
+    assert.doesNotMatch(markdown, /\| 補助ポリシー \| 超急騰 \|/);
     assert.match(markdown, /\| 補助ポリシー \| Rule of 40 \| US Technology Services software-like industries only \/ total_revenue_yoy_growth_ttm \+ free_cash_flow_margin_ttm \/ 40\+ を badge \/ 20 未満を warning \/ hard filter なし \|/);
     assert.match(markdown, /\| ユニバース \| 取引所 \| NASDAQ, NYSE \|/);
     assert.match(markdown, /\| 補助ポリシー \| Yahoo Finance 補完 \| 売上成長率 YoY はプロファイル別閾値を適用し、null は通過 \|/);
@@ -548,6 +549,8 @@ describe('daily screener template', () => {
     assert.doesNotMatch(template, /## 今後改善できそうな点/);
     assert.doesNotMatch(template, /アプローチ/);
     assert.doesNotMatch(template, /採用セクター/);
+    assert.doesNotMatch(template, /## 超急騰候補/);
+    assert.doesNotMatch(template, /\| 補助ポリシー \| 超急騰 \|/);
     assert.ok(template.indexOf('## 銘柄ランキング') < template.indexOf('## 上位5件の選定理由'));
     assert.match(template, /\| 区分 \| 項目 \| 条件・説明 \|/);
     assert.match(template, /\| ブロック \| 重み \| 主な評価項目 \| 役割 \|/);

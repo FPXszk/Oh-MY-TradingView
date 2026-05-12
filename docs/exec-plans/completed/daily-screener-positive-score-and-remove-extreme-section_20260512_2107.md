@@ -38,14 +38,14 @@
 
 ## 実装ステップ
 
-- [ ] `src/core/fundamental-screener.js` の総合点を高得点優位へ変換し、並び順とセクター集計を更新する。
-- [ ] `scripts/screener/run-fundamental-screening.mjs` から `超急騰候補` セクションと低得点説明を削除する。
-- [ ] `docs/reports/screener/TEMPLATE.md` を新構成に合わせる。
-- [ ] `tests/fundamental-screener.test.js` と `tests/daily-screener-report.test.js` を更新する。
-- [ ] `node --test tests/fundamental-screener.test.js tests/daily-screener-report.test.js` を実行する。
-- [ ] `SCREENER_MARKET=america SCREENER_EXCHANGES=NASDAQ,NYSE node scripts/screener/run-fundamental-screening.mjs` を実行し、レポートを再生成する。
-- [ ] `git diff --check` を実行する。
-- [ ] 計画を completed へ移動し、変更をコミット・push する。
+- [x] `src/core/fundamental-screener.js` の総合点を高得点優位へ変換し、並び順とセクター集計を更新する。
+- [x] `scripts/screener/run-fundamental-screening.mjs` から `超急騰候補` セクションと低得点説明を削除する。
+- [x] `docs/reports/screener/TEMPLATE.md` を新構成に合わせる。
+- [x] `tests/fundamental-screener.test.js` と `tests/daily-screener-report.test.js` を更新する。
+- [x] `node --test tests/fundamental-screener.test.js tests/daily-screener-report.test.js` を実行する。
+- [x] `SCREENER_MARKET=america SCREENER_EXCHANGES=NASDAQ,NYSE node scripts/screener/run-fundamental-screening.mjs` を実行し、レポートを再生成する。
+- [x] `git diff --check` を実行する。
+- [x] 計画を completed へ移動し、変更をコミット・push する。
 
 ## 検証
 

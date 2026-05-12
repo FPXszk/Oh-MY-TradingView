@@ -9,8 +9,9 @@
  * Optional enrichment (enrichWithYahoo: true):
  *   - Revenue growth YoY threshold is profile-specific (null stays eligible)
  *
- * Ranking: weighted block rank-sum of price momentum + sector strength
- * + profitability/quality + growth + risk/value.
+ * Ranking: weighted block ranks of price momentum + sector strength
+ * + profitability/quality + growth + risk/value, converted to a positive
+ * score where higher is better.
  */
 
 import { readFileSync } from 'node:fs';
@@ -392,6 +393,11 @@ function averageRank(values, fallback) {
   return Number((usable.reduce((sum, value) => sum + value, 0) / usable.length).toFixed(2));
 }
 
+function rankSumToPositiveScore(weightedRank, rowCount) {
+  if (rowCount <= 0) return 0;
+  return Number(Math.max(0, ((rowCount + 1 - weightedRank) / rowCount) * 100).toFixed(2));
+}
+
 function assignRanks(rows, field, direction = 'desc') {
   const indexed = rows.map((r, i) => ({ i, val: r[field] }));
   indexed.sort((a, b) => {
@@ -435,13 +441,16 @@ function applyBlockRanks(rows, rankingBlocks = RANK_BLOCKS) {
         fields: fieldRanks,
       }];
     })),
-  })).map((row) => ({
-    ...row,
-    rankScore: Number(rankingBlocks.reduce(
+  })).map((row) => {
+    const weightedRank = Number(rankingBlocks.reduce(
       (sum, block) => sum + (row.rankBreakdown[block.key].rank * (block.weight / 100)),
       0,
-    ).toFixed(2)),
-  }));
+    ).toFixed(2));
+    return {
+      ...row,
+      rankScore: rankSumToPositiveScore(weightedRank, rows.length),
+    };
+  });
 }
 
 function countBy(rows, field) {
@@ -477,7 +486,7 @@ function summarizeSectors(rows) {
       entry.totalPerf3m += row.perf3m;
       entry.perf3mCount += 1;
     }
-    if (entry.topRankScore === null || (row.rankScore ?? Infinity) < entry.topRankScore) {
+    if (entry.topRankScore === null || (row.rankScore ?? -Infinity) > entry.topRankScore) {
       entry.topRankScore = row.rankScore ?? null;
       entry.topSymbol = row.symbol;
     }
@@ -500,7 +509,7 @@ function summarizeSectors(rows) {
         return (b.averagePerf3m ?? -Infinity) - (a.averagePerf3m ?? -Infinity);
       }
       if (b.count !== a.count) return b.count - a.count;
-      return (a.averageRankScore ?? Infinity) - (b.averageRankScore ?? Infinity);
+      return (b.averageRankScore ?? -Infinity) - (a.averageRankScore ?? -Infinity);
     });
 }
 
@@ -646,7 +655,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   }
 
   const rankingBlocks = getRankingBlocks(market);
-  const ranked = applyBlockRanks(clientFiltered, rankingBlocks).sort((a, b) => a.rankScore - b.rankScore);
+  const ranked = applyBlockRanks(clientFiltered, rankingBlocks).sort((a, b) => b.rankScore - a.rankScore);
   const matched = ranked.slice(0, effectiveLimit).map(stripInternalFields);
   const sectorRanking = summarizeSectors(ranked);
 
