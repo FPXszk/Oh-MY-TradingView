@@ -265,12 +265,16 @@ export function buildMarkdown(result, options = {}) {
     lines.push('- Phase1 セクター順位は算出できませんでした。');
   } else {
     lines.push(`- Phase1 ソース候補数: ${result.sectorMomentum.coverage?.scopedCandidates ?? 'N/A'} / reported ${result.sectorMomentum.coverage?.totalCandidatesReported ?? 'N/A'}`);
+    if (result.sectorMomentum.benchmark?.symbol) {
+      lines.push(`- 相対強度の基準: ${result.sectorMomentum.benchmark.exchange ?? '-'}:${result.sectorMomentum.benchmark.symbol}（SPY）`);
+    }
+    lines.push('- 12M / 6M / 3M はセクター構成銘柄の平均リターンです。');
     lines.push('');
-    lines.push('| 順位 | セクター | 12M | 6M | 3M | 1M | RSI | 相対出来高 | 出来高/構成数 | 順位合計 |');
-    lines.push('|:---:|:---|---:|---:|---:|---:|---:|---:|:---|---:|');
+    lines.push('| 順位 | セクター | 平均12M | 平均6M | 平均3M | SPY差12M | SPY差6M | SPY差3M | SMA50上 | SMA200上 | 52w高値90%内 | RSI | 相対出来高 | 構成数 | 順位合計 |');
+    lines.push('|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|');
     result.sectorMomentum.rankings.forEach((entry, index) => {
       lines.push(
-        `| ${index + 1} | ${entry.sector} | ${fmt(entry.perfY)}% | ${fmt(entry.perf6m)}% | ${fmt(entry.perf3m)}% | ${fmt(entry.perf1m)}% | ${fmt(entry.rsi14)} | ${fmt(entry.relativeVolume, 2)}x | ${fmtCountOrVolume(entry)} | ${entry.rankScore} |`,
+        `| ${index + 1} | ${entry.sector} | ${fmt(entry.perfY)}% | ${fmt(entry.perf6m)}% | ${fmt(entry.perf3m)}% | ${fmt(entry.relativeStrengthY)}pt | ${fmt(entry.relativeStrength6m)}pt | ${fmt(entry.relativeStrength3m)}pt | ${fmt(entry.pctAboveSma50)}% | ${fmt(entry.pctAboveSma200)}% | ${fmt(entry.pctNear52WeekHigh)}% | ${fmt(entry.rsi14)} | ${fmt(entry.relativeVolume, 2)}x | ${entry.memberCount ?? 'N/A'} | ${entry.rankScore} |`,
       );
     });
   }

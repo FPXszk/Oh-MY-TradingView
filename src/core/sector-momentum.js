@@ -4,10 +4,15 @@ const DEFAULT_US_SELECTED_SECTOR_COUNT = 20;
 const STOCK_PAGE_SIZE = 1000;
 const MARKET_CAP_MIN_USD = 1_000_000_000;
 const MAX_SELECTED_STOCK_SECTOR_COUNT = 20;
+const AMERICA_BENCHMARK_TICKERS = ['BATS:SPY', 'AMEX:SPY'];
 
 const STOCK_COLUMNS = [
   'name',
   'sector',
+  'close',
+  'SMA200',
+  'SMA50',
+  'price_52_week_high',
   'Perf.1M',
   'Perf.3M',
   'Perf.6M',
@@ -39,6 +44,11 @@ function validateSelectedSectorCount(value, { max = MAX_SELECTED_STOCK_SECTOR_CO
 function average(total, count, digits = 1) {
   if (!count) return null;
   return Number((total / count).toFixed(digits));
+}
+
+function percentage(count, total, digits = 1) {
+  if (!total) return null;
+  return Number(((count / total) * 100).toFixed(digits));
 }
 
 function assignRanks(rows, field) {
@@ -107,6 +117,18 @@ function buildStockAggregationRequestBody(market, rangeStart, rangeEnd) {
   };
 }
 
+function buildBenchmarkRequestBody(market, ticker) {
+  return {
+    filter: [],
+    options: { lang: 'en' },
+    markets: [market],
+    symbols: { query: { types: ['fund'] }, tickers: [ticker] },
+    columns: STOCK_COLUMNS,
+    sort: { sortBy: 'name', sortOrder: 'asc' },
+    range: [0, 1],
+  };
+}
+
 function passesScopeFilters(row, { exchangeAllowlist, symbolAllowlist }) {
   if (exchangeAllowlist && !exchangeAllowlist.includes(row.exchange)) return false;
   if (symbolAllowlist && !symbolAllowlist.has(row.symbol)) return false;
@@ -119,6 +141,10 @@ function normalizeStockRow(row) {
     exchange,
     symbol,
     sector: row.d[STOCK_COL['sector']] ?? 'Unknown',
+    close: row.d[STOCK_COL['close']] ?? null,
+    sma200: row.d[STOCK_COL['SMA200']] ?? null,
+    sma50: row.d[STOCK_COL['SMA50']] ?? null,
+    price52WeekHigh: row.d[STOCK_COL['price_52_week_high']] ?? null,
     perf1m: row.d[STOCK_COL['Perf.1M']] ?? null,
     perf3m: row.d[STOCK_COL['Perf.3M']] ?? null,
     perf6m: row.d[STOCK_COL['Perf.6M']] ?? null,
@@ -148,6 +174,23 @@ async function requestScanner(url, body, fetchFn) {
   return payload;
 }
 
+async function requestBenchmarkSnapshot(market, fetchFn) {
+  if (market !== 'america') return null;
+
+  for (const ticker of AMERICA_BENCHMARK_TICKERS) {
+    const payload = await requestScanner(
+      `https://scanner.tradingview.com/${market}/scan`,
+      buildBenchmarkRequestBody(market, ticker),
+      fetchFn,
+    );
+    if (payload.data.length > 0) {
+      return normalizeStockRow(payload.data[0]);
+    }
+  }
+
+  return null;
+}
+
 async function runStockAggregation({
   market,
   exchangeAllowlist,
@@ -175,6 +218,7 @@ async function runStockAggregation({
   const normalized = rawRows
     .map(normalizeStockRow)
     .filter((row) => passesScopeFilters(row, { exchangeAllowlist, symbolAllowlist }));
+  const benchmark = await requestBenchmarkSnapshot(market, fetchFn);
 
   const grouped = new Map();
   for (const row of normalized) {
@@ -198,6 +242,12 @@ async function runStockAggregation({
         totalRelativeVolume: 0,
         relativeVolumeCount: 0,
         rsiAbove60Count: 0,
+        closeAboveSma50Count: 0,
+        closeAboveSma50BaseCount: 0,
+        closeAboveSma200Count: 0,
+        closeAboveSma200BaseCount: 0,
+        near52WeekHighCount: 0,
+        near52WeekHighBaseCount: 0,
       });
     }
 
@@ -228,6 +278,18 @@ async function runStockAggregation({
       entry.totalRelativeVolume += row.relativeVolume;
       entry.relativeVolumeCount += 1;
     }
+    if (row.close !== null && row.close !== undefined && row.sma50 !== null && row.sma50 !== undefined) {
+      entry.closeAboveSma50BaseCount += 1;
+      if (row.close > row.sma50) entry.closeAboveSma50Count += 1;
+    }
+    if (row.close !== null && row.close !== undefined && row.sma200 !== null && row.sma200 !== undefined) {
+      entry.closeAboveSma200BaseCount += 1;
+      if (row.close > row.sma200) entry.closeAboveSma200Count += 1;
+    }
+    if (row.close !== null && row.close !== undefined && row.price52WeekHigh !== null && row.price52WeekHigh !== undefined && row.price52WeekHigh > 0) {
+      entry.near52WeekHighBaseCount += 1;
+      if ((row.close / row.price52WeekHigh) >= 0.9) entry.near52WeekHighCount += 1;
+    }
   }
 
   const summarized = Array.from(grouped.values()).map((entry) => ({
@@ -244,10 +306,38 @@ async function runStockAggregation({
     pctRsiAbove60: entry.memberCount > 0
       ? Number(((entry.rsiAbove60Count / entry.memberCount) * 100).toFixed(1))
       : null,
+    pctAboveSma50: percentage(entry.closeAboveSma50Count, entry.closeAboveSma50BaseCount),
+    pctAboveSma200: percentage(entry.closeAboveSma200Count, entry.closeAboveSma200BaseCount),
+    pctNear52WeekHigh: percentage(entry.near52WeekHighCount, entry.near52WeekHighBaseCount),
   }));
 
-  const rankingFormula = ['perfY', 'perf6m', 'perf3m', 'relativeVolume', 'rsi14', 'pctRsiAbove60'];
-  const rankings = applyRankSum(summarized, rankingFormula);
+  const withRelativeStrength = summarized.map((entry) => ({
+    ...entry,
+    relativeStrengthY: entry.perfY !== null && benchmark?.perfY !== null && benchmark?.perfY !== undefined
+      ? Number((entry.perfY - benchmark.perfY).toFixed(1))
+      : null,
+    relativeStrength6m: entry.perf6m !== null && benchmark?.perf6m !== null && benchmark?.perf6m !== undefined
+      ? Number((entry.perf6m - benchmark.perf6m).toFixed(1))
+      : null,
+    relativeStrength3m: entry.perf3m !== null && benchmark?.perf3m !== null && benchmark?.perf3m !== undefined
+      ? Number((entry.perf3m - benchmark.perf3m).toFixed(1))
+      : null,
+  }));
+  const candidateRankingFormula = [
+    'perfY',
+    'perf6m',
+    'perf3m',
+    'relativeStrengthY',
+    'relativeStrength6m',
+    'relativeStrength3m',
+    'pctAboveSma50',
+    'pctAboveSma200',
+    'pctNear52WeekHigh',
+  ];
+  const rankingFormula = candidateRankingFormula.filter((field) => (
+    withRelativeStrength.some((entry) => entry[field] !== null && entry[field] !== undefined)
+  ));
+  const rankings = applyRankSum(withRelativeStrength, rankingFormula);
   const { selected, selectedStockSectors, selectedFilterRules } = buildSelection(rankings, selectedSectorCount);
 
   return {
@@ -265,6 +355,15 @@ async function runStockAggregation({
     })),
     selectedStockSectors,
     selectedFilterRules,
+    benchmark: benchmark
+      ? {
+        symbol: benchmark.symbol,
+        exchange: benchmark.exchange,
+        perf3m: benchmark.perf3m,
+        perf6m: benchmark.perf6m,
+        perfY: benchmark.perfY,
+      }
+      : null,
     rankings,
     coverage: {
       totalCandidatesReported: totalCandidatesReported ?? rawRows.length,

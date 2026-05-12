@@ -68,6 +68,10 @@ function buildPhase1StockRow(symbol, values) {
     d: [
       values.name,
       values.sector,
+      values.close ?? 100,
+      values.sma200 ?? 90,
+      values.sma50 ?? 95,
+      values.high52w ?? 110,
       values.perf1m,
       values.perf3m,
       values.perf6m ?? null,
@@ -87,13 +91,23 @@ function isPhase2StockRequest(body) {
   return body.columns?.includes('earnings_per_share_diluted_ttm');
 }
 
+function isBenchmarkRequest(body) {
+  return body.symbols?.tickers?.some((ticker) => ticker.includes('SPY'));
+}
+
 function getFilterValue(body, left) {
   return body.filter?.find((entry) => entry.left === left)?.right ?? null;
 }
 
-function createMockFetch({ phase1Payload, phase2PayloadsBySector, stockBodies }) {
+function createMockFetch({ phase1Payload, benchmarkPayload, phase2PayloadsBySector, stockBodies }) {
   return async (_url, options) => {
     const body = JSON.parse(options.body);
+    if (isBenchmarkRequest(body)) {
+      return {
+        ok: true,
+        json: async () => benchmarkPayload ?? { totalCount: 0, data: [] },
+      };
+    }
     if (isFundRequest(body) || !isPhase2StockRequest(body)) {
       return {
         ok: true,
@@ -125,6 +139,26 @@ describe('runFundamentalScreener', () => {
       _deps: {
         fetch: createMockFetch({
           stockBodies,
+          benchmarkPayload: {
+            totalCount: 1,
+            data: [
+              buildPhase1StockRow('BATS:SPY', {
+                name: 'SPY',
+                sector: 'Benchmark',
+                close: 100,
+                sma200: 95,
+                sma50: 98,
+                high52w: 104,
+                perf1m: 6,
+                perf3m: 12,
+                perf6m: 24,
+                perfY: 48,
+                rsi: 61,
+                relativeVolume: 1.0,
+                marketCap: 1_000_000_000,
+              }),
+            ],
+          },
           phase1Payload: {
             totalCount: 4,
             data: [
@@ -388,6 +422,7 @@ describe('runFundamentalScreener', () => {
         scopeLabel: 'JPX Prime domestic stocks snapshot',
         fetch: createMockFetch({
           stockBodies,
+          benchmarkPayload: null,
           phase1Payload: {
             totalCount: 4,
             data: [

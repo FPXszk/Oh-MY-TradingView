@@ -241,16 +241,22 @@ describe('buildMarkdown', () => {
           { key: 'Finance', label: 'Finance', memberCount: 2 },
         ],
         selectedStockSectors: ['Technology Services', 'Electronic Technology', 'Finance'],
-        rankingFormula: ['perfY', 'perf6m', 'perf3m', 'relativeVolume', 'rsi14', 'pctRsiAbove60'],
+        benchmark: { symbol: 'SPY', exchange: 'BATS', perf3m: 10.2, perf6m: 18.4, perfY: 30.5 },
+        rankingFormula: ['perfY', 'perf6m', 'perf3m', 'relativeStrengthY', 'relativeStrength6m', 'relativeStrength3m', 'pctAboveSma50', 'pctAboveSma200', 'pctNear52WeekHigh'],
         coverage: { totalCandidatesReported: 20, scopedCandidates: 20, serverLimit: 20 },
         rankings: [
           {
             sector: 'Technology Services',
             memberCount: 3,
-            perf1m: 22.8,
             perf3m: 11.1,
             perf6m: 18.4,
             perfY: 44.2,
+            relativeStrength3m: 0.9,
+            relativeStrength6m: 0.0,
+            relativeStrengthY: 13.7,
+            pctAboveSma50: 100,
+            pctAboveSma200: 100,
+            pctNear52WeekHigh: 66.7,
             rsi14: 73.7,
             relativeVolume: 1.04,
             rankScore: 5,
@@ -403,8 +409,12 @@ describe('buildMarkdown', () => {
     assert.doesNotMatch(markdown, /2026-05-04T03:00:00.000Z/);
     assert.match(markdown, /セクター別取得候補 26銘柄 → ユニバース条件通過 26銘柄 → ランキング対象 14銘柄 → レポート掲載 6銘柄/);
     assert.match(markdown, /## Phase1 セクターランキング/);
+    assert.match(markdown, /相対強度の基準: BATS:SPY（SPY）/);
+    assert.match(markdown, /12M \/ 6M \/ 3M はセクター構成銘柄の平均リターンです/);
     assert.doesNotMatch(markdown, /アプローチ:/);
     assert.doesNotMatch(markdown, /採用セクター:/);
+    assert.match(markdown, /\| 順位 \| セクター \| 平均12M \| 平均6M \| 平均3M \| SPY差12M \| SPY差6M \| SPY差3M \| SMA50上 \| SMA200上 \| 52w高値90%内 \| RSI \| 相対出来高 \| 構成数 \| 順位合計 \|/);
+    assert.match(markdown, /\| 1 \| Technology Services \| 44\.2% \| 18\.4% \| 11\.1% \| 13\.7pt \| 0\.0pt \| 0\.9pt \| 100\.0% \| 100\.0% \| 66\.7% \| 73\.7 \| 1\.04x \| 3 \| 5 \|/);
     assert.match(markdown, /## 銘柄ランキング/);
     assert.match(markdown, /\| 順位 \| シンボル \| セクター \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCF \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \|/);
     assert.match(markdown, /\| 1 \| \*\*AAA\*\* \| Technology Services \| NASDAQ \| \$12\.3B \|/);
@@ -490,15 +500,21 @@ describe('buildMarkdown', () => {
           { key: 'Finance', label: 'Finance', memberCount: 8 },
         ],
         selectedStockSectors: ['Finance'],
-        rankingFormula: ['perfY', 'perf6m', 'perf3m', 'relativeVolume', 'rsi14', 'pctRsiAbove60'],
+        benchmark: null,
+        rankingFormula: ['perfY', 'perf6m', 'perf3m', 'pctAboveSma50', 'pctAboveSma200', 'pctNear52WeekHigh'],
         coverage: { totalCandidatesReported: 1200, scopedCandidates: 420, serverLimit: 2000 },
         rankings: [
           {
             sector: 'Finance',
-            perf1m: 7.2,
             perf3m: 11.8,
             perf6m: 20.1,
             perfY: 32.5,
+            relativeStrength3m: null,
+            relativeStrength6m: null,
+            relativeStrengthY: null,
+            pctAboveSma50: 75.0,
+            pctAboveSma200: 87.5,
+            pctNear52WeekHigh: 62.5,
             rsi14: 62.5,
             relativeVolume: 1.21,
             memberCount: 8,
@@ -540,6 +556,7 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /# 日本株 ファンダメンタル × モメンタム スクリーニング 上位20件/);
     assert.match(markdown, /更新: 12:00 JST/);
     assert.match(markdown, /## Phase1 セクターランキング/);
+    assert.match(markdown, /\| 1 \| Finance \| 32\.5% \| 20\.1% \| 11\.8% \| N\/Apt \| N\/Apt \| N\/Apt \| 75\.0% \| 87\.5% \| 62\.5% \| 62\.5 \| 1\.21x \| 8 \| 4 \|/);
     assert.doesNotMatch(markdown, /アプローチ:/);
     assert.match(markdown, /\| 1 \| \*\*7203\*\* \| Consumer Durables \| TSE \| \$4\.50T \|/);
     assert.match(markdown, /\| ユニバース \| 取引所 \| TSE \|/);
