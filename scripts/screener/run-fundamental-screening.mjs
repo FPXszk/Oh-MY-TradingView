@@ -88,6 +88,14 @@ function buildRiskNote(row) {
   return notes.length > 0 ? notes.join('、') : '目立つ過熱/財務リスクなし';
 }
 
+function buildRuleOf40Note(row) {
+  if (row.ruleOf40 === null || row.ruleOf40 === undefined) return 'N/A';
+  const value = fmt(row.ruleOf40);
+  if (row.ruleOf40 >= 40) return `${value}（Rule 40+）`;
+  if (row.ruleOf40 < 20) return `${value}（20未満注意）`;
+  return value;
+}
+
 function buildMarketLines(label, entries) {
   if (!entries || entries.length === 0) {
     return `- ${label}: データなし`;
@@ -181,8 +189,8 @@ export function buildMarkdown(result, options = {}) {
     topFive.forEach((row, index) => {
       lines.push(`### ${index + 1}位 ${row.symbol} (${row.exchange ?? '-'})`);
       lines.push(`- 総合点: ${fmt(row.rankScore, 2)}（低いほど良い）`);
-      lines.push(`- ブロック: 価格 ${fmt(getBlock(row, 'priceMomentum')?.rank, 2)} / セクター ${fmt(getBlock(row, 'sectorStrength')?.rank, 2)} / 品質 ${fmt(getBlock(row, 'quality')?.rank, 2)} / 成長 ${fmt(getBlock(row, 'growth')?.rank, 2)} / リスク・割安 ${fmt(getBlock(row, 'riskValue')?.rank, 2)}`);
-      lines.push(`- 主要指標: 12M ${fmt(row.perfY)}% / 6M ${fmt(row.perf6m)}% / 3M ${fmt(row.perf3m)}% / ROIC ${fmt(row.roic)}% / GP/A ${fmt(row.grossProfitToAssets)}% / FCF ${fmt(row.fcfMargin)}%`);
+      lines.push(`- ブロック: 価格 ${fmt(getBlock(row, 'priceMomentum')?.rank, 2)} / セクター ${fmt(getBlock(row, 'sectorStrength')?.rank, 2)} / 品質 ${fmt(getBlock(row, 'quality')?.rank, 2)} / 成長 ${fmt(getBlock(row, 'growth')?.rank, 2)} / リスク・割安 ${fmt(getBlock(row, 'riskValue')?.rank, 2)} / Rule40 ${fmt(getBlock(row, 'ruleOf40')?.rank, 2)}`);
+      lines.push(`- 主要指標: 12M ${fmt(row.perfY)}% / 6M ${fmt(row.perf6m)}% / 3M ${fmt(row.perf3m)}% / ROIC ${fmt(row.roic)}% / GP/A ${fmt(row.grossProfitToAssets)}% / FCF ${fmt(row.fcfMargin)}% / Rule40 ${buildRuleOf40Note(row)}`);
       lines.push(`- リスク確認: ${buildRiskNote(row)}`);
       lines.push(`- 理由: ${buildExplanation(row, index, topFive)}`);
       lines.push('');
@@ -190,11 +198,11 @@ export function buildMarkdown(result, options = {}) {
 
     lines.push('## 銘柄ランキング');
     lines.push('');
-    lines.push('| 順位 | シンボル | セクター | 市場 | 現在値 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | EPS YoY | P/FCF | ATR% | 総合点 |');
-    lines.push('|:---:|:---|:---|:---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|');
+    lines.push('| 順位 | シンボル | セクター | 市場 | 現在値 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 |');
+    lines.push('|:---:|:---|:---|:---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|');
     result.results.forEach((r, i) => {
       lines.push(
-        `| ${i + 1} | **${r.symbol}** | ${r.sector ?? 'N/A'} | ${r.exchange ?? '-'} | ${currencySymbol}${fmt(r.close, 2)} | ${fmt(r.perfY)}% | ${fmt(r.perf6m)}% | ${fmt(r.perf3m)}% | ${fmt(r.pctOf52wHigh)}% | ${fmt(r.roic)}% | ${fmt(r.grossProfitToAssets)}% | ${fmt(r.fcfMargin)}% | ${fmt(r.revenueGrowthTtm)}% | ${fmt(r.epsGrowthTtm)}% | ${fmt(r.pFcf, 1)} | ${fmt(r.atrPct)}% | ${fmt(r.rankScore, 2)} |`,
+        `| ${i + 1} | **${r.symbol}** | ${r.sector ?? 'N/A'} | ${r.exchange ?? '-'} | ${currencySymbol}${fmt(r.close, 2)} | ${fmt(r.perfY)}% | ${fmt(r.perf6m)}% | ${fmt(r.perf3m)}% | ${fmt(r.pctOf52wHigh)}% | ${fmt(r.roic)}% | ${fmt(r.grossProfitToAssets)}% | ${fmt(r.fcfMargin)}% | ${fmt(r.revenueGrowthTtm)}% | ${buildRuleOf40Note(r)} | ${fmt(r.epsGrowthTtm)}% | ${fmt(r.pFcf, 1)} | ${fmt(r.atrPct)}% | ${fmt(r.rankScore, 2)} |`,
       );
     });
     lines.push('');
@@ -250,6 +258,9 @@ export function buildMarkdown(result, options = {}) {
   lines.push('- Profitability / quality: ROIC、gross profit/assets、operating margin、FCF margin、cash conversion');
   lines.push('- Growth confirmation: 売上 YoY、EPS YoY、FCF YoY、Yahoo revenue growth');
   lines.push('- Risk / value guard: P/FCF、EV/EBITDA、ATR%、beta、D/E');
+  if (result.criteria.rule_of_40_policy) {
+    lines.push('- Rule of 40: US Technology Services の Software 系 industry に限り、売上 YoY + FCF margin を補助 rank として評価。40以上は badge、20未満は warning。hard filter にはしない');
+  }
   lines.push('');
   lines.push('## 今後改善できそうな点');
   lines.push('');
@@ -267,6 +278,9 @@ export function buildMarkdown(result, options = {}) {
   lines.push(`- 共通条件: 時価総額 > $1B, EPS(TTM) > ${result.criteria.eps_min}, Close > SMA200, Close > SMA50, Close ≥ 52週高値 × ${result.criteria.price_pct_of_52wk_high_min}%`);
   if (result.criteria.extreme_momentum_policy) {
     lines.push(`- 超急騰ポリシー: Perf.6M > ${result.criteria.extreme_momentum_policy.perf_6m_extreme_pct}% または Perf.Y > ${result.criteria.extreme_momentum_policy.perf_y_extreme_pct}% でも除外せず、超急騰としてリスク確認に表示`);
+  }
+  if (result.criteria.rule_of_40_policy) {
+    lines.push(`- Rule of 40: ${result.criteria.rule_of_40_policy.scope}。${result.criteria.rule_of_40_policy.formula} を補助 scoring に使い、${result.criteria.rule_of_40_policy.pass_badge_min}+ を badge、${result.criteria.rule_of_40_policy.warning_below} 未満を warning 表示。hard filter なし`);
   }
   if (result.criteria.profile_summaries?.length) {
     result.criteria.profile_summaries.forEach((profile) => {

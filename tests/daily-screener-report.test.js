@@ -80,20 +80,22 @@ describe('daily screener WSL publish script', () => {
 
 describe('buildMarkdown', () => {
   const rankingBlocks = [
-    { key: 'priceMomentum', label: 'Price momentum', weight: 70 },
+    { key: 'priceMomentum', label: 'Price momentum', weight: 67 },
     { key: 'sectorStrength', label: 'Sector strength', weight: 10 },
     { key: 'quality', label: 'Profitability / quality', weight: 10 },
     { key: 'growth', label: 'Growth confirmation', weight: 5 },
     { key: 'riskValue', label: 'Risk / value guard', weight: 5 },
+    { key: 'ruleOf40', label: 'Rule of 40 (US software)', weight: 3 },
   ];
 
   function rankBreakdown(rank) {
     return {
-      priceMomentum: { label: 'Price momentum', weight: 70, rank, fields: { perf3m: rank } },
+      priceMomentum: { label: 'Price momentum', weight: 67, rank, fields: { perf3m: rank } },
       sectorStrength: { label: 'Sector strength', weight: 10, rank, fields: { phase1SectorRankScore: rank } },
       quality: { label: 'Profitability / quality', weight: 10, rank, fields: { fcfMargin: rank } },
       growth: { label: 'Growth confirmation', weight: 5, rank, fields: { revenueGrowthTtm: rank } },
       riskValue: { label: 'Risk / value guard', weight: 5, rank, fields: { pFcf: rank } },
+      ruleOf40: { label: 'Rule of 40 (US software)', weight: 3, rank, fields: { ruleOf40: rank } },
     };
   }
 
@@ -160,6 +162,14 @@ describe('buildMarkdown', () => {
           perf_y_extreme_pct: 1000,
           action: 'retain_and_flag',
         },
+        rule_of_40_policy: {
+          scope: 'US Technology Services software-like industries only',
+          formula: 'total_revenue_yoy_growth_ttm + free_cash_flow_margin_ttm',
+          action: 'ranking_badge_warning_only',
+          pass_badge_min: 40,
+          warning_below: 20,
+          hard_filter: false,
+        },
       },
       sectorMomentum: {
         approach: 'stock-aggregation',
@@ -205,6 +215,7 @@ describe('buildMarkdown', () => {
           grossProfitToAssets: 42,
           fcfMargin: 25,
           revenueGrowthTtm: 35,
+          ruleOf40: 60,
           epsGrowthTtm: 30,
           pFcf: 28,
           atrPct: 3.2,
@@ -229,6 +240,7 @@ describe('buildMarkdown', () => {
           grossProfitToAssets: 40,
           fcfMargin: 21,
           revenueGrowthTtm: 30,
+          ruleOf40: 51,
           epsGrowthTtm: 28,
           pFcf: 35,
           atrPct: 3.5,
@@ -327,6 +339,8 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /## 上位5件の選定理由/);
     assert.match(markdown, /### 1位 AAA \(NASDAQ\)/);
     assert.match(markdown, /## 銘柄ランキング/);
+    assert.match(markdown, /Rule40/);
+    assert.match(markdown, /60\.0（Rule 40\+）/);
     assert.match(markdown, /## 超急騰候補/);
     assert.match(markdown, /\| 1 \| \*\*AAA\*\* \| Technology Services \| 1200\.0%/);
     assert.match(markdown, /## Phase2 通過銘柄のセクター内訳/);
@@ -337,10 +351,12 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /Technology Services: scope は Technology Services。hard gate は Perf\.3M > 10% \/ P\/FCF < 50/);
     assert.match(markdown, /Electronic Technology \/ Semiconductors: scope は Electronic Technology。hard gate は Perf\.3M > 10% \/ P\/FCF < 50 \(fabless\), 100 \(IDM\/foundry\)/);
     assert.match(markdown, /超急騰ポリシー: Perf\.6M > 600% または Perf\.Y > 1000% でも除外せず/);
+    assert.match(markdown, /Rule of 40: US Technology Services software-like industries only。total_revenue_yoy_growth_ttm \+ free_cash_flow_margin_ttm を補助 scoring に使い、40\+ を badge、20 未満を warning 表示。hard filter なし/);
     assert.match(markdown, /12M 1200\.0%の超急騰/);
     assert.match(markdown, /取引所限定: NASDAQ, NYSE/);
     assert.match(markdown, /## 採用した P0 \/ P1 指標/);
-    assert.match(markdown, /Price momentum 70%/);
+    assert.match(markdown, /Price momentum 67%/);
+    assert.match(markdown, /Rule of 40 \(US software\) 3%/);
     assert.match(markdown, /## 今後改善できそうな点/);
     assert.match(markdown, /Yahoo Finance 補完あり: 売上成長率 YoY はプロファイル別閾値を適用し、null は通過/);
   });

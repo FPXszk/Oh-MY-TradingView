@@ -128,6 +128,31 @@ const RANK_BLOCKS = [
   },
 ];
 
+const RULE_OF_40_RANK_BLOCK = {
+  key: 'ruleOf40',
+  label: 'Rule of 40 (US software)',
+  weight: 3,
+  missingRank: 'neutral',
+  fields: [
+    { key: 'ruleOf40', label: 'Revenue growth + FCF margin', direction: 'desc' },
+  ],
+};
+
+const RULE_OF_40_SECTOR = 'Technology Services';
+const RULE_OF_40_INDUSTRY_PATTERN = /software|saas|cloud|application|infrastructure/i;
+
+function getRankingBlocks(market) {
+  if (market !== DEFAULT_MARKET) return RANK_BLOCKS;
+  return [
+    {
+      ...RANK_BLOCKS[0],
+      weight: 67,
+    },
+    ...RANK_BLOCKS.slice(1),
+    RULE_OF_40_RANK_BLOCK,
+  ];
+}
+
 function buildRequestBody(serverLimit, { market, profile, scope }) {
   const thresholds = profile.thresholds;
   return {
@@ -219,6 +244,11 @@ function normalizeRow(row) {
       ? Number(((atr / close) * 100).toFixed(2))
       : null;
 
+  const ruleOf40Raw =
+    revenueGrowthTtm !== null && fcfMargin !== null
+      ? Number((revenueGrowthTtm + fcfMargin).toFixed(2))
+      : null;
+
   return {
     symbol,
     companyName,
@@ -254,12 +284,21 @@ function normalizeRow(row) {
     netIncomeTtm,
     cashConversion,
     revenueGrowthTtm,
+    ruleOf40Raw,
     pFcf,
     evEbitda,
     debtToEquity,
     netDebt,
     volume,
   };
+}
+
+function isUsSoftwareRuleOf40Candidate(row, market) {
+  return market === DEFAULT_MARKET
+    && row.sector === RULE_OF_40_SECTOR
+    && row.industry !== null
+    && row.industry !== undefined
+    && RULE_OF_40_INDUSTRY_PATTERN.test(row.industry);
 }
 
 function resolveSymbolAllowlist(symbolAllowlistKey, customAllowlists) {
@@ -341,6 +380,7 @@ function stripInternalFields(row) {
     screeningThresholds,
     screeningPfcfMax,
     screeningRevenueGrowthMinPct,
+    ruleOf40Raw,
     ...publicRow
   } = row;
   return publicRow;
@@ -366,9 +406,9 @@ function assignRanks(rows, field, direction = 'desc') {
   return ranks;
 }
 
-function applyBlockRanks(rows) {
+function applyBlockRanks(rows, rankingBlocks = RANK_BLOCKS) {
   const rankMaps = new Map();
-  for (const block of RANK_BLOCKS) {
+  for (const block of rankingBlocks) {
     for (const field of block.fields) {
       rankMaps.set(`${block.key}:${field.key}`, assignRanks(rows, field.key, field.direction));
     }
@@ -376,12 +416,18 @@ function applyBlockRanks(rows) {
 
   return rows.map((row, i) => ({
     ...row,
-    rankBreakdown: Object.fromEntries(RANK_BLOCKS.map((block) => {
+    rankBreakdown: Object.fromEntries(rankingBlocks.map((block) => {
       const fieldRanks = Object.fromEntries(block.fields.map((field) => [
         field.key,
         rankMaps.get(`${block.key}:${field.key}`)[i],
       ]));
-      const blockRank = averageRank(Object.values(fieldRanks), rows.length + 1);
+      const usableFieldRanks = block.fields
+        .filter((field) => row[field.key] !== null && row[field.key] !== undefined)
+        .map((field) => fieldRanks[field.key]);
+      const fallback = block.missingRank === 'neutral'
+        ? Number(((rows.length + 1) / 2).toFixed(2))
+        : rows.length + 1;
+      const blockRank = averageRank(usableFieldRanks, fallback);
       return [block.key, {
         label: block.label,
         weight: block.weight,
@@ -391,7 +437,7 @@ function applyBlockRanks(rows) {
     })),
   })).map((row) => ({
     ...row,
-    rankScore: Number(RANK_BLOCKS.reduce(
+    rankScore: Number(rankingBlocks.reduce(
       (sum, block) => sum + (row.rankBreakdown[block.key].rank * (block.weight / 100)),
       0,
     ).toFixed(2)),
@@ -582,6 +628,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
         screeningThresholds: profile.thresholds,
         screeningPfcfMax: profile.getPfcfMax ? profile.getPfcfMax(row) : profile.thresholds.pFcfMax,
         screeningRevenueGrowthMinPct: profile.thresholds.revenueGrowthMinPct,
+        ruleOf40: isUsSoftwareRuleOf40Candidate(row, market) ? row.ruleOf40Raw : null,
         extremeMomentum: buildExtremeMomentum(row),
       }))),
   );
@@ -598,7 +645,8 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
         || r.revenueGrowth > (r.screeningRevenueGrowthMinPct / 100));
   }
 
-  const ranked = applyBlockRanks(clientFiltered).sort((a, b) => a.rankScore - b.rankScore);
+  const rankingBlocks = getRankingBlocks(market);
+  const ranked = applyBlockRanks(clientFiltered, rankingBlocks).sort((a, b) => a.rankScore - b.rankScore);
   const matched = ranked.slice(0, effectiveLimit).map(stripInternalFields);
   const sectorRanking = summarizeSectors(ranked);
 
@@ -617,6 +665,16 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     excluded_phase2_sectors: excludedSelectedSectors,
     phase1_selected_sectors: selectedSectorLabels,
   };
+  if (market === DEFAULT_MARKET) {
+    criteria.rule_of_40_policy = {
+      scope: 'US Technology Services software-like industries only',
+      formula: 'total_revenue_yoy_growth_ttm + free_cash_flow_margin_ttm',
+      action: 'ranking_badge_warning_only',
+      pass_badge_min: 40,
+      warning_below: 20,
+      hard_filter: false,
+    };
+  }
   if (exchangeAllowlist) {
     criteria.allowed_exchanges = exchangeAllowlist;
   }
@@ -636,8 +694,8 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     matched: matched.length,
     enrichedWithYahoo: enrichWithYahoo,
     criteria,
-    rankingFormula: RANK_BLOCKS.map((block) => block.key),
-    rankingBlocks: RANK_BLOCKS.map((block) => ({
+    rankingFormula: rankingBlocks.map((block) => block.key),
+    rankingBlocks: rankingBlocks.map((block) => ({
       key: block.key,
       label: block.label,
       weight: block.weight,

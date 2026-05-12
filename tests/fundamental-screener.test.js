@@ -189,6 +189,7 @@ describe('runFundamentalScreener', () => {
                   grossMargin: 72,
                   fcfMargin: 29,
                   fcfTtm: 90_000_000,
+                  revenueGrowthTtm: 16,
                   netDebt: 0,
                   volume: 300_000,
                 }),
@@ -348,6 +349,8 @@ describe('runFundamentalScreener', () => {
     ]);
     assert.ok(result.results[0].rankBreakdown.priceMomentum);
     assert.ok(result.results[0].rankBreakdown.quality);
+    assert.equal(result.results.find((row) => row.symbol === 'ADEA').ruleOf40, 45);
+    assert.equal(result.results.find((row) => row.symbol === 'MU').ruleOf40, null);
     assert.deepEqual(result.criteria.profile_summaries.map((profile) => profile.label), [
       'Technology Services',
       'Electronic Technology',
@@ -439,6 +442,7 @@ describe('runFundamentalScreener', () => {
                   grossMargin: 60,
                   fcfMargin: 35,
                   fcfTtm: 54_000_000,
+                  revenueGrowthTtm: 20,
                   netDebt: -10_000_000,
                   volume: 400_000,
                 }),
@@ -526,6 +530,9 @@ describe('runFundamentalScreener', () => {
     assert.deepEqual(result.criteria.excluded_phase2_sectors, ['Finance']);
     assert.equal(result.scannerScope.market, 'japan');
     assert.equal(result.scannerScope.scopeLabel, 'JPX Prime domestic stocks snapshot');
+    assert.equal(result.results.find((row) => row.symbol === '8035').ruleOf40, null);
+    assert.equal(result.criteria.rule_of_40_policy, undefined);
+    assert.deepEqual(result.rankingFormula, ['priceMomentum', 'sectorStrength', 'quality', 'growth', 'riskValue']);
     assert.ok(stockBodies.every((body) => getFilterValue(body, 'sector') !== 'Finance'));
   });
 
@@ -587,6 +594,7 @@ describe('runFundamentalScreener', () => {
                   grossMargin: 72,
                   fcfMargin: 29,
                   fcfTtm: 90_000_000,
+                  revenueGrowthTtm: 16,
                   netDebt: 0,
                   volume: 300_000,
                 }),
@@ -624,7 +632,8 @@ describe('runFundamentalScreener', () => {
 
     assert.deepEqual(result.results.map((row) => row.symbol), ['ADEA']);
     assert.equal(result.criteria.revenue_growth_policy, 'profile-specific minimum, null passes');
-    assert.deepEqual(result.rankingFormula, ['priceMomentum', 'sectorStrength', 'quality', 'growth', 'riskValue']);
+    assert.equal(result.criteria.rule_of_40_policy.hard_filter, false);
+    assert.deepEqual(result.rankingFormula, ['priceMomentum', 'sectorStrength', 'quality', 'growth', 'riskValue', 'ruleOf40']);
     assert.deepEqual(result.rankingBlocks.map((block) => block.key), result.rankingFormula);
   });
 });

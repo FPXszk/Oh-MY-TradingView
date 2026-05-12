@@ -33,14 +33,14 @@
 
 ## 実装ステップ
 
-- [ ] `fundamental-screener` に US Software 判定と Rule of 40 計算を追加する。
-- [ ] Rule of 40 補助 ranking block と criteria 出力を追加する。
-- [ ] 日次レポート Markdown に Rule of 40 の列・badge・warning・scoring guide を追加する。
-- [ ] 単体テストを更新し、USのみ適用されることを確認する。
-- [ ] `node --test tests/fundamental-screener.test.js tests/daily-screener-report.test.js` を実行する。
-- [ ] 実スクリーナーをUS設定で実行し、出力結果と上位候補の Rule of 40 を確認する。
-- [ ] `git diff --check` と必要な追加検証を実行する。
-- [ ] 計画ファイルを completed に移動して、実装変更をコミット・pushする。
+- [x] `fundamental-screener` に US Software 判定と Rule of 40 計算を追加する。
+- [x] Rule of 40 補助 ranking block と criteria 出力を追加する。
+- [x] 日次レポート Markdown に Rule of 40 の列・badge・warning・scoring guide を追加する。
+- [x] 単体テストを更新し、USのみ適用されることを確認する。
+- [x] `node --test tests/fundamental-screener.test.js tests/daily-screener-report.test.js` を実行する。
+- [x] 実スクリーナーをUS設定で実行し、出力結果と上位候補の Rule of 40 を確認する。
+- [x] `git diff --check` と必要な追加検証を実行する。
+- [x] 計画ファイルを completed に移動して、実装変更をコミット・pushする。
 
 ## 検証
 
