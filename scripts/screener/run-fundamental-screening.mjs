@@ -21,6 +21,15 @@ function fmt(val, digits = 1, suffix = '') {
   return Number(val).toFixed(digits) + suffix;
 }
 
+function fmtUsdMarketCap(val) {
+  if (val === null || val === undefined) return 'N/A';
+  const abs = Math.abs(Number(val));
+  if (abs >= 1_000_000_000_000) return `$${(val / 1_000_000_000_000).toFixed(2)}T`;
+  if (abs >= 1_000_000_000) return `$${(val / 1_000_000_000).toFixed(1)}B`;
+  if (abs >= 1_000_000) return `$${(val / 1_000_000).toFixed(1)}M`;
+  return `$${Number(val).toLocaleString('en-US')}`;
+}
+
 function fmtCountOrVolume(entry) {
   if (entry.memberCount !== null && entry.memberCount !== undefined) return `${entry.memberCount}銘柄`;
   if (entry.volume !== null && entry.volume !== undefined) return Number(entry.volume).toLocaleString('en-US');
@@ -273,11 +282,11 @@ export function buildMarkdown(result, options = {}) {
   } else {
     lines.push('## 銘柄ランキング');
     lines.push('');
-    lines.push('| 順位 | シンボル | セクター | 市場 | 現在値 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 |');
-    lines.push('|:---:|:---|:---|:---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|');
+    lines.push('| 順位 | シンボル | セクター | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 |');
+    lines.push('|:---:|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|');
     result.results.forEach((r, i) => {
       lines.push(
-        `| ${i + 1} | **${r.symbol}** | ${r.sector ?? 'N/A'} | ${r.exchange ?? '-'} | ${currencySymbol}${fmt(r.close, 2)} | ${fmt(r.perfY)}% | ${fmt(r.perf6m)}% | ${fmt(r.perf3m)}% | ${fmt(r.pctOf52wHigh)}% | ${fmt(r.roic)}% | ${fmt(r.grossProfitToAssets)}% | ${fmt(r.fcfMargin)}% | ${fmt(r.revenueGrowthTtm)}% | ${buildRuleOf40Note(r)} | ${fmt(r.epsGrowthTtm)}% | ${fmt(r.pFcf, 1)} | ${fmt(r.atrPct)}% | ${fmt(r.rankScore, 2)} |`,
+        `| ${i + 1} | **${r.symbol}** | ${r.sector ?? 'N/A'} | ${r.exchange ?? '-'} | ${fmtUsdMarketCap(r.marketCapUsd)} | ${fmt(r.perfY)}% | ${fmt(r.perf6m)}% | ${fmt(r.perf3m)}% | ${fmt(r.pctOf52wHigh)}% | ${fmt(r.roic)}% | ${fmt(r.grossProfitToAssets)}% | ${fmt(r.fcfMargin)}% | ${fmt(r.revenueGrowthTtm)}% | ${buildRuleOf40Note(r)} | ${fmt(r.epsGrowthTtm)}% | ${fmt(r.pFcf, 1)} | ${fmt(r.atrPct)}% | ${fmt(r.rankScore, 2)} |`,
       );
     });
     lines.push('');

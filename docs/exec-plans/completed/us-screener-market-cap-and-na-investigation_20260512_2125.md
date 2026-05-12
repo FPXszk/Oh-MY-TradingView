@@ -29,14 +29,14 @@
 
 ## 実装ステップ
 
-- [ ] レポート生成コードの `現在値` 列を `時価総額` に差し替える。
-- [ ] テンプレートとレポートテストを更新する。
-- [ ] 現行ランキングで `EPS YoY` / `P/FCF` が `N/A` の銘柄を列挙する。
-- [ ] ソースコードと必要な live data を確認し、欠損理由を切り分ける。
-- [ ] `node --test tests/daily-screener-report.test.js tests/fundamental-screener.test.js` を実行する。
-- [ ] `SCREENER_MARKET=america SCREENER_EXCHANGES=NASDAQ,NYSE node scripts/screener/run-fundamental-screening.mjs` を実行してレポートを再生成する。
-- [ ] `git diff --check` を実行する。
-- [ ] 計画を completed へ移動し、変更をコミット・push する。
+- [x] レポート生成コードの `現在値` 列を `時価総額` に差し替える。
+- [x] テンプレートとレポートテストを更新する。
+- [x] 現行ランキングで `EPS YoY` / `P/FCF` が `N/A` の銘柄を列挙する。
+- [x] ソースコードと必要な live data を確認し、欠損理由を切り分ける。
+- [x] `node --test tests/daily-screener-report.test.js tests/fundamental-screener.test.js` を実行する。
+- [x] `SCREENER_MARKET=america SCREENER_EXCHANGES=NASDAQ,NYSE node scripts/screener/run-fundamental-screening.mjs` を実行してレポートを再生成する。
+- [x] `git diff --check` を実行する。
+- [x] 計画を completed へ移動し、変更をコミット・push する。
 
 ## 検証
 

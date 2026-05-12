@@ -265,6 +265,7 @@ describe('buildMarkdown', () => {
           symbol: 'AAA',
           exchange: 'NASDAQ',
           sector: 'Technology Services',
+          marketCapUsd: 12_300_000_000,
           close: 100,
           perfY: 1200,
           perf6m: 55,
@@ -290,6 +291,7 @@ describe('buildMarkdown', () => {
           symbol: 'BBB',
           exchange: 'NASDAQ',
           sector: 'Technology Services',
+          marketCapUsd: 9_800_000_000,
           close: 90,
           perfY: 70,
           perf6m: 50,
@@ -311,6 +313,7 @@ describe('buildMarkdown', () => {
           symbol: 'CCC',
           exchange: 'NYSE',
           sector: 'Consumer Non-Durables',
+          marketCapUsd: 4_250_000_000,
           close: 80,
           perfY: 55,
           perf6m: 36,
@@ -331,6 +334,7 @@ describe('buildMarkdown', () => {
           symbol: 'DDD',
           exchange: 'NYSE',
           sector: 'Finance',
+          marketCapUsd: 3_100_000_000,
           close: 70,
           perfY: 45,
           perf6m: 30,
@@ -351,6 +355,7 @@ describe('buildMarkdown', () => {
           symbol: 'EEE',
           exchange: 'NASDAQ',
           sector: 'Health Technology',
+          marketCapUsd: 850_000_000,
           close: 60,
           perfY: 35,
           perf6m: 24,
@@ -371,6 +376,7 @@ describe('buildMarkdown', () => {
           symbol: 'FFF',
           exchange: 'NYSE',
           sector: 'Retail Trade',
+          marketCapUsd: null,
           close: 50,
           perfY: 30,
           perf6m: 20,
@@ -400,6 +406,10 @@ describe('buildMarkdown', () => {
     assert.doesNotMatch(markdown, /アプローチ:/);
     assert.doesNotMatch(markdown, /採用セクター:/);
     assert.match(markdown, /## 銘柄ランキング/);
+    assert.match(markdown, /\| 順位 \| シンボル \| セクター \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCF \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \|/);
+    assert.match(markdown, /\| 1 \| \*\*AAA\*\* \| Technology Services \| NASDAQ \| \$12\.3B \|/);
+    assert.match(markdown, /\| 5 \| \*\*EEE\*\* \| Health Technology \| NASDAQ \| \$850\.0M \|/);
+    assert.match(markdown, /\| 6 \| \*\*FFF\*\* \| Retail Trade \| NYSE \| N\/A \|/);
     assert.match(markdown, /## 上位5件の選定理由/);
     assert.ok(markdown.indexOf('## 銘柄ランキング') < markdown.indexOf('## 上位5件の選定理由'));
     assert.match(markdown, /### 1位 AAA \(NASDAQ\)/);
@@ -502,6 +512,7 @@ describe('buildMarkdown', () => {
           symbol: '7203',
           exchange: 'TSE',
           sector: 'Consumer Durables',
+          marketCapUsd: 4_500_000_000_000,
           close: 3000,
           perfY: 30,
           perf6m: 20,
@@ -530,7 +541,7 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /更新: 12:00 JST/);
     assert.match(markdown, /## Phase1 セクターランキング/);
     assert.doesNotMatch(markdown, /アプローチ:/);
-    assert.match(markdown, /¥3000\.00/);
+    assert.match(markdown, /\| 1 \| \*\*7203\*\* \| Consumer Durables \| TSE \| \$4\.50T \|/);
     assert.match(markdown, /\| ユニバース \| 取引所 \| TSE \|/);
     assert.match(markdown, /\| ユニバース \| 銘柄ユニバース \| jpx-prime \|/);
   });
@@ -544,6 +555,7 @@ describe('daily screener template', () => {
     assert.match(template, /更新: HH:MM JST/);
     assert.match(template, /セクター別取得候補 XXX銘柄 → ユニバース条件通過 XXX銘柄 → ランキング対象 XXX銘柄 → レポート掲載 XX銘柄/);
     assert.match(template, /実際の出力ロジックの正本は/);
+    assert.match(template, /時価総額で確認/);
     assert.doesNotMatch(template, /## 市場カバレッジ/);
     assert.doesNotMatch(template, /## 採用した P0 \/ P1 指標/);
     assert.doesNotMatch(template, /## 今後改善できそうな点/);
