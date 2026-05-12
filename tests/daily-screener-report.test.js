@@ -266,6 +266,7 @@ describe('buildMarkdown', () => {
       sectorRanking: [
         {
           sector: 'Technology Services',
+          phase1SectorRank: 1,
           count: 3,
           averagePerf3m: 32.4,
           averageRankScore: 91.7,
@@ -316,6 +317,7 @@ describe('buildMarkdown', () => {
           symbol: 'AAA',
           exchange: 'NASDAQ',
           sector: 'Technology Services',
+          phase1SectorRank: 1,
           marketCapUsd: 12_300_000_000,
           close: 100,
           perfY: 1200,
@@ -342,6 +344,7 @@ describe('buildMarkdown', () => {
           symbol: 'BBB',
           exchange: 'NASDAQ',
           sector: 'Technology Services',
+          phase1SectorRank: 1,
           marketCapUsd: 9_800_000_000,
           close: 90,
           perfY: 70,

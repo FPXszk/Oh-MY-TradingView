@@ -410,6 +410,12 @@ describe('runFundamentalScreener', () => {
     assert.ok(technologyServices);
     assert.equal(technologyServices.topRows[0].symbol, 'ADEA');
     assert.ok(technologyServices.topRows.length <= 5);
+    const phase2Set = new Set(result.sectorRanking.map((entry) => entry.sector));
+    const phase1Order = result.sectorMomentum.selectedSectors
+      .map((entry) => entry.label)
+      .filter((label) => phase2Set.has(label));
+    const phase2Order = result.sectorRanking.map((entry) => entry.sector);
+    assert.deepEqual(phase2Order.slice(0, phase1Order.length), phase1Order);
   });
 
   it('applies Japan-specific profiles and skips finance even when phase1 selects it', async () => {

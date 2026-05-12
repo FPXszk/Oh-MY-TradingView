@@ -476,6 +476,7 @@ function summarizeSectors(rows) {
         perf3mCount: 0,
         totalRankScore: 0,
         topRows: [],
+        phase1SectorRank: row.phase1SectorRank ?? null,
       });
     }
     const entry = grouped.get(key);
@@ -486,11 +487,15 @@ function summarizeSectors(rows) {
       entry.perf3mCount += 1;
     }
     entry.topRows.push(row);
+    if (entry.phase1SectorRank === null && row.phase1SectorRank !== null && row.phase1SectorRank !== undefined) {
+      entry.phase1SectorRank = row.phase1SectorRank;
+    }
   }
 
   return Array.from(grouped.values())
     .map((entry) => ({
       sector: entry.sector,
+      phase1SectorRank: entry.phase1SectorRank,
       count: entry.count,
       averagePerf3m: entry.perf3mCount > 0
         ? Number((entry.totalPerf3m / entry.perf3mCount).toFixed(1))
@@ -504,6 +509,9 @@ function summarizeSectors(rows) {
         .map((row) => stripInternalFields(row)),
     }))
     .sort((a, b) => {
+      const aRank = a.phase1SectorRank ?? Number.POSITIVE_INFINITY;
+      const bRank = b.phase1SectorRank ?? Number.POSITIVE_INFINITY;
+      if (aRank !== bRank) return aRank - bRank;
       if (b.averagePerf3m !== a.averagePerf3m) {
         return (b.averagePerf3m ?? -Infinity) - (a.averagePerf3m ?? -Infinity);
       }

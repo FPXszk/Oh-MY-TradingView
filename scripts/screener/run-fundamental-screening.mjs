@@ -337,10 +337,11 @@ export function buildMarkdown(result, options = {}) {
     lines.push('| セクター順位 | セクター | 通過銘柄数 | セクター内順位 | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 |');
     lines.push('|:---:|:---|---:|:---:|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|');
     result.sectorRanking.forEach((sector, index) => {
+      const sectorRank = sector.phase1SectorRank ?? index + 1;
       (sector.topRows ?? []).forEach((row, rowIndex) => {
         const metricCells = buildRankingMetricCells(row).join(' | ');
         lines.push(
-          `| ${index + 1} | ${sector.sector} | ${sector.count} | ${rowIndex + 1} | **${row.symbol}** | ${row.exchange ?? '-'} | ${metricCells} |`,
+          `| ${sectorRank} | ${sector.sector} | ${sector.count} | ${rowIndex + 1} | **${row.symbol}** | ${row.exchange ?? '-'} | ${metricCells} |`,
         );
       });
     });

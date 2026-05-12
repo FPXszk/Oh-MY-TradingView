@@ -25,10 +25,10 @@
 
 ## 実装ステップ
 
-- [ ] `src/core/fundamental-screener.js` で `sectorRanking` に `phase1SectorRank` を反映し、並び順を Phase1 基準へ変更する
-- [ ] `tests/fundamental-screener.test.js` で Phase1 順になることを検証する
-- [ ] `tests/daily-screener-report.test.js` の期待値を Phase1 順へ更新する
-- [ ] workflow 相当条件でレポートを再生成し、期待どおりの順序になることを確認する
+- [x] `src/core/fundamental-screener.js` で `sectorRanking` に `phase1SectorRank` を反映し、並び順を Phase1 基準へ変更する
+- [x] `tests/fundamental-screener.test.js` で Phase1 順になることを検証する
+- [x] `tests/daily-screener-report.test.js` の期待値を Phase1 順へ更新する
+- [x] workflow 相当条件でレポートを再生成し、期待どおりの順序になることを確認する
 
 ## テスト戦略
 
