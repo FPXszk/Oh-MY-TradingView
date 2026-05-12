@@ -13,8 +13,8 @@ import { runFundamentalScreener } from '../../src/core/fundamental-screener.js';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(__dirname, '..', '..');
 const DEFAULT_REPORT_PATH = join(REPO_ROOT, 'docs', 'reports', 'screener', 'daily-ranking.md');
-const DEFAULT_TITLE = 'ファンダメンタル × モメンタム スクリーニング 上位20件';
 const DEFAULT_CURRENCY_SYMBOL = '$';
+const WEEKDAYS_JA = ['日', '月', '火', '水', '木', '金', '土'];
 
 function fmt(val, digits = 1, suffix = '') {
   if (val === null || val === undefined) return 'N/A';
@@ -117,6 +117,36 @@ function formatBlockWeights(result) {
     .join(' / ');
 }
 
+function formatJstDateParts(isoString) {
+  const now = new Date(isoString);
+  const jstDate = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Tokyo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(now);
+  const weekday = WEEKDAYS_JA[new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Tokyo' })).getDay()];
+  const jstTime = new Intl.DateTimeFormat('ja-JP', {
+    timeZone: 'Asia/Tokyo',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(now);
+  return {
+    dateWithWeekday: `${jstDate.replace(/-/g, '/')}（${weekday}）`,
+    timeOnly: `${jstTime} JST`,
+  };
+}
+
+function buildHeadlineSummary(result) {
+  return [
+    `セクター別取得候補 ${result.totalScanned.toLocaleString()}銘柄`,
+    `ユニバース条件通過 ${result.serverFiltered}銘柄`,
+    `ランキング対象 ${result.clientFiltered}銘柄`,
+    `レポート掲載 ${result.matched}銘柄`,
+  ].join(' → ');
+}
+
 function parseExchangeAllowlist(value) {
   if (!value) return null;
   const exchanges = value.split(',').map((entry) => entry.trim()).filter(Boolean);
@@ -126,7 +156,7 @@ function parseExchangeAllowlist(value) {
 function getRuntimeConfig() {
   return {
     reportPath: process.env.SCREENER_REPORT_PATH ? join(REPO_ROOT, process.env.SCREENER_REPORT_PATH) : DEFAULT_REPORT_PATH,
-    title: process.env.SCREENER_REPORT_TITLE || DEFAULT_TITLE,
+    title: process.env.SCREENER_REPORT_TITLE || null,
     currencySymbol: process.env.SCREENER_CURRENCY_SYMBOL || DEFAULT_CURRENCY_SYMBOL,
     workflowLabel: process.env.SCREENER_WORKFLOW_LABEL || 'daily-screener',
     screenerOptions: {
@@ -142,22 +172,17 @@ function getRuntimeConfig() {
 }
 
 export function buildMarkdown(result, options = {}) {
-  const title = options.title ?? DEFAULT_TITLE;
+  const jst = formatJstDateParts(result.retrieved_at);
+  const title = options.title ?? `スクリーニング結果 ${jst.dateWithWeekday}`;
   const currencySymbol = options.currencySymbol ?? DEFAULT_CURRENCY_SYMBOL;
-  const now = new Date(result.retrieved_at);
-  const jst = new Intl.DateTimeFormat('ja-JP', {
-    timeZone: 'Asia/Tokyo',
-    year: 'numeric', month: '2-digit', day: '2-digit',
-    hour: '2-digit', minute: '2-digit',
-  }).format(now);
   const topFive = result.results.slice(0, 5);
 
   const lines = [
     `# ${title}`,
     '',
-    `更新: ${result.retrieved_at}（JST ${jst}）`,
+    `更新: ${jst.timeOnly}`,
     '',
-    `Phase2候補取得: ${result.totalScanned.toLocaleString()} 銘柄 → スコープ通過: ${result.serverFiltered} → Phase1 選択セクター通過: ${result.phase1Filtered ?? result.serverFiltered} → クライアントフィルター通過: ${result.clientFiltered} → 上位: ${result.matched}`,
+    buildHeadlineSummary(result),
     '',
   ];
 

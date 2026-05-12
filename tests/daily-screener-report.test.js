@@ -9,6 +9,7 @@ const PROJECT_ROOT = process.cwd();
 const WORKFLOW_PATH = join(PROJECT_ROOT, '.github', 'workflows', 'daily-screener.yml');
 const JP_WORKFLOW_PATH = join(PROJECT_ROOT, '.github', 'workflows', 'daily-screener-japan.yml');
 const SYNC_SCRIPT_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'github-actions', 'sync-daily-screener-report-to-wsl.ps1');
+const REPORT_TEMPLATE_PATH = join(PROJECT_ROOT, 'docs', 'reports', 'screener', 'TEMPLATE.md');
 
 describe('Daily Fundamental Screener workflow', () => {
   it('preserves local self-hosted artifacts and avoids npm cache save warnings', () => {
@@ -332,7 +333,10 @@ describe('buildMarkdown', () => {
 
     const markdown = buildMarkdown(result);
 
-    assert.match(markdown, /# ファンダメンタル × モメンタム スクリーニング 上位20件/);
+    assert.match(markdown, /# スクリーニング結果 2026\/05\/04（月）/);
+    assert.match(markdown, /更新: 12:00 JST/);
+    assert.doesNotMatch(markdown, /2026-05-04T03:00:00.000Z/);
+    assert.match(markdown, /セクター別取得候補 26銘柄 → ユニバース条件通過 26銘柄 → ランキング対象 14銘柄 → レポート掲載 6銘柄/);
     assert.match(markdown, /## Phase1 セクターランキング/);
     assert.match(markdown, /アプローチ: 米国 TradingView stock sector 集計/);
     assert.match(markdown, /採用セクター: Technology Services, Electronic Technology, Finance/);
@@ -462,10 +466,22 @@ describe('buildMarkdown', () => {
     });
 
     assert.match(markdown, /# 日本株 ファンダメンタル × モメンタム スクリーニング 上位20件/);
+    assert.match(markdown, /更新: 12:00 JST/);
     assert.match(markdown, /## Phase1 セクターランキング/);
     assert.match(markdown, /アプローチ: 銘柄集計/);
     assert.match(markdown, /¥3000\.00/);
     assert.match(markdown, /取引所限定: TSE/);
     assert.match(markdown, /銘柄ユニバース限定: jpx-prime/);
+  });
+});
+
+describe('daily screener template', () => {
+  it('stores a human-editable report skeleton next to the generated reports', () => {
+    const template = readFileSync(REPORT_TEMPLATE_PATH, 'utf8');
+
+    assert.match(template, /# スクリーニング結果 YYYY\/MM\/DD（曜）/);
+    assert.match(template, /更新: HH:MM JST/);
+    assert.match(template, /セクター別取得候補 XXX銘柄 → ユニバース条件通過 XXX銘柄 → ランキング対象 XXX銘柄 → レポート掲載 XX銘柄/);
+    assert.match(template, /実際の出力ロジックの正本は/);
   });
 });

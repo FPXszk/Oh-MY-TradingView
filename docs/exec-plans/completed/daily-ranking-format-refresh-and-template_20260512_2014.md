@@ -28,14 +28,14 @@
 
 ## 実装ステップ
 
-- [ ] 現行の冒頭サマリー各件数がコード上で何を意味するか確認し、ユーザー向けラベル案へ落とす。
-- [ ] `run-fundamental-screening.mjs` のタイトル・更新日時・冒頭サマリーを変更する。
-- [ ] `docs/reports/screener/TEMPLATE.md` を追加し、各セクションの意図も短く記載する。
-- [ ] `tests/daily-screener-report.test.js` を新フォーマットに合わせて更新する。
-- [ ] `node --test tests/daily-screener-report.test.js tests/fundamental-screener.test.js` を実行する。
-- [ ] `SCREENER_MARKET=america SCREENER_EXCHANGES=NASDAQ,NYSE node scripts/screener/run-fundamental-screening.mjs` を実行して実出力を確認する。
-- [ ] `git diff --check` を実行する。
-- [ ] 計画ファイルを completed へ移動し、変更をコミット・push する。
+- [x] 現行の冒頭サマリー各件数がコード上で何を意味するか確認し、ユーザー向けラベル案へ落とす。
+- [x] `run-fundamental-screening.mjs` のタイトル・更新日時・冒頭サマリーを変更する。
+- [x] `docs/reports/screener/TEMPLATE.md` を追加し、各セクションの意図も短く記載する。
+- [x] `tests/daily-screener-report.test.js` を新フォーマットに合わせて更新する。
+- [x] `node --test tests/daily-screener-report.test.js tests/fundamental-screener.test.js` を実行する。
+- [x] `SCREENER_MARKET=america SCREENER_EXCHANGES=NASDAQ,NYSE node scripts/screener/run-fundamental-screening.mjs` を実行して実出力を確認する。
+- [x] `git diff --check` を実行する。
+- [x] 計画ファイルを completed へ移動し、変更をコミット・push する。
 
 ## 検証
 
