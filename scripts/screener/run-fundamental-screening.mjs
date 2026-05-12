@@ -125,6 +125,31 @@ function formatBlockWeights(result) {
     .join(' / ');
 }
 
+function summarizeBlockFields(block) {
+  return (block.fields ?? [])
+    .map((field) => field.label)
+    .join(', ');
+}
+
+function describeBlockRole(blockKey) {
+  switch (blockKey) {
+    case 'priceMomentum':
+      return '最も重視。上昇トレンドの強さと52週高値接近を評価';
+    case 'sectorStrength':
+      return '強いセクター追随かを確認';
+    case 'quality':
+      return '収益性とキャッシュ創出力を確認';
+    case 'growth':
+      return '売上・EPS・FCF の成長確認';
+    case 'riskValue':
+      return '過熱バリュエーションと変動リスクを抑制';
+    case 'ruleOf40':
+      return 'US software の質を補助的に確認';
+    default:
+      return '補助評価';
+  }
+}
+
 function formatJstDateParts(isoString) {
   const now = new Date(isoString);
   const jstDate = new Intl.DateTimeFormat('en-CA', {
@@ -233,8 +258,6 @@ export function buildMarkdown(result, options = {}) {
   if (!result.sectorMomentum || !result.sectorMomentum.rankings || result.sectorMomentum.rankings.length === 0) {
     lines.push('- Phase1 セクター順位は算出できませんでした。');
   } else {
-    lines.push(`- アプローチ: ${formatSectorMomentumApproach(result.sectorMomentum)}`);
-    lines.push(`- 採用セクター: ${result.sectorMomentum.selectedSectors.map((entry) => `${entry.label}${entry.proxySymbol ? ` (${entry.proxySymbol})` : ''}`).join(', ')}`);
     lines.push(`- Phase1 ソース候補数: ${result.sectorMomentum.coverage?.scopedCandidates ?? 'N/A'} / reported ${result.sectorMomentum.coverage?.totalCandidatesReported ?? 'N/A'}`);
     lines.push('');
     lines.push('| 順位 | セクター | 12M | 6M | 3M | 1M | RSI | 相対出来高 | 出来高/構成数 | 総合点 |');
@@ -251,6 +274,17 @@ export function buildMarkdown(result, options = {}) {
     lines.push('> 本日は条件を満たす銘柄がありませんでした。');
     lines.push('');
   } else {
+    lines.push('## 銘柄ランキング');
+    lines.push('');
+    lines.push('| 順位 | シンボル | セクター | 市場 | 現在値 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 |');
+    lines.push('|:---:|:---|:---|:---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|');
+    result.results.forEach((r, i) => {
+      lines.push(
+        `| ${i + 1} | **${r.symbol}** | ${r.sector ?? 'N/A'} | ${r.exchange ?? '-'} | ${currencySymbol}${fmt(r.close, 2)} | ${fmt(r.perfY)}% | ${fmt(r.perf6m)}% | ${fmt(r.perf3m)}% | ${fmt(r.pctOf52wHigh)}% | ${fmt(r.roic)}% | ${fmt(r.grossProfitToAssets)}% | ${fmt(r.fcfMargin)}% | ${fmt(r.revenueGrowthTtm)}% | ${buildRuleOf40Note(r)} | ${fmt(r.epsGrowthTtm)}% | ${fmt(r.pFcf, 1)} | ${fmt(r.atrPct)}% | ${fmt(r.rankScore, 2)} |`,
+      );
+    });
+    lines.push('');
+
     lines.push('## 上位5件の選定理由');
     lines.push('');
     topFive.forEach((row, index) => {
@@ -262,17 +296,6 @@ export function buildMarkdown(result, options = {}) {
       lines.push(`- 理由: ${buildExplanation(row, index, topFive)}`);
       lines.push('');
     });
-
-    lines.push('## 銘柄ランキング');
-    lines.push('');
-    lines.push('| 順位 | シンボル | セクター | 市場 | 現在値 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 |');
-    lines.push('|:---:|:---|:---|:---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|');
-    result.results.forEach((r, i) => {
-      lines.push(
-        `| ${i + 1} | **${r.symbol}** | ${r.sector ?? 'N/A'} | ${r.exchange ?? '-'} | ${currencySymbol}${fmt(r.close, 2)} | ${fmt(r.perfY)}% | ${fmt(r.perf6m)}% | ${fmt(r.perf3m)}% | ${fmt(r.pctOf52wHigh)}% | ${fmt(r.roic)}% | ${fmt(r.grossProfitToAssets)}% | ${fmt(r.fcfMargin)}% | ${fmt(r.revenueGrowthTtm)}% | ${buildRuleOf40Note(r)} | ${fmt(r.epsGrowthTtm)}% | ${fmt(r.pFcf, 1)} | ${fmt(r.atrPct)}% | ${fmt(r.rankScore, 2)} |`,
-      );
-    });
-    lines.push('');
 
     const extremeRows = result.results.filter((row) => row.extremeMomentum?.isExtreme);
     if (extremeRows.length > 0) {
@@ -305,7 +328,13 @@ export function buildMarkdown(result, options = {}) {
 
   lines.push('---');
   lines.push('');
-  lines.push(`**スコア算出:** weighted block rank-sum: ${formatBlockWeights(result)}（合計が小さいほど上位）`);
+  lines.push('**スコア算出:**');
+  lines.push('');
+  lines.push('| ブロック | 重み | 主な評価項目 | 役割 |');
+  lines.push('|:---|---:|:---|:---|');
+  (result.rankingBlocks ?? []).forEach((block) => {
+    lines.push(`| ${block.label} | ${block.weight}% | ${summarizeBlockFields(block)} | ${describeBlockRole(block.key)} |`);
+  });
   lines.push('');
   lines.push('**フィルター条件と scoring guide:**');
   lines.push('');

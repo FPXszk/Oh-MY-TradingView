@@ -8,9 +8,11 @@
 
 ## Phase1 セクターランキング
 
-- アプローチ
-- 採用セクター
 - Phase1 ソース候補数
+
+## 銘柄ランキング
+
+- メインのランキング表
 
 ## 上位5件の選定理由
 
@@ -20,13 +22,7 @@
 - リスク確認
 - 理由
 
-## 銘柄ランキング
-
-- メインのランキング表
-
 ## 超急騰候補
-
-- 条件に該当したときだけ表示
 
 ## Phase2 通過銘柄のセクター内訳
 
@@ -34,7 +30,16 @@
 
 ---
 
-**スコア算出:** weighted block rank-sum
+**スコア算出:**
+
+| ブロック | 重み | 主な評価項目 | 役割 |
+|:---|---:|:---|:---|
+| Price momentum | 67% | 12M / 6M / 3M momentum、52週高値比率 | 何を最重視しているか |
+| Sector strength | 10% | sector rank、sector 12M / 6M / 3M | セクター追随の確認 |
+| Profitability / quality | 10% | ROIC、GP/A、FCF margin など | 収益性の確認 |
+| Growth confirmation | 5% | 売上 / EPS / FCF growth | 成長確認 |
+| Risk / value guard | 5% | P/FCF、EV/EBITDA、ATR%、beta、D/E | 過熱抑制 |
+| Rule of 40 | 3% | revenue growth + FCF margin | US software 補助確認 |
 
 **フィルター条件と scoring guide:**
 | 区分 | 項目 | 条件・説明 |

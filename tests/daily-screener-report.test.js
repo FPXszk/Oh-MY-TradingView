@@ -81,12 +81,71 @@ describe('daily screener WSL publish script', () => {
 
 describe('buildMarkdown', () => {
   const rankingBlocks = [
-    { key: 'priceMomentum', label: 'Price momentum', weight: 67 },
-    { key: 'sectorStrength', label: 'Sector strength', weight: 10 },
-    { key: 'quality', label: 'Profitability / quality', weight: 10 },
-    { key: 'growth', label: 'Growth confirmation', weight: 5 },
-    { key: 'riskValue', label: 'Risk / value guard', weight: 5 },
-    { key: 'ruleOf40', label: 'Rule of 40 (US software)', weight: 3 },
+    {
+      key: 'priceMomentum',
+      label: 'Price momentum',
+      weight: 67,
+      fields: [
+        { label: '12M momentum' },
+        { label: '6M momentum' },
+        { label: '3M momentum' },
+        { label: '52w high proximity' },
+      ],
+    },
+    {
+      key: 'sectorStrength',
+      label: 'Sector strength',
+      weight: 10,
+      fields: [
+        { label: 'Phase1 sector rank' },
+        { label: 'Sector 12M momentum' },
+        { label: 'Sector 6M momentum' },
+        { label: 'Sector 3M momentum' },
+      ],
+    },
+    {
+      key: 'quality',
+      label: 'Profitability / quality',
+      weight: 10,
+      fields: [
+        { label: 'ROIC' },
+        { label: 'Gross profit / assets' },
+        { label: 'Operating margin' },
+        { label: 'FCF margin' },
+        { label: 'Cash conversion' },
+      ],
+    },
+    {
+      key: 'growth',
+      label: 'Growth confirmation',
+      weight: 5,
+      fields: [
+        { label: 'Revenue YoY growth' },
+        { label: 'EPS YoY growth' },
+        { label: 'FCF YoY growth' },
+        { label: 'Yahoo revenue growth' },
+      ],
+    },
+    {
+      key: 'riskValue',
+      label: 'Risk / value guard',
+      weight: 5,
+      fields: [
+        { label: 'P/FCF' },
+        { label: 'EV/EBITDA' },
+        { label: 'ATR %' },
+        { label: 'Beta 1Y' },
+        { label: 'Debt / equity' },
+      ],
+    },
+    {
+      key: 'ruleOf40',
+      label: 'Rule of 40 (US software)',
+      weight: 3,
+      fields: [
+        { label: 'Revenue growth + FCF margin' },
+      ],
+    },
   ];
 
   function rankBreakdown(rank) {
@@ -338,11 +397,12 @@ describe('buildMarkdown', () => {
     assert.doesNotMatch(markdown, /2026-05-04T03:00:00.000Z/);
     assert.match(markdown, /セクター別取得候補 26銘柄 → ユニバース条件通過 26銘柄 → ランキング対象 14銘柄 → レポート掲載 6銘柄/);
     assert.match(markdown, /## Phase1 セクターランキング/);
-    assert.match(markdown, /アプローチ: 米国 TradingView stock sector 集計/);
-    assert.match(markdown, /採用セクター: Technology Services, Electronic Technology, Finance/);
-    assert.match(markdown, /## 上位5件の選定理由/);
-    assert.match(markdown, /### 1位 AAA \(NASDAQ\)/);
+    assert.doesNotMatch(markdown, /アプローチ:/);
+    assert.doesNotMatch(markdown, /採用セクター:/);
     assert.match(markdown, /## 銘柄ランキング/);
+    assert.match(markdown, /## 上位5件の選定理由/);
+    assert.ok(markdown.indexOf('## 銘柄ランキング') < markdown.indexOf('## 上位5件の選定理由'));
+    assert.match(markdown, /### 1位 AAA \(NASDAQ\)/);
     assert.match(markdown, /Rule40/);
     assert.match(markdown, /60\.0（Rule 40\+）/);
     assert.match(markdown, /## 超急騰候補/);
@@ -360,7 +420,9 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /12M 1200\.0%の超急騰/);
     assert.doesNotMatch(markdown, /## 採用した P0 \/ P1 指標/);
     assert.doesNotMatch(markdown, /## 今後改善できそうな点/);
-    assert.match(markdown, /Price momentum 67%/);
+    assert.match(markdown, /\| ブロック \| 重み \| 主な評価項目 \| 役割 \|/);
+    assert.match(markdown, /\| Price momentum \| 67% \| 12M momentum, 6M momentum, 3M momentum, 52w high proximity \| 最も重視。上昇トレンドの強さと52週高値接近を評価 \|/);
+    assert.match(markdown, /\| Sector strength \| 10% \| Phase1 sector rank, Sector 12M momentum, Sector 6M momentum, Sector 3M momentum \| 強いセクター追随かを確認 \|/);
   });
 
   it('supports a Japan-specific title and currency symbol', () => {
@@ -466,7 +528,7 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /# 日本株 ファンダメンタル × モメンタム スクリーニング 上位20件/);
     assert.match(markdown, /更新: 12:00 JST/);
     assert.match(markdown, /## Phase1 セクターランキング/);
-    assert.match(markdown, /アプローチ: 銘柄集計/);
+    assert.doesNotMatch(markdown, /アプローチ:/);
     assert.match(markdown, /¥3000\.00/);
     assert.match(markdown, /\| ユニバース \| 取引所 \| TSE \|/);
     assert.match(markdown, /\| ユニバース \| 銘柄ユニバース \| jpx-prime \|/);
@@ -484,6 +546,10 @@ describe('daily screener template', () => {
     assert.doesNotMatch(template, /## 市場カバレッジ/);
     assert.doesNotMatch(template, /## 採用した P0 \/ P1 指標/);
     assert.doesNotMatch(template, /## 今後改善できそうな点/);
+    assert.doesNotMatch(template, /アプローチ/);
+    assert.doesNotMatch(template, /採用セクター/);
+    assert.ok(template.indexOf('## 銘柄ランキング') < template.indexOf('## 上位5件の選定理由'));
     assert.match(template, /\| 区分 \| 項目 \| 条件・説明 \|/);
+    assert.match(template, /\| ブロック \| 重み \| 主な評価項目 \| 役割 \|/);
   });
 });

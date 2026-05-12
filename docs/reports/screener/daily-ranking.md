@@ -1,13 +1,11 @@
 # スクリーニング結果 2026/05/12（火）
 
-更新: 20:32 JST
+更新: 20:55 JST
 
 セクター別取得候補 843銘柄 → ユニバース条件通過 492銘柄 → ランキング対象 319銘柄 → レポート掲載 20銘柄
 
 ## Phase1 セクターランキング
 
-- アプローチ: 米国 TradingView stock sector 集計
-- 採用セクター: Electronic Technology, Non-Energy Minerals, Industrial Services, Producer Manufacturing, Technology Services, Communications, Health Services, Process Industries, Health Technology, Miscellaneous, Transportation, Energy Minerals, Distribution Services, Consumer Services, Finance, Retail Trade, Consumer Durables, Utilities, Commercial Services, Consumer Non-Durables
 - Phase1 ソース候補数: 2621 / reported 4118
 
 | 順位 | セクター | 12M | 6M | 3M | 1M | RSI | 相対出来高 | 出来高/構成数 | 総合点 |
@@ -32,6 +30,31 @@
 | 18 | Utilities | 22.6% | 6.1% | 2.8% | -2.6% | 47.0 | 0.95x | 77銘柄 | 96 |
 | 19 | Commercial Services | 1.4% | -4.8% | -1.6% | 5.1% | 48.8 | 1.05x | 83銘柄 | 98 |
 | 20 | Consumer Non-Durables | -1.9% | 1.5% | -9.0% | -3.2% | 45.1 | 1.16x | 86銘柄 | 101 |
+
+## 銘柄ランキング
+
+| 順位 | シンボル | セクター | 市場 | 現在値 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 |
+|:---:|:---|:---|:---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|
+| 1 | **SNDK** | Electronic Technology | NASDAQ | $1547.56 | 3976.8% | 469.8% | 169.7% | 96.7% | 35.7% | 43.3% | 33.8% | 82.8% | N/A | N/A% | 54.5 | 6.0% | 50.89 |
+| 2 | **MU** | Electronic Technology | NASDAQ | $795.33 | 829.4% | 224.8% | 111.5% | 97.2% | 33.1% | 33.5% | 17.7% | 85.5% | N/A | 409.1% | 88.3 | 5.2% | 50.91 |
+| 3 | **KEYS** | Electronic Technology | NYSE | $366.36 | 138.3% | 98.6% | 55.5% | 99.0% | 12.2% | 30.7% | 23.4% | 13.1% | N/A | 58.6% | 47.7 | 2.9% | 55.29 |
+| 4 | **ON** | Electronic Technology | NASDAQ | $107.24 | 165.4% | 117.8% | 65.7% | 100.0% | 5.2% | 18.5% | 19.5% | -9.0% | N/A | -2.7% | 35.8 | 4.2% | 56.61 |
+| 5 | **COHR** | Electronic Technology | NYSE | $379.69 | 436.7% | 135.8% | 63.5% | 98.7% | 3.6% | 14.5% | -8.2% | 18.0% | N/A | N/A% | N/A | 6.7% | 66.53 |
+| 6 | **PLAB** | Electronic Technology | NASDAQ | $54.96 | 180.4% | 146.5% | 45.5% | 98.1% | 11.7% | 15.9% | 7.7% | -0.1% | N/A | -0.7% | 48.6 | 4.3% | 68.23 |
+| 7 | **TSEM** | Electronic Technology | NASDAQ | $228.88 | 507.9% | 122.4% | 55.9% | 98.4% | 7.6% | 10.9% | -3.3% | 9.1% | N/A | 4.7% | N/A | 6.5% | 70.08 |
+| 8 | **GTX** | Producer Manufacturing | NASDAQ | $29.14 | 155.4% | 68.7% | 51.3% | 99.0% | 46.6% | 37.7% | 10.3% | 7.4% | N/A | 33.3% | 14.8 | 3.7% | 70.58 |
+| 9 | **ADI** | Electronic Technology | NASDAQ | $422.73 | 104.0% | 78.4% | 31.8% | 100.0% | 6.5% | 13.8% | 38.8% | 25.9% | N/A | 74.6% | 45.6 | 2.6% | 71.15 |
+| 10 | **KGS** | Industrial Services | NYSE | $75.52 | 111.8% | 122.6% | 46.6% | 98.5% | 1.7% | 12.8% | 15.1% | 4.0% | N/A | 41.5% | 33.0 | 3.3% | 72.73 |
+| 11 | **NGL** | Industrial Services | NYSE | $16.76 | 420.5% | 70.5% | 37.6% | 99.5% | 3.2% | 17.2% | 5.8% | -46.3% | N/A | N/A% | 11.4 | 4.1% | 74.89 |
+| 12 | **BELFA** | Electronic Technology | NASDAQ | $270.76 | 315.0% | 106.9% | 27.5% | 98.0% | 8.2% | 28.9% | 10.5% | 25.5% | N/A | 17.2% | 46.1 | 4.7% | 76.93 |
+| 13 | **MYRG** | Industrial Services | NASDAQ | $458.42 | 193.9% | 95.4% | 69.7% | 96.4% | 20.1% | 27.3% | 6.0% | 13.1% | N/A | 316.6% | 31.2 | 4.4% | 77.06 |
+| 14 | **BHE** | Electronic Technology | NYSE | $86.51 | 145.4% | 91.4% | 47.1% | 98.6% | 2.4% | 13.0% | 3.4% | 3.5% | N/A | -34.7% | 34.4 | 3.9% | 77.34 |
+| 15 | **ENS** | Producer Manufacturing | NYSE | $236.82 | 154.4% | 70.4% | 35.3% | 99.3% | 10.2% | 27.7% | 11.8% | 5.2% | N/A | -0.1% | 20.2 | 2.8% | 79.33 |
+| 16 | **MDA** | Electronic Technology | NYSE | $37.34 | 113.4% | 129.8% | 37.1% | 99.3% | 5.9% | 9.0% | -0.1% | 47.9% | N/A | 7.7% | N/A | 5.5% | 79.39 |
+| 17 | **NWPX** | Non-Energy Minerals | NASDAQ | $111.18 | 188.6% | 94.2% | 46.7% | 97.3% | 8.4% | 17.5% | 13.1% | 10.7% | N/A | 30.4% | 15.2 | 3.9% | 79.83 |
+| 18 | **IESC** | Industrial Services | NASDAQ | $685.11 | 173.4% | 73.4% | 38.3% | 97.8% | 39.7% | 44.9% | 9.8% | 16.2% | N/A | 62.7% | 38.7 | 5.5% | 80.02 |
+| 19 | **AGX** | Industrial Services | NYSE | $683.52 | 294.2% | 93.1% | 85.7% | 92.1% | 33.6% | 16.1% | 43.5% | 8.1% | N/A | 59.4% | 23.6 | 4.9% | 82.55 |
+| 20 | **GFS** | Electronic Technology | NASDAQ | $74.99 | 106.0% | 102.3% | 71.6% | 97.4% | 6.0% | 10.6% | 15.7% | 0.8% | N/A | N/A% | 39.2 | 4.8% | 84.13 |
 
 ## 上位5件の選定理由
 
@@ -70,31 +93,6 @@
 - リスク確認: ATR 6.7%、β 1.68
 - 理由: Price momentum が候補群内 22.5 位相当、ONとの差は総合点で9.92点、弱点は Risk / value guard の 242 位相当。
 
-## 銘柄ランキング
-
-| 順位 | シンボル | セクター | 市場 | 現在値 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 |
-|:---:|:---|:---|:---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|
-| 1 | **SNDK** | Electronic Technology | NASDAQ | $1547.56 | 3976.8% | 469.8% | 169.7% | 96.7% | 35.7% | 43.3% | 33.8% | 82.8% | N/A | N/A% | 54.5 | 6.0% | 50.89 |
-| 2 | **MU** | Electronic Technology | NASDAQ | $795.33 | 829.4% | 224.8% | 111.5% | 97.2% | 33.1% | 33.5% | 17.7% | 85.5% | N/A | 409.1% | 88.3 | 5.2% | 50.91 |
-| 3 | **KEYS** | Electronic Technology | NYSE | $366.36 | 138.3% | 98.6% | 55.5% | 99.0% | 12.2% | 30.7% | 23.4% | 13.1% | N/A | 58.6% | 47.7 | 2.9% | 55.29 |
-| 4 | **ON** | Electronic Technology | NASDAQ | $107.24 | 165.4% | 117.8% | 65.7% | 100.0% | 5.2% | 18.5% | 19.5% | -9.0% | N/A | -2.7% | 35.8 | 4.2% | 56.61 |
-| 5 | **COHR** | Electronic Technology | NYSE | $379.69 | 436.7% | 135.8% | 63.5% | 98.7% | 3.6% | 14.5% | -8.2% | 18.0% | N/A | N/A% | N/A | 6.7% | 66.53 |
-| 6 | **PLAB** | Electronic Technology | NASDAQ | $54.96 | 180.4% | 146.5% | 45.5% | 98.1% | 11.7% | 15.9% | 7.7% | -0.1% | N/A | -0.7% | 48.6 | 4.3% | 68.23 |
-| 7 | **TSEM** | Electronic Technology | NASDAQ | $228.88 | 507.9% | 122.4% | 55.9% | 98.4% | 7.6% | 10.9% | -3.3% | 9.1% | N/A | 4.7% | N/A | 6.5% | 70.08 |
-| 8 | **GTX** | Producer Manufacturing | NASDAQ | $29.14 | 155.4% | 68.7% | 51.3% | 99.0% | 46.6% | 37.7% | 10.3% | 7.4% | N/A | 33.3% | 14.8 | 3.7% | 70.58 |
-| 9 | **ADI** | Electronic Technology | NASDAQ | $422.73 | 104.0% | 78.4% | 31.8% | 100.0% | 6.5% | 13.8% | 38.8% | 25.9% | N/A | 74.6% | 45.6 | 2.6% | 71.15 |
-| 10 | **KGS** | Industrial Services | NYSE | $75.52 | 111.8% | 122.6% | 46.6% | 98.5% | 1.7% | 12.8% | 15.1% | 4.0% | N/A | 41.5% | 33.0 | 3.3% | 72.73 |
-| 11 | **NGL** | Industrial Services | NYSE | $16.76 | 420.5% | 70.5% | 37.6% | 99.5% | 3.2% | 17.2% | 5.8% | -46.3% | N/A | N/A% | 11.4 | 4.1% | 74.89 |
-| 12 | **BELFA** | Electronic Technology | NASDAQ | $270.76 | 315.0% | 106.9% | 27.5% | 98.0% | 8.2% | 28.9% | 10.5% | 25.5% | N/A | 17.2% | 46.1 | 4.7% | 76.93 |
-| 13 | **MYRG** | Industrial Services | NASDAQ | $458.42 | 193.9% | 95.4% | 69.7% | 96.4% | 20.1% | 27.3% | 6.0% | 13.1% | N/A | 316.6% | 31.2 | 4.4% | 77.06 |
-| 14 | **BHE** | Electronic Technology | NYSE | $86.51 | 145.4% | 91.4% | 47.1% | 98.6% | 2.4% | 13.0% | 3.4% | 3.5% | N/A | -34.7% | 34.4 | 3.9% | 77.34 |
-| 15 | **ENS** | Producer Manufacturing | NYSE | $236.82 | 154.4% | 70.4% | 35.3% | 99.3% | 10.2% | 27.7% | 11.8% | 5.2% | N/A | -0.1% | 20.2 | 2.8% | 79.33 |
-| 16 | **MDA** | Electronic Technology | NYSE | $37.34 | 113.4% | 129.8% | 37.1% | 99.3% | 5.9% | 9.0% | -0.1% | 47.9% | N/A | 7.7% | N/A | 5.5% | 79.39 |
-| 17 | **NWPX** | Non-Energy Minerals | NASDAQ | $111.18 | 188.6% | 94.2% | 46.7% | 97.3% | 8.4% | 17.5% | 13.1% | 10.7% | N/A | 30.4% | 15.2 | 3.9% | 79.83 |
-| 18 | **IESC** | Industrial Services | NASDAQ | $685.11 | 173.4% | 73.4% | 38.3% | 97.8% | 39.7% | 44.9% | 9.8% | 16.2% | N/A | 62.7% | 38.7 | 5.5% | 80.02 |
-| 19 | **AGX** | Industrial Services | NYSE | $683.52 | 294.2% | 93.1% | 85.7% | 92.1% | 33.6% | 16.1% | 43.5% | 8.1% | N/A | 59.4% | 23.6 | 4.9% | 82.55 |
-| 20 | **GFS** | Electronic Technology | NASDAQ | $74.99 | 106.0% | 102.3% | 71.6% | 97.4% | 6.0% | 10.6% | 15.7% | 0.8% | N/A | N/A% | 39.2 | 4.8% | 84.13 |
-
 ## 超急騰候補
 
 | 順位 | シンボル | セクター | 12M | 6M | 3M | リスク確認 |
@@ -128,7 +126,16 @@
 
 ---
 
-**スコア算出:** weighted block rank-sum: Price momentum 67% / Sector strength 10% / Profitability / quality 10% / Growth confirmation 5% / Risk / value guard 5% / Rule of 40 (US software) 3%（合計が小さいほど上位）
+**スコア算出:**
+
+| ブロック | 重み | 主な評価項目 | 役割 |
+|:---|---:|:---|:---|
+| Price momentum | 67% | 12M momentum, 6M momentum, 3M momentum, 52w high proximity | 最も重視。上昇トレンドの強さと52週高値接近を評価 |
+| Sector strength | 10% | Phase1 sector rank, Sector 12M momentum, Sector 6M momentum, Sector 3M momentum | 強いセクター追随かを確認 |
+| Profitability / quality | 10% | ROIC, Gross profit / assets, Operating margin, FCF margin, Cash conversion | 収益性とキャッシュ創出力を確認 |
+| Growth confirmation | 5% | Revenue YoY growth, EPS YoY growth, FCF YoY growth, Yahoo revenue growth | 売上・EPS・FCF の成長確認 |
+| Risk / value guard | 5% | P/FCF, EV/EBITDA, ATR %, Beta 1Y, Debt / equity | 過熱バリュエーションと変動リスクを抑制 |
+| Rule of 40 (US software) | 3% | Revenue growth + FCF margin | US software の質を補助的に確認 |
 
 **フィルター条件と scoring guide:**
 
