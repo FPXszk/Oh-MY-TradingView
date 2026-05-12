@@ -10,12 +10,14 @@
 - ファンダメンタルは `ROE` 単独を避け、`ROIC`、粗利益/総資産、営業利益率、FCF マージン、FCF 利回り、D/E を組み合わせる。
 - 成長は売上成長率だけでなく、EPS 成長、FCF 成長、売上サプライズ/利益サプライズを優先する。ただし日次スクリーナーではサプライズ系のデータ取得が課題。
 - RSI、MACD、BB、VWAP は主役ではなく、エントリー確認または過熱/失速の補助に降格する。
+- Rule of 40 は Technology / Software、特に SaaS 型企業では「成長と収益性の両立」を見る実務指標として有用。ただし学術的な横断株式リターン因子ではないため、全銘柄共通の中核 rank ではなく、Software universe の quality/growth confirmation として使う。
 
 ## 調査範囲と制約
 
 - 調査日: 2026-05-05 JST
 - 対象コード: `src/core/fundamental-screener.js`、`src/core/sector-momentum.js`、`src/core/sector-screening-profiles.js`、`scripts/screener/run-fundamental-screening.mjs`
 - 外部根拠: 学術論文、AQR / Kenneth French / Alpha Architect / Robeco / Quantpedia などの実務資料、X/Twitter、Reddit、Substack、GitHub 上の周辺実装
+- Rule of 40 追記根拠: McKinsey、Bain、CFI などの SaaS / software valuation 資料
 - データ取得可否: 現行実装と TradingView Scanner API への軽いフィールド確認を根拠にした。Yahoo Finance は現行の `revenueGrowth` 補完のみ前提とした。
 - 有料 DB、ログイン必須論文、非公開 API は採用判断の根拠にしない。
 - X/Twitter、Reddit、Substack、GitHub は実務上の関心と実装ヒントとして扱い、論文根拠より上位には置かない。
@@ -139,6 +141,27 @@
 | 39 | Short interest | short interest / float、days to cover | 悪材料期待、需給 squeeze | Asquith et al. (2005)、Boehmer et al. (2008) | △ | TV 未確認、外部必要 | P2。高 short は除外ではなく警戒 |
 | 40 | Institutional ownership change | 13F 保有比率変化 | 機関投資家の累積買い | Gompers and Metrick (2001)、Sias et al. (2006) | △ | 外部必要、13F は遅い | P2。日次には不向き |
 
+## 追加補足: Rule of 40
+
+Rule of 40 は SaaS / software 企業の成長率と収益性を足し合わせる実務指標で、一般的には `売上成長率 + 利益率 >= 40%` を健全性の目安にする。利益率には EBITDA margin、operating margin、FCF margin など複数の流儀があるが、このプロジェクトでは既存フィールドとの整合性から `total_revenue_yoy_growth_ttm + free_cash_flow_margin_ttm` を第一候補にする。
+
+| 指標 | 定義/計算式 | 経済的意味 | 根拠 | 評価 | 取得可否 | 追加優先度 |
+|---|---|---|---|---|---|---|
+| Rule of 40 proxy | `total_revenue_yoy_growth_ttm + free_cash_flow_margin_ttm`。Software/SaaS では ARR growth + FCF margin または EBITDA margin が本来形 | 成長投資と現金創出の両立。高成長でも赤字幅が過大なら減点し、低成長でも高 FCF なら一定評価する | McKinsey は 2011-2021 の software 分析で Rule of 40 達成企業の EV/revenue multiple が高い傾向を示す。Bain も software 企業で Rule of 40 超過企業の valuation と継続性を分析。CFI は簡易 valuation check と位置付ける | ○ | TV 計算 `total_revenue_yoy_growth_ttm + free_cash_flow_margin_ttm`。厳密な ARR growth / NRR は外部必要 | P1。Technology / Software 限定の confirmation。全業種 rank 中核にはしない |
+
+解釈の目安:
+
+- `>= 40`: Software/SaaS では成長と FCF の両立が見える。既存の momentum / quality 条件を満たすなら加点候補。
+- `20-40`: 平均的。売上成長、FCF、粗利率、NRR 相当の追加確認が必要。
+- `< 20`: 成長不足または赤字過大。高い価格モメンタムだけで拾うと glamour risk が大きい。
+
+注意点:
+
+- Rule of 40 は「良い会社か」を見る operational quality / valuation proxy であり、Jegadeesh and Titman 型の momentum や Fama-French profitability のような横断リターン因子そのものではない。
+- `revenueGrowthTtm` と `fcfMargin` は既存 ranking block にすでに含まれるため、Rule of 40 を別 block で強く加点すると二重カウントになる。
+- ARR、NRR、gross retention、S&M payback を取れない場合は、本来の SaaS 指標より粗い proxy になる。
+- Software 以外、特に Energy / Materials / Industrials / Financials では、成長率と FCF margin の意味が cycle や会計構造に強く左右されるため横断比較に向かない。
+
 ## 推奨指標セット
 
 ### P0: 次に入れるべき中核
@@ -175,7 +198,7 @@
 
 | セクター | 優先する指標 | 注意点 |
 |---|---|---|
-| Technology / Software | Gross margin、FCF margin、revenue/EPS growth、Rule of 40 proxy、P/S 補助 | 粗利率は効くが、P/S 単独は危険。FCF と成長の両立を見る |
+| Technology / Software | Gross margin、FCF margin、revenue/EPS growth、Rule of 40 proxy、P/S 補助 | 粗利率は効くが、P/S 単独は危険。Rule of 40 は SaaS 型の成長/FCF 両立確認に限定し、半導体や hardware には機械適用しない |
 | Semiconductors | ROIC、FCF margin、revenue acceleration、sector RS、EV/EBITDA | cycle が強い。P/FCF cap は fabless と IDM/foundry で分ける現行方針を維持 |
 | Industrials | ROIC/ROCE、asset turnover、operating margin、EV/EBITDA | 粗利率より資産効率と backlog/需要 cycle が重要 |
 | Materials / Energy | FCF yield、EV/EBITDA、D/E、commodity trend | 粗利率・売上成長率の横断比較は弱い |
@@ -204,6 +227,53 @@
 - `total_assets`
 
 その後、`enterprise_value_ebitda_ttm`、`price_free_cash_flow_ttm`、`ATR`、`beta_1_year`、YoY growth 群を足す。
+
+### Rule of 40 をスクリーニングワークフローへ入れる方法
+
+現行 `src/core/fundamental-screener.js` は `total_revenue_yoy_growth_ttm` と `free_cash_flow_margin_ttm` を取得済みなので、最小実装は `ruleOf40 = revenueGrowthTtm + fcfMargin` を `normalizeRow` で計算し、Software universe の説明列または補助 rank に入れるだけで済む。
+
+推奨は次の順番。
+
+1. `sector === Technology` かつ `industry` が Software / SaaS / Cloud / Application / Infrastructure software に近い銘柄だけに `ruleOf40` を計算する。
+2. 初回は gate にしない。`ruleOf40 >= 40` を report の badge、`ruleOf40 < 20` を warning として出し、採用候補の説明力を見る。
+3. 2-4週間の日次出力で、上位候補の `ruleOf40`、`Perf.3M/6M/Y`、`pFcf`、`EV/EBITDA`、決算後値動きを比較する。
+4. 効いているなら Technology / Software profile に限り、quality/growth block の補助 rank として低 weight で追加する。目安は全体 weight の 3-5% 程度。
+5. `revenueGrowthTtm` と `fcfMargin` の個別 rank を残す場合、Rule of 40 の weight はさらに小さくする。二重カウントを避けるなら、Software profile だけ `revenueGrowthTtm` と `fcfMargin` の個別加点を弱め、Rule of 40 に置き換える。
+
+実装するなら、最初の変更は次のような軽い proxy で十分。
+
+```js
+const ruleOf40 =
+  revenueGrowthTtm !== null && fcfMargin !== null
+    ? Number((revenueGrowthTtm + fcfMargin).toFixed(2))
+    : null;
+```
+
+この段階では `ruleOf40 >= 40` を hard filter にしない。モメンタム戦略では、良い会社を見つけることと、次の数カ月で上がる銘柄を見つけることは同じではないため、まずは説明列として追加して ablation する。
+
+### Rule of 40 の有効性評価
+
+結論: 意味はある。ただし「株価 alpha の独立因子」としてではなく、「Software/SaaS 銘柄の質と valuation premium を説明する proxy」として意味がある。
+
+有効と見なせる点:
+
+- McKinsey は public SaaS / software の分析で、Rule of 40 以上の企業が高い EV/revenue multiple を得る傾向を示している。これは市場が成長と FCF の両立を評価しているという実務根拠になる。
+- Bain は software 企業で Rule of 40 を継続的に超えることが難しく、継続達成企業は valuation と shareholder return で優位になりやすいと整理している。単年の数値より、複数年の持続性が重要。
+- 指標の構造上、売上成長だけを追って赤字が拡大する glamour 株と、利益率だけ高いが成長が止まった mature 株を同時に減点できる。これはこのプロジェクトの「モメンタム + ファンダメンタル最強」方針と相性が良い。
+
+過信できない点:
+
+- Rule of 40 は多くの資料で valuation multiple との関係として語られており、次期リターンを直接予測する査読済み factor として確立しているわけではない。
+- 高い Rule of 40 はすでに株価に織り込まれていることが多い。`P/S`、`EV/Sales`、`P/FCF` が極端に高い場合、良い会社でも良い投資とは限らない。
+- `100% growth - 60% margin = 40` のように、同じ 40 でも中身が大きく違う。特に赤字高成長型は金利環境や資金調達環境に弱い。
+- このプロジェクトの TV proxy は ARR growth ではなく total revenue YoY、profitability も FCF margin なので、本来の SaaS 指標より粗い。
+
+実務判断:
+
+- Technology / Software の候補を並べる時は、`ruleOf40 >= 40` を「良い候補の説明材料」として採用する価値がある。
+- `ruleOf40 < 20` は警戒材料にする価値がある。特に price momentum が強いのに Rule of 40 が低い銘柄は、期待先行の可能性が高い。
+- 全セクターの first-pass rank に入れる価値は低い。入れるなら sector-specific profile の Software 限定。
+- 有効性を本当に確認するには、日次候補について `ruleOf40` あり/なしの上位銘柄を保存し、1カ月/3カ月 forward return、最大ドローダウン、決算跨ぎの反応で比較するのが必要。
 
 ## 日本株への適用
 
@@ -272,4 +342,7 @@ Substack と GitHub は residual momentum、quality momentum、TradingView scann
 - Alpha Architect. https://alphaarchitect.com/
 - Quantpedia. https://quantpedia.com/
 - Robeco "Residual Momentum". https://www.robeco.com/en-int/insights/2011/02/residual-momentum
+- McKinsey (2021) "SaaS and the Rule of 40: Keys to the critical value creation metric". https://www.mckinsey.com/industries/technology-media-and-telecommunications/our-insights/saas-and-the-rule-of-40-keys-to-the-critical-value-creation-metric
+- Bain & Company (2018) "Hacking Software's Rule of 40". https://www.bain.com/insights/hacking-softwares-rule-of-40/
+- Corporate Finance Institute (2024) "The SaaS Rule of 40 Explained". https://corporatefinanceinstitute.com/resources/valuation/rule-of-40/
 - Reddit discussion of Yartseva multibagger study. https://www.reddit.com/r/ValueInvesting/comments/1ro1gmd/the_only_statistical_study_on_multibaggers_find/
