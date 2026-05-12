@@ -475,8 +475,7 @@ function summarizeSectors(rows) {
         totalPerf3m: 0,
         perf3mCount: 0,
         totalRankScore: 0,
-        topSymbol: null,
-        topRankScore: null,
+        topRows: [],
       });
     }
     const entry = grouped.get(key);
@@ -486,10 +485,7 @@ function summarizeSectors(rows) {
       entry.totalPerf3m += row.perf3m;
       entry.perf3mCount += 1;
     }
-    if (entry.topRankScore === null || (row.rankScore ?? -Infinity) > entry.topRankScore) {
-      entry.topRankScore = row.rankScore ?? null;
-      entry.topSymbol = row.symbol;
-    }
+    entry.topRows.push(row);
   }
 
   return Array.from(grouped.values())
@@ -502,7 +498,10 @@ function summarizeSectors(rows) {
       averageRankScore: entry.count > 0
         ? Number((entry.totalRankScore / entry.count).toFixed(1))
         : null,
-      topSymbol: entry.topSymbol,
+      topRows: entry.topRows
+        .sort((a, b) => (b.rankScore ?? -Infinity) - (a.rankScore ?? -Infinity))
+        .slice(0, 5)
+        .map((row) => stripInternalFields(row)),
     }))
     .sort((a, b) => {
       if (b.averagePerf3m !== a.averagePerf3m) {

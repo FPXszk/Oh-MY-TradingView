@@ -31,12 +31,12 @@
 
 ## 実装ステップ
 
-- [ ] `src/core/fundamental-screener.js` でセクター別 Top5 銘柄情報を返すようにする
-- [ ] `scripts/screener/run-fundamental-screening.mjs` で Phase2 セクションをセクター別 Top5 表示に置き換える
-- [ ] `scripts/screener/run-fundamental-screening.mjs` の掲載件数を 30 に広げる
-- [ ] `docs/reports/screener/TEMPLATE.md` を新しい Phase2 表示に合わせて更新する
-- [ ] `tests/daily-screener-report.test.js` と `tests/fundamental-screener.test.js` を新仕様に合わせて更新する
-- [ ] テスト実行と実レポート再生成で、Phase2 表示と Top30 掲載を確認する
+- [x] `src/core/fundamental-screener.js` でセクター別 Top5 銘柄情報を返すようにする
+- [x] `scripts/screener/run-fundamental-screening.mjs` で Phase2 セクションをセクター別 Top5 表示に置き換える
+- [x] `scripts/screener/run-fundamental-screening.mjs` の掲載件数を 30 に広げる
+- [x] `docs/reports/screener/TEMPLATE.md` を新しい Phase2 表示に合わせて更新する
+- [x] `tests/daily-screener-report.test.js` と `tests/fundamental-screener.test.js` を新仕様に合わせて更新する
+- [x] テスト実行と実レポート再生成で、Phase2 表示と Top30 掲載を確認する
 
 ## テスト戦略
 

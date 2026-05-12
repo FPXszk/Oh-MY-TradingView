@@ -105,6 +105,25 @@ function buildRuleOf40Note(row) {
   return value;
 }
 
+function buildRankingMetricCells(row) {
+  return [
+    fmtUsdMarketCap(row.marketCapUsd),
+    `${fmt(row.perfY)}%`,
+    `${fmt(row.perf6m)}%`,
+    `${fmt(row.perf3m)}%`,
+    `${fmt(row.pctOf52wHigh)}%`,
+    `${fmt(row.roic)}%`,
+    `${fmt(row.grossProfitToAssets)}%`,
+    `${fmt(row.fcfMargin)}%`,
+    `${fmt(row.revenueGrowthTtm)}%`,
+    buildRuleOf40Note(row),
+    `${fmt(row.epsGrowthTtm)}%`,
+    fmt(row.pFcf, 1),
+    `${fmt(row.atrPct)}%`,
+    fmt(row.rankScore, 2),
+  ];
+}
+
 function buildMarketLines(label, entries) {
   if (!entries || entries.length === 0) {
     return `- ${label}: データなし`;
@@ -289,8 +308,9 @@ export function buildMarkdown(result, options = {}) {
     lines.push('| 順位 | シンボル | セクター | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 |');
     lines.push('|:---:|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|');
     result.results.forEach((r, i) => {
+      const metricCells = buildRankingMetricCells(r).join(' | ');
       lines.push(
-        `| ${i + 1} | **${r.symbol}** | ${r.sector ?? 'N/A'} | ${r.exchange ?? '-'} | ${fmtUsdMarketCap(r.marketCapUsd)} | ${fmt(r.perfY)}% | ${fmt(r.perf6m)}% | ${fmt(r.perf3m)}% | ${fmt(r.pctOf52wHigh)}% | ${fmt(r.roic)}% | ${fmt(r.grossProfitToAssets)}% | ${fmt(r.fcfMargin)}% | ${fmt(r.revenueGrowthTtm)}% | ${buildRuleOf40Note(r)} | ${fmt(r.epsGrowthTtm)}% | ${fmt(r.pFcf, 1)} | ${fmt(r.atrPct)}% | ${fmt(r.rankScore, 2)} |`,
+        `| ${i + 1} | **${r.symbol}** | ${r.sector ?? 'N/A'} | ${r.exchange ?? '-'} | ${metricCells} |`,
       );
     });
     lines.push('');
@@ -314,12 +334,15 @@ export function buildMarkdown(result, options = {}) {
   if (!result.sectorRanking || result.sectorRanking.length === 0) {
     lines.push('- 条件通過銘柄がないため、Phase2 のセクター内訳は算出できませんでした。');
   } else {
-    lines.push('| 順位 | セクター | 通過銘柄数 | 平均Perf.3M | 平均総合点 | 代表銘柄 |');
-    lines.push('|:---:|:---|---:|---:|---:|:---|');
+    lines.push('| セクター順位 | セクター | 通過銘柄数 | セクター内順位 | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 |');
+    lines.push('|:---:|:---|---:|:---:|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|');
     result.sectorRanking.forEach((sector, index) => {
-      lines.push(
-        `| ${index + 1} | ${sector.sector} | ${sector.count} | ${fmt(sector.averagePerf3m)}% | ${fmt(sector.averageRankScore)} | ${sector.topSymbol ?? 'N/A'} |`,
-      );
+      (sector.topRows ?? []).forEach((row, rowIndex) => {
+        const metricCells = buildRankingMetricCells(row).join(' | ');
+        lines.push(
+          `| ${index + 1} | ${sector.sector} | ${sector.count} | ${rowIndex + 1} | **${row.symbol}** | ${row.exchange ?? '-'} | ${metricCells} |`,
+        );
+      });
     });
   }
   lines.push('');
@@ -350,7 +373,7 @@ async function main() {
   let result;
   try {
     result = await runFundamentalScreener({
-      limit: 20,
+      limit: 30,
       enrichWithYahoo: true,
       _deps: runtime.screenerOptions,
     });

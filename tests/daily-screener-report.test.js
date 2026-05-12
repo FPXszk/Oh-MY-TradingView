@@ -264,7 +264,52 @@ describe('buildMarkdown', () => {
         ],
       },
       sectorRanking: [
-        { sector: 'Technology Services', count: 3, averagePerf3m: 32.4, averageRankScore: 91.7, topSymbol: 'AAA' },
+        {
+          sector: 'Technology Services',
+          count: 3,
+          averagePerf3m: 32.4,
+          averageRankScore: 91.7,
+          topRows: [
+            {
+              symbol: 'AAA',
+              exchange: 'NASDAQ',
+              sector: 'Technology Services',
+              marketCapUsd: 12_300_000_000,
+              perfY: 1200,
+              perf6m: 55,
+              perf3m: 40,
+              pctOf52wHigh: 98,
+              roic: 32,
+              grossProfitToAssets: 42,
+              fcfMargin: 25,
+              revenueGrowthTtm: 35,
+              ruleOf40: 60,
+              epsGrowthTtm: 30,
+              pFcf: 28,
+              atrPct: 3.2,
+              rankScore: 96,
+            },
+            {
+              symbol: 'BBB',
+              exchange: 'NASDAQ',
+              sector: 'Technology Services',
+              marketCapUsd: 9_800_000_000,
+              perfY: 70,
+              perf6m: 50,
+              perf3m: 35,
+              pctOf52wHigh: 95,
+              roic: 31,
+              grossProfitToAssets: 40,
+              fcfMargin: 21,
+              revenueGrowthTtm: 30,
+              ruleOf40: 51,
+              epsGrowthTtm: 28,
+              pFcf: 35,
+              atrPct: 3.5,
+              rankScore: 91,
+            },
+          ],
+        },
       ],
       results: [
         {
@@ -429,6 +474,9 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /60\.0（Rule 40\+）/);
     assert.doesNotMatch(markdown, /## 超急騰候補/);
     assert.match(markdown, /## Phase2 通過銘柄のセクター内訳/);
+    assert.match(markdown, /\| セクター順位 \| セクター \| 通過銘柄数 \| セクター内順位 \| シンボル \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCF \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \|/);
+    assert.match(markdown, /\| 1 \| Technology Services \| 3 \| 1 \| \*\*AAA\*\* \| NASDAQ \| \$12\.3B \| 1200\.0% \| 55\.0% \| 40\.0% \| 98\.0% \| 32\.0% \| 42\.0% \| 25\.0% \| 35\.0% \| 60\.0（Rule 40\+） \| 30\.0% \| 28\.0 \| 3\.2% \| 96\.00 \|/);
+    assert.match(markdown, /\| 1 \| Technology Services \| 3 \| 2 \| \*\*BBB\*\* \| NASDAQ \| \$9\.8B \| 70\.0% \| 50\.0% \| 35\.0% \| 95\.0% \| 31\.0% \| 40\.0% \| 21\.0% \| 30\.0% \| 51\.0（Rule 40\+） \| 28\.0% \| 35\.0 \| 3\.5% \| 91\.00 \|/);
     assert.doesNotMatch(markdown, /## 市場カバレッジ/);
     assert.match(markdown, /\| 区分 \| 項目 \| 条件・説明 \|/);
     assert.match(markdown, /\| 共通条件 \| ベース条件 \| 時価総額 > \$1B \/ EPS\(TTM\) > 0 \/ Close > SMA200 \/ Close > SMA50 \/ Close ≥ 52週高値 × 75% \|/);

@@ -406,6 +406,10 @@ describe('runFundamentalScreener', () => {
       stockBodies.map((body) => getFilterValue(body, 'sector')),
       ['Technology Services', 'Electronic Technology', 'Electronic Technology', 'Producer Manufacturing', 'Finance'],
     );
+    const technologyServices = result.sectorRanking.find((entry) => entry.sector === 'Technology Services');
+    assert.ok(technologyServices);
+    assert.equal(technologyServices.topRows[0].symbol, 'ADEA');
+    assert.ok(technologyServices.topRows.length <= 5);
   });
 
   it('applies Japan-specific profiles and skips finance even when phase1 selects it', async () => {
