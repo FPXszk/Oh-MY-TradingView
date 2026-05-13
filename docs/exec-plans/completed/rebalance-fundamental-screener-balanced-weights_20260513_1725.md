@@ -113,4 +113,3 @@ gh run view <run-id> --log-failed
 ## 競合確認
 
 - `docs/exec-plans/active/` 配下に既存 active plan は存在しないため、直接競合なし
-

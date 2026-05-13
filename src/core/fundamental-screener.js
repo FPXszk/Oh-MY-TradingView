@@ -73,7 +73,7 @@ const RANK_BLOCKS = [
   {
     key: 'priceMomentum',
     label: 'Price momentum',
-    weight: 70,
+    weight: 35,
     fields: [
       { key: 'perfY', label: '12M momentum', direction: 'desc' },
       { key: 'perf6m', label: '6M momentum', direction: 'desc' },
@@ -84,18 +84,18 @@ const RANK_BLOCKS = [
   {
     key: 'sectorStrength',
     label: 'Sector strength',
-    weight: 10,
+    weight: 15,
     fields: [
       { key: 'phase1SectorRankScore', label: 'Phase1 sector rank', direction: 'asc' },
-      { key: 'phase1SectorPerfY', label: 'Sector 12M momentum', direction: 'desc' },
-      { key: 'phase1SectorPerf6m', label: 'Sector 6M momentum', direction: 'desc' },
-      { key: 'phase1SectorPerf3m', label: 'Sector 3M momentum', direction: 'desc' },
     ],
   },
   {
     key: 'quality',
     label: 'Profitability / quality',
-    weight: 10,
+    weight: 25,
+    missingRank: 'neutral',
+    minUsableFields: 3,
+    insufficientFieldRank: 'worst',
     fields: [
       { key: 'roic', label: 'ROIC', direction: 'desc' },
       { key: 'grossProfitToAssets', label: 'Gross profit / assets', direction: 'desc' },
@@ -107,7 +107,8 @@ const RANK_BLOCKS = [
   {
     key: 'growth',
     label: 'Growth confirmation',
-    weight: 5,
+    weight: 10,
+    missingRank: 'neutral',
     fields: [
       { key: 'revenueGrowthTtm', label: 'Revenue YoY growth', direction: 'desc' },
       { key: 'epsGrowthTtm', label: 'EPS YoY growth', direction: 'desc' },
@@ -118,7 +119,8 @@ const RANK_BLOCKS = [
   {
     key: 'riskValue',
     label: 'Risk / value guard',
-    weight: 5,
+    weight: 15,
+    missingRank: 'neutral',
     fields: [
       { key: 'pFcf', label: 'P/FCF', direction: 'asc' },
       { key: 'evEbitda', label: 'EV/EBITDA', direction: 'asc' },
@@ -147,7 +149,7 @@ function getRankingBlocks(market) {
   return [
     {
       ...RANK_BLOCKS[0],
-      weight: 67,
+      weight: 32,
     },
     ...RANK_BLOCKS.slice(1),
     RULE_OF_40_RANK_BLOCK,
@@ -393,6 +395,12 @@ function averageRank(values, fallback) {
   return Number((usable.reduce((sum, value) => sum + value, 0) / usable.length).toFixed(2));
 }
 
+function resolveFallbackRank(strategy, rowCount) {
+  return strategy === 'neutral'
+    ? Number(((rowCount + 1) / 2).toFixed(2))
+    : rowCount + 1;
+}
+
 function rankSumToPositiveScore(weightedRank, rowCount) {
   if (rowCount <= 0) return 0;
   return Number(Math.max(0, ((rowCount + 1 - weightedRank) / rowCount) * 100).toFixed(2));
@@ -427,13 +435,18 @@ function applyBlockRanks(rows, rankingBlocks = RANK_BLOCKS) {
         field.key,
         rankMaps.get(`${block.key}:${field.key}`)[i],
       ]));
-      const usableFieldRanks = block.fields
-        .filter((field) => row[field.key] !== null && row[field.key] !== undefined)
-        .map((field) => fieldRanks[field.key]);
-      const fallback = block.missingRank === 'neutral'
-        ? Number(((rows.length + 1) / 2).toFixed(2))
-        : rows.length + 1;
-      const blockRank = averageRank(usableFieldRanks, fallback);
+      const missingFallback = resolveFallbackRank(block.missingRank, rows.length);
+      const usableFieldCount = block.fields.filter((field) => (
+        row[field.key] !== null && row[field.key] !== undefined
+      )).length;
+      const minUsableFields = block.minUsableFields ?? 1;
+      const blockRank = usableFieldCount < minUsableFields
+        ? resolveFallbackRank(block.insufficientFieldRank, rows.length)
+        : averageRank(block.fields.map((field) => (
+        row[field.key] !== null && row[field.key] !== undefined
+          ? fieldRanks[field.key]
+          : missingFallback
+      )), missingFallback);
       return [block.key, {
         label: block.label,
         weight: block.weight,

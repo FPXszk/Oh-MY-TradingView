@@ -84,7 +84,7 @@ describe('buildMarkdown', () => {
     {
       key: 'priceMomentum',
       label: 'Price momentum',
-      weight: 67,
+      weight: 32,
       fields: [
         { label: '12M momentum' },
         { label: '6M momentum' },
@@ -95,18 +95,15 @@ describe('buildMarkdown', () => {
     {
       key: 'sectorStrength',
       label: 'Sector strength',
-      weight: 10,
+      weight: 15,
       fields: [
         { label: 'Phase1 sector rank' },
-        { label: 'Sector 12M momentum' },
-        { label: 'Sector 6M momentum' },
-        { label: 'Sector 3M momentum' },
       ],
     },
     {
       key: 'quality',
       label: 'Profitability / quality',
-      weight: 10,
+      weight: 25,
       fields: [
         { label: 'ROIC' },
         { label: 'Gross profit / assets' },
@@ -118,7 +115,7 @@ describe('buildMarkdown', () => {
     {
       key: 'growth',
       label: 'Growth confirmation',
-      weight: 5,
+      weight: 10,
       fields: [
         { label: 'Revenue YoY growth' },
         { label: 'EPS YoY growth' },
@@ -129,7 +126,7 @@ describe('buildMarkdown', () => {
     {
       key: 'riskValue',
       label: 'Risk / value guard',
-      weight: 5,
+      weight: 15,
       fields: [
         { label: 'P/FCF' },
         { label: 'EV/EBITDA' },
@@ -148,13 +145,70 @@ describe('buildMarkdown', () => {
     },
   ];
 
+  const rankingBlocksJapan = [
+    {
+      key: 'priceMomentum',
+      label: 'Price momentum',
+      weight: 35,
+      fields: [
+        { label: '12M momentum' },
+        { label: '6M momentum' },
+        { label: '3M momentum' },
+        { label: '52w high proximity' },
+      ],
+    },
+    {
+      key: 'sectorStrength',
+      label: 'Sector strength',
+      weight: 15,
+      fields: [
+        { label: 'Phase1 sector rank' },
+      ],
+    },
+    {
+      key: 'quality',
+      label: 'Profitability / quality',
+      weight: 25,
+      fields: [
+        { label: 'ROIC' },
+        { label: 'Gross profit / assets' },
+        { label: 'Operating margin' },
+        { label: 'FCF margin' },
+        { label: 'Cash conversion' },
+      ],
+    },
+    {
+      key: 'growth',
+      label: 'Growth confirmation',
+      weight: 10,
+      fields: [
+        { label: 'Revenue YoY growth' },
+        { label: 'EPS YoY growth' },
+        { label: 'FCF YoY growth' },
+        { label: 'Yahoo revenue growth' },
+      ],
+    },
+    {
+      key: 'riskValue',
+      label: 'Risk / value guard',
+      weight: 15,
+      fields: [
+        { label: 'P/FCF' },
+        { label: 'EV/EBITDA' },
+        { label: 'ATR %' },
+        { label: 'Beta 1Y' },
+        { label: 'Debt / equity' },
+      ],
+    },
+  ];
+
   function rankBreakdown(rank) {
     return {
-      priceMomentum: { label: 'Price momentum', weight: 67, rank, fields: { perf3m: rank } },
-      sectorStrength: { label: 'Sector strength', weight: 10, rank, fields: { phase1SectorRankScore: rank } },
-      quality: { label: 'Profitability / quality', weight: 10, rank, fields: { fcfMargin: rank } },
-      growth: { label: 'Growth confirmation', weight: 5, rank, fields: { revenueGrowthTtm: rank } },
-      riskValue: { label: 'Risk / value guard', weight: 5, rank, fields: { pFcf: rank } },
+      priceMomentum: { label: 'Price momentum', weight: 32, rank, fields: { perf3m: rank } },
+      sectorStrength: { label: 'Sector strength', weight: 15, rank, fields: { phase1SectorRankScore: rank } },
+      quality: { label: 'Profitability / quality', weight: 25, rank, fields: { fcfMargin: rank } },
+      growth: { label: 'Growth confirmation', weight: 10, rank, fields: { revenueGrowthTtm: rank } },
+      riskValue: { label: 'Risk / value guard', weight: 15, rank, fields: { pFcf: rank } },
       ruleOf40: { label: 'Rule of 40 (US software)', weight: 3, rank, fields: { ruleOf40: rank } },
     };
   }
@@ -493,8 +547,11 @@ describe('buildMarkdown', () => {
     assert.doesNotMatch(markdown, /## 採用した P0 \/ P1 指標/);
     assert.doesNotMatch(markdown, /## 今後改善できそうな点/);
     assert.match(markdown, /\| ブロック \| 重み \| 主な評価項目 \| 役割 \|/);
-    assert.match(markdown, /\| Price momentum \| 67% \| 12M momentum, 6M momentum, 3M momentum, 52w high proximity \| 最も重視。上昇トレンドの強さと52週高値接近を評価 \|/);
-    assert.match(markdown, /\| Sector strength \| 10% \| Phase1 sector rank, Sector 12M momentum, Sector 6M momentum, Sector 3M momentum \| 強いセクター追随かを確認 \|/);
+    assert.match(markdown, /\| Price momentum \| 32% \| 12M momentum, 6M momentum, 3M momentum, 52w high proximity \| 最も重視。上昇トレンドの強さと52週高値接近を評価 \|/);
+    assert.match(markdown, /\| Sector strength \| 15% \| Phase1 sector rank \| 強いセクター追随かを確認 \|/);
+    assert.match(markdown, /\| Profitability \/ quality \| 25% \| ROIC, Gross profit \/ assets, Operating margin, FCF margin, Cash conversion \| 収益性とキャッシュ創出力を確認 \|/);
+    assert.match(markdown, /\| Growth confirmation \| 10% \| Revenue YoY growth, EPS YoY growth, FCF YoY growth, Yahoo revenue growth \| 売上・EPS・FCF の成長確認 \|/);
+    assert.match(markdown, /\| Risk \/ value guard \| 15% \| P\/FCF, EV\/EBITDA, ATR %, Beta 1Y, Debt \/ equity \| 過熱バリュエーションと変動リスクを抑制 \|/);
   });
 
   it('supports a Japan-specific title and currency symbol', () => {
@@ -506,8 +563,8 @@ describe('buildMarkdown', () => {
       clientFiltered: 2,
       matched: 2,
       enrichedWithYahoo: true,
-      rankingFormula: rankingBlocks.map((block) => block.key),
-      rankingBlocks,
+      rankingFormula: rankingBlocksJapan.map((block) => block.key),
+      rankingBlocks: rankingBlocksJapan,
       scannerScope: {
         market: 'japan',
         instrumentTypes: ['stock'],
