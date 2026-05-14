@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import math
 import sys
 from dataclasses import asdict, is_dataclass
 from datetime import date, datetime
@@ -36,6 +37,8 @@ def fail(message: str, details: str | None = None, exit_code: int = 1) -> "NoRet
 
 def normalize_scalar(value: Any) -> Any:
     if isinstance(value, (str, int, float, bool)) or value is None:
+        if isinstance(value, float) and not math.isfinite(value):
+            return None
         return value
     if isinstance(value, Decimal):
         return float(value)

@@ -208,6 +208,19 @@ describe('moomoo error handling', () => {
       /Invalid JSON response/,
     );
   });
+
+  it('accepts adapter responses when moomoo logs prepend stdout noise', async () => {
+    const result = await getMoomooHealthCheck(
+      mockDeps(createExecSuccess([
+        '2026-05-14 10:53:58,796 | log noise',
+        '{"success":true,"state":{"program_status_type":"READY"}}',
+        '2026-05-14 10:53:58,799 | trailing disconnect log',
+      ].join('\n'))),
+    );
+
+    assert.equal(result.success, true);
+    assert.equal(result.state.program_status_type, 'READY');
+  });
 });
 
 describe('registerMoomooTools', () => {

@@ -132,9 +132,16 @@ async function runAdapter(command, payload, { label, _deps } = {}) {
     throw buildExecError(label, error);
   }
 
+  const normalizedStdout = stdout
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .filter((line) => line.startsWith('{') || line.startsWith('['))
+    .at(-1) || '';
+
   let data;
   try {
-    data = JSON.parse(stdout);
+    data = JSON.parse(normalizedStdout);
   } catch {
     throw new Error(`Invalid JSON response from moomoo adapter for ${label}`);
   }
