@@ -15,6 +15,7 @@ import { registerBrowserLaunchTools } from './tools/browser-launch.js';
 import { registerTwitterReadTools } from './tools/twitter-read.js';
 import { registerReachTools } from './tools/reach.js';
 import { registerScreenerTools } from './tools/screener.js';
+import { registerMoomooTools } from './tools/moomoo.js';
 
 const server = new McpServer(
   {
@@ -107,6 +108,14 @@ Reach external observation (no CDP needed, read-only):
 - reach_read_reddit_post → read a public Reddit post and top comments
 - reach_read_youtube → read YouTube metadata and optional subtitles
 
+Moomoo OpenAPI read-only (no CDP needed, requires OpenD reachable from this runtime):
+- moomoo_health_check → verify OpenD connectivity and login state
+- moomoo_snapshot → fetch multi-symbol snapshots
+- moomoo_kline_history → fetch historical K-line data
+- moomoo_stock_filter → run simple market/price/PE filters
+- moomoo_plate_list → list plate/theme groups by market
+- moomoo_plate_stocks → list constituent symbols for one plate
+
 BACKTEST WORKFLOW:
 1. tv_backtest_nvda_ma_5_20 → switches to NVDA, applies 5/20 MA cross strategy, reads Strategy Tester
 
@@ -133,6 +142,7 @@ registerBrowserLaunchTools(server);
 registerTwitterReadTools(server);
 registerReachTools(server);
 registerScreenerTools(server);
+registerMoomooTools(server);
 
 process.stderr.write(
   '⚠  oh-my-tradingview  |  Unofficial tool. Not affiliated with TradingView Inc.\n'
