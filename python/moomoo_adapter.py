@@ -71,10 +71,17 @@ def normalize_object(value: Any) -> Any:
             pass
 
     if hasattr(value, "__dict__"):
+        def normalize_attr_key(key: Any) -> str:
+            if isinstance(key, str):
+                return key
+            if isinstance(key, tuple):
+                return "|".join(str(part) for part in key if part not in (None, ""))
+            return str(key)
+
         public = {
-            key: normalize_object(item)
+            normalize_attr_key(key): normalize_object(item)
             for key, item in vars(value).items()
-            if not key.startswith("_")
+            if not normalize_attr_key(key).startswith("_")
         }
         if public:
             return public
@@ -345,6 +352,34 @@ def cmd_snapshot(payload: dict[str, Any]) -> dict[str, Any]:
         quote_ctx.close()
 
 
+def cmd_stock_basicinfo(payload: dict[str, Any]) -> dict[str, Any]:
+    market_name = payload.get("market")
+    if not isinstance(market_name, str) or not market_name.strip():
+        fail("market is required")
+
+    code_list = payload.get("code_list")
+    if not isinstance(code_list, list) or not code_list:
+        fail("code_list must be a non-empty list")
+
+    quote_ctx = open_quote_context(payload)
+    try:
+        ret, data = quote_ctx.get_stock_basicinfo(
+            get_enum(ft.Market, market_name, "market"),
+            code_list=code_list,
+        )
+        if ret != ft.RET_OK:
+            fail("get_stock_basicinfo failed", str(data))
+        rows = normalize_object(data)
+        return {
+            "success": True,
+            "market": market_name.upper(),
+            "count": len(rows),
+            "rows": rows,
+        }
+    finally:
+        quote_ctx.close()
+
+
 def cmd_kline_history(payload: dict[str, Any]) -> dict[str, Any]:
     symbol = payload.get("symbol")
     if not isinstance(symbol, str) or not symbol.strip():
@@ -389,6 +424,7 @@ def cmd_stock_filter(payload: dict[str, Any]) -> dict[str, Any]:
         ret, data = quote_ctx.get_stock_filter(
             get_enum(ft.Market, market_name, "market"),
             filter_list=filters,
+            plate_code=payload.get("plate_code"),
             begin=int(payload.get("begin", 0)),
             num=int(payload.get("limit", 20)),
         )
@@ -462,6 +498,7 @@ def cmd_plate_stocks(payload: dict[str, Any]) -> dict[str, Any]:
 COMMANDS = {
     "health_check": cmd_health_check,
     "snapshot": cmd_snapshot,
+    "stock_basicinfo": cmd_stock_basicinfo,
     "kline_history": cmd_kline_history,
     "stock_filter_fields": cmd_stock_filter_fields,
     "stock_filter": cmd_stock_filter,

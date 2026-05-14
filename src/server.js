@@ -112,9 +112,13 @@ Moomoo OpenAPI read-only (no CDP needed, requires OpenD reachable from this runt
 - moomoo_health_check → verify OpenD connectivity and login state
 - moomoo_snapshot → fetch multi-symbol snapshots
 - moomoo_kline_history → fetch historical K-line data
-- moomoo_stock_filter → run simple market/price/PE filters
+- moomoo_stock_filter → run market/plate filters with optional field DSL
 - moomoo_plate_list → list plate/theme groups by market
 - moomoo_plate_stocks → list constituent symbols for one plate
+- moomoo_plate_breadth → aggregate theme breadth from plate constituents
+- moomoo_ohlc_compare → benchmark moomoo daily bars against an external provider
+- moomoo_screening_validate → run moomoo-only or benchmark validation modes
+- moomoo_fundamental_probe → compare moomoo proxy metrics with repo reference fields
 
 BACKTEST WORKFLOW:
 1. tv_backtest_nvda_ma_5_20 → switches to NVDA, applies 5/20 MA cross strategy, reads Strategy Tester

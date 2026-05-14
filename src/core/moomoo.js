@@ -2,6 +2,7 @@ import { access, constants } from 'node:fs/promises';
 import { execFile } from 'node:child_process';
 import { join } from 'node:path';
 import { promisify } from 'node:util';
+import { getSymbolFundamentals } from './market-intel.js';
 
 const execFileAsync = promisify(execFile);
 
@@ -15,10 +16,16 @@ const MAX_PLATE_BREADTH_SYMBOLS = 50;
 const MAX_VALIDATION_SYMBOLS = 20;
 const MAX_HISTORY_BARS = 400;
 const YAHOO_CHART_BASE = 'https://query1.finance.yahoo.com/v8/finance/chart';
+const TRADINGVIEW_SCANNER_BASE = 'https://scanner.tradingview.com';
 
 const SUPPORTED_MARKETS = new Set(['US', 'HK', 'SH', 'SZ', 'JP', 'SG', 'AU', 'CA', 'FX', 'CC']);
 const SUPPORTED_PLATE_CLASSES = new Set(['ALL', 'INDUSTRY', 'REGION', 'CONCEPT', 'OTHER']);
 const SUPPORTED_FILTER_TYPES = new Set(['simple', 'financial', 'indicator', 'pattern']);
+const SUPPORTED_BENCHMARK_PROVIDERS = new Set(['yahoo_finance']);
+const SUPPORTED_VALIDATION_MODES = new Set(['benchmark', 'moomoo-only']);
+const TRADINGVIEW_MARKET_SCOPES = new Map([
+  ['US', 'america'],
+]);
 
 function resolveDeps(_deps = {}) {
   return {
@@ -27,6 +34,7 @@ function resolveDeps(_deps = {}) {
     env: _deps.env || process.env,
     execFile: _deps.execFile || execFileAsync,
     fetch: _deps.fetch || globalThis.fetch,
+    getSymbolFundamentals: _deps.getSymbolFundamentals || getSymbolFundamentals,
   };
 }
 
@@ -204,6 +212,65 @@ function buildConnectionPayload(_deps) {
   };
 }
 
+function normalizeBenchmarkProvider(value, { allowNull = false } = {}) {
+  if (value === undefined) return 'yahoo_finance';
+  if (value === null) {
+    if (allowNull) return null;
+    throw new Error(`benchmarkProvider must be one of: ${[...SUPPORTED_BENCHMARK_PROVIDERS].join(', ')}`);
+  }
+  const normalized = requireString(value, 'benchmarkProvider').toLowerCase();
+  if (!SUPPORTED_BENCHMARK_PROVIDERS.has(normalized)) {
+    throw new Error(`benchmarkProvider must be one of: ${[...SUPPORTED_BENCHMARK_PROVIDERS].join(', ')}`);
+  }
+  return normalized;
+}
+
+function normalizeValidationMode(value) {
+  const normalized = requireString(value ?? 'benchmark', 'mode').toLowerCase();
+  if (!SUPPORTED_VALIDATION_MODES.has(normalized)) {
+    throw new Error(`mode must be one of: ${[...SUPPORTED_VALIDATION_MODES].join(', ')}`);
+  }
+  return normalized;
+}
+
+function roundNullable(value, precision = 4) {
+  const normalized = toFiniteNumber(value);
+  if (normalized === null) return null;
+  return Number(normalized.toFixed(precision));
+}
+
+function computeAbsPointDiff(left, right, precision = 4) {
+  const leftValue = toFiniteNumber(left);
+  const rightValue = toFiniteNumber(right);
+  if (leftValue === null || rightValue === null) return null;
+  return Number(Math.abs(leftValue - rightValue).toFixed(precision));
+}
+
+function inferMarketFromSymbols(symbols) {
+  const normalizedSymbols = dedupeSymbols(symbols);
+  if (normalizedSymbols.length === 0) return null;
+  const prefixes = [...new Set(normalizedSymbols.map((symbol) => symbol.split('.')[0]).filter(Boolean))];
+  if (prefixes.length !== 1) {
+    throw new Error('symbols must belong to a single market');
+  }
+  return normalizeEnum(prefixes[0], {
+    label: 'market',
+    allowed: SUPPORTED_MARKETS,
+  });
+}
+
+function toTradingViewMarketScope(market) {
+  const normalizedMarket = normalizeEnum(market, {
+    label: 'market',
+    allowed: SUPPORTED_MARKETS,
+  });
+  const scope = TRADINGVIEW_MARKET_SCOPES.get(normalizedMarket);
+  if (!scope) {
+    throw new Error(`TradingView reference probe is not supported for market ${normalizedMarket}`);
+  }
+  return scope;
+}
+
 function normalizeStockFilterSpec(spec, index) {
   if (!spec || typeof spec !== 'object' || Array.isArray(spec)) {
     throw new Error(`filters[${index}] must be an object`);
@@ -337,6 +404,7 @@ function buildStockFilterPayload({
   minMarketCap,
   peMin,
   peMax,
+  plateCode,
   limit,
   begin,
   filters,
@@ -373,6 +441,7 @@ function buildStockFilterPayload({
   return {
     ...buildConnectionPayload(_deps),
     market: normalizedMarket,
+    plate_code: normalizeOptionalString(plateCode),
     filters: [
       ...buildLegacyFilterSpecs({ minPrice, minMarketCap, peMin, peMax }),
       ...normalizedCustomFilters,
@@ -734,6 +803,157 @@ function compareHistorySeries(moomooRows, yahooRows) {
   };
 }
 
+async function getMoomooHistoryMetrics({
+  symbols,
+  start,
+  end,
+  maxBars,
+  autype,
+  _deps,
+} = {}) {
+  const entries = [];
+  for (const symbol of normalizeStringArray(symbols, {
+    label: 'symbols',
+    maxLength: MAX_VALIDATION_SYMBOLS,
+  })) {
+    try {
+      const moomooHistory = await getStableMoomooKlineHistory({
+        symbol,
+        ktype: 'K_DAY',
+        autype,
+        start,
+        end,
+        maxCount: maxBars,
+        _deps,
+      });
+      entries.push({
+        success: true,
+        symbol,
+        moomooMetrics: computeHistoryMetrics(moomooHistory.rows),
+      });
+    } catch (error) {
+      entries.push({
+        success: false,
+        symbol,
+        error: error.message,
+        moomooMetrics: null,
+      });
+    }
+  }
+
+  return {
+    success: entries.some((entry) => entry.success),
+    count: entries.length,
+    entries,
+    retrieved_at: new Date().toISOString(),
+    source: 'moomoo',
+  };
+}
+
+function mapExchangeTypeToTradingViewPrefix(exchangeType) {
+  const normalized = normalizeOptionalString(exchangeType)?.toUpperCase() || null;
+  if (!normalized) return null;
+  if (normalized.includes('NASDAQ')) return 'NASDAQ';
+  if (normalized.includes('NYSE')) return 'NYSE';
+  if (normalized.includes('AMEX')) return 'AMEX';
+  return null;
+}
+
+function symbolLeaf(symbol) {
+  const normalized = requireString(symbol, 'symbol').toUpperCase();
+  const parts = normalized.split('.');
+  return parts.length > 1 ? parts.slice(1).join('.') : normalized;
+}
+
+function buildTradingViewTicker(symbol, basicInfoRow) {
+  const prefix = mapExchangeTypeToTradingViewPrefix(
+    basicInfoRow?.exchange_type || basicInfoRow?.exchangeType,
+  );
+  if (!prefix) return null;
+  return `${prefix}:${symbolLeaf(symbol)}`;
+}
+
+async function fetchTradingViewReferenceMetrics(symbols, { market, _deps } = {}) {
+  const deps = resolveDeps(_deps);
+  if (typeof deps.fetch !== 'function') {
+    throw new Error('fetch is not available for TradingView reference probe');
+  }
+
+  const basicInfo = await getMoomooStockBasicInfo({ market, symbols, _deps });
+  const basicInfoMap = new Map(
+    (basicInfo.rows || []).map((row) => [extractMoomooSymbol(row), row]),
+  );
+  const tickers = normalizeStringArray(symbols, {
+    label: 'symbols',
+    maxLength: MAX_VALIDATION_SYMBOLS,
+  })
+    .map((symbol) => [symbol, buildTradingViewTicker(symbol, basicInfoMap.get(symbol))])
+    .filter(([, ticker]) => ticker);
+
+  if (tickers.length === 0) {
+    return new Map();
+  }
+
+  const scope = toTradingViewMarketScope(market);
+  const response = await deps.fetch(`${TRADINGVIEW_SCANNER_BASE}/${scope}/scan`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      filter: [],
+      options: { lang: 'en' },
+      markets: [scope],
+      symbols: { query: { types: ['stock'] }, tickers: tickers.map(([, ticker]) => ticker) },
+      columns: [
+        'name',
+        'total_revenue_yoy_growth_ttm',
+        'debt_to_equity',
+        'price_free_cash_flow_ttm',
+      ],
+      sort: { sortBy: 'name', sortOrder: 'asc' },
+      range: [0, tickers.length],
+    }),
+    signal: AbortSignal.timeout(10000),
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status} from TradingView scanner`);
+  }
+
+  const payload = await response.json();
+  const tickerToSymbol = new Map(tickers.map(([symbol, ticker]) => [ticker, symbol]));
+  return new Map(
+    (payload?.data || []).map((row) => {
+      const symbol = tickerToSymbol.get(row?.s);
+      return [
+        symbol,
+        {
+          symbol,
+          name: row?.d?.[0] ?? null,
+          revenueGrowthPct: roundNullable(row?.d?.[1], 4),
+          debtToEquity: roundNullable(row?.d?.[2], 6),
+          pFcf: roundNullable(row?.d?.[3], 4),
+        },
+      ];
+    }).filter(([symbol]) => symbol),
+  );
+}
+
+function extractMoomooField(row, key) {
+  return toFiniteNumber(row?.[key]);
+}
+
+function normalizeYahooRevenueGrowthPct(value) {
+  const normalized = toFiniteNumber(value);
+  if (normalized === null) return null;
+  return Number((normalized * 100).toFixed(4));
+}
+
+function normalizeMoomooPcfApprox(value) {
+  const normalized = toFiniteNumber(value);
+  if (normalized === null) return null;
+  return Number((normalized / 100).toFixed(4));
+}
+
 function buildCandidateRow({
   symbol,
   snapshot,
@@ -843,6 +1063,7 @@ export async function getMoomooStockFilter({
   minMarketCap,
   peMin,
   peMax,
+  plateCode,
   limit,
   begin,
   filters,
@@ -856,12 +1077,36 @@ export async function getMoomooStockFilter({
       minMarketCap,
       peMin,
       peMax,
+      plateCode,
       limit,
       begin,
       filters,
       _deps,
     }),
     { label: 'moomoo stock_filter', _deps },
+  );
+}
+
+export async function getMoomooStockBasicInfo({ market, symbols, _deps } = {}) {
+  const normalizedSymbols = normalizeStringArray(symbols, {
+    label: 'symbols',
+    maxLength: MAX_SNAPSHOT_SYMBOLS,
+  });
+  const normalizedMarket = market === undefined
+    ? inferMarketFromSymbols(normalizedSymbols)
+    : normalizeEnum(market, {
+      label: 'market',
+      allowed: SUPPORTED_MARKETS,
+    });
+
+  return runAdapter(
+    'stock_basicinfo',
+    {
+      ...buildConnectionPayload(_deps),
+      market: normalizedMarket,
+      code_list: normalizedSymbols,
+    },
+    { label: 'moomoo stock_basicinfo', _deps },
   );
 }
 
@@ -1006,6 +1251,7 @@ export async function getMoomooOhlcComparison({
   end,
   maxBars,
   autype,
+  benchmarkProvider,
   _deps,
 } = {}) {
   if (symbols === undefined) {
@@ -1021,6 +1267,7 @@ export async function getMoomooOhlcComparison({
     max: MAX_HISTORY_BARS,
     defaultValue: 260,
   });
+  const normalizedBenchmarkProvider = normalizeBenchmarkProvider(benchmarkProvider);
 
   const comparisons = [];
   for (const symbol of normalizedSymbols) {
@@ -1034,16 +1281,19 @@ export async function getMoomooOhlcComparison({
         maxCount: normalizedMaxBars,
         _deps,
       });
-      const yahooHistory = await fetchYahooHistory(symbol, {
-        start,
-        end,
-        maxBars: normalizedMaxBars,
-        _deps,
-      });
+      let benchmarkHistory = [];
+      if (normalizedBenchmarkProvider === 'yahoo_finance') {
+        benchmarkHistory = await fetchYahooHistory(symbol, {
+          start,
+          end,
+          maxBars: normalizedMaxBars,
+          _deps,
+        });
+      }
       comparisons.push({
         success: true,
         symbol,
-        ...compareHistorySeries(moomooHistory.rows, yahooHistory),
+        ...compareHistorySeries(moomooHistory.rows, benchmarkHistory),
         moomooMetrics: computeHistoryMetrics(moomooHistory.rows),
       });
     } catch (error) {
@@ -1059,8 +1309,159 @@ export async function getMoomooOhlcComparison({
     success: comparisons.some((entry) => entry.success),
     count: comparisons.length,
     comparisons,
-    source: 'moomoo+yahoo_finance',
+    benchmarkProvider: normalizedBenchmarkProvider,
+    source: `moomoo+${normalizedBenchmarkProvider}`,
     retrieved_at: new Date().toISOString(),
+  };
+}
+
+export async function getMoomooFundamentalProbe({
+  market,
+  symbols,
+  plateCode,
+  limit,
+  _deps,
+} = {}) {
+  const normalizedPlateCode = requireString(plateCode, 'plateCode');
+  const normalizedSymbols = normalizeStringArray(symbols, {
+    label: 'symbols',
+    maxLength: MAX_VALIDATION_SYMBOLS,
+  });
+  const normalizedMarket = market === undefined
+    ? inferMarketFromSymbols(normalizedSymbols)
+    : normalizeEnum(market, {
+      label: 'market',
+      allowed: SUPPORTED_MARKETS,
+    });
+  const normalizedLimit = normalizeInteger(limit, {
+    label: 'limit',
+    min: 1,
+    max: MAX_FILTER_LIMIT,
+    defaultValue: MAX_FILTER_LIMIT,
+  });
+  const probeRows = await getMoomooStockFilter({
+    market: normalizedMarket,
+    plateCode: normalizedPlateCode,
+    limit: normalizedLimit,
+    filters: [
+      {
+        type: 'financial',
+        field: 'SUM_OF_BUSINESS_GROWTH',
+        min: -100000,
+        max: 100000,
+        quarter: 'ANNUAL',
+      },
+      {
+        type: 'financial',
+        field: 'DEBT_ASSET_RATE',
+        min: -100000,
+        max: 100000,
+        quarter: 'ANNUAL',
+      },
+      {
+        type: 'simple',
+        field: 'PCF_TTM',
+        min: -100000,
+        max: 100000,
+      },
+    ],
+    _deps,
+  });
+  const moomooProbeMap = new Map(
+    (probeRows.rows || []).map((row) => [extractMoomooSymbol(row), row]),
+  );
+  const tradingViewMap = await fetchTradingViewReferenceMetrics(normalizedSymbols, {
+    market: normalizedMarket,
+    _deps,
+  });
+  const deps = resolveDeps(_deps);
+  const yahooResults = await Promise.allSettled(
+    normalizedSymbols.map((symbol) => deps.getSymbolFundamentals(symbolLeaf(symbol))),
+  );
+  const yahooMap = new Map(
+    yahooResults.map((result, index) => {
+      const symbol = normalizedSymbols[index];
+      if (result.status !== 'fulfilled') {
+        return [symbol, {
+          data: null,
+          error: result.reason?.message || 'Yahoo fundamentals unavailable',
+        }];
+      }
+      return [
+        symbol,
+        {
+          data: {
+            revenueGrowthPct: normalizeYahooRevenueGrowthPct(result.value?.revenueGrowth),
+            debtToEquity: roundNullable(result.value?.debtToEquity, 6),
+          },
+          error: null,
+        },
+      ];
+    }),
+  );
+
+  const rows = normalizedSymbols.map((symbol) => {
+    const moomooRow = moomooProbeMap.get(symbol) || {};
+    const tradingView = tradingViewMap.get(symbol) || null;
+    const yahooEnvelope = yahooMap.get(symbol) || { data: null, error: null };
+    const yahoo = yahooEnvelope.data;
+    const sumOfBusinessGrowthPct = roundNullable(
+      extractMoomooField(moomooRow, 'sum_of_business_growth|annual'),
+      4,
+    );
+    const debtAssetRatePct = roundNullable(
+      extractMoomooField(moomooRow, 'debt_asset_rate|annual'),
+      4,
+    );
+    const pcfTtmRaw = roundNullable(extractMoomooField(moomooRow, 'pcf_ttm'), 4);
+    const pcfTtmApprox = normalizeMoomooPcfApprox(pcfTtmRaw);
+
+    return {
+      symbol,
+      success: Boolean(moomooProbeMap.has(symbol)),
+      moomoo: {
+        sumOfBusinessGrowthPct,
+        debtAssetRatePct,
+        pcfTtmRaw,
+        pcfTtmApprox,
+      },
+      reference: {
+        tradingView,
+        yahoo,
+        yahooError: yahooEnvelope.error,
+      },
+      comparison: {
+        revenueGrowth: {
+          moomooPct: sumOfBusinessGrowthPct,
+          tradingViewPct: tradingView?.revenueGrowthPct ?? null,
+          yahooPct: yahoo?.revenueGrowthPct ?? null,
+          diffVsTradingViewPctPoints: computeAbsPointDiff(sumOfBusinessGrowthPct, tradingView?.revenueGrowthPct, 4),
+          diffVsYahooPctPoints: computeAbsPointDiff(sumOfBusinessGrowthPct, yahoo?.revenueGrowthPct, 4),
+        },
+        debtToEquityProxy: {
+          moomooDebtAssetRatePct: debtAssetRatePct,
+          tradingViewDebtToEquity: tradingView?.debtToEquity ?? null,
+          yahooDebtToEquity: yahoo?.debtToEquity ?? null,
+          note: 'Formula mismatch: DEBT_ASSET_RATE is debt/assets, not debt/equity.',
+        },
+        pFcfProxy: {
+          moomooApprox: pcfTtmApprox,
+          tradingViewPFcf: tradingView?.pFcf ?? null,
+          diffVsTradingView: computeAbsPointDiff(pcfTtmApprox, tradingView?.pFcf, 4),
+          note: 'PCF_TTM is normalized by dividing the moomoo raw value by 100 before comparison.',
+        },
+      },
+    };
+  });
+
+  return {
+    success: rows.some((row) => row.success),
+    market: normalizedMarket,
+    plateCode: normalizedPlateCode,
+    count: rows.length,
+    rows,
+    retrieved_at: new Date().toISOString(),
+    source: 'moomoo+tradingview_scanner+yahoo_finance',
   };
 }
 
@@ -1080,8 +1481,17 @@ export async function runMoomooScreeningValidation({
   historyStart,
   historyEnd,
   nearHighThresholdPct,
+  mode,
+  benchmarkProvider,
   _deps,
 } = {}) {
+  const validationMode = normalizeValidationMode(mode);
+  const normalizedHistoryBars = normalizeInteger(historyBars, {
+    label: 'historyBars',
+    min: 20,
+    max: MAX_HISTORY_BARS,
+    defaultValue: 260,
+  });
   const normalizedValidateLimit = normalizeInteger(validateLimit, {
     label: 'validateLimit',
     min: 1,
@@ -1141,24 +1551,39 @@ export async function runMoomooScreeningValidation({
     (snapshot.rows || []).map((row) => [extractMoomooSymbol(row), row]),
   );
 
-  const ohlcComparison = validationSymbols.length > 0
+  const ohlcComparison = validationMode === 'benchmark' && validationSymbols.length > 0
     ? await getMoomooOhlcComparison({
       symbols: validationSymbols,
       start: historyStart,
       end: historyEnd,
-      maxBars: historyBars,
+      maxBars: normalizedHistoryBars,
+      benchmarkProvider: normalizeBenchmarkProvider(benchmarkProvider),
       _deps,
     })
-    : { comparisons: [] };
+    : { comparisons: [], benchmarkProvider: null };
+  const historyMetrics = validationMode === 'moomoo-only' && validationSymbols.length > 0
+    ? await getMoomooHistoryMetrics({
+      symbols: validationSymbols,
+      start: historyStart,
+      end: historyEnd,
+      maxBars: normalizedHistoryBars,
+      _deps,
+    })
+    : { entries: [] };
   const comparisonMap = new Map(
     (ohlcComparison.comparisons || []).map((entry) => [entry.symbol, entry]),
+  );
+  const historyMetricsMap = new Map(
+    (historyMetrics.entries || []).map((entry) => [entry.symbol, entry]),
   );
 
   const rankedCandidates = applyProxyRanks(
     validationSymbols.map((symbol) => buildCandidateRow({
       symbol,
       snapshot: snapshotMap.get(symbol) || null,
-      historyMetrics: comparisonMap.get(symbol)?.moomooMetrics || null,
+      historyMetrics: validationMode === 'moomoo-only'
+        ? historyMetricsMap.get(symbol)?.moomooMetrics || null
+        : comparisonMap.get(symbol)?.moomooMetrics || null,
       comparison: comparisonMap.get(symbol) || null,
       stockFilterRank: stockFilterRank.get(symbol) ?? null,
       plateSet,
@@ -1177,6 +1602,7 @@ export async function runMoomooScreeningValidation({
 
   return {
     success: true,
+    validationMode,
     market: normalizeEnum(market, {
       label: 'market',
       allowed: SUPPORTED_MARKETS,
@@ -1196,8 +1622,17 @@ export async function runMoomooScreeningValidation({
     requestedCandidates,
     validatedCandidateCount: rankedCandidates.length,
     rankedCandidates,
-    ohlcComparison,
+    ohlcComparison: validationMode === 'moomoo-only'
+      ? {
+        comparisons: [],
+        benchmarkProvider: null,
+        source: 'moomoo',
+        retrieved_at: new Date().toISOString(),
+      }
+      : ohlcComparison,
     retrieved_at: new Date().toISOString(),
-    source: 'moomoo_phase2_validation',
+    source: validationMode === 'moomoo-only'
+      ? 'moomoo_phase2_validation'
+      : 'moomoo_phase2_validation+benchmark',
   };
 }

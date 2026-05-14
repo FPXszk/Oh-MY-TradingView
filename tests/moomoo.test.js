@@ -5,6 +5,7 @@ import {
   getMoomooHealthCheck,
   getMoomooSnapshot,
   getMoomooKlineHistory,
+  getMoomooFundamentalProbe,
   getMoomooStockFilterFields,
   getMoomooStockFilter,
   getMoomooPlateList,
@@ -156,6 +157,13 @@ describe('moomoo validation', () => {
       /symbols must be a non-empty array/,
     );
   });
+
+  it('rejects missing plate code for fundamental probe', async () => {
+    await assert.rejects(
+      () => getMoomooFundamentalProbe({ market: 'US', symbols: ['US.NVDA'] }),
+      /plateCode is required/,
+    );
+  });
 });
 
 describe('moomoo success paths', () => {
@@ -250,6 +258,7 @@ describe('moomoo success paths', () => {
       minPrice: 20,
       minMarketCap: 1000000000,
       peMax: 30,
+      plateCode: 'US.LIST1',
       filters: [
         { type: 'simple', field: 'CHANGE_RATE', min: 5, sort: 'DESCEND' },
         {
@@ -282,6 +291,7 @@ describe('moomoo success paths', () => {
     assert.equal(payload.market, 'US');
     assert.equal(payload.limit, 10);
     assert.equal(payload.begin, 5);
+    assert.equal(payload.plate_code, 'US.LIST1');
     assert.equal(payload.filters[0].field, 'CUR_PRICE');
     assert.equal(payload.filters[4].type, 'indicator');
     assert.equal(payload.filters[4].field2_params[0], 20);
@@ -354,6 +364,7 @@ describe('moomoo success paths', () => {
     assert.equal(result.comparisons[0].comparedBars, 28);
     assert.ok(result.comparisons[0].avgAbsCloseDiffPct > 0);
     assert.ok(result.comparisons[0].moomooMetrics.perf3m !== null);
+    assert.equal(result.benchmarkProvider, 'yahoo_finance');
   });
 
   it('runs screening validation end-to-end', async () => {
@@ -423,6 +434,192 @@ describe('moomoo success paths', () => {
     assert.equal(result.requestedCandidates[0].inStockFilter, true);
     assert.equal(result.rankedCandidates[0].symbol, 'US.NVDA');
     assert.ok(result.rankedCandidates[0].proxyScore > result.rankedCandidates[1].proxyScore);
+    assert.equal(result.validationMode, 'benchmark');
+    assert.equal(result.ohlcComparison.benchmarkProvider, 'yahoo_finance');
+  });
+
+  it('runs screening validation in moomoo-only mode without benchmark fetches', async () => {
+    const nvdaRows = buildHistoryRows({ base: 100, step: 1.2, days: 90 });
+    const result = await runMoomooScreeningValidation({
+      market: 'US',
+      minPrice: 20,
+      limit: 5,
+      plateCode: 'US.LIST1',
+      candidateSymbols: ['US.NVDA'],
+      validateLimit: 3,
+      historyBars: 90,
+      mode: 'moomoo-only',
+      ...mockDeps(createExecRouter({
+        stock_filter: async () => ({
+          success: true,
+          market: 'US',
+          last_page: true,
+          all_count: 1,
+          count: 1,
+          rows: [{ stock_code: 'US.NVDA', stock_name: 'NVIDIA' }],
+        }),
+        plate_stocks: async () => ({
+          success: true,
+          plate_code: 'US.LIST1',
+          count: 1,
+          rows: [{ code: 'US.NVDA' }],
+        }),
+        snapshot: async () => ({
+          success: true,
+          count: 1,
+          rows: [
+            { code: 'US.NVDA', name: 'NVIDIA', last_price: 205, prev_close_price: 200, highest52weeks_price: 210, volume_ratio: 1.2, total_market_val: 1000, pe_ttm_ratio: 40 },
+          ],
+        }),
+        kline_history: async () => ({
+          success: true,
+          count: nvdaRows.length,
+          rows: nvdaRows,
+        }),
+      })),
+    });
+
+    assert.equal(result.validationMode, 'moomoo-only');
+    assert.equal(result.ohlcComparison.benchmarkProvider, null);
+    assert.equal(result.ohlcComparison.comparisons.length, 0);
+    assert.equal(result.requestedCandidates[0].avgAbsCloseDiffPct, null);
+    assert.equal(result.rankedCandidates[0].symbol, 'US.NVDA');
+  });
+
+  it('probes moomoo fundamental proxies against TradingView and Yahoo references', async () => {
+    const fetch = async (url) => {
+      if (url.includes('scanner.tradingview.com')) {
+        return {
+          ok: true,
+          async json() {
+            return {
+              totalCount: 2,
+              data: [
+                { s: 'NASDAQ:NVDA', d: ['NVDA', 65.4735, 0.0726, 65.9386] },
+                { s: 'NASDAQ:AMD', d: ['AMD', 34.9694, 0.0601, 85.733] },
+              ],
+            };
+          },
+        };
+      }
+      throw new Error(`Unexpected URL: ${url}`);
+    };
+
+    const result = await getMoomooFundamentalProbe({
+      market: 'US',
+      plateCode: 'US.LIST20077',
+      symbols: ['US.NVDA', 'US.AMD'],
+      ...mockDeps(createExecRouter({
+        stock_basicinfo: async () => ({
+          success: true,
+          market: 'US',
+          count: 2,
+          rows: [
+            { code: 'US.NVDA', exchange_type: 'US_NASDAQ' },
+            { code: 'US.AMD', exchange_type: 'US_NASDAQ' },
+          ],
+        }),
+        stock_filter: async () => ({
+          success: true,
+          market: 'US',
+          last_page: true,
+          all_count: 2,
+          count: 2,
+          rows: [
+            {
+              stock_code: 'US.NVDA',
+              stock_name: 'NVIDIA',
+              'sum_of_business_growth|annual': 65.473,
+              'debt_asset_rate|annual': 23.94,
+              pcf_ttm: 6593.86,
+            },
+            {
+              stock_code: 'US.AMD',
+              stock_name: 'Advanced Micro Devices',
+              'sum_of_business_growth|annual': 34.337,
+              'debt_asset_rate|annual': 18.104,
+              pcf_ttm: 8573.3,
+            },
+          ],
+        }),
+      }), {
+        fetch,
+        getSymbolFundamentals: async (symbol) => ({
+          success: true,
+          symbol,
+          revenueGrowth: symbol === 'NVDA' ? 0.654735 : 0.349694,
+          debtToEquity: symbol === 'NVDA' ? 0.072552 : 0.060051,
+        }),
+      }),
+    });
+
+    assert.equal(result.count, 2);
+    assert.equal(result.rows[0].symbol, 'US.NVDA');
+    assert.equal(result.rows[0].moomoo.sumOfBusinessGrowthPct, 65.473);
+    assert.equal(result.rows[0].reference.tradingView.pFcf, 65.9386);
+    assert.equal(result.rows[0].comparison.revenueGrowth.diffVsTradingViewPctPoints, 0.0005);
+    assert.equal(result.rows[0].comparison.pFcfProxy.moomooApprox, 65.9386);
+    assert.match(result.rows[0].comparison.debtToEquityProxy.note, /Formula mismatch/);
+  });
+
+  it('preserves dotted symbol suffixes when building external reference tickers', async () => {
+    const fetch = async (url) => {
+      if (url.includes('scanner.tradingview.com')) {
+        return {
+          ok: true,
+          async json() {
+            return {
+              totalCount: 1,
+              data: [
+                { s: 'NYSE:BRK.B', d: ['BRK.B', 5.5, 0.2, 15.1] },
+              ],
+            };
+          },
+        };
+      }
+      throw new Error(`Unexpected URL: ${url}`);
+    };
+
+    const result = await getMoomooFundamentalProbe({
+      market: 'US',
+      plateCode: 'US.LIST1',
+      symbols: ['US.BRK.B'],
+      ...mockDeps(createExecRouter({
+        stock_basicinfo: async () => ({
+          success: true,
+          market: 'US',
+          count: 1,
+          rows: [{ code: 'US.BRK.B', exchange_type: 'US_NYSE' }],
+        }),
+        stock_filter: async () => ({
+          success: true,
+          market: 'US',
+          last_page: true,
+          all_count: 1,
+          count: 1,
+          rows: [
+            {
+              stock_code: 'US.BRK.B',
+              stock_name: 'Berkshire Hathaway',
+              'sum_of_business_growth|annual': 5.4,
+              'debt_asset_rate|annual': 20.1,
+              pcf_ttm: 1510,
+            },
+          ],
+        }),
+      }), {
+        fetch,
+        getSymbolFundamentals: async () => ({
+          success: true,
+          revenueGrowth: 0.054,
+          debtToEquity: 0.2,
+        }),
+      }),
+    });
+
+    assert.equal(result.rows[0].symbol, 'US.BRK.B');
+    assert.equal(result.rows[0].reference.tradingView.symbol, 'US.BRK.B');
+    assert.equal(result.rows[0].reference.tradingView.pFcf, 15.1);
   });
 });
 
@@ -492,6 +689,7 @@ describe('registerMoomooTools', () => {
         'moomoo_plate_breadth',
         'moomoo_ohlc_compare',
         'moomoo_screening_validate',
+        'moomoo_fundamental_probe',
       ],
     );
   });

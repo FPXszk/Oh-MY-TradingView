@@ -4,6 +4,7 @@ import {
   getMoomooHealthCheck,
   getMoomooSnapshot,
   getMoomooKlineHistory,
+  getMoomooFundamentalProbe,
   getMoomooStockFilterFields,
   getMoomooStockFilter,
   getMoomooPlateList,
@@ -37,6 +38,7 @@ const stockFilterSchema = {
   minMarketCap: z.number().optional().describe('Minimum market cap'),
   peMin: z.number().optional().describe('Minimum PE TTM'),
   peMax: z.number().optional().describe('Maximum PE TTM'),
+  plateCode: z.string().optional().describe('Optional plate code to limit get_stock_filter scope'),
   filters: z.array(filterSchema).max(24).optional().describe('Additional get_stock_filter DSL entries'),
   limit: z.number().int().min(1).max(200).optional().default(20).describe('Max results to return'),
   begin: z.number().int().min(0).optional().default(0).describe('Pagination offset'),
@@ -117,7 +119,7 @@ export function registerMoomooTools(server) {
     'moomoo_stock_filter',
     'Run moomoo get_stock_filter with basic constraints plus optional filter DSL entries. Read-only. No CDP connection needed.',
     stockFilterSchema,
-    async ({ market, minPrice, minMarketCap, peMin, peMax, filters, limit, begin }) => {
+    async ({ market, minPrice, minMarketCap, peMin, peMax, plateCode, filters, limit, begin }) => {
       try {
         return jsonResult(await getMoomooStockFilter({
           market,
@@ -125,6 +127,7 @@ export function registerMoomooTools(server) {
           minMarketCap,
           peMin,
           peMax,
+          plateCode,
           filters,
           limit,
           begin,
@@ -204,8 +207,9 @@ export function registerMoomooTools(server) {
       end: z.string().optional().describe('Optional inclusive end date'),
       maxBars: z.number().int().min(20).max(400).optional().default(260).describe('Max daily bars to compare'),
       autype: z.string().optional().default('qfq').describe('Adjustment type such as qfq'),
+      benchmarkProvider: z.string().optional().default('yahoo_finance').describe('External comparison provider, currently yahoo_finance'),
     },
-    async ({ symbols, start, end, maxBars, autype }) => {
+    async ({ symbols, start, end, maxBars, autype, benchmarkProvider }) => {
       try {
         return jsonResult(await getMoomooOhlcComparison({
           symbols,
@@ -213,6 +217,7 @@ export function registerMoomooTools(server) {
           end,
           maxBars,
           autype,
+          benchmarkProvider,
         }));
       } catch (err) {
         return jsonResult({ success: false, error: err.message }, true);
@@ -225,13 +230,14 @@ export function registerMoomooTools(server) {
     'Fetch moomoo candidates with get_stock_filter, optionally intersect them with a plate, then proxy-rescore and compare OHLC for validation. Read-only. No CDP connection needed.',
     {
       ...stockFilterSchema,
-      plateCode: z.string().optional().describe('Optional plate code to intersect with stock filter results'),
       candidateSymbols: z.array(z.string()).max(20).optional().describe('TradingView candidate symbols to re-check'),
       validateLimit: z.number().int().min(1).max(20).optional().default(10).describe('Max symbols to validate end-to-end'),
       historyBars: z.number().int().min(20).max(400).optional().default(260).describe('Max daily bars for OHLC comparison'),
       historyStart: z.string().optional().describe('Optional inclusive history start date'),
       historyEnd: z.string().optional().describe('Optional inclusive history end date'),
       nearHighThresholdPct: z.number().min(0).optional().default(90).describe('Threshold used when plate breadth is computed'),
+      mode: z.string().optional().default('benchmark').describe('benchmark or moomoo-only'),
+      benchmarkProvider: z.string().optional().default('yahoo_finance').describe('External comparison provider used in benchmark mode'),
     },
     async ({
       market,
@@ -249,6 +255,8 @@ export function registerMoomooTools(server) {
       historyStart,
       historyEnd,
       nearHighThresholdPct,
+      mode,
+      benchmarkProvider,
     }) => {
       try {
         return jsonResult(await runMoomooScreeningValidation({
@@ -267,6 +275,31 @@ export function registerMoomooTools(server) {
           historyStart,
           historyEnd,
           nearHighThresholdPct,
+          mode,
+          benchmarkProvider,
+        }));
+      } catch (err) {
+        return jsonResult({ success: false, error: err.message }, true);
+      }
+    },
+  );
+
+  server.tool(
+    'moomoo_fundamental_probe',
+    'Probe moomoo proxy fundamentals against TradingView scanner and Yahoo references for specific symbols. Read-only. No CDP connection needed.',
+    {
+      market: z.string().describe('Market such as US'),
+      symbols: z.array(z.string()).min(1).max(20).describe('Symbols like US.NVDA'),
+      plateCode: z.string().describe('Plate code used to make get_stock_filter probing deterministic'),
+      limit: z.number().int().min(1).max(200).optional().default(200).describe('Max get_stock_filter rows to inspect'),
+    },
+    async ({ market, symbols, plateCode, limit }) => {
+      try {
+        return jsonResult(await getMoomooFundamentalProbe({
+          market,
+          symbols,
+          plateCode,
+          limit,
         }));
       } catch (err) {
         return jsonResult({ success: false, error: err.message }, true);
