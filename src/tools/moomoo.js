@@ -4,10 +4,43 @@ import {
   getMoomooHealthCheck,
   getMoomooSnapshot,
   getMoomooKlineHistory,
+  getMoomooStockFilterFields,
   getMoomooStockFilter,
   getMoomooPlateList,
   getMoomooPlateStocks,
+  getMoomooPlateBreadth,
+  getMoomooOhlcComparison,
+  runMoomooScreeningValidation,
 } from '../core/moomoo.js';
+
+const filterSchema = z.object({
+  type: z.enum(['simple', 'financial', 'indicator', 'pattern']).describe('Filter type'),
+  field: z.string().optional().describe('StockField name for simple / financial / pattern filters'),
+  min: z.number().optional().describe('Inclusive lower bound for simple / financial filters'),
+  max: z.number().optional().describe('Inclusive upper bound for simple / financial filters'),
+  sort: z.string().optional().describe('Sort direction such as ASCEND or DESCEND'),
+  noFilter: z.boolean().optional().describe('Request field without applying threshold filtering when supported'),
+  quarter: z.string().optional().describe('Financial quarter such as ANNUAL or QUARTERLY'),
+  field1: z.string().optional().describe('First StockField name for indicator filters'),
+  field2: z.string().optional().describe('Second StockField name for indicator filters'),
+  relativePosition: z.string().optional().describe('Relative position such as CROSS_UP, ABOVE, BELOW'),
+  ktype: z.string().optional().describe('K-line type such as K_DAY or K_WEEK'),
+  value: z.number().optional().describe('Optional constant value for indicator filters'),
+  field1Params: z.array(z.number()).max(8).optional().describe('Optional parameter list for field1'),
+  field2Params: z.array(z.number()).max(8).optional().describe('Optional parameter list for field2'),
+  consecutivePeriod: z.number().int().min(1).max(999).optional().describe('Consecutive period count'),
+});
+
+const stockFilterSchema = {
+  market: z.string().describe('Market such as US, HK, or JP'),
+  minPrice: z.number().optional().describe('Minimum last price'),
+  minMarketCap: z.number().optional().describe('Minimum market cap'),
+  peMin: z.number().optional().describe('Minimum PE TTM'),
+  peMax: z.number().optional().describe('Maximum PE TTM'),
+  filters: z.array(filterSchema).max(24).optional().describe('Additional get_stock_filter DSL entries'),
+  limit: z.number().int().min(1).max(200).optional().default(20).describe('Max results to return'),
+  begin: z.number().int().min(0).optional().default(0).describe('Pagination offset'),
+};
 
 export function registerMoomooTools(server) {
   server.tool(
@@ -68,18 +101,23 @@ export function registerMoomooTools(server) {
   );
 
   server.tool(
-    'moomoo_stock_filter',
-    'Run a simple moomoo stock filter using market, price, market-cap, and PE constraints. Read-only. No CDP connection needed.',
-    {
-      market: z.string().describe('Market such as US, HK, or JP'),
-      minPrice: z.number().optional().describe('Minimum last price'),
-      minMarketCap: z.number().optional().describe('Minimum market cap'),
-      peMin: z.number().optional().describe('Minimum PE TTM'),
-      peMax: z.number().optional().describe('Maximum PE TTM'),
-      limit: z.number().int().min(1).max(200).optional().default(20).describe('Max results to return'),
-      begin: z.number().int().min(0).optional().default(0).describe('Pagination offset'),
+    'moomoo_stock_filter_fields',
+    'List get_stock_filter field inventory and supporting enums available from the moomoo SDK. Read-only. No CDP connection needed.',
+    {},
+    async () => {
+      try {
+        return jsonResult(await getMoomooStockFilterFields());
+      } catch (err) {
+        return jsonResult({ success: false, error: err.message }, true);
+      }
     },
-    async ({ market, minPrice, minMarketCap, peMin, peMax, limit, begin }) => {
+  );
+
+  server.tool(
+    'moomoo_stock_filter',
+    'Run moomoo get_stock_filter with basic constraints plus optional filter DSL entries. Read-only. No CDP connection needed.',
+    stockFilterSchema,
+    async ({ market, minPrice, minMarketCap, peMin, peMax, filters, limit, begin }) => {
       try {
         return jsonResult(await getMoomooStockFilter({
           market,
@@ -87,6 +125,7 @@ export function registerMoomooTools(server) {
           minMarketCap,
           peMin,
           peMax,
+          filters,
           limit,
           begin,
         }));
@@ -123,6 +162,112 @@ export function registerMoomooTools(server) {
     async ({ plateCode, sortField, ascend }) => {
       try {
         return jsonResult(await getMoomooPlateStocks({ plateCode, sortField, ascend }));
+      } catch (err) {
+        return jsonResult({ success: false, error: err.message }, true);
+      }
+    },
+  );
+
+  server.tool(
+    'moomoo_plate_breadth',
+    'Compute theme breadth from moomoo plate constituents using repo-side aggregation. Read-only. No CDP connection needed.',
+    {
+      plateCode: z.string().describe('Plate code returned by moomoo_plate_list'),
+      symbolLimit: z.number().int().min(1).max(50).optional().default(25).describe('Max plate constituents to analyze'),
+      nearHighThresholdPct: z.number().min(0).optional().default(90).describe('Threshold for near-52-week-high breadth'),
+      volumeRatioSupportMin: z.number().min(0).optional().default(1).describe('Volume ratio threshold for support breadth'),
+      sortField: z.string().optional().default('CODE').describe('Sort field accepted by get_plate_stock'),
+      ascend: z.boolean().optional().default(true).describe('Sort ascending when true'),
+    },
+    async ({ plateCode, symbolLimit, nearHighThresholdPct, volumeRatioSupportMin, sortField, ascend }) => {
+      try {
+        return jsonResult(await getMoomooPlateBreadth({
+          plateCode,
+          symbolLimit,
+          nearHighThresholdPct,
+          volumeRatioSupportMin,
+          sortField,
+          ascend,
+        }));
+      } catch (err) {
+        return jsonResult({ success: false, error: err.message }, true);
+      }
+    },
+  );
+
+  server.tool(
+    'moomoo_ohlc_compare',
+    'Compare moomoo daily OHLC against Yahoo daily bars to gauge data drift for backtest targets. Read-only. No CDP connection needed.',
+    {
+      symbols: z.array(z.string()).min(1).max(20).describe('Symbols like US.NVDA'),
+      start: z.string().optional().describe('Optional inclusive start date'),
+      end: z.string().optional().describe('Optional inclusive end date'),
+      maxBars: z.number().int().min(20).max(400).optional().default(260).describe('Max daily bars to compare'),
+      autype: z.string().optional().default('qfq').describe('Adjustment type such as qfq'),
+    },
+    async ({ symbols, start, end, maxBars, autype }) => {
+      try {
+        return jsonResult(await getMoomooOhlcComparison({
+          symbols,
+          start,
+          end,
+          maxBars,
+          autype,
+        }));
+      } catch (err) {
+        return jsonResult({ success: false, error: err.message }, true);
+      }
+    },
+  );
+
+  server.tool(
+    'moomoo_screening_validate',
+    'Fetch moomoo candidates with get_stock_filter, optionally intersect them with a plate, then proxy-rescore and compare OHLC for validation. Read-only. No CDP connection needed.',
+    {
+      ...stockFilterSchema,
+      plateCode: z.string().optional().describe('Optional plate code to intersect with stock filter results'),
+      candidateSymbols: z.array(z.string()).max(20).optional().describe('TradingView candidate symbols to re-check'),
+      validateLimit: z.number().int().min(1).max(20).optional().default(10).describe('Max symbols to validate end-to-end'),
+      historyBars: z.number().int().min(20).max(400).optional().default(260).describe('Max daily bars for OHLC comparison'),
+      historyStart: z.string().optional().describe('Optional inclusive history start date'),
+      historyEnd: z.string().optional().describe('Optional inclusive history end date'),
+      nearHighThresholdPct: z.number().min(0).optional().default(90).describe('Threshold used when plate breadth is computed'),
+    },
+    async ({
+      market,
+      minPrice,
+      minMarketCap,
+      peMin,
+      peMax,
+      filters,
+      limit,
+      begin,
+      plateCode,
+      candidateSymbols,
+      validateLimit,
+      historyBars,
+      historyStart,
+      historyEnd,
+      nearHighThresholdPct,
+    }) => {
+      try {
+        return jsonResult(await runMoomooScreeningValidation({
+          market,
+          minPrice,
+          minMarketCap,
+          peMin,
+          peMax,
+          filters,
+          limit,
+          begin,
+          plateCode,
+          candidateSymbols,
+          validateLimit,
+          historyBars,
+          historyStart,
+          historyEnd,
+          nearHighThresholdPct,
+        }));
       } catch (err) {
         return jsonResult({ success: false, error: err.message }, true);
       }

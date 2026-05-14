@@ -123,7 +123,126 @@ def get_enum(enum_group: Any, name: str, label: str):
         fail(f"unsupported {label}: {name}", str(exc))
 
 
-def build_stock_filters(payload: dict[str, Any]) -> list[Any]:
+def enum_values(enum_group: Any) -> list[str]:
+    values: list[str] = []
+    for name in dir(enum_group):
+        if name.startswith("_"):
+            continue
+        value = getattr(enum_group, name)
+        if isinstance(value, str):
+            values.append(name)
+    return sorted(set(values))
+
+
+def classify_stock_field(number: int) -> str:
+    if number >= ft.StockField.indicator_enum_begin:
+        return "indicator"
+    if number >= ft.StockField.pattern_enum_begin:
+        return "pattern"
+    if number >= ft.StockField.financial_enum_begin:
+        return "financial"
+    return "simple"
+
+
+def build_stock_field_inventory() -> list[dict[str, Any]]:
+    fields: list[dict[str, Any]] = []
+    for name in dir(ft.StockField):
+        if name.startswith("_") or name == "NONE":
+            continue
+        value = getattr(ft.StockField, name)
+        ok, number = ft.StockField.to_number(value)
+        if not ok:
+            continue
+        fields.append(
+            {
+                "name": name,
+                "value": value,
+                "number": int(number),
+                "category": classify_stock_field(int(number)),
+            }
+        )
+    fields.sort(key=lambda item: (item["category"], item["number"], item["name"]))
+    return fields
+
+
+def apply_range_filter_fields(filter_obj: Any, spec: dict[str, Any]) -> None:
+    has_filtering = (
+        spec.get("min") is not None
+        or spec.get("max") is not None
+        or spec.get("sort") is not None
+    )
+    if spec.get("no_filter") is True and has_filtering:
+        fail("no_filter=true cannot be combined with min, max, or sort")
+    if spec.get("min") is not None:
+        filter_obj.filter_min = float(spec["min"])
+    if spec.get("max") is not None:
+        filter_obj.filter_max = float(spec["max"])
+    if spec.get("sort") is not None:
+        filter_obj.sort = get_enum(ft.SortDir, str(spec["sort"]), "sort")
+    if spec.get("no_filter") is not None:
+        filter_obj.is_no_filter = bool(spec["no_filter"])
+    elif has_filtering:
+        filter_obj.is_no_filter = False
+
+
+def build_simple_filter(spec: dict[str, Any]) -> Any:
+    simple_filter = ft.SimpleFilter()
+    simple_filter.stock_field = get_enum(ft.StockField, spec.get("field"), "field")
+    apply_range_filter_fields(simple_filter, spec)
+    return simple_filter
+
+
+def build_financial_filter(spec: dict[str, Any]) -> Any:
+    financial_filter = ft.FinancialFilter()
+    financial_filter.stock_field = get_enum(ft.StockField, spec.get("field"), "field")
+    financial_filter.quarter = get_enum(
+        ft.FinancialQuarter,
+        spec.get("quarter", "ANNUAL"),
+        "quarter",
+    )
+    apply_range_filter_fields(financial_filter, spec)
+    return financial_filter
+
+
+def build_indicator_filter(spec: dict[str, Any]) -> Any:
+    indicator_filter = ft.CustomIndicatorFilter()
+    indicator_filter.stock_field1 = get_enum(ft.StockField, spec.get("field1"), "field1")
+    indicator_filter.stock_field2 = get_enum(ft.StockField, spec.get("field2"), "field2")
+    indicator_filter.relative_position = get_enum(
+        ft.RelativePosition,
+        spec.get("relative_position"),
+        "relative_position",
+    )
+    indicator_filter.ktype = get_enum(ft.KLType, spec.get("ktype", "K_DAY"), "ktype")
+    if spec.get("value") is not None:
+        indicator_filter.value = float(spec["value"])
+    if spec.get("field1_params") is not None:
+        indicator_filter.stock_field1_para = [int(item) for item in spec["field1_params"]]
+    if spec.get("field2_params") is not None:
+        indicator_filter.stock_field2_para = [int(item) for item in spec["field2_params"]]
+    if spec.get("consecutive_period") is not None:
+        indicator_filter.consecutive_period = int(spec["consecutive_period"])
+    if spec.get("no_filter") is not None:
+        indicator_filter.is_no_filter = bool(spec["no_filter"])
+    else:
+        indicator_filter.is_no_filter = False
+    return indicator_filter
+
+
+def build_pattern_filter(spec: dict[str, Any]) -> Any:
+    pattern_filter = ft.PatternFilter()
+    pattern_filter.stock_field = get_enum(ft.StockField, spec.get("field"), "field")
+    pattern_filter.ktype = get_enum(ft.KLType, spec.get("ktype", "K_DAY"), "ktype")
+    if spec.get("consecutive_period") is not None:
+        pattern_filter.consecutive_period = int(spec["consecutive_period"])
+    if spec.get("no_filter") is not None:
+        pattern_filter.is_no_filter = bool(spec["no_filter"])
+    else:
+        pattern_filter.is_no_filter = False
+    return pattern_filter
+
+
+def build_legacy_stock_filters(payload: dict[str, Any]) -> list[Any]:
     filters: list[Any] = []
 
     if payload.get("min_price") is not None:
@@ -131,12 +250,14 @@ def build_stock_filters(payload: dict[str, Any]) -> list[Any]:
         price_filter.stock_field = ft.StockField.CUR_PRICE
         price_filter.filter_min = float(payload["min_price"])
         price_filter.sort = ft.SortDir.DESCEND
+        price_filter.is_no_filter = False
         filters.append(price_filter)
 
     if payload.get("min_market_cap") is not None:
         market_cap_filter = ft.SimpleFilter()
         market_cap_filter.stock_field = ft.StockField.MARKET_VAL
         market_cap_filter.filter_min = float(payload["min_market_cap"])
+        market_cap_filter.is_no_filter = False
         filters.append(market_cap_filter)
 
     if payload.get("pe_min") is not None or payload.get("pe_max") is not None:
@@ -147,9 +268,54 @@ def build_stock_filters(payload: dict[str, Any]) -> list[Any]:
         if payload.get("pe_max") is not None:
             pe_filter.filter_max = float(payload["pe_max"])
         pe_filter.quarter = ft.FinancialQuarter.ANNUAL
+        pe_filter.is_no_filter = False
         filters.append(pe_filter)
 
     return filters
+
+
+def build_custom_stock_filters(payload: dict[str, Any]) -> list[Any]:
+    raw_filters = payload.get("filters")
+    if raw_filters is None:
+        return []
+    if not isinstance(raw_filters, list):
+        fail("filters must be a list")
+
+    filters: list[Any] = []
+    for index, raw_filter in enumerate(raw_filters):
+        if not isinstance(raw_filter, dict):
+            fail(f"filter #{index} must be an object")
+        filter_type = str(raw_filter.get("type", "")).lower()
+        if filter_type == "simple":
+            filters.append(build_simple_filter(raw_filter))
+        elif filter_type == "financial":
+            filters.append(build_financial_filter(raw_filter))
+        elif filter_type == "indicator":
+            filters.append(build_indicator_filter(raw_filter))
+        elif filter_type == "pattern":
+            filters.append(build_pattern_filter(raw_filter))
+        else:
+            fail(f"unsupported filter type: {raw_filter.get('type')}")
+    return filters
+
+
+def build_stock_filters(payload: dict[str, Any]) -> list[Any]:
+    return build_legacy_stock_filters(payload) + build_custom_stock_filters(payload)
+
+
+def cmd_stock_filter_fields(payload: dict[str, Any]) -> dict[str, Any]:
+    _ = payload
+    fields = build_stock_field_inventory()
+    return {
+        "success": True,
+        "count": len(fields),
+        "fields": fields,
+        "filter_types": ["simple", "financial", "indicator", "pattern"],
+        "sort_values": enum_values(ft.SortDir),
+        "financial_quarters": enum_values(ft.FinancialQuarter),
+        "kline_types": enum_values(ft.KLType),
+        "relative_positions": enum_values(ft.RelativePosition),
+    }
 
 
 def cmd_health_check(payload: dict[str, Any]) -> dict[str, Any]:
@@ -297,6 +463,7 @@ COMMANDS = {
     "health_check": cmd_health_check,
     "snapshot": cmd_snapshot,
     "kline_history": cmd_kline_history,
+    "stock_filter_fields": cmd_stock_filter_fields,
     "stock_filter": cmd_stock_filter,
     "plate_list": cmd_plate_list,
     "plate_stocks": cmd_plate_stocks,
