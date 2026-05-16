@@ -286,7 +286,7 @@ export function registerMoomooTools(server) {
 
   server.tool(
     'moomoo_fundamental_probe',
-    'Probe moomoo proxy fundamentals against TradingView scanner and Yahoo references for specific symbols. Read-only. No CDP connection needed.',
+    'Probe moomoo proxy fundamentals against TradingView scanner references for specific symbols. Read-only. No CDP connection needed.',
     {
       market: z.string().describe('Market such as US'),
       symbols: z.array(z.string()).min(1).max(20).describe('Symbols like US.NVDA'),

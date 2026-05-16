@@ -9,6 +9,8 @@ Yahoo Finance `quoteSummary` が 2026-05-16 時点でも `401 Unauthorized / Inv
 - `src/core/moomoo.js`
   - Moomoo snapshot と `get_stock_filter()` を使うファンダメンタル取得 helper を追加する
   - `getMoomooFundamentalProbe()` から Yahoo fundamentals 比較を外し、Moomoo / TradingView reference の比較に絞る
+- `python/moomoo_adapter.py`
+  - moomoo SDK import 時のログ出力先が読み取り専用の場合に writable な `HOME` へ逃がす
 - `src/core/market-intel.js`
   - `getSymbolFundamentals()` / batch financials を Moomoo-backed に変更する
   - `source` を `moomoo` に更新する
@@ -34,12 +36,12 @@ Yahoo Finance `quoteSummary` が 2026-05-16 時点でも `401 Unauthorized / Inv
 
 ## Implementation Steps
 
-- [ ] Moomoo fundamentals helper の最小 API と symbol 正規化を実装する
-- [ ] market intelligence の fundamentals 経路を Moomoo helper に差し替える
-- [ ] daily screener の revenue growth 補完を Moomoo helper に差し替える
-- [ ] probe / report / test の Yahoo fundamentals 表記と期待値を更新する
-- [ ] 単体テストを実行して壊れた期待値を修正する
-- [ ] 実機 OpenD で daily screening workflow を実行し、Moomoo 補完が成功することを確認する
+- [x] Moomoo fundamentals helper の最小 API と symbol 正規化を実装する
+- [x] market intelligence の fundamentals 経路を Moomoo helper に差し替える
+- [x] daily screener の revenue growth 補完を Moomoo helper に差し替える
+- [x] probe / report / test の Yahoo fundamentals 表記と期待値を更新する
+- [x] 単体テストを実行して壊れた期待値を修正する
+- [x] 実機 OpenD で daily screening workflow を実行し、Moomoo 補完が成功することを確認する
 
 ## Validation
 

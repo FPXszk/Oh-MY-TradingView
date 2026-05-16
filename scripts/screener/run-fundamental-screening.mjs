@@ -223,7 +223,7 @@ function buildGuideRows(result) {
     rows.push(`| ユニバース | 銘柄ユニバース | ${result.criteria.symbol_allowlist_key} |`);
   }
   if (result.enrichedWithYahoo) {
-    rows.push('| 補助ポリシー | Yahoo Finance 補完 | 売上成長率 YoY はプロファイル別閾値を適用し、null は通過 |');
+    rows.push('| 補助ポリシー | Moomoo 補完 | 売上成長率 YoY はプロファイル別閾値を適用し、null は通過 |');
   }
   if (result.criteria.excluded_phase2_sectors?.length) {
     rows.push(`| ユニバース | Phase2 除外セクター | ${result.criteria.excluded_phase2_sectors.join(', ')} |`);

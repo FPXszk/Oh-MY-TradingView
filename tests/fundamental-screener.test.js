@@ -598,7 +598,7 @@ describe('runFundamentalScreener', () => {
     assert.ok(stockBodies.every((body) => getFilterValue(body, 'sector') !== 'Finance'));
   });
 
-  it('applies profile-specific Yahoo revenue growth thresholds', async () => {
+  it('applies profile-specific Moomoo revenue growth thresholds', async () => {
     const result = await runFundamentalScreener({
       limit: 10,
       enrichWithYahoo: true,
@@ -693,7 +693,7 @@ describe('runFundamentalScreener', () => {
     });
 
     assert.deepEqual(result.results.map((row) => row.symbol), ['ADEA']);
-    assert.equal(result.criteria.revenue_growth_policy, 'profile-specific minimum, null passes');
+    assert.equal(result.criteria.revenue_growth_policy, 'Moomoo profile-specific minimum, null passes');
     assert.equal(result.criteria.rule_of_40_policy.hard_filter, false);
     assert.deepEqual(result.rankingFormula, ['priceMomentum', 'sectorStrength', 'quality', 'growth', 'riskValue', 'ruleOf40']);
     assert.deepEqual(result.rankingBlocks.map((block) => block.key), result.rankingFormula);

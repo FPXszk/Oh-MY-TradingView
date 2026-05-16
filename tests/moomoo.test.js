@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import {
   getMoomooHealthCheck,
   getMoomooSnapshot,
+  getMoomooFundamentalsBatch,
   getMoomooKlineHistory,
   getMoomooFundamentalProbe,
   getMoomooStockFilterFields,
@@ -206,6 +207,45 @@ describe('moomoo success paths', () => {
     assert.deepEqual(payload.symbols, ['US.AAPL', 'US.TSLA']);
     assert.equal(payload.host, '127.0.0.1');
     assert.equal(payload.port, 11111);
+  });
+
+  it('fetches Moomoo fundamentals with paged stock-filter rows', async () => {
+    const calls = [];
+    const result = await getMoomooFundamentalsBatch({
+      symbols: ['NVDA'],
+      ...mockDeps(createExecRouter({
+        snapshot: async (_payload) => ({
+          success: true,
+          count: 1,
+          rows: [{ code: 'US.NVDA', total_market_val: 3000, pe_ttm_ratio: 45 }],
+        }),
+        stock_filter: async (payload) => {
+          calls.push(payload);
+          return {
+            success: true,
+            market: 'US',
+            last_page: true,
+            all_count: 1,
+            count: 1,
+            rows: [{
+              stock_code: 'US.NVDA',
+              'sum_of_business_growth|annual': 65.473,
+              'eps_growth_rate|annual': 20,
+              'return_on_equity_rate|annual': 30,
+              'net_profit_rate|annual': 50,
+              'debt_asset_rate|annual': 23.94,
+              pcf_ttm: 5312.962,
+            }],
+          };
+        },
+      })),
+    });
+
+    assert.equal(result.success, true);
+    assert.equal(result.fundamentals[0].symbol, 'NVDA');
+    assert.equal(result.fundamentals[0].revenueGrowth, 0.65473);
+    assert.equal(result.fundamentals[0].source, 'moomoo');
+    assert.equal(calls[0].market, 'US');
   });
 
   it('passes kline options through the adapter', async () => {
@@ -486,7 +526,7 @@ describe('moomoo success paths', () => {
     assert.equal(result.rankedCandidates[0].symbol, 'US.NVDA');
   });
 
-  it('probes moomoo fundamental proxies against TradingView and Yahoo references', async () => {
+  it('probes moomoo fundamental proxies against TradingView references', async () => {
     const fetch = async (url) => {
       if (url.includes('scanner.tradingview.com')) {
         return {

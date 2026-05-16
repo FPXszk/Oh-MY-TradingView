@@ -2,7 +2,6 @@ import { access, constants } from 'node:fs/promises';
 import { execFile } from 'node:child_process';
 import { join } from 'node:path';
 import { promisify } from 'node:util';
-import { getSymbolFundamentals } from './market-intel.js';
 
 const execFileAsync = promisify(execFile);
 
@@ -10,11 +9,13 @@ const EXEC_MAX_BUFFER = 10 * 1024 * 1024;
 const MAX_KLINE_COUNT = 1000;
 const MAX_FILTER_LIMIT = 200;
 const MAX_SNAPSHOT_SYMBOLS = 50;
+const MAX_FUNDAMENTAL_SYMBOLS = 1000;
 const MAX_FILTERS = 24;
 const MAX_FILTER_PARAM_VALUES = 8;
 const MAX_PLATE_BREADTH_SYMBOLS = 50;
 const MAX_VALIDATION_SYMBOLS = 20;
 const MAX_HISTORY_BARS = 400;
+const MAX_FUNDAMENTAL_PAGES = 5;
 const YAHOO_CHART_BASE = 'https://query1.finance.yahoo.com/v8/finance/chart';
 const TRADINGVIEW_SCANNER_BASE = 'https://scanner.tradingview.com';
 
@@ -34,7 +35,7 @@ function resolveDeps(_deps = {}) {
     env: _deps.env || process.env,
     execFile: _deps.execFile || execFileAsync,
     fetch: _deps.fetch || globalThis.fetch,
-    getSymbolFundamentals: _deps.getSymbolFundamentals || getSymbolFundamentals,
+    getSymbolFundamentals: _deps.getSymbolFundamentals,
   };
 }
 
@@ -167,6 +168,7 @@ async function runAdapter(command, payload, { label, _deps } = {}) {
   const pythonBin = await resolvePythonBin(deps);
   const adapterPath = resolveAdapterPath(deps);
   const args = [adapterPath, command, JSON.stringify(payload)];
+  const timeoutMs = Number(deps.env.MOOMOO_ADAPTER_TIMEOUT_MS || 30000);
 
   let stdout;
   try {
@@ -176,6 +178,7 @@ async function runAdapter(command, payload, { label, _deps } = {}) {
       {
         env: deps.env,
         maxBuffer: EXEC_MAX_BUFFER,
+        timeout: Number.isFinite(timeoutMs) && timeoutMs > 0 ? timeoutMs : 30000,
       },
     ));
   } catch (error) {
@@ -506,6 +509,17 @@ function dedupeSymbols(symbols) {
 
 function extractMoomooSymbol(row) {
   return normalizeOptionalString(row?.stock_code || row?.code || row?.symbol)?.toUpperCase() || null;
+}
+
+function normalizeMoomooSymbol(symbol, market = 'US') {
+  const normalized = requireString(symbol, 'symbol').toUpperCase();
+  if (normalized.includes('.')) return normalized;
+  const normalizedMarket = normalizeEnum(market, {
+    label: 'market',
+    allowed: SUPPORTED_MARKETS,
+    defaultValue: 'US',
+  });
+  return `${normalizedMarket}.${normalized}`;
 }
 
 function chunkArray(values, size) {
@@ -942,16 +956,131 @@ function extractMoomooField(row, key) {
   return toFiniteNumber(row?.[key]);
 }
 
-function normalizeYahooRevenueGrowthPct(value) {
+function normalizeMoomooPercentRatio(value) {
   const normalized = toFiniteNumber(value);
   if (normalized === null) return null;
-  return Number((normalized * 100).toFixed(4));
+  return Number((normalized / 100).toFixed(6));
 }
 
 function normalizeMoomooPcfApprox(value) {
   const normalized = toFiniteNumber(value);
   if (normalized === null) return null;
   return Number((normalized / 100).toFixed(4));
+}
+
+function buildMoomooFundamentalFilters() {
+  return [
+    {
+      type: 'simple',
+      field: 'MARKET_VAL',
+      min: 0,
+      sort: 'DESCEND',
+    },
+    {
+      type: 'financial',
+      field: 'SUM_OF_BUSINESS_GROWTH',
+      min: -100000,
+      max: 100000,
+      quarter: 'ANNUAL',
+    },
+    {
+      type: 'financial',
+      field: 'EPS_GROWTH_RATE',
+      min: -100000,
+      max: 100000,
+      quarter: 'ANNUAL',
+    },
+    {
+      type: 'financial',
+      field: 'RETURN_ON_EQUITY_RATE',
+      min: -100000,
+      max: 100000,
+      quarter: 'ANNUAL',
+    },
+    {
+      type: 'financial',
+      field: 'NET_PROFIT_RATE',
+      min: -100000,
+      max: 100000,
+      quarter: 'ANNUAL',
+    },
+    {
+      type: 'financial',
+      field: 'DEBT_ASSET_RATE',
+      min: -100000,
+      max: 100000,
+      quarter: 'ANNUAL',
+    },
+    {
+      type: 'simple',
+      field: 'PCF_TTM',
+      min: -100000,
+      max: 100000,
+    },
+  ];
+}
+
+function normalizeMoomooFundamentalsEntry(symbol, snapshotRow, filterRow) {
+  const snapshot = snapshotRow || {};
+  const filter = filterRow || {};
+  const resolvedSymbol = extractMoomooSymbol(snapshot) || extractMoomooSymbol(filter) || symbol;
+  const revenueGrowthPct = roundNullable(extractMoomooField(filter, 'sum_of_business_growth|annual'), 4);
+  const epsGrowthPct = roundNullable(extractMoomooField(filter, 'eps_growth_rate|annual'), 4);
+  const roePct = roundNullable(extractMoomooField(filter, 'return_on_equity_rate|annual'), 4);
+  const profitMarginPct = roundNullable(extractMoomooField(filter, 'net_profit_rate|annual'), 4);
+  const debtAssetRatePct = roundNullable(extractMoomooField(filter, 'debt_asset_rate|annual'), 4);
+  const pcfTtmRaw = roundNullable(extractMoomooField(filter, 'pcf_ttm'), 4);
+
+  return {
+    success: Boolean(snapshotRow || filterRow),
+    symbol: symbolLeaf(resolvedSymbol),
+    moomooSymbol: resolvedSymbol,
+    marketCap: roundNullable(snapshot.total_market_val, 2),
+    trailingPE: roundNullable(snapshot.pe_ttm_ratio ?? snapshot.pe_ratio, 4),
+    forwardPE: null,
+    dividendYield: normalizeMoomooPercentRatio(snapshot.dividend_ratio_ttm),
+    beta: null,
+    profitMargins: normalizeMoomooPercentRatio(profitMarginPct),
+    revenueGrowth: normalizeMoomooPercentRatio(revenueGrowthPct),
+    earningsGrowth: normalizeMoomooPercentRatio(epsGrowthPct),
+    returnOnEquity: normalizeMoomooPercentRatio(roePct),
+    debtToEquity: null,
+    debtAssetRate: normalizeMoomooPercentRatio(debtAssetRatePct),
+    pcfTtm: normalizeMoomooPcfApprox(pcfTtmRaw),
+    retrieved_at: new Date().toISOString(),
+    source: 'moomoo',
+  };
+}
+
+async function fetchMoomooFundamentalFilterRows(symbols, { market, maxPages, _deps } = {}) {
+  const wanted = new Set(symbols);
+  const found = new Map();
+  const pageLimit = MAX_FILTER_LIMIT;
+  const normalizedMaxPages = normalizeInteger(maxPages, {
+    label: 'maxPages',
+    min: 1,
+    max: MAX_FUNDAMENTAL_PAGES,
+    defaultValue: MAX_FUNDAMENTAL_PAGES,
+  });
+
+  for (let page = 0; page < normalizedMaxPages && found.size < wanted.size; page += 1) {
+    const response = await getMoomooStockFilter({
+      market,
+      begin: page * pageLimit,
+      limit: pageLimit,
+      filters: buildMoomooFundamentalFilters(),
+      _deps,
+    });
+    for (const row of response.rows || []) {
+      const rowSymbol = extractMoomooSymbol(row);
+      if (wanted.has(rowSymbol)) {
+        found.set(rowSymbol, row);
+      }
+    }
+    if (response.last_page) break;
+  }
+
+  return found;
 }
 
 function buildCandidateRow({
@@ -1016,6 +1145,72 @@ export async function getMoomooSnapshot({ symbols, _deps } = {}) {
   );
 }
 
+export async function getMoomooFundamentalsBatch({
+  symbols,
+  market,
+  maxPages,
+  _deps,
+} = {}) {
+  const rawSymbols = normalizeStringArray(symbols, {
+    label: 'symbols',
+    maxLength: MAX_FUNDAMENTAL_SYMBOLS,
+  });
+  const normalizedMarket = market === undefined && rawSymbols.some((symbol) => symbol.includes('.'))
+    ? inferMarketFromSymbols(rawSymbols)
+    : normalizeEnum(market, {
+      label: 'market',
+      allowed: SUPPORTED_MARKETS,
+      defaultValue: 'US',
+    });
+  const normalizedSymbols = dedupeSymbols(rawSymbols.map((symbol) => normalizeMoomooSymbol(symbol, normalizedMarket)));
+
+  const snapshotRows = [];
+  for (const chunk of chunkArray(normalizedSymbols, MAX_SNAPSHOT_SYMBOLS)) {
+    try {
+      const snapshot = await getMoomooSnapshot({ symbols: chunk, _deps });
+      snapshotRows.push(...(snapshot.rows || []));
+    } catch {
+      // Some screener universes include symbols Moomoo snapshot cannot resolve.
+      // Keep stock-filter fundamentals usable for the rest of the batch.
+    }
+  }
+  const snapshotMap = new Map(snapshotRows.map((row) => [extractMoomooSymbol(row), row]));
+  const filterMap = await fetchMoomooFundamentalFilterRows(normalizedSymbols, {
+    market: normalizedMarket,
+    maxPages,
+    _deps,
+  });
+  const fundamentals = normalizedSymbols.map((symbol) => (
+    normalizeMoomooFundamentalsEntry(symbol, snapshotMap.get(symbol), filterMap.get(symbol))
+  ));
+  const successCount = fundamentals.filter((entry) => entry.success).length;
+
+  return {
+    success: successCount > 0,
+    market: normalizedMarket,
+    count: fundamentals.length,
+    successCount,
+    failureCount: fundamentals.length - successCount,
+    fundamentals,
+    retrieved_at: new Date().toISOString(),
+    source: 'moomoo',
+  };
+}
+
+export async function getMoomooSymbolFundamentals(symbol, { market, maxPages, _deps } = {}) {
+  const response = await getMoomooFundamentalsBatch({
+    symbols: [symbol],
+    market,
+    maxPages,
+    _deps,
+  });
+  const entry = response.fundamentals[0];
+  if (!entry?.success) {
+    throw new Error(`No moomoo fundamentals data for symbol "${symbol}"`);
+  }
+  return entry;
+}
+
 export async function getMoomooKlineHistory({
   symbol,
   ktype,
@@ -1069,22 +1264,34 @@ export async function getMoomooStockFilter({
   filters,
   _deps,
 } = {}) {
-  return runAdapter(
-    'stock_filter',
-    buildStockFilterPayload({
-      market,
-      minPrice,
-      minMarketCap,
-      peMin,
-      peMax,
-      plateCode,
-      limit,
-      begin,
-      filters,
-      _deps,
-    }),
-    { label: 'moomoo stock_filter', _deps },
-  );
+  const payload = buildStockFilterPayload({
+    market,
+    minPrice,
+    minMarketCap,
+    peMin,
+    peMax,
+    plateCode,
+    limit,
+    begin,
+    filters,
+    _deps,
+  });
+  try {
+    return await runAdapter(
+      'stock_filter',
+      payload,
+      { label: 'moomoo stock_filter', _deps },
+    );
+  } catch (error) {
+    if (!/Invalid JSON response from moomoo adapter/.test(error.message)) {
+      throw error;
+    }
+    return runAdapter(
+      'stock_filter',
+      payload,
+      { label: 'moomoo stock_filter', _deps },
+    );
+  }
 }
 
 export async function getMoomooStockBasicInfo({ market, symbols, _deps } = {}) {
@@ -1374,37 +1581,9 @@ export async function getMoomooFundamentalProbe({
     market: normalizedMarket,
     _deps,
   });
-  const deps = resolveDeps(_deps);
-  const yahooResults = await Promise.allSettled(
-    normalizedSymbols.map((symbol) => deps.getSymbolFundamentals(symbolLeaf(symbol))),
-  );
-  const yahooMap = new Map(
-    yahooResults.map((result, index) => {
-      const symbol = normalizedSymbols[index];
-      if (result.status !== 'fulfilled') {
-        return [symbol, {
-          data: null,
-          error: result.reason?.message || 'Yahoo fundamentals unavailable',
-        }];
-      }
-      return [
-        symbol,
-        {
-          data: {
-            revenueGrowthPct: normalizeYahooRevenueGrowthPct(result.value?.revenueGrowth),
-            debtToEquity: roundNullable(result.value?.debtToEquity, 6),
-          },
-          error: null,
-        },
-      ];
-    }),
-  );
-
   const rows = normalizedSymbols.map((symbol) => {
     const moomooRow = moomooProbeMap.get(symbol) || {};
     const tradingView = tradingViewMap.get(symbol) || null;
-    const yahooEnvelope = yahooMap.get(symbol) || { data: null, error: null };
-    const yahoo = yahooEnvelope.data;
     const sumOfBusinessGrowthPct = roundNullable(
       extractMoomooField(moomooRow, 'sum_of_business_growth|annual'),
       4,
@@ -1427,21 +1606,16 @@ export async function getMoomooFundamentalProbe({
       },
       reference: {
         tradingView,
-        yahoo,
-        yahooError: yahooEnvelope.error,
       },
       comparison: {
         revenueGrowth: {
           moomooPct: sumOfBusinessGrowthPct,
           tradingViewPct: tradingView?.revenueGrowthPct ?? null,
-          yahooPct: yahoo?.revenueGrowthPct ?? null,
           diffVsTradingViewPctPoints: computeAbsPointDiff(sumOfBusinessGrowthPct, tradingView?.revenueGrowthPct, 4),
-          diffVsYahooPctPoints: computeAbsPointDiff(sumOfBusinessGrowthPct, yahoo?.revenueGrowthPct, 4),
         },
         debtToEquityProxy: {
           moomooDebtAssetRatePct: debtAssetRatePct,
           tradingViewDebtToEquity: tradingView?.debtToEquity ?? null,
-          yahooDebtToEquity: yahoo?.debtToEquity ?? null,
           note: 'Formula mismatch: DEBT_ASSET_RATE is debt/assets, not debt/equity.',
         },
         pFcfProxy: {
@@ -1461,7 +1635,7 @@ export async function getMoomooFundamentalProbe({
     count: rows.length,
     rows,
     retrieved_at: new Date().toISOString(),
-    source: 'moomoo+tradingview_scanner+yahoo_finance',
+    source: 'moomoo+tradingview_scanner',
   };
 }
 

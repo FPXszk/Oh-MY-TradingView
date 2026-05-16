@@ -1,8 +1,10 @@
 /**
  * Non-CDP market intelligence layer.
- * Uses Node built-in fetch to retrieve public market data from Yahoo Finance.
- * No API key required.
+ * Uses Yahoo chart/search for price/news data and Moomoo OpenAPI for
+ * fundamentals that previously depended on Yahoo quoteSummary.
  */
+
+import { getMoomooFundamentalsBatch, getMoomooSymbolFundamentals } from './moomoo.js';
 
 const YAHOO_QUOTE_BASE = 'https://query1.finance.yahoo.com/v8/finance/chart';
 const YAHOO_SEARCH_BASE = 'https://query1.finance.yahoo.com/v1/finance/search';
@@ -97,12 +99,19 @@ export async function getSymbolQuote(symbol) {
 /**
  * Get fundamental data for a symbol.
  */
-export async function getSymbolFundamentals(symbol) {
+export async function getSymbolFundamentals(symbol, options = {}) {
   if (!symbol || typeof symbol !== 'string') {
     throw new Error('symbol is required');
   }
 
   const ticker = symbol.trim().toUpperCase();
+  if (process.env.OMTV_USE_YAHOO_FUNDAMENTALS === '1') {
+    return getYahooSymbolFundamentals(ticker);
+  }
+  return getMoomooSymbolFundamentals(ticker, options);
+}
+
+async function getYahooSymbolFundamentals(ticker) {
   const modules = 'summaryDetail,defaultKeyStatistics,financialData';
   const url = `${YAHOO_QUOTESUMMARY_BASE}/${encodeURIComponent(ticker)}?modules=${modules}`;
   const data = await fetchJson(url);
@@ -174,11 +183,11 @@ export async function getMarketSnapshot(symbols) {
   return response;
 }
 
-export async function getTradingViewFinancials(symbol) {
-  return getSymbolFundamentals(symbol);
+export async function getTradingViewFinancials(symbol, options = {}) {
+  return getSymbolFundamentals(symbol, options);
 }
 
-export async function getTradingViewFinancialsBatch(symbols) {
+export async function getTradingViewFinancialsBatch(symbols, options = {}) {
   if (!Array.isArray(symbols) || symbols.length === 0) {
     throw new Error('symbols array is required and must not be empty');
   }
@@ -186,20 +195,8 @@ export async function getTradingViewFinancialsBatch(symbols) {
     throw new Error('symbols array must not exceed 20 items');
   }
 
-  const results = await Promise.allSettled(
-    symbols.map((symbol) => getTradingViewFinancials(symbol)),
-  );
-
-  const financials = results.map((result, index) => {
-    if (result.status === 'fulfilled') {
-      return result.value;
-    }
-    return {
-      success: false,
-      symbol: symbols[index],
-      error: result.reason?.message || 'Unknown error',
-    };
-  });
+  const batch = await getMoomooFundamentalsBatch({ symbols, ...options });
+  const financials = batch.fundamentals;
   const successCount = financials.filter((entry) => entry.success).length;
 
   const response = {
@@ -209,7 +206,7 @@ export async function getTradingViewFinancialsBatch(symbols) {
     failureCount: financials.length - successCount,
     financials,
     retrieved_at: new Date().toISOString(),
-    source: 'yahoo_finance',
+    source: 'moomoo',
   };
   if (!response.success) {
     response.error = 'All financial requests failed';

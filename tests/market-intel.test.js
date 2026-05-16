@@ -18,8 +18,10 @@ import {
 async function withMockFetch(mockImpl, fn) {
   const originalFetch = global.fetch;
   const originalCommunityFlag = process.env.OMTV_DISABLE_COMMUNITY_SNAPSHOT;
+  const originalFundamentalsProvider = process.env.OMTV_USE_YAHOO_FUNDAMENTALS;
   global.fetch = mockImpl;
   process.env.OMTV_DISABLE_COMMUNITY_SNAPSHOT = '1';
+  process.env.OMTV_USE_YAHOO_FUNDAMENTALS = '1';
   try {
     await fn();
   } finally {
@@ -29,7 +31,21 @@ async function withMockFetch(mockImpl, fn) {
     } else {
       process.env.OMTV_DISABLE_COMMUNITY_SNAPSHOT = originalCommunityFlag;
     }
+    if (originalFundamentalsProvider === undefined) {
+      delete process.env.OMTV_USE_YAHOO_FUNDAMENTALS;
+    } else {
+      process.env.OMTV_USE_YAHOO_FUNDAMENTALS = originalFundamentalsProvider;
+    }
   }
+}
+
+function createMoomooExecRouter(routes) {
+  return async (_file, args) => {
+    const command = args[1];
+    const route = routes[command];
+    if (!route) throw new Error(`Unexpected moomoo command: ${command}`);
+    return { stdout: JSON.stringify(await route(JSON.parse(args[2]))), stderr: '' };
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -205,36 +221,46 @@ describe('market-intel — success paths with mocked fetch', () => {
   });
 
   it('returns normalized fundamentals data', async () => {
-    await withMockFetch(async () => ({
-      ok: true,
-      json: async () => ({
-        quoteSummary: {
-          result: [{
-            summaryDetail: {
-              marketCap: { raw: 1000 },
-              trailingPE: { raw: 20.5 },
-              forwardPE: { raw: 18.25 },
-              dividendYield: { raw: 0.01 },
-              beta: { raw: 1.2 },
-            },
-            defaultKeyStatistics: {},
-            financialData: {
-              profitMargins: { raw: 0.2 },
-              revenueGrowth: { raw: 0.15 },
-              earningsGrowth: { raw: 0.12 },
-              returnOnEquity: { raw: 0.3 },
-              debtToEquity: { raw: 50 },
-            },
-          }],
-        },
-      }),
-    }), async () => {
-      const result = await getSymbolFundamentals('AAPL');
-      assert.equal(result.success, true);
-      assert.equal(result.marketCap, 1000);
-      assert.equal(result.trailingPE, 20.5);
-      assert.equal(result.returnOnEquity, 0.3);
+    const result = await getSymbolFundamentals('AAPL', {
+      _deps: {
+        cwd: () => '/workspace',
+        env: {},
+        execFile: createMoomooExecRouter({
+          snapshot: async () => ({
+            success: true,
+            count: 1,
+            rows: [{
+              code: 'US.AAPL',
+              total_market_val: 1000,
+              pe_ttm_ratio: 20.5,
+              dividend_ratio_ttm: 1,
+            }],
+          }),
+          stock_filter: async () => ({
+            success: true,
+            market: 'US',
+            last_page: true,
+            all_count: 1,
+            count: 1,
+            rows: [{
+              stock_code: 'US.AAPL',
+              'sum_of_business_growth|annual': 15,
+              'eps_growth_rate|annual': 12,
+              'return_on_equity_rate|annual': 30,
+              'net_profit_rate|annual': 20,
+              'debt_asset_rate|annual': 40,
+              pcf_ttm: 2500,
+            }],
+          }),
+        }),
+      },
     });
+    assert.equal(result.success, true);
+    assert.equal(result.marketCap, 1000);
+    assert.equal(result.trailingPE, 20.5);
+    assert.equal(result.returnOnEquity, 0.3);
+    assert.equal(result.revenueGrowth, 0.15);
+    assert.equal(result.source, 'moomoo');
   });
 
   it('returns normalized news results', async () => {

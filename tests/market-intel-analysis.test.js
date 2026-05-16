@@ -10,8 +10,10 @@ import { getSymbolAnalysis } from '../src/core/market-intel-analysis.js';
 async function withMockFetch(mockImpl, fn) {
   const originalFetch = global.fetch;
   const originalCommunityFlag = process.env.OMTV_DISABLE_COMMUNITY_SNAPSHOT;
+  const originalFundamentalsProvider = process.env.OMTV_USE_YAHOO_FUNDAMENTALS;
   global.fetch = mockImpl;
   process.env.OMTV_DISABLE_COMMUNITY_SNAPSHOT = '1';
+  process.env.OMTV_USE_YAHOO_FUNDAMENTALS = '1';
   try {
     await fn();
   } finally {
@@ -20,6 +22,11 @@ async function withMockFetch(mockImpl, fn) {
       delete process.env.OMTV_DISABLE_COMMUNITY_SNAPSHOT;
     } else {
       process.env.OMTV_DISABLE_COMMUNITY_SNAPSHOT = originalCommunityFlag;
+    }
+    if (originalFundamentalsProvider === undefined) {
+      delete process.env.OMTV_USE_YAHOO_FUNDAMENTALS;
+    } else {
+      process.env.OMTV_USE_YAHOO_FUNDAMENTALS = originalFundamentalsProvider;
     }
   }
 }

@@ -21,10 +21,10 @@ export function registerScreenerTools(server) {
 
   server.tool(
     'market_fundamental_screener',
-    'Screen US stocks by fundamental quality + Minervini momentum: ROE>15%, FCF margin>10%, gross margin>40%, EPS profitable, RSI>60, price>SMA200/SMA50, Perf.3M>10%, P/FCF<50. Returns rank breakdown, sector ranking, and market breakdown. Optionally enriches with Yahoo Finance revenue growth filter (>20% YoY). No CDP needed.',
+    'Screen US stocks by fundamental quality + Minervini momentum: ROE>15%, FCF margin>10%, gross margin>40%, EPS profitable, RSI>60, price>SMA200/SMA50, Perf.3M>10%, P/FCF<50. Returns rank breakdown, sector ranking, and market breakdown. Optionally enriches with Moomoo revenue growth filter (>20% YoY). No CDP needed.',
     {
       limit: z.number().int().min(1).max(200).optional().describe('Max results to return (default 10; daily workflow report uses 20)'),
-      with_yahoo: z.boolean().optional().describe('Enrich with Yahoo Finance revenue growth filter (>20% YoY)'),
+      with_yahoo: z.boolean().optional().describe('Legacy option name: enrich with Moomoo revenue growth filter (>20% YoY)'),
     },
     async ({ limit, with_yahoo } = {}) => {
       try {

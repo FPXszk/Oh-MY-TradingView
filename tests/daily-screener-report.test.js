@@ -120,7 +120,7 @@ describe('buildMarkdown', () => {
         { label: 'Revenue YoY growth' },
         { label: 'EPS YoY growth' },
         { label: 'FCF YoY growth' },
-        { label: 'Yahoo revenue growth' },
+        { label: 'Moomoo revenue growth' },
       ],
     },
     {
@@ -185,7 +185,7 @@ describe('buildMarkdown', () => {
         { label: 'Revenue YoY growth' },
         { label: 'EPS YoY growth' },
         { label: 'FCF YoY growth' },
-        { label: 'Yahoo revenue growth' },
+        { label: 'Moomoo revenue growth' },
       ],
     },
     {
@@ -540,7 +540,7 @@ describe('buildMarkdown', () => {
     assert.doesNotMatch(markdown, /\| 補助ポリシー \| 超急騰 \|/);
     assert.match(markdown, /\| 補助ポリシー \| Rule of 40 \| US Technology Services software-like industries only \/ total_revenue_yoy_growth_ttm \+ free_cash_flow_margin_ttm \/ 40\+ を badge \/ 20 未満を warning \/ hard filter なし \|/);
     assert.match(markdown, /\| ユニバース \| 取引所 \| NASDAQ, NYSE \|/);
-    assert.match(markdown, /\| 補助ポリシー \| Yahoo Finance 補完 \| 売上成長率 YoY はプロファイル別閾値を適用し、null は通過 \|/);
+    assert.match(markdown, /\| 補助ポリシー \| Moomoo 補完 \| 売上成長率 YoY はプロファイル別閾値を適用し、null は通過 \|/);
     assert.match(markdown, /\| セクタープロファイル \| Technology Services \| scope: Technology Services \/ hard gate: Perf\.3M > 10% \/ P\/FCF < 50/);
     assert.match(markdown, /\| セクタープロファイル \| Electronic Technology \/ Semiconductors \| scope: Electronic Technology \/ hard gate: Perf\.3M > 10% \/ P\/FCF < 50 \(fabless\), 100 \(IDM\/foundry\)/);
     assert.match(markdown, /12M 1200\.0%の超急騰/);
@@ -550,7 +550,7 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| Price momentum \| 32% \| 12M momentum, 6M momentum, 3M momentum, 52w high proximity \| 最も重視。上昇トレンドの強さと52週高値接近を評価 \|/);
     assert.match(markdown, /\| Sector strength \| 15% \| Phase1 sector rank \| 強いセクター追随かを確認 \|/);
     assert.match(markdown, /\| Profitability \/ quality \| 25% \| ROIC, Gross profit \/ assets, Operating margin, FCF margin, Cash conversion \| 収益性とキャッシュ創出力を確認 \|/);
-    assert.match(markdown, /\| Growth confirmation \| 10% \| Revenue YoY growth, EPS YoY growth, FCF YoY growth, Yahoo revenue growth \| 売上・EPS・FCF の成長確認 \|/);
+    assert.match(markdown, /\| Growth confirmation \| 10% \| Revenue YoY growth, EPS YoY growth, FCF YoY growth, Moomoo revenue growth \| 売上・EPS・FCF の成長確認 \|/);
     assert.match(markdown, /\| Risk \/ value guard \| 15% \| P\/FCF, EV\/EBITDA, ATR %, Beta 1Y, Debt \/ equity \| 過熱バリュエーションと変動リスクを抑制 \|/);
   });
 

@@ -5,11 +5,32 @@ from __future__ import annotations
 
 import json
 import math
+import os
 import sys
+import tempfile
 from dataclasses import asdict, is_dataclass
 from datetime import date, datetime
 from decimal import Decimal
 from typing import Any, NoReturn
+
+def ensure_writable_home_for_moomoo_logs() -> None:
+    """moomoo SDK writes logs under HOME during import."""
+    home = os.environ.get("HOME")
+    if not home:
+        os.environ["HOME"] = tempfile.gettempdir()
+        return
+    log_dir = os.path.join(home, ".com.moomoo.OpenD", "Log")
+    try:
+        os.makedirs(log_dir, exist_ok=True)
+        probe_path = os.path.join(log_dir, ".write_test")
+        with open(probe_path, "a", encoding="utf-8"):
+            pass
+        os.unlink(probe_path)
+    except OSError:
+        os.environ["HOME"] = tempfile.gettempdir()
+
+
+ensure_writable_home_for_moomoo_logs()
 
 try:
     import moomoo as ft

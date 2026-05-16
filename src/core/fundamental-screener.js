@@ -6,8 +6,8 @@
  * global filter stack. Each profile applies its own server-side quality /
  * momentum thresholds plus shared client-side price-structure checks.
  *
- * Optional enrichment (enrichWithYahoo: true):
- *   - Revenue growth YoY threshold is profile-specific (null stays eligible)
+ * Optional enrichment (enrichWithYahoo: true, legacy option name):
+ *   - Moomoo revenue growth YoY threshold is profile-specific (null stays eligible)
  *
  * Ranking: weighted block ranks of price momentum + sector strength
  * + profitability/quality + growth + risk/value, converted to a positive
@@ -15,7 +15,7 @@
  */
 
 import { readFileSync } from 'node:fs';
-import { getSymbolFundamentals } from './market-intel.js';
+import { getMoomooFundamentalsBatch } from './moomoo.js';
 import { runSectorMomentumScan } from './sector-momentum.js';
 import { getSectorScreeningPlan } from './sector-screening-profiles.js';
 
@@ -113,7 +113,7 @@ const RANK_BLOCKS = [
       { key: 'revenueGrowthTtm', label: 'Revenue YoY growth', direction: 'desc' },
       { key: 'epsGrowthTtm', label: 'EPS YoY growth', direction: 'desc' },
       { key: 'fcfGrowthTtm', label: 'FCF YoY growth', direction: 'desc' },
-      { key: 'revenueGrowth', label: 'Yahoo revenue growth', direction: 'desc' },
+      { key: 'revenueGrowth', label: 'Moomoo revenue growth', direction: 'desc' },
     ],
   },
   {
@@ -555,11 +555,11 @@ async function sleep(ms) {
 }
 
 /**
- * Fetches revenueGrowth (YoY) from Yahoo Finance for each symbol.
+ * Fetches revenueGrowth (YoY) from a dependency-injected fundamentals provider.
  * Processes in batches of YAHOO_BATCH_SIZE with a delay between batches.
  * On error, sets revenueGrowth to null (does not throw).
  */
-async function batchFetchRevenueGrowth(symbols, getFundamentals = getSymbolFundamentals) {
+async function batchFetchRevenueGrowth(symbols, getFundamentals) {
   const results = {};
   for (let i = 0; i < symbols.length; i += YAHOO_BATCH_SIZE) {
     const batch = symbols.slice(i, i + YAHOO_BATCH_SIZE);
@@ -580,6 +580,27 @@ async function batchFetchRevenueGrowth(symbols, getFundamentals = getSymbolFunda
   return results;
 }
 
+function toMoomooMarket(market) {
+  if (market === 'america') return 'US';
+  if (market === 'japan') return 'JP';
+  return 'US';
+}
+
+async function batchFetchMoomooRevenueGrowth(symbols, { market, _deps } = {}) {
+  try {
+    const response = await getMoomooFundamentalsBatch({
+      symbols,
+      market: toMoomooMarket(market),
+      _deps,
+    });
+    return Object.fromEntries(
+      (response.fundamentals || []).map((entry) => [entry.symbol, entry.revenueGrowth ?? null]),
+    );
+  } catch {
+    return Object.fromEntries(symbols.map((symbol) => [symbol, null]));
+  }
+}
+
 function validateLimit(limit) {
   if (limit === undefined || limit === null) return DEFAULT_LIMIT;
   const n = Number(limit);
@@ -597,7 +618,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   const symbolAllowlistKey = _deps?.symbolAllowlistKey ?? null;
   const symbolAllowlist = resolveSymbolAllowlist(symbolAllowlistKey, _deps?.symbolAllowlistByKey);
   const scopeLabel = _deps?.scopeLabel ?? null;
-  const getFundamentals = _deps?.getSymbolFundamentals ?? getSymbolFundamentals;
+  const getFundamentals = _deps?.getSymbolFundamentals ?? null;
   const scannerUrl = `https://scanner.tradingview.com/${market}/scan`;
   const sectorMomentumScan = await runSectorMomentumScan({
     market,
@@ -666,7 +687,9 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
 
   if (enrichWithYahoo && clientFiltered.length > 0) {
     const symbols = clientFiltered.map((r) => r.symbol);
-    const growthMap = await batchFetchRevenueGrowth(symbols, getFundamentals);
+    const growthMap = getFundamentals
+      ? await batchFetchRevenueGrowth(symbols, getFundamentals)
+      : await batchFetchMoomooRevenueGrowth(symbols, { market, _deps });
 
     clientFiltered = clientFiltered
       .map((r) => ({ ...r, revenueGrowth: growthMap[r.symbol] ?? null }))
@@ -711,7 +734,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     criteria.symbol_allowlist_key = symbolAllowlistKey;
   }
   if (enrichWithYahoo) {
-    criteria.revenue_growth_policy = 'profile-specific minimum, null passes';
+    criteria.revenue_growth_policy = 'Moomoo profile-specific minimum, null passes';
   }
 
   return {
@@ -722,6 +745,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     clientFiltered: clientFiltered.length,
     matched: matched.length,
     enrichedWithYahoo: enrichWithYahoo,
+    enrichedWithMoomoo: enrichWithYahoo,
     criteria,
     rankingFormula: rankingBlocks.map((block) => block.key),
     rankingBlocks: rankingBlocks.map((block) => ({
@@ -751,6 +775,6 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     sectorRanking,
     results: matched,
     retrieved_at: new Date().toISOString(),
-    source: enrichWithYahoo ? 'tradingview_scanner+yahoo_finance' : 'tradingview_scanner',
+    source: enrichWithYahoo ? 'tradingview_scanner+moomoo' : 'tradingview_scanner',
   };
 }
