@@ -703,7 +703,7 @@ export async function getSymbolAnalysis(symbol) {
     success: hasCoreInput,
     symbol: ticker,
     generated_at: new Date().toISOString(),
-    source: 'yahoo_finance',
+    source: process.env.OMTV_USE_YAHOO_MARKET_DATA === '1' ? 'market_intel_legacy_yahoo' : 'market_intel_moomoo',
     ...(hasCoreInput ? {} : { error: 'No core market-intel inputs available for analysis' }),
     warnings: topLevelWarnings,
     inputs: {

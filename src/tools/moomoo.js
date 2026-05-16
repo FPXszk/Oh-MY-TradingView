@@ -200,14 +200,14 @@ export function registerMoomooTools(server) {
 
   server.tool(
     'moomoo_ohlc_compare',
-    'Compare moomoo daily OHLC against Yahoo daily bars to gauge data drift for backtest targets. Read-only. No CDP connection needed.',
+    'Summarize moomoo daily OHLC and optionally compare against an explicit legacy benchmark provider. Read-only. No CDP connection needed.',
     {
       symbols: z.array(z.string()).min(1).max(20).describe('Symbols like US.NVDA'),
       start: z.string().optional().describe('Optional inclusive start date'),
       end: z.string().optional().describe('Optional inclusive end date'),
       maxBars: z.number().int().min(20).max(400).optional().default(260).describe('Max daily bars to compare'),
       autype: z.string().optional().default('qfq').describe('Adjustment type such as qfq'),
-      benchmarkProvider: z.string().optional().default('yahoo_finance').describe('External comparison provider, currently yahoo_finance'),
+      benchmarkProvider: z.string().optional().default('none').describe('Optional external comparison provider. Use yahoo_finance only for legacy drift checks.'),
     },
     async ({ symbols, start, end, maxBars, autype, benchmarkProvider }) => {
       try {
@@ -237,7 +237,7 @@ export function registerMoomooTools(server) {
       historyEnd: z.string().optional().describe('Optional inclusive history end date'),
       nearHighThresholdPct: z.number().min(0).optional().default(90).describe('Threshold used when plate breadth is computed'),
       mode: z.string().optional().default('benchmark').describe('benchmark or moomoo-only'),
-      benchmarkProvider: z.string().optional().default('yahoo_finance').describe('External comparison provider used in benchmark mode'),
+      benchmarkProvider: z.string().optional().default('none').describe('Optional external comparison provider used in benchmark mode'),
     },
     async ({
       market,

@@ -10,7 +10,7 @@
 
 Moomoo は **補完・検証データ源**として使うのが良い。`get_stock_filter()` の field inventory は 120 件あり、価格、時価総額、PER、P/S、P/B、PCF、ROE、ROIC、ROA、売上成長、EPS 成長、各種 margin、RSI / MA / EMA / MACD / Bollinger などを持てる。ただし、現行スクリーニングで重要な `gross profit / assets`、`FCF margin`、`EV/EBITDA`、`debt_to_equity` は exact replacement ではなく、proxy または欠損になる。よって主データ源へ置き換えるより、TradingView 候補の再確認、Moomoo revenue growth 補完、OHLC drift 検証に使う方が安全。
 
-Yahoo Finance は **ファンダメンタルには使わない**。chart / OHLCV / news search は動くが、2026-05-16 実査でも `quoteSummary` は `401 Unauthorized / Invalid Crumb` を返した。現行 repo の判断どおり、Yahoo は価格系列・ニュース・ベンチマーク用途に限定する。
+Yahoo Finance は **通常運用では使わない方向へ寄せる**。chart / OHLCV / news search は動くが、2026-05-16 実査でも `quoteSummary` は `401 Unauthorized / Invalid Crumb` を返した。価格系列は Moomoo `request_history_kline()`、quote は Moomoo snapshot、TA は Moomoo kline からの repo 側計算へ寄せる。ニュースは現行 Moomoo / TradingView 実装に直接代替がないため、スクリーニング本体から切り離し、必要時だけ明示 provider で扱う。
 
 ## 実査メモ
 
@@ -21,6 +21,21 @@ Yahoo Finance は **ファンダメンタルには使わない**。chart / OHLCV
 | Moomoo OpenAPI | 2026-05-16 | `stock_filter_fields` | 120 fields: financial 46 / indicator 28 / pattern 20 / simple 26 |
 | Moomoo OpenAPI | 2026-05-16 | `US.NVDA` snapshot / fundamentals / kline | snapshot, Moomoo fundamentals, 日足 OHLCV 取得成功 |
 | Yahoo Finance | 2026-05-16 | chart / search / quoteSummary | chart と search は 200、quoteSummary は 401 |
+
+## 「価格系列・ニュース限定」の具体的な意味
+
+前版で「価格系列・ニュース限定」と書いたのは、Yahoo をファンダメンタルには使わず、以下のような軽い補助用途だけなら使える、という意味だった。
+
+| 用途 | Yahoo で取っていたもの | コード上の該当箇所 | 代替方針 |
+| --- | --- | --- | --- |
+| 単一銘柄 quote | 現在値、前日終値、1日騰落率、出来高、52週高値/安値 | `src/core/market-intel.js` の `getSymbolQuote()` | Moomoo `get_market_snapshot()` に置換 |
+| TA 用価格系列 | 3カ月の日足 close | `fetchDailyCloses()` → `RSI14`, `SMA20`, `SMA50` 計算 | Moomoo `request_history_kline()` に置換 |
+| OHLC drift 比較 | Moomoo 日足と比較する外部 daily bars | `src/core/moomoo.js` の `fetchYahooHistory()` | 既定では比較なし。必要時だけ legacy benchmark として明示 |
+| ニュース検索 | Yahoo Finance search の `news` | `getFinancialNews()` | 通常無効化。スクリーニング判断には入れない |
+
+つまり「価格系列」は、`open / high / low / close / volume` の時系列データのこと。具体的には RSI、SMA、期間リターン、OHLC drift の計算に使うローソク足データを指す。
+
+「ニュース限定」は、Yahoo search から銘柄ニュースのタイトル、publisher、link、publishedAt を取る用途のこと。ただしこれはスクリーニング本体の品質指標ではないため、通常経路からは外す。
 
 ## 現行スクリーニングで使っている指標
 
@@ -102,7 +117,7 @@ Yahoo Finance は **ファンダメンタルには使わない**。chart / OHLCV
 | --- | --- | --- | --- |
 | TradingView Scanner | 横断スクリーニングが強い。ファンダメンタル、valuation、price momentum、TA を同じ scan で取れる。現行指標との対応が最も良い | 非公式 API 依存。TradingView 側の field 名変更には弱い | **主データ源**。候補抽出、rank、sector momentum に使う |
 | Moomoo OpenAPI | OpenD 経由で snapshot / kline / stock filter / plate を取れる。field inventory が広く、実機検証しやすい | `get_stock_filter()` の頻度制限あり。TradingView と完全同義でない指標がある。FCF / EV / beta 周りが弱い | **補完・検証**。revenue growth 補完、候補再確認、OHLC drift、plate breadth に使う |
-| Yahoo Finance | chart / OHLCV / search news は軽く使える。TA 計算の元データには便利 | quoteSummary fundamentals が 401 で不安定。公式保証なし。横断 screener ではない | **価格系列・ニュース限定**。ファンダメンタルには使わない |
+| Yahoo Finance | chart / OHLCV / search news は軽く使える | quoteSummary fundamentals が 401 で不安定。公式保証なし。横断 screener ではない | **通常運用では使わない**。必要時だけ legacy fallback |
 
 ## 採用方針
 
@@ -110,4 +125,4 @@ Yahoo Finance は **ファンダメンタルには使わない**。chart / OHLCV
 2. `enrichWithYahoo` という legacy option 名は互換性のため残し、中身は Moomoo revenue growth 補完として扱う。
 3. Moomoo の `SUM_OF_BUSINESS_GROWTH` は revenue growth proxy として採用可能。ただし `PCF_TTM`、`DEBT_ASSET_RATE` は exact replacement として扱わない。
 4. Yahoo `quoteSummary` fundamentals は復旧しても主経路へ戻さない。認証 crumb / cookie 依存が再発しやすく、スクリーニング運用に向かない。
-5. テクニカルは、横断スクリーニングなら TradingView、検証や独自計算なら Moomoo / Yahoo の OHLCV を使う。バックテストや候補確認では Moomoo と Yahoo の OHLC drift を定期的に見る。
+5. テクニカルは、横断スクリーニングなら TradingView、検証や独自計算なら Moomoo OHLCV を使う。Yahoo OHLCV は明示的な legacy benchmark が必要な時だけ使う。

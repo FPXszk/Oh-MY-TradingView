@@ -22,7 +22,7 @@ const TRADINGVIEW_SCANNER_BASE = 'https://scanner.tradingview.com';
 const SUPPORTED_MARKETS = new Set(['US', 'HK', 'SH', 'SZ', 'JP', 'SG', 'AU', 'CA', 'FX', 'CC']);
 const SUPPORTED_PLATE_CLASSES = new Set(['ALL', 'INDUSTRY', 'REGION', 'CONCEPT', 'OTHER']);
 const SUPPORTED_FILTER_TYPES = new Set(['simple', 'financial', 'indicator', 'pattern']);
-const SUPPORTED_BENCHMARK_PROVIDERS = new Set(['yahoo_finance']);
+const SUPPORTED_BENCHMARK_PROVIDERS = new Set(['yahoo_finance', 'none']);
 const SUPPORTED_VALIDATION_MODES = new Set(['benchmark', 'moomoo-only']);
 const TRADINGVIEW_MARKET_SCOPES = new Map([
   ['US', 'america'],
@@ -216,12 +216,13 @@ function buildConnectionPayload(_deps) {
 }
 
 function normalizeBenchmarkProvider(value, { allowNull = false } = {}) {
-  if (value === undefined) return 'yahoo_finance';
   if (value === null) {
     if (allowNull) return null;
     throw new Error(`benchmarkProvider must be one of: ${[...SUPPORTED_BENCHMARK_PROVIDERS].join(', ')}`);
   }
+  if (value === undefined) return null;
   const normalized = requireString(value, 'benchmarkProvider').toLowerCase();
+  if (normalized === 'none') return null;
   if (!SUPPORTED_BENCHMARK_PROVIDERS.has(normalized)) {
     throw new Error(`benchmarkProvider must be one of: ${[...SUPPORTED_BENCHMARK_PROVIDERS].join(', ')}`);
   }
@@ -1517,7 +1518,7 @@ export async function getMoomooOhlcComparison({
     count: comparisons.length,
     comparisons,
     benchmarkProvider: normalizedBenchmarkProvider,
-    source: `moomoo+${normalizedBenchmarkProvider}`,
+    source: normalizedBenchmarkProvider ? `moomoo+${normalizedBenchmarkProvider}` : 'moomoo',
     retrieved_at: new Date().toISOString(),
   };
 }

@@ -35,7 +35,7 @@ register('screener', {
         description: 'Screen US stocks by fundamental quality + Minervini momentum conditions',
         options: {
           limit: { type: 'string', description: 'Max results to return (CLI default: 10, daily workflow report: 20, max: 200)' },
-          'with-yahoo': { type: 'boolean', description: 'Enrich with Yahoo Finance revenue growth filter (>20% YoY)' },
+          'with-yahoo': { type: 'boolean', description: 'Legacy alias: enrich with Moomoo revenue growth filter (>20% YoY)' },
           compact: { type: 'boolean', short: 'c', description: 'Emit compact summary output' },
         },
         handler: async (opts) => {

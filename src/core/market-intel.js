@@ -1,10 +1,15 @@
 /**
  * Non-CDP market intelligence layer.
- * Uses Yahoo chart/search for price/news data and Moomoo OpenAPI for
- * fundamentals that previously depended on Yahoo quoteSummary.
+ * Uses Moomoo OpenAPI for quote, TA, and fundamentals.
+ * Yahoo endpoints are kept only as explicit legacy fallbacks.
  */
 
-import { getMoomooFundamentalsBatch, getMoomooSymbolFundamentals } from './moomoo.js';
+import {
+  getMoomooFundamentalsBatch,
+  getMoomooKlineHistory,
+  getMoomooSnapshot,
+  getMoomooSymbolFundamentals,
+} from './moomoo.js';
 
 const YAHOO_QUOTE_BASE = 'https://query1.finance.yahoo.com/v8/finance/chart';
 const YAHOO_SEARCH_BASE = 'https://query1.finance.yahoo.com/v1/finance/search';
@@ -12,6 +17,7 @@ const YAHOO_QUOTESUMMARY_BASE = 'https://query1.finance.yahoo.com/v10/finance/qu
 
 const DEFAULT_TIMEOUT_MS = 10000;
 const CONFLUENCE_MAX_SYMBOLS = 20;
+const DEFAULT_MOOMOO_MARKET = 'US';
 
 function buildHeaders() {
   return {
@@ -50,12 +56,62 @@ function computePercentDelta(current, base, precision = 4) {
 /**
  * Get a single symbol quote (price, change, volume, market cap basics).
  */
-export async function getSymbolQuote(symbol) {
+export async function getSymbolQuote(symbol, options = {}) {
   if (!symbol || typeof symbol !== 'string') {
     throw new Error('symbol is required');
   }
 
   const ticker = symbol.trim().toUpperCase();
+  if (process.env.OMTV_USE_YAHOO_MARKET_DATA === '1') {
+    return getYahooSymbolQuote(ticker);
+  }
+
+  const moomooSymbol = normalizeMoomooSymbol(ticker, options.market);
+  const snapshot = await getMoomooSnapshot({
+    symbols: [moomooSymbol],
+    _deps: options._deps,
+  });
+  const row = snapshot.rows?.[0];
+  if (!row) {
+    throw new Error(`No quote data for symbol "${ticker}"`);
+  }
+
+  const regularMarketPrice = normalizeNumber(row.last_price);
+  const previousClose = normalizeNumber(row.prev_close_price);
+  const priceChange = (
+    regularMarketPrice !== null && previousClose !== null
+      ? Number((regularMarketPrice - previousClose).toFixed(4))
+      : normalizeNumber(row.change_val)
+  );
+  const priceChangePercent = normalizeNumber(row.change_rate) ?? (
+    priceChange !== null && previousClose
+      ? Number(((priceChange / previousClose) * 100).toFixed(4))
+      : null
+  );
+
+  return {
+    success: true,
+    symbol: stripMoomooMarket(row.code || moomooSymbol),
+    moomooSymbol: row.code || moomooSymbol,
+    currency: null,
+    exchangeName: null,
+    regularMarketPrice,
+    previousClose,
+    priceChange,
+    priceChangePercent,
+    regularMarketVolume: normalizeNumber(row.volume),
+    regularMarketDayHigh: normalizeNumber(row.high_price),
+    regularMarketDayLow: normalizeNumber(row.low_price),
+    fiftyTwoWeekHigh: normalizeNumber(row.highest52weeks_price),
+    fiftyTwoWeekLow: normalizeNumber(row.lowest52weeks_price),
+    marketCap: normalizeNumber(row.total_market_val),
+    trailingPE: normalizeNumber(row.pe_ttm_ratio),
+    retrieved_at: new Date().toISOString(),
+    source: 'moomoo',
+  };
+}
+
+async function getYahooSymbolQuote(ticker) {
   const url = `${YAHOO_QUOTE_BASE}/${encodeURIComponent(ticker)}?range=1d&interval=1d`;
   const data = await fetchJson(url);
 
@@ -155,9 +211,7 @@ export async function getMarketSnapshot(symbols) {
     throw new Error('symbols array must not exceed 20 items');
   }
 
-  const results = await Promise.allSettled(
-    symbols.map((s) => getSymbolQuote(s)),
-  );
+  const results = await Promise.allSettled(symbols.map((s) => getSymbolQuote(s)));
 
   const quotes = results.map((r, i) => {
     if (r.status === 'fulfilled') return r.value;
@@ -222,6 +276,10 @@ export async function getFinancialNews(query) {
     throw new Error('query is required');
   }
 
+  if (process.env.OMTV_USE_YAHOO_NEWS !== '1') {
+    throw new Error('Financial news provider is not configured. Yahoo Finance news is disabled by default; set OMTV_USE_YAHOO_NEWS=1 to use the legacy Yahoo search fallback.');
+  }
+
   const url = `${YAHOO_SEARCH_BASE}?q=${encodeURIComponent(query.trim())}&newsCount=10&quotesCount=0`;
   const data = await fetchJson(url);
 
@@ -261,6 +319,21 @@ const TA_MAX_SYMBOLS = 20;
  */
 async function fetchDailyCloses(symbol, timeoutMs = DEFAULT_TIMEOUT_MS) {
   const ticker = symbol.trim().toUpperCase();
+  if (process.env.OMTV_USE_YAHOO_MARKET_DATA !== '1') {
+    const history = await getMoomooKlineHistory({
+      symbol: normalizeMoomooSymbol(ticker),
+      ktype: 'K_DAY',
+      maxCount: 80,
+    });
+    const closes = (history.rows || [])
+      .map((row) => normalizeNumber(row.close))
+      .filter((value) => value !== null);
+    if (closes.length === 0) {
+      throw new Error(`No close prices for symbol "${ticker}"`);
+    }
+    return closes;
+  }
+
   const url = `${YAHOO_QUOTE_BASE}/${encodeURIComponent(ticker)}?range=3mo&interval=1d`;
   const data = await fetchJson(url, timeoutMs);
   const result = data?.chart?.result?.[0];
@@ -276,6 +349,18 @@ async function fetchDailyCloses(symbol, timeoutMs = DEFAULT_TIMEOUT_MS) {
     throw new Error(`No valid close prices for symbol "${ticker}"`);
   }
   return filtered;
+}
+
+function normalizeMoomooSymbol(symbol, market = DEFAULT_MOOMOO_MARKET) {
+  const ticker = symbol.trim().toUpperCase();
+  if (ticker.includes('.')) return ticker;
+  return `${market}.${ticker}`;
+}
+
+function stripMoomooMarket(symbol) {
+  const normalized = String(symbol || '').trim().toUpperCase();
+  const dotIndex = normalized.indexOf('.');
+  return dotIndex === -1 ? normalized : normalized.slice(dotIndex + 1);
 }
 
 /**
@@ -374,7 +459,7 @@ export async function getMultiSymbolTaSummary(symbols) {
     failureCount: summaries.length - successCount,
     summaries,
     retrieved_at: new Date().toISOString(),
-    source: 'yahoo_finance',
+    source: process.env.OMTV_USE_YAHOO_MARKET_DATA === '1' ? 'yahoo_finance' : 'moomoo',
   };
   if (!response.success) {
     response.error = 'All TA requests failed';
@@ -421,7 +506,7 @@ export async function rankSymbolsByTa(symbols, sortBy = 'priceChange', order = '
     rankedCount: ranked.length,
     ...(summary.error ? { error: summary.error } : {}),
     retrieved_at: new Date().toISOString(),
-    source: 'yahoo_finance',
+    source: summary.source,
   };
 }
 
@@ -460,7 +545,7 @@ export async function getMultiSymbolAnalysis(symbols) {
     failureCount: analyses.length - successCount,
     analyses,
     retrieved_at: new Date().toISOString(),
-    source: 'yahoo_finance',
+    source: process.env.OMTV_USE_YAHOO_MARKET_DATA === '1' ? 'market_intel_legacy_yahoo' : 'market_intel_moomoo',
     ...(successCount > 0 ? {} : { error: 'All analysis requests failed' }),
   };
 }
@@ -551,7 +636,7 @@ export async function rankSymbolsByConfluence(symbols, { limit } = {}) {
     omitted,
     unranked,
     retrieved_at: new Date().toISOString(),
-    source: 'yahoo_finance',
+    source: process.env.OMTV_USE_YAHOO_MARKET_DATA === '1' ? 'yahoo_finance' : 'moomoo',
   };
   if (!response.success) {
     response.error = 'All confluence analysis requests failed';

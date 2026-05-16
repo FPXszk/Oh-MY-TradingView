@@ -388,6 +388,7 @@ describe('moomoo success paths', () => {
     const result = await getMoomooOhlcComparison({
       symbols: ['US.NVDA'],
       maxBars: 80,
+      benchmarkProvider: 'yahoo_finance',
       ...mockDeps(createExecRouter({
         kline_history: async () => ({
           success: true,
@@ -435,6 +436,7 @@ describe('moomoo success paths', () => {
       candidateSymbols: ['US.NVDA'],
       validateLimit: 3,
       historyBars: 90,
+      benchmarkProvider: 'yahoo_finance',
       ...mockDeps(createExecRouter({
         stock_filter: async () => ({
           success: true,

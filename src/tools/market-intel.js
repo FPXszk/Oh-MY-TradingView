@@ -18,7 +18,7 @@ import { attachArtifactWarning, tryWriteRawArtifact } from '../core/output-artif
 export function registerMarketIntelTools(server) {
   server.tool(
     'market_quote',
-    'Get a real-time quote for a symbol (price, change, volume). No CDP connection needed.',
+    'Get a real-time quote for a symbol via Moomoo OpenAPI (price, change, volume). No CDP connection needed.',
     {
       symbol: z.string().describe('Ticker symbol (e.g. AAPL, MSFT, ^GSPC)'),
     },
@@ -64,7 +64,7 @@ export function registerMarketIntelTools(server) {
 
   server.tool(
     'market_news',
-    'Get financial news for a query or symbol. No CDP connection needed.',
+    'Get financial news for a query or symbol. Yahoo legacy fallback is disabled unless OMTV_USE_YAHOO_NEWS=1 is set. No CDP connection needed.',
     {
       query: z.string().describe('Search query (symbol name, topic, etc.)'),
     },
@@ -98,7 +98,7 @@ export function registerMarketIntelTools(server) {
 
   server.tool(
     'market_financials',
-    'Get TradingView-backed financial summaries for multiple symbols (max 20). No CDP connection needed.',
+    'Get Moomoo-backed financial summaries for multiple symbols (max 20). No CDP connection needed.',
     {
       symbols: z.array(z.string()).min(1).max(20)
         .describe('Candidate ticker symbols to inspect'),
@@ -114,7 +114,7 @@ export function registerMarketIntelTools(server) {
 
   server.tool(
     'market_ta_summary',
-    'Get TA summary for multiple symbols — price change, RSI(14), SMA20/50 deviation. No CDP connection needed.',
+    'Get Moomoo-backed TA summary for multiple symbols — price change, RSI(14), SMA20/50 deviation. No CDP connection needed.',
     {
       symbols: z.array(z.string()).min(1).max(20)
         .describe('Array of ticker symbols (max 20)'),

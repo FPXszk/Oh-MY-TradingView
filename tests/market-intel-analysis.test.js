@@ -11,9 +11,13 @@ async function withMockFetch(mockImpl, fn) {
   const originalFetch = global.fetch;
   const originalCommunityFlag = process.env.OMTV_DISABLE_COMMUNITY_SNAPSHOT;
   const originalFundamentalsProvider = process.env.OMTV_USE_YAHOO_FUNDAMENTALS;
+  const originalMarketDataProvider = process.env.OMTV_USE_YAHOO_MARKET_DATA;
+  const originalNewsProvider = process.env.OMTV_USE_YAHOO_NEWS;
   global.fetch = mockImpl;
   process.env.OMTV_DISABLE_COMMUNITY_SNAPSHOT = '1';
   process.env.OMTV_USE_YAHOO_FUNDAMENTALS = '1';
+  process.env.OMTV_USE_YAHOO_MARKET_DATA = '1';
+  process.env.OMTV_USE_YAHOO_NEWS = '1';
   try {
     await fn();
   } finally {
@@ -27,6 +31,16 @@ async function withMockFetch(mockImpl, fn) {
       delete process.env.OMTV_USE_YAHOO_FUNDAMENTALS;
     } else {
       process.env.OMTV_USE_YAHOO_FUNDAMENTALS = originalFundamentalsProvider;
+    }
+    if (originalMarketDataProvider === undefined) {
+      delete process.env.OMTV_USE_YAHOO_MARKET_DATA;
+    } else {
+      process.env.OMTV_USE_YAHOO_MARKET_DATA = originalMarketDataProvider;
+    }
+    if (originalNewsProvider === undefined) {
+      delete process.env.OMTV_USE_YAHOO_NEWS;
+    } else {
+      process.env.OMTV_USE_YAHOO_NEWS = originalNewsProvider;
     }
   }
 }
@@ -181,7 +195,7 @@ describe('getSymbolAnalysis — response shape', () => {
       assert.equal(result.success, true);
       assert.equal(result.symbol, 'AAPL');
       assert.ok(result.generated_at);
-      assert.equal(result.source, 'yahoo_finance');
+      assert.equal(result.source, 'market_intel_legacy_yahoo');
       assert.ok(result.inputs);
       assert.ok(result.analysis);
     });

@@ -45,14 +45,14 @@ Yahoo Finance 依存をできるだけ減らし、価格・TA・OHLC 系は Moom
 
 ## 実装ステップ
 
-- [ ] Yahoo 依存箇所を quote / TA / news / OHLC benchmark / docs 表記に分類する。
-- [ ] Moomoo snapshot / kline を market-intel quote / TA の通常経路に接続する。
-- [ ] OHLC comparison の既定を Yahoo benchmark なしへ変更する。
-- [ ] news は通常 Yahoo 利用を止め、未対応または明示 provider 扱いへ変更する。
-- [ ] tests と tool descriptions を更新する。
-- [ ] `docs/strategy/data-provider-indicator-coverage_20260516.md` に具体説明を追記する。
-- [ ] 実機 Moomoo と単体テストで検証する。
-- [ ] 計画を completed に移動し、commit / push する。
+- [x] Yahoo 依存箇所を quote / TA / news / OHLC benchmark / docs 表記に分類する。
+- [x] Moomoo snapshot / kline を market-intel quote / TA の通常経路に接続する。
+- [x] OHLC comparison の既定を Yahoo benchmark なしへ変更する。
+- [x] news は通常 Yahoo 利用を止め、未対応または明示 provider 扱いへ変更する。
+- [x] tests と tool descriptions を更新する。
+- [x] `docs/strategy/data-provider-indicator-coverage_20260516.md` に具体説明を追記する。
+- [x] 実機 Moomoo と単体テストで検証する。
+- [x] 計画を completed に移動し、commit / push する。
 
 ## 検証
 

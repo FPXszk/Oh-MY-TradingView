@@ -90,7 +90,7 @@ Market Intelligence (no CDP needed):
 - market_ta_summary → multi-symbol TA summary (price change, RSI14, SMA20/50)
 - market_ta_rank → rank symbols by TA indicator
 - market_symbol_analysis → deterministic single-symbol trend/fundamentals/news/risk analysis
-- market_* tools fetch public Yahoo Finance endpoints over the network
+- market_* tools use Moomoo for quote/TA/fundamentals; Yahoo endpoints are legacy opt-in fallbacks
 
 Twitter/X read-only (no CDP needed, requires local twitter-cli auth):
 - x_status → verify twitter-cli authentication state
