@@ -901,3 +901,43 @@
 - このプロジェクトにどう活かしたか: `docs/strategy/00_environment.md` と `docs/strategy/03_mcp_integration.md` で、最初のブロッカーが OpenD 導入であることを明確にした。
 - 採用したもの: OpenD を前提条件として明示すること。
 - 採用しなかったもの: OpenD 未導入のまま API 実査を進めること。
+
+---
+
+## 90：SBI Securities official API and portfolio help pages
+
+- URL: https://www.sbisec.co.jp/ETGate/?OutSide=on&_ControlID=WPLETmgR001Control&burl=search_op&cat1=op&cat2=service&dir=service&file=op_service_05.html&getFlg=on , https://search.sbisec.co.jp/v2/popwin/help/opfutures/setting_api.html , https://search.sbisec.co.jp/v2/popwin/help/portfolio_02_01.html , https://search.sbisec.co.jp/v2/popwin/help/manage_f_03_01.html , https://search.sbisec.co.jp/v2/popwin/help/foreign/account_06.html
+- 参考にした理由: SBI証券から保有ポートフォリオ情報をプログラムで取得できる公式手段があるか確認するため。
+- このプロジェクトにどう活かしたか: `docs/research/sbi_portfolio_api.md` の公式API / CSVエクスポート / 保有項目整理の根拠にした。
+- 採用したもの: 先物・オプションAPIは存在するが、総合口座の保有株・投信ポートフォリオ取得APIは公開情報では確認できない、という判断。
+- 採用しなかったもの: 先物・オプションAPIを国内株式・投信のポートフォリオ取得APIとして扱うこと。
+
+---
+
+## 91：Japanese financial aggregation services for SBI Securities
+
+- URL: https://support.me.moneyforward.com/hc/ja/articles/13480029279897 , https://github.com/moneyforward/api-doc , https://docs.link.getmoneytree.com/docs/getting-started , https://getmoneytree.com/jp/link/link-api , https://institutions.moneytree.jp/en/institutions/sbi_securities , https://help.getmoneytree.com/en/articles/3829492-add-new-financial-institutions-with-api-corporate-accounts , https://content.zaim.net/questions/show/1119 , https://www.sbi-bs.co.jp/api/
+- 参考にした理由: マネーフォワード、Moneytree、Zaim、MoneyLook 経由でSBI証券のポートフォリオ情報を取得できるか確認するため。
+- このプロジェクトにどう活かしたか: 連携サービス経由は可能性があるが、個人が直接使うSBI証券APIではなく、パートナー向けAPIまたはスクレイピング/直接収集方式として整理した。
+- 採用したもの: Money Forward はSBI証券をスクレイピング連携方式の例として明記していること、Moneytree LINK はOAuth 2.0ベースの法人向けAPIであること。
+- 採用しなかったもの: 家計簿サービスの内部連携方式が全てOAuth APIであると推測すること。
+
+---
+
+## 92：SBI Securities scraping and export precedents
+
+- URL: https://tid.jp/s/ofxproxy/?help=sbisec , https://github.com/neka-nat/SBIcomm , https://hato.yokohama/scraping_sbi_investment/ , https://search.sbisec.co.jp/v2/popwin/info/home/kouhu/open_kouza_02.html
+- 参考にした理由: Selenium / mechanize 等でSBI証券を操作またはポートフォリオ取得する先例と、利用上の制約を確認するため。
+- このプロジェクトにどう活かしたか: スクレイピングは技術的には可能性があるが、現行認証・規約・保守性の観点から推奨順位を下げた。
+- 採用したもの: CSV手動エクスポートを第一候補、スクレイピングを高リスクな代替案として扱う判断。
+- 採用しなかったもの: 古いOSSや個人記事の手法を現行SBI証券で動く前提にすること。
+
+---
+
+## 93：Japan broker API comparison references
+
+- URL: https://kabu.com/item/kabustation_api/default.html , https://kabucom.github.io/kabusapi/ptal/ , https://info.monex.co.jp/press/pdf/press2019_02_04_OpenAPI_pr.pdf , https://www.matsui.co.jp/company/press/2022/pr221222.html , https://webservice.rakuten.co.jp/documentation , https://prtimes.jp/main/html/rd/p/000000359.000011088.html , https://www.ibx-pm.co.jp/ib-api/ , https://www.home.saxo/ja-jp/platforms/api , https://openapi.moomoo.com/moomoo-api-doc/jp/intro/intro.html , https://openapi.moomoo.com/moomoo-api-doc/jp/trade/overview.html
+- 参考にした理由: SBI証券以外の日本向け証券APIの現状を比較し、今回の推奨アプローチの妥当性を確認するため。
+- このプロジェクトにどう活かしたか: SBI証券本体よりも、CSVインポートまたはAPI提供が明確な証券会社の併用が現実的という比較材料にした。
+- 採用したもの: kabuステーションAPI、moomoo OpenAPI、IBKR、サクソバンクなど公式API提供事例を比較表に反映した。
+- 採用しなかったもの: 楽天ウェブサービスAPIを楽天証券口座APIとして扱うこと。
