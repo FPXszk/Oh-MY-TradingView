@@ -1,0 +1,95 @@
+name: Moomoo Portfolio Diagnostics
+
+on:
+  workflow_dispatch:
+    inputs:
+      opend_host:
+        description: Moomoo OpenD host
+        required: true
+        default: 127.0.0.1
+      opend_port:
+        description: Moomoo OpenD port
+        required: true
+        default: '11112'
+      market:
+        description: Trade market context
+        required: true
+        default: US
+      trd_env:
+        description: Optional trading environment filter, REAL or SIMULATE
+        required: false
+        default: ''
+      account_id:
+        description: Optional account id filter
+        required: false
+        default: ''
+      currency:
+        description: Reporting currency
+        required: true
+        default: USD
+      include_simulate:
+        description: Include SIMULATE accounts when no trd_env is specified
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+
+jobs:
+  run-portfolio-diagnostics:
+    runs-on:
+      - self-hosted
+      - windows
+    env:
+      MOOMOO_HOST: ${{ inputs.opend_host }}
+      MOOMOO_PORT: ${{ inputs.opend_port }}
+      MOOMOO_PORTFOLIO_MARKET: ${{ inputs.market }}
+      MOOMOO_PORTFOLIO_TRD_ENV: ${{ inputs.trd_env }}
+      MOOMOO_PORTFOLIO_ACCOUNT_ID: ${{ inputs.account_id }}
+      MOOMOO_PORTFOLIO_CURRENCY: ${{ inputs.currency }}
+      MOOMOO_PORTFOLIO_INCLUDE_SIMULATE: ${{ inputs.include_simulate }}
+      MOOMOO_PORTFOLIO_REFRESH_CACHE: 'true'
+      MOOMOO_PORTFOLIO_REPORT_PATH: docs/reports/moomoo/portfolio-diagnostics.md
+      MOOMOO_PORTFOLIO_JSON_PATH: docs/reports/moomoo/portfolio-diagnostics.json
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          clean: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci --silent
+
+      - name: Check Python runtime
+        shell: pwsh
+        run: |
+          python --version
+
+      - name: Run read-only portfolio diagnostics
+        run: node scripts/moomoo/run-portfolio-diagnostics.mjs
+
+      - name: Validate diagnostics output
+        shell: pwsh
+        run: |
+          if (-not (Test-Path '${{ env.MOOMOO_PORTFOLIO_REPORT_PATH }}')) {
+            throw '${{ env.MOOMOO_PORTFOLIO_REPORT_PATH }} was not created'
+          }
+          if (-not (Test-Path '${{ env.MOOMOO_PORTFOLIO_JSON_PATH }}')) {
+            throw '${{ env.MOOMOO_PORTFOLIO_JSON_PATH }} was not created'
+          }
+
+      - name: Upload diagnostics artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: moomoo-portfolio-diagnostics-${{ github.run_id }}
+          path: |
+            ${{ env.MOOMOO_PORTFOLIO_REPORT_PATH }}
+            ${{ env.MOOMOO_PORTFOLIO_JSON_PATH }}
+          if-no-files-found: warn

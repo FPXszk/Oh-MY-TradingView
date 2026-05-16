@@ -22,6 +22,10 @@ import {
   runMoomooScreeningValidation,
 } from '../src/core/moomoo.js';
 import { registerMoomooTools } from '../src/tools/moomoo.js';
+import {
+  buildPortfolioDiagnosticsReport,
+  sanitizePortfolioDiagnosticsResult,
+} from '../scripts/moomoo/run-portfolio-diagnostics.mjs';
 
 function mockDeps(execImpl, extra = {}) {
   return {
@@ -301,6 +305,66 @@ describe('moomoo success paths', () => {
     assert.equal(result.totals.investedRatioPct, 42);
     assert.equal(result.accounts[0].summary.topPositionWeightPct, 57.14);
     assert.equal(result.accounts[0].positions[0].symbol, 'US.AAPL');
+  });
+
+  it('renders a read-only portfolio diagnostics report', () => {
+    const report = buildPortfolioDiagnosticsReport({
+      retrieved_at: '2026-05-17T00:00:00.000Z',
+      currency: 'USD',
+      totals: {
+        accountCount: 1,
+        realAccountCount: 1,
+        simulateAccountCount: 0,
+        positionCount: 1,
+        totalAssets: 5000,
+        cash: 3800,
+        marketValue: 1200,
+        unrealizedPl: 200,
+        cashRatioPct: 76,
+        investedRatioPct: 24,
+      },
+      accounts: [
+        {
+          currency: 'USD',
+          account: { accId: '284852704340244600', trdEnv: 'REAL', accType: 'CASH' },
+          summary: {
+            positionCount: 1,
+            totalAssets: 5000,
+            cash: 3800,
+            marketValue: 1200,
+            unrealizedPl: 200,
+            topPositionWeightPct: 100,
+          },
+          positions: [
+            {
+              symbol: 'US.AAPL',
+              name: 'Apple',
+              qty: 10,
+              marketValue: 1200,
+              unrealizedPl: 200,
+              weightPct: 100,
+            },
+          ],
+        },
+      ],
+      notes: ['Read-only diagnostics only. No order, cancel, modify, or unlock methods are called.'],
+    }, { generatedAt: '2026-05-17T00:00:00.000Z', workflowRunId: '123' });
+
+    assert.match(report, /^# Moomoo Portfolio Diagnostics/);
+    assert.match(report, /Read-only diagnostics only/);
+    assert.match(report, /Account \*+4600 \(REAL\)/);
+    assert.match(report, /\| `US\.AAPL` \| Apple \| 10\.00 \| 1,200\.00 \| 200\.00 \| 100\.00% \|/);
+    assert.doesNotMatch(report, /284852704340244600/);
+  });
+
+  it('sanitizes account ids before writing diagnostics artifacts', () => {
+    const result = sanitizePortfolioDiagnosticsResult({
+      accounts: [
+        { account: { accId: '284852704340244600', trdEnv: 'REAL' }, positions: [] },
+      ],
+    });
+
+    assert.equal(result.accounts[0].account.accId, '**************4600');
   });
 
   it('passes snapshot symbols through the adapter', async () => {

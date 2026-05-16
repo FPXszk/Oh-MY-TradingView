@@ -70,8 +70,8 @@ moomoo OpenAPI の Phase 2 として、`get_stock_filter()` / `get_plate_list()`
 
 ## Tasks
 
-- [ ] Phase 1 handoff と現行 screener 指標を元に、Phase 2 で必要な field inventory / breadth / OHLC 比較の対象を確定する
-- [ ] Python adapter と Node core に Phase 2 用の read-only screening / validation 呼び出しを追加する
-- [ ] MCP tools と unit test を拡張し、payload / 集計 / 返却 shape を固定する
-- [ ] moomoo field 対応表と validation 結果を docs に記録する
-- [ ] OpenD 実機で候補再確認フローを実行し、完了基準を満たすことを確認する
+- [x] Phase 1 handoff と現行 screener 指標を元に、Phase 2 で必要な field inventory / breadth / OHLC 比較の対象を確定する
+- [x] Python adapter と Node core に Phase 2 用の read-only screening / validation 呼び出しを追加する
+- [x] MCP tools と unit test を拡張し、payload / 集計 / 返却 shape を固定する
+- [x] moomoo field 対応表と validation 結果を docs に記録する
+- [x] OpenD 実機で候補再確認フローを実行し、完了基準を満たすことを確認する
