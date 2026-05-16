@@ -2,6 +2,12 @@ import { z } from 'zod';
 import { jsonResult } from './_format.js';
 import {
   getMoomooHealthCheck,
+  getMoomooAccounts,
+  getMoomooPositions,
+  getMoomooBalance,
+  getMoomooOrders,
+  getMoomooDeals,
+  getMoomooPortfolioDiagnostics,
   getMoomooSnapshot,
   getMoomooKlineHistory,
   getMoomooFundamentalProbe,
@@ -44,6 +50,13 @@ const stockFilterSchema = {
   begin: z.number().int().min(0).optional().default(0).describe('Pagination offset'),
 };
 
+const accountReadSchema = {
+  market: z.string().optional().default('US').describe('Trade market such as US, HK, CN, or JP'),
+  trdEnv: z.string().optional().default('REAL').describe('Trading environment to read: REAL or SIMULATE'),
+  accountId: z.string().optional().describe('Optional moomoo account id. Pass as a string to preserve precision'),
+  refreshCache: z.boolean().optional().default(true).describe('Refresh account cache before reading when supported'),
+};
+
 export function registerMoomooTools(server) {
   server.tool(
     'moomoo_health_check',
@@ -52,6 +65,146 @@ export function registerMoomooTools(server) {
     async () => {
       try {
         return jsonResult(await getMoomooHealthCheck());
+      } catch (err) {
+        return jsonResult({ success: false, error: err.message }, true);
+      }
+    },
+  );
+
+  server.tool(
+    'moomoo_accounts',
+    'List moomoo account metadata. Read-only account query; does not place, modify, cancel, or unlock trades.',
+    {
+      market: z.string().optional().default('US').describe('Trade market context such as US, HK, CN, or JP'),
+    },
+    async ({ market }) => {
+      try {
+        return jsonResult(await getMoomooAccounts({ market }));
+      } catch (err) {
+        return jsonResult({ success: false, error: err.message }, true);
+      }
+    },
+  );
+
+  server.tool(
+    'moomoo_positions',
+    'List moomoo account positions. Read-only account query; does not place, modify, cancel, or unlock trades.',
+    {
+      ...accountReadSchema,
+      currency: z.string().optional().default('USD').describe('Currency such as USD or JPY'),
+      code: z.string().optional().describe('Optional symbol filter like US.AAPL'),
+    },
+    async ({ market, trdEnv, accountId, currency, code, refreshCache }) => {
+      try {
+        return jsonResult(await getMoomooPositions({
+          market,
+          trdEnv,
+          accountId,
+          currency,
+          code,
+          refreshCache,
+        }));
+      } catch (err) {
+        return jsonResult({ success: false, error: err.message }, true);
+      }
+    },
+  );
+
+  server.tool(
+    'moomoo_balance',
+    'Read moomoo account balance/assets. Read-only account query; does not place, modify, cancel, or unlock trades.',
+    {
+      ...accountReadSchema,
+      currency: z.string().optional().default('USD').describe('Currency such as USD or JPY'),
+    },
+    async ({ market, trdEnv, accountId, currency, refreshCache }) => {
+      try {
+        return jsonResult(await getMoomooBalance({
+          market,
+          trdEnv,
+          accountId,
+          currency,
+          refreshCache,
+        }));
+      } catch (err) {
+        return jsonResult({ success: false, error: err.message }, true);
+      }
+    },
+  );
+
+  server.tool(
+    'moomoo_orders',
+    'List moomoo orders. Read-only history query; does not place, modify, cancel, or unlock trades.',
+    {
+      ...accountReadSchema,
+      code: z.string().optional().describe('Optional symbol filter like US.AAPL'),
+      start: z.string().optional().describe('Optional start date for order history'),
+      end: z.string().optional().describe('Optional end date for order history'),
+      limit: z.number().int().min(1).max(200).optional().default(200).describe('Max rows to return'),
+    },
+    async ({ market, trdEnv, accountId, code, start, end, limit, refreshCache }) => {
+      try {
+        return jsonResult(await getMoomooOrders({
+          market,
+          trdEnv,
+          accountId,
+          code,
+          start,
+          end,
+          limit,
+          refreshCache,
+        }));
+      } catch (err) {
+        return jsonResult({ success: false, error: err.message }, true);
+      }
+    },
+  );
+
+  server.tool(
+    'moomoo_deals',
+    'List moomoo filled deals when the broker/API supports it. Read-only history query; does not place, modify, cancel, or unlock trades.',
+    {
+      ...accountReadSchema,
+      code: z.string().optional().describe('Optional symbol filter like US.AAPL'),
+      limit: z.number().int().min(1).max(200).optional().default(200).describe('Max rows to return'),
+    },
+    async ({ market, trdEnv, accountId, code, limit, refreshCache }) => {
+      try {
+        return jsonResult(await getMoomooDeals({
+          market,
+          trdEnv,
+          accountId,
+          code,
+          limit,
+          refreshCache,
+        }));
+      } catch (err) {
+        return jsonResult({ success: false, error: err.message }, true);
+      }
+    },
+  );
+
+  server.tool(
+    'moomoo_portfolio',
+    'Build read-only moomoo portfolio diagnostics: positions, balance, exposure, cash ratio, P/L, and concentration. No order methods are called.',
+    {
+      market: z.string().optional().default('US').describe('Trade market context such as US, HK, CN, or JP'),
+      trdEnv: z.string().optional().describe('Optional environment filter: REAL or SIMULATE'),
+      accountId: z.string().optional().describe('Optional moomoo account id. Pass as a string to preserve precision'),
+      currency: z.string().optional().default('USD').describe('Reporting currency such as USD or JPY'),
+      includeSimulate: z.boolean().optional().default(false).describe('Include SIMULATE accounts in diagnostics when no trdEnv is specified'),
+      refreshCache: z.boolean().optional().default(true).describe('Refresh account cache before reading when supported'),
+    },
+    async ({ market, trdEnv, accountId, currency, includeSimulate, refreshCache }) => {
+      try {
+        return jsonResult(await getMoomooPortfolioDiagnostics({
+          market,
+          trdEnv,
+          accountId,
+          currency,
+          includeSimulate,
+          refreshCache,
+        }));
       } catch (err) {
         return jsonResult({ success: false, error: err.message }, true);
       }

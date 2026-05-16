@@ -110,6 +110,12 @@ Reach external observation (no CDP needed, read-only):
 
 Moomoo OpenAPI read-only (no CDP needed, requires OpenD reachable from this runtime):
 - moomoo_health_check → verify OpenD connectivity and login state
+- moomoo_accounts → list account metadata (read-only)
+- moomoo_positions → list account positions (read-only)
+- moomoo_balance → read account balance/assets (read-only)
+- moomoo_orders → list order history/status (read-only)
+- moomoo_deals → list filled deals when supported (read-only)
+- moomoo_portfolio → portfolio diagnostics: exposure, cash ratio, P/L, concentration (read-only)
 - moomoo_snapshot → fetch multi-symbol snapshots
 - moomoo_kline_history → fetch historical K-line data
 - moomoo_stock_filter → run market/plate filters with optional field DSL

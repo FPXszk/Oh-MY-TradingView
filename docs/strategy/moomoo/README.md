@@ -51,9 +51,11 @@
 | `moomoo_accounts` | `get_acc_list()` | 中 | 中 |
 | `moomoo_positions` | `position_list_query()` | 中 | 中 |
 | `moomoo_balance` | `accinfo_query()` | 中 | 中 |
+| `moomoo_orders` | `order_list_query()` | 中 | 中 |
+| `moomoo_deals` | `deal_list_query()` | 低 | 中 |
+| `moomoo_portfolio` | `get_acc_list()` + `position_list_query()` + `accinfo_query()` | 高 | 中 |
 | `moomoo_paper_buy` | `place_order()` | 高 | 高 |
 | `moomoo_cancel_order` | `modify_order(CANCEL)` | 高 | 高 |
-| `moomoo_deal_list` | `deal_list_query()` | 低 | 中 |
 
 ## Oh-MY-TradingView との統合ロードマップ
 
@@ -65,7 +67,7 @@
 ### Phase 2
 
 - 権限確認 (対象市場、LV1/LV2、SIMULATE)
-- account read tools の有効化
+- account read tools の有効化 (`moomoo_accounts` / `moomoo_positions` / `moomoo_balance` / `moomoo_orders` / `moomoo_deals` / `moomoo_portfolio`)
 
 ### Phase 3
 

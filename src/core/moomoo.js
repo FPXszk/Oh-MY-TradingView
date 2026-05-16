@@ -16,10 +16,13 @@ const MAX_PLATE_BREADTH_SYMBOLS = 50;
 const MAX_VALIDATION_SYMBOLS = 20;
 const MAX_HISTORY_BARS = 400;
 const MAX_FUNDAMENTAL_PAGES = 5;
+const MAX_ACCOUNT_HISTORY_ROWS = 200;
 const YAHOO_CHART_BASE = 'https://query1.finance.yahoo.com/v8/finance/chart';
 const TRADINGVIEW_SCANNER_BASE = 'https://scanner.tradingview.com';
 
 const SUPPORTED_MARKETS = new Set(['US', 'HK', 'SH', 'SZ', 'JP', 'SG', 'AU', 'CA', 'FX', 'CC']);
+const SUPPORTED_TRADE_MARKETS = new Set(['US', 'HK', 'CN', 'JP', 'SG', 'AU', 'CA']);
+const SUPPORTED_TRADE_ENVS = new Set(['REAL', 'SIMULATE']);
 const SUPPORTED_PLATE_CLASSES = new Set(['ALL', 'INDUSTRY', 'REGION', 'CONCEPT', 'OTHER']);
 const SUPPORTED_FILTER_TYPES = new Set(['simple', 'financial', 'indicator', 'pattern']);
 const SUPPORTED_BENCHMARK_PROVIDERS = new Set(['yahoo_finance', 'none']);
@@ -235,6 +238,64 @@ function normalizeValidationMode(value) {
     throw new Error(`mode must be one of: ${[...SUPPORTED_VALIDATION_MODES].join(', ')}`);
   }
   return normalized;
+}
+
+function normalizeTradeEnv(value) {
+  return normalizeEnum(value, {
+    label: 'trdEnv',
+    allowed: SUPPORTED_TRADE_ENVS,
+    defaultValue: 'REAL',
+  });
+}
+
+function normalizeTradeMarket(value) {
+  return normalizeEnum(value, {
+    label: 'market',
+    allowed: SUPPORTED_TRADE_MARKETS,
+    defaultValue: 'US',
+  });
+}
+
+function normalizeAccountId(value) {
+  if (value === undefined || value === null || value === '') return undefined;
+  const normalized = String(value).trim();
+  if (!/^\d+$/.test(normalized)) {
+    throw new Error('accountId must be an integer string');
+  }
+  return normalized;
+}
+
+function normalizeCurrency(value) {
+  const normalized = normalizeOptionalString(value) || 'USD';
+  if (!/^[A-Z]{3}$/.test(normalized.toUpperCase())) {
+    throw new Error('currency must be a three-letter currency code');
+  }
+  return normalized.toUpperCase();
+}
+
+function buildAccountReadPayload({
+  market,
+  trdEnv,
+  accountId,
+  currency,
+  code,
+  start,
+  end,
+  refreshCache,
+  _deps,
+} = {}) {
+  const payload = {
+    ...buildConnectionPayload(_deps),
+    market: normalizeTradeMarket(market),
+  };
+  if (trdEnv !== undefined) payload.trd_env = normalizeTradeEnv(trdEnv);
+  if (accountId !== undefined) payload.account_id = normalizeAccountId(accountId);
+  if (currency !== undefined) payload.currency = normalizeCurrency(currency);
+  if (code !== undefined) payload.code = normalizeOptionalString(code) || '';
+  if (start !== undefined) payload.start = normalizeOptionalString(start) || '';
+  if (end !== undefined) payload.end = normalizeOptionalString(end) || '';
+  if (refreshCache !== undefined) payload.refresh_cache = Boolean(refreshCache);
+  return payload;
 }
 
 function roundNullable(value, precision = 4) {
@@ -498,10 +559,23 @@ function averageNullable(values, precision = 2) {
   return Number((usable.reduce((sum, value) => sum + value, 0) / usable.length).toFixed(precision));
 }
 
+function sumNullable(values, precision = 2) {
+  const usable = values.filter((value) => value !== null && value !== undefined);
+  if (usable.length === 0) return null;
+  return Number(usable.reduce((sum, value) => sum + value, 0).toFixed(precision));
+}
+
 function maxNullable(values, precision = 2) {
   const usable = values.filter((value) => value !== null && value !== undefined);
   if (usable.length === 0) return null;
   return Number(Math.max(...usable).toFixed(precision));
+}
+
+function ratioPct(numerator, denominator, precision = 2) {
+  const left = toFiniteNumber(numerator);
+  const right = toFiniteNumber(denominator);
+  if (left === null || right === null || right === 0) return null;
+  return Number(((left / right) * 100).toFixed(precision));
 }
 
 function dedupeSymbols(symbols) {
@@ -1127,8 +1201,303 @@ function buildCandidateRow({
   };
 }
 
+function pickBalanceRow(balance) {
+  const rows = Array.isArray(balance?.rows) ? balance.rows : [];
+  return rows[0] || {};
+}
+
+function aggregatePositionRows(positions, balanceRow = {}) {
+  const rows = Array.isArray(positions) ? positions : [];
+  const marketValue = sumNullable(rows.map((row) => toFiniteNumber(row.market_val)), 2) ?? 0;
+  const unrealizedPl = sumNullable(rows.map((row) => toFiniteNumber(row.pl_val ?? row.unrealized_pl)), 2) ?? 0;
+  const costBasis = rows.reduce((sum, row) => {
+    const qty = toFiniteNumber(row.qty);
+    const costPrice = toFiniteNumber(row.cost_price ?? row.average_cost);
+    if (qty === null || costPrice === null) return sum;
+    return sum + (qty * costPrice);
+  }, 0);
+  const totalAssets = toFiniteNumber(balanceRow.total_assets);
+  const cash = toFiniteNumber(balanceRow.cash);
+
+  const by = (key) => {
+    const grouped = new Map();
+    for (const row of rows) {
+      const groupKey = row[key] || 'UNKNOWN';
+      const current = grouped.get(groupKey) || {
+        key: groupKey,
+        count: 0,
+        marketValue: 0,
+        unrealizedPl: 0,
+      };
+      current.count += 1;
+      current.marketValue += toFiniteNumber(row.market_val) ?? 0;
+      current.unrealizedPl += toFiniteNumber(row.pl_val ?? row.unrealized_pl) ?? 0;
+      grouped.set(groupKey, current);
+    }
+    return [...grouped.values()]
+      .map((entry) => ({
+        ...entry,
+        marketValue: Number(entry.marketValue.toFixed(2)),
+        unrealizedPl: Number(entry.unrealizedPl.toFixed(2)),
+        weightPct: ratioPct(entry.marketValue, marketValue),
+      }))
+      .sort((left, right) => right.marketValue - left.marketValue);
+  };
+
+  const enrichedPositions = rows
+    .map((row) => {
+      const rowMarketValue = toFiniteNumber(row.market_val) ?? 0;
+      return {
+        symbol: extractMoomooSymbol(row),
+        name: row.stock_name || row.name || null,
+        market: row.position_market || null,
+        currency: row.currency || null,
+        side: row.position_side || null,
+        quantity: toFiniteNumber(row.qty),
+        costPrice: toFiniteNumber(row.cost_price ?? row.average_cost),
+        lastPrice: toFiniteNumber(row.nominal_price),
+        marketValue: Number(rowMarketValue.toFixed(2)),
+        unrealizedPl: roundNullable(row.pl_val ?? row.unrealized_pl, 2),
+        plRatioPct: roundNullable(row.pl_ratio, 2),
+        weightPctOfPositions: ratioPct(rowMarketValue, marketValue),
+        weightPctOfAssets: ratioPct(rowMarketValue, totalAssets),
+      };
+    })
+    .sort((left, right) => (right.marketValue ?? 0) - (left.marketValue ?? 0));
+
+  return {
+    positionCount: rows.length,
+    marketValue: Number(marketValue.toFixed(2)),
+    costBasis: Number(costBasis.toFixed(2)),
+    unrealizedPl,
+    unrealizedPlPct: ratioPct(unrealizedPl, costBasis),
+    totalAssets,
+    cash,
+    cashRatioPct: ratioPct(cash, totalAssets),
+    investedRatioPct: ratioPct(marketValue, totalAssets),
+    topPositionWeightPct: enrichedPositions[0]?.weightPctOfPositions ?? null,
+    averagePositionPlRatioPct: averageNullable(enrichedPositions.map((row) => row.plRatioPct), 2),
+    byMarket: by('position_market'),
+    byCurrency: by('currency'),
+    bySide: by('position_side'),
+    positions: enrichedPositions,
+  };
+}
+
 export async function getMoomooHealthCheck({ _deps } = {}) {
   return runAdapter('health_check', buildConnectionPayload(_deps), { label: 'moomoo health_check', _deps });
+}
+
+export async function getMoomooAccounts({ market, _deps } = {}) {
+  return runAdapter(
+    'accounts',
+    {
+      ...buildConnectionPayload(_deps),
+      market: normalizeTradeMarket(market),
+    },
+    { label: 'moomoo accounts', _deps },
+  );
+}
+
+export async function getMoomooPositions({
+  market,
+  trdEnv,
+  accountId,
+  currency,
+  code,
+  refreshCache,
+  _deps,
+} = {}) {
+  return runAdapter(
+    'positions',
+    buildAccountReadPayload({
+      market,
+      trdEnv,
+      accountId,
+      currency: currency ?? 'USD',
+      code,
+      refreshCache,
+      _deps,
+    }),
+    { label: 'moomoo positions', _deps },
+  );
+}
+
+export async function getMoomooBalance({
+  market,
+  trdEnv,
+  accountId,
+  currency,
+  refreshCache,
+  _deps,
+} = {}) {
+  return runAdapter(
+    'balance',
+    buildAccountReadPayload({
+      market,
+      trdEnv,
+      accountId,
+      currency: currency ?? 'USD',
+      refreshCache,
+      _deps,
+    }),
+    { label: 'moomoo balance', _deps },
+  );
+}
+
+export async function getMoomooOrders({
+  market,
+  trdEnv,
+  accountId,
+  code,
+  start,
+  end,
+  limit,
+  refreshCache,
+  _deps,
+} = {}) {
+  const normalizedLimit = normalizeInteger(limit, {
+    label: 'limit',
+    min: 1,
+    max: MAX_ACCOUNT_HISTORY_ROWS,
+    defaultValue: MAX_ACCOUNT_HISTORY_ROWS,
+  });
+  const result = await runAdapter(
+    'orders',
+    buildAccountReadPayload({
+      market,
+      trdEnv,
+      accountId,
+      code,
+      start,
+      end,
+      refreshCache,
+      _deps,
+    }),
+    { label: 'moomoo orders', _deps },
+  );
+  if (Array.isArray(result.rows)) {
+    result.rows = result.rows.slice(0, normalizedLimit);
+    result.count = result.rows.length;
+  }
+  return result;
+}
+
+export async function getMoomooDeals({
+  market,
+  trdEnv,
+  accountId,
+  code,
+  limit,
+  refreshCache,
+  _deps,
+} = {}) {
+  const normalizedLimit = normalizeInteger(limit, {
+    label: 'limit',
+    min: 1,
+    max: MAX_ACCOUNT_HISTORY_ROWS,
+    defaultValue: MAX_ACCOUNT_HISTORY_ROWS,
+  });
+  const result = await runAdapter(
+    'deals',
+    buildAccountReadPayload({
+      market,
+      trdEnv,
+      accountId,
+      code,
+      refreshCache,
+      _deps,
+    }),
+    { label: 'moomoo deals', _deps },
+  );
+  if (Array.isArray(result.rows)) {
+    result.rows = result.rows.slice(0, normalizedLimit);
+    result.count = result.rows.length;
+  }
+  return result;
+}
+
+export async function getMoomooPortfolioDiagnostics({
+  market,
+  trdEnv,
+  accountId,
+  currency,
+  includeSimulate,
+  refreshCache,
+  _deps,
+} = {}) {
+  const accountsResponse = await getMoomooAccounts({ market, _deps });
+  const normalizedAccountId = normalizeAccountId(accountId);
+  const normalizedTrdEnv = trdEnv === undefined ? undefined : normalizeTradeEnv(trdEnv);
+  const normalizedCurrency = normalizeCurrency(currency);
+  const accounts = (accountsResponse.rows || []).filter((account) => {
+    if (normalizedAccountId && String(account.acc_id) !== normalizedAccountId) return false;
+    if (normalizedTrdEnv && account.trd_env !== normalizedTrdEnv) return false;
+    if (includeSimulate !== true && account.trd_env === 'SIMULATE' && !normalizedTrdEnv) return false;
+    return true;
+  });
+
+  const accountReports = [];
+  for (const account of accounts) {
+    const accountMarket = normalizeTradeMarket(market);
+    const shared = {
+      market: accountMarket,
+      trdEnv: account.trd_env,
+      accountId: String(account.acc_id),
+      currency: normalizedCurrency,
+      refreshCache,
+      _deps,
+    };
+    const [positions, balance] = await Promise.all([
+      getMoomooPositions(shared),
+      getMoomooBalance(shared),
+    ]);
+    const summary = aggregatePositionRows(positions.rows || [], pickBalanceRow(balance));
+    accountReports.push({
+      account: {
+        accId: String(account.acc_id),
+        trdEnv: account.trd_env,
+        accType: account.acc_type ?? null,
+        securityFirm: account.security_firm ?? null,
+        simAccType: account.sim_acc_type ?? null,
+        trdmarketAuth: account.trdmarket_auth ?? null,
+      },
+      currency: normalizedCurrency,
+      summary,
+      balance: pickBalanceRow(balance),
+      positions: summary.positions,
+    });
+  }
+
+  const realReports = accountReports.filter((entry) => entry.account.trdEnv === 'REAL');
+  const baseReports = realReports.length > 0 ? realReports : accountReports;
+  const totals = {
+    accountCount: accountReports.length,
+    realAccountCount: realReports.length,
+    simulateAccountCount: accountReports.filter((entry) => entry.account.trdEnv === 'SIMULATE').length,
+    positionCount: baseReports.reduce((sum, entry) => sum + entry.summary.positionCount, 0),
+    totalAssets: sumNullable(baseReports.map((entry) => entry.summary.totalAssets), 2),
+    cash: sumNullable(baseReports.map((entry) => entry.summary.cash), 2),
+    marketValue: sumNullable(baseReports.map((entry) => entry.summary.marketValue), 2),
+    unrealizedPl: sumNullable(baseReports.map((entry) => entry.summary.unrealizedPl), 2),
+  };
+  totals.cashRatioPct = ratioPct(totals.cash, totals.totalAssets);
+  totals.investedRatioPct = ratioPct(totals.marketValue, totals.totalAssets);
+
+  return {
+    success: true,
+    readOnly: true,
+    source: 'moomoo',
+    market: normalizeTradeMarket(market),
+    currency: normalizedCurrency,
+    totals,
+    accounts: accountReports,
+    notes: [
+      'Read-only diagnostics only. No order, cancel, modify, or unlock methods are called.',
+      'Portfolio totals prefer REAL accounts when present; SIMULATE accounts remain listed separately.',
+    ],
+    retrieved_at: new Date().toISOString(),
+  };
 }
 
 export async function getMoomooSnapshot({ symbols, _deps } = {}) {

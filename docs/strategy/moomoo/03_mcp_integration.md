@@ -53,13 +53,14 @@
 | `moomoo_ticker` | `get_rt_ticker()` | 約定履歴 | read-only |
 | `moomoo_rt_data` | `get_rt_data()` | 当日分足 | read-only |
 | `moomoo_stock_filter` | `get_stock_filter()` | スクリーナー | read-only |
-| `moomoo_accounts` | `get_acc_list()` | 口座一覧 | account read |
-| `moomoo_positions` | `position_list_query()` | ポジション照会 | account read |
-| `moomoo_balance` | `accinfo_query()` | 残高/資産 | account read |
+| `moomoo_accounts` | `get_acc_list()` | 口座一覧 | account read / 実装済み |
+| `moomoo_positions` | `position_list_query()` | ポジション照会 | account read / 実装済み |
+| `moomoo_balance` | `accinfo_query()` | 残高/資産 | account read / 実装済み |
+| `moomoo_orders` | `order_list_query()` | 注文一覧 | account read / 実装済み |
+| `moomoo_deals` | `deal_list_query()` | 約定一覧 | account read / 実装済み |
+| `moomoo_portfolio` | account read APIs | ポートフォリオ診断 | account read / 実装済み |
 | `moomoo_paper_buy` | `place_order()` | ペーパー買い注文 | **SIMULATE 固定** |
-| `moomoo_order_list` | `order_list_query()` | 注文一覧 | account read |
 | `moomoo_cancel_order` | `modify_order(CANCEL)` | 注文キャンセル | **SIMULATE 固定** |
-| `moomoo_deal_list` | `deal_list_query()` | 約定一覧 | account read |
 
 ## 4-2. 既存 MCP サーバー実装の調査
 
@@ -129,7 +130,9 @@
 - `moomoo_accounts`
 - `moomoo_positions`
 - `moomoo_balance`
-- diagnostics / entitlement check
+- `moomoo_orders`
+- `moomoo_deals`
+- `moomoo_portfolio`
 
 ### Phase 3: Safe paper trading
 

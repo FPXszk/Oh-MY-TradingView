@@ -144,6 +144,17 @@ def open_quote_context(payload: dict[str, Any]):
     return ft.OpenQuoteContext(host=host, port=port)
 
 
+def open_trade_context(payload: dict[str, Any]):
+    host = payload.get("host", "127.0.0.1")
+    port = int(payload.get("port", 11111))
+    market_name = str(payload.get("market", "US"))
+    return ft.OpenSecTradeContext(
+        filter_trdmarket=get_enum(ft.TrdMarket, market_name, "market"),
+        host=host,
+        port=port,
+    )
+
+
 def get_enum(enum_group: Any, name: str, label: str):
     try:
         return getattr(enum_group, str(name).upper())
@@ -160,6 +171,39 @@ def enum_values(enum_group: Any) -> list[str]:
         if isinstance(value, str):
             values.append(name)
     return sorted(set(values))
+
+
+def payload_account_id(payload: dict[str, Any]) -> int:
+    raw_account_id = payload.get("account_id")
+    if raw_account_id in (None, ""):
+        return 0
+    try:
+        return int(str(raw_account_id))
+    except ValueError as exc:
+        fail("account_id must be an integer string", str(exc))
+
+
+def payload_trade_env(payload: dict[str, Any]):
+    return get_enum(ft.TrdEnv, str(payload.get("trd_env", "REAL")), "trd_env")
+
+
+def normalize_trade_rows(data: Any) -> list[dict[str, Any]]:
+    rows = normalize_object(data)
+    if not isinstance(rows, list):
+        return []
+    normalized_rows: list[dict[str, Any]] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            normalized_rows.append({"value": row})
+            continue
+        normalized = dict(row)
+        for sensitive_key in ("card_num", "uni_card_num"):
+            normalized.pop(sensitive_key, None)
+        for key in ("acc_id", "position_id", "order_id", "deal_id"):
+            if key in normalized and normalized[key] not in (None, "N/A"):
+                normalized[key] = str(normalized[key])
+        normalized_rows.append(normalized)
+    return normalized_rows
 
 
 def classify_stock_field(number: int) -> str:
@@ -516,6 +560,118 @@ def cmd_plate_stocks(payload: dict[str, Any]) -> dict[str, Any]:
         quote_ctx.close()
 
 
+def cmd_accounts(payload: dict[str, Any]) -> dict[str, Any]:
+    trade_ctx = open_trade_context(payload)
+    try:
+        ret, data = trade_ctx.get_acc_list()
+        if ret != ft.RET_OK:
+            fail("get_acc_list failed", str(data))
+        rows = normalize_trade_rows(data)
+        return {
+            "success": True,
+            "read_only": True,
+            "count": len(rows),
+            "rows": rows,
+        }
+    finally:
+        trade_ctx.close()
+
+
+def cmd_positions(payload: dict[str, Any]) -> dict[str, Any]:
+    trade_ctx = open_trade_context(payload)
+    try:
+        ret, data = trade_ctx.position_list_query(
+            code=str(payload.get("code", "")),
+            trd_env=payload_trade_env(payload),
+            acc_id=payload_account_id(payload),
+            refresh_cache=bool(payload.get("refresh_cache", True)),
+            currency=str(payload.get("currency", "USD")),
+        )
+        if ret != ft.RET_OK:
+            fail("position_list_query failed", str(data))
+        rows = normalize_trade_rows(data)
+        return {
+            "success": True,
+            "read_only": True,
+            "count": len(rows),
+            "rows": rows,
+        }
+    finally:
+        trade_ctx.close()
+
+
+def cmd_balance(payload: dict[str, Any]) -> dict[str, Any]:
+    trade_ctx = open_trade_context(payload)
+    try:
+        ret, data = trade_ctx.accinfo_query(
+            trd_env=payload_trade_env(payload),
+            acc_id=payload_account_id(payload),
+            refresh_cache=bool(payload.get("refresh_cache", True)),
+            currency=str(payload.get("currency", "USD")),
+        )
+        if ret != ft.RET_OK:
+            fail("accinfo_query failed", str(data))
+        rows = normalize_trade_rows(data)
+        return {
+            "success": True,
+            "read_only": True,
+            "currency": str(payload.get("currency", "USD")),
+            "count": len(rows),
+            "rows": rows,
+        }
+    finally:
+        trade_ctx.close()
+
+
+def cmd_orders(payload: dict[str, Any]) -> dict[str, Any]:
+    trade_ctx = open_trade_context(payload)
+    try:
+        ret, data = trade_ctx.order_list_query(
+            order_id=str(payload.get("order_id", "")),
+            code=str(payload.get("code", "")),
+            start=str(payload.get("start", "")),
+            end=str(payload.get("end", "")),
+            trd_env=payload_trade_env(payload),
+            acc_id=payload_account_id(payload),
+            refresh_cache=bool(payload.get("refresh_cache", True)),
+            order_market=str(payload.get("order_market", "N/A")),
+        )
+        if ret != ft.RET_OK:
+            fail("order_list_query failed", str(data))
+        rows = normalize_trade_rows(data)
+        return {
+            "success": True,
+            "read_only": True,
+            "count": len(rows),
+            "rows": rows,
+        }
+    finally:
+        trade_ctx.close()
+
+
+def cmd_deals(payload: dict[str, Any]) -> dict[str, Any]:
+    trade_ctx = open_trade_context(payload)
+    try:
+        ret, data = trade_ctx.deal_list_query(
+            code=str(payload.get("code", "")),
+            trd_env=payload_trade_env(payload),
+            acc_id=payload_account_id(payload),
+            refresh_cache=bool(payload.get("refresh_cache", True)),
+            deal_market=str(payload.get("deal_market", "N/A")),
+        )
+        if ret != ft.RET_OK:
+            fail("deal_list_query failed", str(data))
+        rows = normalize_trade_rows(data)
+        return {
+            "success": True,
+            "read_only": True,
+            "count": len(rows),
+            "rows": rows,
+        }
+    finally:
+        trade_ctx.close()
+
+
 COMMANDS = {
     "health_check": cmd_health_check,
     "snapshot": cmd_snapshot,
@@ -525,6 +681,11 @@ COMMANDS = {
     "stock_filter": cmd_stock_filter,
     "plate_list": cmd_plate_list,
     "plate_stocks": cmd_plate_stocks,
+    "accounts": cmd_accounts,
+    "positions": cmd_positions,
+    "balance": cmd_balance,
+    "orders": cmd_orders,
+    "deals": cmd_deals,
 }
 
 

@@ -3,6 +3,12 @@ import assert from 'node:assert/strict';
 
 import {
   getMoomooHealthCheck,
+  getMoomooAccounts,
+  getMoomooPositions,
+  getMoomooBalance,
+  getMoomooOrders,
+  getMoomooDeals,
+  getMoomooPortfolioDiagnostics,
   getMoomooSnapshot,
   getMoomooFundamentalsBatch,
   getMoomooKlineHistory,
@@ -178,6 +184,123 @@ describe('moomoo success paths', () => {
 
     assert.equal(result.success, true);
     assert.equal(result.state.program_status_type, 'READY');
+  });
+
+  it('passes read-only account payloads through the adapter', async () => {
+    const calls = [];
+    const router = createExecRouter({
+      accounts: async (payload) => {
+        calls.push({ command: 'accounts', payload });
+        return { success: true, read_only: true, count: 1, rows: [{ acc_id: '1', trd_env: 'REAL' }] };
+      },
+      positions: async (payload) => {
+        calls.push({ command: 'positions', payload });
+        return { success: true, read_only: true, count: 0, rows: [] };
+      },
+      balance: async (payload) => {
+        calls.push({ command: 'balance', payload });
+        return { success: true, read_only: true, count: 1, rows: [{ cash: 1000 }] };
+      },
+      orders: async (payload) => {
+        calls.push({ command: 'orders', payload });
+        return { success: true, read_only: true, count: 0, rows: [] };
+      },
+      deals: async (payload) => {
+        calls.push({ command: 'deals', payload });
+        return { success: true, read_only: true, count: 0, rows: [] };
+      },
+    });
+
+    await getMoomooAccounts({ market: 'US', ...mockDeps(router) });
+    await getMoomooPositions({
+      market: 'US',
+      trdEnv: 'REAL',
+      accountId: '284852704340244600',
+      currency: 'USD',
+      code: 'US.AAPL',
+      ...mockDeps(router),
+    });
+    await getMoomooBalance({
+      market: 'US',
+      trdEnv: 'REAL',
+      accountId: '284852704340244600',
+      currency: 'JPY',
+      ...mockDeps(router),
+    });
+    await getMoomooOrders({
+      market: 'US',
+      trdEnv: 'REAL',
+      accountId: '284852704340244600',
+      start: '2026-01-01',
+      end: '2026-05-16',
+      ...mockDeps(router),
+    });
+    await getMoomooDeals({
+      market: 'US',
+      trdEnv: 'SIMULATE',
+      accountId: '1058261',
+      ...mockDeps(router),
+    });
+
+    assert.deepEqual(calls.map((call) => call.command), [
+      'accounts',
+      'positions',
+      'balance',
+      'orders',
+      'deals',
+    ]);
+    assert.equal(calls[1].payload.account_id, '284852704340244600');
+    assert.equal(calls[1].payload.trd_env, 'REAL');
+    assert.equal(calls[1].payload.currency, 'USD');
+    assert.equal(calls[1].payload.code, 'US.AAPL');
+    assert.equal(calls[2].payload.currency, 'JPY');
+    assert.equal(calls[3].payload.start, '2026-01-01');
+    assert.equal(calls[4].payload.trd_env, 'SIMULATE');
+  });
+
+  it('builds read-only portfolio diagnostics from positions and balances', async () => {
+    const result = await getMoomooPortfolioDiagnostics({
+      market: 'US',
+      currency: 'USD',
+      ...mockDeps(createExecRouter({
+        accounts: async () => ({
+          success: true,
+          read_only: true,
+          count: 2,
+          rows: [
+            { acc_id: '1001', trd_env: 'REAL', acc_type: 'CASH', security_firm: 'FUTUJP' },
+            { acc_id: '2001', trd_env: 'SIMULATE', acc_type: 'MARGIN' },
+          ],
+        }),
+        positions: async () => ({
+          success: true,
+          read_only: true,
+          count: 2,
+          rows: [
+            { code: 'US.AAPL', stock_name: 'Apple', qty: 10, cost_price: 100, nominal_price: 120, market_val: 1200, pl_val: 200, pl_ratio: 20, currency: 'USD', position_market: 'US', position_side: 'LONG' },
+            { code: 'US.MSFT', stock_name: 'Microsoft', qty: 5, cost_price: 200, nominal_price: 180, market_val: 900, pl_val: -100, pl_ratio: -10, currency: 'USD', position_market: 'US', position_side: 'LONG' },
+          ],
+        }),
+        balance: async () => ({
+          success: true,
+          read_only: true,
+          count: 1,
+          rows: [{ total_assets: 5000, cash: 2900, market_val: 2100, currency: 'USD' }],
+        }),
+      })),
+    });
+
+    assert.equal(result.success, true);
+    assert.equal(result.readOnly, true);
+    assert.equal(result.accounts.length, 1);
+    assert.equal(result.totals.accountCount, 1);
+    assert.equal(result.totals.positionCount, 2);
+    assert.equal(result.totals.marketValue, 2100);
+    assert.equal(result.totals.unrealizedPl, 100);
+    assert.equal(result.totals.cashRatioPct, 58);
+    assert.equal(result.totals.investedRatioPct, 42);
+    assert.equal(result.accounts[0].summary.topPositionWeightPct, 57.14);
+    assert.equal(result.accounts[0].positions[0].symbol, 'US.AAPL');
   });
 
   it('passes snapshot symbols through the adapter', async () => {
@@ -722,6 +845,12 @@ describe('registerMoomooTools', () => {
       calls.map((call) => call.name),
       [
         'moomoo_health_check',
+        'moomoo_accounts',
+        'moomoo_positions',
+        'moomoo_balance',
+        'moomoo_orders',
+        'moomoo_deals',
+        'moomoo_portfolio',
         'moomoo_snapshot',
         'moomoo_kline_history',
         'moomoo_stock_filter_fields',
