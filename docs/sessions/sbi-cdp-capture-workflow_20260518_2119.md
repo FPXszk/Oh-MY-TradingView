@@ -42,6 +42,7 @@ SBI 証券のログイン済み Chrome を self-hosted GitHub Actions runner か
 node --test tests/sbi-capture-workflow.test.js
 node scripts/sbi/capture-portfolio-data.mjs --help
 node scripts/sbi/capture-portfolio-data.mjs --dry-run --output-dir tmp/sbi-capture-dryrun
+gh workflow run "SBI Portfolio Capture" --ref main --field cdp_host=127.0.0.1 --field cdp_port=9222 --field output_dir=docs/reports/screener/portfolio/capture/latest --field dry_run=true
 ```
 
 結果:
@@ -49,6 +50,8 @@ node scripts/sbi/capture-portfolio-data.mjs --dry-run --output-dir tmp/sbi-captu
 - テスト成功
 - CLI help 表示成功
 - dry-run は `127.0.0.1:9222` に endpoint が無く `fetch failed` で終了したが、`capture-summary.md` と `capture-error.txt` は出力された
+- GitHub Actions run `26033528664` は artifact upload まで進み、その後 `Capture SBI portfolio data` step が `TypeError: fetch failed` で失敗した
+- 失敗理由は runner 上の `127.0.0.1:9222` に CDP endpoint が無かったためで、workflow 定義自体は dispatch / artifact upload まで成立している
 
 ## Notes
 
