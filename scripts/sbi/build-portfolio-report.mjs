@@ -379,6 +379,44 @@ export function parseAssetsSummarySnapshot(snapshot) {
         .replace('預り金（米ドル）', '預り金(米ドル)'),
     }));
 
+  if (
+    result.totalAssetsJpy === null &&
+    result.totalUnrealizedPlJpy === null &&
+    result.products.length === 0 &&
+    snapshot?.text
+  ) {
+    const text = snapshot.text;
+    const metricValue = (label) => {
+      const start = text.indexOf(label);
+      if (start === -1) return null;
+      const slice = text.slice(start, start + 120);
+      const match = slice.match(/[+\-]?[0-9,]+円/);
+      return match ? parseNumber(match[0]) : null;
+    };
+    const totalAssets = metricValue('資産残高');
+    const dayChange = metricValue('前日比');
+    const unrealized = metricValue('評価損益');
+    const unrealizedPct = text.match(/評価損益率\s+([+\-]?[0-9.]+)%/);
+    result.totalAssetsJpy = totalAssets;
+    result.totalDayChangeJpy = dayChange;
+    result.totalUnrealizedPlJpy = unrealized;
+    result.totalUnrealizedPlPct = parseNumber(unrealizedPct?.[1]);
+
+    const productPattern = /(米国株式|投資信託|預り金\(円\)|預り金\(米ドル\)|国内株式)\s+([+\-]?[0-9,]+)円(?:\s+([+\-]?[0-9,]+)円\s+([+\-]?[0-9.]+)%){0,1}/g;
+    const products = [];
+    for (const match of text.matchAll(productPattern)) {
+      products.push({
+        product: match[1],
+        marketValueJpy: parseNumber(match[2]),
+        unrealizedPlJpy: parseNumber(match[3]),
+        unrealizedPlPct: parseNumber(match[4]),
+        dayChangeJpy: null,
+        monthChangePct: null,
+      });
+    }
+    result.products = products;
+  }
+
   return result;
 }
 
@@ -410,8 +448,9 @@ export function parseFundPortfolioCsv(text) {
   for (let index = 0; index < rows.length; index += 1) {
     const row = rows[index];
     const first = row[0];
-    if (first?.startsWith('投資信託（金額/') && !first.endsWith('）合計')) {
+    if ((first?.startsWith('投資信託（金額/') || first?.startsWith('投資信託(金額/')) && !first.includes('合計')) {
       section = first.replace('投資信託（金額/', '').replace('）', '');
+      section = section.replace('投資信託(金額/', '').replace(')', '');
       currentHeader = null;
       continue;
     }
@@ -420,7 +459,13 @@ export function parseFundPortfolioCsv(text) {
       continue;
     }
     if (!section || !currentHeader) continue;
-    if (first?.startsWith('投資信託（金額/') || first === '評価額合計' || first === '総合計') {
+    if (
+      first?.startsWith('投資信託（金額/') ||
+      first?.startsWith('投資信託(金額/') ||
+      first === '評価額合計' ||
+      first === '総合計' ||
+      first.includes('合計')
+    ) {
       currentHeader = null;
       continue;
     }
@@ -432,7 +477,7 @@ export function parseFundPortfolioCsv(text) {
     funds.push({
       accountType: section,
       name: entry['ファンド名'],
-      quantity: parseNumber(entry['保有口数']),
+      quantity: parseNumber(entry['保有口数'] || entry['数量']),
       averageCost: parseNumber(entry['取得単価']),
       currentPrice: parseNumber(entry['基準価額']),
       costBasisJpy: parseNumber(entry['取得金額']),
@@ -453,7 +498,7 @@ export function parseFundPortfolioSnapshot(snapshot) {
 
   for (const row of rows) {
     const first = cleanCell(row[0]);
-    if (first.startsWith('投資信託') && !first.endsWith('合計')) {
+    if (first.startsWith('投資信託') && !first.includes('合計')) {
       section = first;
       header = null;
       continue;

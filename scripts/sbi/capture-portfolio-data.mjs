@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import CDP from 'chrome-remote-interface';
-import { mkdir, readdir, readFile, rename, stat, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -490,6 +490,7 @@ async function main() {
 
   const outputDir = resolve(options.outputDir);
   const downloadDir = join(outputDir, 'downloads');
+  await rm(outputDir, { recursive: true, force: true });
   await mkdir(downloadDir, { recursive: true });
 
   const summary = {
