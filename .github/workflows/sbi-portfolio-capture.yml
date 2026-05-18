@@ -1,0 +1,80 @@
+name: SBI Portfolio Capture
+
+on:
+  workflow_dispatch:
+    inputs:
+      cdp_host:
+        description: Chrome CDP host
+        required: true
+        default: 127.0.0.1
+      cdp_port:
+        description: Chrome CDP port
+        required: true
+        default: '9222'
+      output_dir:
+        description: Repo-relative output directory
+        required: true
+        default: docs/reports/screener/portfolio/capture/latest
+      dry_run:
+        description: Probe only, do not click or navigate
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+
+jobs:
+  capture-sbi-portfolio:
+    runs-on:
+      - self-hosted
+      - windows
+    env:
+      SBI_CDP_HOST: ${{ inputs.cdp_host }}
+      SBI_CDP_PORT: ${{ inputs.cdp_port }}
+      SBI_CAPTURE_OUTPUT_DIR: ${{ inputs.output_dir }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          clean: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci --silent
+
+      - name: Capture SBI portfolio data
+        shell: pwsh
+        run: |
+          $args = @(
+            'scripts/sbi/capture-portfolio-data.mjs',
+            '--cdp-host', '${{ env.SBI_CDP_HOST }}',
+            '--cdp-port', '${{ env.SBI_CDP_PORT }}',
+            '--output-dir', '${{ env.SBI_CAPTURE_OUTPUT_DIR }}'
+          )
+          if ('${{ inputs.dry_run }}' -eq 'true') {
+            $args += '--dry-run'
+          }
+          node @args
+
+      - name: Validate capture output
+        shell: pwsh
+        run: |
+          if (-not (Test-Path '${{ env.SBI_CAPTURE_OUTPUT_DIR }}/capture-summary.json')) {
+            throw 'capture-summary.json was not created'
+          }
+          if (-not (Test-Path '${{ env.SBI_CAPTURE_OUTPUT_DIR }}/capture-summary.md')) {
+            throw 'capture-summary.md was not created'
+          }
+
+      - name: Upload capture artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbi-portfolio-capture-${{ github.run_id }}
+          path: ${{ env.SBI_CAPTURE_OUTPUT_DIR }}
+          if-no-files-found: warn

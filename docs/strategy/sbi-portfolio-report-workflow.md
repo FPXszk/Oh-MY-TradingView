@@ -16,6 +16,12 @@
 今回のセッションで実際に検証できたのは、**CSV ダウンロード後の集計ワークフロー**。
 Chrome 上での tab claim / 画面遷移は、このセッションではツール露出を確認できなかったため、ブラウザ操作自体は durable workflow に含めず、CSV 出力以降を安定経路として固定する。
 
+追記:
+
+- `SBI Portfolio Capture` という self-hosted GitHub Actions workflow を追加した。
+- こちらは **既存のログイン済み Chrome が CDP endpoint を公開していること** を前提に、SBI タブへ接続して CSV ダウンロードを試み、取れない場合は「毎資産」ページのテキストと表を artifact 化する。
+- 2026-05-18 時点では、この開発セッションから `127.0.0.1:9222` / `127.0.0.1:9223` の live endpoint は未確認だったため、repo 側では probe 可能な workflow として実装し、実運用確認は runner 上で行う前提とする。
+
 ## Required CSV Files
 
 `/mnt/c/Users/szk/Downloads/` に以下の最新ファイルがある前提。
@@ -69,6 +75,42 @@ node scripts/sbi/build-portfolio-report.mjs --help
 2. 口座管理 / ポートフォリオ / 実現損益 / 約定履歴から CSV をダウンロードする
 3. `Downloads` に CSV が揃ったら `npm run sbi:portfolio-report` を実行する
 4. 出力 Markdown を確認する
+
+## GitHub Actions Capture Workflow
+
+workflow:
+
+```text
+.github/workflows/sbi-portfolio-capture.yml
+```
+
+目的:
+
+- ログイン済み SBI Chrome tab へ CDP 接続する
+- 現在ページを保存する
+- 可能なら CSV ダウンロードを試す
+- CSV が取れなくても「毎資産」ページのテキスト / 表 snapshot を artifact 化する
+
+前提:
+
+1. self-hosted runner が Windows 上で動いている
+2. 同じマシン上の Chrome が SBI 証券へログイン済みで開いている
+3. Chrome が remote debugging port 付きで起動している
+
+代表入力:
+
+- `cdp_host`: 既定 `127.0.0.1`
+- `cdp_port`: 既定 `9222`
+- `output_dir`: 既定 `docs/reports/screener/portfolio/capture/latest`
+- `dry_run`: `true` / `false`
+
+ローカル確認:
+
+```bash
+npm run sbi:portfolio-capture -- --dry-run
+```
+
+CDP endpoint が無い場合でも、`capture-summary.md` と `capture-error.txt` を出して失敗理由を残す。
 
 ## Notes
 
