@@ -29,6 +29,14 @@ describe('sbi capture target selection', () => {
     ]);
     assert.equal(target.title, 'SBI証券 - 口座管理');
   });
+
+  it('does not select unrelated pages with zero score', () => {
+    const target = pickSbiTarget([
+      { type: 'page', title: 'about:blank', url: 'about:blank' },
+      { type: 'page', title: 'Google', url: 'https://www.google.com/' },
+    ]);
+    assert.equal(target, null);
+  });
 });
 
 describe('sbi capture candidate ranking', () => {

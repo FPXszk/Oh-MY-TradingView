@@ -123,6 +123,9 @@ CDP endpoint が無い場合でも、`capture-summary.md` と `capture-error.txt
   が残る。
 - workflow 側でも `Probe CDP endpoint` step で `json/version` / `json/list` を先に確認する。
 - 現在の blocker が `CDP endpoint 不在` なのか `SBI tab 不在` なのかは、この probe と summary で切り分ける。
+- Windows 側では dedicated Chrome shortcut から `127.0.0.1:9222` の endpoint 応答を確認できた。
+- 一方、WSL からの `127.0.0.1:9222` は未到達のままだったため、local WSL 実行と self-hosted Windows runner 実行は分けて考える。
+- 現時点で bootstrap 後の次 blocker は `No SBI Securities tab found` で、SBI ログイン済み tab を CDP 対象の Chrome 側に載せる必要がある。
 
 ## Notes
 

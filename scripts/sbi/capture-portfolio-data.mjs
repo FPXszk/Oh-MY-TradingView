@@ -93,7 +93,7 @@ export function scoreSbiTarget(target) {
 export function pickSbiTarget(targets) {
   return [...(targets || [])]
     .map((target) => ({ target, score: scoreSbiTarget(target) }))
-    .filter((entry) => entry.score >= 0)
+    .filter((entry) => entry.score > 0)
     .sort((left, right) => right.score - left.score)[0]?.target ?? null;
 }
 
