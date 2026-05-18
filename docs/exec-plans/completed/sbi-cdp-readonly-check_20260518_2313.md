@@ -51,12 +51,18 @@
 
 ## Steps
 
-- [ ] Step 1: CDP endpoint と target 一覧を read-only で確認する
-- [ ] Step 2: SBI tab 検出可否と、今読める範囲を整理する
-- [ ] Step 3: 必要なら dry-run を 1 回だけ行い、結果を確認する
-- [ ] Step 4: session log と必要な docs を更新する
-- [ ] Step 5: 変更をレビューし、plan を completed へ移して commit / push する
+- [x] Step 1: CDP endpoint と target 一覧を read-only で確認する
+- [x] Step 2: SBI tab 検出可否と、今読める範囲を整理する
+- [x] Step 3: 必要なら dry-run を 1 回だけ行い、結果を確認する
+- [x] Step 4: session log と必要な docs を更新する
+- [x] Step 5: 変更をレビューし、plan を completed へ移して commit / push する
 
 ## No-Overlap Check
 
 - `docs/exec-plans/active/` は確認時点で空であり、競合する active plan は無い
+
+## Outcome
+
+- Windows 側 `127.0.0.1:9222` の endpoint 応答を再確認できた
+- `json/list` から SBI タブが見えていることを確認できた
+- local Windows 実行の dry-run で SBI target が正しく pick されることを確認できた
