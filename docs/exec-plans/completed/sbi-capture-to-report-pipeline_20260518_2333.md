@@ -58,9 +58,9 @@
 
 ## Steps
 
-- [ ] Step 1: 現行 capture artifact / scripts / tests を確認し、`account/assets` と report build の最小実装方針を固める
-- [ ] Step 2: exec-plan を保存し、docs-only commit と push を行う
-- [ ] Step 3: capture script と tests を更新し、`マイ資産` capture と CSV 識別を実装する
-- [ ] Step 4: report script と workflow を更新し、capture directory から report 生成までつなぐ
-- [ ] Step 5: tests と live workflow を実行して結果を確認する
-- [ ] Step 6: docs / session log を更新し、exec-plan を completed へ移動して commit / push する
+- [x] Step 1: 現行 capture artifact / scripts / tests を確認し、`account/assets` と report build の最小実装方針を固める
+- [x] Step 2: exec-plan を保存し、docs-only commit と push を行う
+- [x] Step 3: capture script と tests を更新し、`マイ資産` capture と CSV 識別を実装する
+- [x] Step 4: report script と workflow を更新し、capture directory から report 生成までつなぐ
+- [x] Step 5: tests と live workflow を実行して結果を確認する
+- [x] Step 6: docs / session log を更新し、exec-plan を completed へ移動して commit / push する

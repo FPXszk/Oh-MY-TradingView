@@ -88,8 +88,10 @@ workflow:
 
 - ログイン済み SBI Chrome tab へ CDP 接続する
 - 現在ページを保存する
+- `My資産トップ` (`https://site.sbisec.co.jp/account/assets`) を authenticated session 経由で保存する
 - 可能なら CSV ダウンロードを試す
 - CSV が取れなくても「毎資産」ページのテキスト / 表 snapshot を artifact 化する
+- capture artifact から `sbi_portfolio_report.md` を生成する
 
 前提:
 
@@ -126,6 +128,13 @@ CDP endpoint が無い場合でも、`capture-summary.md` と `capture-error.txt
 - Windows 側では dedicated Chrome shortcut から `127.0.0.1:9222` の endpoint 応答を確認できた。
 - 一方、WSL からの `127.0.0.1:9222` は未到達のままだったため、local WSL 実行と self-hosted Windows runner 実行は分けて考える。
 - 現時点で bootstrap 後の次 blocker は `No SBI Securities tab found` で、SBI ログイン済み tab を CDP 対象の Chrome 側に載せる必要がある。
+
+2026-05-18 pipeline update:
+
+- live workflow run `26040718109` で `My資産トップ｜SBI証券` を target として capture できた
+- artifact には `account-assets-page.json/.txt` と `sbi_portfolio_report.md` が含まれる
+- 今回の自動回収で確認できた detailed source は `downloads/SaveFile.csv` で、投資信託 3 件は report 化できた
+- 一方で、米国株明細 / 国内株明細 / 実現損益詳細 / 約定履歴 CSV はまだ自動回収していないため、report は部分的である
 
 ## Notes
 
