@@ -71,12 +71,27 @@ Windows から local 最新版 script を実行すると:
 - `pickSbiTarget()` の filter を `score >= 0` から `score > 0` へ変更
 - test 追加: unrelated page だけのとき `null` を返す
 
+### 5. self-hosted workflow 再検証
+
+run:
+
+- `26038180429`
+  - dedicated Chrome endpoint へ接続できることを確認
+  - ただし旧コードでは `about:blank` を target として success 扱いしていた
+- `26038690971`
+  - 最新コード反映後の dry-run
+  - `Probe CDP endpoint` は success
+  - `Capture SBI portfolio data` は
+    - `No SBI Securities tab found on the configured CDP endpoint. Found 1 target(s), but none matched SBI.`
+  - 期待どおり、次 blocker が `SBI tab 不在` に変わった
+
 ## What Was Verified
 
 - Desktop shortcut の作成成功
 - Windows 側 `127.0.0.1:9222` の CDP endpoint 応答成功
 - self-hosted workflow run `26038180429` で endpoint probe success
 - local 最新版 script で `No SBI Securities tab found` まで進むことを確認
+- self-hosted workflow run `26038690971` で同じ failure reason へ揃った
 - `node --test tests/sbi-capture-workflow.test.js` success
 
 ## Important Interpretation
