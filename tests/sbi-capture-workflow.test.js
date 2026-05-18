@@ -47,6 +47,15 @@ describe('sbi capture summary markdown', () => {
     const markdown = buildCaptureSummaryMarkdown({
       generatedAt: '2026-05-18T12:00:00.000Z',
       cdpEndpoint: { host: '127.0.0.1', port: 9222 },
+      endpointProbe: {
+        reachable: false,
+        versionOk: false,
+        listOk: false,
+        browser: null,
+        protocolVersion: null,
+        targetCount: null,
+        errors: ['GET /json/version failed: fetch failed'],
+      },
       target: { title: 'SBI証券', url: 'https://site2.sbisec.co.jp/ETGate/' },
       dryRun: false,
       currentPageSaved: true,
@@ -60,6 +69,8 @@ describe('sbi capture summary markdown', () => {
     });
 
     assert.match(markdown, /# SBI Portfolio Capture Summary/);
+    assert.match(markdown, /endpoint_reachable: false/);
+    assert.match(markdown, /GET \/json\/version failed: fetch failed/);
     assert.match(markdown, /downloads\/sbi_assets_summary\.csv/);
     assert.match(markdown, /test note/);
   });

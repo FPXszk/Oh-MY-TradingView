@@ -58,13 +58,19 @@
 
 ## Steps
 
-- [ ] Step 1: capture script / workflow / docs を読み、現状の failure-path を整理する
-- [ ] Step 2: local で CDP endpoint 未応答ケースを再現し、summary と log の不足を特定する
-- [ ] Step 3: script と workflow に最小限の診断強化を実装する
-- [ ] Step 4: テストを追加または更新し、local validation を実行する
-- [ ] Step 5: session log と必要な workflow doc を更新する
-- [ ] Step 6: 変更をレビューし、plan を completed へ移して commit / push する
+- [x] Step 1: capture script / workflow / docs を読み、現状の failure-path を整理する
+- [x] Step 2: local で CDP endpoint 未応答ケースを再現し、summary と log の不足を特定する
+- [x] Step 3: script と workflow に最小限の診断強化を実装する
+- [x] Step 4: テストを追加または更新し、local validation を実行する
+- [x] Step 5: session log と必要な workflow doc を更新する
+- [x] Step 6: 変更をレビューし、plan を completed へ移して commit / push する
 
 ## No-Overlap Check
 
 - `docs/exec-plans/active/` は確認時点で空であり、競合する active plan は無い
+
+## Outcome
+
+- `127.0.0.1:9222/9223` の CDP endpoint 未応答は再現した
+- capture script に endpoint probe を追加し、`CDP endpoint 不在` と `SBI tab 不在` を区別できるようにした
+- GitHub Actions workflow に preflight probe を追加し、Actions log だけでも接続状態が見えるようにした

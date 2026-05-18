@@ -111,6 +111,56 @@ async function listTargets(host, port) {
   return response.json();
 }
 
+async function probeEndpoint(host, port) {
+  const baseUrl = `http://${host}:${port}`;
+  const result = {
+    baseUrl,
+    reachable: false,
+    versionOk: false,
+    listOk: false,
+    browser: null,
+    protocolVersion: null,
+    targetCount: null,
+    errors: [],
+  };
+
+  try {
+    const versionResponse = await fetch(`${baseUrl}/json/version`, {
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!versionResponse.ok) {
+      result.errors.push(`GET /json/version failed: HTTP ${versionResponse.status}`);
+    } else {
+      const versionPayload = await versionResponse.json();
+      result.reachable = true;
+      result.versionOk = true;
+      result.browser = versionPayload.Browser ?? null;
+      result.protocolVersion = versionPayload['Protocol-Version'] ?? null;
+      result.webSocketDebuggerUrl = versionPayload.webSocketDebuggerUrl ?? null;
+    }
+  } catch (error) {
+    result.errors.push(`GET /json/version failed: ${error.message}`);
+  }
+
+  try {
+    const listResponse = await fetch(`${baseUrl}/json/list`, {
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!listResponse.ok) {
+      result.errors.push(`GET /json/list failed: HTTP ${listResponse.status}`);
+    } else {
+      const targets = await listResponse.json();
+      result.reachable = true;
+      result.listOk = true;
+      result.targetCount = Array.isArray(targets) ? targets.length : null;
+    }
+  } catch (error) {
+    result.errors.push(`GET /json/list failed: ${error.message}`);
+  }
+
+  return result;
+}
+
 async function evaluateJson(client, expression) {
   const result = await client.Runtime.evaluate({
     expression,
@@ -334,6 +384,15 @@ export function buildCaptureSummaryMarkdown(summary) {
     `- target_url: ${summary.target?.url || 'n/a'}`,
     `- dry_run: ${summary.dryRun ? 'true' : 'false'}`,
     '',
+    '## Endpoint Probe',
+    '',
+    `- endpoint_reachable: ${summary.endpointProbe?.reachable ? 'true' : 'false'}`,
+    `- version_ok: ${summary.endpointProbe?.versionOk ? 'true' : 'false'}`,
+    `- list_ok: ${summary.endpointProbe?.listOk ? 'true' : 'false'}`,
+    `- browser: ${summary.endpointProbe?.browser || 'n/a'}`,
+    `- protocol_version: ${summary.endpointProbe?.protocolVersion || 'n/a'}`,
+    `- target_count: ${summary.endpointProbe?.targetCount ?? 'n/a'}`,
+    '',
     '## Capture',
     '',
     `- current_page_saved: ${summary.currentPageSaved ? 'true' : 'false'}`,
@@ -342,6 +401,14 @@ export function buildCaptureSummaryMarkdown(summary) {
     `- csv_download_success: ${summary.csvDownload?.success ? 'true' : 'false'}`,
     '',
   ];
+
+  if (summary.endpointProbe?.errors?.length) {
+    lines.push('## Endpoint Probe Errors', '');
+    for (const error of summary.endpointProbe.errors) {
+      lines.push(`- ${error}`);
+    }
+    lines.push('');
+  }
 
   if (summary.csvDownload?.files?.length) {
     lines.push('## Downloaded Files', '');
@@ -376,6 +443,7 @@ async function main() {
   const summary = {
     generatedAt: new Date().toISOString(),
     cdpEndpoint: { host: options.cdpHost, port: options.cdpPort },
+    endpointProbe: null,
     dryRun: options.dryRun,
     outputDir,
     target: null,
@@ -386,10 +454,15 @@ async function main() {
     notes: [],
   };
   try {
+    summary.endpointProbe = await probeEndpoint(options.cdpHost, options.cdpPort);
+    if (!summary.endpointProbe.reachable) {
+      throw new Error(`CDP endpoint is unreachable at ${summary.endpointProbe.baseUrl}. Start Chrome with --remote-debugging-port=${options.cdpPort}.`);
+    }
+
     const targets = await listTargets(options.cdpHost, options.cdpPort);
     const target = pickSbiTarget(targets);
     if (!target) {
-      throw new Error('No SBI Securities tab found on the configured CDP endpoint.');
+      throw new Error(`No SBI Securities tab found on the configured CDP endpoint. Found ${targets.length} target(s), but none matched SBI.`);
     }
 
     summary.target = {
@@ -456,6 +529,8 @@ async function main() {
   console.log(JSON.stringify({
     success: true,
     outputDir,
+    endpointReachable: summary.endpointProbe?.reachable ?? false,
+    endpointTargetCount: summary.endpointProbe?.targetCount ?? null,
     targetTitle: summary.target?.title ?? null,
     targetUrl: summary.target?.url ?? null,
     everyAssetCaptured: summary.everyAssetCaptured,

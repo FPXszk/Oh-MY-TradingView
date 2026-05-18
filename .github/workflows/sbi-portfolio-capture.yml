@@ -47,6 +47,28 @@ jobs:
       - name: Install dependencies
         run: npm ci --silent
 
+      - name: Probe CDP endpoint
+        shell: pwsh
+        run: |
+          $versionUrl = "http://${{ env.SBI_CDP_HOST }}:${{ env.SBI_CDP_PORT }}/json/version"
+          $listUrl = "http://${{ env.SBI_CDP_HOST }}:${{ env.SBI_CDP_PORT }}/json/list"
+          Write-Host "Probing $versionUrl"
+          try {
+            $version = Invoke-RestMethod -Uri $versionUrl -TimeoutSec 5
+            Write-Host "CDP Browser: $($version.Browser)"
+            Write-Host "CDP Protocol-Version: $($version.'Protocol-Version')"
+          } catch {
+            Write-Host "CDP version probe failed: $($_.Exception.Message)"
+          }
+          Write-Host "Probing $listUrl"
+          try {
+            $targets = Invoke-RestMethod -Uri $listUrl -TimeoutSec 5
+            $count = @($targets).Count
+            Write-Host "CDP target count: $count"
+          } catch {
+            Write-Host "CDP target list probe failed: $($_.Exception.Message)"
+          }
+
       - name: Capture SBI portfolio data
         shell: pwsh
         run: |

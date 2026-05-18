@@ -112,6 +112,18 @@ npm run sbi:portfolio-capture -- --dry-run
 
 CDP endpoint が無い場合でも、`capture-summary.md` と `capture-error.txt` を出して失敗理由を残す。
 
+2026-05-18 debug memo:
+
+- `127.0.0.1:9222` / `127.0.0.1:9223` が未応答なら、`capture-summary.md` の `Endpoint Probe` に
+  - `endpoint_reachable`
+  - `version_ok`
+  - `list_ok`
+  - `target_count`
+  - `GET /json/version` / `GET /json/list` の失敗理由
+  が残る。
+- workflow 側でも `Probe CDP endpoint` step で `json/version` / `json/list` を先に確認する。
+- 現在の blocker が `CDP endpoint 不在` なのか `SBI tab 不在` なのかは、この probe と summary で切り分ける。
+
 ## Notes
 
 - 日本株の現保有一覧 CSV が無い場合は、資産サマリー上の評価額から「現保有なし / 要追加CSV」を判定する。
