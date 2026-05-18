@@ -1,14 +1,20 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { mkdtemp, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 
 import {
   parseAssetsSummaryCsv,
+  parseAssetsSummarySnapshot,
   parseUsStocksCsv,
   parseFundPortfolioCsv,
+  parseFundPortfolioSnapshot,
   parseRealizedSummaryCsv,
   parseDomesticHistoryCsv,
   parseForeignHistoryCsv,
   buildPortfolioReport,
+  buildPortfolioReportFromCaptureDir,
 } from '../scripts/sbi/build-portfolio-report.mjs';
 
 describe('sbi portfolio report parsers', () => {
@@ -48,6 +54,41 @@ NISA預り,エヌビディア,NVDA,NASDAQ,10,174.50,225.32,2253.20,358213,+508.2
     assert.equal(usStocks[0].ticker, 'NVDA');
     assert.equal(funds.length, 1);
     assert.equal(funds[0].distributionMethod, '再投資');
+  });
+
+  it('parses asset/fund snapshot fallbacks', () => {
+    const assets = parseAssetsSummarySnapshot({
+      tables: [
+        {
+          rows: [
+            ['総資産', '5,424,050'],
+            ['評価損益', '+923,131'],
+            ['前日比', '+6,550'],
+            ['国内株式', '0'],
+            ['米国株式', '1,750,653'],
+            ['投資信託', '1,546,177'],
+            ['預り金(円)', '1,398,724'],
+            ['預り金(米ドル)', '728,498'],
+          ],
+        },
+      ],
+    });
+    const funds = parseFundPortfolioSnapshot({
+      tables: [
+        {
+          rows: [
+            ['投資信託（金額/NISA預り（つみたて投資枠））'],
+            ['ファンド名', '数量', '取得単価', '現在値', '損益', '評価額'],
+            ['ｅＭＡＸＩＳ　Ｓｌｉｍ　米国株式（Ｓ＆Ｐ５００）', '305,179', '30,474', '43,645', '+401,951.26', '1,331,953.74'],
+          ],
+        },
+      ],
+    });
+
+    assert.equal(assets.totalAssetsJpy, 5424050);
+    assert.equal(assets.products.find((row) => row.product === '米国株式')?.marketValueJpy, 1750653);
+    assert.equal(funds.length, 1);
+    assert.equal(funds[0].marketValueJpy, 1331953.74);
   });
 
   it('parses realized summary and histories', () => {
@@ -135,5 +176,40 @@ describe('sbi portfolio report builder', () => {
     assert.match(report, /## 約定履歴サマリー/);
     assert.match(report, /エヌビディア/);
     assert.match(report, /住友電気工業/);
+  });
+
+  it('builds a report from capture directory fallbacks', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'sbi-capture-'));
+    const downloads = join(root, 'downloads');
+    await mkdir(downloads, { recursive: true });
+    await writeFile(join(downloads, 'SaveFile.csv'), `ポートフォリオ一覧
+投資信託（金額/NISA預り（つみたて投資枠））
+ファンド名,数量,取得単価,現在値,損益,評価額
+ｅＭＡＸＩＳ　Ｓｌｉｍ　米国株式（Ｓ＆Ｐ５００）,305179,30474,43645,+401951.26,1331953.74
+`, 'utf8');
+    await writeFile(join(root, 'account-assets-page.json'), `${JSON.stringify({
+      tables: [
+        {
+          rows: [
+            ['総資産', '5,424,050'],
+            ['評価損益', '+923,131'],
+            ['前日比', '+6,550'],
+            ['国内株式', '0'],
+            ['米国株式', '1,750,653'],
+            ['投資信託', '1,546,177'],
+            ['預り金(円)', '1,398,724'],
+            ['預り金(米ドル)', '728,498'],
+          ],
+        },
+      ],
+    }, null, 2)}\n`, 'utf8');
+    const output = join(root, 'report.md');
+
+    await buildPortfolioReportFromCaptureDir(root, output);
+    const report = await readFile(output, 'utf8');
+
+    assert.match(report, /# SBI Portfolio Report/);
+    assert.match(report, /総資産残高/);
+    assert.match(report, /ｅＭＡＸＩＳ/);
   });
 });

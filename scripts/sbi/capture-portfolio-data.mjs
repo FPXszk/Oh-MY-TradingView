@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 
 import CDP from 'chrome-remote-interface';
-import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, rename, stat, writeFile } from 'node:fs/promises';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const DEFAULT_CDP_HOST = '127.0.0.1';
 const DEFAULT_CDP_PORT = 9222;
 const DEFAULT_OUTPUT_DIR = 'docs/reports/screener/portfolio/capture/latest';
+const ACCOUNT_ASSETS_URL = 'https://site.sbisec.co.jp/account/assets';
 const CLICKABLE_SELECTOR = [
   'a',
   'button',
@@ -75,6 +76,28 @@ function sanitizeName(value) {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .slice(0, 80) || 'untitled';
+}
+
+function decodeCsvBuffer(buffer) {
+  const utf8 = new TextDecoder('utf-8').decode(buffer);
+  if (!utf8.includes('�')) return utf8;
+  return new TextDecoder('shift_jis').decode(buffer);
+}
+
+function detectSbiCsvKind(text) {
+  const normalized = text.replace(/^\uFEFF/, '');
+  if (/^取得日時,/m.test(normalized) && /総資産残高/.test(normalized)) return 'sbi_assets_summary.csv';
+  if (/口座種別,銘柄名,ティッカー,取引所/m.test(normalized)) return 'sbi_us_stocks.csv';
+  if (/投資信託（金額\//.test(normalized) || /保有証券一覧/.test(normalized)) return 'SaveFile.csv';
+  if (/^商品,実現損益\(税引前・円\),利益金額\(円\),損失金額\(円\)/m.test(normalized)) return 'ALLTYPE_capture.csv';
+  if (/^約定日,(口座|国|ファンド名)/m.test(normalized)) {
+    if (/ファンド名/.test(normalized)) return 'FUND_capture.csv';
+    if (/国/.test(normalized)) return 'FOREIGN_STOCK_capture.csv';
+    return 'DOMESTIC_STOCK_capture.csv';
+  }
+  if (/^約定日,銘柄,銘柄コード,市場,取引/m.test(normalized)) return 'SaveFile_capture.csv';
+  if (/^国内約定日,通貨,銘柄名,取引,預り区分/m.test(normalized)) return 'yakujo_capture.csv';
+  return null;
 }
 
 export function scoreSbiTarget(target) {
@@ -198,6 +221,26 @@ async function ensureDownloadBehavior(client, downloadPath) {
   } catch (error) {
     return { success: false, error: error.message };
   }
+}
+
+async function classifyDownloadedFiles(downloadDir) {
+  const files = await listFilesRecursive(downloadDir);
+  const renamed = [];
+  for (const file of files) {
+    const targetName = detectSbiCsvKind(decodeCsvBuffer(await readFile(file.path)));
+    if (!targetName) continue;
+    const targetPath = join(downloadDir, targetName);
+    if (targetPath !== file.path) {
+      await rename(file.path, targetPath).catch(() => {});
+    }
+    const details = await stat(targetPath).catch(() => null);
+    renamed.push({
+      path: targetPath,
+      mtimeMs: details?.mtimeMs ?? file.mtimeMs,
+      size: details?.size ?? file.size,
+    });
+  }
+  return renamed;
 }
 
 async function listFilesRecursive(dir) {
@@ -335,6 +378,12 @@ async function waitForPageSettle(client, previousUrl, timeoutMs = 10000) {
   return { url: lastUrl, readyState: 'timeout' };
 }
 
+async function navigateToUrl(client, url, timeoutMs = 15000) {
+  const previous = await evaluateJson(client, 'location.href');
+  await client.Page.navigate({ url });
+  return waitForPageSettle(client, previous, timeoutMs);
+}
+
 async function tryCsvDownloads(client, downloadDir) {
   const beforeFiles = await listFilesRecursive(downloadDir);
   const csvKeywordsList = [
@@ -355,10 +404,12 @@ async function tryCsvDownloads(client, downloadDir) {
     const beforeSet = new Set(beforeFiles.map((entry) => entry.path));
     const newFiles = afterFiles.filter((entry) => !beforeSet.has(entry.path));
     if (newFiles.length > 0) {
+      await classifyDownloadedFiles(downloadDir);
+      const renamedFiles = await listFilesRecursive(downloadDir);
       return {
         success: true,
         attempts,
-        files: newFiles.sort((left, right) => right.mtimeMs - left.mtimeMs),
+        files: renamedFiles.sort((left, right) => right.mtimeMs - left.mtimeMs),
       };
     }
   }
@@ -398,6 +449,7 @@ export function buildCaptureSummaryMarkdown(summary) {
     `- current_page_saved: ${summary.currentPageSaved ? 'true' : 'false'}`,
     `- every_asset_attempted: ${summary.everyAssetAttempted ? 'true' : 'false'}`,
     `- every_asset_captured: ${summary.everyAssetCaptured ? 'true' : 'false'}`,
+    `- account_assets_captured: ${summary.accountAssetsCaptured ? 'true' : 'false'}`,
     `- csv_download_success: ${summary.csvDownload?.success ? 'true' : 'false'}`,
     '',
   ];
@@ -450,6 +502,7 @@ async function main() {
     currentPageSaved: false,
     everyAssetAttempted: false,
     everyAssetCaptured: false,
+    accountAssetsCaptured: false,
     csvDownload: null,
     notes: [],
   };
@@ -506,11 +559,41 @@ async function main() {
           summary.everyAssetCaptured = true;
         }
 
-        summary.csvDownload = await tryCsvDownloads(client, downloadDir);
+        const currentPageCsv = await tryCsvDownloads(client, downloadDir);
+        summary.csvDownload = currentPageCsv;
         summary.csvDownload.files = summary.csvDownload.files.map((file) => ({
           ...file,
           relativePath: relative(outputDir, file.path),
         }));
+
+        const accountAssetsNavigation = await navigateToUrl(client, ACCOUNT_ASSETS_URL, 15000).catch((error) => ({
+          url: null,
+          readyState: `navigation-error:${error.message}`,
+        }));
+        summary.notes.push(`Account-assets navigation result: ${JSON.stringify(accountAssetsNavigation)}`);
+        const accountAssets = await snapshotPage(client);
+        if (/資産/.test(accountAssets.title + accountAssets.text) || /account\/assets/.test(accountAssets.url)) {
+          await captureStage(client, outputDir, 'account-assets-page');
+          summary.accountAssetsCaptured = true;
+          const accountAssetsCsv = await tryCsvDownloads(client, downloadDir);
+          if (accountAssetsCsv.success) {
+            const knownPaths = new Set(summary.csvDownload.files.map((file) => file.path));
+            const mergedFiles = [
+              ...summary.csvDownload.files,
+              ...accountAssetsCsv.files.filter((file) => !knownPaths.has(file.path)),
+            ].map((file) => ({
+              ...file,
+              relativePath: relative(outputDir, file.path),
+            }));
+            summary.csvDownload = {
+              success: true,
+              attempts: [...summary.csvDownload.attempts, ...accountAssetsCsv.attempts],
+              files: mergedFiles,
+            };
+          } else {
+            summary.csvDownload.attempts.push(...accountAssetsCsv.attempts);
+          }
+        }
       } finally {
         await client.close().catch(() => {});
       }
@@ -534,6 +617,7 @@ async function main() {
     targetTitle: summary.target?.title ?? null,
     targetUrl: summary.target?.url ?? null,
     everyAssetCaptured: summary.everyAssetCaptured,
+    accountAssetsCaptured: summary.accountAssetsCaptured,
     csvDownloadSuccess: summary.csvDownload?.success ?? false,
     downloadedFiles: summary.csvDownload?.files?.map((file) => file.relativePath) ?? [],
     dryRun: summary.dryRun,

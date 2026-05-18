@@ -69,6 +69,7 @@ describe('sbi capture summary markdown', () => {
       currentPageSaved: true,
       everyAssetAttempted: true,
       everyAssetCaptured: true,
+      accountAssetsCaptured: true,
       csvDownload: {
         success: true,
         files: [{ relativePath: 'downloads/sbi_assets_summary.csv' }],
@@ -78,6 +79,7 @@ describe('sbi capture summary markdown', () => {
 
     assert.match(markdown, /# SBI Portfolio Capture Summary/);
     assert.match(markdown, /endpoint_reachable: false/);
+    assert.match(markdown, /account_assets_captured: true/);
     assert.match(markdown, /GET \/json\/version failed: fetch failed/);
     assert.match(markdown, /downloads\/sbi_assets_summary\.csv/);
     assert.match(markdown, /test note/);

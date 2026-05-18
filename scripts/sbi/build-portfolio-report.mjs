@@ -15,6 +15,7 @@ Build a read-only SBI portfolio markdown report from downloaded CSV files.
 
 Options:
   --downloads-dir <path>     Directory to scan for the latest SBI CSV files
+  --capture-dir <path>       Capture output directory produced by sbi:portfolio-capture
   --output <path>            Output markdown path
   --assets-summary <path>    Override assets summary CSV path
   --us-stocks <path>         Override US stocks portfolio CSV path
@@ -33,6 +34,7 @@ function parseArgs(argv) {
   const options = {
     downloadsDir: DEFAULT_DOWNLOADS_DIR,
     output: join(DEFAULT_OUTPUT_DIR, DEFAULT_OUTPUT_NAME),
+    captureDir: null,
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -126,6 +128,17 @@ function parseNumber(value) {
   return Number.isFinite(number) ? number : null;
 }
 
+function createEmptyAssetsSummary() {
+  return {
+    asOf: '',
+    totalAssetsJpy: null,
+    totalDayChangeJpy: null,
+    totalUnrealizedPlJpy: null,
+    totalUnrealizedPlPct: null,
+    products: [],
+  };
+}
+
 function formatInteger(value) {
   if (!Number.isFinite(value)) return 'n/a';
   return Math.round(value).toLocaleString('ja-JP');
@@ -211,6 +224,55 @@ async function discoverInputPaths(downloadsDir) {
   };
 }
 
+function detectSbiCsvKind(text) {
+  const normalized = text.replace(/^\uFEFF/, '');
+  if (/^取得日時,/m.test(normalized) && /総資産残高/.test(normalized)) return 'assetsSummary';
+  if (/口座種別,銘柄名,ティッカー,取引所/m.test(normalized)) return 'usStocks';
+  if (/投資信託（金額\//.test(normalized) || /保有証券一覧/.test(normalized)) return 'fundPortfolio';
+  if (/^商品,実現損益\(税引前・円\),利益金額\(円\),損失金額\(円\)/m.test(normalized)) return 'realizedAll';
+  if (/^約定日,(口座|国|ファンド名)/m.test(normalized)) {
+    if (/ファンド名/.test(normalized)) return 'realizedFund';
+    if (/国/.test(normalized)) return 'realizedForeign';
+    return 'realizedDomestic';
+  }
+  if (/^約定日,銘柄,銘柄コード,市場,取引/m.test(normalized)) return 'historyDomestic';
+  if (/^国内約定日,通貨,銘柄名,取引,預り区分/m.test(normalized)) return 'historyForeign';
+  return null;
+}
+
+async function discoverCaptureInputPaths(captureDir) {
+  const names = await readdir(captureDir).catch(() => []);
+  const downloadDir = join(captureDir, 'downloads');
+  const downloadNames = await readdir(downloadDir).catch(() => []);
+  const inputs = {
+    assetsSummary: null,
+    usStocks: null,
+    fundPortfolio: null,
+    realizedAll: null,
+    realizedDomestic: null,
+    realizedForeign: null,
+    realizedFund: null,
+    historyDomestic: null,
+    historyForeign: null,
+    accountAssetsPage: names.includes('account-assets-page.json') ? join(captureDir, 'account-assets-page.json') : null,
+    everyAssetPage: names.includes('every-asset-page.json') ? join(captureDir, 'every-asset-page.json') : null,
+    currentPage: names.includes('current-page.json') ? join(captureDir, 'current-page.json') : null,
+  };
+
+  for (const name of downloadNames) {
+    const path = join(downloadDir, name);
+    const details = await stat(path).catch(() => null);
+    if (!details?.isFile()) continue;
+    const text = decodeCsvBuffer(await readFile(path));
+    const kind = detectSbiCsvKind(text);
+    if (kind && !inputs[kind]) {
+      inputs[kind] = path;
+    }
+  }
+
+  return inputs;
+}
+
 function mapRows(rows, headerIndex) {
   const header = rows[headerIndex];
   const data = [];
@@ -225,6 +287,24 @@ function mapRows(rows, headerIndex) {
     data.push(entry);
   }
   return data;
+}
+
+function buildProductsFromAssetRows(rows) {
+  return rows
+    .map((row) => {
+      const product = cleanCell(row[0]);
+      const marketValueJpy = parseNumber(row[1]);
+      if (!product || !Number.isFinite(marketValueJpy)) return null;
+      return {
+        product,
+        marketValueJpy,
+        unrealizedPlJpy: parseNumber(row[2]),
+        unrealizedPlPct: parseNumber(row[3]),
+        dayChangeJpy: parseNumber(row[4]),
+        monthChangePct: parseNumber(row[5]),
+      };
+    })
+    .filter(Boolean);
 }
 
 export function parseAssetsSummaryCsv(text) {
@@ -252,6 +332,54 @@ export function parseAssetsSummaryCsv(text) {
     totalUnrealizedPlPct: parseNumber(summaryMap.get('評価損益率(%)')),
     products,
   };
+}
+
+export function parseAssetsSummarySnapshot(snapshot) {
+  const result = createEmptyAssetsSummary();
+  const rows = snapshot?.tables?.flatMap((table) => table.rows || []) || [];
+  const metrics = new Map();
+
+  for (const row of rows) {
+    if (row.length < 2) continue;
+    for (let index = 0; index < row.length - 1; index += 1) {
+      const label = cleanCell(row[index]);
+      const next = cleanCell(row[index + 1]);
+      if (label && next) {
+        metrics.set(label, next);
+      }
+    }
+  }
+
+  result.totalAssetsJpy = parseNumber(
+    metrics.get('総資産') ||
+    metrics.get('総資産残高') ||
+    metrics.get('資産合計'),
+  );
+  result.totalUnrealizedPlJpy = parseNumber(
+    metrics.get('評価損益') ||
+    metrics.get('含み損益'),
+  );
+  result.totalUnrealizedPlPct = parseNumber(
+    metrics.get('評価損益率(%)') ||
+    metrics.get('含み損益（％）') ||
+    metrics.get('含み損益率'),
+  );
+  result.totalDayChangeJpy = parseNumber(
+    metrics.get('前日比') ||
+    metrics.get('前日比(円)'),
+  );
+
+  const knownProducts = ['国内株式', '米国株式', '投資信託', '預り金(円)', '預り金（円）', '預り金(米ドル)', '預り金（米ドル）'];
+  const productRows = rows.filter((row) => knownProducts.includes(cleanCell(row[0])));
+  result.products = buildProductsFromAssetRows(productRows)
+    .map((row) => ({
+      ...row,
+      product: row.product
+        .replace('預り金（円）', '預り金(円)')
+        .replace('預り金（米ドル）', '預り金(米ドル)'),
+    }));
+
+  return result;
 }
 
 export function parseUsStocksCsv(text) {
@@ -315,6 +443,48 @@ export function parseFundPortfolioCsv(text) {
   }
 
   return funds;
+}
+
+export function parseFundPortfolioSnapshot(snapshot) {
+  const rows = snapshot?.tables?.flatMap((table) => table.rows || []) || [];
+  const funds = [];
+  let section = null;
+  let header = null;
+
+  for (const row of rows) {
+    const first = cleanCell(row[0]);
+    if (first.startsWith('投資信託') && !first.endsWith('合計')) {
+      section = first;
+      header = null;
+      continue;
+    }
+    if (first === 'ファンド名') {
+      header = row;
+      continue;
+    }
+    if (!section || !header || !first) continue;
+    if (first.includes('合計') || first === '総合計') {
+      header = null;
+      continue;
+    }
+    const entry = {};
+    for (let index = 0; index < header.length; index += 1) {
+      entry[header[index]] = cleanCell(row[index]);
+    }
+    funds.push({
+      accountType: section,
+      name: entry['ファンド名'],
+      quantity: parseNumber(entry['数量'] || entry['保有口数']),
+      averageCost: parseNumber(entry['取得単価']),
+      currentPrice: parseNumber(entry['現在値'] || entry['基準価額']),
+      costBasisJpy: parseNumber(entry['取得金額']),
+      marketValueJpy: parseNumber(entry['評価額']),
+      unrealizedPlJpy: parseNumber(entry['損益'] || entry['評価損益']),
+      distributionMethod: entry['分配金受取方法'] || '',
+    });
+  }
+
+  return funds.filter((row) => row.name);
 }
 
 export function parseRealizedSummaryCsv(text) {
@@ -388,6 +558,19 @@ export function parseForeignHistoryCsv(text) {
 
 function sumNumbers(values) {
   return values.reduce((total, value) => total + (Number.isFinite(value) ? value : 0), 0);
+}
+
+function mergeAssetsSummary(primary, fallback) {
+  const base = primary || createEmptyAssetsSummary();
+  const merged = {
+    asOf: base.asOf || fallback?.asOf || '',
+    totalAssetsJpy: base.totalAssetsJpy ?? fallback?.totalAssetsJpy ?? null,
+    totalDayChangeJpy: base.totalDayChangeJpy ?? fallback?.totalDayChangeJpy ?? null,
+    totalUnrealizedPlJpy: base.totalUnrealizedPlJpy ?? fallback?.totalUnrealizedPlJpy ?? null,
+    totalUnrealizedPlPct: base.totalUnrealizedPlPct ?? fallback?.totalUnrealizedPlPct ?? null,
+    products: base.products?.length ? base.products : (fallback?.products || []),
+  };
+  return merged;
 }
 
 function inferDomesticHoldings(assetsSummary) {
@@ -637,6 +820,46 @@ export async function buildPortfolioReportFromFiles(inputPaths, outputPath) {
   return { report, data };
 }
 
+async function readSnapshotJson(path) {
+  if (!path) return null;
+  return JSON.parse(await readFile(path, 'utf8'));
+}
+
+export async function buildPortfolioReportFromCaptureDir(captureDir, outputPath) {
+  const inputPaths = await discoverCaptureInputPaths(captureDir);
+  const accountAssetsSnapshot = await readSnapshotJson(inputPaths.accountAssetsPage);
+  const everyAssetSnapshot = await readSnapshotJson(inputPaths.everyAssetPage);
+
+  const assetsSummary = inputPaths.assetsSummary
+    ? parseAssetsSummaryCsv(await readCsvText(inputPaths.assetsSummary))
+    : mergeAssetsSummary(createEmptyAssetsSummary(), parseAssetsSummarySnapshot(accountAssetsSnapshot));
+
+  const funds = inputPaths.fundPortfolio
+    ? parseFundPortfolioCsv(await readCsvText(inputPaths.fundPortfolio))
+    : parseFundPortfolioSnapshot(everyAssetSnapshot);
+
+  const data = {
+    assetsSummary,
+    usStocks: inputPaths.usStocks ? parseUsStocksCsv(await readCsvText(inputPaths.usStocks)) : [],
+    funds,
+    realizedSummary: inputPaths.realizedAll ? parseRealizedSummaryCsv(await readCsvText(inputPaths.realizedAll)) : [],
+    realizedDomestic: inputPaths.realizedDomestic ? parseRealizedDetailCsv(await readCsvText(inputPaths.realizedDomestic), '国内株式') : [],
+    realizedForeign: inputPaths.realizedForeign ? parseRealizedDetailCsv(await readCsvText(inputPaths.realizedForeign), '米国株式') : [],
+    realizedFund: inputPaths.realizedFund ? parseRealizedDetailCsv(await readCsvText(inputPaths.realizedFund), '投資信託') : [],
+    domesticHistory: inputPaths.historyDomestic ? parseDomesticHistoryCsv(await readCsvText(inputPaths.historyDomestic)) : [],
+    foreignHistory: inputPaths.historyForeign ? parseForeignHistoryCsv(await readCsvText(inputPaths.historyForeign)) : [],
+    sources: {
+      ...inputPaths,
+      captureDir,
+    },
+  };
+
+  const report = buildPortfolioReport(data);
+  await mkdir(dirname(outputPath), { recursive: true });
+  await writeFile(outputPath, report, 'utf8');
+  return { report, data, inputPaths };
+}
+
 function ensureInputs(paths) {
   const required = [
     'assetsSummary',
@@ -663,23 +886,27 @@ async function main() {
     return;
   }
 
-  const discovered = await discoverInputPaths(resolve(options.downloadsDir));
-  const inputPaths = {
-    assetsSummary: options.assetsSummary || discovered.assetsSummary,
-    usStocks: options.usStocks || discovered.usStocks,
-    fundPortfolio: options.fundPortfolio || discovered.fundPortfolio,
-    realizedAll: options.realizedAll || discovered.realizedAll,
-    realizedDomestic: options.realizedDomestic || discovered.realizedDomestic,
-    realizedForeign: options.realizedForeign || discovered.realizedForeign,
-    realizedFund: options.realizedFund || discovered.realizedFund,
-    historyDomestic: options.historyDomestic || discovered.historyDomestic,
-    historyForeign: options.historyForeign || discovered.historyForeign,
-  };
-
-  ensureInputs(inputPaths);
-
   const outputPath = resolve(options.output);
-  const { data } = await buildPortfolioReportFromFiles(inputPaths, outputPath);
+  let data;
+  if (options.captureDir) {
+    ({ data } = await buildPortfolioReportFromCaptureDir(resolve(options.captureDir), outputPath));
+  } else {
+    const discovered = await discoverInputPaths(resolve(options.downloadsDir));
+    const inputPaths = {
+      assetsSummary: options.assetsSummary || discovered.assetsSummary,
+      usStocks: options.usStocks || discovered.usStocks,
+      fundPortfolio: options.fundPortfolio || discovered.fundPortfolio,
+      realizedAll: options.realizedAll || discovered.realizedAll,
+      realizedDomestic: options.realizedDomestic || discovered.realizedDomestic,
+      realizedForeign: options.realizedForeign || discovered.realizedForeign,
+      realizedFund: options.realizedFund || discovered.realizedFund,
+      historyDomestic: options.historyDomestic || discovered.historyDomestic,
+      historyForeign: options.historyForeign || discovered.historyForeign,
+    };
+
+    ensureInputs(inputPaths);
+    ({ data } = await buildPortfolioReportFromFiles(inputPaths, outputPath));
+  }
 
   console.log(JSON.stringify({
     success: true,

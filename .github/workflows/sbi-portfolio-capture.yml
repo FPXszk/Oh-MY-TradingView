@@ -93,6 +93,20 @@ jobs:
             throw 'capture-summary.md was not created'
           }
 
+      - name: Build SBI portfolio report
+        shell: pwsh
+        run: |
+          node scripts/sbi/build-portfolio-report.mjs `
+            --capture-dir '${{ env.SBI_CAPTURE_OUTPUT_DIR }}' `
+            --output '${{ env.SBI_CAPTURE_OUTPUT_DIR }}/sbi_portfolio_report.md'
+
+      - name: Validate report output
+        shell: pwsh
+        run: |
+          if (-not (Test-Path '${{ env.SBI_CAPTURE_OUTPUT_DIR }}/sbi_portfolio_report.md')) {
+            throw 'sbi_portfolio_report.md was not created'
+          }
+
       - name: Upload capture artifact
         if: always()
         uses: actions/upload-artifact@v4
