@@ -25,6 +25,7 @@ const ROUTE_DEFINITIONS = [
     snapshotName: 'us-stocks-page',
     fallbackActions: [
       { label: '外国株式トップ', keywords: ['外国株式トップ'], snapshotName: 'foreign-top-page' },
+      { label: '保有銘柄', keywords: ['保有銘柄'], snapshotName: 'foreign-holdings-page' },
       { label: '保有資産評価', keywords: ['保有資産評価'], snapshotName: 'us-holdings-page' },
       { label: '資産損益', keywords: ['資産損益'], snapshotName: 'us-profit-loss-page' },
     ],
@@ -520,11 +521,23 @@ async function fillFirstDateControl(client, value) {
         let score = 0;
         if (type === 'date') score += 100;
         if (/(日付|期間|from|date|開始|から)/i.test(text)) score += 60;
+        if (/^\\d{4}\\/\\d{2}\\/\\d{2}$/.test(norm(element.value || ''))) score += 80;
         if (/yyyy|yyyy\\\/mm\\\/dd/i.test(text)) score += 30;
-        return { element, text, type, score };
+        return {
+          element,
+          text,
+          type,
+          score,
+          x: Math.round(element.getBoundingClientRect().x),
+          y: Math.round(element.getBoundingClientRect().y),
+        };
       })
       .filter((entry) => entry.score > 0)
-      .sort((left, right) => right.score - left.score);
+      .sort((left, right) => {
+        if (right.score !== left.score) return right.score - left.score;
+        if (left.y !== right.y) return left.y - right.y;
+        return left.x - right.x;
+      });
     if (candidates.length === 0) {
       return { updated: false, candidateCount: 0 };
     }

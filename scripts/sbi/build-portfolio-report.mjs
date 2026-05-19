@@ -260,6 +260,7 @@ async function discoverCaptureInputPaths(captureDir) {
     currentPage: names.includes('current-page.json') ? join(captureDir, 'current-page.json') : null,
     usStocksPage: names.includes('us-stocks-page.json') ? join(captureDir, 'us-stocks-page.json') : null,
     foreignTopPage: names.includes('foreign-top-page.json') ? join(captureDir, 'foreign-top-page.json') : null,
+    foreignHoldingsPage: names.includes('foreign-holdings-page.json') ? join(captureDir, 'foreign-holdings-page.json') : null,
   };
 
   for (const name of downloadNames) {
@@ -927,6 +928,7 @@ export async function buildPortfolioReportFromCaptureDir(captureDir, outputPath)
   const everyAssetSnapshot = await readSnapshotJson(inputPaths.everyAssetPage);
   const usStocksSnapshot = await readSnapshotJson(inputPaths.usStocksPage);
   const foreignTopSnapshot = await readSnapshotJson(inputPaths.foreignTopPage);
+  const foreignHoldingsSnapshot = await readSnapshotJson(inputPaths.foreignHoldingsPage);
 
   const assetsSummary = inputPaths.assetsSummary
     ? parseAssetsSummaryCsv(await readCsvText(inputPaths.assetsSummary))
@@ -941,6 +943,7 @@ export async function buildPortfolioReportFromCaptureDir(captureDir, outputPath)
     : [
       ...parseUsStocksSnapshot(usStocksSnapshot),
       ...parseUsStocksSnapshot(foreignTopSnapshot),
+      ...parseUsStocksSnapshot(foreignHoldingsSnapshot),
     ].filter((row, index, rows) => rows.findIndex((candidate) => candidate.name === row.name && candidate.ticker === row.ticker) === index);
 
   const data = {
