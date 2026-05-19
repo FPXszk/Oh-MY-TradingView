@@ -158,6 +158,23 @@ CDP endpoint が無い場合でも、`capture-summary.md` と `capture-error.txt
   が残る
 - report builder は capture artifact 内の未解析 download も `補助artifact` セクションに列挙するため、`配当金・分配金履歴` 由来の CSV がまだ未解析でも workflow の成果を見失わない
 
+2026-05-20 us-stocks / history-range update:
+
+- `実現損益詳細` は workflow から `2022/01/01` - `today` の range へ強制遷移できるようになった
+- `配当金・分配金履歴` も同様に `2022/01/01` - `today` まで広げられる
+- どちらも page 本文上で `CSVダウンロード` 文言と長期レンジ結果が確認できた
+- `米国株式` は `My資産` 直リンク先では `現在、お客様の預り情報はございません。` となり、CSV も確認できなかった
+- そのため米国株の回収は fallback を追加し、
+  - `外国株式トップ`
+  - `保有銘柄`
+  の順で進み、`foreign-holdings-page` 本文から
+  - 銘柄名
+  - ティッカー
+  - 数量
+  - 円換算評価額
+  - 円換算評価損益
+  を text fallback で report 化する
+
 ## Notes
 
 - 日本株の現保有一覧 CSV が無い場合は、資産サマリー上の評価額から「現保有なし / 要追加CSV」を判定する。
