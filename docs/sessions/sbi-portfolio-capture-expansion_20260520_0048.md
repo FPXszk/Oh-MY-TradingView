@@ -58,9 +58,39 @@ artifact の clickables からは
 - `node --test tests/sbi-capture-workflow.test.js` -> success
 - `node --test tests/sbi-portfolio-report.test.js` -> success
 
+### Live workflow run
+
+- workflow: `SBI Portfolio Capture`
+- run id: `26108902705`
+- URL: <https://github.com/FPXszk/Oh-MY-TradingView/actions/runs/26108902705>
+- conclusion: `success`
+
+artifact に含まれていた追加 snapshot:
+
+- `us-stocks-page.json/.txt`
+- `realized-detail-page.json/.txt`
+- `dividend-history-page.json/.txt`
+
+`capture-summary.md` で確認できた route result:
+
+- `米国株式`
+  - clicked: `true`
+  - captured: `true`
+  - page_url: `https://site.sbisec.co.jp/account/foreign/summary`
+- `実現損益詳細`
+  - clicked: `true`
+  - captured: `true`
+  - page_url: `https://site.sbisec.co.jp/account/assets/profits`
+- `配当金・分配金履歴`
+  - clicked: `true`
+  - captured: `true`
+  - page_url: `https://site.sbisec.co.jp/account/assets/dividends`
+
+今回の live run でも CSV download 成功は `downloads/SaveFile.csv` のみで、追加 3 導線からの CSV 自動回収はまだ未達だった。
+
 ## Important Interpretation
 
-- 今回は live workflow rerun までは行っていないが、導線追加の骨格と artifact 可視化は repo 側で固まった
+- live workflow rerun まで実施し、導線追加の骨格だけでなく実 artifact 上でも 3 導線の snapshot 取得を確認できた
 - 既存 parser がすでに理解できる `sbi_us_stocks.csv` や `ALLTYPE` / `FOREIGN_STOCK` 系 CSV が落ちれば、report は capture artifact からそのまま取り込める
 - `配当金・分配金履歴` はまだ専用 parser を持たないが、download 成否とファイル名は artifact / report の両方で追えるようになった
 
