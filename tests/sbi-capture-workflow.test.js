@@ -82,6 +82,7 @@ describe('sbi capture summary markdown', () => {
           captured: true,
           pageUrl: 'https://site.sbisec.co.jp/account/assets/us',
           snapshotName: 'us-stocks-page',
+          formControlCount: 3,
           csvDownload: {
             success: true,
             files: [{ relativePath: 'downloads/sbi_us_stocks.csv' }],
@@ -100,6 +101,7 @@ describe('sbi capture summary markdown', () => {
     assert.match(markdown, /## Route Captures/);
     assert.match(markdown, /### 米国株式/);
     assert.match(markdown, /snapshot: us-stocks-page/);
+    assert.match(markdown, /form_controls: 3/);
     assert.match(markdown, /downloads\/sbi_us_stocks\.csv/);
     assert.match(markdown, /test note/);
   });

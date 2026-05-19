@@ -258,6 +258,8 @@ async function discoverCaptureInputPaths(captureDir) {
     accountAssetsPage: names.includes('account-assets-page.json') ? join(captureDir, 'account-assets-page.json') : null,
     everyAssetPage: names.includes('every-asset-page.json') ? join(captureDir, 'every-asset-page.json') : null,
     currentPage: names.includes('current-page.json') ? join(captureDir, 'current-page.json') : null,
+    usStocksPage: names.includes('us-stocks-page.json') ? join(captureDir, 'us-stocks-page.json') : null,
+    foreignTopPage: names.includes('foreign-top-page.json') ? join(captureDir, 'foreign-top-page.json') : null,
   };
 
   for (const name of downloadNames) {
@@ -440,6 +442,36 @@ export function parseUsStocksCsv(text) {
     unrealizedPlUsd: parseNumber(row['外貨建評価損益(USD)']),
     unrealizedPlJpy: parseNumber(row['円換算評価損益(円)']),
   }));
+}
+
+export function parseUsStocksSnapshot(snapshot) {
+  const rows = snapshot?.tables?.flatMap((table) => table.rows || []) || [];
+  const headerIndex = rows.findIndex((row) => row.some((cell) => cleanCell(cell) === '銘柄' || cleanCell(cell) === '銘柄名') && (
+    row.some((cell) => /数量|保有数量/.test(cleanCell(cell))) ||
+    row.some((cell) => /評価額/.test(cleanCell(cell)))
+  ));
+  if (headerIndex !== -1) {
+    const mapped = mapRows(rows, headerIndex).map((row) => ({
+      accountType: row['口座'] || row['口座種別'] || '',
+      name: row['銘柄'] || row['銘柄名'] || '',
+      ticker: row['ティッカー'] || row['銘柄コード'] || '',
+      exchange: row['取引所'] || '',
+      quantity: parseNumber(row['数量'] || row['保有数量']),
+      averageCostUsd: parseNumber(row['取得単価(USD)'] || row['取得単価']),
+      currentPriceUsd: parseNumber(row['現在値(USD)'] || row['現在値']),
+      marketValueUsd: parseNumber(row['外貨建評価額(USD)']),
+      marketValueJpy: parseNumber(row['円換算評価額(円)'] || row['評価額']),
+      unrealizedPlUsd: parseNumber(row['外貨建評価損益(USD)']),
+      unrealizedPlJpy: parseNumber(row['円換算評価損益(円)'] || row['損益'] || row['評価損益']),
+    })).filter((row) => row.name);
+    if (mapped.length) return mapped;
+  }
+
+  if (/現在、お客様の預り情報はございません。/.test(snapshot?.text || '')) {
+    return [];
+  }
+
+  return [];
 }
 
 export function parseFundPortfolioCsv(text) {
@@ -893,6 +925,8 @@ export async function buildPortfolioReportFromCaptureDir(captureDir, outputPath)
   const inputPaths = await discoverCaptureInputPaths(captureDir);
   const accountAssetsSnapshot = await readSnapshotJson(inputPaths.accountAssetsPage);
   const everyAssetSnapshot = await readSnapshotJson(inputPaths.everyAssetPage);
+  const usStocksSnapshot = await readSnapshotJson(inputPaths.usStocksPage);
+  const foreignTopSnapshot = await readSnapshotJson(inputPaths.foreignTopPage);
 
   const assetsSummary = inputPaths.assetsSummary
     ? parseAssetsSummaryCsv(await readCsvText(inputPaths.assetsSummary))
@@ -902,9 +936,16 @@ export async function buildPortfolioReportFromCaptureDir(captureDir, outputPath)
     ? parseFundPortfolioCsv(await readCsvText(inputPaths.fundPortfolio))
     : parseFundPortfolioSnapshot(everyAssetSnapshot);
 
+  const usStocks = inputPaths.usStocks
+    ? parseUsStocksCsv(await readCsvText(inputPaths.usStocks))
+    : [
+      ...parseUsStocksSnapshot(usStocksSnapshot),
+      ...parseUsStocksSnapshot(foreignTopSnapshot),
+    ].filter((row, index, rows) => rows.findIndex((candidate) => candidate.name === row.name && candidate.ticker === row.ticker) === index);
+
   const data = {
     assetsSummary,
-    usStocks: inputPaths.usStocks ? parseUsStocksCsv(await readCsvText(inputPaths.usStocks)) : [],
+    usStocks,
     funds,
     realizedSummary: inputPaths.realizedAll ? parseRealizedSummaryCsv(await readCsvText(inputPaths.realizedAll)) : [],
     realizedDomestic: inputPaths.realizedDomestic ? parseRealizedDetailCsv(await readCsvText(inputPaths.realizedDomestic), '国内株式') : [],

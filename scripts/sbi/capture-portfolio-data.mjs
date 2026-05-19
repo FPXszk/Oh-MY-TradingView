@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 const DEFAULT_CDP_HOST = '127.0.0.1';
 const DEFAULT_CDP_PORT = 9222;
 const DEFAULT_OUTPUT_DIR = 'docs/reports/screener/portfolio/capture/latest';
+const DEFAULT_HISTORY_START_DATE = '2022/01/01';
 const ACCOUNT_ASSETS_URL = 'https://site.sbisec.co.jp/account/assets';
 const CLICKABLE_SELECTOR = [
   'a',
@@ -22,18 +23,25 @@ const ROUTE_DEFINITIONS = [
     label: '米国株式',
     keywords: ['米国株式'],
     snapshotName: 'us-stocks-page',
+    fallbackActions: [
+      { label: '外国株式トップ', keywords: ['外国株式トップ'], snapshotName: 'foreign-top-page' },
+      { label: '保有資産評価', keywords: ['保有資産評価'], snapshotName: 'us-holdings-page' },
+      { label: '資産損益', keywords: ['資産損益'], snapshotName: 'us-profit-loss-page' },
+    ],
   },
   {
     key: 'realizedDetail',
     label: '実現損益詳細',
     keywords: ['実現損益詳細'],
     snapshotName: 'realized-detail-page',
+    startDate: DEFAULT_HISTORY_START_DATE,
   },
   {
     key: 'dividendHistory',
     label: '配当金・分配金履歴',
     keywords: ['配当金・分配金履歴'],
     snapshotName: 'dividend-history-page',
+    startDate: DEFAULT_HISTORY_START_DATE,
   },
 ];
 
@@ -318,12 +326,54 @@ async function snapshotPage(client) {
           .filter((row) => row.length > 0),
       }))
       .filter((table) => table.rows.length > 0);
+    const labelText = (element) => {
+      const fromLabel = element.labels?.[0]?.innerText;
+      if (fromLabel) return norm(fromLabel);
+      const aria = element.getAttribute('aria-label');
+      if (aria) return norm(aria);
+      const placeholder = element.getAttribute('placeholder');
+      if (placeholder) return norm(placeholder);
+      const title = element.getAttribute('title');
+      if (title) return norm(title);
+      const parentText = element.closest('label, td, th, div, span')?.innerText;
+      return norm(parentText || element.name || element.id || '');
+    };
+    const formControls = [...document.querySelectorAll('input, select, textarea')]
+      .filter(visible)
+      .map((element) => {
+        const rect = element.getBoundingClientRect();
+        const base = {
+          tag: element.tagName.toLowerCase(),
+          type: element.type || null,
+          name: element.name || null,
+          id: element.id || null,
+          value: norm(element.value || ''),
+          label: labelText(element),
+          x: Math.round(rect.x),
+          y: Math.round(rect.y),
+          width: Math.round(rect.width),
+          height: Math.round(rect.height),
+        };
+        if (element.tagName.toLowerCase() === 'select') {
+          return {
+            ...base,
+            options: [...element.options].slice(0, 20).map((option) => ({
+              text: norm(option.text),
+              value: option.value,
+              selected: option.selected,
+            })),
+          };
+        }
+        return base;
+      })
+      .slice(0, 120);
     return {
       title: document.title,
       url: location.href,
       text: norm(document.body?.innerText || ''),
       clickables,
       tables,
+      formControls,
     };
   })()`);
 }
@@ -437,6 +487,69 @@ async function tryCsvDownloads(client, downloadDir) {
   return { success: false, attempts, files: [] };
 }
 
+async function fillFirstDateControl(client, value) {
+  return evaluateJson(client, `(() => {
+    const targetValue = ${jsString(value)};
+    const norm = (input) => String(input ?? '').replace(/\\s+/g, ' ').trim();
+    const visible = (element) => {
+      const style = window.getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      return style && style.visibility !== 'hidden' && style.display !== 'none' && rect.width > 0 && rect.height > 0;
+    };
+    const labelText = (element) => {
+      const fromLabel = element.labels?.[0]?.innerText;
+      if (fromLabel) return norm(fromLabel);
+      return norm(
+        element.getAttribute('aria-label') ||
+        element.getAttribute('placeholder') ||
+        element.name ||
+        element.id ||
+        element.closest('label, td, th, div, span')?.innerText ||
+        '',
+      );
+    };
+    const candidates = [...document.querySelectorAll('input, textarea')]
+      .filter((element) => visible(element))
+      .filter((element) => {
+        const type = String(element.type || '').toLowerCase();
+        return !['hidden', 'checkbox', 'radio', 'button', 'submit', 'reset'].includes(type);
+      })
+      .map((element) => {
+        const text = labelText(element);
+        const type = String(element.type || '').toLowerCase();
+        let score = 0;
+        if (type === 'date') score += 100;
+        if (/(日付|期間|from|date|開始|から)/i.test(text)) score += 60;
+        if (/yyyy|yyyy\/mm\/dd/i.test(text)) score += 30;
+        return { element, text, type, score };
+      })
+      .filter((entry) => entry.score > 0)
+      .sort((left, right) => right.score - left.score);
+    if (candidates.length === 0) {
+      return { updated: false, candidateCount: 0 };
+    }
+    const best = candidates[0];
+    best.element.focus();
+    best.element.value = targetValue;
+    best.element.dispatchEvent(new Event('input', { bubbles: true }));
+    best.element.dispatchEvent(new Event('change', { bubbles: true }));
+    return {
+      updated: true,
+      candidateCount: candidates.length,
+      label: best.text,
+      type: best.type,
+      value: best.element.value,
+    };
+  })()`);
+}
+
+async function trySubmitQuery(client, keywords = ['照会']) {
+  const clicked = await clickByKeywords(client, keywords);
+  if (!clicked.clicked) return clicked;
+  await sleep(2000);
+  return clicked;
+}
+
 async function captureStage(client, outputDir, name) {
   const snapshot = await snapshotPage(client);
   const safeName = sanitizeName(name);
@@ -502,6 +615,9 @@ export function buildCaptureSummaryMarkdown(summary) {
       if (route.snapshotName) {
         lines.push(`- snapshot: ${route.snapshotName}`);
       }
+      if (route.formControlCount !== undefined) {
+        lines.push(`- form_controls: ${route.formControlCount}`);
+      }
       if (route.csvDownload?.files?.length) {
         lines.push(`- downloaded_files: ${route.csvDownload.files.map((file) => file.relativePath || file.path).join(', ')}`);
       }
@@ -543,6 +659,32 @@ function mergeDownloadedFiles(outputDir, existingFiles, newFiles) {
   return [...mergedByPath.values()].sort((left, right) => right.mtimeMs - left.mtimeMs);
 }
 
+function mergeCsvDownloadResults(outputDir, current, next) {
+  const base = current || { success: false, attempts: [], files: [] };
+  return {
+    success: base.success || next.success,
+    attempts: [...(base.attempts || []), ...(next.attempts || [])],
+    files: mergeDownloadedFiles(outputDir, base.files || [], next.files || []),
+  };
+}
+
+async function runFallbackActions(client, outputDir, downloadDir, route, result) {
+  if (!route.fallbackActions?.length) return;
+  for (const action of route.fallbackActions) {
+    const clicked = await clickByKeywords(client, action.keywords);
+    result.notes.push(`Fallback action ${action.label}: ${JSON.stringify(clicked)}`);
+    if (!clicked.clicked) continue;
+    await waitForPageSettle(client, result.pageUrl || ACCOUNT_ASSETS_URL, 12000);
+    const snapshot = await captureStage(client, outputDir, action.snapshotName);
+    result.notes.push(`Fallback snapshot ${action.snapshotName}: ${snapshot.url}`);
+    const csvDownload = await tryCsvDownloads(client, downloadDir);
+    result.csvDownload = mergeCsvDownloadResults(outputDir, result.csvDownload, {
+      ...csvDownload,
+      files: toRelativeFiles(outputDir, csvDownload.files),
+    });
+  }
+}
+
 async function captureRouteFromAccountAssets(client, outputDir, downloadDir, route) {
   const result = {
     key: route.key,
@@ -572,15 +714,37 @@ async function captureRouteFromAccountAssets(client, outputDir, downloadDir, rou
   const pageState = await waitForPageSettle(client, navigation.url || ACCOUNT_ASSETS_URL, 12000);
   result.pageUrl = pageState.url || null;
 
+  if (route.startDate) {
+    const fillResult = await fillFirstDateControl(client, route.startDate);
+    result.notes.push(`Start-date fill result: ${JSON.stringify(fillResult)}`);
+    if (fillResult.updated) {
+      const submitResult = await trySubmitQuery(client, ['照会']);
+      result.notes.push(`Submit result: ${JSON.stringify(submitResult)}`);
+      await waitForPageSettle(client, pageState.url || navigation.url || ACCOUNT_ASSETS_URL, 12000);
+    }
+  }
+
   const snapshot = await captureStage(client, outputDir, route.snapshotName);
   result.captured = true;
   result.pageUrl = snapshot.url || result.pageUrl;
+  result.formControlCount = snapshot.formControls?.length ?? 0;
+
+  if (route.key === 'usStocks') {
+    const marketValue = (snapshot.text || '').match(/米国株式\\s+([0-9,]+)円/);
+    if (/現在、お客様の預り情報はございません。/.test(snapshot.text || '')) {
+      result.notes.push('US stocks route landed on a page that reports no custody information.');
+    }
+    if (marketValue?.[1]) {
+      result.notes.push(`US market value seen on page text: ${marketValue[1]}円`);
+    }
+  }
 
   const csvDownload = await tryCsvDownloads(client, downloadDir);
   result.csvDownload = {
     ...csvDownload,
     files: toRelativeFiles(outputDir, csvDownload.files),
   };
+  await runFallbackActions(client, outputDir, downloadDir, route, result);
   return result;
 }
 

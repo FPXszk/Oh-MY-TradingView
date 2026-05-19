@@ -8,6 +8,7 @@ import {
   parseAssetsSummaryCsv,
   parseAssetsSummarySnapshot,
   parseUsStocksCsv,
+  parseUsStocksSnapshot,
   parseFundPortfolioCsv,
   parseFundPortfolioSnapshot,
   parseRealizedSummaryCsv,
@@ -54,6 +55,23 @@ NISA預り,エヌビディア,NVDA,NASDAQ,10,174.50,225.32,2253.20,358213,+508.2
     assert.equal(usStocks[0].ticker, 'NVDA');
     assert.equal(funds.length, 1);
     assert.equal(funds[0].distributionMethod, '再投資');
+  });
+
+  it('parses US stocks from snapshot tables', () => {
+    const stocks = parseUsStocksSnapshot({
+      tables: [
+        {
+          rows: [
+            ['口座種別', '銘柄名', 'ティッカー', '取引所', '保有数量', '円換算評価額(円)', '円換算評価損益(円)'],
+            ['NISA預り', 'エヌビディア', 'NVDA', 'NASDAQ', '10', '358,213', '+77,963'],
+          ],
+        },
+      ],
+    });
+
+    assert.equal(stocks.length, 1);
+    assert.equal(stocks[0].ticker, 'NVDA');
+    assert.equal(stocks[0].marketValueJpy, 358213);
   });
 
   it('parses asset/fund snapshot fallbacks', () => {
@@ -207,6 +225,16 @@ describe('sbi portfolio report builder', () => {
         },
       ],
     }, null, 2)}\n`, 'utf8');
+    await writeFile(join(root, 'foreign-top-page.json'), `${JSON.stringify({
+      tables: [
+        {
+          rows: [
+            ['口座種別', '銘柄名', 'ティッカー', '取引所', '保有数量', '円換算評価額(円)', '円換算評価損益(円)'],
+            ['NISA預り', 'エヌビディア', 'NVDA', 'NASDAQ', '10', '358,213', '+77,963'],
+          ],
+        },
+      ],
+    }, null, 2)}\n`, 'utf8');
     const output = join(root, 'report.md');
 
     await buildPortfolioReportFromCaptureDir(root, output);
@@ -215,6 +243,7 @@ describe('sbi portfolio report builder', () => {
     assert.match(report, /# SBI Portfolio Report/);
     assert.match(report, /総資産残高/);
     assert.match(report, /ｅＭＡＸＩＳ/);
+    assert.match(report, /エヌビディア/);
     assert.match(report, /補助artifact/);
     assert.match(report, /dividend-history\.csv/);
   });
