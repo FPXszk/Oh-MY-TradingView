@@ -441,6 +441,7 @@ async function clickByKeywords(client, keywords) {
           else if (text.includes(keyword)) score += 40;
         }
         if (score === 0) return null;
+        const rect = element.getBoundingClientRect();
         return {
           element,
           text,
