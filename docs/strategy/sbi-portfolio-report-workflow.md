@@ -175,6 +175,17 @@ CDP endpoint が無い場合でも、`capture-summary.md` と `capture-error.txt
   - 円換算評価損益
   を text fallback で report 化する
 
+2026-05-20 csv-download artifact update:
+
+- `実現損益詳細` は `baseDateType=CONTRACT` / `product=ALL` を維持した range URL へ workflow から到達できるようになった
+- `実現損益詳細` / `配当金・分配金履歴` の両方で、artifact summary 上 `CSVダウンロード` button click 自体は `clicked: true` まで確認できた
+- ただし live runs `26112826557` / `26113139012` でも artifact `downloads/` に追加保存された CSV は現れず、結果は `downloads/SaveFile.csv` のみだった
+- したがって current state は
+  - page 到達: 済み
+  - CSV button click: 済み
+  - CSV file artifact 化: 未解決
+  である
+
 ## Notes
 
 - 日本株の現保有一覧 CSV が無い場合は、資産サマリー上の評価額から「現保有なし / 要追加CSV」を判定する。

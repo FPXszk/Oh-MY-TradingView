@@ -11,6 +11,13 @@
 - `capture-summary.md` に route ごとの CSV click / download 成否が残る
 - `sbi_portfolio_report.md` と手順書 / session log が最新挙動に追随している
 
+結果:
+
+- `capture-summary.md` / `capture-summary.json` に route ごとの click / download 成否は残せた
+- `実現損益詳細` は error page を脱して本ページ到達と `CSVダウンロード` click まで確認できた
+- `配当金・分配金履歴` も `CSVダウンロード` click まで確認できた
+- ただし artifact `downloads/` への追加 CSV 保存は最後まで未達だった
+
 ## Files
 
 - 変更: `scripts/sbi/capture-portfolio-data.mjs`
@@ -66,8 +73,8 @@
 
 ## Implementation Steps
 
-- [ ] `scripts/sbi/capture-portfolio-data.mjs` の CSV button 探索・click・download 完了待ちを見直し、`実現損益詳細` / `配当金・分配金履歴` で実ファイル回収を狙う
-- [ ] 必要最小限で `scripts/sbi/build-portfolio-report.mjs` を調整し、新規 download の扱いを安定させる
-- [ ] `tests/sbi-capture-workflow.test.js` と必要な report test を更新する
-- [ ] 手順書と durable session log を更新する
-- [ ] live workflow run を実行し、artifact で CSV 本体回収の成否を確認する
+- [x] `scripts/sbi/capture-portfolio-data.mjs` の CSV button 探索・click・download 完了待ちを見直し、`実現損益詳細` / `配当金・分配金履歴` で実ファイル回収を狙う
+- [x] 必要最小限で `scripts/sbi/build-portfolio-report.mjs` を調整し、新規 download の扱いを安定させる
+- [x] `tests/sbi-capture-workflow.test.js` と必要な report test を更新する
+- [x] 手順書と durable session log を更新する
+- [x] live workflow run を実行し、artifact で CSV 本体回収の成否を確認する
