@@ -480,7 +480,9 @@ export function parseUsStocksSnapshot(snapshot) {
   for (const sectionMatch of text.matchAll(sectionPattern)) {
     const accountType = cleanCell(sectionMatch[1]);
     const sectionText = sectionMatch[0];
-    for (const rowMatch of sectionText.matchAll(rowPattern)) {
+    const tableStart = sectionText.indexOf('取引 ');
+    const rowsText = tableStart >= 0 ? sectionText.slice(tableStart + '取引 '.length) : sectionText;
+    for (const rowMatch of rowsText.matchAll(rowPattern)) {
       positions.push({
         accountType,
         name: cleanCell(rowMatch[1]),
