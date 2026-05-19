@@ -520,7 +520,7 @@ async function fillFirstDateControl(client, value) {
         let score = 0;
         if (type === 'date') score += 100;
         if (/(日付|期間|from|date|開始|から)/i.test(text)) score += 60;
-        if (/yyyy|yyyy\/mm\/dd/i.test(text)) score += 30;
+        if (/yyyy|yyyy\\\/mm\\\/dd/i.test(text)) score += 30;
         return { element, text, type, score };
       })
       .filter((entry) => entry.score > 0)
