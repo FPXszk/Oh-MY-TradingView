@@ -502,6 +502,23 @@ async function clickByKeywords(client, keywords) {
     return match;
   }
 
+  if (match.tag === 'a' && match.href) {
+    if (/^https?:/i.test(match.href)) {
+      await client.Page.navigate({ url: match.href }).catch(() => {});
+    } else {
+      await evaluateJson(client, `(() => {
+        const href = ${jsString(match.href)};
+        const link = [...document.querySelectorAll('a')].find((element) => element.href === href);
+        if (link) link.click();
+        return true;
+      })()`);
+    }
+    return {
+      clicked: true,
+      ...match,
+    };
+  }
+
   await client.Input.dispatchMouseEvent({
     type: 'mouseMoved',
     x: match.centerX,
