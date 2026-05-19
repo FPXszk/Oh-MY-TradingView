@@ -36,6 +36,7 @@ const ROUTE_DEFINITIONS = [
     keywords: ['実現損益詳細'],
     snapshotName: 'realized-detail-page',
     startDate: DEFAULT_HISTORY_START_DATE,
+    dateRangeParams: { fromKey: 'baseDateFrom', toKey: 'baseDateTo' },
   },
   {
     key: 'dividendHistory',
@@ -43,6 +44,7 @@ const ROUTE_DEFINITIONS = [
     keywords: ['配当金・分配金履歴'],
     snapshotName: 'dividend-history-page',
     startDate: DEFAULT_HISTORY_START_DATE,
+    dateRangeParams: { fromKey: 'dispositionDateFrom', toKey: 'dispositionDateTo' },
   },
 ];
 
@@ -563,6 +565,33 @@ async function trySubmitQuery(client, keywords = ['照会']) {
   return clicked;
 }
 
+async function readVisibleDateValues(client) {
+  return evaluateJson(client, `(() => {
+    const visible = (element) => {
+      const style = window.getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      return style && style.visibility !== 'hidden' && style.display !== 'none' && rect.width > 0 && rect.height > 0;
+    };
+    return [...document.querySelectorAll('input, textarea')]
+      .filter((element) => visible(element))
+      .map((element) => String(element.value || '').trim())
+      .filter((value) => /^\\d{4}\\/\\d{2}\\/\\d{2}$/.test(value))
+      .slice(0, 4);
+  })()`);
+}
+
+function replaceDateRangeInUrl(currentUrl, params, fromValue, toValue) {
+  try {
+    const url = new URL(currentUrl);
+    url.searchParams.set(params.fromKey, fromValue);
+    url.searchParams.set(params.toKey, toValue);
+    url.searchParams.delete('period');
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
+
 async function captureStage(client, outputDir, name) {
   const snapshot = await snapshotPage(client);
   const safeName = sanitizeName(name);
@@ -734,6 +763,20 @@ async function captureRouteFromAccountAssets(client, outputDir, downloadDir, rou
       const submitResult = await trySubmitQuery(client, ['照会']);
       result.notes.push(`Submit result: ${JSON.stringify(submitResult)}`);
       await waitForPageSettle(client, pageState.url || navigation.url || ACCOUNT_ASSETS_URL, 12000);
+      if (route.dateRangeParams) {
+        const currentUrl = await evaluateJson(client, 'location.href');
+        const dateValues = await readVisibleDateValues(client);
+        const toDate = dateValues[1] || dateValues[0] || new Date().toISOString().slice(0, 10).replace(/-/g, '/');
+        const rangedUrl = replaceDateRangeInUrl(currentUrl, route.dateRangeParams, route.startDate, toDate);
+        result.notes.push(`Range URL candidate: ${rangedUrl || 'n/a'}`);
+        if (rangedUrl && rangedUrl !== currentUrl) {
+          const forcedNavigation = await navigateToUrl(client, rangedUrl, 15000).catch((error) => ({
+            url: null,
+            readyState: `navigation-error:${error.message}`,
+          }));
+          result.notes.push(`Forced range navigation: ${JSON.stringify(forcedNavigation)}`);
+        }
+      }
     }
   }
 
