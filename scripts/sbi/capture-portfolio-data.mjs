@@ -398,6 +398,29 @@ export function pickBestTextCandidate(candidates, keywords) {
     .sort((left, right) => right.score - left.score)[0] ?? null;
 }
 
+export function diffDownloadStates(beforeFiles, afterFiles) {
+  const beforeByPath = new Map((beforeFiles || []).map((file) => [file.path, file]));
+  const addedFiles = [];
+  const changedFiles = [];
+
+  for (const file of afterFiles || []) {
+    const previous = beforeByPath.get(file.path);
+    if (!previous) {
+      addedFiles.push(file);
+      continue;
+    }
+    if (previous.mtimeMs !== file.mtimeMs || previous.size !== file.size) {
+      changedFiles.push(file);
+    }
+  }
+
+  return {
+    addedFiles,
+    changedFiles,
+    hasMutation: addedFiles.length > 0 || changedFiles.length > 0,
+  };
+}
+
 async function clickByKeywords(client, keywords) {
   return evaluateJson(client, `(() => {
     const keywords = ${jsString(keywords)};
@@ -418,7 +441,18 @@ async function clickByKeywords(client, keywords) {
           else if (text.includes(keyword)) score += 40;
         }
         if (score === 0) return null;
-        return { element, text, score, href: element.href || null };
+        return {
+          element,
+          text,
+          score,
+          href: element.href || null,
+          tag: element.tagName.toLowerCase(),
+          type: element.type || null,
+          id: element.id || null,
+          name: element.name || null,
+          onclick: element.getAttribute('onclick') || null,
+          formAction: element.formAction || element.getAttribute('formaction') || element.form?.action || null,
+        };
       })
       .filter(Boolean)
       .sort((left, right) => right.score - left.score);
@@ -426,13 +460,41 @@ async function clickByKeywords(client, keywords) {
       return { clicked: false, candidates: [] };
     }
     const best = candidates[0];
-    best.element.click();
+    best.element.scrollIntoView({ block: 'center', inline: 'center' });
+    best.element.focus?.();
+    for (const eventName of ['pointerdown', 'mousedown', 'pointerup', 'mouseup']) {
+      best.element.dispatchEvent(new MouseEvent(eventName, { bubbles: true, cancelable: true, view: window }));
+    }
+    best.element.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+    if (best.element.form && typeof best.element.form.requestSubmit === 'function') {
+      try {
+        best.element.form.requestSubmit(best.element);
+      } catch {}
+    } else if (typeof best.element.click === 'function') {
+      best.element.click();
+    }
     return {
       clicked: true,
       text: best.text,
       href: best.href,
+      tag: best.tag,
+      type: best.type,
+      id: best.id,
+      name: best.name,
+      onclick: best.onclick,
+      formAction: best.formAction,
       candidateCount: candidates.length,
-      candidates: candidates.slice(0, 10).map((entry) => ({ text: entry.text, score: entry.score, href: entry.href })),
+      candidates: candidates.slice(0, 10).map((entry) => ({
+        text: entry.text,
+        score: entry.score,
+        href: entry.href,
+        tag: entry.tag,
+        type: entry.type,
+        id: entry.id,
+        name: entry.name,
+        onclick: entry.onclick,
+        formAction: entry.formAction,
+      })),
     };
   })()`);
 }
@@ -458,7 +520,6 @@ async function navigateToUrl(client, url, timeoutMs = 15000) {
 }
 
 async function tryCsvDownloads(client, downloadDir) {
-  const beforeFiles = await listFilesRecursive(downloadDir);
   const csvKeywordsList = [
     ['CSV'],
     ['CSVダウンロード'],
@@ -469,19 +530,37 @@ async function tryCsvDownloads(client, downloadDir) {
   const attempts = [];
 
   for (const keywords of csvKeywordsList) {
+    const beforeFiles = await listFilesRecursive(downloadDir);
     const clicked = await clickByKeywords(client, keywords);
     attempts.push({ keywords, ...clicked });
     if (!clicked.clicked) continue;
-    await sleep(4000);
-    const afterFiles = await listFilesRecursive(downloadDir);
-    const beforeSet = new Set(beforeFiles.map((entry) => entry.path));
-    const newFiles = afterFiles.filter((entry) => !beforeSet.has(entry.path));
-    if (newFiles.length > 0) {
+
+    let downloadDetected = null;
+    const startedAt = Date.now();
+    while (Date.now() - startedAt < 15000) {
+      await sleep(1000);
+      const afterFiles = await listFilesRecursive(downloadDir);
+      const mutation = diffDownloadStates(beforeFiles, afterFiles);
+      if (mutation.hasMutation) {
+        downloadDetected = mutation;
+        break;
+      }
+    }
+
+    if (downloadDetected) {
       await classifyDownloadedFiles(downloadDir);
       const renamedFiles = await listFilesRecursive(downloadDir);
       return {
         success: true,
-        attempts,
+        attempts: attempts.map((attempt, index) => (
+          index === attempts.length - 1
+            ? {
+              ...attempt,
+              detectedAddedFiles: downloadDetected.addedFiles.map((file) => file.path),
+              detectedChangedFiles: downloadDetected.changedFiles.map((file) => file.path),
+            }
+            : attempt
+        )),
         files: renamedFiles.sort((left, right) => right.mtimeMs - left.mtimeMs),
       };
     }

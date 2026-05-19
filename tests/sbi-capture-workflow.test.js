@@ -5,6 +5,7 @@ import {
   scoreSbiTarget,
   pickSbiTarget,
   pickBestTextCandidate,
+  diffDownloadStates,
   buildCaptureSummaryMarkdown,
 } from '../scripts/sbi/capture-portfolio-data.mjs';
 
@@ -47,6 +48,26 @@ describe('sbi capture candidate ranking', () => {
       { text: 'ダウンロード' },
     ], ['CSV']);
     assert.equal(picked.text, 'CSV');
+  });
+});
+
+describe('sbi download mutation detection', () => {
+  it('detects added and changed files separately', () => {
+    const before = [
+      { path: '/tmp/SaveFile.csv', mtimeMs: 1000, size: 100 },
+      { path: '/tmp/existing.csv', mtimeMs: 2000, size: 200 },
+    ];
+    const after = [
+      { path: '/tmp/SaveFile.csv', mtimeMs: 3000, size: 150 },
+      { path: '/tmp/existing.csv', mtimeMs: 2000, size: 200 },
+      { path: '/tmp/new.csv', mtimeMs: 4000, size: 50 },
+    ];
+
+    const result = diffDownloadStates(before, after);
+
+    assert.equal(result.hasMutation, true);
+    assert.deepEqual(result.changedFiles.map((file) => file.path), ['/tmp/SaveFile.csv']);
+    assert.deepEqual(result.addedFiles.map((file) => file.path), ['/tmp/new.csv']);
   });
 });
 
