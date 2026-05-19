@@ -422,7 +422,7 @@ export function diffDownloadStates(beforeFiles, afterFiles) {
 }
 
 async function clickByKeywords(client, keywords) {
-  return evaluateJson(client, `(() => {
+  const match = await evaluateJson(client, `(() => {
     const keywords = ${jsString(keywords)};
     const norm = (value) => String(value ?? '').replace(/\\s+/g, ' ').trim();
     const visible = (element) => {
@@ -452,6 +452,10 @@ async function clickByKeywords(client, keywords) {
           name: element.name || null,
           onclick: element.getAttribute('onclick') || null,
           formAction: element.formAction || element.getAttribute('formaction') || element.form?.action || null,
+          x: rect.x,
+          y: rect.y,
+          width: rect.width,
+          height: rect.height,
         };
       })
       .filter(Boolean)
@@ -461,20 +465,9 @@ async function clickByKeywords(client, keywords) {
     }
     const best = candidates[0];
     best.element.scrollIntoView({ block: 'center', inline: 'center' });
-    best.element.focus?.();
-    for (const eventName of ['pointerdown', 'mousedown', 'pointerup', 'mouseup']) {
-      best.element.dispatchEvent(new MouseEvent(eventName, { bubbles: true, cancelable: true, view: window }));
-    }
-    best.element.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
-    if (best.element.form && typeof best.element.form.requestSubmit === 'function') {
-      try {
-        best.element.form.requestSubmit(best.element);
-      } catch {}
-    } else if (typeof best.element.click === 'function') {
-      best.element.click();
-    }
+    const rect = best.element.getBoundingClientRect();
     return {
-      clicked: true,
+      matched: true,
       text: best.text,
       href: best.href,
       tag: best.tag,
@@ -483,6 +476,12 @@ async function clickByKeywords(client, keywords) {
       name: best.name,
       onclick: best.onclick,
       formAction: best.formAction,
+      x: Math.round(rect.x),
+      y: Math.round(rect.y),
+      width: Math.round(rect.width),
+      height: Math.round(rect.height),
+      centerX: Math.round(rect.x + (rect.width / 2)),
+      centerY: Math.round(rect.y + (rect.height / 2)),
       candidateCount: candidates.length,
       candidates: candidates.slice(0, 10).map((entry) => ({
         text: entry.text,
@@ -497,6 +496,36 @@ async function clickByKeywords(client, keywords) {
       })),
     };
   })()`);
+
+  if (!match?.matched) {
+    return match;
+  }
+
+  await client.Input.dispatchMouseEvent({
+    type: 'mouseMoved',
+    x: match.centerX,
+    y: match.centerY,
+    button: 'none',
+  });
+  await client.Input.dispatchMouseEvent({
+    type: 'mousePressed',
+    x: match.centerX,
+    y: match.centerY,
+    button: 'left',
+    clickCount: 1,
+  });
+  await client.Input.dispatchMouseEvent({
+    type: 'mouseReleased',
+    x: match.centerX,
+    y: match.centerY,
+    button: 'left',
+    clickCount: 1,
+  });
+
+  return {
+    clicked: true,
+    ...match,
+  };
 }
 
 async function waitForPageSettle(client, previousUrl, timeoutMs = 10000) {
@@ -937,6 +966,7 @@ async function main() {
       try {
         await client.Page.enable();
         await client.Runtime.enable();
+        await client.Input?.enable?.().catch(() => {});
         const downloadBehavior = await ensureDownloadBehavior(client, downloadDir);
         if (!downloadBehavior.success) {
           summary.notes.push(`Download behavior could not be enabled: ${downloadBehavior.error}`);
