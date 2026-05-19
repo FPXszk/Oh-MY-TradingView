@@ -472,6 +472,33 @@ export function parseUsStocksSnapshot(snapshot) {
     return [];
   }
 
+  const text = cleanCell(snapshot?.text);
+  const sectionPattern = /株式\(([^)]+)\)\s+総評価合計[\s\S]*?(?=株式\(|預り金\s+通貨|お問い合わせ|ページ上部|$)/gu;
+  const rowPattern = /(.+?)\s+([A-Z.-]+?)(NYSE|NASDAQ|NYSEArca|NYSEAmerican|CBOE|OTCMarket)\s+([0-9.,]+)\s+USD\s+[0-9,]+\s+円\s+([0-9,]+)\s+\(\d+\)\s+[0-9.,]+\s+USD\s+[0-9,]+\s+円\s+[0-9.,]+\s+USD\s+[0-9,]+\s+円\s+([0-9.,]+)\s+USD\s+([0-9,]+)\s+円\s+([+\-]?[0-9.,]+)\s+USD\s+([+\-]?[0-9,]+)\s+円\s+現買\s+現売\s+積立/gu;
+  const positions = [];
+
+  for (const sectionMatch of text.matchAll(sectionPattern)) {
+    const accountType = cleanCell(sectionMatch[1]);
+    const sectionText = sectionMatch[0];
+    for (const rowMatch of sectionText.matchAll(rowPattern)) {
+      positions.push({
+        accountType,
+        name: cleanCell(rowMatch[1]),
+        ticker: cleanCell(rowMatch[2]),
+        exchange: cleanCell(rowMatch[3]),
+        quantity: parseNumber(rowMatch[5]),
+        averageCostUsd: null,
+        currentPriceUsd: parseNumber(rowMatch[4]),
+        marketValueUsd: parseNumber(rowMatch[6]),
+        marketValueJpy: parseNumber(rowMatch[7]),
+        unrealizedPlUsd: parseNumber(rowMatch[8]),
+        unrealizedPlJpy: parseNumber(rowMatch[9]),
+      });
+    }
+  }
+
+  if (positions.length) return positions;
+
   return [];
 }
 

@@ -74,6 +74,17 @@ NISA預り,エヌビディア,NVDA,NASDAQ,10,174.50,225.32,2253.20,358213,+508.2
     assert.equal(stocks[0].marketValueJpy, 358213);
   });
 
+  it('parses US stocks from snapshot text fallback', () => {
+    const stocks = parseUsStocksSnapshot({
+      text: '株式(特定) 総評価合計 外貨建評価額 2,013.99 USD 円換算評価額 320,264 円 外貨建評価損益 -1,118.81 USD -35.71 % 円換算評価損益 -152,472 円 -32.25 % 銘柄 現在値 円換算額 保有数量 (売却注文中) 取得単価 円換算額 取得金額 円換算額 外貨建評価額 円換算評価額 外貨建評価損益 円換算評価損益 金額 % 取引 オラクル ORCLNYSE 183.09 USD 29,114 円 11 (0) 284.80 USD 42,976 円 3,132.80 USD 472,736 円 2,013.99 USD 320,264 円 -1,118.81 USD -152,472 円 現買 現売 積立 株式(NISA) 総評価合計 外貨建評価額 8,615.84 USD 円換算評価額 1,370,088 円 外貨建評価損益 +3,341.54 USD +63.36 % 円換算評価損益 +531,377 円 +63.36 % 銘柄 現在値 円換算額 保有数量 (売却注文中) 取得単価 円換算額 取得金額 円換算額 外貨建評価額 円換算評価額 外貨建評価損益 円換算評価損益 金額 % 取引 IonQ Inc IONQNYSE 46.71 USD 7,428 円 1 (0) 53.80 USD 8,493 円 53.80 USD 8,493 円 46.71 USD 7,427 円 -7.09 USD -1,066 円 現買 現売 積立',
+    });
+
+    assert.equal(stocks.length, 2);
+    assert.equal(stocks[0].ticker, 'ORCL');
+    assert.equal(stocks[1].ticker, 'IONQ');
+    assert.equal(stocks[1].marketValueJpy, 7427);
+  });
+
   it('parses asset/fund snapshot fallbacks', () => {
     const assets = parseAssetsSummarySnapshot({
       tables: [
