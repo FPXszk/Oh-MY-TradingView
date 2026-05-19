@@ -37,6 +37,7 @@ const ROUTE_DEFINITIONS = [
     snapshotName: 'realized-detail-page',
     startDate: DEFAULT_HISTORY_START_DATE,
     dateRangeParams: { fromKey: 'baseDateFrom', toKey: 'baseDateTo' },
+    fixedQueryParams: { baseDateType: 'CONTRACT', product: 'ALL' },
   },
   {
     key: 'dividendHistory',
@@ -711,6 +712,9 @@ function replaceDateRangeInUrl(currentUrl, params, fromValue, toValue) {
     const url = new URL(currentUrl);
     url.searchParams.set(params.fromKey, fromValue);
     url.searchParams.set(params.toKey, toValue);
+    for (const [key, value] of Object.entries(params.fixedQueryParams || {})) {
+      url.searchParams.set(key, value);
+    }
     url.searchParams.delete('period');
     return url.toString();
   } catch {
