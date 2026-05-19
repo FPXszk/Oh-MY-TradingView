@@ -422,6 +422,83 @@ export function diffDownloadStates(beforeFiles, afterFiles) {
   };
 }
 
+async function triggerMatchedElement(client, match, keywords) {
+  if (match.tag === 'a' && match.href) {
+    if (/^https?:/i.test(match.href)) {
+      await client.Page.navigate({ url: match.href }).catch(() => {});
+    } else {
+      await evaluateJson(client, `(() => {
+        const href = ${jsString(match.href)};
+        const link = [...document.querySelectorAll('a')].find((element) => element.href === href);
+        if (link) link.click();
+        return true;
+      })()`);
+    }
+    return;
+  }
+
+  if (match.formAction || match.tag === 'button' || match.type === 'submit') {
+    const submitResult = await evaluateJson(client, `(() => {
+      const keywords = ${jsString(keywords)};
+      const norm = (value) => String(value ?? '').replace(/\\s+/g, ' ').trim();
+      const visible = (element) => {
+        const style = window.getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+        return style && style.visibility !== 'hidden' && style.display !== 'none' && rect.width > 0 && rect.height > 0;
+      };
+      const candidates = [...document.querySelectorAll(${jsString(CLICKABLE_SELECTOR)})]
+        .filter(visible)
+        .map((element) => {
+          const text = norm(element.innerText || element.value || element.getAttribute('aria-label') || element.title || '');
+          if (!text) return null;
+          let score = 0;
+          for (const keyword of keywords) {
+            if (text === keyword) score += 100;
+            else if (text.includes(keyword)) score += 40;
+          }
+          if (score === 0) return null;
+          return { element, score };
+        })
+        .filter(Boolean)
+        .sort((left, right) => right.score - left.score);
+      const best = candidates[0]?.element;
+      if (!best) return { triggered: false, method: 'not-found' };
+      best.scrollIntoView({ block: 'center', inline: 'center' });
+      if (best.form && typeof best.form.requestSubmit === 'function') {
+        best.form.requestSubmit(best);
+        return { triggered: true, method: 'requestSubmit' };
+      }
+      best.click();
+      return { triggered: true, method: 'dom-click' };
+    })()`);
+
+    if (submitResult?.triggered) {
+      return;
+    }
+  }
+
+  await client.Input.dispatchMouseEvent({
+    type: 'mouseMoved',
+    x: match.centerX,
+    y: match.centerY,
+    button: 'none',
+  });
+  await client.Input.dispatchMouseEvent({
+    type: 'mousePressed',
+    x: match.centerX,
+    y: match.centerY,
+    button: 'left',
+    clickCount: 1,
+  });
+  await client.Input.dispatchMouseEvent({
+    type: 'mouseReleased',
+    x: match.centerX,
+    y: match.centerY,
+    button: 'left',
+    clickCount: 1,
+  });
+}
+
 async function clickByKeywords(client, keywords) {
   const match = await evaluateJson(client, `(() => {
     const keywords = ${jsString(keywords)};
@@ -503,43 +580,7 @@ async function clickByKeywords(client, keywords) {
     return match;
   }
 
-  if (match.tag === 'a' && match.href) {
-    if (/^https?:/i.test(match.href)) {
-      await client.Page.navigate({ url: match.href }).catch(() => {});
-    } else {
-      await evaluateJson(client, `(() => {
-        const href = ${jsString(match.href)};
-        const link = [...document.querySelectorAll('a')].find((element) => element.href === href);
-        if (link) link.click();
-        return true;
-      })()`);
-    }
-    return {
-      clicked: true,
-      ...match,
-    };
-  }
-
-  await client.Input.dispatchMouseEvent({
-    type: 'mouseMoved',
-    x: match.centerX,
-    y: match.centerY,
-    button: 'none',
-  });
-  await client.Input.dispatchMouseEvent({
-    type: 'mousePressed',
-    x: match.centerX,
-    y: match.centerY,
-    button: 'left',
-    clickCount: 1,
-  });
-  await client.Input.dispatchMouseEvent({
-    type: 'mouseReleased',
-    x: match.centerX,
-    y: match.centerY,
-    button: 'left',
-    clickCount: 1,
-  });
+  await triggerMatchedElement(client, match, keywords);
 
   return {
     clicked: true,
@@ -707,12 +748,12 @@ async function readVisibleDateValues(client) {
   })()`);
 }
 
-function replaceDateRangeInUrl(currentUrl, params, fromValue, toValue) {
+export function replaceDateRangeInUrl(currentUrl, params, fromValue, toValue, fixedQueryParams = null) {
   try {
     const url = new URL(currentUrl);
     url.searchParams.set(params.fromKey, fromValue);
     url.searchParams.set(params.toKey, toValue);
-    for (const [key, value] of Object.entries(params.fixedQueryParams || {})) {
+    for (const [key, value] of Object.entries(fixedQueryParams || {})) {
       url.searchParams.set(key, value);
     }
     url.searchParams.delete('period');
@@ -897,7 +938,13 @@ async function captureRouteFromAccountAssets(client, outputDir, downloadDir, rou
         const currentUrl = await evaluateJson(client, 'location.href');
         const dateValues = await readVisibleDateValues(client);
         const toDate = dateValues[1] || dateValues[0] || new Date().toISOString().slice(0, 10).replace(/-/g, '/');
-        const rangedUrl = replaceDateRangeInUrl(currentUrl, route.dateRangeParams, route.startDate, toDate);
+        const rangedUrl = replaceDateRangeInUrl(
+          currentUrl,
+          route.dateRangeParams,
+          route.startDate,
+          toDate,
+          route.fixedQueryParams,
+        );
         result.notes.push(`Range URL candidate: ${rangedUrl || 'n/a'}`);
         if (rangedUrl && rangedUrl !== currentUrl) {
           const forcedNavigation = await navigateToUrl(client, rangedUrl, 15000).catch((error) => ({

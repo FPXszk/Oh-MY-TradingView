@@ -6,6 +6,7 @@ import {
   pickSbiTarget,
   pickBestTextCandidate,
   diffDownloadStates,
+  replaceDateRangeInUrl,
   buildCaptureSummaryMarkdown,
 } from '../scripts/sbi/capture-portfolio-data.mjs';
 
@@ -68,6 +69,23 @@ describe('sbi download mutation detection', () => {
     assert.equal(result.hasMutation, true);
     assert.deepEqual(result.changedFiles.map((file) => file.path), ['/tmp/SaveFile.csv']);
     assert.deepEqual(result.addedFiles.map((file) => file.path), ['/tmp/new.csv']);
+  });
+});
+
+describe('sbi history range url replacement', () => {
+  it('preserves fixed query params for realized detail routes', () => {
+    const result = replaceDateRangeInUrl(
+      'https://site.sbisec.co.jp/account/assets/profits?baseDateFrom=2026%2F01%2F01&baseDateTo=2026%2F05%2F20',
+      { fromKey: 'baseDateFrom', toKey: 'baseDateTo' },
+      '2022/01/01',
+      '2026/05/20',
+      { baseDateType: 'CONTRACT', product: 'ALL' },
+    );
+
+    assert.equal(
+      result,
+      'https://site.sbisec.co.jp/account/assets/profits?baseDateFrom=2022%2F01%2F01&baseDateTo=2026%2F05%2F20&baseDateType=CONTRACT&product=ALL',
+    );
   });
 });
 
