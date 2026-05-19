@@ -255,6 +255,31 @@ async function ensureDownloadBehavior(client, downloadPath) {
   }
 }
 
+async function ensureAutomaticDownloadPermissions(client) {
+  const origins = [
+    'https://site.sbisec.co.jp',
+    'https://site1.sbisec.co.jp',
+    'https://www.sbisec.co.jp',
+    'https://member.c.sbisec.co.jp',
+  ];
+  const results = [];
+
+  for (const origin of origins) {
+    try {
+      await client.Browser?.setPermission?.({
+        permission: { name: 'automatic-downloads' },
+        setting: 'granted',
+        origin,
+      });
+      results.push({ origin, success: true });
+    } catch (error) {
+      results.push({ origin, success: false, error: error.message });
+    }
+  }
+
+  return results;
+}
+
 async function classifyDownloadedFiles(downloadDir) {
   const files = await listFilesRecursive(downloadDir);
   const renamed = [];
@@ -1039,6 +1064,12 @@ async function main() {
         const downloadBehavior = await ensureDownloadBehavior(client, downloadDir);
         if (!downloadBehavior.success) {
           summary.notes.push(`Download behavior could not be enabled: ${downloadBehavior.error}`);
+        }
+        const automaticDownloadPermissions = await ensureAutomaticDownloadPermissions(client);
+        for (const permission of automaticDownloadPermissions) {
+          if (!permission.success) {
+            summary.notes.push(`Automatic-download permission failed for ${permission.origin}: ${permission.error}`);
+          }
         }
 
         await captureStage(client, outputDir, 'current-page');
