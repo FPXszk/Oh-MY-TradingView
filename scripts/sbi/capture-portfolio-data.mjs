@@ -16,6 +16,26 @@ const CLICKABLE_SELECTOR = [
   'input[type="submit"]',
   '[role="button"]',
 ].join(',');
+const ROUTE_DEFINITIONS = [
+  {
+    key: 'usStocks',
+    label: '米国株式',
+    keywords: ['米国株式'],
+    snapshotName: 'us-stocks-page',
+  },
+  {
+    key: 'realizedDetail',
+    label: '実現損益詳細',
+    keywords: ['実現損益詳細'],
+    snapshotName: 'realized-detail-page',
+  },
+  {
+    key: 'dividendHistory',
+    label: '配当金・分配金履歴',
+    keywords: ['配当金・分配金履歴'],
+    snapshotName: 'dividend-history-page',
+  },
+];
 
 function printHelp() {
   console.log(`Usage: node scripts/sbi/capture-portfolio-data.mjs [options]
@@ -470,6 +490,30 @@ export function buildCaptureSummaryMarkdown(summary) {
     lines.push('');
   }
 
+  if (summary.routeCaptures?.length) {
+    lines.push('## Route Captures', '');
+    for (const route of summary.routeCaptures) {
+      lines.push(`### ${route.label}`, '');
+      lines.push(`- attempted: ${route.attempted ? 'true' : 'false'}`);
+      lines.push(`- clicked: ${route.clicked ? 'true' : 'false'}`);
+      lines.push(`- captured: ${route.captured ? 'true' : 'false'}`);
+      lines.push(`- csv_download_success: ${route.csvDownload?.success ? 'true' : 'false'}`);
+      lines.push(`- page_url: ${route.pageUrl || 'n/a'}`);
+      if (route.snapshotName) {
+        lines.push(`- snapshot: ${route.snapshotName}`);
+      }
+      if (route.csvDownload?.files?.length) {
+        lines.push(`- downloaded_files: ${route.csvDownload.files.map((file) => file.relativePath || file.path).join(', ')}`);
+      }
+      if (route.notes?.length) {
+        for (const note of route.notes) {
+          lines.push(`- note: ${note}`);
+        }
+      }
+      lines.push('');
+    }
+  }
+
   if (summary.notes?.length) {
     lines.push('## Notes', '');
     for (const note of summary.notes) {
@@ -479,6 +523,65 @@ export function buildCaptureSummaryMarkdown(summary) {
   }
 
   return `${lines.join('\n').trim()}\n`;
+}
+
+function toRelativeFiles(outputDir, files) {
+  return (files || []).map((file) => ({
+    ...file,
+    relativePath: relative(outputDir, file.path),
+  }));
+}
+
+function mergeDownloadedFiles(outputDir, existingFiles, newFiles) {
+  const mergedByPath = new Map();
+  for (const file of [...(existingFiles || []), ...(newFiles || [])]) {
+    mergedByPath.set(file.path, {
+      ...file,
+      relativePath: relative(outputDir, file.path),
+    });
+  }
+  return [...mergedByPath.values()].sort((left, right) => right.mtimeMs - left.mtimeMs);
+}
+
+async function captureRouteFromAccountAssets(client, outputDir, downloadDir, route) {
+  const result = {
+    key: route.key,
+    label: route.label,
+    snapshotName: route.snapshotName,
+    attempted: true,
+    clicked: false,
+    captured: false,
+    pageUrl: null,
+    csvDownload: { success: false, attempts: [], files: [] },
+    notes: [],
+  };
+
+  const navigation = await navigateToUrl(client, ACCOUNT_ASSETS_URL, 15000).catch((error) => ({
+    url: null,
+    readyState: `navigation-error:${error.message}`,
+  }));
+  result.notes.push(`Base navigation: ${JSON.stringify(navigation)}`);
+
+  const clicked = await clickByKeywords(client, route.keywords);
+  result.clicked = clicked.clicked;
+  result.notes.push(`Click result: ${JSON.stringify(clicked)}`);
+  if (!clicked.clicked) {
+    return result;
+  }
+
+  const pageState = await waitForPageSettle(client, navigation.url || ACCOUNT_ASSETS_URL, 12000);
+  result.pageUrl = pageState.url || null;
+
+  const snapshot = await captureStage(client, outputDir, route.snapshotName);
+  result.captured = true;
+  result.pageUrl = snapshot.url || result.pageUrl;
+
+  const csvDownload = await tryCsvDownloads(client, downloadDir);
+  result.csvDownload = {
+    ...csvDownload,
+    files: toRelativeFiles(outputDir, csvDownload.files),
+  };
+  return result;
 }
 
 async function main() {
@@ -505,6 +608,7 @@ async function main() {
     everyAssetCaptured: false,
     accountAssetsCaptured: false,
     csvDownload: null,
+    routeCaptures: [],
     notes: [],
   };
   try {
@@ -562,10 +666,7 @@ async function main() {
 
         const currentPageCsv = await tryCsvDownloads(client, downloadDir);
         summary.csvDownload = currentPageCsv;
-        summary.csvDownload.files = summary.csvDownload.files.map((file) => ({
-          ...file,
-          relativePath: relative(outputDir, file.path),
-        }));
+        summary.csvDownload.files = toRelativeFiles(outputDir, summary.csvDownload.files);
 
         const accountAssetsNavigation = await navigateToUrl(client, ACCOUNT_ASSETS_URL, 15000).catch((error) => ({
           url: null,
@@ -578,21 +679,39 @@ async function main() {
           summary.accountAssetsCaptured = true;
           const accountAssetsCsv = await tryCsvDownloads(client, downloadDir);
           if (accountAssetsCsv.success) {
-            const knownPaths = new Set(summary.csvDownload.files.map((file) => file.path));
-            const mergedFiles = [
-              ...summary.csvDownload.files,
-              ...accountAssetsCsv.files.filter((file) => !knownPaths.has(file.path)),
-            ].map((file) => ({
-              ...file,
-              relativePath: relative(outputDir, file.path),
-            }));
             summary.csvDownload = {
               success: true,
               attempts: [...summary.csvDownload.attempts, ...accountAssetsCsv.attempts],
-              files: mergedFiles,
+              files: mergeDownloadedFiles(outputDir, summary.csvDownload.files, accountAssetsCsv.files),
             };
           } else {
             summary.csvDownload.attempts.push(...accountAssetsCsv.attempts);
+          }
+
+          for (const route of ROUTE_DEFINITIONS) {
+            const routeCapture = await captureRouteFromAccountAssets(client, outputDir, downloadDir, route);
+            summary.routeCaptures.push(routeCapture);
+            if (routeCapture.csvDownload?.success) {
+              summary.csvDownload = {
+                success: true,
+                attempts: [...summary.csvDownload.attempts, ...routeCapture.csvDownload.attempts],
+                files: mergeDownloadedFiles(outputDir, summary.csvDownload.files, routeCapture.csvDownload.files),
+              };
+            }
+          }
+        } else {
+          for (const route of ROUTE_DEFINITIONS) {
+            summary.routeCaptures.push({
+              key: route.key,
+              label: route.label,
+              snapshotName: route.snapshotName,
+              attempted: false,
+              clicked: false,
+              captured: false,
+              pageUrl: null,
+              csvDownload: { success: false, attempts: [], files: [] },
+              notes: ['Skipped because account-assets page was not captured.'],
+            });
           }
         }
       } finally {

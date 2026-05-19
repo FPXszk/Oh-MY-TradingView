@@ -136,6 +136,28 @@ CDP endpoint が無い場合でも、`capture-summary.md` と `capture-error.txt
 - 今回の自動回収で確認できた detailed source は `downloads/SaveFile.csv` で、投資信託 3 件は report 化できた
 - 一方で、米国株明細 / 国内株明細 / 実現損益詳細 / 約定履歴 CSV はまだ自動回収していないため、report は部分的である
 
+2026-05-20 capture expansion update:
+
+- capture script は `My資産トップ` 到達後、artifact に見えていた導線を次の順序で追加探索する
+  - `米国株式`
+  - `実現損益詳細`
+  - `配当金・分配金履歴`
+- 各導線について
+  - `account/assets` へ戻る
+  - クリック結果を summary note に残す
+  - 到達ページを snapshot 化する
+  - CSV download を試行する
+  という flow に拡張した
+- `capture-summary.md` には `Route Captures` セクションが追加され、各導線ごとの
+  - attempted
+  - clicked
+  - captured
+  - csv_download_success
+  - snapshot
+  - downloaded_files
+  が残る
+- report builder は capture artifact 内の未解析 download も `補助artifact` セクションに列挙するため、`配当金・分配金履歴` 由来の CSV がまだ未解析でも workflow の成果を見失わない
+
 ## Notes
 
 - 日本株の現保有一覧 CSV が無い場合は、資産サマリー上の評価額から「現保有なし / 要追加CSV」を判定する。

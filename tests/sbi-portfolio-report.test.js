@@ -167,6 +167,7 @@ describe('sbi portfolio report builder', () => {
       ],
       sources: {
         assetsSummary: '/tmp/sbi_assets_summary.csv',
+        otherDownloads: ['/tmp/dividend-history.csv'],
       },
     });
 
@@ -174,6 +175,8 @@ describe('sbi portfolio report builder', () => {
     assert.match(report, /## 現在のポートフォリオ/);
     assert.match(report, /## 実現損益/);
     assert.match(report, /## 約定履歴サマリー/);
+    assert.match(report, /## 補助artifact/);
+    assert.match(report, /dividend-history\.csv/);
     assert.match(report, /エヌビディア/);
     assert.match(report, /住友電気工業/);
   });
@@ -187,6 +190,7 @@ describe('sbi portfolio report builder', () => {
 ファンド名,数量,取得単価,現在値,損益,評価額
 ｅＭＡＸＩＳ　Ｓｌｉｍ　米国株式（Ｓ＆Ｐ５００）,305179,30474,43645,+401951.26,1331953.74
 `, 'utf8');
+    await writeFile(join(downloads, 'dividend-history.csv'), '入金日,銘柄,金額\n2026/05/01,NVDA,123.45\n', 'utf8');
     await writeFile(join(root, 'account-assets-page.json'), `${JSON.stringify({
       tables: [
         {
@@ -211,5 +215,7 @@ describe('sbi portfolio report builder', () => {
     assert.match(report, /# SBI Portfolio Report/);
     assert.match(report, /総資産残高/);
     assert.match(report, /ｅＭＡＸＩＳ/);
+    assert.match(report, /補助artifact/);
+    assert.match(report, /dividend-history\.csv/);
   });
 });

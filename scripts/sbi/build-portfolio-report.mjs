@@ -254,6 +254,7 @@ async function discoverCaptureInputPaths(captureDir) {
     realizedFund: null,
     historyDomestic: null,
     historyForeign: null,
+    otherDownloads: [],
     accountAssetsPage: names.includes('account-assets-page.json') ? join(captureDir, 'account-assets-page.json') : null,
     everyAssetPage: names.includes('every-asset-page.json') ? join(captureDir, 'every-asset-page.json') : null,
     currentPage: names.includes('current-page.json') ? join(captureDir, 'current-page.json') : null,
@@ -267,7 +268,9 @@ async function discoverCaptureInputPaths(captureDir) {
     const kind = detectSbiCsvKind(text);
     if (kind && !inputs[kind]) {
       inputs[kind] = path;
+      continue;
     }
+    inputs.otherDownloads.push(path);
   }
 
   return inputs;
@@ -655,6 +658,10 @@ function renderTable(headers, rows) {
   return lines.join('\n');
 }
 
+function buildSupplementalArtifactRows(paths) {
+  return (paths || []).map((path) => [basename(path)]);
+}
+
 export function buildPortfolioReport(data) {
   const domesticHoldings = inferDomesticHoldings(data.assetsSummary);
   const recentTrades = buildRecentTradeRows(data.domesticHistory, data.foreignHistory);
@@ -808,6 +815,18 @@ export function buildPortfolioReport(data) {
     ),
     '',
   ];
+
+  if (data.sources.otherDownloads?.length) {
+    lines.push('## 補助artifact', '');
+    lines.push('capture で取得できたものの、現時点では未解析の CSV / 補助ファイルです。', '');
+    lines.push(
+      renderTable(
+        ['ファイル'],
+        buildSupplementalArtifactRows(data.sources.otherDownloads),
+      ),
+      '',
+    );
+  }
 
   return `${lines.join('\n').trim()}\n`;
 }
