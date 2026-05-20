@@ -422,6 +422,14 @@ export function diffDownloadStates(beforeFiles, afterFiles) {
   };
 }
 
+export function shouldUseMouseDispatch(match) {
+  if (!match) return false;
+  if (match.tag === 'a' && match.href) return false;
+  if (match.formAction) return false;
+  if (match.type === 'submit') return false;
+  return true;
+}
+
 async function triggerMatchedElement(client, match, keywords) {
   if (match.tag === 'a' && match.href) {
     if (/^https?:/i.test(match.href)) {
@@ -468,8 +476,7 @@ async function triggerMatchedElement(client, match, keywords) {
         best.form.requestSubmit(best);
         return { triggered: true, method: 'requestSubmit' };
       }
-      best.click();
-      return { triggered: true, method: 'dom-click' };
+      return { triggered: false, method: 'needs-mouse-dispatch' };
     })()`);
 
     if (submitResult?.triggered) {

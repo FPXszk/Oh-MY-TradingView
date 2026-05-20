@@ -7,6 +7,7 @@ import {
   pickBestTextCandidate,
   diffDownloadStates,
   replaceDateRangeInUrl,
+  shouldUseMouseDispatch,
   buildCaptureSummaryMarkdown,
 } from '../scripts/sbi/capture-portfolio-data.mjs';
 
@@ -69,6 +70,23 @@ describe('sbi download mutation detection', () => {
     assert.equal(result.hasMutation, true);
     assert.deepEqual(result.changedFiles.map((file) => file.path), ['/tmp/SaveFile.csv']);
     assert.deepEqual(result.addedFiles.map((file) => file.path), ['/tmp/new.csv']);
+  });
+});
+
+describe('sbi click dispatch strategy', () => {
+  it('uses mouse dispatch for plain buttons without form submission', () => {
+    assert.equal(shouldUseMouseDispatch({
+      tag: 'button',
+      type: 'button',
+      href: null,
+      formAction: null,
+    }), true);
+    assert.equal(shouldUseMouseDispatch({
+      tag: 'button',
+      type: 'submit',
+      href: null,
+      formAction: 'https://example.com/export',
+    }), false);
   });
 });
 
