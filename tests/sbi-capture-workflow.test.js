@@ -8,6 +8,7 @@ import {
   diffDownloadStates,
   replaceDateRangeInUrl,
   shouldUseMouseDispatch,
+  buildCsvDownloadAttemptPlan,
   buildCaptureSummaryMarkdown,
 } from '../scripts/sbi/capture-portfolio-data.mjs';
 
@@ -87,6 +88,22 @@ describe('sbi click dispatch strategy', () => {
       href: null,
       formAction: 'https://example.com/export',
     }), false);
+  });
+});
+
+describe('sbi csv download retry plan', () => {
+  it('retries each keyword set in a second round', () => {
+    const attempts = buildCsvDownloadAttemptPlan([
+      ['CSV'],
+      ['CSVダウンロード'],
+    ], 2);
+
+    assert.deepEqual(attempts, [
+      { round: 1, keywords: ['CSV'] },
+      { round: 1, keywords: ['CSVダウンロード'] },
+      { round: 2, keywords: ['CSV'] },
+      { round: 2, keywords: ['CSVダウンロード'] },
+    ]);
   });
 });
 

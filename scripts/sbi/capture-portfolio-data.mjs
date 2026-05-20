@@ -10,6 +10,14 @@ const DEFAULT_CDP_PORT = 9222;
 const DEFAULT_OUTPUT_DIR = 'docs/reports/screener/portfolio/capture/latest';
 const DEFAULT_HISTORY_START_DATE = '2022/01/01';
 const ACCOUNT_ASSETS_URL = 'https://site.sbisec.co.jp/account/assets';
+const CSV_DOWNLOAD_STABILITY = {
+  preClickWaitMs: 1500,
+  postClickWaitMs: 2000,
+  pollIntervalMs: 1000,
+  detectionTimeoutMs: 20000,
+  retryDelayMs: 2500,
+  maxRounds: 2,
+};
 const CLICKABLE_SELECTOR = [
   'a',
   'button',
@@ -154,6 +162,16 @@ export function pickSbiTarget(targets) {
 
 function sleep(ms) {
   return new Promise((resolvePromise) => setTimeout(resolvePromise, ms));
+}
+
+export function buildCsvDownloadAttemptPlan(keywordSets, maxRounds = CSV_DOWNLOAD_STABILITY.maxRounds) {
+  const attempts = [];
+  for (let round = 1; round <= maxRounds; round += 1) {
+    for (const keywords of keywordSets) {
+      attempts.push({ round, keywords });
+    }
+  }
+  return attempts;
 }
 
 async function listTargets(host, port) {
@@ -624,17 +642,32 @@ async function tryCsvDownloads(client, downloadDir) {
     ['出力', 'CSV'],
   ];
   const attempts = [];
+  const keywordAttempts = buildCsvDownloadAttemptPlan(csvKeywordsList);
 
-  for (const keywords of csvKeywordsList) {
+  for (const keywordAttempt of keywordAttempts) {
+    const { round, keywords } = keywordAttempt;
+    if (round > 1) {
+      await sleep(CSV_DOWNLOAD_STABILITY.retryDelayMs);
+    }
+    await sleep(CSV_DOWNLOAD_STABILITY.preClickWaitMs);
     const beforeFiles = await listFilesRecursive(downloadDir);
     const clicked = await clickByKeywords(client, keywords);
-    attempts.push({ keywords, ...clicked });
+    attempts.push({
+      round,
+      keywords,
+      preClickWaitMs: CSV_DOWNLOAD_STABILITY.preClickWaitMs,
+      postClickWaitMs: CSV_DOWNLOAD_STABILITY.postClickWaitMs,
+      detectionTimeoutMs: CSV_DOWNLOAD_STABILITY.detectionTimeoutMs,
+      retryDelayMs: round > 1 ? CSV_DOWNLOAD_STABILITY.retryDelayMs : 0,
+      ...clicked,
+    });
     if (!clicked.clicked) continue;
 
     let downloadDetected = null;
+    await sleep(CSV_DOWNLOAD_STABILITY.postClickWaitMs);
     const startedAt = Date.now();
-    while (Date.now() - startedAt < 15000) {
-      await sleep(1000);
+    while (Date.now() - startedAt < CSV_DOWNLOAD_STABILITY.detectionTimeoutMs) {
+      await sleep(CSV_DOWNLOAD_STABILITY.pollIntervalMs);
       const afterFiles = await listFilesRecursive(downloadDir);
       const mutation = diffDownloadStates(beforeFiles, afterFiles);
       if (mutation.hasMutation) {
@@ -998,6 +1031,8 @@ async function captureRouteFromAccountAssets(client, outputDir, downloadDir, rou
 
   const pageState = await waitForPageSettle(client, navigation.url || ACCOUNT_ASSETS_URL, 12000);
   result.pageUrl = pageState.url || null;
+  await sleep(1500);
+  result.notes.push('Post-navigation settle wait: 1500ms');
 
   if (route.startDate) {
     const fillResult = await fillFirstDateControl(client, route.startDate);
@@ -1024,6 +1059,8 @@ async function captureRouteFromAccountAssets(client, outputDir, downloadDir, rou
             readyState: `navigation-error:${error.message}`,
           }));
           result.notes.push(`Forced range navigation: ${JSON.stringify(forcedNavigation)}`);
+          await sleep(1500);
+          result.notes.push('Post-range-navigation settle wait: 1500ms');
         }
       }
     }
