@@ -68,9 +68,9 @@
 
 ## Implementation Steps
 
-- [ ] `scripts/sbi/capture-portfolio-data.mjs` の CSV click 前後に必要最小限の settle wait / post-click wait / bounded retry を追加する
-- [ ] `tests/sbi-capture-workflow.test.js` を更新し、stability 用 wait / retry の挙動と summary 出力を固定化する
-- [ ] live workflow run を実行し、artifact から `実現損益詳細` / `配当金・分配金履歴` の download 不発条件を再確認する
-- [ ] 原因に合わせて capture script の wait / retry を最小変更で調整する
-- [ ] 必要なら手順書と durable session log を更新する
-- [ ] live workflow run を rerun 含めて再実行し、追加 CSV が `downloads/` に落ちるか、または到達不能理由が十分具体的に残ることを確認する
+- [x] `scripts/sbi/capture-portfolio-data.mjs` の CSV click 前後に必要最小限の settle wait / post-click wait / bounded retry を追加する
+- [x] `tests/sbi-capture-workflow.test.js` を更新し、stability 用 wait / retry の挙動と summary 出力を固定化する
+- [x] live workflow run を実行し、artifact から `実現損益詳細` / `配当金・分配金履歴` の download 不発条件を再確認する
+- [x] 原因に合わせて capture script の wait / retry を最小変更で調整する
+- [x] 必要なら手順書と durable session log を更新する
+- [x] live workflow run を rerun 含めて再実行し、追加 CSV が `downloads/` に落ちるか、または到達不能理由が十分具体的に残ることを確認する

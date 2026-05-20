@@ -214,6 +214,22 @@ CDP endpoint が無い場合でも、`capture-summary.md` と `capture-error.txt
   - repeated rerun の安定化: 未解決
   である
 
+2026-05-21 stability rerun update:
+
+- revision `bbff9e8` (`fix: stabilize sbi csv download retries`) で、
+  - route 遷移後 `1500ms` settle wait
+  - CSV click 前 `1500ms` / click 後 `2000ms` wait
+  - download 検知 `20s`
+  - keyword ごと最大 2 round retry
+  を追加した
+- live run `26173338216`
+  - URL: <https://github.com/FPXszk/Oh-MY-TradingView/actions/runs/26173338216>
+  - artifact: `ALLTYPE_20260521004507.csv`, `DISTRIBUTION_20260521004519.csv`, `SaveFile.csv`
+- live run `26173625221`
+  - URL: <https://github.com/FPXszk/Oh-MY-TradingView/actions/runs/26173625221>
+  - artifact: `ALLTYPE_20260521004929.csv`, `DISTRIBUTION_20260521004941.csv`, `SaveFile.csv`
+- 2 連続 rerun で `実現損益詳細` / `配当金・分配金履歴` の CSV が回収できたため、現時点では repeated rerun の安定性は改善したと見てよい
+
 ## Notes
 
 - 日本株の現保有一覧 CSV が無い場合は、資産サマリー上の評価額から「現保有なし / 要追加CSV」を判定する。

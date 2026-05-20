@@ -2,7 +2,7 @@
 
 ## Summary
 
-`SBI Portfolio Capture` workflow の最後の blocker だった `CSVダウンロード button は押せるのに artifact downloads/ に実ファイルが増えない` 問題を潰し、`実現損益詳細` と `配当金・分配金履歴` の両方で CSV 本体の回収に一度成功させた。そのうえで、同じ revision の rerun では再現性がまだ揺れることも確認した。
+`SBI Portfolio Capture` workflow の最後の blocker だった `CSVダウンロード button は押せるのに artifact downloads/ に実ファイルが増えない` 問題を潰し、`実現損益詳細` と `配当金・分配金履歴` の両方で CSV 本体の回収に一度成功させた。そのうえで、同じ revision の rerun では再現性がまだ揺れることも確認したが、後続の stability patch 後に 2 連続成功まで持ち直した。
 
 今回の最終到達点:
 
@@ -118,3 +118,36 @@ route result:
 - `DISTRIBUTION_*.csv` を parse して配当サマリー / 受取履歴を report 本文へ組み込む
 - 米国株の direct CSV 導線が後日見つかった場合は parser を追加する
 - trusted click が効かない run のときに、download が別ディレクトリへ落ちていないか、あるいは Chrome 側の site permission / prompt 状態が揺れていないかを runner 上で追加観測する
+
+## Stability Follow-up
+
+`fix: stabilize sbi csv download retries` (`bbff9e8`) で、CSV click 前後に短い settle wait と bounded retry を追加した。
+
+- 変更点:
+  - route 遷移後に `1500ms` の settle wait
+  - CSV click 前に `1500ms`、click 後に `2000ms` の wait
+  - download 検知 window を `20s` に延長
+  - keyword ごとに最大 2 round の retry
+
+### Run `26173338216`
+
+- workflow: success
+- URL: <https://github.com/FPXszk/Oh-MY-TradingView/actions/runs/26173338216>
+- artifact:
+  - `downloads/SaveFile.csv`
+  - `downloads/ALLTYPE_20260521004507.csv`
+  - `downloads/DISTRIBUTION_20260521004519.csv`
+
+### Run `26173625221`
+
+- workflow: success
+- URL: <https://github.com/FPXszk/Oh-MY-TradingView/actions/runs/26173625221>
+- artifact:
+  - `downloads/SaveFile.csv`
+  - `downloads/ALLTYPE_20260521004929.csv`
+  - `downloads/DISTRIBUTION_20260521004941.csv`
+
+### Updated Assessment
+
+- trusted click だけでは揺れが残っていたが、短い settle wait と retry を足した revision では 2 連続で `実現損益詳細` / `配当金・分配金履歴` の CSV 回収に成功した
+- したがって現時点の評価は `機能実証は済み / 安定性は改善済み / なお長期運用での監視は継続` が妥当
