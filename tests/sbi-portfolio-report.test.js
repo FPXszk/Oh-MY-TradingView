@@ -14,6 +14,7 @@ import {
   parseRealizedSummaryCsv,
   parseDomesticHistoryCsv,
   parseForeignHistoryCsv,
+  parseDistributionHistoryCsv,
   buildPortfolioReport,
   buildPortfolioReportFromCaptureDir,
 } from '../scripts/sbi/build-portfolio-report.mjs';
@@ -138,6 +139,32 @@ NISA預り,エヌビディア,NVDA,NASDAQ,10,174.50,225.32,2253.20,358213,+508.2
     assert.equal(domesticHistory[0].date, '2025-05-13');
     assert.equal(foreignHistory[0].settlementDate, '2025-05-30');
   });
+
+  it('parses distribution history summary and details', () => {
+    const distribution = parseDistributionHistoryCsv(`"検索件数","4"
+"受渡日","2025/1/1-2026/5/18"
+"種類","すべて"
+"口座","すべて"
+
+"商品","受取額(税引後・円)","受取額(税引後・USD)"
+"国内株式(現物)","4,345",
+"米国株式","10,644.17","67.56"
+"投資信託","3,686",
+"合計","18,675.17",
+
+"受渡日","口座","商品","銘柄名","数量","受取額(税引後・円)"
+"2026/4/30","特定/一般","投資信託","インベスコ","37,849","454"
+"2026/4/27","特定/一般","米国株式","オラクル ORCL","11","629"
+"2026/4/16","NISA（成長投資枠）","米国株式","マイクロン MU","10","213.17"
+`);
+
+    assert.equal(distribution.summary.length, 3);
+    assert.equal(distribution.summary[1].product, '米国株式');
+    assert.equal(distribution.summary[1].amountUsd, 67.56);
+    assert.equal(distribution.entries.length, 3);
+    assert.equal(distribution.entries[0].date, '2026-04-30');
+    assert.equal(distribution.entries[2].currency, 'USD');
+  });
 });
 
 describe('sbi portfolio report builder', () => {
@@ -194,18 +221,27 @@ describe('sbi portfolio report builder', () => {
       foreignHistory: [
         { date: '2025-05-28', category: '米国株式', currency: '米国ドル', name: 'IonQ Inc IONQ', action: '売却', accountType: 'NISA', quantity: 1, settlementAmount: 46 },
       ],
+      distributionSummary: [
+        { product: '国内株式(現物)', amountJpy: 4345, amountUsd: null },
+        { product: '米国株式', amountJpy: 10644.17, amountUsd: 67.56 },
+      ],
+      distributionEntries: [
+        { date: '2026-04-30', accountType: '特定/一般', product: '投資信託', name: 'インベスコ', quantity: 37849, amount: 454, currency: 'JPY' },
+        { date: '2026-04-16', accountType: 'NISA（成長投資枠）', product: '米国株式', name: 'マイクロン MU', quantity: 10, amount: 213.17, currency: 'USD' },
+      ],
       sources: {
         assetsSummary: '/tmp/sbi_assets_summary.csv',
-        otherDownloads: ['/tmp/dividend-history.csv'],
+        distributionHistory: '/tmp/DISTRIBUTION_20260521004941.csv',
       },
     });
 
     assert.match(report, /# SBI Portfolio Report/);
     assert.match(report, /## 現在のポートフォリオ/);
     assert.match(report, /## 実現損益/);
+    assert.match(report, /## 配当金・分配金履歴/);
     assert.match(report, /## 約定履歴サマリー/);
-    assert.match(report, /## 補助artifact/);
-    assert.match(report, /dividend-history\.csv/);
+    assert.match(report, /DISTRIBUTION_20260521004941\.csv/);
+    assert.match(report, /マイクロン MU/);
     assert.match(report, /エヌビディア/);
     assert.match(report, /住友電気工業/);
   });
@@ -219,7 +255,20 @@ describe('sbi portfolio report builder', () => {
 ファンド名,数量,取得単価,現在値,損益,評価額
 ｅＭＡＸＩＳ　Ｓｌｉｍ　米国株式（Ｓ＆Ｐ５００）,305179,30474,43645,+401951.26,1331953.74
 `, 'utf8');
-    await writeFile(join(downloads, 'dividend-history.csv'), '入金日,銘柄,金額\n2026/05/01,NVDA,123.45\n', 'utf8');
+    await writeFile(join(downloads, 'DISTRIBUTION_20260521004941.csv'), `"検索件数","2"
+"受渡日","2025/1/1-2026/5/18"
+"種類","すべて"
+"口座","すべて"
+
+"商品","受取額(税引後・円)","受取額(税引後・USD)"
+"投資信託","3,686",
+"米国株式","10,644.17","67.56"
+"合計","14,330.17",
+
+"受渡日","口座","商品","銘柄名","数量","受取額(税引後・円)"
+"2026/4/30","特定/一般","投資信託","インベスコ　世界厳選株式オープン","37,849","454"
+"2026/4/16","NISA（成長投資枠）","米国株式","マイクロン テクノロジー MU","10","213.17"
+`, 'utf8');
     await writeFile(join(downloads, 'ALLTYPE_20260521001538.csv'), `"すべて"
 
 "約定日","2022/1/1-2026/5/21"
@@ -267,7 +316,8 @@ describe('sbi portfolio report builder', () => {
     assert.match(report, /エヌビディア/);
     assert.match(report, /米国株式/);
     assert.match(report, /\+￥1,128,671/);
-    assert.match(report, /補助artifact/);
-    assert.match(report, /dividend-history\.csv/);
+    assert.match(report, /配当金・分配金履歴/);
+    assert.match(report, /マイクロン テクノロジー MU/);
+    assert.doesNotMatch(report, /補助artifact/);
   });
 });

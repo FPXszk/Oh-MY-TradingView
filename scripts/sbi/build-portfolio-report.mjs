@@ -26,6 +26,7 @@ Options:
   --realized-fund <path>     Override fund realized P/L CSV path
   --history-domestic <path>  Override domestic/fund trade history CSV path
   --history-foreign <path>   Override foreign trade history CSV path
+  --distribution-history <path> Override dividend/distribution history CSV path
   --help                     Show this help
 `);
 }
@@ -221,6 +222,7 @@ async function discoverInputPaths(downloadsDir) {
     realizedFund: getLatestMatch(files, (name) => /^FUND_.*\.csv$/i.test(name)),
     historyDomestic: getLatestMatch(files, (name) => /^SaveFile_.*\.csv$/i.test(name)),
     historyForeign: getLatestMatch(files, (name) => /^yakujo.*\.csv$/i.test(name)),
+    distributionHistory: getLatestMatch(files, (name) => /^DISTRIBUTION_.*\.csv$/i.test(name)),
   };
 }
 
@@ -238,6 +240,7 @@ function detectSbiCsvKind(text) {
   }
   if (rows.some((row) => cleanCell(row[0]) === '約定日' && cleanCell(row[1]) === '銘柄' && cleanCell(row[2]) === '銘柄コード')) return 'historyDomestic';
   if (rows.some((row) => cleanCell(row[0]) === '国内約定日' && cleanCell(row[1]) === '通貨' && cleanCell(row[2]) === '銘柄名')) return 'historyForeign';
+  if (rows.some((row) => cleanCell(row[0]) === '商品' && cleanCell(row[1]) === '受取額(税引後・円)')) return 'distributionHistory';
   return null;
 }
 
@@ -255,6 +258,7 @@ async function discoverCaptureInputPaths(captureDir) {
     realizedFund: null,
     historyDomestic: null,
     historyForeign: null,
+    distributionHistory: null,
     otherDownloads: [],
     accountAssetsPage: names.includes('account-assets-page.json') ? join(captureDir, 'account-assets-page.json') : null,
     everyAssetPage: names.includes('every-asset-page.json') ? join(captureDir, 'every-asset-page.json') : null,
@@ -667,6 +671,30 @@ export function parseForeignHistoryCsv(text) {
   }));
 }
 
+export function parseDistributionHistoryCsv(text) {
+  const rows = parseCsv(text);
+  const summaryHeaderIndex = rows.findIndex((row) => row[0] === '商品' && row[1] === '受取額(税引後・円)');
+  const detailHeaderIndex = rows.findIndex((row) => row[0] === '受渡日' && row[1] === '口座' && row[2] === '商品');
+
+  const summary = summaryHeaderIndex === -1 ? [] : mapRows(rows, summaryHeaderIndex).map((row) => ({
+    product: row['商品'],
+    amountJpy: parseNumber(row['受取額(税引後・円)']),
+    amountUsd: parseNumber(row['受取額(税引後・USD)']),
+  }));
+
+  const entries = detailHeaderIndex === -1 ? [] : mapRows(rows, detailHeaderIndex).map((row) => ({
+    date: toIsoDate(row['受渡日']),
+    accountType: row['口座'],
+    product: row['商品'],
+    name: row['銘柄名'],
+    quantity: parseNumber(row['数量']),
+    amount: parseNumber(row['受取額(税引後・円)']),
+    currency: row['商品'] === '米国株式' ? 'USD' : 'JPY',
+  }));
+
+  return { summary, entries };
+}
+
 function sumNumbers(values) {
   return values.reduce((total, value) => total + (Number.isFinite(value) ? value : 0), 0);
 }
@@ -710,6 +738,13 @@ function buildTopRealizedRows(realizedDetails, limit = 5) {
   return { gains, losses };
 }
 
+function formatDistributionAmount(amount, currency) {
+  if (!Number.isFinite(amount)) return 'n/a';
+  return currency === 'USD'
+    ? formatCurrency(amount, 'USD', 2)
+    : formatCurrency(amount, 'JPY', 0);
+}
+
 function renderTable(headers, rows) {
   const lines = [
     `| ${headers.join(' | ')} |`,
@@ -734,6 +769,9 @@ export function buildPortfolioReport(data) {
     ...data.realizedFund,
   ];
   const topRealized = buildTopRealizedRows(realizedDetails);
+  const recentDistributions = [...(data.distributionEntries || [])]
+    .sort((left, right) => String(right.date).localeCompare(String(left.date)))
+    .slice(0, 20);
   const totalUsMarketValueJpy = sumNumbers(data.usStocks.map((row) => row.marketValueJpy));
   const totalFundMarketValueJpy = sumNumbers(data.funds.map((row) => row.marketValueJpy));
   const cashJpy = data.assetsSummary.products.find((row) => row.product === '預り金(円)')?.marketValueJpy ?? null;
@@ -745,6 +783,7 @@ export function buildPortfolioReport(data) {
     `- 取得日時: ${data.assetsSummary.asOf || 'n/a'}`,
     `- 生成元: ${data.sources.assetsSummary ? basename(data.sources.assetsSummary) : 'n/a'} ほか`,
     '- 取得方法: 読み取り専用。ログインや発注は自動化していません。',
+    data.sources.distributionHistory ? `- 配当履歴CSV: ${basename(data.sources.distributionHistory)}` : null,
     '',
     '## 全体サマリー',
     '',
@@ -849,6 +888,31 @@ export function buildPortfolioReport(data) {
       ]),
     ),
     '',
+    '## 配当金・分配金履歴',
+    '',
+    renderTable(
+      ['商品', '受取額(税引後・円)', '受取額(税引後・USD)'],
+      (data.distributionSummary || []).map((row) => [
+        row.product || 'n/a',
+        formatCurrency(row.amountJpy, 'JPY', 0),
+        formatCurrency(row.amountUsd, 'USD', 2),
+      ]),
+    ),
+    '',
+    '### 直近受取 20 件',
+    '',
+    renderTable(
+      ['日付', '口座', '商品', '銘柄', '数量', '受取額'],
+      recentDistributions.map((row) => [
+        row.date || 'n/a',
+        row.accountType || 'n/a',
+        row.product || 'n/a',
+        row.name || 'n/a',
+        formatInteger(row.quantity),
+        formatDistributionAmount(row.amount, row.currency),
+      ]),
+    ),
+    '',
     '## 約定履歴サマリー',
     '',
     renderTable(
@@ -891,7 +955,7 @@ export function buildPortfolioReport(data) {
     );
   }
 
-  return `${lines.join('\n').trim()}\n`;
+  return `${lines.filter(Boolean).join('\n').trim()}\n`;
 }
 
 function decodeCsvBuffer(buffer) {
@@ -916,6 +980,7 @@ export async function buildPortfolioReportFromFiles(inputPaths, outputPath) {
     realizedFundText,
     historyDomesticText,
     historyForeignText,
+    distributionHistoryText,
   ] = await Promise.all([
     readCsvText(inputPaths.assetsSummary),
     readCsvText(inputPaths.usStocks),
@@ -926,7 +991,9 @@ export async function buildPortfolioReportFromFiles(inputPaths, outputPath) {
     readCsvText(inputPaths.realizedFund),
     readCsvText(inputPaths.historyDomestic),
     readCsvText(inputPaths.historyForeign),
+    readCsvText(inputPaths.distributionHistory),
   ]);
+  const distributionHistory = parseDistributionHistoryCsv(distributionHistoryText);
 
   const data = {
     assetsSummary: parseAssetsSummaryCsv(assetsSummaryText),
@@ -938,6 +1005,8 @@ export async function buildPortfolioReportFromFiles(inputPaths, outputPath) {
     realizedFund: parseRealizedDetailCsv(realizedFundText, '投資信託'),
     domesticHistory: parseDomesticHistoryCsv(historyDomesticText),
     foreignHistory: parseForeignHistoryCsv(historyForeignText),
+    distributionSummary: distributionHistory.summary,
+    distributionEntries: distributionHistory.entries,
     sources: inputPaths,
   };
 
@@ -975,6 +1044,9 @@ export async function buildPortfolioReportFromCaptureDir(captureDir, outputPath)
       ...parseUsStocksSnapshot(foreignTopSnapshot),
       ...parseUsStocksSnapshot(foreignHoldingsSnapshot),
     ].filter((row, index, rows) => rows.findIndex((candidate) => candidate.name === row.name && candidate.ticker === row.ticker) === index);
+  const distributionHistory = inputPaths.distributionHistory
+    ? parseDistributionHistoryCsv(await readCsvText(inputPaths.distributionHistory))
+    : { summary: [], entries: [] };
 
   const data = {
     assetsSummary,
@@ -986,6 +1058,8 @@ export async function buildPortfolioReportFromCaptureDir(captureDir, outputPath)
     realizedFund: inputPaths.realizedFund ? parseRealizedDetailCsv(await readCsvText(inputPaths.realizedFund), '投資信託') : [],
     domesticHistory: inputPaths.historyDomestic ? parseDomesticHistoryCsv(await readCsvText(inputPaths.historyDomestic)) : [],
     foreignHistory: inputPaths.historyForeign ? parseForeignHistoryCsv(await readCsvText(inputPaths.historyForeign)) : [],
+    distributionSummary: distributionHistory.summary,
+    distributionEntries: distributionHistory.entries,
     sources: {
       ...inputPaths,
       captureDir,
@@ -1009,6 +1083,7 @@ function ensureInputs(paths) {
     'realizedFund',
     'historyDomestic',
     'historyForeign',
+    'distributionHistory',
   ];
   for (const key of required) {
     if (!paths[key]) {
@@ -1040,6 +1115,7 @@ async function main() {
       realizedFund: options.realizedFund || discovered.realizedFund,
       historyDomestic: options.historyDomestic || discovered.historyDomestic,
       historyForeign: options.historyForeign || discovered.historyForeign,
+      distributionHistory: options.distributionHistory || discovered.distributionHistory,
     };
 
     ensureInputs(inputPaths);
