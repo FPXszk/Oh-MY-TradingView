@@ -226,17 +226,18 @@ async function discoverInputPaths(downloadsDir) {
 
 function detectSbiCsvKind(text) {
   const normalized = text.replace(/^\uFEFF/, '');
-  if (/^取得日時,/m.test(normalized) && /総資産残高/.test(normalized)) return 'assetsSummary';
-  if (/口座種別,銘柄名,ティッカー,取引所/m.test(normalized)) return 'usStocks';
+  const rows = parseCsv(normalized);
+  if (rows.some((row) => cleanCell(row[0]) === '取得日時') && /総資産残高/.test(normalized)) return 'assetsSummary';
+  if (rows.some((row) => cleanCell(row[0]) === '口座種別' && cleanCell(row[1]) === '銘柄名' && cleanCell(row[2]) === 'ティッカー')) return 'usStocks';
   if (/投資信託（金額\//.test(normalized) || /保有証券一覧/.test(normalized)) return 'fundPortfolio';
-  if (/^商品,実現損益\(税引前・円\),利益金額\(円\),損失金額\(円\)/m.test(normalized)) return 'realizedAll';
-  if (/^約定日,(口座|国|ファンド名)/m.test(normalized)) {
-    if (/ファンド名/.test(normalized)) return 'realizedFund';
-    if (/国/.test(normalized)) return 'realizedForeign';
+  if (rows.some((row) => cleanCell(row[0]) === '商品' && cleanCell(row[1]) === '実現損益(税引前・円)')) return 'realizedAll';
+  if (rows.some((row) => cleanCell(row[0]) === '約定日' && ['口座', '国', 'ファンド名'].includes(cleanCell(row[1])))) {
+    if (rows.some((row) => cleanCell(row[1]) === 'ファンド名')) return 'realizedFund';
+    if (rows.some((row) => cleanCell(row[1]) === '国')) return 'realizedForeign';
     return 'realizedDomestic';
   }
-  if (/^約定日,銘柄,銘柄コード,市場,取引/m.test(normalized)) return 'historyDomestic';
-  if (/^国内約定日,通貨,銘柄名,取引,預り区分/m.test(normalized)) return 'historyForeign';
+  if (rows.some((row) => cleanCell(row[0]) === '約定日' && cleanCell(row[1]) === '銘柄' && cleanCell(row[2]) === '銘柄コード')) return 'historyDomestic';
+  if (rows.some((row) => cleanCell(row[0]) === '国内約定日' && cleanCell(row[1]) === '通貨' && cleanCell(row[2]) === '銘柄名')) return 'historyForeign';
   return null;
 }
 

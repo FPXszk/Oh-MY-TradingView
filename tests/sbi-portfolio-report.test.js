@@ -220,6 +220,16 @@ describe('sbi portfolio report builder', () => {
 ｅＭＡＸＩＳ　Ｓｌｉｍ　米国株式（Ｓ＆Ｐ５００）,305179,30474,43645,+401951.26,1331953.74
 `, 'utf8');
     await writeFile(join(downloads, 'dividend-history.csv'), '入金日,銘柄,金額\n2026/05/01,NVDA,123.45\n', 'utf8');
+    await writeFile(join(downloads, 'ALLTYPE_20260521001538.csv'), `"すべて"
+
+"約定日","2022/1/1-2026/5/21"
+
+"商品","実現損益(税引前・円)","利益金額(円)","損失金額(円)"
+"国内株式(現物)","+623,767","701,950","-78,183"
+"米国株式","+1,128,671","1,151,168","-22,497"
+"投資信託","+177,705","177,705","0"
+"合計","+1,930,143","2,030,823","-100,680"
+`, 'utf8');
     await writeFile(join(root, 'account-assets-page.json'), `${JSON.stringify({
       tables: [
         {
@@ -255,6 +265,8 @@ describe('sbi portfolio report builder', () => {
     assert.match(report, /総資産残高/);
     assert.match(report, /ｅＭＡＸＩＳ/);
     assert.match(report, /エヌビディア/);
+    assert.match(report, /米国株式/);
+    assert.match(report, /\+￥1,128,671/);
     assert.match(report, /補助artifact/);
     assert.match(report, /dividend-history\.csv/);
   });
