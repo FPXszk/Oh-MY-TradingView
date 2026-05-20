@@ -66,9 +66,10 @@
 
 ## Implementation Steps
 
-- [ ] `tests/sbi-portfolio-report.test.js` に配当 CSV parser / report 表示の期待値を追加する
-- [ ] `scripts/sbi/build-portfolio-report.mjs` に配当 CSV parser と report 反映を実装する
-- [ ] 必要なら source discovery / capture 側 wiring を最小変更で補強する
-- [ ] unit test を通し、既存 report 出力に回帰がないことを確認する
+- [x] `tests/sbi-portfolio-report.test.js` に配当 CSV parser / report 表示の期待値を追加する
+- [x] `scripts/sbi/build-portfolio-report.mjs` に配当 CSV parser と report 反映を実装する
+- [x] 必要なら source discovery / capture 側 wiring を最小変更で補強する
+- [x] unit test を通し、既存 report 出力に回帰がないことを確認する
 - [ ] live workflow run で artifact と report を確認する
-- [ ] durable session log と workflow 手順書を更新する
+- [x] durable session log を更新する
+- [ ] workflow 手順書を更新する
