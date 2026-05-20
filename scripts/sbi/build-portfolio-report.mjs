@@ -428,6 +428,11 @@ export function parseAssetsSummarySnapshot(snapshot) {
     result.products = products;
   }
 
+  if (!result.asOf && snapshot?.text) {
+    const asOfMatch = snapshot.text.match(/更新\s+(\d{4}\/\d{1,2}\/\d{1,2}\s+\d{1,2}:\d{2})/);
+    result.asOf = asOfMatch?.[1] || '';
+  }
+
   return result;
 }
 
@@ -760,6 +765,15 @@ function buildSupplementalArtifactRows(paths) {
   return (paths || []).map((path) => [basename(path)]);
 }
 
+function describeAssetsSource(sources) {
+  if (sources.assetsSummary) return basename(sources.assetsSummary);
+  if (sources.accountAssetsPage) return basename(sources.accountAssetsPage);
+  if (sources.everyAssetPage) return basename(sources.everyAssetPage);
+  if (sources.currentPage) return basename(sources.currentPage);
+  if (sources.captureDir) return basename(sources.captureDir);
+  return 'n/a';
+}
+
 export function buildPortfolioReport(data) {
   const domesticHoldings = inferDomesticHoldings(data.assetsSummary);
   const recentTrades = buildRecentTradeRows(data.domesticHistory, data.foreignHistory);
@@ -781,7 +795,7 @@ export function buildPortfolioReport(data) {
     '# SBI Portfolio Report',
     '',
     `- 取得日時: ${data.assetsSummary.asOf || 'n/a'}`,
-    `- 生成元: ${data.sources.assetsSummary ? basename(data.sources.assetsSummary) : 'n/a'} ほか`,
+    `- 生成元: ${describeAssetsSource(data.sources)} ほか`,
     '- 取得方法: 読み取り専用。ログインや発注は自動化していません。',
     data.sources.distributionHistory ? `- 配当履歴CSV: ${basename(data.sources.distributionHistory)}` : null,
     '',

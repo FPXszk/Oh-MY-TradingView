@@ -102,6 +102,7 @@ NISA預り,エヌビディア,NVDA,NASDAQ,10,174.50,225.32,2253.20,358213,+508.2
           ],
         },
       ],
+      text: '資産残高 更新 2026/5/21 01:43 5,424,050円 前日比 +6,550円 評価損益 +923,131円 評価損益率 +20.50%',
     });
     const funds = parseFundPortfolioSnapshot({
       tables: [
@@ -116,6 +117,7 @@ NISA預り,エヌビディア,NVDA,NASDAQ,10,174.50,225.32,2253.20,358213,+508.2
     });
 
     assert.equal(assets.totalAssetsJpy, 5424050);
+    assert.equal(assets.asOf, '2026/5/21 01:43');
     assert.equal(assets.products.find((row) => row.product === '米国株式')?.marketValueJpy, 1750653);
     assert.equal(funds.length, 1);
     assert.equal(funds[0].marketValueJpy, 1331953.74);
@@ -280,6 +282,7 @@ describe('sbi portfolio report builder', () => {
 "合計","+1,930,143","2,030,823","-100,680"
 `, 'utf8');
     await writeFile(join(root, 'account-assets-page.json'), `${JSON.stringify({
+      text: 'My資産トップ 更新 2026/5/21 01:43 資産残高 5,424,050円 前日比 +6,550円 評価損益 +923,131円 評価損益率 +20.50%',
       tables: [
         {
           rows: [
@@ -311,6 +314,8 @@ describe('sbi portfolio report builder', () => {
     const report = await readFile(output, 'utf8');
 
     assert.match(report, /# SBI Portfolio Report/);
+    assert.match(report, /取得日時: 2026\/5\/21 01:43/);
+    assert.match(report, /生成元: account-assets-page\.json ほか/);
     assert.match(report, /総資産残高/);
     assert.match(report, /ｅＭＡＸＩＳ/);
     assert.match(report, /エヌビディア/);

@@ -230,6 +230,23 @@ CDP endpoint が無い場合でも、`capture-summary.md` と `capture-error.txt
   - artifact: `ALLTYPE_20260521004929.csv`, `DISTRIBUTION_20260521004941.csv`, `SaveFile.csv`
 - 2 連続 rerun で `実現損益詳細` / `配当金・分配金履歴` の CSV が回収できたため、現時点では repeated rerun の安定性は改善したと見てよい
 
+2026-05-21 metadata / us-stocks triage update:
+
+- live run `26175124809`
+  - URL: <https://github.com/FPXszk/Oh-MY-TradingView/actions/runs/26175124809>
+  - conclusion: `success`
+- report 冒頭の `取得日時: n/a` / `生成元: n/a` は、artifact 不足ではなく builder fallback 不足だった
+  - `account-assets-page.json` の `text` に `更新 2026/5/21 01:43` が存在したため、snapshot fallback から `取得日時` を復元するよう修正した
+  - assets summary CSV が無い run でも、`生成元` は `account-assets-page.json` などの snapshot 名を出すよう修正した
+- 米国株 route の `csv_download_success: false` は、この run では workflow failure ではなく live page 制約として扱うのが妥当
+  - `My資産` 直リンク先では `csv_candidates: 0`
+  - fallback で取得した `foreign-holdings-page.json` には ORCL / IONQ / MU / NVDA / OKLO の保有本文が存在
+  - report でも米国株 5 件が本文へ反映されている
+- したがって current interpretation は
+  - 配当履歴 / 実現損益 CSV: workflow で取得成功
+  - 米国株 CSV: 未取得でも、text fallback により report 目的は達成可能
+  - 今後 CSV 化を再挑戦する場合は、`csv_download_success` 単体ではなく `foreign-holdings-page` と report 本文の両方を見て判定する
+
 ## Notes
 
 - 日本株の現保有一覧 CSV が無い場合は、資産サマリー上の評価額から「現保有なし / 要追加CSV」を判定する。
