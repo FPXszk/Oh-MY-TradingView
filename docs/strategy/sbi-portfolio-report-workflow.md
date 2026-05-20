@@ -186,6 +186,34 @@ CDP endpoint が無い場合でも、`capture-summary.md` と `capture-error.txt
   - CSV file artifact 化: 未解決
   である
 
+2026-05-21 csv-download completion update:
+
+- live run `26171801854`
+  - URL: <https://github.com/FPXszk/Oh-MY-TradingView/actions/runs/26171801854>
+  - conclusion: `success`
+- `実現損益詳細` / `配当金・分配金履歴` の `CSVダウンロード` は、`button type="button"` で `form` も `onclick` attribute も持たない plain button だった
+- capture script 側でこの種の button を `element.click()` ではなく trusted click 相当の CDP mouse dispatch に切り替えたところ、artifact `downloads/` に実ファイルが追加された
+- 実際に増えたファイル:
+  - `ALLTYPE_20260521001538.csv`
+  - `DISTRIBUTION_20260521001543.csv`
+- `capture-summary.md` の route result でも
+  - `実現損益詳細` `csv_download_success: true`
+  - `配当金・分配金履歴` `csv_download_success: true`
+  を確認できた
+- `build-portfolio-report` 側も quoted CSV header を認識するよう更新し、capture artifact から `ALLTYPE_*.csv` を `実現損益` セクションへ取り込めるようになった
+- 現在の到達点は
+  - 投資信託 CSV: 取得済み
+  - 実現損益 CSV: 取得済み
+  - 配当金・分配金履歴 CSV: 取得済み
+  - 米国株 CSV: 依然として未確認。ただし `foreign-holdings-page` text fallback で report 化は可能
+  である
+- ただし subsequent live runs `26172151272` / `26172459167` では、同じ revision でも追加 CSV が再び落ちず `downloads/SaveFile.csv` のみへ戻った
+- したがって現時点の厳密な評価は
+  - 成功 run の実証: 済み
+  - report builder の `ALLTYPE_*.csv` 反映: 済み
+  - repeated rerun の安定化: 未解決
+  である
+
 ## Notes
 
 - 日本株の現保有一覧 CSV が無い場合は、資産サマリー上の評価額から「現保有なし / 要追加CSV」を判定する。
