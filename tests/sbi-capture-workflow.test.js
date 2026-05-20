@@ -122,6 +122,20 @@ describe('sbi capture summary markdown', () => {
           pageUrl: 'https://site.sbisec.co.jp/account/assets/us',
           snapshotName: 'us-stocks-page',
           formControlCount: 3,
+          csvDiagnostics: {
+            candidateCount: 1,
+            candidates: [
+              {
+                tag: 'button',
+                name: 'download',
+                formAction: 'https://site.sbisec.co.jp/account/assets/us/export',
+                form: {
+                  action: 'https://site.sbisec.co.jp/account/assets/us/export',
+                  method: 'post',
+                },
+              },
+            ],
+          },
           csvDownload: {
             success: true,
             files: [{ relativePath: 'downloads/sbi_us_stocks.csv' }],
@@ -141,6 +155,11 @@ describe('sbi capture summary markdown', () => {
     assert.match(markdown, /### 米国株式/);
     assert.match(markdown, /snapshot: us-stocks-page/);
     assert.match(markdown, /form_controls: 3/);
+    assert.match(markdown, /csv_candidates: 1/);
+    assert.match(markdown, /csv_candidate_tag: button/);
+    assert.match(markdown, /csv_candidate_name: download/);
+    assert.match(markdown, /csv_candidate_form_action: https:\/\/site\.sbisec\.co\.jp\/account\/assets\/us\/export/);
+    assert.match(markdown, /csv_candidate_form_method: post/);
     assert.match(markdown, /downloads\/sbi_us_stocks\.csv/);
     assert.match(markdown, /test note/);
   });

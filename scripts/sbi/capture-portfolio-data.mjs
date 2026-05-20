@@ -658,6 +658,61 @@ async function tryCsvDownloads(client, downloadDir) {
   return { success: false, attempts, files: [] };
 }
 
+async function inspectCsvDownloadTargets(client, keywordsList = [['CSV'], ['CSVダウンロード']]) {
+  return evaluateJson(client, `(() => {
+    const keywordSets = ${jsString(keywordsList)};
+    const norm = (value) => String(value ?? '').replace(/\\s+/g, ' ').trim();
+    const visible = (element) => {
+      const style = window.getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      return style && style.visibility !== 'hidden' && style.display !== 'none' && rect.width > 0 && rect.height > 0;
+    };
+    const describeForm = (form) => {
+      if (!form) return null;
+      const hiddenInputs = [...form.querySelectorAll('input[type="hidden"]')]
+        .slice(0, 20)
+        .map((input) => ({
+          name: input.name || null,
+          value: norm(input.value || ''),
+        }));
+      return {
+        action: form.action || null,
+        method: (form.method || 'get').toLowerCase(),
+        target: form.target || null,
+        hiddenInputs,
+      };
+    };
+    const candidates = [...document.querySelectorAll(${jsString(CLICKABLE_SELECTOR)})]
+      .filter(visible)
+      .map((element) => {
+        const text = norm(element.innerText || element.value || element.getAttribute('aria-label') || element.title || '');
+        if (!text) return null;
+        const matchedKeywords = keywordSets.filter((keywords) => keywords.every((keyword) => text.includes(keyword)));
+        if (matchedKeywords.length === 0) return null;
+        return {
+          text,
+          tag: element.tagName.toLowerCase(),
+          type: element.type || null,
+          id: element.id || null,
+          name: element.name || null,
+          value: element.value || null,
+          href: element.href || null,
+          onclick: element.getAttribute('onclick') || null,
+          formAction: element.formAction || element.getAttribute('formaction') || element.form?.action || null,
+          outerHtml: (element.outerHTML || '').slice(0, 500),
+          matchedKeywords,
+          form: describeForm(element.form || null),
+        };
+      })
+      .filter(Boolean)
+      .slice(0, 10);
+    return {
+      candidateCount: candidates.length,
+      candidates,
+    };
+  })()`);
+}
+
 async function fillFirstDateControl(client, value) {
   return evaluateJson(client, `(() => {
     const targetValue = ${jsString(value)};
@@ -831,6 +886,16 @@ export function buildCaptureSummaryMarkdown(summary) {
       if (route.formControlCount !== undefined) {
         lines.push(`- form_controls: ${route.formControlCount}`);
       }
+      if (route.csvDiagnostics?.candidateCount !== undefined) {
+        lines.push(`- csv_candidates: ${route.csvDiagnostics.candidateCount}`);
+      }
+      const bestCandidate = route.csvDiagnostics?.candidates?.[0];
+      if (bestCandidate) {
+        lines.push(`- csv_candidate_tag: ${bestCandidate.tag || 'n/a'}`);
+        lines.push(`- csv_candidate_name: ${bestCandidate.name || 'n/a'}`);
+        lines.push(`- csv_candidate_form_action: ${bestCandidate.form?.action || bestCandidate.formAction || 'n/a'}`);
+        lines.push(`- csv_candidate_form_method: ${bestCandidate.form?.method || 'n/a'}`);
+      }
       if (route.csvDownload?.files?.length) {
         lines.push(`- downloaded_files: ${route.csvDownload.files.map((file) => file.relativePath || file.path).join(', ')}`);
       }
@@ -961,6 +1026,8 @@ async function captureRouteFromAccountAssets(client, outputDir, downloadDir, rou
   result.captured = true;
   result.pageUrl = snapshot.url || result.pageUrl;
   result.formControlCount = snapshot.formControls?.length ?? 0;
+  result.csvDiagnostics = await inspectCsvDownloadTargets(client);
+  result.notes.push(`CSV diagnostics: ${JSON.stringify(result.csvDiagnostics)}`);
 
   if (route.key === 'usStocks') {
     const marketValue = (snapshot.text || '').match(/米国株式\\s+([0-9,]+)円/);
