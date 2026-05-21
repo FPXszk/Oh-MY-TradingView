@@ -11,24 +11,24 @@
   },
   {
     "description": "",
-    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/inspector.html?ws=127.0.0.1:9222/devtools/page/8820D15807970101324B38007DDDBF9F",
+    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/inspector.html?ws=127.0.0.1:9222/devtools/page/325680A6FE54B1A2021670D6F0A14474",
     "faviconUrl": "https://sbisec.akamaized.net/sbisec/images/common/favicon/favicon-32x32.png",
-    "id": "8820D15807970101324B38007DDDBF9F",
-    "title": "配当金・分配金履歴｜SBI証券",
+    "id": "325680A6FE54B1A2021670D6F0A14474",
+    "title": "My資産トップ｜SBI証券",
     "type": "page",
-    "url": "https://site.sbisec.co.jp/account/assets/dividends?dispositionDateFrom=2022%2F01%2F01&dispositionDateTo=2026%2F05%2F21",
-    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/8820D15807970101324B38007DDDBF9F"
+    "url": "https://site.sbisec.co.jp/account/assets",
+    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/325680A6FE54B1A2021670D6F0A14474"
   },
   {
     "description": "",
-    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/inspector.html?ws=127.0.0.1:9222/devtools/page/B92DA2A2DD4D9170927A32E8BD1E4C3B",
+    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/inspector.html?ws=127.0.0.1:9222/devtools/page/A466BCEBBE675F430E72E0391AC92D78",
     "faviconUrl": "https://sbisec.akamaized.net/sbisec/images/common/favicon/favicon-32x32.png",
-    "id": "B92DA2A2DD4D9170927A32E8BD1E4C3B",
-    "parentId": "8820D15807970101324B38007DDDBF9F",
+    "id": "A466BCEBBE675F430E72E0391AC92D78",
+    "parentId": "325680A6FE54B1A2021670D6F0A14474",
     "title": "https://cdn.d2-apps.net/html/frame.html#https://tg.socdm.com/aux/idsync?client_id=900&amp;proto=primenumber",
     "type": "iframe",
     "url": "https://cdn.d2-apps.net/html/frame.html#https://tg.socdm.com/aux/idsync?client_id=900&proto=primenumber",
-    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/B92DA2A2DD4D9170927A32E8BD1E4C3B"
+    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/A466BCEBBE675F430E72E0391AC92D78"
   },
   {
     "description": "",
@@ -63,12 +63,12 @@
   },
   {
     "description": "",
-    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/worker_app.html?ws=127.0.0.1:9222/devtools/page/E07C8DC6006058E8FBDAB34267424C0F",
-    "id": "E07C8DC6006058E8FBDAB34267424C0F",
+    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/worker_app.html?ws=127.0.0.1:9222/devtools/page/71FFA751D8C331B45E5639944D2742A2",
+    "id": "71FFA751D8C331B45E5639944D2742A2",
     "title": "github-socket-worker-v3-489b8e8886d580d2afe20646f675578274643dc3c708a1905bb6ab8af5114454",
     "type": "shared_worker",
     "url": "https://github.com/assets-cdn/worker/socket-worker-5074bd5c33c83e94.js?module=true",
-    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/E07C8DC6006058E8FBDAB34267424C0F"
+    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/71FFA751D8C331B45E5639944D2742A2"
   },
   {
     "description": "",
@@ -90,11 +90,11 @@
   },
   {
     "description": "",
-    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/worker_app.html?ws=127.0.0.1:9222/devtools/page/3C9F40D80EDCA2C19B3097D7B7AC9D14",
-    "id": "3C9F40D80EDCA2C19B3097D7B7AC9D14",
+    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/worker_app.html?ws=127.0.0.1:9222/devtools/page/12FC7F95C9FA57680FC254225E1C713A",
+    "id": "12FC7F95C9FA57680FC254225E1C713A",
     "title": "Service Worker https://github.com/assets-cdn/worker/service-worker-83cbd54255e6cf42.js?current_user=FPXszk&amp;errors_url=https%3A%2F%2Fapi.github.com%2F_private%2Fbrowser%2Ferrors&amp;release=ce868f5c2a18a336b572ad0da21ab134bccc842f&amp;actor_id=106506797&amp;is_staff=false&amp;analytics_collector_url=https%3A%2F%2Fcollector.github.com%2Fgithub%2Fcollect&amp;module=true",
     "type": "service_worker",
     "url": "https://github.com/assets-cdn/worker/service-worker-83cbd54255e6cf42.js?current_user=FPXszk&errors_url=https%3A%2F%2Fapi.github.com%2F_private%2Fbrowser%2Ferrors&release=ce868f5c2a18a336b572ad0da21ab134bccc842f&actor_id=106506797&is_staff=false&analytics_collector_url=https%3A%2F%2Fcollector.github.com%2Fgithub%2Fcollect&module=true",
-    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/3C9F40D80EDCA2C19B3097D7B7AC9D14"
+    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/12FC7F95C9FA57680FC254225E1C713A"
   }
 ]

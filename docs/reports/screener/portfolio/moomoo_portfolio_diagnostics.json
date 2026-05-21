@@ -10,7 +10,7 @@
     "simulateAccountCount": 0,
     "positionCount": 4,
     "totalAssets": 14859.02,
-    "cash": 9853.54,
+    "cash": 9853.55,
     "marketValue": 5005.48,
     "unrealizedPl": -852.22,
     "cashRatioPct": 66.31,
@@ -38,12 +38,12 @@
         "costBasis": 5857.69,
         "unrealizedPl": -852.22,
         "unrealizedPlPct": -14.55,
-        "totalAssets": 14859.023,
-        "cash": 9853.54,
+        "totalAssets": 14859.0246,
+        "cash": 9853.55,
         "cashRatioPct": 66.31,
         "investedRatioPct": 33.69,
-        "topPositionWeightPct": 34.2,
-        "averagePositionPlRatioPct": -13.36,
+        "topPositionWeightPct": 34.22,
+        "averagePositionPlRatioPct": -13.37,
         "byMarket": [
           {
             "key": "US",
@@ -80,12 +80,12 @@
             "side": "LONG",
             "quantity": 19,
             "costPrice": 96.126,
-            "lastPrice": 90.09,
-            "marketValue": 1711.71,
-            "unrealizedPl": -114.69,
-            "plRatioPct": -6.28,
-            "weightPctOfPositions": 34.2,
-            "weightPctOfAssets": 11.52
+            "lastPrice": 90.14,
+            "marketValue": 1712.66,
+            "unrealizedPl": -113.74,
+            "plRatioPct": -6.23,
+            "weightPctOfPositions": 34.22,
+            "weightPctOfAssets": 11.53
           },
           {
             "symbol": "US.SIL",
@@ -125,31 +125,31 @@
             "side": "LONG",
             "quantity": 1,
             "costPrice": 881.16,
-            "lastPrice": 874.71,
-            "marketValue": 874.71,
-            "unrealizedPl": -6.45,
-            "plRatioPct": -0.73,
-            "weightPctOfPositions": 17.48,
-            "weightPctOfAssets": 5.89
+            "lastPrice": 873.756,
+            "marketValue": 873.76,
+            "unrealizedPl": -7.4,
+            "plRatioPct": -0.84,
+            "weightPctOfPositions": 17.46,
+            "weightPctOfAssets": 5.88
           }
         ]
       },
       "balance": {
-        "power": 9853.53757,
+        "power": 9853.54851,
         "max_power_short": "N/A",
         "net_cash_power": "N/A",
-        "total_assets": 14859.023,
-        "securities_assets": 14859.02,
+        "total_assets": 14859.0246,
+        "securities_assets": 14859.03,
         "fund_assets": 0,
         "bond_assets": 0,
-        "cash": 9853.54,
-        "market_val": 5005.48,
+        "cash": 9853.55,
+        "market_val": 5005.4761,
         "long_mv": "N/A",
         "short_mv": "N/A",
         "pending_asset": 0,
-        "interest_charged_amount": 68.75243,
+        "interest_charged_amount": 68.74149,
         "frozen_cash": 0,
-        "avl_withdrawal_cash": 9853.53,
+        "avl_withdrawal_cash": 9853.54,
         "max_withdrawal": "N/A",
         "currency": "USD",
         "available_funds": "N/A",
@@ -165,8 +165,8 @@
         "hkd_net_cash_power": "N/A",
         "hkd_assets": 0,
         "us_cash": 9922.29,
-        "us_avl_withdrawal_cash": 9853.53,
-        "usd_net_cash_power": 9853.53757,
+        "us_avl_withdrawal_cash": 9853.54,
+        "usd_net_cash_power": 9853.54851,
         "usd_assets": 14927.77,
         "cn_cash": "N/A",
         "cn_avl_withdrawal_cash": "N/A",
@@ -213,12 +213,12 @@
           "side": "LONG",
           "quantity": 19,
           "costPrice": 96.126,
-          "lastPrice": 90.09,
-          "marketValue": 1711.71,
-          "unrealizedPl": -114.69,
-          "plRatioPct": -6.28,
-          "weightPctOfPositions": 34.2,
-          "weightPctOfAssets": 11.52
+          "lastPrice": 90.14,
+          "marketValue": 1712.66,
+          "unrealizedPl": -113.74,
+          "plRatioPct": -6.23,
+          "weightPctOfPositions": 34.22,
+          "weightPctOfAssets": 11.53
         },
         {
           "symbol": "US.SIL",
@@ -258,12 +258,12 @@
           "side": "LONG",
           "quantity": 1,
           "costPrice": 881.16,
-          "lastPrice": 874.71,
-          "marketValue": 874.71,
-          "unrealizedPl": -6.45,
-          "plRatioPct": -0.73,
-          "weightPctOfPositions": 17.48,
-          "weightPctOfAssets": 5.89
+          "lastPrice": 873.756,
+          "marketValue": 873.76,
+          "unrealizedPl": -7.4,
+          "plRatioPct": -0.84,
+          "weightPctOfPositions": 17.46,
+          "weightPctOfAssets": 5.88
         }
       ]
     }
@@ -272,13 +272,13 @@
     "Read-only diagnostics only. No order, cancel, modify, or unlock methods are called.",
     "Portfolio totals prefer REAL accounts when present; SIMULATE accounts remain listed separately."
   ],
-  "retrieved_at": "2026-05-21T10:55:45.652Z",
+  "retrieved_at": "2026-05-21T10:59:27.631Z",
   "workflow": {
     "runId": "26221593596",
-    "runAttempt": "1",
+    "runAttempt": "2",
     "runNumber": "10",
     "refName": "main",
     "sha": "ed2eb0518f284fb5f054eca66ce3fbf0ac636cf0",
-    "generatedAt": "2026-05-21T10:55:42.021Z"
+    "generatedAt": "2026-05-21T10:59:26.205Z"
   }
 }
