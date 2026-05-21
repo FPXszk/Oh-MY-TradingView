@@ -1,0 +1,72 @@
+[
+  {
+    "description": "",
+    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/inspector.html?ws=127.0.0.1:9222/devtools/page/8820D15807970101324B38007DDDBF9F",
+    "faviconUrl": "https://sbisec.akamaized.net/sbisec/images/common/favicon/favicon-32x32.png",
+    "id": "8820D15807970101324B38007DDDBF9F",
+    "title": "配当金・分配金履歴｜SBI証券",
+    "type": "page",
+    "url": "https://site.sbisec.co.jp/account/assets/dividends?dispositionDateFrom=2022%2F01%2F01&dispositionDateTo=2026%2F05%2F21",
+    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/8820D15807970101324B38007DDDBF9F"
+  },
+  {
+    "description": "",
+    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/inspector.html?ws=127.0.0.1:9222/devtools/page/5FEFB8F5AE2B1E602787D7C7DFBDF886",
+    "faviconUrl": "https://sbisec.akamaized.net/sbisec/images/common/favicon/favicon-32x32.png",
+    "id": "5FEFB8F5AE2B1E602787D7C7DFBDF886",
+    "parentId": "8820D15807970101324B38007DDDBF9F",
+    "title": "https://cdn.d2-apps.net/html/frame.html#https://tg.socdm.com/aux/idsync?client_id=900&amp;proto=primenumber",
+    "type": "iframe",
+    "url": "https://cdn.d2-apps.net/html/frame.html#https://tg.socdm.com/aux/idsync?client_id=900&proto=primenumber",
+    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/5FEFB8F5AE2B1E602787D7C7DFBDF886"
+  },
+  {
+    "description": "",
+    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/inspector.html?ws=127.0.0.1:9222/devtools/page/DA92AB02A071C27D81ECF26AE2E21311",
+    "faviconUrl": "https://www.gstatic.com/lamda/images/gemini_sparkle_aurora_33f86dc0c0257da337c63.svg",
+    "id": "DA92AB02A071C27D81ECF26AE2E21311",
+    "parentId": "AF415686BF8E7150329C632C19526BD0",
+    "title": "‎Google Gemini",
+    "type": "webview",
+    "url": "https://gemini.google.com/glic?hl=ja",
+    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/DA92AB02A071C27D81ECF26AE2E21311"
+  },
+  {
+    "description": "",
+    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/inspector.html?ws=127.0.0.1:9222/devtools/page/6CD176CFBF095DFE4F25F6BC8FC5009E",
+    "faviconUrl": "https://www.gstatic.com/lamda/images/gemini_sparkle_aurora_33f86dc0c0257da337c63.svg",
+    "id": "6CD176CFBF095DFE4F25F6BC8FC5009E",
+    "parentId": "DA92AB02A071C27D81ECF26AE2E21311",
+    "title": "https://accounts.google.com/RotateCookiesPage?origin=https%3A%2F%2Fgemini.google.com&amp;hfcr_pid=2",
+    "type": "iframe",
+    "url": "https://accounts.google.com/RotateCookiesPage?origin=https%3A%2F%2Fgemini.google.com&hfcr_pid=2",
+    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/6CD176CFBF095DFE4F25F6BC8FC5009E"
+  },
+  {
+    "description": "",
+    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/inspector.html?ws=127.0.0.1:9222/devtools/page/AF415686BF8E7150329C632C19526BD0",
+    "id": "AF415686BF8E7150329C632C19526BD0",
+    "title": "chrome://glic",
+    "type": "other",
+    "url": "chrome://glic/",
+    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/AF415686BF8E7150329C632C19526BD0"
+  },
+  {
+    "description": "",
+    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/worker_app.html?ws=127.0.0.1:9222/devtools/page/35AFD7F2FDB7E447BE72BD91F762A42C",
+    "id": "35AFD7F2FDB7E447BE72BD91F762A42C",
+    "title": "Service Worker chrome-extension://neebplgakaahbhdphmkckjjcegoiijjo/keepa.js",
+    "type": "service_worker",
+    "url": "chrome-extension://neebplgakaahbhdphmkckjjcegoiijjo/keepa.js",
+    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/35AFD7F2FDB7E447BE72BD91F762A42C"
+  },
+  {
+    "description": "",
+    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/worker_app.html?ws=127.0.0.1:9222/devtools/page/88F5D03564E5AC43B2F0A30116D2FAC0",
+    "id": "88F5D03564E5AC43B2F0A30116D2FAC0",
+    "title": "Service Worker chrome-extension://hehggadaopoacecdllhhajmbjkdcmajg/background.js",
+    "type": "service_worker",
+    "url": "chrome-extension://hehggadaopoacecdllhhajmbjkdcmajg/background.js",
+    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/88F5D03564E5AC43B2F0A30116D2FAC0"
+  }
+]
