@@ -127,9 +127,18 @@ function buildUnifiedPositionList(sbiData, moomooPayload, moomooCurrency) {
   }
 
   for (const row of sbiData.funds) {
-    const plJpy = Number.isFinite(row.unrealizedPlJpy) ? row.unrealizedPlJpy : null;
     const mvJpy = Number.isFinite(row.marketValueJpy) ? row.marketValueJpy : null;
-    const costJpy = (plJpy !== null && mvJpy !== null) ? mvJpy - plJpy : null;
+    let plJpy = Number.isFinite(row.unrealizedPlJpy) ? row.unrealizedPlJpy : null;
+    let costJpy = null;
+
+    if (plJpy !== null && mvJpy !== null) {
+      costJpy = mvJpy - plJpy;
+    } else if (Number.isFinite(row.averageCost) && Number.isFinite(row.quantity) && mvJpy !== null) {
+      // Compute from averageCost (yen per 10,000 units) and quantity
+      costJpy = row.averageCost * row.quantity / 10000;
+      plJpy = mvJpy - costJpy;
+    }
+
     const plRateRaw = (costJpy !== null && costJpy !== 0) ? (plJpy / costJpy * 100) : null;
     positions.push({
       ticker: '-',
@@ -189,40 +198,18 @@ function buildRealizedAndDividendSection(sbiData) {
   }
 
   const hasDividendSummary = (sbiData.distributionSummary || []).length > 0;
-  const hasDividendEntries = (sbiData.distributionEntries || []).length > 0;
 
-  if (hasDividendSummary || hasDividendEntries) {
-    if (hasDividendSummary) {
-      lines.push('### 配当・分配金サマリー', '');
-      lines.push(renderTable(
-        ['商品', '受取額(税引後・円)', '受取額(税引後・USD)'],
-        sbiData.distributionSummary.map((row) => [
-          row.product || 'n/a',
-          formatCurrency(row.amountJpy, 'JPY', 0),
-          Number.isFinite(row.amountUsd) ? formatCurrency(row.amountUsd, 'USD', 2) : 'n/a',
-        ]),
-      ));
-      lines.push('');
-    }
-    if (hasDividendEntries) {
-      const recentEntries = [...sbiData.distributionEntries]
-        .sort((a, b) => String(b.date).localeCompare(String(a.date)))
-        .slice(0, 10);
-      lines.push('### 直近配当履歴（最大10件）', '');
-      lines.push(renderTable(
-        ['日付', '口座', '商品', '銘柄', '受取額'],
-        recentEntries.map((row) => [
-          row.date || 'n/a',
-          row.accountType || 'n/a',
-          row.product || 'n/a',
-          row.name || 'n/a',
-          Number.isFinite(row.amount)
-            ? (row.currency === 'USD' ? formatCurrency(row.amount, 'USD', 2) : formatCurrency(row.amount, 'JPY', 0))
-            : 'n/a',
-        ]),
-      ));
-      lines.push('');
-    }
+  if (hasDividendSummary) {
+    lines.push('### 配当・分配金サマリー', '');
+    lines.push(renderTable(
+      ['商品', '受取額(税引後・円)', '受取額(税引後・USD)'],
+      sbiData.distributionSummary.map((row) => [
+        row.product || 'n/a',
+        formatCurrency(row.amountJpy, 'JPY', 0),
+        Number.isFinite(row.amountUsd) ? formatCurrency(row.amountUsd, 'USD', 2) : 'n/a',
+      ]),
+    ));
+    lines.push('');
   } else {
     lines.push('配当受取なし', '');
   }
