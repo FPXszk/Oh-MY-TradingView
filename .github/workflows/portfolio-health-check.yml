@@ -1,26 +1,58 @@
-name: SBI Portfolio Capture
+name: Portfolio Health Check
 
 on:
   workflow_dispatch:
     inputs:
       cdp_host:
-        description: Chrome CDP host
+        description: Chrome CDP host for SBI
         required: true
         default: 127.0.0.1
       cdp_port:
-        description: Chrome CDP port
+        description: Chrome CDP port for SBI
         required: true
         default: '9222'
-      output_dir:
-        description: Repo-relative output directory
+      sbi_capture_dir:
+        description: Repo-relative SBI capture directory
         required: true
         default: docs/reports/screener/portfolio/capture/latest
-      report_path:
-        description: Repo-relative output markdown path
+      sbi_report_path:
+        description: Repo-relative SBI report path
         required: true
         default: docs/reports/screener/portfolio/sbi_portfolio_report.md
-      dry_run:
-        description: Probe only, do not click or navigate
+      sbi_dry_run:
+        description: Probe only for SBI, do not click or navigate
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+      opend_host:
+        description: Moomoo OpenD host
+        required: true
+        default: 127.0.0.1
+      opend_port:
+        description: Moomoo OpenD port
+        required: true
+        default: '11112'
+      market:
+        description: Moomoo trade market context
+        required: true
+        default: US
+      trd_env:
+        description: Optional Moomoo trading environment filter, REAL or SIMULATE
+        required: false
+        default: ''
+      account_id:
+        description: Optional Moomoo account id filter
+        required: false
+        default: ''
+      currency:
+        description: Moomoo reporting currency
+        required: true
+        default: USD
+      include_simulate:
+        description: Include SIMULATE accounts when no trd_env is specified
         required: true
         default: 'false'
         type: choice
@@ -29,15 +61,25 @@ on:
           - 'true'
 
 jobs:
-  capture-sbi-portfolio:
+  portfolio-health-check:
     runs-on:
       - self-hosted
       - windows
     env:
       SBI_CDP_HOST: ${{ inputs.cdp_host }}
       SBI_CDP_PORT: ${{ inputs.cdp_port }}
-      SBI_CAPTURE_OUTPUT_DIR: ${{ inputs.output_dir }}
-      SBI_REPORT_PATH: ${{ inputs.report_path }}
+      SBI_CAPTURE_OUTPUT_DIR: ${{ inputs.sbi_capture_dir }}
+      SBI_REPORT_PATH: ${{ inputs.sbi_report_path }}
+      MOOMOO_HOST: ${{ inputs.opend_host }}
+      MOOMOO_PORT: ${{ inputs.opend_port }}
+      MOOMOO_PORTFOLIO_MARKET: ${{ inputs.market }}
+      MOOMOO_PORTFOLIO_TRD_ENV: ${{ inputs.trd_env }}
+      MOOMOO_PORTFOLIO_ACCOUNT_ID: ${{ inputs.account_id }}
+      MOOMOO_PORTFOLIO_CURRENCY: ${{ inputs.currency }}
+      MOOMOO_PORTFOLIO_INCLUDE_SIMULATE: ${{ inputs.include_simulate }}
+      MOOMOO_PORTFOLIO_REFRESH_CACHE: 'true'
+      MOOMOO_PORTFOLIO_REPORT_PATH: docs/reports/screener/portfolio/moomoo_portfolio_diagnostics.md
+      MOOMOO_PORTFOLIO_JSON_PATH: docs/reports/screener/portfolio/moomoo_portfolio_diagnostics.json
 
     steps:
       - uses: actions/checkout@v4
@@ -52,7 +94,12 @@ jobs:
       - name: Install dependencies
         run: npm ci --silent
 
-      - name: Probe CDP endpoint
+      - name: Check Python runtime
+        shell: pwsh
+        run: |
+          python --version
+
+      - name: Probe SBI CDP endpoint
         shell: pwsh
         run: |
           $versionUrl = "http://${{ env.SBI_CDP_HOST }}:${{ env.SBI_CDP_PORT }}/json/version"
@@ -83,12 +130,12 @@ jobs:
             '--cdp-port', '${{ env.SBI_CDP_PORT }}',
             '--output-dir', '${{ env.SBI_CAPTURE_OUTPUT_DIR }}'
           )
-          if ('${{ inputs.dry_run }}' -eq 'true') {
+          if ('${{ inputs.sbi_dry_run }}' -eq 'true') {
             $args += '--dry-run'
           }
           node @args
 
-      - name: Validate capture output
+      - name: Validate SBI capture output
         shell: pwsh
         run: |
           if (-not (Test-Path '${{ env.SBI_CAPTURE_OUTPUT_DIR }}/capture-summary.json')) {
@@ -105,19 +152,34 @@ jobs:
             --capture-dir '${{ env.SBI_CAPTURE_OUTPUT_DIR }}' `
             --output '${{ env.SBI_REPORT_PATH }}'
 
-      - name: Validate report output
+      - name: Validate SBI report output
         shell: pwsh
         run: |
           if (-not (Test-Path '${{ env.SBI_REPORT_PATH }}')) {
             throw '${{ env.SBI_REPORT_PATH }} was not created'
           }
 
-      - name: Upload capture artifact
+      - name: Run Moomoo read-only portfolio diagnostics
+        run: node scripts/moomoo/run-portfolio-diagnostics.mjs
+
+      - name: Validate Moomoo diagnostics output
+        shell: pwsh
+        run: |
+          if (-not (Test-Path '${{ env.MOOMOO_PORTFOLIO_REPORT_PATH }}')) {
+            throw '${{ env.MOOMOO_PORTFOLIO_REPORT_PATH }} was not created'
+          }
+          if (-not (Test-Path '${{ env.MOOMOO_PORTFOLIO_JSON_PATH }}')) {
+            throw '${{ env.MOOMOO_PORTFOLIO_JSON_PATH }} was not created'
+          }
+
+      - name: Upload portfolio health artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: sbi-portfolio-capture-${{ github.run_id }}
+          name: portfolio-health-check-${{ github.run_id }}
           path: |
             ${{ env.SBI_CAPTURE_OUTPUT_DIR }}
             ${{ env.SBI_REPORT_PATH }}
+            ${{ env.MOOMOO_PORTFOLIO_REPORT_PATH }}
+            ${{ env.MOOMOO_PORTFOLIO_JSON_PATH }}
           if-no-files-found: warn

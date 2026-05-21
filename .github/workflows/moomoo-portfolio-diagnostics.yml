@@ -50,8 +50,8 @@ jobs:
       MOOMOO_PORTFOLIO_CURRENCY: ${{ inputs.currency }}
       MOOMOO_PORTFOLIO_INCLUDE_SIMULATE: ${{ inputs.include_simulate }}
       MOOMOO_PORTFOLIO_REFRESH_CACHE: 'true'
-      MOOMOO_PORTFOLIO_REPORT_PATH: docs/reports/moomoo/portfolio-diagnostics.md
-      MOOMOO_PORTFOLIO_JSON_PATH: docs/reports/moomoo/portfolio-diagnostics.json
+      MOOMOO_PORTFOLIO_REPORT_PATH: docs/reports/screener/portfolio/moomoo_portfolio_diagnostics.md
+      MOOMOO_PORTFOLIO_JSON_PATH: docs/reports/screener/portfolio/moomoo_portfolio_diagnostics.json
 
     steps:
       - uses: actions/checkout@v4

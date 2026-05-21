@@ -5,7 +5,7 @@ import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const DEFAULT_DOWNLOADS_DIR = '/mnt/c/Users/szk/Downloads';
-const DEFAULT_OUTPUT_DIR = '/mnt/c/Users/szk/Documents/レポート/スクリーンワー/portfolio_new';
+const DEFAULT_OUTPUT_DIR = 'docs/reports/screener/portfolio';
 const DEFAULT_OUTPUT_NAME = 'sbi_portfolio_report.md';
 
 function printHelp() {

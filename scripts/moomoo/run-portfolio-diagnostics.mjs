@@ -6,8 +6,8 @@ import { fileURLToPath } from 'node:url';
 
 import { getMoomooPortfolioDiagnostics } from '../../src/core/moomoo.js';
 
-const DEFAULT_REPORT_PATH = 'docs/reports/moomoo/portfolio-diagnostics.md';
-const DEFAULT_JSON_PATH = 'docs/reports/moomoo/portfolio-diagnostics.json';
+const DEFAULT_REPORT_PATH = 'docs/reports/screener/portfolio/moomoo_portfolio_diagnostics.md';
+const DEFAULT_JSON_PATH = 'docs/reports/screener/portfolio/moomoo_portfolio_diagnostics.json';
 
 function envString(name, defaultValue) {
   const value = process.env[name];
