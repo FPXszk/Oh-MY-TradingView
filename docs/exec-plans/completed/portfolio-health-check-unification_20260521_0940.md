@@ -80,10 +80,10 @@ SBI と moomoo の read-only ポートフォリオ取得フローを 1 本の wo
 
 ## Implementation Steps
 
-- [ ] SBI / moomoo の既存出力先と workflow 入出力を統合方針に合わせて整理する
-- [ ] SBI / moomoo レポート既定出力先を `docs/reports/screener/portfolio/` 配下へ揃える
-- [ ] `Portfolio Health Check` workflow を追加し、両 read-only flow を 1 回の dispatch で実行できるようにする
-- [ ] 必要最小限の test を更新して targeted tests を通す
-- [ ] live workflow run を実行し、artifact とレポート内容を確認する
-- [ ] docs / durable session log を更新する
-- [ ] plan を `completed/` に移して commit / push する
+- [x] SBI / moomoo の既存出力先と workflow 入出力を統合方針に合わせて整理する
+- [x] SBI / moomoo レポート既定出力先を `docs/reports/screener/portfolio/` 配下へ揃える
+- [x] `Portfolio Health Check` workflow を追加し、両 read-only flow を 1 回の dispatch で実行できるようにする
+- [x] 必要最小限の test を更新して targeted tests を通す
+- [x] live workflow run を実行し、artifact とレポート内容を確認する
+- [x] docs / durable session log を更新する
+- [x] plan を `completed/` に移して commit / push する

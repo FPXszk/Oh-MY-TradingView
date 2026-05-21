@@ -45,7 +45,7 @@ npm run sbi:portfolio-report
 既定の出力先:
 
 ```text
-/mnt/c/Users/szk/Documents/レポート/スクリーンワー/portfolio_new/sbi_portfolio_report.md
+docs/reports/screener/portfolio/sbi_portfolio_report.md
 ```
 
 入力元の既定探索先:
@@ -110,6 +110,7 @@ workflow:
 - `cdp_host`: 既定 `127.0.0.1`
 - `cdp_port`: 既定 `9222`
 - `output_dir`: 既定 `docs/reports/screener/portfolio/capture/latest`
+- `report_path`: 既定 `docs/reports/screener/portfolio/sbi_portfolio_report.md`
 - `dry_run`: `true` / `false`
 
 主な出力先:
@@ -117,10 +118,31 @@ workflow:
 - runner 上の repo worktree:
   - `docs/reports/screener/portfolio/capture/latest/capture-summary.md`
   - `docs/reports/screener/portfolio/capture/latest/capture-summary.json`
-  - `docs/reports/screener/portfolio/capture/latest/sbi_portfolio_report.md`
+  - `docs/reports/screener/portfolio/sbi_portfolio_report.md`
   - `docs/reports/screener/portfolio/capture/latest/downloads/`
 - GitHub Actions artifact:
   - `sbi-portfolio-capture-<RUN_ID>`
+
+## Portfolio Health Check Workflow
+
+workflow:
+
+```text
+.github/workflows/portfolio-health-check.yml
+```
+
+目的:
+
+- SBI capture / report と moomoo read-only diagnostics を 1 回の dispatch でまとめて実行する
+- 生成物を `docs/reports/screener/portfolio/` 配下へ集約する
+- artifact `portfolio-health-check-<RUN_ID>` で両証券会社の出力をまとめて確認できるようにする
+
+主な出力先:
+
+- `docs/reports/screener/portfolio/sbi_portfolio_report.md`
+- `docs/reports/screener/portfolio/moomoo_portfolio_diagnostics.md`
+- `docs/reports/screener/portfolio/moomoo_portfolio_diagnostics.json`
+- `docs/reports/screener/portfolio/capture/latest/`
 
 ローカル確認:
 
@@ -283,6 +305,30 @@ CDP endpoint が無い場合でも、`capture-summary.md` と `capture-error.txt
   - workflow の最終到達点としては **概ね期待どおり**
   - 米国株 direct CSV は依然未取得でも、report 目的は達成できている
   - この workflow は `capture artifact を残しつつ report を組み立てる read-only パイプライン` として完了扱いにしてよい
+
+2026-05-21 portfolio health check integration update:
+
+- live run `26199543437`
+  - URL: <https://github.com/FPXszk/Oh-MY-TradingView/actions/runs/26199543437>
+  - conclusion: `success`
+- unified workflow `Portfolio Health Check` で
+  - SBI capture / report
+  - moomoo read-only portfolio diagnostics
+  を 1 本で完走できた
+- 今回の artifact では
+  - `sbi_portfolio_report.md`
+  - `moomoo_portfolio_diagnostics.md`
+  - `moomoo_portfolio_diagnostics.json`
+  - `capture/latest/`
+  が同一 artifact に含まれた
+- ただしこの run の SBI 側は `downloads/SaveFile.csv` のみで、`ALLTYPE_*.csv` / `DISTRIBUTION_*.csv` は再取得されなかった
+  - workflow success: 済み
+  - 米国株 fallback / 投資信託 report: 済み
+  - 実現損益 / 配当履歴の厚い CSV artifact: この run では未取得
+- したがって統合 workflow の評価は
+  - **動作確認としては成功**
+  - **SBI report の内容密度は run ごとの live 状態に依存**
+  と整理するのが妥当
 
 ## Notes
 

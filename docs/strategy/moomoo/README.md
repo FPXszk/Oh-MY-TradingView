@@ -87,3 +87,17 @@
 - WSL からの安定接続先は現状 `172.31.144.1:11112` (Windows portproxy) を使う
 - `moomoo-api 10.05.6508` では、要求名と実メソッド名が一部異なる
 - `docs/strategy/samples/` には実行準備済みサンプルを配置済み
+
+## Portfolio Diagnostics Workflow
+
+- standalone workflow:
+  - `.github/workflows/moomoo-portfolio-diagnostics.yml`
+- unified workflow:
+  - `.github/workflows/portfolio-health-check.yml`
+
+既定の出力先:
+
+- `docs/reports/screener/portfolio/moomoo_portfolio_diagnostics.md`
+- `docs/reports/screener/portfolio/moomoo_portfolio_diagnostics.json`
+
+2026-05-21 時点では、workflow 側で `python -m pip install moomoo-api` を実行してから診断を回すため、Windows runner 上に事前 venv が無くても read-only diagnostics を実行できる。
