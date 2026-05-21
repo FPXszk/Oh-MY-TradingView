@@ -17,6 +17,13 @@ const CSV_DOWNLOAD_STABILITY = {
   detectionTimeoutMs: 20000,
   retryDelayMs: 2500,
   maxRounds: 2,
+  settleStablePolls: 2,
+  settleTimeoutMs: 12000,
+};
+const ROUTE_CAPTURE_STABILITY = {
+  maxAttempts: 2,
+  retryDelayMs: 2500,
+  postNavigationSettleMs: 1500,
 };
 const CLICKABLE_SELECTOR = [
   'a',
@@ -172,6 +179,10 @@ export function buildCsvDownloadAttemptPlan(keywordSets, maxRounds = CSV_DOWNLOA
     }
   }
   return attempts;
+}
+
+export function buildRouteCaptureAttemptPlan(maxAttempts = ROUTE_CAPTURE_STABILITY.maxAttempts) {
+  return Array.from({ length: Math.max(1, maxAttempts) }, (_value, index) => index + 1);
 }
 
 async function listTargets(host, port) {
@@ -440,6 +451,21 @@ export function diffDownloadStates(beforeFiles, afterFiles) {
   };
 }
 
+export function hasPendingDownloadFiles(files) {
+  return (files || []).some((file) => {
+    const path = String(file.path || '');
+    return /\.crdownload$/i.test(path) || /\.tmp$/i.test(path) || /unconfirmed/i.test(path);
+  });
+}
+
+export function shouldRetryRouteCapture(route, result) {
+  if (!result) return true;
+  if (!result.clicked) return true;
+  if (!result.captured) return true;
+  if (route?.key === 'usStocks') return false;
+  return !result.csvDownload?.success;
+}
+
 export function shouldUseMouseDispatch(match) {
   if (!match) return false;
   if (match.tag === 'a' && match.href) return false;
@@ -613,18 +639,60 @@ async function clickByKeywords(client, keywords) {
   };
 }
 
+async function readPageSettleState(client) {
+  return evaluateJson(client, `(() => {
+    const norm = (value) => String(value ?? '').replace(/\\s+/g, ' ').trim();
+    const visible = (element) => {
+      const style = window.getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      return style && style.visibility !== 'hidden' && style.display !== 'none' && rect.width > 0 && rect.height > 0;
+    };
+    const text = norm(document.body?.innerText || '');
+    const clickableCount = [...document.querySelectorAll(${jsString(CLICKABLE_SELECTOR)})].filter(visible).length;
+    const formControlCount = [...document.querySelectorAll('input, select, textarea')].filter(visible).length;
+    return {
+      url: location.href,
+      readyState: document.readyState,
+      title: document.title || '',
+      textSample: text.slice(0, 240),
+      textLength: text.length,
+      clickableCount,
+      formControlCount,
+    };
+  })()`);
+}
+
+function pageSettleSignature(state) {
+  return [
+    state?.url || '',
+    state?.readyState || '',
+    state?.title || '',
+    String(state?.textLength ?? ''),
+    state?.textSample || '',
+    String(state?.clickableCount ?? ''),
+    String(state?.formControlCount ?? ''),
+  ].join('|');
+}
+
 async function waitForPageSettle(client, previousUrl, timeoutMs = 10000) {
   const startedAt = Date.now();
-  let lastUrl = previousUrl;
+  let lastState = { url: previousUrl, readyState: 'unknown' };
+  let lastSignature = null;
+  let stablePolls = 0;
   while (Date.now() - startedAt < timeoutMs) {
-    const state = await evaluateJson(client, `(() => ({ url: location.href, readyState: document.readyState }))()`);
-    lastUrl = state.url;
-    if (state.readyState === 'complete' && (!previousUrl || state.url !== previousUrl || Date.now() - startedAt > 1000)) {
+    const state = await readPageSettleState(client);
+    lastState = state;
+    const signature = pageSettleSignature(state);
+    stablePolls = signature === lastSignature ? stablePolls + 1 : 1;
+    lastSignature = signature;
+    const urlChanged = !previousUrl || state.url !== previousUrl;
+    const stableEnough = stablePolls >= CSV_DOWNLOAD_STABILITY.settleStablePolls;
+    if (state.readyState === 'complete' && stableEnough && (urlChanged || Date.now() - startedAt > 1000)) {
       return state;
     }
     await sleep(500);
   }
-  return { url: lastUrl, readyState: 'timeout' };
+  return { ...lastState, readyState: 'timeout' };
 }
 
 async function navigateToUrl(client, url, timeoutMs = 15000) {
@@ -666,11 +734,20 @@ async function tryCsvDownloads(client, downloadDir) {
     let downloadDetected = null;
     await sleep(CSV_DOWNLOAD_STABILITY.postClickWaitMs);
     const startedAt = Date.now();
+    let stablePolls = 0;
     while (Date.now() - startedAt < CSV_DOWNLOAD_STABILITY.detectionTimeoutMs) {
       await sleep(CSV_DOWNLOAD_STABILITY.pollIntervalMs);
       const afterFiles = await listFilesRecursive(downloadDir);
       const mutation = diffDownloadStates(beforeFiles, afterFiles);
-      if (mutation.hasMutation) {
+      if (!mutation.hasMutation) continue;
+      if (hasPendingDownloadFiles(afterFiles)) {
+        stablePolls = 0;
+        downloadDetected = mutation;
+        continue;
+      }
+      stablePolls += 1;
+      downloadDetected = mutation;
+      if (stablePolls >= CSV_DOWNLOAD_STABILITY.settleStablePolls) {
         downloadDetected = mutation;
         break;
       }
@@ -822,10 +899,11 @@ async function fillFirstDateControl(client, value) {
 }
 
 async function trySubmitQuery(client, keywords = ['照会']) {
+  const previousUrl = await evaluateJson(client, 'location.href');
   const clicked = await clickByKeywords(client, keywords);
   if (!clicked.clicked) return clicked;
-  await sleep(2000);
-  return clicked;
+  const settle = await waitForPageSettle(client, previousUrl, CSV_DOWNLOAD_STABILITY.settleTimeoutMs);
+  return { ...clicked, settle };
 }
 
 async function readVisibleDateValues(client) {
@@ -1004,10 +1082,28 @@ async function runFallbackActions(client, outputDir, downloadDir, route, result)
 }
 
 async function captureRouteFromAccountAssets(client, outputDir, downloadDir, route) {
+  let bestResult = null;
+  for (const attempt of buildRouteCaptureAttemptPlan()) {
+    if (attempt > 1) {
+      await sleep(ROUTE_CAPTURE_STABILITY.retryDelayMs);
+    }
+    const attemptResult = await captureRouteFromAccountAssetsOnce(client, outputDir, downloadDir, route, attempt);
+    if (!bestResult || (attemptResult.csvDownload?.success && !bestResult.csvDownload?.success) || (attemptResult.captured && !bestResult.captured)) {
+      bestResult = attemptResult;
+    }
+    if (!shouldRetryRouteCapture(route, attemptResult)) {
+      return attemptResult;
+    }
+  }
+  return bestResult;
+}
+
+async function captureRouteFromAccountAssetsOnce(client, outputDir, downloadDir, route, attempt) {
   const result = {
     key: route.key,
     label: route.label,
     snapshotName: route.snapshotName,
+    attempt,
     attempted: true,
     clicked: false,
     captured: false,
@@ -1020,26 +1116,26 @@ async function captureRouteFromAccountAssets(client, outputDir, downloadDir, rou
     url: null,
     readyState: `navigation-error:${error.message}`,
   }));
-  result.notes.push(`Base navigation: ${JSON.stringify(navigation)}`);
+  result.notes.push(`Attempt ${attempt}: base navigation: ${JSON.stringify(navigation)}`);
 
   const clicked = await clickByKeywords(client, route.keywords);
   result.clicked = clicked.clicked;
-  result.notes.push(`Click result: ${JSON.stringify(clicked)}`);
+  result.notes.push(`Attempt ${attempt}: click result: ${JSON.stringify(clicked)}`);
   if (!clicked.clicked) {
     return result;
   }
 
   const pageState = await waitForPageSettle(client, navigation.url || ACCOUNT_ASSETS_URL, 12000);
   result.pageUrl = pageState.url || null;
-  await sleep(1500);
-  result.notes.push('Post-navigation settle wait: 1500ms');
+  await sleep(ROUTE_CAPTURE_STABILITY.postNavigationSettleMs);
+  result.notes.push(`Attempt ${attempt}: post-navigation settle wait: ${ROUTE_CAPTURE_STABILITY.postNavigationSettleMs}ms`);
 
   if (route.startDate) {
     const fillResult = await fillFirstDateControl(client, route.startDate);
-    result.notes.push(`Start-date fill result: ${JSON.stringify(fillResult)}`);
+    result.notes.push(`Attempt ${attempt}: start-date fill result: ${JSON.stringify(fillResult)}`);
     if (fillResult.updated) {
       const submitResult = await trySubmitQuery(client, ['照会']);
-      result.notes.push(`Submit result: ${JSON.stringify(submitResult)}`);
+      result.notes.push(`Attempt ${attempt}: submit result: ${JSON.stringify(submitResult)}`);
       await waitForPageSettle(client, pageState.url || navigation.url || ACCOUNT_ASSETS_URL, 12000);
       if (route.dateRangeParams) {
         const currentUrl = await evaluateJson(client, 'location.href');
@@ -1052,15 +1148,15 @@ async function captureRouteFromAccountAssets(client, outputDir, downloadDir, rou
           toDate,
           route.fixedQueryParams,
         );
-        result.notes.push(`Range URL candidate: ${rangedUrl || 'n/a'}`);
+        result.notes.push(`Attempt ${attempt}: range URL candidate: ${rangedUrl || 'n/a'}`);
         if (rangedUrl && rangedUrl !== currentUrl) {
           const forcedNavigation = await navigateToUrl(client, rangedUrl, 15000).catch((error) => ({
             url: null,
             readyState: `navigation-error:${error.message}`,
           }));
-          result.notes.push(`Forced range navigation: ${JSON.stringify(forcedNavigation)}`);
-          await sleep(1500);
-          result.notes.push('Post-range-navigation settle wait: 1500ms');
+          result.notes.push(`Attempt ${attempt}: forced range navigation: ${JSON.stringify(forcedNavigation)}`);
+          await sleep(ROUTE_CAPTURE_STABILITY.postNavigationSettleMs);
+          result.notes.push(`Attempt ${attempt}: post-range-navigation settle wait: ${ROUTE_CAPTURE_STABILITY.postNavigationSettleMs}ms`);
         }
       }
     }
@@ -1071,7 +1167,7 @@ async function captureRouteFromAccountAssets(client, outputDir, downloadDir, rou
   result.pageUrl = snapshot.url || result.pageUrl;
   result.formControlCount = snapshot.formControls?.length ?? 0;
   result.csvDiagnostics = await inspectCsvDownloadTargets(client);
-  result.notes.push(`CSV diagnostics: ${JSON.stringify(result.csvDiagnostics)}`);
+  result.notes.push(`Attempt ${attempt}: CSV diagnostics: ${JSON.stringify(result.csvDiagnostics)}`);
 
   if (route.key === 'usStocks') {
     const marketValue = (snapshot.text || '').match(/米国株式\\s+([0-9,]+)円/);

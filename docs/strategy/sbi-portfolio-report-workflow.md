@@ -346,3 +346,7 @@ CDP endpoint が無い場合でも、`capture-summary.md` と `capture-error.txt
 
 - 日本株の現保有一覧 CSV が無い場合は、資産サマリー上の評価額から「現保有なし / 要追加CSV」を判定する。
 - SBI CSV は UTF-8 と Shift_JIS が混在しうるため、スクリプト側で両対応している。
+- 2026-05-21 stability update:
+  - capture script の待機は固定 sleep だけでなく、`readyState=complete` と DOM 安定を数 poll 連続で確認してから次へ進む
+  - CSV download は `*.crdownload` などの一時ファイルが消え、変化が安定するまで completion 扱いにしない
+  - `実現損益詳細` / `配当金・分配金履歴` など CSV が重要な route は 1 回失敗しても route 単位で再進入する

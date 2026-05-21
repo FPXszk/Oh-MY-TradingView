@@ -9,7 +9,10 @@ import {
   replaceDateRangeInUrl,
   shouldUseMouseDispatch,
   buildCsvDownloadAttemptPlan,
+  buildRouteCaptureAttemptPlan,
   buildCaptureSummaryMarkdown,
+  hasPendingDownloadFiles,
+  shouldRetryRouteCapture,
 } from '../scripts/sbi/capture-portfolio-data.mjs';
 
 describe('sbi capture target selection', () => {
@@ -104,6 +107,46 @@ describe('sbi csv download retry plan', () => {
       { round: 2, keywords: ['CSV'] },
       { round: 2, keywords: ['CSVダウンロード'] },
     ]);
+  });
+});
+
+describe('sbi route retry plan', () => {
+  it('builds sequential route attempts', () => {
+    assert.deepEqual(buildRouteCaptureAttemptPlan(2), [1, 2]);
+  });
+});
+
+describe('sbi download pending detection', () => {
+  it('treats temporary browser files as pending downloads', () => {
+    assert.equal(hasPendingDownloadFiles([
+      { path: '/tmp/report.csv.crdownload' },
+    ]), true);
+    assert.equal(hasPendingDownloadFiles([
+      { path: '/tmp/sbi_assets_summary.csv' },
+    ]), false);
+  });
+});
+
+describe('sbi route retry decision', () => {
+  it('retries when route click or csv capture failed', () => {
+    assert.equal(shouldRetryRouteCapture({ key: 'realizedDetail' }, {
+      clicked: false,
+      captured: false,
+      csvDownload: { success: false },
+    }), true);
+    assert.equal(shouldRetryRouteCapture({ key: 'realizedDetail' }, {
+      clicked: true,
+      captured: true,
+      csvDownload: { success: false },
+    }), true);
+  });
+
+  it('does not force retry for usStocks fallback capture once page was captured', () => {
+    assert.equal(shouldRetryRouteCapture({ key: 'usStocks' }, {
+      clicked: true,
+      captured: true,
+      csvDownload: { success: false },
+    }), false);
   });
 });
 
