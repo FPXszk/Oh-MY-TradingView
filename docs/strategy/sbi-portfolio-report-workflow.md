@@ -139,10 +139,18 @@ workflow:
 
 主な出力先:
 
-- `docs/reports/screener/portfolio/sbi_portfolio_report.md`
-- `docs/reports/screener/portfolio/moomoo_portfolio_diagnostics.md`
+- `docs/reports/screener/portfolio/portfolio_health_check_report.md`
 - `docs/reports/screener/portfolio/moomoo_portfolio_diagnostics.json`
 - `docs/reports/screener/portfolio/capture/latest/`
+
+補足:
+
+- unified workflow 内では
+  - `docs/reports/screener/portfolio/_sbi_portfolio_report.md`
+  - `docs/reports/screener/portfolio/_moomoo_portfolio_diagnostics.md`
+  を中間生成する
+- ただしユーザー向け Markdown は `portfolio_health_check_report.md` の 1 本にまとめる
+- レポート先頭に総合サマリーと総合保有一覧、その下に `SBI 詳細` と `moomoo 詳細` を並べる
 
 ローカル確認:
 
@@ -316,11 +324,15 @@ CDP endpoint が無い場合でも、`capture-summary.md` と `capture-error.txt
   - moomoo read-only portfolio diagnostics
   を 1 本で完走できた
 - 今回の artifact では
-  - `sbi_portfolio_report.md`
-  - `moomoo_portfolio_diagnostics.md`
+  - `portfolio_health_check_report.md`
   - `moomoo_portfolio_diagnostics.json`
   - `capture/latest/`
   が同一 artifact に含まれた
+- 2026-05-21 layout update では、この unified artifact のユーザー向けレポートを 1 本化し、
+  - 先頭: SBI / moomoo 横断の総合サマリー
+  - 中段: 総合保有一覧
+  - 下段: `SBI 詳細` / `moomoo 詳細`
+  の順で読めるようにした
 - ただしこの run の SBI 側は `downloads/SaveFile.csv` のみで、`ALLTYPE_*.csv` / `DISTRIBUTION_*.csv` は再取得されなかった
   - workflow success: 済み
   - 米国株 fallback / 投資信託 report: 済み

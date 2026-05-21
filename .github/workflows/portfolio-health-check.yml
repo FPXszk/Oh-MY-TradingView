@@ -16,9 +16,9 @@ on:
         required: true
         default: docs/reports/screener/portfolio/capture/latest
       sbi_report_path:
-        description: Repo-relative SBI report path
+        description: Repo-relative unified portfolio report path
         required: true
-        default: docs/reports/screener/portfolio/sbi_portfolio_report.md
+        default: docs/reports/screener/portfolio/portfolio_health_check_report.md
       sbi_dry_run:
         description: Probe only for SBI, do not click or navigate
         required: true
@@ -69,7 +69,8 @@ jobs:
       SBI_CDP_HOST: ${{ inputs.cdp_host }}
       SBI_CDP_PORT: ${{ inputs.cdp_port }}
       SBI_CAPTURE_OUTPUT_DIR: ${{ inputs.sbi_capture_dir }}
-      SBI_REPORT_PATH: ${{ inputs.sbi_report_path }}
+      PORTFOLIO_REPORT_PATH: ${{ inputs.sbi_report_path }}
+      SBI_REPORT_PATH: docs/reports/screener/portfolio/_sbi_portfolio_report.md
       MOOMOO_HOST: ${{ inputs.opend_host }}
       MOOMOO_PORT: ${{ inputs.opend_port }}
       MOOMOO_PORTFOLIO_MARKET: ${{ inputs.market }}
@@ -78,7 +79,7 @@ jobs:
       MOOMOO_PORTFOLIO_CURRENCY: ${{ inputs.currency }}
       MOOMOO_PORTFOLIO_INCLUDE_SIMULATE: ${{ inputs.include_simulate }}
       MOOMOO_PORTFOLIO_REFRESH_CACHE: 'true'
-      MOOMOO_PORTFOLIO_REPORT_PATH: docs/reports/screener/portfolio/moomoo_portfolio_diagnostics.md
+      MOOMOO_PORTFOLIO_REPORT_PATH: docs/reports/screener/portfolio/_moomoo_portfolio_diagnostics.md
       MOOMOO_PORTFOLIO_JSON_PATH: docs/reports/screener/portfolio/moomoo_portfolio_diagnostics.json
 
     steps:
@@ -177,6 +178,21 @@ jobs:
             throw '${{ env.MOOMOO_PORTFOLIO_JSON_PATH }} was not created'
           }
 
+      - name: Build unified portfolio report
+        shell: pwsh
+        run: |
+          node scripts/portfolio/build-unified-portfolio-report.mjs `
+            --capture-dir '${{ env.SBI_CAPTURE_OUTPUT_DIR }}' `
+            --moomoo-json '${{ env.MOOMOO_PORTFOLIO_JSON_PATH }}' `
+            --output '${{ env.PORTFOLIO_REPORT_PATH }}'
+
+      - name: Validate unified portfolio report
+        shell: pwsh
+        run: |
+          if (-not (Test-Path '${{ env.PORTFOLIO_REPORT_PATH }}')) {
+            throw '${{ env.PORTFOLIO_REPORT_PATH }} was not created'
+          }
+
       - name: Upload portfolio health artifact
         if: always()
         uses: actions/upload-artifact@v4
@@ -184,7 +200,6 @@ jobs:
           name: portfolio-health-check-${{ github.run_id }}
           path: |
             ${{ env.SBI_CAPTURE_OUTPUT_DIR }}
-            ${{ env.SBI_REPORT_PATH }}
-            ${{ env.MOOMOO_PORTFOLIO_REPORT_PATH }}
+            ${{ env.PORTFOLIO_REPORT_PATH }}
             ${{ env.MOOMOO_PORTFOLIO_JSON_PATH }}
           if-no-files-found: warn

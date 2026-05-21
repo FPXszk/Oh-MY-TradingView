@@ -18,6 +18,7 @@ import {
   buildPortfolioReport,
   buildPortfolioReportFromCaptureDir,
 } from '../scripts/sbi/build-portfolio-report.mjs';
+import { buildUnifiedPortfolioReport } from '../scripts/portfolio/build-unified-portfolio-report.mjs';
 
 describe('sbi portfolio report parsers', () => {
   it('parses assets summary rows', () => {
@@ -324,5 +325,118 @@ describe('sbi portfolio report builder', () => {
     assert.match(report, /配当金・分配金履歴/);
     assert.match(report, /マイクロン テクノロジー MU/);
     assert.doesNotMatch(report, /補助artifact/);
+  });
+
+  it('builds a unified portfolio report with overall summary and broker details', () => {
+    const report = buildUnifiedPortfolioReport({
+      generatedAt: '2026-05-21T01:44:00.000Z',
+      workflow: { runId: '123', runAttempt: '1', refName: 'main' },
+      sbiData: {
+        assetsSummary: {
+          asOf: '2026/5/21 10:44',
+          totalAssetsJpy: 5424050,
+          totalDayChangeJpy: 6550,
+          totalUnrealizedPlJpy: 923131,
+          totalUnrealizedPlPct: 20.5,
+          products: [
+            { product: '米国株式', marketValueJpy: 1750653 },
+            { product: '投資信託', marketValueJpy: 1546175 },
+            { product: '預り金(円)', marketValueJpy: 1398724 },
+            { product: '預り金(米ドル)', marketValueJpy: 728498 },
+          ],
+        },
+        usStocks: [
+          {
+            accountType: 'NISA預り',
+            name: 'エヌビディア',
+            ticker: 'NVDA',
+            quantity: 10,
+            marketValueJpy: 358213,
+            unrealizedPlJpy: 77963,
+            unrealizedPlUsd: 508.2,
+          },
+        ],
+        funds: [
+          {
+            accountType: 'NISA預り（つみたて投資枠）',
+            name: 'ｅＭＡＸＩＳ　Ｓｌｉｍ　米国株式（Ｓ＆Ｐ５００）',
+            quantity: 305179,
+            marketValueJpy: 1331953,
+            unrealizedPlJpy: 401951,
+            distributionMethod: '再投資',
+          },
+        ],
+        realizedSummary: [],
+        realizedDomestic: [],
+        realizedForeign: [],
+        realizedFund: [],
+        domesticHistory: [],
+        foreignHistory: [],
+        distributionSummary: [],
+        distributionEntries: [],
+        sources: {
+          captureDir: '/tmp/capture',
+          assetsSummary: '/tmp/sbi_assets_summary.csv',
+        },
+      },
+      moomooPayload: {
+        retrieved_at: '2026-05-21T01:43:00.000Z',
+        currency: 'USD',
+        totals: {
+          accountCount: 1,
+          realAccountCount: 1,
+          simulateAccountCount: 0,
+          positionCount: 2,
+          totalAssets: 3210.55,
+          cash: 210.12,
+          marketValue: 3000.43,
+          unrealizedPl: 400.11,
+          cashRatioPct: 6.55,
+          investedRatioPct: 93.45,
+        },
+        accounts: [
+          {
+            currency: 'USD',
+            account: { accId: '****4600', trdEnv: 'REAL', accType: 'SECURITIES' },
+            summary: {
+              positionCount: 2,
+              totalAssets: 3210.55,
+              cash: 210.12,
+              marketValue: 3000.43,
+              unrealizedPl: 400.11,
+              topPositionWeightPct: 60.5,
+            },
+            positions: [
+              {
+                symbol: 'NVDA',
+                name: 'NVIDIA',
+                qty: 3,
+                marketValue: 1200.25,
+                unrealizedPl: 150.33,
+                weightPct: 40.01,
+              },
+              {
+                symbol: 'AAPL',
+                name: 'Apple',
+                qty: 5,
+                marketValue: 1800.18,
+                unrealizedPl: 249.78,
+                weightPct: 59.99,
+              },
+            ],
+          },
+        ],
+        notes: ['read-only diagnostics'],
+      },
+    });
+
+    assert.match(report, /# Portfolio Health Check Report/);
+    assert.match(report, /## 総合サマリー/);
+    assert.match(report, /## 総合保有一覧/);
+    assert.match(report, /## SBI 詳細/);
+    assert.match(report, /## moomoo 詳細/);
+    assert.match(report, /NVDA/);
+    assert.match(report, /13\.00/);
+    assert.match(report, /通貨が異なるため単純合算はしていません/);
   });
 });

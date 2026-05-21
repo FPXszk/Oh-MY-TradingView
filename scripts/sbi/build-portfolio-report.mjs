@@ -1035,7 +1035,7 @@ async function readSnapshotJson(path) {
   return JSON.parse(await readFile(path, 'utf8'));
 }
 
-export async function buildPortfolioReportFromCaptureDir(captureDir, outputPath) {
+export async function loadPortfolioDataFromCaptureDir(captureDir) {
   const inputPaths = await discoverCaptureInputPaths(captureDir);
   const accountAssetsSnapshot = await readSnapshotJson(inputPaths.accountAssetsPage);
   const everyAssetSnapshot = await readSnapshotJson(inputPaths.everyAssetPage);
@@ -1080,6 +1080,11 @@ export async function buildPortfolioReportFromCaptureDir(captureDir, outputPath)
     },
   };
 
+  return { data, inputPaths };
+}
+
+export async function buildPortfolioReportFromCaptureDir(captureDir, outputPath) {
+  const { data, inputPaths } = await loadPortfolioDataFromCaptureDir(captureDir);
   const report = buildPortfolioReport(data);
   await mkdir(dirname(outputPath), { recursive: true });
   await writeFile(outputPath, report, 'utf8');
