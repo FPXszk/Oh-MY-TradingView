@@ -65,7 +65,7 @@ function Normalize-RelativePaths {
     $normalized = @()
     foreach ($value in $Values) {
         foreach ($candidate in ($value -split ',')) {
-            $trimmed = $candidate.Trim()
+            $trimmed = $candidate.Trim().Trim('"')
             if (-not [string]::IsNullOrWhiteSpace($trimmed)) {
                 $normalized += $trimmed
             }
