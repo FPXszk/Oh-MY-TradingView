@@ -120,8 +120,17 @@ workflow:
   - `docs/reports/screener/portfolio/capture/latest/capture-summary.json`
   - `docs/reports/screener/portfolio/sbi_portfolio_report.md`
   - `docs/reports/screener/portfolio/capture/latest/downloads/`
+- workflow success 後に WSL 側 `main` checkout へ同期:
+  - `docs/reports/screener/portfolio/capture/latest/`
+  - `docs/reports/screener/portfolio/sbi_portfolio_report.md`
 - GitHub Actions artifact:
   - `sbi-portfolio-capture-<RUN_ID>`
+
+publish 動作:
+
+- 既存の `daily-screener` と同じく、Windows checkout の成果物を WSL 側 `/home/fpxszk/code/Oh-MY-TradingView` へ `cp` する
+- その後 WSL 側 `main` で `git add` / `commit` / `push` まで自動で行う
+- commit message は `docs: sbi portfolio report run <RUN_ID>-<RUN_ATTEMPT>`
 
 ## Portfolio Health Check Workflow
 
@@ -142,6 +151,10 @@ workflow:
 - `docs/reports/screener/portfolio/portfolio_health_check_report.md`
 - `docs/reports/screener/portfolio/moomoo_portfolio_diagnostics.json`
 - `docs/reports/screener/portfolio/capture/latest/`
+- workflow success 後に WSL 側 `main` checkout へ同期:
+  - `docs/reports/screener/portfolio/portfolio_health_check_report.md`
+  - `docs/reports/screener/portfolio/moomoo_portfolio_diagnostics.json`
+  - `docs/reports/screener/portfolio/capture/latest/`
 
 補足:
 
@@ -151,6 +164,28 @@ workflow:
   を中間生成する
 - ただしユーザー向け Markdown は `portfolio_health_check_report.md` の 1 本にまとめる
 - レポート先頭に総合サマリーと総合保有一覧、その下に `SBI 詳細` と `moomoo 詳細` を並べる
+- workflow 完了時は Windows runner 上だけで終わらせず、WSL 側 repo にも同期して `main` へ push する
+
+## Standalone Moomoo Workflow
+
+workflow:
+
+```text
+.github/workflows/moomoo-portfolio-diagnostics.yml
+```
+
+主な出力先:
+
+- runner 上の repo worktree:
+  - `docs/reports/screener/portfolio/moomoo_portfolio_diagnostics.md`
+  - `docs/reports/screener/portfolio/moomoo_portfolio_diagnostics.json`
+- workflow success 後に WSL 側 `main` checkout へ同期:
+  - `docs/reports/screener/portfolio/moomoo_portfolio_diagnostics.md`
+  - `docs/reports/screener/portfolio/moomoo_portfolio_diagnostics.json`
+
+commit message:
+
+- `docs: moomoo portfolio diagnostics run <RUN_ID>-<RUN_ATTEMPT>`
 
 ローカル確認:
 

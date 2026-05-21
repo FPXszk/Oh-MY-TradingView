@@ -66,6 +66,7 @@ jobs:
       - self-hosted
       - windows
     env:
+      WSL_REPO_PATH: /home/fpxszk/code/Oh-MY-TradingView
       SBI_CDP_HOST: ${{ inputs.cdp_host }}
       SBI_CDP_PORT: ${{ inputs.cdp_port }}
       SBI_CAPTURE_OUTPUT_DIR: ${{ inputs.sbi_capture_dir }}
@@ -203,3 +204,12 @@ jobs:
             ${{ env.PORTFOLIO_REPORT_PATH }}
             ${{ env.MOOMOO_PORTFOLIO_JSON_PATH }}
           if-no-files-found: warn
+
+      - name: Publish portfolio health report to WSL main
+        if: success()
+        shell: pwsh
+        run: |
+          powershell -NoProfile -ExecutionPolicy Bypass -File scripts/windows/github-actions/sync-portfolio-reports-to-wsl.ps1 `
+            -WslRepoPath "${{ env.WSL_REPO_PATH }}" `
+            -CommitMessage "docs: portfolio health report run ${{ github.run_id }}-${{ github.run_attempt }}" `
+            -RelativePaths "${{ env.SBI_CAPTURE_OUTPUT_DIR }}","${{ env.PORTFOLIO_REPORT_PATH }}","${{ env.MOOMOO_PORTFOLIO_JSON_PATH }}"

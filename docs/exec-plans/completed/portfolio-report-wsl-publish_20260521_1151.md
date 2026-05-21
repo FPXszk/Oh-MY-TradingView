@@ -13,12 +13,13 @@ Windows self-hosted runner 上で生成される `SBI Portfolio Capture`、`Moom
 
 ## Files
 
-- 作成予定: `scripts/windows/github-actions/sync-portfolio-reports-to-wsl.ps1`
-- 変更予定: `.github/workflows/sbi-portfolio-capture.yml`
-- 変更予定: `.github/workflows/moomoo-portfolio-diagnostics.yml`
-- 変更予定: `.github/workflows/portfolio-health-check.yml`
-- 変更予定: `docs/strategy/sbi-portfolio-report-workflow.md`
-- 変更予定: `docs/sessions/` 配下の durable session log
+- 作成: `scripts/windows/github-actions/sync-portfolio-reports-to-wsl.ps1`
+- 作成: `docs/sessions/portfolio-report-wsl-publish_20260521_1151.md`
+- 変更: `.github/workflows/sbi-portfolio-capture.yml`
+- 変更: `.github/workflows/moomoo-portfolio-diagnostics.yml`
+- 変更: `.github/workflows/portfolio-health-check.yml`
+- 変更: `docs/strategy/sbi-portfolio-report-workflow.md`
+- 移動: `docs/exec-plans/active/portfolio-report-wsl-publish_20260521_1151.md` -> `docs/exec-plans/completed/portfolio-report-wsl-publish_20260521_1151.md`
 
 ## Scope
 
@@ -70,9 +71,9 @@ Windows self-hosted runner 上で生成される `SBI Portfolio Capture`、`Moom
 
 ## Implementation Steps
 
-- [ ] portfolio 系 workflow の現状出力と daily screener publish 手順を比較し、同期対象ファイルを確定する
-- [ ] portfolio 用の WSL publish PowerShell script を追加する
-- [ ] 3 つの workflow に success 時 publish step を追加する
-- [ ] 運用 docs / durable session log を更新する
-- [ ] 変更をレビューし、`git diff --check` で崩れがないことを確認する
-- [ ] active plan を `completed/` へ移して commit / push する
+- [x] portfolio 系 workflow の現状出力と daily screener publish 手順を比較し、同期対象ファイルを確定する
+- [x] portfolio 用の WSL publish PowerShell script を追加する
+- [x] 3 つの workflow に success 時 publish step を追加する
+- [x] 運用 docs / durable session log を更新する
+- [x] 変更をレビューし、`git diff --check` で崩れがないことを確認する
+- [x] active plan を `completed/` へ移して commit / push する
