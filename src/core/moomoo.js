@@ -138,6 +138,15 @@ async function resolvePythonBin({ access: accessFn, cwd, env }) {
     return localBin;
   }
 
+  const localWindowsBin = join(cwd(), 'python', '.venv', 'Scripts', 'python.exe');
+  if (await canExecute(localWindowsBin, accessFn)) {
+    return localWindowsBin;
+  }
+
+  if (env.OS === 'Windows_NT') {
+    return 'python';
+  }
+
   return 'python3';
 }
 
