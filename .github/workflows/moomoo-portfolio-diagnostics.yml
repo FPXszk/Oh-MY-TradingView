@@ -71,6 +71,11 @@ jobs:
         run: |
           python --version
 
+      - name: Ensure moomoo-api runtime
+        shell: pwsh
+        run: |
+          python -m pip install --disable-pip-version-check --quiet moomoo-api
+
       - name: Run read-only portfolio diagnostics
         run: node scripts/moomoo/run-portfolio-diagnostics.mjs
 
