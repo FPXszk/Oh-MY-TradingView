@@ -59,7 +59,7 @@
 
 ## Implementation Steps
 
-- [ ] live workflow run を再実行して完走させる
-- [ ] artifact と `sbi_portfolio_report.md` を確認し、期待値との差分を判断する
-- [ ] `docs/strategy/sbi-portfolio-report-workflow.md` と durable session log を最終更新する
-- [ ] active plan を `completed/` に移して commit / push する
+- [x] live workflow run を再実行して完走させる
+- [x] artifact と `sbi_portfolio_report.md` を確認し、期待値との差分を判断する
+- [x] `docs/strategy/sbi-portfolio-report-workflow.md` と durable session log を最終更新する
+- [x] active plan を `completed/` に移して commit / push する

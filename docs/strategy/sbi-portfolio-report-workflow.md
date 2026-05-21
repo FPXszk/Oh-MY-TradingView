@@ -48,6 +48,12 @@ npm run sbi:portfolio-report
 /mnt/c/Users/szk/Documents/レポート/スクリーンワー/portfolio_new/sbi_portfolio_report.md
 ```
 
+入力元の既定探索先:
+
+```text
+/mnt/c/Users/szk/Downloads
+```
+
 ## Optional Overrides
 
 個別パスを上書きしたい場合は CLI option を使う。
@@ -105,6 +111,16 @@ workflow:
 - `cdp_port`: 既定 `9222`
 - `output_dir`: 既定 `docs/reports/screener/portfolio/capture/latest`
 - `dry_run`: `true` / `false`
+
+主な出力先:
+
+- runner 上の repo worktree:
+  - `docs/reports/screener/portfolio/capture/latest/capture-summary.md`
+  - `docs/reports/screener/portfolio/capture/latest/capture-summary.json`
+  - `docs/reports/screener/portfolio/capture/latest/sbi_portfolio_report.md`
+  - `docs/reports/screener/portfolio/capture/latest/downloads/`
+- GitHub Actions artifact:
+  - `sbi-portfolio-capture-<RUN_ID>`
 
 ローカル確認:
 
@@ -246,6 +262,27 @@ CDP endpoint が無い場合でも、`capture-summary.md` と `capture-error.txt
   - 配当履歴 / 実現損益 CSV: workflow で取得成功
   - 米国株 CSV: 未取得でも、text fallback により report 目的は達成可能
   - 今後 CSV 化を再挑戦する場合は、`csv_download_success` 単体ではなく `foreign-holdings-page` と report 本文の両方を見て判定する
+
+2026-05-21 final verification update:
+
+- live run `26197836346`
+  - URL: <https://github.com/FPXszk/Oh-MY-TradingView/actions/runs/26197836346>
+  - conclusion: `success`
+- artifact には次が含まれていた
+  - `downloads/ALLTYPE_20260521092554.csv`
+  - `downloads/DISTRIBUTION_20260521092606.csv`
+  - `downloads/SaveFile.csv`
+  - `sbi_portfolio_report.md`
+- `sbi_portfolio_report.md` では次を確認できた
+  - `取得日時: 2026/5/21 09:23`
+  - `生成元: account-assets-page.json ほか`
+  - `米国株` 5 件の text fallback 反映
+  - `実現損益` セクションの集計反映
+  - `配当金・分配金履歴` セクションの集計と直近受取 20 件の反映
+- よって現時点の評価は
+  - workflow の最終到達点としては **概ね期待どおり**
+  - 米国株 direct CSV は依然未取得でも、report 目的は達成できている
+  - この workflow は `capture artifact を残しつつ report を組み立てる read-only パイプライン` として完了扱いにしてよい
 
 ## Notes
 
