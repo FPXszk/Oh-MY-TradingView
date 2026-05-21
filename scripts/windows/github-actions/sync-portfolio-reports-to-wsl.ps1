@@ -59,8 +59,25 @@ function Resolve-CheckoutPath {
     return (Resolve-Path $resolvedPath).Path
 }
 
+function Normalize-RelativePaths {
+    param([Parameter(Mandatory = $true)][string[]]$Values)
+
+    $normalized = @()
+    foreach ($value in $Values) {
+        foreach ($candidate in ($value -split ',')) {
+            $trimmed = $candidate.Trim()
+            if (-not [string]::IsNullOrWhiteSpace($trimmed)) {
+                $normalized += $trimmed
+            }
+        }
+    }
+
+    return $normalized
+}
+
 Assert-NoSingleQuote -Value $WslRepoPath -Label 'WslRepoPath'
 Assert-NoSingleQuote -Value $CommitMessage -Label 'CommitMessage'
+$RelativePaths = Normalize-RelativePaths -Values $RelativePaths
 if ($RelativePaths.Count -eq 0) {
     throw 'RelativePaths must contain at least one path'
 }
