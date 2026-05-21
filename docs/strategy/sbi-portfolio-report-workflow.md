@@ -377,6 +377,25 @@ CDP endpoint が無い場合でも、`capture-summary.md` と `capture-error.txt
   - **SBI report の内容密度は run ごとの live 状態に依存**
   と整理するのが妥当
 
+2026-05-21 live publish verification update:
+
+- live verification run:
+  - `26203533551`
+  - URL: <https://github.com/FPXszk/Oh-MY-TradingView/actions/runs/26203533551>
+  - conclusion: `success`
+- `Publish portfolio health report to WSL main` まで含めて完走した
+- WSL 側 publish commit:
+  - `8b8b246`
+  - message: `docs: portfolio health report run 26203533551-1`
+- 実際に WSL 側 `docs/reports/screener/portfolio/` へ次が同期された
+  - `portfolio_health_check_report.md`
+  - `moomoo_portfolio_diagnostics.json`
+  - `capture/latest/` 配下一式
+- publish script 側では、GitHub Actions の PowerShell 引数解釈差に対応するため
+  - comma-separated path split
+  - quoted path trim
+  を追加した
+
 ## Notes
 
 - 日本株の現保有一覧 CSV が無い場合は、資産サマリー上の評価額から「現保有なし / 要追加CSV」を判定する。

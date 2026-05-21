@@ -13,9 +13,10 @@
 
 ## Files
 
-- 作成予定: `docs/sessions/portfolio-health-check-live-verification_20260521_1212.md`
-- 変更予定: `docs/strategy/sbi-portfolio-report-workflow.md`（必要な知見が出た場合のみ）
-- 移動予定: `docs/exec-plans/active/portfolio-health-check-live-verification_20260521_1212.md` -> `docs/exec-plans/completed/`
+- 作成: `docs/sessions/portfolio-health-check-live-verification_20260521_1212.md`
+- 変更: `docs/strategy/sbi-portfolio-report-workflow.md`
+- 変更: `scripts/windows/github-actions/sync-portfolio-reports-to-wsl.ps1`
+- 移動: `docs/exec-plans/active/portfolio-health-check-live-verification_20260521_1212.md` -> `docs/exec-plans/completed/`
 
 ## Scope
 
@@ -58,8 +59,8 @@
 
 ## Implementation Steps
 
-- [ ] live verification 用 exec plan を作成して先行コミットする
-- [ ] `Portfolio Health Check` workflow を dispatch して完走を待つ
-- [ ] run 結果、artifact、publish commit、WSL 側レポートを確認する
-- [ ] durable session log を追加し、必要なら strategy doc に反映する
-- [ ] active plan を `completed/` に移して commit / push する
+- [x] live verification 用 exec plan を作成して先行コミットする
+- [x] `Portfolio Health Check` workflow を dispatch して完走を待つ
+- [x] run 結果、artifact、publish commit、WSL 側レポートを確認する
+- [x] durable session log を追加し、必要なら strategy doc に反映する
+- [x] active plan を `completed/` に移して commit / push する
