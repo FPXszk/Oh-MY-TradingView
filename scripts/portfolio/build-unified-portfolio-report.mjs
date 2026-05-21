@@ -5,11 +5,9 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import {
-  buildPortfolioReport,
   loadPortfolioDataFromCaptureDir,
 } from '../sbi/build-portfolio-report.mjs';
 import {
-  buildPortfolioDiagnosticsReport,
   sanitizePortfolioDiagnosticsResult,
 } from '../moomoo/run-portfolio-diagnostics.mjs';
 
@@ -82,6 +80,12 @@ function formatSignedCurrency(value, currency = 'JPY', digits = 0) {
   return `${prefix}${formatCurrency(value, currency, digits)}`;
 }
 
+function formatSignedPct(value, digits = 2) {
+  if (!Number.isFinite(value)) return 'n/a';
+  const prefix = value > 0 ? '+' : '';
+  return `${prefix}${value.toFixed(digits)}%`;
+}
+
 function renderTable(headers, rows) {
   const safeRows = rows.length > 0 ? rows : [headers.map(() => 'n/a')];
   return [
@@ -91,211 +95,256 @@ function renderTable(headers, rows) {
   ].join('\n');
 }
 
-function formatSbiCash(assetsSummary) {
-  const cashJpy = assetsSummary.products.find((row) => row.product === '預り金(円)')?.marketValueJpy ?? null;
-  const cashUsdJpy = assetsSummary.products.find((row) => row.product === '預り金(米ドル)')?.marketValueJpy ?? null;
-  return [
-    Number.isFinite(cashJpy) ? `円 ${formatCurrency(cashJpy, 'JPY', 0)}` : null,
-    Number.isFinite(cashUsdJpy) ? `米ドル預り金(円換算) ${formatCurrency(cashUsdJpy, 'JPY', 0)}` : null,
-  ].filter(Boolean).join(' / ') || 'n/a';
+function estimateUsdJpyRate(usStocks) {
+  for (const row of usStocks) {
+    const jpy = Number(row.marketValueJpy);
+    const usd = Number(row.marketValueUsd);
+    if (Number.isFinite(jpy) && jpy > 0 && Number.isFinite(usd) && usd > 0) {
+      return jpy / usd;
+    }
+  }
+  return null;
 }
 
-function createHoldingRow({
-  type,
-  label,
-  symbol,
-  sbiQuantity = null,
-  moomooQuantity = null,
-  sbiValueJpy = null,
-  moomooValue = null,
-  moomooCurrency = 'USD',
-}) {
-  const totalQuantity = [sbiQuantity, moomooQuantity]
-    .filter(Number.isFinite)
-    .reduce((sum, value) => sum + value, 0);
-  return {
-    type,
-    label,
-    symbol,
-    totalQuantity: Number.isFinite(totalQuantity) ? totalQuantity : null,
-    sbiQuantity,
-    moomooQuantity,
-    sbiValueJpy,
-    moomooValue,
-    moomooCurrency,
-  };
-}
-
-function buildCombinedHoldings(sbiData, moomooPayload) {
-  const holdings = new Map();
-  const mergeNumber = (left, right) => {
-    if (Number.isFinite(left) && Number.isFinite(right)) return left + right;
-    if (Number.isFinite(left)) return left;
-    if (Number.isFinite(right)) return right;
-    return null;
-  };
-  const upsert = (key, next) => {
-    const current = holdings.get(key);
-    holdings.set(key, current ? {
-      ...current,
-      totalQuantity: mergeNumber(current.totalQuantity, next.totalQuantity),
-      sbiQuantity: mergeNumber(current.sbiQuantity, next.sbiQuantity),
-      moomooQuantity: mergeNumber(current.moomooQuantity, next.moomooQuantity),
-      sbiValueJpy: mergeNumber(current.sbiValueJpy, next.sbiValueJpy),
-      moomooValue: mergeNumber(current.moomooValue, next.moomooValue),
-      moomooCurrency: next.moomooCurrency ?? current.moomooCurrency,
-    } : next);
-  };
+function buildUnifiedPositionList(sbiData, moomooPayload, moomooCurrency) {
+  const positions = [];
 
   for (const row of sbiData.usStocks) {
-    const key = `stock:${row.ticker || row.name}`;
-    upsert(key, createHoldingRow({
-      type: '米国株',
-      label: row.name || row.ticker || 'n/a',
-      symbol: row.ticker || 'n/a',
-      sbiQuantity: row.quantity,
-      sbiValueJpy: row.marketValueJpy,
-    }));
+    const plJpy = Number.isFinite(row.unrealizedPlJpy) ? row.unrealizedPlJpy : null;
+    const mvJpy = Number.isFinite(row.marketValueJpy) ? row.marketValueJpy : null;
+    const costJpy = (plJpy !== null && mvJpy !== null) ? mvJpy - plJpy : null;
+    const plRateRaw = (costJpy !== null && costJpy !== 0) ? (plJpy / costJpy * 100) : null;
+    positions.push({
+      ticker: row.ticker || '-',
+      name: row.name || 'n/a',
+      account: `SBI/${row.accountType || 'n/a'}`,
+      qty: Number.isFinite(row.quantity) ? formatNumber(row.quantity, 0, 'en-US') : 'n/a',
+      pl: plJpy !== null ? formatSignedCurrency(plJpy, 'JPY', 0) : 'n/a',
+      plRate: formatSignedPct(plRateRaw),
+      _plSortKey: plJpy,
+      _plRateRaw: plRateRaw,
+    });
   }
 
   for (const row of sbiData.funds) {
-    const key = `fund:${row.name}`;
-    upsert(key, createHoldingRow({
-      type: '投資信託',
-      label: row.name || 'n/a',
-      symbol: '-',
-      sbiQuantity: row.quantity,
-      sbiValueJpy: row.marketValueJpy,
-    }));
+    const plJpy = Number.isFinite(row.unrealizedPlJpy) ? row.unrealizedPlJpy : null;
+    const mvJpy = Number.isFinite(row.marketValueJpy) ? row.marketValueJpy : null;
+    const costJpy = (plJpy !== null && mvJpy !== null) ? mvJpy - plJpy : null;
+    const plRateRaw = (costJpy !== null && costJpy !== 0) ? (plJpy / costJpy * 100) : null;
+    positions.push({
+      ticker: '-',
+      name: row.name || 'n/a',
+      account: `SBI/${row.accountType || 'n/a'}`,
+      qty: Number.isFinite(row.quantity) ? formatNumber(row.quantity, 0, 'en-US') : 'n/a',
+      pl: plJpy !== null ? formatSignedCurrency(plJpy, 'JPY', 0) : 'n/a',
+      plRate: formatSignedPct(plRateRaw),
+      _plSortKey: plJpy,
+      _plRateRaw: plRateRaw,
+    });
   }
 
-  const moomooCurrency = moomooPayload.currency || 'USD';
   for (const account of moomooPayload.accounts || []) {
-    for (const position of account.positions || []) {
-      const key = `stock:${position.symbol || position.name}`;
-      upsert(key, createHoldingRow({
-        type: '米国株',
-        label: position.name || position.symbol || 'n/a',
-        symbol: position.symbol || 'n/a',
-        moomooQuantity: Number(position.qty),
-        moomooValue: Number(position.marketValue),
-        moomooCurrency,
-      }));
+    for (const pos of account.positions || []) {
+      const unrealizedPl = Number(pos.unrealizedPl);
+      const marketValue = Number(pos.marketValue);
+      const plRateRaw = Number.isFinite(pos.plRatioPct)
+        ? pos.plRatioPct
+        : (Number.isFinite(unrealizedPl) && Number.isFinite(marketValue) && marketValue !== unrealizedPl
+          ? (unrealizedPl / (marketValue - unrealizedPl) * 100)
+          : null);
+      const qty = pos.qty ?? pos.quantity ?? null;
+      positions.push({
+        ticker: pos.symbol || 'n/a',
+        name: pos.name || 'n/a',
+        account: 'moomoo',
+        qty: qty != null && qty !== '' ? String(Number(qty)) : 'n/a',
+        pl: Number.isFinite(unrealizedPl) ? formatSignedCurrency(unrealizedPl, moomooCurrency, 2) : 'n/a',
+        plRate: formatSignedPct(plRateRaw),
+        _plSortKey: Number.isFinite(unrealizedPl) ? unrealizedPl : null,
+        _plRateRaw: plRateRaw,
+      });
     }
   }
 
-  return [...holdings.values()]
-    .sort((left, right) => left.label.localeCompare(right.label, 'ja'))
-    .map((row) => [
-      row.type,
-      row.label,
-      row.symbol || '-',
-      Number.isFinite(row.totalQuantity) ? formatNumber(row.totalQuantity, 2, 'en-US') : 'n/a',
-      Number.isFinite(row.sbiQuantity) ? formatNumber(row.sbiQuantity, 2, 'en-US') : '-',
-      Number.isFinite(row.moomooQuantity) ? formatNumber(row.moomooQuantity, 2, 'en-US') : '-',
-      [
-        Number.isFinite(row.sbiValueJpy) ? `SBI ${formatCurrency(row.sbiValueJpy, 'JPY', 0)}` : null,
-        Number.isFinite(row.moomooValue) ? `moomoo ${formatCurrency(row.moomooValue, row.moomooCurrency, 2)}` : null,
-      ].filter(Boolean).join(' / ') || 'n/a',
-    ]);
+  return positions;
 }
 
-function buildExecutiveSummary(sbiData, moomooPayload) {
-  const sbiAssets = sbiData.assetsSummary;
-  const moomooTotals = moomooPayload.totals || {};
-  return renderTable(
-    ['項目', 'SBI', 'moomoo', 'メモ'],
-    [
-      [
-        '口座数',
-        '1',
-        formatNumber(moomooTotals.accountCount, 0, 'en-US'),
-        'SBI は単一口座レポートとして扱う',
-      ],
-      [
-        '保有明細数',
-        String(sbiData.usStocks.length + sbiData.funds.length),
-        formatNumber(moomooTotals.positionCount, 0, 'en-US'),
-        'SBI は米国株 + 投資信託、moomoo は position 数',
-      ],
-      [
-        '総資産',
-        formatCurrency(sbiAssets.totalAssetsJpy, 'JPY', 0),
-        formatCurrency(Number(moomooTotals.totalAssets), moomooPayload.currency || 'USD', 2),
-        '通貨が異なるため単純合算はしていません',
-      ],
-      [
-        '現金',
-        formatSbiCash(sbiAssets),
-        formatCurrency(Number(moomooTotals.cash), moomooPayload.currency || 'USD', 2),
-        'SBI は円預り金 + 米ドル預り金(円換算)',
-      ],
-      [
-        '評価額',
-        formatCurrency(
-          sbiData.usStocks.reduce((sum, row) => sum + (row.marketValueJpy || 0), 0)
-            + sbiData.funds.reduce((sum, row) => sum + (row.marketValueJpy || 0), 0),
-          'JPY',
-          0,
-        ),
-        formatCurrency(Number(moomooTotals.marketValue), moomooPayload.currency || 'USD', 2),
-        '保有ポジション分のみ',
-      ],
-      [
-        '評価損益',
-        formatSignedCurrency(sbiAssets.totalUnrealizedPlJpy, 'JPY', 0),
-        formatSignedCurrency(Number(moomooTotals.unrealizedPl), moomooPayload.currency || 'USD', 2),
-        'SBI は資産サマリー、moomoo は diagnostics totals',
-      ],
-    ],
-  );
+function buildRealizedAndDividendSection(sbiData) {
+  const lines = ['## 💰 実現損益 & 配当', ''];
+
+  if (sbiData.realizedSummary.length > 0) {
+    lines.push('### 実現損益サマリー', '');
+    lines.push(renderTable(
+      ['商品', '実現損益(税引前・円)', '利益合計(円)', '損失合計(円)'],
+      sbiData.realizedSummary.map((row) => [
+        row.product || 'n/a',
+        formatSignedCurrency(row.realizedPlJpy, 'JPY', 0),
+        formatCurrency(row.gainJpy, 'JPY', 0),
+        formatSignedCurrency(row.lossJpy, 'JPY', 0),
+      ]),
+    ));
+    lines.push('');
+  } else {
+    lines.push('当期実現損益なし', '');
+  }
+
+  const hasDividendSummary = (sbiData.distributionSummary || []).length > 0;
+  const hasDividendEntries = (sbiData.distributionEntries || []).length > 0;
+
+  if (hasDividendSummary || hasDividendEntries) {
+    if (hasDividendSummary) {
+      lines.push('### 配当・分配金サマリー', '');
+      lines.push(renderTable(
+        ['商品', '受取額(税引後・円)', '受取額(税引後・USD)'],
+        sbiData.distributionSummary.map((row) => [
+          row.product || 'n/a',
+          formatCurrency(row.amountJpy, 'JPY', 0),
+          Number.isFinite(row.amountUsd) ? formatCurrency(row.amountUsd, 'USD', 2) : 'n/a',
+        ]),
+      ));
+      lines.push('');
+    }
+    if (hasDividendEntries) {
+      const recentEntries = [...sbiData.distributionEntries]
+        .sort((a, b) => String(b.date).localeCompare(String(a.date)))
+        .slice(0, 10);
+      lines.push('### 直近配当履歴（最大10件）', '');
+      lines.push(renderTable(
+        ['日付', '口座', '商品', '銘柄', '受取額'],
+        recentEntries.map((row) => [
+          row.date || 'n/a',
+          row.accountType || 'n/a',
+          row.product || 'n/a',
+          row.name || 'n/a',
+          Number.isFinite(row.amount)
+            ? (row.currency === 'USD' ? formatCurrency(row.amount, 'USD', 2) : formatCurrency(row.amount, 'JPY', 0))
+            : 'n/a',
+        ]),
+      ));
+      lines.push('');
+    }
+  } else {
+    lines.push('配当受取なし', '');
+  }
+
+  return lines;
 }
 
-function demoteReport(markdown, heading) {
-  const lines = String(markdown || '').trim().split('\n');
-  return lines.map((line, index) => {
-    if (index === 0 && /^#\s/.test(line)) return `## ${heading}`;
-    const match = line.match(/^(#{1,5})\s(.*)$/);
-    if (!match) return line;
-    return `${match[1]}# ${match[2]}`;
-  }).join('\n');
+function buildMetaSection(workflow) {
+  if (!workflow) return [];
+  const lines = ['## 🔧 取得メタ情報', ''];
+  if (workflow.runId) lines.push(`- run_id: ${workflow.runId}`);
+  if (workflow.runAttempt) lines.push(`- run_attempt: ${workflow.runAttempt}`);
+  if (workflow.refName) lines.push(`- ref_name: ${workflow.refName}`);
+  if (workflow.runNumber) lines.push(`- run_number: ${workflow.runNumber}`);
+  if (workflow.sha) lines.push(`- sha: ${workflow.sha}`);
+  lines.push('');
+  return lines;
 }
 
 export function buildUnifiedPortfolioReport({ sbiData, moomooPayload, generatedAt, workflow }) {
   const sanitizedMoomoo = sanitizePortfolioDiagnosticsResult(moomooPayload);
-  const sbiReport = buildPortfolioReport(sbiData);
-  const moomooReport = buildPortfolioDiagnosticsReport(sanitizedMoomoo, {
-    generatedAt,
-    workflowRunId: workflow?.runId,
-    workflowRunAttempt: workflow?.runAttempt,
-    refName: workflow?.refName,
-  });
+  const moomooTotals = sanitizedMoomoo.totals || {};
+  const moomooCurrency = sanitizedMoomoo.currency || 'USD';
+  const sbiAssets = sbiData.assetsSummary;
+
+  // Section 1: Header
+  const dateStr = generatedAt.slice(0, 10);
+  const sbiTime = sbiAssets.asOf || 'n/a';
+  const moomooTime = sanitizedMoomoo.retrieved_at || 'n/a';
+
+  // Section 2: Health summary
+  const cashJpy = sbiAssets.products.find((row) => row.product === '預り金(円)')?.marketValueJpy ?? null;
+  const cashUsdJpy = sbiAssets.products.find((row) => row.product === '預り金(米ドル)')?.marketValueJpy ?? null;
+  const sbiTotalCashJpy = (Number.isFinite(cashJpy) ? cashJpy : 0) + (Number.isFinite(cashUsdJpy) ? cashUsdJpy : 0);
+  const sbiCashRatioPct = Number.isFinite(sbiAssets.totalAssetsJpy) && sbiAssets.totalAssetsJpy > 0
+    ? (sbiTotalCashJpy / sbiAssets.totalAssetsJpy * 100)
+    : null;
+
+  const leadingStock = [...sbiData.usStocks]
+    .filter((row) => Number.isFinite(row.unrealizedPlJpy))
+    .sort((a, b) => (b.unrealizedPlJpy || 0) - (a.unrealizedPlJpy || 0))[0];
+  const leadingTicker = leadingStock?.ticker || null;
+
+  const moomooPl = Number(moomooTotals.unrealizedPl);
+  const moomooCashRatioText = Number.isFinite(Number(moomooTotals.cashRatioPct))
+    ? `${Number(moomooTotals.cashRatioPct).toFixed(0)}%`
+    : 'n/a';
+
+  let healthText = `SBI評価損益 ${formatSignedCurrency(sbiAssets.totalUnrealizedPlJpy, 'JPY', 0)}`;
+  if (Number.isFinite(sbiAssets.totalUnrealizedPlPct)) {
+    healthText += ` (${formatSignedPct(sbiAssets.totalUnrealizedPlPct)})`;
+  }
+  healthText += '。';
+  if (leadingTicker) healthText += `${leadingTicker}が主要牽引。`;
+  healthText += `moomoo全ポジション含み${moomooPl >= 0 ? '益' : '損'} ${formatSignedCurrency(moomooPl, moomooCurrency, 2)}、現金比率${moomooCashRatioText}。`;
+
+  // Section 3: Asset snapshot
+  const usdJpyRate = estimateUsdJpyRate(sbiData.usStocks);
+  const rateNote = Number.isFinite(usdJpyRate)
+    ? `※ 推定 USD/JPY レート: ${usdJpyRate.toFixed(2)}`
+    : '※ USD/JPY レート不明';
+
+  // Section 4: Unified position list (sorted by abs P/L descending)
+  const positions = buildUnifiedPositionList(sbiData, sanitizedMoomoo, moomooCurrency);
+  positions.sort((a, b) => Math.abs(b._plSortKey || 0) - Math.abs(a._plSortKey || 0));
+
+  // Section 6: Alerts
+  const alertList = positions.filter((pos) => Number.isFinite(pos._plRateRaw) && pos._plRateRaw < -20);
 
   const lines = [
-    '# Portfolio Health Check Report',
+    `# Portfolio Health Check — ${dateStr}`,
+    `- SBI取得: ${sbiTime}`,
+    `- moomoo取得: ${moomooTime}`,
     '',
-    `- Generated at: ${generatedAt}`,
-    `- SBI取得日時: ${sbiData.assetsSummary.asOf || 'n/a'}`,
-    `- moomoo取得日時: ${sanitizedMoomoo.retrieved_at || 'n/a'}`,
+    '## 🚦 ヘルスサマリー',
     '',
-    '## 総合サマリー',
+    healthText,
     '',
-    buildExecutiveSummary(sbiData, sanitizedMoomoo),
-    '',
-    '## 総合保有一覧',
-    '',
-    'SBI と moomoo の保有を 1 つの表で見られるようにし、同一シンボルは 1 行に寄せています。',
+    '## 📊 資産スナップショット',
     '',
     renderTable(
-      ['区分', '資産', 'シンボル', '合計数量', 'SBI数量', 'moomoo数量', '評価額'],
-      buildCombinedHoldings(sbiData, sanitizedMoomoo),
+      ['口座', '総資産', '評価損益', '現金比率', '取得時刻'],
+      [
+        [
+          'SBI',
+          formatCurrency(sbiAssets.totalAssetsJpy, 'JPY', 0),
+          formatSignedCurrency(sbiAssets.totalUnrealizedPlJpy, 'JPY', 0),
+          Number.isFinite(sbiCashRatioPct) ? `${sbiCashRatioPct.toFixed(1)}%` : 'n/a',
+          sbiTime,
+        ],
+        [
+          'moomoo',
+          formatCurrency(Number(moomooTotals.totalAssets), moomooCurrency, 2),
+          formatSignedCurrency(Number(moomooTotals.unrealizedPl), moomooCurrency, 2),
+          Number.isFinite(Number(moomooTotals.cashRatioPct)) ? `${Number(moomooTotals.cashRatioPct).toFixed(1)}%` : 'n/a',
+          moomooTime,
+        ],
+      ],
     ),
     '',
-    demoteReport(sbiReport, 'SBI 詳細'),
+    rateNote,
     '',
-    demoteReport(moomooReport, 'moomoo 詳細'),
+    '## 📋 ポジション一覧（統合）',
     '',
+    renderTable(
+      ['ティッカー', '銘柄', '口座', '数量', '評価損益', '損益率'],
+      positions.map((pos) => [pos.ticker, pos.name, pos.account, pos.qty, pos.pl, pos.plRate]),
+    ),
+    '',
+    ...buildRealizedAndDividendSection(sbiData),
   ];
+
+  if (alertList.length > 0) {
+    lines.push('## ⚠️ アラート', '');
+    lines.push('含み損率 -20% 超のポジション:', '');
+    for (const pos of alertList) {
+      lines.push(`- ${pos.ticker}（${pos.name} / ${pos.account}）: ${pos.pl} / ${pos.plRate}`);
+    }
+    lines.push('');
+  }
+
+  lines.push(...buildMetaSection(sanitizedMoomoo.workflow || moomooPayload.workflow || workflow));
 
   return `${lines.join('\n').trim()}\n`;
 }

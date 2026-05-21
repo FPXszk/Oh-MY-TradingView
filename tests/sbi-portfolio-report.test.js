@@ -430,13 +430,15 @@ describe('sbi portfolio report builder', () => {
       },
     });
 
-    assert.match(report, /# Portfolio Health Check Report/);
-    assert.match(report, /## 総合サマリー/);
-    assert.match(report, /## 総合保有一覧/);
-    assert.match(report, /## SBI 詳細/);
-    assert.match(report, /## moomoo 詳細/);
+    assert.match(report, /# Portfolio Health Check — 2026-05-21/);
+    assert.match(report, /🚦 ヘルスサマリー/);
+    assert.match(report, /📊 資産スナップショット/);
+    assert.match(report, /📋 ポジション一覧（統合）/);
+    assert.doesNotMatch(report, /## SBI 詳細/);
+    assert.doesNotMatch(report, /## moomoo 詳細/);
     assert.match(report, /NVDA/);
-    assert.match(report, /13\.00/);
-    assert.match(report, /通貨が異なるため単純合算はしていません/);
+    assert.match(report, /AAPL/);
+    assert.match(report, /当期実現損益なし/);
+    assert.match(report, /配当受取なし/);
   });
 });
