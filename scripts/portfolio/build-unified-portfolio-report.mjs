@@ -121,6 +121,7 @@ function buildUnifiedPositionList(sbiData, moomooPayload, moomooCurrency) {
       qty: Number.isFinite(row.quantity) ? formatNumber(row.quantity, 0, 'en-US') : 'n/a',
       pl: plJpy !== null ? formatSignedCurrency(plJpy, 'JPY', 0) : 'n/a',
       plRate: formatSignedPct(plRateRaw),
+      _category: /\betf\b/i.test(row.name || '') ? 1 : 2,
       _plSortKey: plJpy,
       _plRateRaw: plRateRaw,
     });
@@ -147,6 +148,7 @@ function buildUnifiedPositionList(sbiData, moomooPayload, moomooCurrency) {
       qty: Number.isFinite(row.quantity) ? formatNumber(row.quantity, 0, 'en-US') : 'n/a',
       pl: plJpy !== null ? formatSignedCurrency(plJpy, 'JPY', 0) : 'n/a',
       plRate: formatSignedPct(plRateRaw),
+      _category: 0,
       _plSortKey: plJpy,
       _plRateRaw: plRateRaw,
     });
@@ -169,6 +171,7 @@ function buildUnifiedPositionList(sbiData, moomooPayload, moomooCurrency) {
         qty: qty != null && qty !== '' ? String(Number(qty)) : 'n/a',
         pl: Number.isFinite(unrealizedPl) ? formatSignedCurrency(unrealizedPl, moomooCurrency, 2) : 'n/a',
         plRate: formatSignedPct(plRateRaw),
+        _category: /\betf\b/i.test(pos.name || '') ? 1 : 2,
         _plSortKey: Number.isFinite(unrealizedPl) ? unrealizedPl : null,
         _plRateRaw: plRateRaw,
       });
@@ -272,9 +275,12 @@ export function buildUnifiedPortfolioReport({ sbiData, moomooPayload, generatedA
     ? `※ 推定 USD/JPY レート: ${usdJpyRate.toFixed(2)}`
     : '※ USD/JPY レート不明';
 
-  // Section 4: Unified position list (sorted by abs P/L descending)
+  // Section 4: Unified position list (投資信託 → ETF → 個別株, P/L descending within each)
   const positions = buildUnifiedPositionList(sbiData, sanitizedMoomoo, moomooCurrency);
-  positions.sort((a, b) => Math.abs(b._plSortKey || 0) - Math.abs(a._plSortKey || 0));
+  positions.sort((a, b) => {
+    if (a._category !== b._category) return a._category - b._category;
+    return (b._plSortKey || 0) - (a._plSortKey || 0);
+  });
 
   // Section 6: Alerts
   const alertList = positions.filter((pos) => Number.isFinite(pos._plRateRaw) && pos._plRateRaw < -20);
