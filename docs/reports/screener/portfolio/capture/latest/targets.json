@@ -1,6 +1,16 @@
 [
   {
     "description": "",
+    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/inspector.html?ws=127.0.0.1:9222/devtools/page/6F52E4145454A0BF8B5CA7F3EC9B8744",
+    "faviconUrl": "https://github.githubassets.com/favicons/favicon-pending-dark.svg",
+    "id": "6F52E4145454A0BF8B5CA7F3EC9B8744",
+    "title": "Portfolio Health Check · FPXszk/Oh-MY-TradingView@ed2eb05",
+    "type": "page",
+    "url": "https://github.com/FPXszk/Oh-MY-TradingView/actions/runs/26221593596",
+    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/6F52E4145454A0BF8B5CA7F3EC9B8744"
+  },
+  {
+    "description": "",
     "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/inspector.html?ws=127.0.0.1:9222/devtools/page/8820D15807970101324B38007DDDBF9F",
     "faviconUrl": "https://sbisec.akamaized.net/sbisec/images/common/favicon/favicon-32x32.png",
     "id": "8820D15807970101324B38007DDDBF9F",
@@ -11,14 +21,14 @@
   },
   {
     "description": "",
-    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/inspector.html?ws=127.0.0.1:9222/devtools/page/5FEFB8F5AE2B1E602787D7C7DFBDF886",
+    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/inspector.html?ws=127.0.0.1:9222/devtools/page/B92DA2A2DD4D9170927A32E8BD1E4C3B",
     "faviconUrl": "https://sbisec.akamaized.net/sbisec/images/common/favicon/favicon-32x32.png",
-    "id": "5FEFB8F5AE2B1E602787D7C7DFBDF886",
+    "id": "B92DA2A2DD4D9170927A32E8BD1E4C3B",
     "parentId": "8820D15807970101324B38007DDDBF9F",
     "title": "https://cdn.d2-apps.net/html/frame.html#https://tg.socdm.com/aux/idsync?client_id=900&amp;proto=primenumber",
     "type": "iframe",
     "url": "https://cdn.d2-apps.net/html/frame.html#https://tg.socdm.com/aux/idsync?client_id=900&proto=primenumber",
-    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/5FEFB8F5AE2B1E602787D7C7DFBDF886"
+    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/B92DA2A2DD4D9170927A32E8BD1E4C3B"
   },
   {
     "description": "",
@@ -53,12 +63,12 @@
   },
   {
     "description": "",
-    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/worker_app.html?ws=127.0.0.1:9222/devtools/page/35AFD7F2FDB7E447BE72BD91F762A42C",
-    "id": "35AFD7F2FDB7E447BE72BD91F762A42C",
-    "title": "Service Worker chrome-extension://neebplgakaahbhdphmkckjjcegoiijjo/keepa.js",
-    "type": "service_worker",
-    "url": "chrome-extension://neebplgakaahbhdphmkckjjcegoiijjo/keepa.js",
-    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/35AFD7F2FDB7E447BE72BD91F762A42C"
+    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/worker_app.html?ws=127.0.0.1:9222/devtools/page/E07C8DC6006058E8FBDAB34267424C0F",
+    "id": "E07C8DC6006058E8FBDAB34267424C0F",
+    "title": "github-socket-worker-v3-489b8e8886d580d2afe20646f675578274643dc3c708a1905bb6ab8af5114454",
+    "type": "shared_worker",
+    "url": "https://github.com/assets-cdn/worker/socket-worker-5074bd5c33c83e94.js?module=true",
+    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/E07C8DC6006058E8FBDAB34267424C0F"
   },
   {
     "description": "",
@@ -68,5 +78,23 @@
     "type": "service_worker",
     "url": "chrome-extension://hehggadaopoacecdllhhajmbjkdcmajg/background.js",
     "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/88F5D03564E5AC43B2F0A30116D2FAC0"
+  },
+  {
+    "description": "",
+    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/worker_app.html?ws=127.0.0.1:9222/devtools/page/02660A5BD33461FD6E8A44CA0F7AD408",
+    "id": "02660A5BD33461FD6E8A44CA0F7AD408",
+    "title": "Service Worker chrome-extension://neebplgakaahbhdphmkckjjcegoiijjo/keepa.js",
+    "type": "service_worker",
+    "url": "chrome-extension://neebplgakaahbhdphmkckjjcegoiijjo/keepa.js",
+    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/02660A5BD33461FD6E8A44CA0F7AD408"
+  },
+  {
+    "description": "",
+    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/worker_app.html?ws=127.0.0.1:9222/devtools/page/3C9F40D80EDCA2C19B3097D7B7AC9D14",
+    "id": "3C9F40D80EDCA2C19B3097D7B7AC9D14",
+    "title": "Service Worker https://github.com/assets-cdn/worker/service-worker-83cbd54255e6cf42.js?current_user=FPXszk&amp;errors_url=https%3A%2F%2Fapi.github.com%2F_private%2Fbrowser%2Ferrors&amp;release=ce868f5c2a18a336b572ad0da21ab134bccc842f&amp;actor_id=106506797&amp;is_staff=false&amp;analytics_collector_url=https%3A%2F%2Fcollector.github.com%2Fgithub%2Fcollect&amp;module=true",
+    "type": "service_worker",
+    "url": "https://github.com/assets-cdn/worker/service-worker-83cbd54255e6cf42.js?current_user=FPXszk&errors_url=https%3A%2F%2Fapi.github.com%2F_private%2Fbrowser%2Ferrors&release=ce868f5c2a18a336b572ad0da21ab134bccc842f&actor_id=106506797&is_staff=false&analytics_collector_url=https%3A%2F%2Fcollector.github.com%2Fgithub%2Fcollect&module=true",
+    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/3C9F40D80EDCA2C19B3097D7B7AC9D14"
   }
 ]

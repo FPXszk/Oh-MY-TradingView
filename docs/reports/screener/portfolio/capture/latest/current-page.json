@@ -7,7 +7,7 @@
       "text": "銀行",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETsmR001Control&_PageID=WPLETsmR001Sdtl15&_ActionID=noLogin&_DataStoreID=DSWPLETsmR001Control&OutSide=on&getFlg=on&sw_param1=bank&sw_param2=top&sw_param3=redirect&_scpr=intpr=hn_bank",
-      "x": 1788,
+      "x": 1469,
       "y": 10,
       "width": 42,
       "height": 14
@@ -16,7 +16,7 @@
       "text": "保険",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETsmR001Control&_PageID=WPLETsmR001Sdtl15&_ActionID=noLogin&_DataStoreID=DSWPLETsmR001Control&OutSide=on&getFlg=on&sw_param1=insurance&sw_param2=top&_scpr=intpr=hn_insurance",
-      "x": 1846,
+      "x": 1527,
       "y": 10,
       "width": 42,
       "height": 14
@@ -25,7 +25,7 @@
       "text": "ポートフォリオ",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETpfR001Control&_PageID=DefaultPID&_ActionID=DefaultAID&_DataStoreID=DSWPLETpfR001Control&OutSide=on&getFlg=on&_scpr=intpr=hn_trade",
-      "x": 1246,
+      "x": 926,
       "y": 38,
       "width": 92,
       "height": 44
@@ -34,7 +34,7 @@
       "text": "口座管理",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETacR001Control&_PageID=DefaultPID&_ActionID=DefaultAID&_DataStoreID=DSWPLETacR001Control&OutSide=on&getFlg=on&_scpr=intpr=hn_acc",
-      "x": 1342,
+      "x": 1022,
       "y": 38,
       "width": 56,
       "height": 44
@@ -43,7 +43,7 @@
       "text": "取引",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETstT001Control&_PageID=DefaultPID&_ActionID=DefaultAID&_DataStoreID=DSWPLETstT001Control&OutSide=on&getFlg=on&_SeqNo=1733915647974_default_task_314499_DefaultPID_DefaultAID&_scpr=intpr=hn_trade",
-      "x": 1402,
+      "x": 1082,
       "y": 38,
       "width": 48,
       "height": 44
@@ -52,7 +52,7 @@
       "text": "入出金",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETsmR001Control&_PageID=WPLETsmR001Sdtl23&_ActionID=NoActionID&_DataStoreID=DSWPLETsmR001Control&OutSide=on&getFlg=on&path=banking%2Fyen%2Fdeposit&_scpr=intpr=hn_cash",
-      "x": 1454,
+      "x": 1134,
       "y": 38,
       "width": 48,
       "height": 44
@@ -61,7 +61,7 @@
       "text": "お知らせ",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETmbR001Control&_PageID=WPLETmbR001Rsub15&_ActionID=DefaultAID&_DataStoreID=DSWPLETmbR001Control&OutSide=on&getFlg=on&category_id=03&_scpr=intpr=hn_infomation",
-      "x": 1528,
+      "x": 1208,
       "y": 38,
       "width": 56,
       "height": 44
@@ -70,7 +70,7 @@
       "text": "My設定",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETsmR001Control&_DataStoreID=DSWPLETsmR001Control&OutSide=on&getFlg=on&sw_page=Regist&cat1=home&cat2=none&_scpr=intpr=hn_myacc",
-      "x": 1588,
+      "x": 1267,
       "y": 38,
       "width": 49,
       "height": 44
@@ -79,7 +79,7 @@
       "text": "サービス",
       "tag": "button",
       "href": null,
-      "x": 1641,
+      "x": 1321,
       "y": 37,
       "width": 68,
       "height": 46
@@ -88,7 +88,7 @@
       "text": "サポート",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?OutSide=on&getFlg=on&_ControlID=WPLETmgR001Control&_PageID=WPLETmgR001Mdtl20&_ActionID=DefaultAID&_DataStoreID=DSWPLETmgR001Control&burl=search_home&cat1=home&cat2=none&dir=support&file=home_support.html&_scpr=intpr=hn_support",
-      "x": 1713,
+      "x": 1393,
       "y": 38,
       "width": 56,
       "height": 44
@@ -97,16 +97,16 @@
       "text": "ログアウト",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETlgR001Control&_PageID=WPLETlgR001Rlgn50&_ActionID=logout&_DataStoreID=DSWPLETlgR001Control&OutSide=on&getFlg=on&_scpr=intpr=hn_logout",
-      "x": 1795,
+      "x": 1475,
       "y": 44,
-      "width": 93,
-      "height": 31
+      "width": 94,
+      "height": 32
     },
     {
       "text": "ホーム",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?_ControlID=WPLEThmR001Control&_PageID=DefaultPID&_ActionID=DefaultAID&_DataStoreID=DSWPLEThmR001Control&OutSide=on&getFlg=on&_scpr=intpr=hn_i_top",
-      "x": 656,
+      "x": 337,
       "y": 92,
       "width": 72,
       "height": 36
@@ -115,7 +115,7 @@
       "text": "マーケット",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?OutSide=on&getFlg=on&_ControlID=WPLETmgR001Control&_PageID=WPLETmgR001Mdtl20&_ActionID=DefaultAID&_DataStoreID=DSWPLETmgR001Control&burl=iris_top&cat1=market&cat2=top&dir=tl1-top%7Ctl2-map%7Ctl5-jpn&file=index.html&_scpr=intpr=hn_i_top",
-      "x": 769,
+      "x": 449,
       "y": 92,
       "width": 104,
       "height": 36
@@ -124,7 +124,7 @@
       "text": "NISA",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETsmR001Control&_PageID=WPLETsmR001Sdtl18&_ActionID=NoActionID&OutSide=on&getFlg=on&sw_param1=account&sw_param2=nisa&_scpr=intpr=hn_i_nisa_acc",
-      "x": 913,
+      "x": 594,
       "y": 92,
       "width": 62,
       "height": 36
@@ -133,7 +133,7 @@
       "text": "国内株式",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETsmR001Control&_PageID=WPLETsmR001Sdtl15&_DataStoreID=DSWPLETsmR001Control&_ActionID=noLogin&OutSide=on&getFlg=on&sw_param1=domestic&sw_param2=top&_scpr=intpr=hn_i_ds",
-      "x": 1016,
+      "x": 696,
       "y": 92,
       "width": 88,
       "height": 36
@@ -142,7 +142,7 @@
       "text": "外国株式",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETsmR001Control&_PageID=WPLETsmR001Sdtl23&_ActionID=NoActionID&_DataStoreID=DSWPLETsmR001Control&OutSide=on&getFlg=on&path=foreign%2Fhome&_scpr=intpr=hn_i_foreign_ord",
-      "x": 1144,
+      "x": 825,
       "y": 92,
       "width": 88,
       "height": 36
@@ -151,7 +151,7 @@
       "text": "投資信託",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETsmR001Control&_PageID=WPLETsmR001Sdtl23&_ActionID=NoActionID&_DataStoreID=DSWPLETsmR001Control&OutSide=on&getFlg=on&path=fund%2Ftop&_scpr=intpr=hn_i_fund_ord",
-      "x": 1273,
+      "x": 953,
       "y": 92,
       "width": 88,
       "height": 36
@@ -160,7 +160,7 @@
       "text": "債券",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETsmR001Control&_PageID=WPLETsmR001Sdtl23&_ActionID=NoActionID&_DataStoreID=DSWPLETsmR001Control&OutSide=on&getFlg=on&path=bond%2Ftop&_scpr=intpr=hn_i_bond_ord",
-      "x": 1402,
+      "x": 1082,
       "y": 92,
       "width": 56,
       "height": 36
@@ -169,7 +169,7 @@
       "text": "FX",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETsmR001Control&_PageID=WPLETsmR001Sdtl15&_ActionID=noLogin&_DataStoreID=DSWPLETsmR001Control&OutSide=on&getFlg=on&sw_param1=exchange&sw_param2=top&_scpr=intpr=hn_i_fx",
-      "x": 1499,
+      "x": 1179,
       "y": 92,
       "width": 48,
       "height": 36
@@ -178,7 +178,7 @@
       "text": "PICK UP おまかせ投資",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?OutSide=on&getFlg=on&_ControlID=WPLETmgR001Control&_PageID=WPLETmgR001Mdtl20&_ActionID=DefaultAID&_DataStoreID=DSWPLETmgR001Control&burl=search_wrap&cat1=wrap&cat2=none&dir=top&file=wrap_top.html&_scpr=intpr=hn_i_wrap",
-      "x": 1588,
+      "x": 1268,
       "y": 92,
       "width": 120,
       "height": 36
@@ -187,7 +187,7 @@
       "text": "その他の商品",
       "tag": "button",
       "href": null,
-      "x": 1748,
+      "x": 1429,
       "y": 92,
       "width": 140,
       "height": 36
@@ -196,7 +196,7 @@
       "text": "My資産トップ",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETsmR001Control&_PageID=WPLETsmR001Sdtl18&_ActionID=NoActionID&OutSide=on&getFlg=on&sw_param1=account&sw_param2=assets&_scpr=intpr=hn_i_my_top",
-      "x": 656,
+      "x": 337,
       "y": 136,
       "width": 114,
       "height": 30
@@ -205,7 +205,7 @@
       "text": "実現損益詳細",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETsmR001Control&_PageID=WPLETsmR001Sdtl18&_ActionID=NoActionID&OutSide=on&getFlg=on&sw_param1=account&sw_param2=assets&sw_param3=profits&_scpr=intpr=hn_i_my_profits",
-      "x": 774,
+      "x": 454,
       "y": 136,
       "width": 108,
       "height": 30
@@ -214,7 +214,7 @@
       "text": "配当金・分配金履歴",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETsmR001Control&_PageID=WPLETsmR001Sdtl18&_ActionID=NoActionID&OutSide=on&getFlg=on&sw_param1=account&sw_param2=assets&sw_param3=dividends&_scpr=intpr=hn_i_my_dividends",
-      "x": 886,
+      "x": 566,
       "y": 136,
       "width": 150,
       "height": 30
@@ -223,7 +223,7 @@
       "text": "診断(ポトフォる)",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETpfR002Control&_PageID=DefaultPID&_ActionID=DefaultAID&_DataStoreID=DSWPLETpfR002Control&OutSide=on&getFlg=on&_scpr=intpr=hn_i_my_potofol",
-      "x": 1040,
+      "x": 720,
       "y": 136,
       "width": 133,
       "height": 30
@@ -232,7 +232,7 @@
       "text": "配当金・分配金履歴とは",
       "tag": "a",
       "href": "https://search.sbisec.co.jp/v2/popwin/guide/tool/assets/04_dividens/dividens.html",
-      "x": 1570,
+      "x": 1251,
       "y": 238,
       "width": 192,
       "height": 15
@@ -241,8 +241,8 @@
       "text": "My資産トップ",
       "tag": "a",
       "href": "https://site.sbisec.co.jp/account/assets",
-      "x": 782,
-      "y": 260,
+      "x": 463,
+      "y": 261,
       "width": 77,
       "height": 12
     },
@@ -250,17 +250,17 @@
       "text": "検索条件の変更",
       "tag": "a",
       "href": "https://site.sbisec.co.jp/account/assets/dividends?dispositionDateFrom=2022%2F01%2F01&dispositionDateTo=2026%2F05%2F21#search-condition",
-      "x": 1598,
+      "x": 1279,
       "y": 324,
       "width": 100,
-      "height": 19
+      "height": 20
     },
     {
       "text": "CSVダウンロード",
       "tag": "button",
       "href": null,
-      "x": 1539,
-      "y": 399,
+      "x": 1220,
+      "y": 400,
       "width": 127,
       "height": 20
     },
@@ -268,8 +268,8 @@
       "text": "印刷",
       "tag": "button",
       "href": null,
-      "x": 1666,
-      "y": 399,
+      "x": 1347,
+      "y": 400,
       "width": 56,
       "height": 20
     },
@@ -277,242 +277,242 @@
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 775,
+      "x": 1375,
+      "y": 776,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 833,
+      "x": 1375,
+      "y": 834,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 891,
+      "x": 1375,
+      "y": 893,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 950,
+      "x": 1375,
+      "y": 952,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 1007,
+      "x": 1375,
+      "y": 1009,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 1065,
+      "x": 1375,
+      "y": 1067,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 1122,
+      "x": 1375,
+      "y": 1124,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 1178,
+      "x": 1375,
+      "y": 1180,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 1235,
+      "x": 1375,
+      "y": 1238,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 1293,
+      "x": 1375,
+      "y": 1295,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 1350,
+      "x": 1375,
+      "y": 1353,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 1407,
+      "x": 1375,
+      "y": 1410,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 1463,
+      "x": 1375,
+      "y": 1466,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 1521,
+      "x": 1375,
+      "y": 1524,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 1579,
+      "x": 1375,
+      "y": 1583,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 1637,
+      "x": 1375,
+      "y": 1640,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 1693,
+      "x": 1375,
+      "y": 1696,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 1749,
+      "x": 1375,
+      "y": 1752,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 1805,
+      "x": 1375,
+      "y": 1808,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 1862,
+      "x": 1375,
+      "y": 1866,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 1921,
+      "x": 1375,
+      "y": 1925,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 1978,
+      "x": 1375,
+      "y": 1982,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 2034,
+      "x": 1375,
+      "y": 2038,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 2090,
+      "x": 1375,
+      "y": 2094,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 2147,
+      "x": 1375,
+      "y": 2152,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "詳細",
       "tag": "button",
       "href": null,
-      "x": 1694,
-      "y": 2206,
+      "x": 1375,
+      "y": 2211,
       "width": 60,
-      "height": 30
+      "height": 31
     },
     {
       "text": "照会",
       "tag": "button",
       "href": null,
-      "x": 1192,
-      "y": 2537,
+      "x": 873,
+      "y": 2542,
       "width": 160,
       "height": 32
     },
@@ -520,8 +520,8 @@
       "text": "各項目の計算式について",
       "tag": "a",
       "href": "https://search.sbisec.co.jp/v2/popwin/guide/tool/assets/04_dividens/",
-      "x": 799,
-      "y": 2636,
+      "x": 480,
+      "y": 2641,
       "width": 143,
       "height": 17
     },
@@ -529,8 +529,8 @@
       "text": "pageTop",
       "tag": "button",
       "href": null,
-      "x": 1730,
-      "y": 2711,
+      "x": 1411,
+      "y": 2716,
       "width": 32,
       "height": 32
     },
@@ -538,8 +538,8 @@
       "text": "お問い合わせ",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?OutSide=on&getFlg=on&_ControlID=WPLETmgR001Control&_PageID=WPLETmgR001Mdtl20&_ActionID=DefaultAID&_DataStoreID=DSWPLETmgR001Control&burl=search_home&cat1=home&cat2=none&dir=support&file=home_support.html",
-      "x": 665,
-      "y": 2833,
+      "x": 345,
+      "y": 2838,
       "width": 102,
       "height": 14
     },
@@ -547,8 +547,8 @@
       "text": "投資情報の免責事項",
       "tag": "a",
       "href": "https://search.sbisec.co.jp/v2/popwin/attention/trading/info_attention.html",
-      "x": 783,
-      "y": 2833,
+      "x": 463,
+      "y": 2838,
       "width": 144,
       "height": 14
     },
@@ -556,8 +556,8 @@
       "text": "決算公告",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/company/about/disclosure/",
-      "x": 943,
-      "y": 2833,
+      "x": 623,
+      "y": 2838,
       "width": 74,
       "height": 14
     },
@@ -565,8 +565,8 @@
       "text": "金融商品取引法等に係る表示",
       "tag": "a",
       "href": "https://search.sbisec.co.jp/v2/popwin/info/home/pop6040_torihikihou.html",
-      "x": 1033,
-      "y": 2833,
+      "x": 713,
+      "y": 2838,
       "width": 200,
       "height": 14
     },
@@ -574,8 +574,8 @@
       "text": "定期・臨時システムメンテナンスのお知らせ",
       "tag": "a",
       "href": "https://search.sbisec.co.jp/v2/popwin/info/home/pop6040_maintenance.html",
-      "x": 1249,
-      "y": 2833,
+      "x": 929,
+      "y": 2838,
       "width": 297,
       "height": 14
     },
@@ -583,8 +583,8 @@
       "text": "システム障害の備え",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?OutSide=on&getFlg=on&_ControlID=WPLETmgR001Control&_PageID=WPLETmgR001Mdtl20&_ActionID=DefaultAID&_DataStoreID=DSWPLETmgR001Control&burl=search_home&cat1=home&cat2=none&dir=support&file=home_support_backup.html",
-      "x": 1562,
-      "y": 2833,
+      "x": 1242,
+      "y": 2838,
       "width": 144,
       "height": 14
     },
@@ -592,8 +592,8 @@
       "text": "システム障害時の対応",
       "tag": "a",
       "href": "https://www.sbisec.co.jp/ETGate/?OutSide=on&getFlg=on&_ControlID=WPLETmgR001Control&_PageID=WPLETmgR001Mdtl20&_ActionID=DefaultAID&_DataStoreID=DSWPLETmgR001Control&burl=search_home&cat1=home&cat2=service&dir=service&file=home_syougaitaiou.html",
-      "x": 1722,
-      "y": 2833,
+      "x": 1402,
+      "y": 2838,
       "width": 158,
       "height": 14
     },
@@ -601,8 +601,8 @@
       "text": "ページ上部",
       "tag": "button",
       "href": null,
-      "x": 1728,
-      "y": 2879,
+      "x": 1409,
+      "y": 2884,
       "width": 160,
       "height": 40
     }
@@ -616,7 +616,7 @@
       "id": "brand-search-category",
       "value": "domestic",
       "label": "国内株式 外国株式 投資信託",
-      "x": 1216,
+      "x": 897,
       "y": 1,
       "width": 110,
       "height": 32,
@@ -645,7 +645,7 @@
       "id": "brand-search-text",
       "value": "",
       "label": "銘柄・銘柄コード",
-      "x": 1334,
+      "x": 1015,
       "y": 1,
       "width": 182,
       "height": 32
@@ -657,7 +657,7 @@
       "id": "site-search",
       "value": "",
       "label": "キーワード",
-      "x": 1612,
+      "x": 1293,
       "y": 1,
       "width": 160,
       "height": 32
@@ -669,8 +669,8 @@
       "id": null,
       "value": "2022/01/01",
       "label": "",
-      "x": 918,
-      "y": 2315,
+      "x": 599,
+      "y": 2320,
       "width": 312,
       "height": 30
     },
@@ -681,8 +681,8 @@
       "id": null,
       "value": "2026/05/21",
       "label": "",
-      "x": 1279,
-      "y": 2315,
+      "x": 959,
+      "y": 2320,
       "width": 312,
       "height": 30
     }
