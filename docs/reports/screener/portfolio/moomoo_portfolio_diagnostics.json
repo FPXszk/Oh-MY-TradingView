@@ -9,12 +9,12 @@
     "realAccountCount": 1,
     "simulateAccountCount": 0,
     "positionCount": 4,
-    "totalAssets": 14859.02,
-    "cash": 9853.55,
-    "marketValue": 5005.48,
-    "unrealizedPl": -852.22,
-    "cashRatioPct": 66.31,
-    "investedRatioPct": 33.69
+    "totalAssets": 14954.82,
+    "cash": 10545.36,
+    "marketValue": 4409.46,
+    "unrealizedPl": -668.21,
+    "cashRatioPct": 70.51,
+    "investedRatioPct": 29.49
   },
   "accounts": [
     {
@@ -34,22 +34,22 @@
       "currency": "USD",
       "summary": {
         "positionCount": 4,
-        "marketValue": 5005.48,
-        "costBasis": 5857.69,
-        "unrealizedPl": -852.22,
-        "unrealizedPlPct": -14.55,
-        "totalAssets": 14859.0246,
-        "cash": 9853.55,
-        "cashRatioPct": 66.31,
-        "investedRatioPct": 33.69,
-        "topPositionWeightPct": 34.22,
-        "averagePositionPlRatioPct": -13.37,
+        "marketValue": 4409.46,
+        "costBasis": 5077.67,
+        "unrealizedPl": -668.21,
+        "unrealizedPlPct": -13.16,
+        "totalAssets": 14954.8213,
+        "cash": 10545.36,
+        "cashRatioPct": 70.51,
+        "investedRatioPct": 29.49,
+        "topPositionWeightPct": 27.97,
+        "averagePositionPlRatioPct": -9.85,
         "byMarket": [
           {
             "key": "US",
             "count": 4,
-            "marketValue": 5005.48,
-            "unrealizedPl": -852.22,
+            "marketValue": 4409.46,
+            "unrealizedPl": -668.21,
             "weightPct": 100
           }
         ],
@@ -57,8 +57,8 @@
           {
             "key": "USD",
             "count": 4,
-            "marketValue": 5005.48,
-            "unrealizedPl": -852.22,
+            "marketValue": 4409.46,
+            "unrealizedPl": -668.21,
             "weightPct": 100
           }
         ],
@@ -66,27 +66,12 @@
           {
             "key": "LONG",
             "count": 4,
-            "marketValue": 5005.48,
-            "unrealizedPl": -852.22,
+            "marketValue": 4409.46,
+            "unrealizedPl": -668.21,
             "weightPct": 100
           }
         ],
         "positions": [
-          {
-            "symbol": "US.ASTS",
-            "name": "AST SpaceMobile",
-            "market": "US",
-            "currency": "USD",
-            "side": "LONG",
-            "quantity": 19,
-            "costPrice": 96.126,
-            "lastPrice": 90.14,
-            "marketValue": 1712.66,
-            "unrealizedPl": -113.74,
-            "plRatioPct": -6.23,
-            "weightPctOfPositions": 34.22,
-            "weightPctOfAssets": 11.53
-          },
           {
             "symbol": "US.SIL",
             "name": "Global X Funds Global X Silver Miners Etf (Post Rev Spl",
@@ -95,12 +80,12 @@
             "side": "LONG",
             "quantity": 14,
             "costPrice": 112.612,
-            "lastPrice": 88.1,
-            "marketValue": 1233.4,
-            "unrealizedPl": -343.17,
-            "plRatioPct": -21.77,
-            "weightPctOfPositions": 24.64,
-            "weightPctOfAssets": 8.3
+            "lastPrice": 88.11,
+            "marketValue": 1233.54,
+            "unrealizedPl": -343.03,
+            "plRatioPct": -21.76,
+            "weightPctOfPositions": 27.97,
+            "weightPctOfAssets": 8.25
           },
           {
             "symbol": "US.GDX",
@@ -110,12 +95,27 @@
             "side": "LONG",
             "quantity": 14,
             "costPrice": 112.398,
-            "lastPrice": 84.69,
-            "marketValue": 1185.66,
-            "unrealizedPl": -387.91,
-            "plRatioPct": -24.65,
-            "weightPctOfPositions": 23.69,
-            "weightPctOfAssets": 7.98
+            "lastPrice": 85.02,
+            "marketValue": 1190.28,
+            "unrealizedPl": -383.29,
+            "plRatioPct": -24.36,
+            "weightPctOfPositions": 26.99,
+            "weightPctOfAssets": 7.96
+          },
+          {
+            "symbol": "US.GEV",
+            "name": "GE Vernova",
+            "market": "US",
+            "currency": "USD",
+            "side": "LONG",
+            "quantity": 1,
+            "costPrice": 1046.37,
+            "lastPrice": 1038.74,
+            "marketValue": 1038.74,
+            "unrealizedPl": -7.63,
+            "plRatioPct": -0.73,
+            "weightPctOfPositions": 23.56,
+            "weightPctOfAssets": 6.95
           },
           {
             "symbol": "US.LITE",
@@ -125,31 +125,31 @@
             "side": "LONG",
             "quantity": 1,
             "costPrice": 881.16,
-            "lastPrice": 873.756,
-            "marketValue": 873.76,
-            "unrealizedPl": -7.4,
-            "plRatioPct": -0.84,
-            "weightPctOfPositions": 17.46,
-            "weightPctOfAssets": 5.88
+            "lastPrice": 946.9,
+            "marketValue": 946.9,
+            "unrealizedPl": 65.74,
+            "plRatioPct": 7.46,
+            "weightPctOfPositions": 21.47,
+            "weightPctOfAssets": 6.33
           }
         ]
       },
       "balance": {
-        "power": 9853.54851,
+        "power": 10545.36126,
         "max_power_short": "N/A",
         "net_cash_power": "N/A",
-        "total_assets": 14859.0246,
-        "securities_assets": 14859.03,
+        "total_assets": 14954.8213,
+        "securities_assets": 14954.82,
         "fund_assets": 0,
         "bond_assets": 0,
-        "cash": 9853.55,
-        "market_val": 5005.4761,
+        "cash": 10545.36,
+        "market_val": 4409.46,
         "long_mv": "N/A",
         "short_mv": "N/A",
         "pending_asset": 0,
-        "interest_charged_amount": 68.74149,
+        "interest_charged_amount": 38.30874,
         "frozen_cash": 0,
-        "avl_withdrawal_cash": 9853.54,
+        "avl_withdrawal_cash": 10545.36,
         "max_withdrawal": "N/A",
         "currency": "USD",
         "available_funds": "N/A",
@@ -164,18 +164,18 @@
         "hk_avl_withdrawal_cash": "N/A",
         "hkd_net_cash_power": "N/A",
         "hkd_assets": 0,
-        "us_cash": 9922.29,
-        "us_avl_withdrawal_cash": 9853.54,
-        "usd_net_cash_power": 9853.54851,
-        "usd_assets": 14927.77,
+        "us_cash": 10583.67,
+        "us_avl_withdrawal_cash": 10545.36,
+        "usd_net_cash_power": 10545.36126,
+        "usd_assets": 14993.13,
         "cn_cash": "N/A",
         "cn_avl_withdrawal_cash": "N/A",
         "cnh_net_cash_power": "N/A",
         "cnh_assets": 0,
-        "jp_cash": -10940,
+        "jp_cash": -6088,
         "jp_avl_withdrawal_cash": 0,
         "jpy_net_cash_power": 0,
-        "jpy_assets": -10940,
+        "jpy_assets": -6088,
         "sg_cash": "N/A",
         "sg_avl_withdrawal_cash": "N/A",
         "sgd_net_cash_power": "N/A",
@@ -206,21 +206,6 @@
       },
       "positions": [
         {
-          "symbol": "US.ASTS",
-          "name": "AST SpaceMobile",
-          "market": "US",
-          "currency": "USD",
-          "side": "LONG",
-          "quantity": 19,
-          "costPrice": 96.126,
-          "lastPrice": 90.14,
-          "marketValue": 1712.66,
-          "unrealizedPl": -113.74,
-          "plRatioPct": -6.23,
-          "weightPctOfPositions": 34.22,
-          "weightPctOfAssets": 11.53
-        },
-        {
           "symbol": "US.SIL",
           "name": "Global X Funds Global X Silver Miners Etf (Post Rev Spl",
           "market": "US",
@@ -228,12 +213,12 @@
           "side": "LONG",
           "quantity": 14,
           "costPrice": 112.612,
-          "lastPrice": 88.1,
-          "marketValue": 1233.4,
-          "unrealizedPl": -343.17,
-          "plRatioPct": -21.77,
-          "weightPctOfPositions": 24.64,
-          "weightPctOfAssets": 8.3
+          "lastPrice": 88.11,
+          "marketValue": 1233.54,
+          "unrealizedPl": -343.03,
+          "plRatioPct": -21.76,
+          "weightPctOfPositions": 27.97,
+          "weightPctOfAssets": 8.25
         },
         {
           "symbol": "US.GDX",
@@ -243,12 +228,27 @@
           "side": "LONG",
           "quantity": 14,
           "costPrice": 112.398,
-          "lastPrice": 84.69,
-          "marketValue": 1185.66,
-          "unrealizedPl": -387.91,
-          "plRatioPct": -24.65,
-          "weightPctOfPositions": 23.69,
-          "weightPctOfAssets": 7.98
+          "lastPrice": 85.02,
+          "marketValue": 1190.28,
+          "unrealizedPl": -383.29,
+          "plRatioPct": -24.36,
+          "weightPctOfPositions": 26.99,
+          "weightPctOfAssets": 7.96
+        },
+        {
+          "symbol": "US.GEV",
+          "name": "GE Vernova",
+          "market": "US",
+          "currency": "USD",
+          "side": "LONG",
+          "quantity": 1,
+          "costPrice": 1046.37,
+          "lastPrice": 1038.74,
+          "marketValue": 1038.74,
+          "unrealizedPl": -7.63,
+          "plRatioPct": -0.73,
+          "weightPctOfPositions": 23.56,
+          "weightPctOfAssets": 6.95
         },
         {
           "symbol": "US.LITE",
@@ -258,12 +258,12 @@
           "side": "LONG",
           "quantity": 1,
           "costPrice": 881.16,
-          "lastPrice": 873.756,
-          "marketValue": 873.76,
-          "unrealizedPl": -7.4,
-          "plRatioPct": -0.84,
-          "weightPctOfPositions": 17.46,
-          "weightPctOfAssets": 5.88
+          "lastPrice": 946.9,
+          "marketValue": 946.9,
+          "unrealizedPl": 65.74,
+          "plRatioPct": 7.46,
+          "weightPctOfPositions": 21.47,
+          "weightPctOfAssets": 6.33
         }
       ]
     }
@@ -272,13 +272,13 @@
     "Read-only diagnostics only. No order, cancel, modify, or unlock methods are called.",
     "Portfolio totals prefer REAL accounts when present; SIMULATE accounts remain listed separately."
   ],
-  "retrieved_at": "2026-05-21T10:59:27.631Z",
+  "retrieved_at": "2026-05-25T11:55:24.299Z",
   "workflow": {
-    "runId": "26221593596",
-    "runAttempt": "2",
-    "runNumber": "10",
+    "runId": "26399196376",
+    "runAttempt": "1",
+    "runNumber": "13",
     "refName": "main",
-    "sha": "ed2eb0518f284fb5f054eca66ce3fbf0ac636cf0",
-    "generatedAt": "2026-05-21T10:59:26.205Z"
+    "sha": "12eb1e9fb377707b194ae153badbbff1cd49991b",
+    "generatedAt": "2026-05-25T11:55:22.730Z"
   }
 }

@@ -1,68 +1,41 @@
-# Portfolio Health Check — 2026-05-21
-- SBI取得: 2026/5/21 19:56
-- moomoo取得: 2026-05-21T10:59:27.631Z
+# Portfolio Health Check — 2026-05-25
+- SBI取得: skipped (disabled)
+- moomoo取得: 2026-05-25T11:55:24.299Z
 
 ## 🚦 ヘルスサマリー
 
-SBI評価損益 +￥897,938 (+19.91%)。MUが主要牽引。moomoo全ポジション含み損 -$852.22、現金比率66%。
+SBI取得は無効。moomoo全ポジション含み損 -$668.21、現金比率71%。
 
 ## 📊 資産スナップショット
 
 | 口座 | 総資産 | 評価損益 | 現金比率 | 取得時刻 |
 | --- | --- | --- | --- | --- |
-| SBI | ￥5,407,134 | +￥897,938 | 39.3% | 2026/5/21 19:56 |
-| moomoo | $14,859.02 | -$852.22 | 66.3% | 2026-05-21T10:59:27.631Z |
-
-※ 推定 USD/JPY レート: 159.04
+| moomoo | $14,954.82 | -$668.21 | 70.5% | 2026-05-25T11:55:24.299Z |
 
 ## 📋 ポジション一覧（統合）
 
 | ティッカー | 銘柄 | 口座 | 数量 | 評価損益 | 損益率 |
 | --- | --- | --- | --- | --- | --- |
-| - | ｅＭＡＸＩＳ　Ｓｌｉｍ　米国株式（Ｓ＆Ｐ５００） | SBI/NISA預り（つみたて投資枠） | 305,179 | +￥380,039 | +40.86% |
-| - | ｅＭＡＸＩＳ　Ｓｌｉｍ　米国株式（Ｓ＆Ｐ５００） | SBI/旧つみたてNISA預り | 41,326 | +￥77,399 | +77.40% |
-| - | インベスコ　世界厳選株式オープン＜為替ヘッジなし＞（毎月決算型） | SBI/特定預り | 46,866 | +￥1,331 | +3.31% |
-| US.SIL | Global X Funds Global X Silver Miners Etf (Post Rev Spl | moomoo | 14 | -$343.17 | -21.77% |
-| US.GDX | VanEck Gold Miners Equity ETF | moomoo | 14 | -$387.91 | -24.65% |
-| MU | マイクロン テクノロジー | SBI/NISA | 9 | +￥512,817 | +95.87% |
-| NVDA | エヌビディア | SBI/NISA | 10 | +￥75,156 | +26.82% |
-| US.LITE | Lumentum | moomoo | 1 | -$7.40 | -0.84% |
-| US.ASTS | AST SpaceMobile | moomoo | 19 | -$113.74 | -6.23% |
-| IONQ | IonQ Inc | SBI/NISA | 1 | -￥149 | -1.75% |
-| OKLO | オクロ A | SBI/NISA | 1 | -￥5,092 | -33.85% |
-| ORCL | オラクル | SBI/特定 | 11 | -￥143,562 | -30.37% |
+| US.SIL | Global X Funds Global X Silver Miners Etf (Post Rev Spl | moomoo | 14 | -$343.03 | -21.76% |
+| US.GDX | VanEck Gold Miners Equity ETF | moomoo | 14 | -$383.29 | -24.36% |
+| US.LITE | Lumentum | moomoo | 1 | +$65.74 | +7.46% |
+| US.GEV | GE Vernova | moomoo | 1 | -$7.63 | -0.73% |
 
 ## 💰 実現損益 & 配当
 
-### 実現損益サマリー
-
-| 商品 | 実現損益(税引前・円) | 利益合計(円) | 損失合計(円) |
-| --- | --- | --- | --- |
-| 国内株式(現物) | +￥623,767 | ￥701,950 | -￥78,183 |
-| 米国株式 | +￥1,128,671 | ￥1,151,168 | -￥22,497 |
-| 投資信託 | +￥177,705 | ￥177,705 | ￥0 |
-
-### 配当・分配金サマリー
-
-| 商品 | 受取額(税引後・円) | 受取額(税引後・USD) |
-| --- | --- | --- |
-| 国内株式(現物) | ￥4,345 | n/a |
-| 米国株式 | ￥10,644 | $67.56 |
-| 投資信託 | ￥3,686 | n/a |
+SBI取得は無効のためスキップ
 
 ## ⚠️ アラート
 
 含み損率 -20% 超のポジション:
 
-- US.SIL（Global X Funds Global X Silver Miners Etf (Post Rev Spl / moomoo）: -$343.17 / -21.77%
-- US.GDX（VanEck Gold Miners Equity ETF / moomoo）: -$387.91 / -24.65%
-- OKLO（オクロ A / SBI/NISA）: -￥5,092 / -33.85%
-- ORCL（オラクル / SBI/特定）: -￥143,562 / -30.37%
+- US.SIL（Global X Funds Global X Silver Miners Etf (Post Rev Spl / moomoo）: -$343.03 / -21.76%
+- US.GDX（VanEck Gold Miners Equity ETF / moomoo）: -$383.29 / -24.36%
 
 ## 🔧 取得メタ情報
 
-- run_id: 26221593596
-- run_attempt: 2
+- run_id: 26399196376
+- run_attempt: 1
 - ref_name: main
-- run_number: 10
-- sha: ed2eb0518f284fb5f054eca66ce3fbf0ac636cf0
+- run_number: 13
+- sha: 12eb1e9fb377707b194ae153badbbff1cd49991b
