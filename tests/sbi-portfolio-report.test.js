@@ -519,5 +519,9 @@ describe('portfolio health check workflow', () => {
       'workflow must decide skip-sbi from the enable_sbi input');
     assert.match(workflow, /\$relativePaths = @\([\s\S]*MOOMOO_PORTFOLIO_JSON_PATH/,
       'publish step must always include moomoo outputs');
+    assert.match(workflow, /\$relativePathsArg = \$relativePaths -join ','/,
+      'publish step must collapse relative paths into the script-compatible comma format');
+    assert.match(workflow, /-RelativePaths \$relativePathsArg/,
+      'publish step must pass a single joined RelativePaths argument');
   });
 });

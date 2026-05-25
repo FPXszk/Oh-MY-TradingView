@@ -235,7 +235,8 @@ jobs:
           if ('${{ inputs.enable_sbi }}' -eq 'true') {
             $relativePaths = @("${{ env.SBI_CAPTURE_OUTPUT_DIR }}") + $relativePaths
           }
+          $relativePathsArg = $relativePaths -join ','
           powershell -NoProfile -ExecutionPolicy Bypass -File scripts/windows/github-actions/sync-portfolio-reports-to-wsl.ps1 `
             -WslRepoPath "${{ env.WSL_REPO_PATH }}" `
             -CommitMessage "docs: portfolio health report run ${{ github.run_id }}-${{ github.run_attempt }}" `
-            -RelativePaths $relativePaths
+            -RelativePaths $relativePathsArg
