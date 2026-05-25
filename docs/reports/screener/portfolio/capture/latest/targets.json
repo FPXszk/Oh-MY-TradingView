@@ -11,14 +11,14 @@
   },
   {
     "description": "",
-    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@4687a88676f95bfbce9ec62314791faae363fea6/inspector.html?ws=127.0.0.1:9222/devtools/page/2877E003C155DFCB86A0A44FD1A356EB",
+    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@4687a88676f95bfbce9ec62314791faae363fea6/inspector.html?ws=127.0.0.1:9222/devtools/page/1DF1A8EC4C77E3C209B5C39A80A85780",
     "faviconUrl": "https://sbisec.akamaized.net/sbisec/images/common/favicon/favicon-32x32.png",
-    "id": "2877E003C155DFCB86A0A44FD1A356EB",
+    "id": "1DF1A8EC4C77E3C209B5C39A80A85780",
     "parentId": "8EFCF6533BF361856E2E4625CA3CF9DE",
     "title": "https://cdn.d2-apps.net/html/frame.html#https://tg.socdm.com/aux/idsync?client_id=900&amp;proto=primenumber",
     "type": "iframe",
     "url": "https://cdn.d2-apps.net/html/frame.html#https://tg.socdm.com/aux/idsync?client_id=900&proto=primenumber",
-    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/2877E003C155DFCB86A0A44FD1A356EB"
+    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/1DF1A8EC4C77E3C209B5C39A80A85780"
   },
   {
     "description": "",
