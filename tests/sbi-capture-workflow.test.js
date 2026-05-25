@@ -1,5 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 
 import {
   scoreSbiTarget,
@@ -14,6 +15,8 @@ import {
   hasPendingDownloadFiles,
   shouldRetryRouteCapture,
 } from '../scripts/sbi/capture-portfolio-data.mjs';
+
+const SBI_CAPTURE_SCRIPT = readFileSync(new URL('../scripts/sbi/capture-portfolio-data.mjs', import.meta.url), 'utf8');
 
 describe('sbi capture target selection', () => {
   it('scores SBI page targets above unrelated tabs', () => {
@@ -91,6 +94,21 @@ describe('sbi click dispatch strategy', () => {
       href: null,
       formAction: 'https://example.com/export',
     }), false);
+  });
+});
+
+describe('sbi target activation before interactive actions', () => {
+  it('re-activates the SBI target before click, navigation, and CSV download attempts', () => {
+    assert.match(SBI_CAPTURE_SCRIPT, /async function ensureSbiTargetActive\(client, interactionContext\)/,
+      'capture script must define a reusable target activation helper');
+    assert.match(SBI_CAPTURE_SCRIPT, /await client\.Page\?\.bringToFront\?\.\(\)\.catch\(\(\) => \{\}\);/,
+      'activation helper should best-effort bring the page to the front');
+    assert.match(SBI_CAPTURE_SCRIPT, /async function clickByKeywords\(client, keywords, interactionContext = null\)\s*\{\s*await ensureSbiTargetActive\(client, interactionContext\);/s,
+      'clickByKeywords must re-activate the target before clicking');
+    assert.match(SBI_CAPTURE_SCRIPT, /async function navigateToUrl\(client, url, timeoutMs = 15000, interactionContext = null\)\s*\{\s*await ensureSbiTargetActive\(client, interactionContext\);/s,
+      'navigateToUrl must re-activate the target before navigation');
+    assert.match(SBI_CAPTURE_SCRIPT, /async function tryCsvDownloads\(client, downloadDir, interactionContext = null\)[\s\S]*await ensureSbiTargetActive\(client, interactionContext\);/s,
+      'tryCsvDownloads must re-activate the target before each download attempt');
   });
 });
 

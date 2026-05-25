@@ -271,6 +271,24 @@ async function activateTarget(host, port, targetId) {
   }).catch(() => {});
 }
 
+async function ensureSbiTargetActive(client, interactionContext) {
+  if (!interactionContext?.host || !interactionContext?.port || !interactionContext?.targetId) {
+    return;
+  }
+
+  await activateTarget(interactionContext.host, interactionContext.port, interactionContext.targetId);
+  await client.Page?.bringToFront?.().catch(() => {});
+  await evaluateJson(client, `(() => {
+    try {
+      window.focus();
+      return true;
+    } catch {
+      return false;
+    }
+  })()`).catch(() => null);
+  await sleep(150);
+}
+
 async function ensureDownloadBehavior(client, downloadPath) {
   await mkdir(downloadPath, { recursive: true });
   try {
@@ -550,7 +568,9 @@ async function triggerMatchedElement(client, match, keywords) {
   });
 }
 
-async function clickByKeywords(client, keywords) {
+async function clickByKeywords(client, keywords, interactionContext = null) {
+  await ensureSbiTargetActive(client, interactionContext);
+
   const match = await evaluateJson(client, `(() => {
     const keywords = ${jsString(keywords)};
     const norm = (value) => String(value ?? '').replace(/\\s+/g, ' ').trim();
@@ -695,13 +715,14 @@ async function waitForPageSettle(client, previousUrl, timeoutMs = 10000) {
   return { ...lastState, readyState: 'timeout' };
 }
 
-async function navigateToUrl(client, url, timeoutMs = 15000) {
+async function navigateToUrl(client, url, timeoutMs = 15000, interactionContext = null) {
+  await ensureSbiTargetActive(client, interactionContext);
   const previous = await evaluateJson(client, 'location.href');
   await client.Page.navigate({ url });
   return waitForPageSettle(client, previous, timeoutMs);
 }
 
-async function tryCsvDownloads(client, downloadDir) {
+async function tryCsvDownloads(client, downloadDir, interactionContext = null) {
   const csvKeywordsList = [
     ['CSV'],
     ['CSVダウンロード'],
@@ -717,9 +738,10 @@ async function tryCsvDownloads(client, downloadDir) {
     if (round > 1) {
       await sleep(CSV_DOWNLOAD_STABILITY.retryDelayMs);
     }
+    await ensureSbiTargetActive(client, interactionContext);
     await sleep(CSV_DOWNLOAD_STABILITY.preClickWaitMs);
     const beforeFiles = await listFilesRecursive(downloadDir);
-    const clicked = await clickByKeywords(client, keywords);
+    const clicked = await clickByKeywords(client, keywords, interactionContext);
     attempts.push({
       round,
       keywords,
@@ -830,7 +852,8 @@ async function inspectCsvDownloadTargets(client, keywordsList = [['CSV'], ['CSV�
   })()`);
 }
 
-async function fillFirstDateControl(client, value) {
+async function fillFirstDateControl(client, value, interactionContext = null) {
+  await ensureSbiTargetActive(client, interactionContext);
   return evaluateJson(client, `(() => {
     const targetValue = ${jsString(value)};
     const norm = (input) => String(input ?? '').replace(/\\s+/g, ' ').trim();
@@ -898,9 +921,9 @@ async function fillFirstDateControl(client, value) {
   })()`);
 }
 
-async function trySubmitQuery(client, keywords = ['照会']) {
+async function trySubmitQuery(client, keywords = ['照会'], interactionContext = null) {
   const previousUrl = await evaluateJson(client, 'location.href');
-  const clicked = await clickByKeywords(client, keywords);
+  const clicked = await clickByKeywords(client, keywords, interactionContext);
   if (!clicked.clicked) return clicked;
   const settle = await waitForPageSettle(client, previousUrl, CSV_DOWNLOAD_STABILITY.settleTimeoutMs);
   return { ...clicked, settle };
@@ -1064,16 +1087,16 @@ function mergeCsvDownloadResults(outputDir, current, next) {
   };
 }
 
-async function runFallbackActions(client, outputDir, downloadDir, route, result) {
+async function runFallbackActions(client, outputDir, downloadDir, route, result, interactionContext) {
   if (!route.fallbackActions?.length) return;
   for (const action of route.fallbackActions) {
-    const clicked = await clickByKeywords(client, action.keywords);
+    const clicked = await clickByKeywords(client, action.keywords, interactionContext);
     result.notes.push(`Fallback action ${action.label}: ${JSON.stringify(clicked)}`);
     if (!clicked.clicked) continue;
     await waitForPageSettle(client, result.pageUrl || ACCOUNT_ASSETS_URL, 12000);
     const snapshot = await captureStage(client, outputDir, action.snapshotName);
     result.notes.push(`Fallback snapshot ${action.snapshotName}: ${snapshot.url}`);
-    const csvDownload = await tryCsvDownloads(client, downloadDir);
+    const csvDownload = await tryCsvDownloads(client, downloadDir, interactionContext);
     result.csvDownload = mergeCsvDownloadResults(outputDir, result.csvDownload, {
       ...csvDownload,
       files: toRelativeFiles(outputDir, csvDownload.files),
@@ -1081,13 +1104,13 @@ async function runFallbackActions(client, outputDir, downloadDir, route, result)
   }
 }
 
-async function captureRouteFromAccountAssets(client, outputDir, downloadDir, route) {
+async function captureRouteFromAccountAssets(client, outputDir, downloadDir, route, interactionContext) {
   let bestResult = null;
   for (const attempt of buildRouteCaptureAttemptPlan()) {
     if (attempt > 1) {
       await sleep(ROUTE_CAPTURE_STABILITY.retryDelayMs);
     }
-    const attemptResult = await captureRouteFromAccountAssetsOnce(client, outputDir, downloadDir, route, attempt);
+    const attemptResult = await captureRouteFromAccountAssetsOnce(client, outputDir, downloadDir, route, attempt, interactionContext);
     if (!bestResult || (attemptResult.csvDownload?.success && !bestResult.csvDownload?.success) || (attemptResult.captured && !bestResult.captured)) {
       bestResult = attemptResult;
     }
@@ -1098,7 +1121,7 @@ async function captureRouteFromAccountAssets(client, outputDir, downloadDir, rou
   return bestResult;
 }
 
-async function captureRouteFromAccountAssetsOnce(client, outputDir, downloadDir, route, attempt) {
+async function captureRouteFromAccountAssetsOnce(client, outputDir, downloadDir, route, attempt, interactionContext) {
   const result = {
     key: route.key,
     label: route.label,
@@ -1112,13 +1135,13 @@ async function captureRouteFromAccountAssetsOnce(client, outputDir, downloadDir,
     notes: [],
   };
 
-  const navigation = await navigateToUrl(client, ACCOUNT_ASSETS_URL, 15000).catch((error) => ({
+  const navigation = await navigateToUrl(client, ACCOUNT_ASSETS_URL, 15000, interactionContext).catch((error) => ({
     url: null,
     readyState: `navigation-error:${error.message}`,
   }));
   result.notes.push(`Attempt ${attempt}: base navigation: ${JSON.stringify(navigation)}`);
 
-  const clicked = await clickByKeywords(client, route.keywords);
+  const clicked = await clickByKeywords(client, route.keywords, interactionContext);
   result.clicked = clicked.clicked;
   result.notes.push(`Attempt ${attempt}: click result: ${JSON.stringify(clicked)}`);
   if (!clicked.clicked) {
@@ -1131,10 +1154,10 @@ async function captureRouteFromAccountAssetsOnce(client, outputDir, downloadDir,
   result.notes.push(`Attempt ${attempt}: post-navigation settle wait: ${ROUTE_CAPTURE_STABILITY.postNavigationSettleMs}ms`);
 
   if (route.startDate) {
-    const fillResult = await fillFirstDateControl(client, route.startDate);
+    const fillResult = await fillFirstDateControl(client, route.startDate, interactionContext);
     result.notes.push(`Attempt ${attempt}: start-date fill result: ${JSON.stringify(fillResult)}`);
     if (fillResult.updated) {
-      const submitResult = await trySubmitQuery(client, ['照会']);
+      const submitResult = await trySubmitQuery(client, ['照会'], interactionContext);
       result.notes.push(`Attempt ${attempt}: submit result: ${JSON.stringify(submitResult)}`);
       await waitForPageSettle(client, pageState.url || navigation.url || ACCOUNT_ASSETS_URL, 12000);
       if (route.dateRangeParams) {
@@ -1150,7 +1173,7 @@ async function captureRouteFromAccountAssetsOnce(client, outputDir, downloadDir,
         );
         result.notes.push(`Attempt ${attempt}: range URL candidate: ${rangedUrl || 'n/a'}`);
         if (rangedUrl && rangedUrl !== currentUrl) {
-          const forcedNavigation = await navigateToUrl(client, rangedUrl, 15000).catch((error) => ({
+          const forcedNavigation = await navigateToUrl(client, rangedUrl, 15000, interactionContext).catch((error) => ({
             url: null,
             readyState: `navigation-error:${error.message}`,
           }));
@@ -1179,12 +1202,12 @@ async function captureRouteFromAccountAssetsOnce(client, outputDir, downloadDir,
     }
   }
 
-  const csvDownload = await tryCsvDownloads(client, downloadDir);
+  const csvDownload = await tryCsvDownloads(client, downloadDir, interactionContext);
   result.csvDownload = {
     ...csvDownload,
     files: toRelativeFiles(outputDir, csvDownload.files),
   };
-  await runFallbackActions(client, outputDir, downloadDir, route, result);
+  await runFallbackActions(client, outputDir, downloadDir, route, result, interactionContext);
   return result;
 }
 
@@ -1248,6 +1271,12 @@ async function main() {
           summary.notes.push(`Download behavior could not be enabled: ${downloadBehavior.error}`);
         }
 
+        const interactionContext = {
+          host: options.cdpHost,
+          port: options.cdpPort,
+          targetId: target.id,
+        };
+
         await captureStage(client, outputDir, 'current-page');
         summary.currentPageSaved = true;
 
@@ -1256,7 +1285,7 @@ async function main() {
         summary.everyAssetAttempted = true;
 
         if (!/毎資産/.test(current.title + current.text)) {
-          const clicked = await clickByKeywords(client, ['毎資産', 'ポートフォリオ', '口座管理']);
+          const clicked = await clickByKeywords(client, ['毎資産', 'ポートフォリオ', '口座管理'], interactionContext);
           summary.notes.push(`Every-asset navigation click result: ${JSON.stringify(clicked)}`);
           if (clicked.clicked) {
             await waitForPageSettle(client, current.url, 12000);
@@ -1269,11 +1298,11 @@ async function main() {
           summary.everyAssetCaptured = true;
         }
 
-        const currentPageCsv = await tryCsvDownloads(client, downloadDir);
+        const currentPageCsv = await tryCsvDownloads(client, downloadDir, interactionContext);
         summary.csvDownload = currentPageCsv;
         summary.csvDownload.files = toRelativeFiles(outputDir, summary.csvDownload.files);
 
-        const accountAssetsNavigation = await navigateToUrl(client, ACCOUNT_ASSETS_URL, 15000).catch((error) => ({
+        const accountAssetsNavigation = await navigateToUrl(client, ACCOUNT_ASSETS_URL, 15000, interactionContext).catch((error) => ({
           url: null,
           readyState: `navigation-error:${error.message}`,
         }));
@@ -1282,7 +1311,7 @@ async function main() {
         if (/資産/.test(accountAssets.title + accountAssets.text) || /account\/assets/.test(accountAssets.url)) {
           await captureStage(client, outputDir, 'account-assets-page');
           summary.accountAssetsCaptured = true;
-          const accountAssetsCsv = await tryCsvDownloads(client, downloadDir);
+          const accountAssetsCsv = await tryCsvDownloads(client, downloadDir, interactionContext);
           if (accountAssetsCsv.success) {
             summary.csvDownload = {
               success: true,
@@ -1294,7 +1323,7 @@ async function main() {
           }
 
           for (const route of ROUTE_DEFINITIONS) {
-            const routeCapture = await captureRouteFromAccountAssets(client, outputDir, downloadDir, route);
+            const routeCapture = await captureRouteFromAccountAssets(client, outputDir, downloadDir, route, interactionContext);
             summary.routeCaptures.push(routeCapture);
             if (routeCapture.csvDownload?.success) {
               summary.csvDownload = {

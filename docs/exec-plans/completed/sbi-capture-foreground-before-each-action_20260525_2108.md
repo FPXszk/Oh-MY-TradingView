@@ -37,11 +37,11 @@
 
 ## 実装ステップ
 
-- [ ] 操作直前に差し込む最小ポイントを特定する
-- [ ] `capture-portfolio-data.mjs` に target activation helper を追加する
-- [ ] click / navigate / csv download / fallback 前へ activation を差し込む
-- [ ] テストを追加・更新する
-- [ ] 対象テストを実行して回帰確認する
+- [x] 操作直前に差し込む最小ポイントを特定する
+- [x] `capture-portfolio-data.mjs` に target activation helper を追加する
+- [x] click / navigate / csv download / fallback 前へ activation を差し込む
+- [x] テストを追加・更新する
+- [x] 対象テストを実行して回帰確認する
 
 ## テスト戦略
 
@@ -53,6 +53,13 @@
 
 - `npm run test:sbi-capture-workflow`
 - `npm test`
+
+## 実施結果
+
+- `ensureSbiTargetActive()` を追加し、`activateTarget()` に加えて `Page.bringToFront()` と `window.focus()` を best-effort で実行するようにした
+- `clickByKeywords` / `navigateToUrl` / `tryCsvDownloads` / `fillFirstDateControl` / fallback action / route capture の各操作直前で毎回 activation するように差し込んだ
+- `tests/sbi-capture-workflow.test.js` に「interactive 操作前に毎回 activation する」契約テストを追加した
+- `npm run test:sbi-capture-workflow` と `npm test` はどちらも通過した
 
 ## リスク・注意点
 
