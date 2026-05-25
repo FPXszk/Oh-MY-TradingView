@@ -12,7 +12,7 @@
 
 ## 変更ファイル
 
-- 追加: `docs/exec-plans/active/portfolio-health-check-live-verification_20260525_2035.md`
+- 追加: `docs/exec-plans/completed/portfolio-health-check-live-verification_20260525_2035.md`
 
 ## 実行方針
 
@@ -38,10 +38,10 @@
 
 ## 実装ステップ
 
-- [ ] runner 状態と workflow 定義を確認する
-- [ ] default (`enable_sbi=false`) run を dispatch して完了まで追う
-- [ ] `enable_sbi=true` run を dispatch して完了まで追う
-- [ ] 各 run の conclusion と失敗 step を整理する
+- [x] runner 状態と workflow 定義を確認する
+- [x] default (`enable_sbi=false`) run を dispatch して完了まで追う
+- [x] `enable_sbi=true` run を dispatch して完了まで追う
+- [x] 各 run の conclusion と失敗 step を整理する
 
 ## テスト戦略
 
@@ -67,3 +67,13 @@
 - default run の成否が確認できる
 - `enable_sbi=true` run の成否が確認できる
 - 各 run の URL / conclusion / failure point を報告できる
+
+## 実施結果
+
+- runner `omtv-win-01` は実行前に `online / busy=false` だった
+- default run は `26398451767` で dispatch され、`moomoo` diagnostics / unified report / artifact upload までは成功した
+- default run では `SBI` step 群は skip され、意図どおり `moomoo-only` path が実行された
+- default run の失敗 step は `Publish portfolio health report to WSL main` で、`sync-portfolio-reports-to-wsl.ps1` への `-RelativePaths $relativePaths` 配列渡しが `PositionalParameterNotFound` で落ちた
+- `enable_sbi=true` run は `26398524156` で dispatch され、`Probe SBI CDP endpoint` / `Capture SBI portfolio data` / `Build SBI portfolio report` / `Build unified portfolio report` / artifact upload まで成功した
+- `enable_sbi=true` run も最後の `Publish portfolio health report to WSL main` で同じ `-RelativePaths` 引数解釈エラーにより失敗した
+- artifact は両 run で生成され、`portfolio-health-check-26398451767` と `portfolio-health-check-26398524156` が取得可能だった
