@@ -26,6 +26,18 @@ public static class ChromeWindowFocusNative {
 
   [DllImport("user32.dll")]
   public static extern bool IsIconic(IntPtr hWnd);
+
+  [DllImport("user32.dll")]
+  public static extern bool BringWindowToTop(IntPtr hWnd);
+
+  [DllImport("user32.dll")]
+  public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
+
+  [DllImport("kernel32.dll")]
+  public static extern uint GetCurrentThreadId();
+
+  [DllImport("user32.dll")]
+  public static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, bool fAttach);
 }
 "@
 
@@ -100,10 +112,31 @@ if ([ChromeWindowFocusNative]::IsIconic($targetHandle)) {
 }
 
 $shell = New-Object -ComObject WScript.Shell
+$shell.SendKeys('%')
+$foregroundPid = [uint32]0
+$targetPid = [uint32]0
+$foregroundThreadId = [ChromeWindowFocusNative]::GetWindowThreadProcessId($beforeHandle, [ref]$foregroundPid)
+$targetThreadId = [ChromeWindowFocusNative]::GetWindowThreadProcessId($targetHandle, [ref]$targetPid)
+$currentThreadId = [ChromeWindowFocusNative]::GetCurrentThreadId()
+$attachedForeground = $false
+$attachedTarget = $false
+if ($foregroundThreadId -ne 0 -and $foregroundThreadId -ne $currentThreadId) {
+  $attachedForeground = [ChromeWindowFocusNative]::AttachThreadInput($currentThreadId, $foregroundThreadId, $true)
+}
+if ($targetThreadId -ne 0 -and $targetThreadId -ne $currentThreadId) {
+  $attachedTarget = [ChromeWindowFocusNative]::AttachThreadInput($currentThreadId, $targetThreadId, $true)
+}
 $appActivated = $shell.AppActivate($target.Id)
 Start-Sleep -Milliseconds 100
 [void][ChromeWindowFocusNative]::ShowWindowAsync($targetHandle, 5)
+[void][ChromeWindowFocusNative]::BringWindowToTop($targetHandle)
 $setForeground = [ChromeWindowFocusNative]::SetForegroundWindow($targetHandle)
+if ($attachedTarget) {
+  [void][ChromeWindowFocusNative]::AttachThreadInput($currentThreadId, $targetThreadId, $false)
+}
+if ($attachedForeground) {
+  [void][ChromeWindowFocusNative]::AttachThreadInput($currentThreadId, $foregroundThreadId, $false)
+}
 Start-Sleep -Milliseconds $PostActivateDelayMs
 
 $afterHandle = [ChromeWindowFocusNative]::GetForegroundWindow()
