@@ -27,6 +27,14 @@ on:
         options:
           - 'false'
           - 'true'
+      enable_sbi:
+        description: Enable SBI capture/report steps after moomoo
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
       opend_host:
         description: Moomoo OpenD host
         required: true
@@ -106,7 +114,21 @@ jobs:
         run: |
           python -m pip install --disable-pip-version-check --quiet moomoo-api
 
+      - name: Run Moomoo read-only portfolio diagnostics
+        run: node scripts/moomoo/run-portfolio-diagnostics.mjs
+
+      - name: Validate Moomoo diagnostics output
+        shell: pwsh
+        run: |
+          if (-not (Test-Path '${{ env.MOOMOO_PORTFOLIO_REPORT_PATH }}')) {
+            throw '${{ env.MOOMOO_PORTFOLIO_REPORT_PATH }} was not created'
+          }
+          if (-not (Test-Path '${{ env.MOOMOO_PORTFOLIO_JSON_PATH }}')) {
+            throw '${{ env.MOOMOO_PORTFOLIO_JSON_PATH }} was not created'
+          }
+
       - name: Probe SBI CDP endpoint
+        if: ${{ inputs.enable_sbi == 'true' }}
         shell: pwsh
         run: |
           $versionUrl = "http://${{ env.SBI_CDP_HOST }}:${{ env.SBI_CDP_PORT }}/json/version"
@@ -129,6 +151,7 @@ jobs:
           }
 
       - name: Capture SBI portfolio data
+        if: ${{ inputs.enable_sbi == 'true' }}
         shell: pwsh
         run: |
           $args = @(
@@ -143,6 +166,7 @@ jobs:
           node @args
 
       - name: Validate SBI capture output
+        if: ${{ inputs.enable_sbi == 'true' }}
         shell: pwsh
         run: |
           if (-not (Test-Path '${{ env.SBI_CAPTURE_OUTPUT_DIR }}/capture-summary.json')) {
@@ -153,6 +177,7 @@ jobs:
           }
 
       - name: Build SBI portfolio report
+        if: ${{ inputs.enable_sbi == 'true' }}
         shell: pwsh
         run: |
           node scripts/sbi/build-portfolio-report.mjs `
@@ -160,32 +185,26 @@ jobs:
             --output '${{ env.SBI_REPORT_PATH }}'
 
       - name: Validate SBI report output
+        if: ${{ inputs.enable_sbi == 'true' }}
         shell: pwsh
         run: |
           if (-not (Test-Path '${{ env.SBI_REPORT_PATH }}')) {
             throw '${{ env.SBI_REPORT_PATH }} was not created'
           }
 
-      - name: Run Moomoo read-only portfolio diagnostics
-        run: node scripts/moomoo/run-portfolio-diagnostics.mjs
-
-      - name: Validate Moomoo diagnostics output
-        shell: pwsh
-        run: |
-          if (-not (Test-Path '${{ env.MOOMOO_PORTFOLIO_REPORT_PATH }}')) {
-            throw '${{ env.MOOMOO_PORTFOLIO_REPORT_PATH }} was not created'
-          }
-          if (-not (Test-Path '${{ env.MOOMOO_PORTFOLIO_JSON_PATH }}')) {
-            throw '${{ env.MOOMOO_PORTFOLIO_JSON_PATH }} was not created'
-          }
-
       - name: Build unified portfolio report
         shell: pwsh
         run: |
-          node scripts/portfolio/build-unified-portfolio-report.mjs `
-            --capture-dir '${{ env.SBI_CAPTURE_OUTPUT_DIR }}' `
-            --moomoo-json '${{ env.MOOMOO_PORTFOLIO_JSON_PATH }}' `
-            --output '${{ env.PORTFOLIO_REPORT_PATH }}'
+          $args = @(
+            'scripts/portfolio/build-unified-portfolio-report.mjs',
+            '--capture-dir', '${{ env.SBI_CAPTURE_OUTPUT_DIR }}',
+            '--moomoo-json', '${{ env.MOOMOO_PORTFOLIO_JSON_PATH }}',
+            '--output', '${{ env.PORTFOLIO_REPORT_PATH }}'
+          )
+          if ('${{ inputs.enable_sbi }}' -ne 'true') {
+            $args += '--skip-sbi'
+          }
+          node @args
 
       - name: Validate unified portfolio report
         shell: pwsh
@@ -209,7 +228,14 @@ jobs:
         if: success()
         shell: pwsh
         run: |
+          $relativePaths = @(
+            "${{ env.PORTFOLIO_REPORT_PATH }}",
+            "${{ env.MOOMOO_PORTFOLIO_JSON_PATH }}"
+          )
+          if ('${{ inputs.enable_sbi }}' -eq 'true') {
+            $relativePaths = @("${{ env.SBI_CAPTURE_OUTPUT_DIR }}") + $relativePaths
+          }
           powershell -NoProfile -ExecutionPolicy Bypass -File scripts/windows/github-actions/sync-portfolio-reports-to-wsl.ps1 `
             -WslRepoPath "${{ env.WSL_REPO_PATH }}" `
             -CommitMessage "docs: portfolio health report run ${{ github.run_id }}-${{ github.run_attempt }}" `
-            -RelativePaths "${{ env.SBI_CAPTURE_OUTPUT_DIR }}","${{ env.PORTFOLIO_REPORT_PATH }}","${{ env.MOOMOO_PORTFOLIO_JSON_PATH }}"
+            -RelativePaths $relativePaths

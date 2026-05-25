@@ -1,7 +1,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { mkdtemp, mkdir, readFile, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 
 import {
@@ -19,6 +20,9 @@ import {
   buildPortfolioReportFromCaptureDir,
 } from '../scripts/sbi/build-portfolio-report.mjs';
 import { buildUnifiedPortfolioReport } from '../scripts/portfolio/build-unified-portfolio-report.mjs';
+
+const PROJECT_ROOT = process.cwd();
+const PORTFOLIO_HEALTH_WORKFLOW_PATH = resolve(PROJECT_ROOT, '.github', 'workflows', 'portfolio-health-check.yml');
 
 describe('sbi portfolio report parsers', () => {
   it('parses assets summary rows', () => {
@@ -440,5 +444,80 @@ describe('sbi portfolio report builder', () => {
     assert.match(report, /AAPL/);
     assert.match(report, /当期実現損益なし/);
     assert.match(report, /配当受取なし/);
+  });
+
+  it('builds a moomoo-only unified report when SBI is disabled', () => {
+    const report = buildUnifiedPortfolioReport({
+      generatedAt: '2026-05-25T11:20:00.000Z',
+      workflow: { runId: '456', runAttempt: '2', refName: 'main' },
+      sbiData: null,
+      moomooPayload: {
+        retrieved_at: '2026-05-25T11:19:00.000Z',
+        currency: 'USD',
+        totals: {
+          accountCount: 1,
+          realAccountCount: 1,
+          simulateAccountCount: 0,
+          positionCount: 1,
+          totalAssets: 1234.56,
+          cash: 234.56,
+          marketValue: 1000.0,
+          unrealizedPl: 88.12,
+          cashRatioPct: 19.0,
+          investedRatioPct: 81.0,
+        },
+        accounts: [
+          {
+            positions: [
+              {
+                symbol: 'MSFT',
+                name: 'Microsoft',
+                qty: 2,
+                marketValue: 1000.0,
+                unrealizedPl: 88.12,
+                plRatioPct: 9.66,
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    assert.match(report, /# Portfolio Health Check — 2026-05-25/);
+    assert.match(report, /SBI取得: skipped \(disabled\)/);
+    assert.match(report, /SBI取得は無効。moomoo全ポジション/);
+    assert.match(report, /MSFT/);
+    assert.match(report, /SBI取得は無効のためスキップ/);
+    assert.doesNotMatch(report, /\| SBI \|/);
+  });
+});
+
+describe('portfolio health check workflow', () => {
+  it('defaults to moomoo-only and runs SBI steps only when explicitly enabled', () => {
+    const workflow = readFileSync(PORTFOLIO_HEALTH_WORKFLOW_PATH, 'utf8');
+
+    assert.match(workflow, /enable_sbi:/,
+      'workflow must define an enable_sbi input');
+    assert.match(workflow, /enable_sbi:[\s\S]*default:\s+'false'/,
+      'workflow must default enable_sbi to false');
+    assert.match(workflow, /Run Moomoo read-only portfolio diagnostics/,
+      'workflow must still run moomoo diagnostics');
+    assert.match(workflow, /if:\s+\$\{\{\s*inputs\.enable_sbi == 'true'\s*\}\}/,
+      'workflow must guard SBI steps behind enable_sbi');
+    assert.ok(
+      workflow.indexOf('Run Moomoo read-only portfolio diagnostics') < workflow.indexOf('Capture SBI portfolio data'),
+      'workflow must run moomoo before SBI capture when SBI is enabled',
+    );
+  });
+
+  it('passes skip-sbi to the unified report builder when SBI is disabled', () => {
+    const workflow = readFileSync(PORTFOLIO_HEALTH_WORKFLOW_PATH, 'utf8');
+
+    assert.match(workflow, /\$args \+= '--skip-sbi'/,
+      'workflow must add --skip-sbi for moomoo-only runs');
+    assert.match(workflow, /if \('\$\{\{ inputs\.enable_sbi \}\}' -ne 'true'\)/,
+      'workflow must decide skip-sbi from the enable_sbi input');
+    assert.match(workflow, /\$relativePaths = @\([\s\S]*MOOMOO_PORTFOLIO_JSON_PATH/,
+      'publish step must always include moomoo outputs');
   });
 });

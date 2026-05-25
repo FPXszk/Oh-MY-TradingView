@@ -10,7 +10,7 @@
 
 ## 変更ファイル
 
-- 追加: `docs/exec-plans/active/portfolio-health-check-optional-sbi_20260525_2025.md`
+- 追加: `docs/exec-plans/completed/portfolio-health-check-optional-sbi_20260525_2025.md`
 - 変更: `.github/workflows/portfolio-health-check.yml`
 - 変更: `scripts/portfolio/build-unified-portfolio-report.mjs`
 - 変更: `tests/sbi-portfolio-report.test.js`
@@ -42,11 +42,11 @@
 
 ## 実装ステップ
 
-- [ ] 現在の workflow と unified report builder の SBI 必須前提を特定する
-- [ ] workflow_dispatch input と step 条件を追加し、moomoo -> SBI(optional) の順へ並べ替える
-- [ ] unified report builder に SBI optional 分岐を追加する
-- [ ] workflow / report builder の回帰テストを追加・更新する
-- [ ] 対象テストを実行して、SBI on/off 両方の契約が崩れていないことを確認する
+- [x] 現在の workflow と unified report builder の SBI 必須前提を特定する
+- [x] workflow_dispatch input と step 条件を追加し、moomoo -> SBI(optional) の順へ並べ替える
+- [x] unified report builder に SBI optional 分岐を追加する
+- [x] workflow / report builder の回帰テストを追加・更新する
+- [x] 対象テストを実行して、SBI on/off 両方の契約が崩れていないことを確認する
 
 ## テスト戦略
 
@@ -73,3 +73,13 @@
 - `enable_sbi=true` のときだけ SBI capture/report が moomoo の後で走る
 - 最終 report / success-failure 判定は SBI off でも成立する
 - SBI on の既存 report ロジックは維持される
+
+## 実施結果
+
+- `portfolio-health-check.yml` に `enable_sbi` input を追加し、default を `'false'` にした
+- workflow の順序を `moomoo -> SBI(optional) -> unified report -> publish` へ変更した
+- SBI step 群は `if: ${{ inputs.enable_sbi == 'true' }}` で guarded にし、default では skip されるようにした
+- unified report builder に `--skip-sbi` と moomoo-only report 分岐を追加し、SBI off でも最終 report を生成できるようにした
+- publish step は SBI off のとき `SBI_CAPTURE_OUTPUT_DIR` を渡さず、moomoo JSON と unified report だけを同期するようにした
+- `tests/sbi-portfolio-report.test.js` に moomoo-only report と workflow 契約テストを追加した
+- `npm run test:sbi-portfolio-report` と `npm test` はともに通過した

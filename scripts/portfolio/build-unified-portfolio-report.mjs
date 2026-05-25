@@ -23,6 +23,7 @@ Build a single Markdown report that combines SBI and moomoo portfolio outputs.
 Options:
   --capture-dir <path>  SBI capture output directory
   --moomoo-json <path>  moomoo diagnostics JSON path
+  --skip-sbi            Build a moomoo-only report without SBI capture inputs
   --output <path>       Output markdown path
   --help                Show this help
 `);
@@ -39,6 +40,10 @@ function parseArgs(argv) {
     const arg = argv[index];
     if (arg === '--help') {
       options.help = true;
+      continue;
+    }
+    if (arg === '--skip-sbi') {
+      options.skipSbi = true;
       continue;
     }
     if (!arg.startsWith('--')) {
@@ -220,6 +225,74 @@ function buildRealizedAndDividendSection(sbiData) {
   return lines;
 }
 
+function buildMoomooOnlyReport({ moomooPayload, generatedAt, workflow }) {
+  const sanitizedMoomoo = sanitizePortfolioDiagnosticsResult(moomooPayload);
+  const moomooTotals = sanitizedMoomoo.totals || {};
+  const moomooCurrency = sanitizedMoomoo.currency || 'USD';
+  const moomooTime = sanitizedMoomoo.retrieved_at || 'n/a';
+  const moomooPl = Number(moomooTotals.unrealizedPl);
+  const moomooCashRatioText = Number.isFinite(Number(moomooTotals.cashRatioPct))
+    ? `${Number(moomooTotals.cashRatioPct).toFixed(0)}%`
+    : 'n/a';
+  const positions = buildUnifiedPositionList({
+    usStocks: [],
+    funds: [],
+  }, sanitizedMoomoo, moomooCurrency);
+
+  positions.sort((a, b) => {
+    if (a._category !== b._category) return a._category - b._category;
+    return (b._plSortKey || 0) - (a._plSortKey || 0);
+  });
+
+  const alertList = positions.filter((pos) => Number.isFinite(pos._plRateRaw) && pos._plRateRaw < -20);
+  const lines = [
+    `# Portfolio Health Check — ${generatedAt.slice(0, 10)}`,
+    '- SBI取得: skipped (disabled)',
+    `- moomoo取得: ${moomooTime}`,
+    '',
+    '## 🚦 ヘルスサマリー',
+    '',
+    `SBI取得は無効。moomoo全ポジション含み${moomooPl >= 0 ? '益' : '損'} ${formatSignedCurrency(moomooPl, moomooCurrency, 2)}、現金比率${moomooCashRatioText}。`,
+    '',
+    '## 📊 資産スナップショット',
+    '',
+    renderTable(
+      ['口座', '総資産', '評価損益', '現金比率', '取得時刻'],
+      [[
+        'moomoo',
+        formatCurrency(Number(moomooTotals.totalAssets), moomooCurrency, 2),
+        formatSignedCurrency(Number(moomooTotals.unrealizedPl), moomooCurrency, 2),
+        Number.isFinite(Number(moomooTotals.cashRatioPct)) ? `${Number(moomooTotals.cashRatioPct).toFixed(1)}%` : 'n/a',
+        moomooTime,
+      ]],
+    ),
+    '',
+    '## 📋 ポジション一覧（統合）',
+    '',
+    renderTable(
+      ['ティッカー', '銘柄', '口座', '数量', '評価損益', '損益率'],
+      positions.map((pos) => [pos.ticker, pos.name, pos.account, pos.qty, pos.pl, pos.plRate]),
+    ),
+    '',
+    '## 💰 実現損益 & 配当',
+    '',
+    'SBI取得は無効のためスキップ',
+    '',
+  ];
+
+  if (alertList.length > 0) {
+    lines.push('## ⚠️ アラート', '');
+    lines.push('含み損率 -20% 超のポジション:', '');
+    for (const pos of alertList) {
+      lines.push(`- ${pos.ticker}（${pos.name} / ${pos.account}）: ${pos.pl} / ${pos.plRate}`);
+    }
+    lines.push('');
+  }
+
+  lines.push(...buildMetaSection(sanitizedMoomoo.workflow || moomooPayload.workflow || workflow));
+  return `${lines.join('\n').trim()}\n`;
+}
+
 function buildMetaSection(workflow) {
   if (!workflow) return [];
   const lines = ['## 🔧 取得メタ情報', ''];
@@ -233,6 +306,10 @@ function buildMetaSection(workflow) {
 }
 
 export function buildUnifiedPortfolioReport({ sbiData, moomooPayload, generatedAt, workflow }) {
+  if (!sbiData) {
+    return buildMoomooOnlyReport({ moomooPayload, generatedAt, workflow });
+  }
+
   const sanitizedMoomoo = sanitizePortfolioDiagnosticsResult(moomooPayload);
   const moomooTotals = sanitizedMoomoo.totals || {};
   const moomooCurrency = sanitizedMoomoo.currency || 'USD';
@@ -353,10 +430,10 @@ async function main() {
   const moomooJsonPath = resolve(options.moomooJson);
   const outputPath = resolve(options.output);
 
-  const [{ data: sbiData }, moomooPayload] = await Promise.all([
-    loadPortfolioDataFromCaptureDir(captureDir),
-    readFile(moomooJsonPath, 'utf8').then((value) => JSON.parse(value)),
-  ]);
+  const moomooPayload = await readFile(moomooJsonPath, 'utf8').then((value) => JSON.parse(value));
+  const sbiData = options.skipSbi
+    ? null
+    : await loadPortfolioDataFromCaptureDir(captureDir).then((result) => result.data);
 
   const generatedAt = new Date().toISOString();
   const report = buildUnifiedPortfolioReport({
