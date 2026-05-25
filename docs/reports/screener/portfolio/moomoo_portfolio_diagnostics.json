@@ -38,7 +38,7 @@
         "costBasis": 5077.67,
         "unrealizedPl": -668.21,
         "unrealizedPlPct": -13.16,
-        "totalAssets": 14954.8213,
+        "totalAssets": 14954.8182,
         "cash": 10545.36,
         "cashRatioPct": 70.51,
         "investedRatioPct": 29.49,
@@ -135,10 +135,10 @@
         ]
       },
       "balance": {
-        "power": 10545.36126,
+        "power": 10545.355172,
         "max_power_short": "N/A",
         "net_cash_power": "N/A",
-        "total_assets": 14954.8213,
+        "total_assets": 14954.8182,
         "securities_assets": 14954.82,
         "fund_assets": 0,
         "bond_assets": 0,
@@ -147,9 +147,9 @@
         "long_mv": "N/A",
         "short_mv": "N/A",
         "pending_asset": 0,
-        "interest_charged_amount": 38.30874,
+        "interest_charged_amount": 38.314828,
         "frozen_cash": 0,
-        "avl_withdrawal_cash": 10545.36,
+        "avl_withdrawal_cash": 10545.35,
         "max_withdrawal": "N/A",
         "currency": "USD",
         "available_funds": "N/A",
@@ -165,8 +165,8 @@
         "hkd_net_cash_power": "N/A",
         "hkd_assets": 0,
         "us_cash": 10583.67,
-        "us_avl_withdrawal_cash": 10545.36,
-        "usd_net_cash_power": 10545.36126,
+        "us_avl_withdrawal_cash": 10545.35,
+        "usd_net_cash_power": 10545.355172,
         "usd_assets": 14993.13,
         "cn_cash": "N/A",
         "cn_avl_withdrawal_cash": "N/A",
@@ -272,13 +272,13 @@
     "Read-only diagnostics only. No order, cancel, modify, or unlock methods are called.",
     "Portfolio totals prefer REAL accounts when present; SIMULATE accounts remain listed separately."
   ],
-  "retrieved_at": "2026-05-25T12:32:11.934Z",
+  "retrieved_at": "2026-05-25T12:41:45.201Z",
   "workflow": {
-    "runId": "26400638788",
+    "runId": "26401033201",
     "runAttempt": "1",
-    "runNumber": "17",
+    "runNumber": "18",
     "refName": "main",
-    "sha": "e0e54d0aa07ce701328ba032cc89dbe594dda798",
-    "generatedAt": "2026-05-25T12:32:10.779Z"
+    "sha": "b85c87870cf6ae1261844dcf0cf6e1afd9755a0c",
+    "generatedAt": "2026-05-25T12:41:43.467Z"
   }
 }
