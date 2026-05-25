@@ -272,13 +272,13 @@
     "Read-only diagnostics only. No order, cancel, modify, or unlock methods are called.",
     "Portfolio totals prefer REAL accounts when present; SIMULATE accounts remain listed separately."
   ],
-  "retrieved_at": "2026-05-25T12:14:22.713Z",
+  "retrieved_at": "2026-05-25T12:32:11.934Z",
   "workflow": {
-    "runId": "26399947995",
+    "runId": "26400638788",
     "runAttempt": "1",
-    "runNumber": "15",
+    "runNumber": "17",
     "refName": "main",
-    "sha": "d4e21b73d804f6375cecdad02dcb840f73e9e795",
-    "generatedAt": "2026-05-25T12:14:21.299Z"
+    "sha": "e0e54d0aa07ce701328ba032cc89dbe594dda798",
+    "generatedAt": "2026-05-25T12:32:10.779Z"
   }
 }

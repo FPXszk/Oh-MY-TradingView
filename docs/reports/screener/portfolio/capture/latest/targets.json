@@ -4,21 +4,10 @@
     "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@4687a88676f95bfbce9ec62314791faae363fea6/inspector.html?ws=127.0.0.1:9222/devtools/page/8EFCF6533BF361856E2E4625CA3CF9DE",
     "faviconUrl": "https://sbisec.akamaized.net/sbisec/images/common/favicon/favicon-32x32.png",
     "id": "8EFCF6533BF361856E2E4625CA3CF9DE",
-    "title": "配当金・分配金履歴｜SBI証券",
+    "title": "口座管理｜SBI証券",
     "type": "page",
-    "url": "https://site.sbisec.co.jp/account/assets/dividends?dispositionDateFrom=2022%2F01%2F01&dispositionDateTo=2026%2F05%2F25",
+    "url": "https://site.sbisec.co.jp/account/foreign/summary",
     "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/8EFCF6533BF361856E2E4625CA3CF9DE"
-  },
-  {
-    "description": "",
-    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@4687a88676f95bfbce9ec62314791faae363fea6/inspector.html?ws=127.0.0.1:9222/devtools/page/37FB49E569D822A6691A0B53A389F78C",
-    "faviconUrl": "https://sbisec.akamaized.net/sbisec/images/common/favicon/favicon-32x32.png",
-    "id": "37FB49E569D822A6691A0B53A389F78C",
-    "parentId": "8EFCF6533BF361856E2E4625CA3CF9DE",
-    "title": "https://cdn.d2-apps.net/html/frame.html#https://tg.socdm.com/aux/idsync?client_id=900&amp;proto=primenumber",
-    "type": "iframe",
-    "url": "https://cdn.d2-apps.net/html/frame.html#https://tg.socdm.com/aux/idsync?client_id=900&proto=primenumber",
-    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/37FB49E569D822A6691A0B53A389F78C"
   },
   {
     "description": "",
