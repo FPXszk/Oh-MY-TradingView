@@ -108,10 +108,10 @@ Start-Sleep -Milliseconds $PostActivateDelayMs
 
 $afterHandle = [ChromeWindowFocusNative]::GetForegroundWindow()
 $afterTitle = Get-WindowTitle $afterHandle
-$afterMatchesTarget = ($afterTitle -eq $target.MainWindowTitle)
+$afterMatchesTargetHandle = ($afterHandle -eq $targetHandle)
 
 $result = [pscustomobject]@{
-  success = ($appActivated -or $setForeground) -and $afterMatchesTarget
+  success = ($appActivated -or $setForeground) -and $afterMatchesTargetHandle
   appActivated = [bool]$appActivated
   setForeground = [bool]$setForeground
   preferredTitle = $preferred
@@ -120,7 +120,7 @@ $result = [pscustomobject]@{
   targetTitle = $target.MainWindowTitle
   beforeTitle = $beforeTitle
   afterTitle = $afterTitle
-  afterMatchesTarget = $afterMatchesTarget
+  afterMatchesTargetHandle = $afterMatchesTargetHandle
 }
 
 if ($AsJson) {

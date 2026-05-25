@@ -332,10 +332,11 @@ async function ensureSbiTargetActive(client, interactionContext) {
   if (windowForeground?.success && !interactionContext.foregroundSuccessLogged) {
     interactionContext.notes?.push(`OS foreground helper succeeded: ${windowForeground.targetTitle || 'n/a'}`);
     interactionContext.foregroundSuccessLogged = true;
-  } else if (!windowForeground?.success && !windowForeground?.skipped) {
+  } else if (!windowForeground?.success && !windowForeground?.skipped && !interactionContext.foregroundFailureLogged) {
     interactionContext.notes?.push(
-      `OS foreground helper failed: ${windowForeground?.reason || windowForeground?.message || 'unknown failure'}`,
+      `OS foreground helper failed: ${windowForeground?.reason || windowForeground?.message || windowForeground?.afterTitle || 'unknown failure'}`,
     );
+    interactionContext.foregroundFailureLogged = true;
   }
   await client.Page?.bringToFront?.().catch(() => {});
   await evaluateJson(client, `(() => {
@@ -1338,6 +1339,7 @@ async function main() {
           targetTitle: target.title,
           notes: summary.notes,
           foregroundSuccessLogged: false,
+          foregroundFailureLogged: false,
         };
 
         await captureStage(client, outputDir, 'current-page');
