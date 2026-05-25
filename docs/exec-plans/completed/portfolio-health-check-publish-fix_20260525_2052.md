@@ -9,7 +9,7 @@
 
 ## 変更ファイル
 
-- 追加: `docs/exec-plans/active/portfolio-health-check-publish-fix_20260525_2052.md`
+- 追加: `docs/exec-plans/completed/portfolio-health-check-publish-fix_20260525_2052.md`
 - 変更: `.github/workflows/portfolio-health-check.yml`
 - 変更: `tests/sbi-portfolio-report.test.js`
 
@@ -36,12 +36,12 @@
 
 ## 実装ステップ
 
-- [ ] publish failure の最小修正を workflow に入れる
-- [ ] workflow 契約テストを更新する
-- [ ] 対象テストを実行する
-- [ ] `enable_sbi=false` で live rerun し、success を確認する
-- [ ] `enable_sbi=true` で live rerun し、success を確認する
-- [ ] 結果を completed plan に記録する
+- [x] publish failure の最小修正を workflow に入れる
+- [x] workflow 契約テストを更新する
+- [x] 対象テストを実行する
+- [x] `enable_sbi=false` で live rerun し、success を確認する
+- [x] `enable_sbi=true` で live rerun し、success を確認する
+- [x] 結果を completed plan に記録する
 
 ## テスト戦略
 
@@ -69,3 +69,14 @@
 - `enable_sbi=false` の live run が success になる
 - `enable_sbi=true` の live run が success になる
 - run URL / conclusion を報告できる
+
+## 実施結果
+
+- `portfolio-health-check.yml` の publish step で `RelativePaths` を配列のまま渡すのをやめ、`$relativePaths -join ','` で script 既存契約に合わせた単一文字列へ変換した
+- `tests/sbi-portfolio-report.test.js` に publish step が `relativePathsArg` を使う契約を追加した
+- `npm run test:sbi-portfolio-report` と `npm test` は通過した
+- 修正 commit は `12eb1e9` (`fix: pass joined portfolio publish paths`)
+- live rerun:
+  - default (`enable_sbi=false`): run `26399196376` / `success` / https://github.com/FPXszk/Oh-MY-TradingView/actions/runs/26399196376
+  - SBI enabled (`enable_sbi=true`): run `26399249803` / `success` / https://github.com/FPXszk/Oh-MY-TradingView/actions/runs/26399249803
+- success run では publish step も通り、workflow から `main` へ report 更新 commit が入った
