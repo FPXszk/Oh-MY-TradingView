@@ -633,6 +633,8 @@ scripts\windows\register-self-hosted-runner-autostart.cmd C:\actions-runner
 
 - 登録先は `run.cmd` 直呼びではなく、生成される `C:\actions-runner\_diag\runner-autostart-launch.cmd`
 - launcher は runner wrapper の前に `%APPDATA%\moomoo_OpenD\moomoo_OpenD.exe` を best-effort で起動する
+- launcher は続けて Windows local `127.0.0.1:9222/json/list` を確認し、TradingView chart target が見えなければ起動を試みる
+- TradingView 起動はまず `%LOCALAPPDATA%\TradingView\TradingView.exe --remote-debugging-port=9222` を優先し、見つからない場合だけ `C:\TradingView` 配下の `TradingView*.lnk` を fallback として使う
 - launcher の中から `C:\actions-runner\_diag\run-self-hosted-runner-with-bootstrap.cmd` を呼ぶ
 - bootstrap も `C:\actions-runner\_diag\bootstrap-self-hosted-runner.cmd` に複製して live checkout 非依存にする
 - trigger は **Task Scheduler / ONLOGON / 30 秒 delay**

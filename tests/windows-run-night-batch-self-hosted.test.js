@@ -199,6 +199,35 @@ describe('register-self-hosted-runner-autostart.cmd', () => {
     );
   });
 
+  it('generated launcher best-effort starts TradingView with local debug-port readiness checks', () => {
+    const script = readFileSync(AUTOSTART_SCRIPT_PATH, 'utf8');
+
+    assert.match(script, /TV_DIRECT=%%LOCALAPPDATA%%\\TradingView\\TradingView\.exe/i,
+      'autostart launcher must know the direct TradingView executable path');
+    assert.match(script, /TV_PORT=9222/i,
+      'autostart launcher must target the default local TradingView debug port');
+    assert.match(script, /Invoke-WebRequest -UseBasicParsing -Uri \$startupUrl -TimeoutSec 3/i,
+      'autostart launcher must probe the local TradingView CDP endpoint before launching');
+    assert.match(script, /response\.Content -match 'tradingview' -and \$response\.Content -match '\/chart'/i,
+      'autostart launcher must verify a TradingView chart target before skipping launch');
+    assert.match(script, /Start-Process -FilePath \$env:TV_DIRECT -ArgumentList \('\-\-remote-debugging-port=' \+ \$env:TV_PORT\) -WindowStyle Normal/i,
+      'autostart launcher must prefer direct TradingView launch with the remote debugging port');
+    assert.match(script, /Get-ChildItem -Path \$env:TV_SHORTCUT_DIR -Filter '\*\.lnk' -File/i,
+      'autostart launcher must fall back to searching the TradingView shortcut directory');
+    assert.match(script, /Start-Process -FilePath \$shortcut -WindowStyle Normal/i,
+      'autostart launcher must keep shortcut fallback launches visible');
+    assert.match(script, /Start-Sleep -Seconds \(\[int\]\$env:TV_WAIT_SEC\)/i,
+      'autostart launcher must wait briefly for TradingView to finish exposing the debug endpoint');
+    assert.ok(
+      script.indexOf('start "" "%%OPEND_EXE%%"') < script.indexOf('Invoke-WebRequest -UseBasicParsing -Uri $startupUrl -TimeoutSec 3'),
+      'autostart launcher must handle OpenD before probing TradingView',
+    );
+    assert.ok(
+      script.indexOf('Invoke-WebRequest -UseBasicParsing -Uri $startupUrl -TimeoutSec 3') < script.indexOf('call "%WRAPPER_COPY%" "%RUNNER_DIR%"'),
+      'autostart launcher must handle TradingView before starting the runner wrapper',
+    );
+  });
+
   it('stages self-contained startup scripts under the runner directory', () => {
     const script = readFileSync(AUTOSTART_SCRIPT_PATH, 'utf8');
 
@@ -410,6 +439,10 @@ describe('docs: non-service self-hosted runner policy', () => {
       'README must mention Task Scheduler for runner auto-start');
     assert.match(readme, /register-self-hosted-runner-autostart\.cmd/i,
       'README must reference the autostart registration script');
+    assert.match(readme, /TradingView/i,
+      'README must mention TradingView in the runner auto-start guidance');
+    assert.match(readme, /9222/,
+      'README must mention the local TradingView debug port in the runner auto-start guidance');
   });
 
   it('README no longer relies on docs/command.md for runner guidance', () => {

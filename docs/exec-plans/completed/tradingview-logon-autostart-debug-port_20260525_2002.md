@@ -10,7 +10,7 @@
 
 ## 変更ファイル
 
-- 追加: `docs/exec-plans/active/tradingview-logon-autostart-debug-port_20260525_2002.md`
+- 追加: `docs/exec-plans/completed/tradingview-logon-autostart-debug-port_20260525_2002.md`
 - 変更: `scripts/windows/register-self-hosted-runner-autostart.cmd`
 - 変更: `tests/windows-run-night-batch-self-hosted.test.js`
 - 変更: `README.md`
@@ -41,11 +41,11 @@
 
 ## 実装ステップ
 
-- [ ] autostart launcher の TradingView 起動要件を workflow / README / 既存テストから整理する
-- [ ] `register-self-hosted-runner-autostart.cmd` に TradingView readiness check と起動 fallback を追加する
-- [ ] `tests/windows-run-night-batch-self-hosted.test.js` に TradingView autostart 契約を追加する
-- [ ] README の autostart 説明を更新し、OpenD と TradingView の起動順・debug port を明記する
-- [ ] 対象テストを実行して回帰を確認する
+- [x] autostart launcher の TradingView 起動要件を workflow / README / 既存テストから整理する
+- [x] `register-self-hosted-runner-autostart.cmd` に TradingView readiness check と起動 fallback を追加する
+- [x] `tests/windows-run-night-batch-self-hosted.test.js` に TradingView autostart 契約を追加する
+- [x] README の autostart 説明を更新し、OpenD と TradingView の起動順・debug port を明記する
+- [x] 対象テストを実行して回帰を確認する
 
 ## テスト戦略
 
@@ -72,3 +72,11 @@
 - direct exe fallback では `--remote-debugging-port=9222` を付ける
 - runner wrapper 呼び出し前に TradingView 起動処理が入ることをテストで固定する
 - README に現在の autostart 挙動が反映される
+
+## 実施結果
+
+- `register-self-hosted-runner-autostart.cmd` の generated launcher に TradingView local `9222` readiness check を追加した
+- TradingView は direct exe を優先して `--remote-debugging-port=9222` 付きで起動し、direct exe が見つからないときだけ `C:\TradingView` 配下の shortcut 検索へ fallback するようにした
+- `tests/windows-run-night-batch-self-hosted.test.js` に TradingView autostart 契約を追加し、OpenD -> TradingView -> runner wrapper の順を固定した
+- README に ONLOGON launcher が local `9222` を見て TradingView を起動することを追記した
+- `node --test tests/windows-run-night-batch-self-hosted.test.js` と `npm test` はともに通過した

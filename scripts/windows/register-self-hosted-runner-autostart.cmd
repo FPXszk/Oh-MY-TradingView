@@ -109,12 +109,17 @@ exit /b 0
 >> "%AUTOSTART_LAUNCHER%" echo setlocal
 >> "%AUTOSTART_LAUNCHER%" echo set "AUTOSTART_LOG=%AUTOSTART_LOG%"
 >> "%AUTOSTART_LAUNCHER%" echo set "OPEND_EXE=%%APPDATA%%\moomoo_OpenD\moomoo_OpenD.exe"
+>> "%AUTOSTART_LAUNCHER%" echo set "TV_SHORTCUT_DIR=C:\TradingView"
+>> "%AUTOSTART_LAUNCHER%" echo set "TV_DIRECT=%%LOCALAPPDATA%%\TradingView\TradingView.exe"
+>> "%AUTOSTART_LAUNCHER%" echo set "TV_PORT=9222"
+>> "%AUTOSTART_LAUNCHER%" echo set "TV_WAIT_SEC=25"
 >> "%AUTOSTART_LAUNCHER%" echo if exist "%%OPEND_EXE%%" ^(
 >> "%AUTOSTART_LAUNCHER%" echo   echo [runner-autostart] Starting OpenD from %%OPEND_EXE%% ^>^> "%%AUTOSTART_LOG%%"
 >> "%AUTOSTART_LAUNCHER%" echo   start "" "%%OPEND_EXE%%"
 >> "%AUTOSTART_LAUNCHER%" echo ^) else ^(
 >> "%AUTOSTART_LAUNCHER%" echo   echo [runner-autostart] OpenD not found at %%OPEND_EXE%% ^>^> "%%AUTOSTART_LOG%%"
 >> "%AUTOSTART_LAUNCHER%" echo ^)
+>> "%AUTOSTART_LAUNCHER%" echo powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$ErrorActionPreference = 'Stop'; $startupUrl = 'http://127.0.0.1:' + $env:TV_PORT + '/json/list'; $alreadyRunning = $false; try { $response = Invoke-WebRequest -UseBasicParsing -Uri $startupUrl -TimeoutSec 3; if ($response.Content -match 'tradingview' -and $response.Content -match '/chart') { $alreadyRunning = $true; Write-Host '[runner-autostart] TradingView already reachable at ' $startupUrl } } catch { Write-Host '[runner-autostart] TradingView not reachable at ' $startupUrl '; launching' }; if (-not $alreadyRunning) { if (Test-Path $env:TV_DIRECT) { Write-Host '[runner-autostart] Starting TradingView direct with remote debugging port ' $env:TV_PORT ' from ' $env:TV_DIRECT; Start-Process -FilePath $env:TV_DIRECT -ArgumentList ('--remote-debugging-port=' + $env:TV_PORT) -WindowStyle Normal } else { $shortcut = $null; if (Test-Path $env:TV_SHORTCUT_DIR) { $shortcut = Get-ChildItem -Path $env:TV_SHORTCUT_DIR -Filter '*.lnk' -File ^| Where-Object { $_.Name -match 'TradingView' } ^| Select-Object -First 1 -ExpandProperty FullName }; if ($shortcut) { Write-Host '[runner-autostart] Starting TradingView shortcut ' $shortcut; Start-Process -FilePath $shortcut -WindowStyle Normal } else { Write-Host '[runner-autostart] TradingView launcher not found at ' $env:TV_DIRECT ' or any TradingView shortcut under ' $env:TV_SHORTCUT_DIR } }; Start-Sleep -Seconds ([int]$env:TV_WAIT_SEC) }" ^>^> "%%AUTOSTART_LOG%%" 2^>^&1
 >> "%AUTOSTART_LAUNCHER%" echo call "%WRAPPER_COPY%" "%RUNNER_DIR%" ^>^> "%%AUTOSTART_LOG%%" 2^>^&1
 >> "%AUTOSTART_LAUNCHER%" echo exit /b %%ERRORLEVEL%%
 if errorlevel 1 exit /b 1
