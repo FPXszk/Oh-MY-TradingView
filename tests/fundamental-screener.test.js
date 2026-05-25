@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { runFundamentalScreener } from '../src/core/fundamental-screener.js';
+import { evaluateSymbolsAgainstFundamentalScreener, runFundamentalScreener } from '../src/core/fundamental-screener.js';
 
 function buildPhase2Row(symbol, values) {
   return {
@@ -949,5 +949,204 @@ describe('runFundamentalScreener', () => {
     assert.deepEqual(result.results.map((row) => row.symbol), ['FULL', 'SPARSE']);
     assert.ok(result.results[0].rankBreakdown.quality.rank < result.results[1].rankBreakdown.quality.rank);
     assert.ok(result.results[0].rankBreakdown.growth.rank < result.results[1].rankBreakdown.growth.rank);
+  });
+});
+
+describe('evaluateSymbolsAgainstFundamentalScreener', () => {
+  it('flags symbols outside selected phase1 sectors while preserving detected winners', async () => {
+    const fetch = async (_url, options) => {
+      const body = JSON.parse(options.body);
+
+      if (isBenchmarkRequest(body)) {
+        return {
+          ok: true,
+          json: async () => ({
+            totalCount: 1,
+            data: [
+              buildPhase1StockRow('BATS:SPY', {
+                name: 'SPY',
+                sector: 'Benchmark',
+                close: 100,
+                sma200: 95,
+                sma50: 98,
+                high52w: 104,
+                perf1m: 6,
+                perf3m: 12,
+                perf6m: 24,
+                perfY: 48,
+                rsi: 61,
+                relativeVolume: 1.0,
+                marketCap: 1_000_000_000,
+              }),
+            ],
+          }),
+        };
+      }
+
+      if (body.symbols?.tickers?.length > 0) {
+        return {
+          ok: true,
+          json: async () => ({
+            totalCount: 2,
+            data: [
+              buildPhase2Row('NASDAQ:AAA', {
+                name: 'Alpha',
+                sector: 'Technology Services',
+                industry: 'Packaged Software',
+                close: 120,
+                high52w: 125,
+                sma200: 90,
+                sma50: 100,
+                perf3m: 22,
+                perf6m: 40,
+                perfY: 88,
+                rsi: 68,
+                relativeVolume: 1.2,
+                marketCap: 2_500_000_000,
+                eps: 3,
+                roe: 24,
+                grossMargin: 58,
+                fcfMargin: 21,
+                fcfTtm: 200_000_000,
+                revenueGrowthTtm: 18,
+                pFcfDirect: 18,
+                volume: 100_000,
+                netDebt: -10_000_000,
+              }),
+              buildPhase2Row('NYSE:BBB', {
+                name: 'Beta Bank',
+                sector: 'Finance',
+                industry: 'Regional Banks',
+                close: 55,
+                high52w: 60,
+                sma200: 50,
+                sma50: 52,
+                perf3m: 18,
+                perf6m: 28,
+                perfY: 50,
+                rsi: 63,
+                relativeVolume: 1.1,
+                marketCap: 2_300_000_000,
+                eps: 4,
+                roe: 18,
+                grossMargin: 45,
+                fcfMargin: 10,
+                fcfTtm: 300_000_000,
+                revenueGrowthTtm: 8,
+                pFcfDirect: 10,
+                volume: 90_000,
+                netDebt: 0,
+              }),
+            ],
+          }),
+        };
+      }
+
+      if (isFundRequest(body) || !isPhase2StockRequest(body)) {
+        return {
+          ok: true,
+          json: async () => ({
+            totalCount: 3,
+            data: [
+              buildPhase1StockRow('NASDAQ:AAA', {
+                name: 'Alpha',
+                sector: 'Technology Services',
+                perf1m: 20,
+                perf3m: 22,
+                perf6m: 40,
+                perfY: 88,
+                rsi: 68,
+                relativeVolume: 1.2,
+                marketCap: 2_500_000_000,
+              }),
+              buildPhase1StockRow('NYSE:BBB', {
+                name: 'Beta Bank',
+                sector: 'Finance',
+                perf1m: 3,
+                perf3m: 4,
+                perf6m: 7,
+                perfY: 11,
+                rsi: 48,
+                relativeVolume: 0.8,
+                marketCap: 2_300_000_000,
+              }),
+              buildPhase1StockRow('NASDAQ:CCC', {
+                name: 'Chip Co',
+                sector: 'Electronic Technology',
+                perf1m: 16,
+                perf3m: 14,
+                perf6m: 24,
+                perfY: 52,
+                rsi: 61,
+                relativeVolume: 1.0,
+                marketCap: 2_200_000_000,
+              }),
+            ],
+          }),
+        };
+      }
+
+      const sector = getFilterValue(body, 'sector');
+      if (sector === 'Technology Services') {
+        return {
+          ok: true,
+          json: async () => ({
+            totalCount: 1,
+            data: [
+              buildPhase2Row('NASDAQ:AAA', {
+                name: 'Alpha',
+                sector: 'Technology Services',
+                industry: 'Packaged Software',
+                close: 120,
+                high52w: 125,
+                sma200: 90,
+                sma50: 100,
+                perf3m: 22,
+                perf6m: 40,
+                perfY: 88,
+                rsi: 68,
+                relativeVolume: 1.2,
+                marketCap: 2_500_000_000,
+                eps: 3,
+                roe: 24,
+                grossMargin: 58,
+                fcfMargin: 21,
+                fcfTtm: 200_000_000,
+                revenueGrowthTtm: 18,
+                pFcfDirect: 18,
+                volume: 100_000,
+                netDebt: -10_000_000,
+              }),
+            ],
+          }),
+        };
+      }
+
+      return {
+        ok: true,
+        json: async () => ({ totalCount: 0, data: [] }),
+      };
+    };
+
+    const result = await evaluateSymbolsAgainstFundamentalScreener({
+      symbols: ['NASDAQ:AAA', 'NYSE:BBB'],
+      _deps: {
+        fetch,
+        market: 'america',
+        exchangeAllowlist: ['NASDAQ', 'NYSE'],
+        selectedSectorCount: 1,
+      },
+    });
+
+    const alpha = result.results.find((entry) => entry.requestedSymbol === 'NASDAQ:AAA');
+    const beta = result.results.find((entry) => entry.requestedSymbol === 'NYSE:BBB');
+
+    assert.equal(alpha.workflowEligible, true);
+    assert.equal(alpha.workflowDetected, true);
+    assert.equal(alpha.watchlistRank, 1);
+
+    assert.equal(beta.workflowEligible, false);
+    assert.equal(beta.workflowDetected, false);
+    assert.match(beta.failureReasons.join(' '), /phase1_sector_not_selected/);
   });
 });

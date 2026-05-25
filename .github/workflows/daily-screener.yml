@@ -13,8 +13,10 @@ jobs:
       SCREENER_WORKFLOW_LABEL: daily-screener
       SCREENER_REPORT_PATH: docs/reports/screener/daily-ranking.md
       SCREENER_METADATA_PATH: docs/reports/screener/daily-ranking-run.json
+      SCREENER_RESULT_LIMIT: '70'
       SCREENER_MARKET: america
       SCREENER_EXCHANGES: NASDAQ,NYSE
+      SCREENER_SELECTED_SECTOR_COUNT: '8'
       SCREENER_GROSS_MARGIN_MIN_PCT: '30'
       SCREENER_SCOPE_LABEL: NASDAQ + NYSE stocks only (OTC excluded)
 

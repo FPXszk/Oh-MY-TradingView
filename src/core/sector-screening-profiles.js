@@ -280,7 +280,7 @@ const JP_PROFILES = [
   },
 ];
 
-function getProfilesForMarket(market) {
+export function getProfilesForMarket(market) {
   return market === 'japan' ? JP_PROFILES : US_PROFILES;
 }
 

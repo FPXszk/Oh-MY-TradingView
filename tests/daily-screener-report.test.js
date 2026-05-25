@@ -26,6 +26,10 @@ describe('Daily Fundamental Screener workflow', () => {
 
     assert.match(workflow, /SCREENER_EXCHANGES:\s+NASDAQ,NYSE/,
       'US workflow must limit the report universe to NASDAQ and NYSE');
+    assert.match(workflow, /SCREENER_RESULT_LIMIT:\s+'70'/,
+      'US workflow must widen the published report limit enough to surface ATH candidates like COHR');
+    assert.match(workflow, /SCREENER_SELECTED_SECTOR_COUNT:\s+'8'/,
+      'US workflow must narrow phase1 sector selection to focus the report on stronger active sectors');
     assert.match(workflow, /SCREENER_GROSS_MARGIN_MIN_PCT:\s+'30'/,
       'US workflow must lower the gross-margin threshold to 30%');
     assert.match(workflow, /name:\s+Publish screener report to WSL main/,
@@ -51,6 +55,8 @@ describe('Daily Fundamental Screener workflow', () => {
       'Japan workflow must filter to TSE listings');
     assert.match(workflow, /SCREENER_SYMBOL_ALLOWLIST_KEY:\s+jpx-prime/,
       'Japan workflow must restrict the universe to JPX Prime symbols');
+    assert.match(workflow, /SCREENER_RESULT_LIMIT:\s+'60'/,
+      'Japan workflow must widen the published report limit enough to surface ATH candidates like 5802 and 4980');
     assert.match(workflow, /SCREENER_REPORT_PATH:\s+docs\/reports\/screener\/daily-ranking-jp\.md/,
       'Japan workflow must write a dedicated markdown report');
     assert.match(workflow, /SCREENER_METADATA_PATH:\s+docs\/reports\/screener\/daily-ranking-jp-run\.json/,

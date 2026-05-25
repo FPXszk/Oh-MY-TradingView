@@ -251,6 +251,9 @@ function getRuntimeConfig() {
     title: process.env.SCREENER_REPORT_TITLE || null,
     currencySymbol: process.env.SCREENER_CURRENCY_SYMBOL || DEFAULT_CURRENCY_SYMBOL,
     workflowLabel: process.env.SCREENER_WORKFLOW_LABEL || 'daily-screener',
+    resultLimit: process.env.SCREENER_RESULT_LIMIT
+      ? Number(process.env.SCREENER_RESULT_LIMIT)
+      : 30,
     screenerOptions: {
       market: process.env.SCREENER_MARKET || 'america',
       exchangeAllowlist: parseExchangeAllowlist(process.env.SCREENER_EXCHANGES),
@@ -258,6 +261,9 @@ function getRuntimeConfig() {
         ? Number(process.env.SCREENER_GROSS_MARGIN_MIN_PCT)
         : undefined,
       symbolAllowlistKey: process.env.SCREENER_SYMBOL_ALLOWLIST_KEY || undefined,
+      selectedSectorCount: process.env.SCREENER_SELECTED_SECTOR_COUNT
+        ? Number(process.env.SCREENER_SELECTED_SECTOR_COUNT)
+        : undefined,
       scopeLabel: process.env.SCREENER_SCOPE_LABEL || undefined,
     },
   };
@@ -374,7 +380,7 @@ async function main() {
   let result;
   try {
     result = await runFundamentalScreener({
-      limit: 30,
+      limit: runtime.resultLimit,
       enrichWithYahoo: true,
       _deps: runtime.screenerOptions,
     });

@@ -17,7 +17,7 @@
 import { readFileSync } from 'node:fs';
 import { getMoomooFundamentalsBatch } from './moomoo.js';
 import { runSectorMomentumScan } from './sector-momentum.js';
-import { getSectorScreeningPlan } from './sector-screening-profiles.js';
+import { getProfilesForMarket, getSectorScreeningPlan } from './sector-screening-profiles.js';
 
 const DEFAULT_MARKET = 'america';
 const DEFAULT_LIMIT = 10;
@@ -173,6 +173,22 @@ function buildRequestBody(serverLimit, { market, profile, scope }) {
     sort: { sortBy: 'market_cap_basic', sortOrder: 'desc' },
     range: [0, serverLimit],
   };
+}
+
+function buildTickerRequestBody(tickers, market) {
+  return {
+    filter: [],
+    options: { lang: 'en' },
+    markets: [market],
+    symbols: { query: { types: ['stock'] }, tickers },
+    columns: COLUMNS,
+    sort: { sortBy: 'market_cap_basic', sortOrder: 'desc' },
+    range: [0, Math.max(50, tickers.length)],
+  };
+}
+
+function uniqueStrings(values) {
+  return [...new Set((values || []).filter((value) => typeof value === 'string' && value.trim() !== ''))];
 }
 
 function normalizeRow(row) {
@@ -331,6 +347,13 @@ function passesProfileScope(row, profile) {
   return true;
 }
 
+function findMatchingProfile(row, profiles) {
+  return profiles.find((profile) => (
+    profile.requestScopes.some((scope) => scope.sector === row.sector)
+    && passesProfileScope(row, profile)
+  )) ?? null;
+}
+
 function passesProfileClientFilters(row) {
   const {
     close,
@@ -350,6 +373,93 @@ function passesProfileClientFilters(row) {
   if (pFcf !== null && pFcf >= screeningPfcfMax) return false;
 
   return true;
+}
+
+function collectClientFilterFailures(row) {
+  const failures = [];
+  const {
+    close,
+    sma200,
+    sma50,
+    pctOf52wHigh,
+    perf3m,
+    pFcf,
+    screeningThresholds,
+    screeningPfcfMax,
+  } = row;
+
+  if (screeningThresholds.priceAboveSma200 && close !== null && sma200 !== null && close <= sma200) {
+    failures.push(`close<=SMA200 (${close} <= ${sma200})`);
+  }
+  if (screeningThresholds.priceAboveSma50 && close !== null && sma50 !== null && close <= sma50) {
+    failures.push(`close<=SMA50 (${close} <= ${sma50})`);
+  }
+  if (pctOf52wHigh !== null && pctOf52wHigh < screeningThresholds.pricePctOf52wHighMin) {
+    failures.push(`52w_high_proximity<${screeningThresholds.pricePctOf52wHighMin}% (${pctOf52wHigh}%)`);
+  }
+  if (perf3m !== null && perf3m <= screeningThresholds.perf3mMinPct) {
+    failures.push(`perf3m<=${screeningThresholds.perf3mMinPct}% (${perf3m}%)`);
+  }
+  if (pFcf !== null && pFcf >= screeningPfcfMax) {
+    failures.push(`p_fcf>=${screeningPfcfMax} (${pFcf})`);
+  }
+
+  return failures;
+}
+
+function annotateRowForProfile(row, profile, sectorRankLookup, market) {
+  return {
+    ...row,
+    ...(sectorRankLookup.get(profile.phase1Labels[0]) ?? {}),
+    screeningProfileId: profile.id,
+    screeningProfileLabel: profile.label,
+    screeningThresholds: profile.thresholds,
+    screeningPfcfMax: profile.getPfcfMax ? profile.getPfcfMax(row) : profile.thresholds.pFcfMax,
+    screeningRevenueGrowthMinPct: profile.thresholds.revenueGrowthMinPct,
+    ruleOf40: isUsSoftwareRuleOf40Candidate(row, market) ? row.ruleOf40Raw : null,
+    extremeMomentum: buildExtremeMomentum(row),
+  };
+}
+
+function normalizeRequestedSymbol(symbol) {
+  return String(symbol || '').trim().toUpperCase();
+}
+
+function symbolMatchesRequested(row, requestedSymbol) {
+  const normalized = normalizeRequestedSymbol(requestedSymbol);
+  if (!normalized) return false;
+  const exchangeSymbol = `${String(row.exchange || '').toUpperCase()}:${String(row.symbol || '').toUpperCase()}`;
+  return exchangeSymbol === normalized || String(row.symbol || '').toUpperCase() === normalized;
+}
+
+async function fetchRowsForSymbols({ symbols, market, fetchFn }) {
+  if (!Array.isArray(symbols) || symbols.length === 0) return [];
+  const scannerUrl = `https://scanner.tradingview.com/${market}/scan`;
+  const chunkSize = 40;
+  const rows = [];
+
+  for (let i = 0; i < symbols.length; i += chunkSize) {
+    const chunk = symbols.slice(i, i + chunkSize);
+    const response = await fetchFn(scannerUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(buildTickerRequestBody(chunk, market)),
+      signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
+    });
+
+    if (!response.ok) {
+      throw new Error(`TradingView scanner request failed: HTTP ${response.status}`);
+    }
+
+    const payload = await response.json();
+    if (!Array.isArray(payload?.data)) {
+      throw new Error('TradingView scanner returned unexpected response format');
+    }
+
+    rows.push(...payload.data.map(normalizeRow));
+  }
+
+  return dedupeRows(rows);
 }
 
 function buildExtremeMomentum(row) {
@@ -618,12 +728,15 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   const symbolAllowlistKey = _deps?.symbolAllowlistKey ?? null;
   const symbolAllowlist = resolveSymbolAllowlist(symbolAllowlistKey, _deps?.symbolAllowlistByKey);
   const scopeLabel = _deps?.scopeLabel ?? null;
+  const selectedSectorCount = _deps?.selectedSectorCount;
+  const resultLimit = _deps?.resultLimit ?? 30;
   const getFundamentals = _deps?.getSymbolFundamentals ?? null;
   const scannerUrl = `https://scanner.tradingview.com/${market}/scan`;
   const sectorMomentumScan = await runSectorMomentumScan({
     market,
     exchangeAllowlist,
     symbolAllowlist,
+    selectedSectorCount,
     fetch: fetchFn,
   });
   const sectorMomentum = sectorMomentumScan;
@@ -670,17 +783,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     phase2Responses.flatMap(({ profile, rows }) => rows
       .filter((row) => passesScopeFilters(row, { exchangeAllowlist, symbolAllowlist }))
       .filter((row) => passesProfileScope(row, profile))
-      .map((row) => ({
-        ...row,
-        ...(sectorRankLookup.get(profile.phase1Labels[0]) ?? {}),
-        screeningProfileId: profile.id,
-        screeningProfileLabel: profile.label,
-        screeningThresholds: profile.thresholds,
-        screeningPfcfMax: profile.getPfcfMax ? profile.getPfcfMax(row) : profile.thresholds.pFcfMax,
-        screeningRevenueGrowthMinPct: profile.thresholds.revenueGrowthMinPct,
-        ruleOf40: isUsSoftwareRuleOf40Candidate(row, market) ? row.ruleOf40Raw : null,
-        extremeMomentum: buildExtremeMomentum(row),
-      }))),
+      .map((row) => annotateRowForProfile(row, profile, sectorRankLookup, market))),
   );
   const phase1Filtered = scopeFiltered;
   let clientFiltered = phase1Filtered.filter(passesProfileClientFilters);
@@ -776,5 +879,172 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     results: matched,
     retrieved_at: new Date().toISOString(),
     source: enrichWithYahoo ? 'tradingview_scanner+moomoo' : 'tradingview_scanner',
+  };
+}
+
+export async function evaluateSymbolsAgainstFundamentalScreener({
+  symbols,
+  enrichWithYahoo = false,
+  _deps,
+} = {}) {
+  const requestedSymbols = uniqueStrings((symbols || []).map(normalizeRequestedSymbol));
+  if (requestedSymbols.length === 0) {
+    throw new Error('symbols array is required and must not be empty');
+  }
+
+  const fetchFn = _deps?.fetch ?? globalThis.fetch;
+  const market = _deps?.market ?? DEFAULT_MARKET;
+  const exchangeAllowlist = _deps?.exchangeAllowlist ?? null;
+  const symbolAllowlistKey = _deps?.symbolAllowlistKey ?? null;
+  const symbolAllowlist = resolveSymbolAllowlist(symbolAllowlistKey, _deps?.symbolAllowlistByKey);
+  const scopeLabel = _deps?.scopeLabel ?? null;
+  const selectedSectorCount = _deps?.selectedSectorCount;
+  const resultLimit = _deps?.resultLimit ?? 30;
+  const getFundamentals = _deps?.getSymbolFundamentals ?? null;
+
+  const sectorMomentum = await runSectorMomentumScan({
+    market,
+    exchangeAllowlist,
+    symbolAllowlist,
+    selectedSectorCount,
+    fetch: fetchFn,
+  });
+  const selectedSectorLabels = sectorMomentum.selectedSectors.map((entry) => entry.label);
+  const { activeProfiles, excludedSelectedSectors } = getSectorScreeningPlan({
+    market,
+    selectedSectors: selectedSectorLabels,
+  });
+  const allProfiles = getProfilesForMarket(market);
+  const sectorRankLookup = buildSectorRankLookup(sectorMomentum);
+
+  const fetchedRows = await fetchRowsForSymbols({
+    symbols: requestedSymbols,
+    market,
+    fetchFn,
+  });
+
+  const byRequestedSymbol = new Map();
+  for (const requestedSymbol of requestedSymbols) {
+    const row = fetchedRows.find((entry) => symbolMatchesRequested(entry, requestedSymbol));
+    if (!row) {
+      byRequestedSymbol.set(requestedSymbol, {
+        requestedSymbol,
+        found: false,
+        market,
+        rankScore: 0,
+        workflowEligible: false,
+        workflowDetected: false,
+        failureReasons: ['symbol_not_returned_by_scanner'],
+      });
+      continue;
+    }
+
+    const matchedProfile = findMatchingProfile(row, allProfiles);
+    const activeProfile = findMatchingProfile(row, activeProfiles);
+    const annotatedRow = matchedProfile
+      ? annotateRowForProfile(row, matchedProfile, sectorRankLookup, market)
+      : row;
+    const failureReasons = [];
+
+    if (exchangeAllowlist && !exchangeAllowlist.includes(row.exchange)) {
+      failureReasons.push(`exchange_not_allowed (${row.exchange})`);
+    }
+    if (symbolAllowlist && !symbolAllowlist.has(row.symbol)) {
+      failureReasons.push(`symbol_not_in_allowlist (${row.symbol})`);
+    }
+    if (!matchedProfile) {
+      failureReasons.push(`no_profile_for_sector (${row.sector ?? 'Unknown'})`);
+    }
+    if (matchedProfile && !activeProfile) {
+      failureReasons.push(`phase1_sector_not_selected (${row.sector ?? 'Unknown'})`);
+    }
+    if (matchedProfile) {
+      failureReasons.push(...collectClientFilterFailures(annotatedRow));
+    }
+
+    byRequestedSymbol.set(requestedSymbol, {
+      ...annotatedRow,
+      requestedSymbol,
+      found: true,
+      matchedProfileId: matchedProfile?.id ?? null,
+      matchedProfileLabel: matchedProfile?.label ?? null,
+      activeProfileId: activeProfile?.id ?? null,
+      activeProfileLabel: activeProfile?.label ?? null,
+      phase1Selected: Boolean(activeProfile),
+      workflowEligible: failureReasons.length === 0,
+      workflowDetected: false,
+      failureReasons,
+    });
+  }
+
+  const eligibleForGrowthCheck = [...byRequestedSymbol.values()]
+    .filter((entry) => entry?.found && entry.matchedProfileId);
+  if (enrichWithYahoo && eligibleForGrowthCheck.length > 0) {
+    const symbolsToCheck = eligibleForGrowthCheck.map((entry) => entry.symbol);
+    const growthMap = getFundamentals
+      ? await batchFetchRevenueGrowth(symbolsToCheck, getFundamentals)
+      : await batchFetchMoomooRevenueGrowth(symbolsToCheck, { market, _deps });
+
+    eligibleForGrowthCheck.forEach((entry) => {
+      const revenueGrowth = growthMap[entry.symbol] ?? null;
+      entry.revenueGrowth = revenueGrowth;
+      if (revenueGrowth !== null && revenueGrowth <= (entry.screeningRevenueGrowthMinPct / 100)) {
+        entry.failureReasons.push(
+          `revenue_growth<=${entry.screeningRevenueGrowthMinPct}% (${Number((revenueGrowth * 100).toFixed(2))}%)`,
+        );
+      }
+      entry.workflowEligible = entry.failureReasons.length === 0;
+    });
+  }
+
+  const rankedCandidates = [...byRequestedSymbol.values()]
+    .filter((entry) => entry?.found && entry.matchedProfileId);
+  let ranked = [];
+  if (rankedCandidates.length > 0) {
+    ranked = applyBlockRanks(rankedCandidates, getRankingBlocks(market))
+      .sort((a, b) => b.rankScore - a.rankScore);
+  }
+  const rankLookup = new Map(ranked.map((row, index) => [`${row.exchange}:${row.symbol}`.toUpperCase(), {
+    rankScore: row.rankScore,
+    watchlistRank: index + 1,
+    rankBreakdown: row.rankBreakdown,
+  }]));
+
+  const workflowResult = await runFundamentalScreener({
+    limit: resultLimit,
+    enrichWithYahoo,
+    _deps,
+  });
+  const workflowSymbols = new Set((workflowResult.results || []).map((row) => `${row.exchange}:${row.symbol}`.toUpperCase()));
+
+  const results = requestedSymbols.map((requestedSymbol) => {
+    const entry = byRequestedSymbol.get(requestedSymbol);
+    if (!entry?.found) return entry;
+    const key = `${entry.exchange}:${entry.symbol}`.toUpperCase();
+    const rankMeta = rankLookup.get(key);
+    return {
+      ...entry,
+      rankScore: rankMeta?.rankScore ?? 0,
+      watchlistRank: rankMeta?.watchlistRank ?? null,
+      rankBreakdown: rankMeta?.rankBreakdown ?? entry.rankBreakdown,
+      workflowDetected: workflowSymbols.has(key),
+    };
+  }).sort((left, right) => {
+    if (left.workflowEligible !== right.workflowEligible) return left.workflowEligible ? -1 : 1;
+    if ((right.rankScore ?? 0) !== (left.rankScore ?? 0)) return (right.rankScore ?? 0) - (left.rankScore ?? 0);
+    return String(left.requestedSymbol).localeCompare(String(right.requestedSymbol));
+  });
+
+  return {
+    success: true,
+    market,
+    requestedSymbols,
+    evaluatedCount: results.length,
+    workflowResult,
+    phase1SelectedSectors: selectedSectorLabels,
+    excludedPhase2Sectors: excludedSelectedSectors,
+    scopeLabel,
+    results,
+    retrieved_at: new Date().toISOString(),
   };
 }

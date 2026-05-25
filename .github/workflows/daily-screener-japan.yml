@@ -13,6 +13,7 @@ jobs:
       SCREENER_WORKFLOW_LABEL: daily-screener-japan
       SCREENER_REPORT_PATH: docs/reports/screener/daily-ranking-jp.md
       SCREENER_METADATA_PATH: docs/reports/screener/daily-ranking-jp-run.json
+      SCREENER_RESULT_LIMIT: '60'
       SCREENER_MARKET: japan
       SCREENER_EXCHANGES: TSE
       SCREENER_SYMBOL_ALLOWLIST_KEY: jpx-prime
