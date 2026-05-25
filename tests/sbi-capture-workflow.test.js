@@ -17,6 +17,7 @@ import {
 } from '../scripts/sbi/capture-portfolio-data.mjs';
 
 const SBI_CAPTURE_SCRIPT = readFileSync(new URL('../scripts/sbi/capture-portfolio-data.mjs', import.meta.url), 'utf8');
+const CHROME_FOREGROUND_HELPER = readFileSync(new URL('../scripts/windows/focus-chrome-window.ps1', import.meta.url), 'utf8');
 
 describe('sbi capture target selection', () => {
   it('scores SBI page targets above unrelated tabs', () => {
@@ -101,6 +102,8 @@ describe('sbi target activation before interactive actions', () => {
   it('re-activates the SBI target before click, navigation, and CSV download attempts', () => {
     assert.match(SBI_CAPTURE_SCRIPT, /async function ensureSbiTargetActive\(client, interactionContext\)/,
       'capture script must define a reusable target activation helper');
+    assert.match(SBI_CAPTURE_SCRIPT, /const windowForeground = await bringChromeWindowToFront\(interactionContext\);/,
+      'activation helper must try the OS-level Chrome foreground helper before CDP focus');
     assert.match(SBI_CAPTURE_SCRIPT, /await client\.Page\?\.bringToFront\?\.\(\)\.catch\(\(\) => \{\}\);/,
       'activation helper should best-effort bring the page to the front');
     assert.match(SBI_CAPTURE_SCRIPT, /async function clickByKeywords\(client, keywords, interactionContext = null\)\s*\{\s*await ensureSbiTargetActive\(client, interactionContext\);/s,
@@ -109,6 +112,17 @@ describe('sbi target activation before interactive actions', () => {
       'navigateToUrl must re-activate the target before navigation');
     assert.match(SBI_CAPTURE_SCRIPT, /async function tryCsvDownloads\(client, downloadDir, interactionContext = null\)[\s\S]*await ensureSbiTargetActive\(client, interactionContext\);/s,
       'tryCsvDownloads must re-activate the target before each download attempt');
+  });
+});
+
+describe('windows chrome foreground helper', () => {
+  it('uses Windows foreground APIs and WScript AppActivate for Chrome windows', () => {
+    assert.match(CHROME_FOREGROUND_HELPER, /SetForegroundWindow/,
+      'foreground helper must call SetForegroundWindow');
+    assert.match(CHROME_FOREGROUND_HELPER, /AppActivate/,
+      'foreground helper must call WScript.Shell AppActivate');
+    assert.match(CHROME_FOREGROUND_HELPER, /Get-Process chrome/,
+      'foreground helper must search for Chrome windows');
   });
 });
 

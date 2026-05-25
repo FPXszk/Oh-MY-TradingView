@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import CDP from 'chrome-remote-interface';
+import { execFile } from 'node:child_process';
 import { mkdir, readdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -10,6 +11,10 @@ const DEFAULT_CDP_PORT = 9222;
 const DEFAULT_OUTPUT_DIR = 'docs/reports/screener/portfolio/capture/latest';
 const DEFAULT_HISTORY_START_DATE = '2022/01/01';
 const ACCOUNT_ASSETS_URL = 'https://site.sbisec.co.jp/account/assets';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const PROJECT_ROOT = resolve(__dirname, '..', '..');
+const WINDOWS_CHROME_FOREGROUND_HELPER = join(PROJECT_ROOT, 'scripts', 'windows', 'focus-chrome-window.ps1');
 const CSV_DOWNLOAD_STABILITY = {
   preClickWaitMs: 1500,
   postClickWaitMs: 2000,
@@ -271,12 +276,67 @@ async function activateTarget(host, port, targetId) {
   }).catch(() => {});
 }
 
+async function bringChromeWindowToFront(interactionContext) {
+  if (process.platform !== 'win32') {
+    return { success: false, skipped: true, reason: 'non-windows' };
+  }
+
+  const preferredTitle = normalizeText(interactionContext?.targetTitle || interactionContext?.currentTitle || '');
+  return new Promise((resolve) => {
+    execFile(
+      'powershell.exe',
+      [
+        '-NoProfile',
+        '-ExecutionPolicy', 'Bypass',
+        '-File', WINDOWS_CHROME_FOREGROUND_HELPER,
+        '-PreferredTitle', preferredTitle,
+        '-FallbackTitlePattern', 'SBI証券',
+        '-AsJson',
+      ],
+      {
+        cwd: PROJECT_ROOT,
+        timeout: 10000,
+        maxBuffer: 1024 * 1024,
+      },
+      (error, stdout, stderr) => {
+        const raw = String(stdout || stderr || '').trim();
+        let payload = null;
+        try {
+          payload = raw ? JSON.parse(raw) : null;
+        } catch {
+          payload = null;
+        }
+
+        if (payload) {
+          resolve(payload);
+          return;
+        }
+
+        resolve({
+          success: false,
+          reason: error ? 'foreground-helper-failed' : 'foreground-helper-unparseable',
+          message: raw || error?.message || 'foreground helper produced no output',
+        });
+      },
+    );
+  });
+}
+
 async function ensureSbiTargetActive(client, interactionContext) {
   if (!interactionContext?.host || !interactionContext?.port || !interactionContext?.targetId) {
     return;
   }
 
   await activateTarget(interactionContext.host, interactionContext.port, interactionContext.targetId);
+  const windowForeground = await bringChromeWindowToFront(interactionContext);
+  if (windowForeground?.success && !interactionContext.foregroundSuccessLogged) {
+    interactionContext.notes?.push(`OS foreground helper succeeded: ${windowForeground.targetTitle || 'n/a'}`);
+    interactionContext.foregroundSuccessLogged = true;
+  } else if (!windowForeground?.success && !windowForeground?.skipped) {
+    interactionContext.notes?.push(
+      `OS foreground helper failed: ${windowForeground?.reason || windowForeground?.message || 'unknown failure'}`,
+    );
+  }
   await client.Page?.bringToFront?.().catch(() => {});
   await evaluateJson(client, `(() => {
     try {
@@ -1275,6 +1335,9 @@ async function main() {
           host: options.cdpHost,
           port: options.cdpPort,
           targetId: target.id,
+          targetTitle: target.title,
+          notes: summary.notes,
+          foregroundSuccessLogged: false,
         };
 
         await captureStage(client, outputDir, 'current-page');
