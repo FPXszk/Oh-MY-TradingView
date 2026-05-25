@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-25T11:56:43.543Z",
+  "generatedAt": "2026-05-25T12:14:24.431Z",
   "cdpEndpoint": {
     "host": "127.0.0.1",
     "port": 9222
@@ -41,7 +41,7 @@
         "clicked": true,
         "matched": true,
         "text": "CSVダウンロード",
-        "href": "https://site1.sbisec.co.jp/ETGate/?_ControlID=WPLETpfR001Control&_PageID=WPLETpfR001Rlst10&_DataStoreID=DSWPLETpfR001Control&_SeqNo=1779710212210_default_task_455550_DefaultPID_DefaultAID&_ActionID=csvdl&ref_from=1&ref_to=50&getFlg=on",
+        "href": "https://site1.sbisec.co.jp/ETGate/?_ControlID=WPLETpfR001Control&_PageID=WPLETpfR001Rlst10&_DataStoreID=DSWPLETpfR001Control&_SeqNo=1779711273269_default_task_459692_DefaultPID_DefaultAID&_ActionID=csvdl&ref_from=1&ref_to=50&getFlg=on",
         "tag": "a",
         "type": null,
         "id": null,
@@ -59,7 +59,7 @@
           {
             "text": "CSVダウンロード",
             "score": 40,
-            "href": "https://site1.sbisec.co.jp/ETGate/?_ControlID=WPLETpfR001Control&_PageID=WPLETpfR001Rlst10&_DataStoreID=DSWPLETpfR001Control&_SeqNo=1779710212210_default_task_455550_DefaultPID_DefaultAID&_ActionID=csvdl&ref_from=1&ref_to=50&getFlg=on",
+            "href": "https://site1.sbisec.co.jp/ETGate/?_ControlID=WPLETpfR001Control&_PageID=WPLETpfR001Rlst10&_DataStoreID=DSWPLETpfR001Control&_SeqNo=1779711273269_default_task_459692_DefaultPID_DefaultAID&_ActionID=csvdl&ref_from=1&ref_to=50&getFlg=on",
             "tag": "a",
             "type": null,
             "id": null,
@@ -480,132 +480,9 @@
             "onclick": null,
             "formAction": "https://site.sbisec.co.jp/account/assets/profits?baseDateFrom=2022%2F01%2F01&baseDateTo=2026%2F05%2F25&baseDateType=CONTRACT&product=ALL"
           }
-        ]
-      },
-      {
-        "round": 2,
-        "keywords": [
-          "ダウンロード",
-          "CSV"
-        ],
-        "preClickWaitMs": 1500,
-        "postClickWaitMs": 2000,
-        "detectionTimeoutMs": 20000,
-        "retryDelayMs": 2500,
-        "clicked": true,
-        "matched": true,
-        "text": "CSVダウンロード",
-        "href": null,
-        "tag": "button",
-        "type": "button",
-        "id": null,
-        "name": null,
-        "onclick": null,
-        "formAction": "https://site.sbisec.co.jp/account/assets/profits?baseDateFrom=2022%2F01%2F01&baseDateTo=2026%2F05%2F25&baseDateType=CONTRACT&product=ALL",
-        "x": 1260,
-        "y": 445,
-        "width": 127,
-        "height": 20,
-        "centerX": 1323,
-        "centerY": 455,
-        "candidateCount": 1,
-        "candidates": [
-          {
-            "text": "CSVダウンロード",
-            "score": 80,
-            "href": null,
-            "tag": "button",
-            "type": "button",
-            "id": null,
-            "name": null,
-            "onclick": null,
-            "formAction": "https://site.sbisec.co.jp/account/assets/profits?baseDateFrom=2022%2F01%2F01&baseDateTo=2026%2F05%2F25&baseDateType=CONTRACT&product=ALL"
-          }
-        ]
-      },
-      {
-        "round": 2,
-        "keywords": [
-          "保存",
-          "CSV"
-        ],
-        "preClickWaitMs": 1500,
-        "postClickWaitMs": 2000,
-        "detectionTimeoutMs": 20000,
-        "retryDelayMs": 2500,
-        "clicked": true,
-        "matched": true,
-        "text": "CSVダウンロード",
-        "href": null,
-        "tag": "button",
-        "type": "button",
-        "id": null,
-        "name": null,
-        "onclick": null,
-        "formAction": "https://site.sbisec.co.jp/account/assets/profits?baseDateFrom=2022%2F01%2F01&baseDateTo=2026%2F05%2F25&baseDateType=CONTRACT&product=ALL",
-        "x": 1260,
-        "y": 445,
-        "width": 127,
-        "height": 20,
-        "centerX": 1323,
-        "centerY": 455,
-        "candidateCount": 1,
-        "candidates": [
-          {
-            "text": "CSVダウンロード",
-            "score": 40,
-            "href": null,
-            "tag": "button",
-            "type": "button",
-            "id": null,
-            "name": null,
-            "onclick": null,
-            "formAction": "https://site.sbisec.co.jp/account/assets/profits?baseDateFrom=2022%2F01%2F01&baseDateTo=2026%2F05%2F25&baseDateType=CONTRACT&product=ALL"
-          }
-        ]
-      },
-      {
-        "round": 2,
-        "keywords": [
-          "出力",
-          "CSV"
-        ],
-        "preClickWaitMs": 1500,
-        "postClickWaitMs": 2000,
-        "detectionTimeoutMs": 20000,
-        "retryDelayMs": 2500,
-        "clicked": true,
-        "matched": true,
-        "text": "CSVダウンロード",
-        "href": null,
-        "tag": "button",
-        "type": "button",
-        "id": null,
-        "name": null,
-        "onclick": null,
-        "formAction": "https://site.sbisec.co.jp/account/assets/profits?baseDateFrom=2022%2F01%2F01&baseDateTo=2026%2F05%2F25&baseDateType=CONTRACT&product=ALL",
-        "x": 1260,
-        "y": 445,
-        "width": 127,
-        "height": 20,
-        "centerX": 1323,
-        "centerY": 455,
-        "candidateCount": 1,
-        "candidates": [
-          {
-            "text": "CSVダウンロード",
-            "score": 40,
-            "href": null,
-            "tag": "button",
-            "type": "button",
-            "id": null,
-            "name": null,
-            "onclick": null,
-            "formAction": "https://site.sbisec.co.jp/account/assets/profits?baseDateFrom=2022%2F01%2F01&baseDateTo=2026%2F05%2F25&baseDateType=CONTRACT&product=ALL"
-          }
         ],
         "detectedAddedFiles": [
-          "C:\\actions-runner\\_work\\Oh-MY-TradingView\\Oh-MY-TradingView\\docs\\reports\\screener\\portfolio\\capture\\latest\\downloads\\ALLTYPE_20260525210356.csv"
+          "C:\\actions-runner\\_work\\Oh-MY-TradingView\\Oh-MY-TradingView\\docs\\reports\\screener\\portfolio\\capture\\latest\\downloads\\ALLTYPE_20260525212014.csv"
         ],
         "detectedChangedFiles": []
       },
@@ -649,27 +526,27 @@
           }
         ],
         "detectedAddedFiles": [
-          "C:\\actions-runner\\_work\\Oh-MY-TradingView\\Oh-MY-TradingView\\docs\\reports\\screener\\portfolio\\capture\\latest\\downloads\\DISTRIBUTION_20260525210410.csv"
+          "C:\\actions-runner\\_work\\Oh-MY-TradingView\\Oh-MY-TradingView\\docs\\reports\\screener\\portfolio\\capture\\latest\\downloads\\DISTRIBUTION_20260525212030.csv"
         ],
         "detectedChangedFiles": []
       }
     ],
     "files": [
       {
-        "path": "C:\\actions-runner\\_work\\Oh-MY-TradingView\\Oh-MY-TradingView\\docs\\reports\\screener\\portfolio\\capture\\latest\\downloads\\DISTRIBUTION_20260525210410.csv",
-        "mtimeMs": 1779710642186.6953,
+        "path": "C:\\actions-runner\\_work\\Oh-MY-TradingView\\Oh-MY-TradingView\\docs\\reports\\screener\\portfolio\\capture\\latest\\downloads\\DISTRIBUTION_20260525212030.csv",
+        "mtimeMs": 1779711621708.4932,
         "size": 2794,
-        "relativePath": "downloads\\DISTRIBUTION_20260525210410.csv"
+        "relativePath": "downloads\\DISTRIBUTION_20260525212030.csv"
       },
       {
-        "path": "C:\\actions-runner\\_work\\Oh-MY-TradingView\\Oh-MY-TradingView\\docs\\reports\\screener\\portfolio\\capture\\latest\\downloads\\ALLTYPE_20260525210356.csv",
-        "mtimeMs": 1779710627895.2136,
+        "path": "C:\\actions-runner\\_work\\Oh-MY-TradingView\\Oh-MY-TradingView\\docs\\reports\\screener\\portfolio\\capture\\latest\\downloads\\ALLTYPE_20260525212014.csv",
+        "mtimeMs": 1779711606380.4045,
         "size": 275,
-        "relativePath": "downloads\\ALLTYPE_20260525210356.csv"
+        "relativePath": "downloads\\ALLTYPE_20260525212014.csv"
       },
       {
         "path": "C:\\actions-runner\\_work\\Oh-MY-TradingView\\Oh-MY-TradingView\\docs\\reports\\screener\\portfolio\\capture\\latest\\downloads\\SaveFile.csv",
-        "mtimeMs": 1779710208794.1035,
+        "mtimeMs": 1779711270502.226,
         "size": 1442,
         "relativePath": "downloads\\SaveFile.csv"
       }
@@ -1070,7 +947,7 @@
         "files": []
       },
       "notes": [
-        "Attempt 1: base navigation: {\"url\":\"https://site.sbisec.co.jp/account/assets\",\"readyState\":\"complete\",\"title\":\"My資産トップ｜SBI証券\",\"textSample\":\"銘柄 検索 国内株式 外国株式 投資信託 サイト 内検索 銀行 保険 ポートフォリオ 口座管理 取引 入出金 お知らせ My設定 サービス サポート ログアウト ホーム マーケット NISA 国内株式 外国株式 投資信託 債券 FX PICK UP おまかせ投資 NEW その他の商品 My資産トップ 実現損益詳細 配当金・分配金履歴 診断(ポトフォる) My資産 My資産とは 資産残高 資産推移 実現損益 資産残高 預り金を除外 更新 2026/5/25 20:57 5,44\",\"textLength\":1574,\"clickableCount\":52,\"formControlCount\":6}",
+        "Attempt 1: base navigation: {\"url\":\"https://site.sbisec.co.jp/account/assets\",\"readyState\":\"complete\",\"title\":\"My資産トップ｜SBI証券\",\"textSample\":\"銘柄 検索 国内株式 外国株式 投資信託 サイト 内検索 銀行 保険 ポートフォリオ 口座管理 取引 入出金 お知らせ My設定 サービス サポート ログアウト ホーム マーケット NISA 国内株式 外国株式 投資信託 債券 FX PICK UP おまかせ投資 NEW その他の商品 My資産トップ 実現損益詳細 配当金・分配金履歴 診断(ポトフォる) My資産 My資産とは 資産残高 資産推移 実現損益 資産残高 預り金を除外 更新 2026/5/25 21:15 5,44\",\"textLength\":1574,\"clickableCount\":52,\"formControlCount\":6}",
         "Attempt 1: click result: {\"clicked\":true,\"matched\":true,\"text\":\"米国株式\",\"href\":\"https://www.sbisec.co.jp/ETGate?_ControlID=WPLETsmR001Control&_PageID=WPLETsmR001Sdtl18&_ActionID=NoActionID&getFlg=on&OutSide=on&sw_param1=account&sw_param2=foreign&sw_param3=summary\",\"tag\":\"a\",\"type\":null,\"id\":null,\"name\":null,\"onclick\":null,\"formAction\":null,\"x\":487,\"y\":444,\"width\":84,\"height\":22,\"centerX\":529,\"centerY\":455,\"candidateCount\":1,\"candidates\":[{\"text\":\"米国株式\",\"score\":100,\"href\":\"https://www.sbisec.co.jp/ETGate?_ControlID=WPLETsmR001Control&_PageID=WPLETsmR001Sdtl18&_ActionID=NoActionID&getFlg=on&OutSide=on&sw_param1=account&sw_param2=foreign&sw_param3=summary\",\"tag\":\"a\",\"type\":null,\"id\":null,\"name\":null,\"onclick\":null,\"formAction\":null}]}",
         "Attempt 1: post-navigation settle wait: 1500ms",
         "Attempt 1: CSV diagnostics: {\"candidateCount\":0,\"candidates\":[]}",
@@ -1380,153 +1257,30 @@
                 "onclick": null,
                 "formAction": "https://site.sbisec.co.jp/account/assets/profits?baseDateFrom=2022%2F01%2F01&baseDateTo=2026%2F05%2F25&baseDateType=CONTRACT&product=ALL"
               }
-            ]
-          },
-          {
-            "round": 2,
-            "keywords": [
-              "ダウンロード",
-              "CSV"
-            ],
-            "preClickWaitMs": 1500,
-            "postClickWaitMs": 2000,
-            "detectionTimeoutMs": 20000,
-            "retryDelayMs": 2500,
-            "clicked": true,
-            "matched": true,
-            "text": "CSVダウンロード",
-            "href": null,
-            "tag": "button",
-            "type": "button",
-            "id": null,
-            "name": null,
-            "onclick": null,
-            "formAction": "https://site.sbisec.co.jp/account/assets/profits?baseDateFrom=2022%2F01%2F01&baseDateTo=2026%2F05%2F25&baseDateType=CONTRACT&product=ALL",
-            "x": 1260,
-            "y": 445,
-            "width": 127,
-            "height": 20,
-            "centerX": 1323,
-            "centerY": 455,
-            "candidateCount": 1,
-            "candidates": [
-              {
-                "text": "CSVダウンロード",
-                "score": 80,
-                "href": null,
-                "tag": "button",
-                "type": "button",
-                "id": null,
-                "name": null,
-                "onclick": null,
-                "formAction": "https://site.sbisec.co.jp/account/assets/profits?baseDateFrom=2022%2F01%2F01&baseDateTo=2026%2F05%2F25&baseDateType=CONTRACT&product=ALL"
-              }
-            ]
-          },
-          {
-            "round": 2,
-            "keywords": [
-              "保存",
-              "CSV"
-            ],
-            "preClickWaitMs": 1500,
-            "postClickWaitMs": 2000,
-            "detectionTimeoutMs": 20000,
-            "retryDelayMs": 2500,
-            "clicked": true,
-            "matched": true,
-            "text": "CSVダウンロード",
-            "href": null,
-            "tag": "button",
-            "type": "button",
-            "id": null,
-            "name": null,
-            "onclick": null,
-            "formAction": "https://site.sbisec.co.jp/account/assets/profits?baseDateFrom=2022%2F01%2F01&baseDateTo=2026%2F05%2F25&baseDateType=CONTRACT&product=ALL",
-            "x": 1260,
-            "y": 445,
-            "width": 127,
-            "height": 20,
-            "centerX": 1323,
-            "centerY": 455,
-            "candidateCount": 1,
-            "candidates": [
-              {
-                "text": "CSVダウンロード",
-                "score": 40,
-                "href": null,
-                "tag": "button",
-                "type": "button",
-                "id": null,
-                "name": null,
-                "onclick": null,
-                "formAction": "https://site.sbisec.co.jp/account/assets/profits?baseDateFrom=2022%2F01%2F01&baseDateTo=2026%2F05%2F25&baseDateType=CONTRACT&product=ALL"
-              }
-            ]
-          },
-          {
-            "round": 2,
-            "keywords": [
-              "出力",
-              "CSV"
-            ],
-            "preClickWaitMs": 1500,
-            "postClickWaitMs": 2000,
-            "detectionTimeoutMs": 20000,
-            "retryDelayMs": 2500,
-            "clicked": true,
-            "matched": true,
-            "text": "CSVダウンロード",
-            "href": null,
-            "tag": "button",
-            "type": "button",
-            "id": null,
-            "name": null,
-            "onclick": null,
-            "formAction": "https://site.sbisec.co.jp/account/assets/profits?baseDateFrom=2022%2F01%2F01&baseDateTo=2026%2F05%2F25&baseDateType=CONTRACT&product=ALL",
-            "x": 1260,
-            "y": 445,
-            "width": 127,
-            "height": 20,
-            "centerX": 1323,
-            "centerY": 455,
-            "candidateCount": 1,
-            "candidates": [
-              {
-                "text": "CSVダウンロード",
-                "score": 40,
-                "href": null,
-                "tag": "button",
-                "type": "button",
-                "id": null,
-                "name": null,
-                "onclick": null,
-                "formAction": "https://site.sbisec.co.jp/account/assets/profits?baseDateFrom=2022%2F01%2F01&baseDateTo=2026%2F05%2F25&baseDateType=CONTRACT&product=ALL"
-              }
             ],
             "detectedAddedFiles": [
-              "C:\\actions-runner\\_work\\Oh-MY-TradingView\\Oh-MY-TradingView\\docs\\reports\\screener\\portfolio\\capture\\latest\\downloads\\ALLTYPE_20260525210356.csv"
+              "C:\\actions-runner\\_work\\Oh-MY-TradingView\\Oh-MY-TradingView\\docs\\reports\\screener\\portfolio\\capture\\latest\\downloads\\ALLTYPE_20260525212014.csv"
             ],
             "detectedChangedFiles": []
           }
         ],
         "files": [
           {
-            "path": "C:\\actions-runner\\_work\\Oh-MY-TradingView\\Oh-MY-TradingView\\docs\\reports\\screener\\portfolio\\capture\\latest\\downloads\\ALLTYPE_20260525210356.csv",
-            "mtimeMs": 1779710627895.2136,
+            "path": "C:\\actions-runner\\_work\\Oh-MY-TradingView\\Oh-MY-TradingView\\docs\\reports\\screener\\portfolio\\capture\\latest\\downloads\\ALLTYPE_20260525212014.csv",
+            "mtimeMs": 1779711606380.4045,
             "size": 275,
-            "relativePath": "downloads\\ALLTYPE_20260525210356.csv"
+            "relativePath": "downloads\\ALLTYPE_20260525212014.csv"
           },
           {
             "path": "C:\\actions-runner\\_work\\Oh-MY-TradingView\\Oh-MY-TradingView\\docs\\reports\\screener\\portfolio\\capture\\latest\\downloads\\SaveFile.csv",
-            "mtimeMs": 1779710208794.1035,
+            "mtimeMs": 1779711270502.226,
             "size": 1442,
             "relativePath": "downloads\\SaveFile.csv"
           }
         ]
       },
       "notes": [
-        "Attempt 1: base navigation: {\"url\":\"https://site.sbisec.co.jp/account/assets\",\"readyState\":\"complete\",\"title\":\"My資産トップ｜SBI証券\",\"textSample\":\"銘柄 検索 国内株式 外国株式 投資信託 サイト 内検索 銀行 保険 ポートフォリオ 口座管理 取引 入出金 お知らせ My設定 サービス サポート ログアウト ホーム マーケット NISA 国内株式 外国株式 投資信託 債券 FX PICK UP おまかせ投資 NEW その他の商品 My資産トップ 実現損益詳細 配当金・分配金履歴 診断(ポトフォる) My資産 My資産とは 資産残高 資産推移 実現損益 資産残高 預り金を除外 更新 2026/5/25 20:58 5,44\",\"textLength\":1574,\"clickableCount\":53,\"formControlCount\":6}",
+        "Attempt 1: base navigation: {\"url\":\"https://site.sbisec.co.jp/account/assets\",\"readyState\":\"complete\",\"title\":\"My資産トップ｜SBI証券\",\"textSample\":\"銘柄 検索 国内株式 外国株式 投資信託 サイト 内検索 銀行 保険 ポートフォリオ 口座管理 取引 入出金 お知らせ My設定 サービス サポート ログアウト ホーム マーケット NISA 国内株式 外国株式 投資信託 債券 FX PICK UP おまかせ投資 NEW その他の商品 My資産トップ 実現損益詳細 配当金・分配金履歴 診断(ポトフォる) My資産 My資産とは 資産残高 資産推移 実現損益 資産残高 預り金を除外 更新 2026/5/25 21:16 5,44\",\"textLength\":1574,\"clickableCount\":53,\"formControlCount\":6}",
         "Attempt 1: click result: {\"clicked\":true,\"matched\":true,\"text\":\"実現損益詳細\",\"href\":\"https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETsmR001Control&_PageID=WPLETsmR001Sdtl18&_ActionID=NoActionID&OutSide=on&getFlg=on&sw_param1=account&sw_param2=assets&sw_param3=profits&_scpr=intpr=hn_i_my_profits\",\"tag\":\"a\",\"type\":null,\"id\":null,\"name\":null,\"onclick\":null,\"formAction\":null,\"x\":454,\"y\":136,\"width\":108,\"height\":30,\"centerX\":508,\"centerY\":151,\"candidateCount\":1,\"candidates\":[{\"text\":\"実現損益詳細\",\"score\":100,\"href\":\"https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETsmR001Control&_PageID=WPLETsmR001Sdtl18&_ActionID=NoActionID&OutSide=on&getFlg=on&sw_param1=account&sw_param2=assets&sw_param3=profits&_scpr=intpr=hn_i_my_profits\",\"tag\":\"a\",\"type\":null,\"id\":null,\"name\":null,\"onclick\":null,\"formAction\":null}]}",
         "Attempt 1: post-navigation settle wait: 1500ms",
         "Attempt 1: start-date fill result: {\"updated\":true,\"candidateCount\":2,\"label\":\"\",\"type\":\"text\",\"value\":\"2022/01/01\"}",
@@ -1616,34 +1370,34 @@
               }
             ],
             "detectedAddedFiles": [
-              "C:\\actions-runner\\_work\\Oh-MY-TradingView\\Oh-MY-TradingView\\docs\\reports\\screener\\portfolio\\capture\\latest\\downloads\\DISTRIBUTION_20260525210410.csv"
+              "C:\\actions-runner\\_work\\Oh-MY-TradingView\\Oh-MY-TradingView\\docs\\reports\\screener\\portfolio\\capture\\latest\\downloads\\DISTRIBUTION_20260525212030.csv"
             ],
             "detectedChangedFiles": []
           }
         ],
         "files": [
           {
-            "path": "C:\\actions-runner\\_work\\Oh-MY-TradingView\\Oh-MY-TradingView\\docs\\reports\\screener\\portfolio\\capture\\latest\\downloads\\DISTRIBUTION_20260525210410.csv",
-            "mtimeMs": 1779710642186.6953,
+            "path": "C:\\actions-runner\\_work\\Oh-MY-TradingView\\Oh-MY-TradingView\\docs\\reports\\screener\\portfolio\\capture\\latest\\downloads\\DISTRIBUTION_20260525212030.csv",
+            "mtimeMs": 1779711621708.4932,
             "size": 2794,
-            "relativePath": "downloads\\DISTRIBUTION_20260525210410.csv"
+            "relativePath": "downloads\\DISTRIBUTION_20260525212030.csv"
           },
           {
-            "path": "C:\\actions-runner\\_work\\Oh-MY-TradingView\\Oh-MY-TradingView\\docs\\reports\\screener\\portfolio\\capture\\latest\\downloads\\ALLTYPE_20260525210356.csv",
-            "mtimeMs": 1779710627895.2136,
+            "path": "C:\\actions-runner\\_work\\Oh-MY-TradingView\\Oh-MY-TradingView\\docs\\reports\\screener\\portfolio\\capture\\latest\\downloads\\ALLTYPE_20260525212014.csv",
+            "mtimeMs": 1779711606380.4045,
             "size": 275,
-            "relativePath": "downloads\\ALLTYPE_20260525210356.csv"
+            "relativePath": "downloads\\ALLTYPE_20260525212014.csv"
           },
           {
             "path": "C:\\actions-runner\\_work\\Oh-MY-TradingView\\Oh-MY-TradingView\\docs\\reports\\screener\\portfolio\\capture\\latest\\downloads\\SaveFile.csv",
-            "mtimeMs": 1779710208794.1035,
+            "mtimeMs": 1779711270502.226,
             "size": 1442,
             "relativePath": "downloads\\SaveFile.csv"
           }
         ]
       },
       "notes": [
-        "Attempt 1: base navigation: {\"url\":\"https://site.sbisec.co.jp/account/assets\",\"readyState\":\"complete\",\"title\":\"My資産トップ｜SBI証券\",\"textSample\":\"銘柄 検索 国内株式 外国株式 投資信託 サイト 内検索 銀行 保険 ポートフォリオ 口座管理 取引 入出金 お知らせ My設定 サービス サポート ログアウト ホーム マーケット NISA 国内株式 外国株式 投資信託 債券 FX PICK UP おまかせ投資 NEW その他の商品 My資産トップ 実現損益詳細 配当金・分配金履歴 診断(ポトフォる) My資産 My資産とは 資産残高 資産推移 実現損益 資産残高 預り金を除外 更新 2026/5/25 21:03 5,44\",\"textLength\":1574,\"clickableCount\":53,\"formControlCount\":6}",
+        "Attempt 1: base navigation: {\"url\":\"https://site.sbisec.co.jp/account/assets\",\"readyState\":\"complete\",\"title\":\"My資産トップ｜SBI証券\",\"textSample\":\"銘柄 検索 国内株式 外国株式 投資信託 サイト 内検索 銀行 保険 ポートフォリオ 口座管理 取引 入出金 お知らせ My設定 サービス サポート ログアウト ホーム マーケット NISA 国内株式 外国株式 投資信託 債券 FX PICK UP おまかせ投資 NEW その他の商品 My資産トップ 実現損益詳細 配当金・分配金履歴 診断(ポトフォる) My資産 My資産とは 資産残高 資産推移 実現損益 資産残高 預り金を除外 更新 2026/5/25 21:20 5,44\",\"textLength\":1574,\"clickableCount\":53,\"formControlCount\":6}",
         "Attempt 1: click result: {\"clicked\":true,\"matched\":true,\"text\":\"配当金・分配金履歴\",\"href\":\"https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETsmR001Control&_PageID=WPLETsmR001Sdtl18&_ActionID=NoActionID&OutSide=on&getFlg=on&sw_param1=account&sw_param2=assets&sw_param3=dividends&_scpr=intpr=hn_i_my_dividends\",\"tag\":\"a\",\"type\":null,\"id\":null,\"name\":null,\"onclick\":null,\"formAction\":null,\"x\":566,\"y\":136,\"width\":150,\"height\":30,\"centerX\":641,\"centerY\":151,\"candidateCount\":2,\"candidates\":[{\"text\":\"配当金・分配金履歴\",\"score\":100,\"href\":\"https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETsmR001Control&_PageID=WPLETsmR001Sdtl18&_ActionID=NoActionID&OutSide=on&getFlg=on&sw_param1=account&sw_param2=assets&sw_param3=dividends&_scpr=intpr=hn_i_my_dividends\",\"tag\":\"a\",\"type\":null,\"id\":null,\"name\":null,\"onclick\":null,\"formAction\":null},{\"text\":\"配当金・分配金履歴はこちら\",\"score\":40,\"href\":\"https://site.sbisec.co.jp/account/assets/dividends\",\"tag\":\"a\",\"type\":null,\"id\":null,\"name\":null,\"onclick\":null,\"formAction\":null}]}",
         "Attempt 1: post-navigation settle wait: 1500ms",
         "Attempt 1: start-date fill result: {\"updated\":true,\"candidateCount\":2,\"label\":\"\",\"type\":\"text\",\"value\":\"2022/01/01\"}",
@@ -1684,6 +1438,6 @@
   ],
   "notes": [
     "Every-asset navigation click result: {\"clicked\":true,\"matched\":true,\"text\":\"ポートフォリオ\",\"href\":\"https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETpfR001Control&_PageID=DefaultPID&_ActionID=DefaultAID&_DataStoreID=DSWPLETpfR001Control&OutSide=on&getFlg=on&_scpr=intpr=hn_trade\",\"tag\":\"a\",\"type\":null,\"id\":null,\"name\":null,\"onclick\":null,\"formAction\":null,\"x\":926,\"y\":38,\"width\":92,\"height\":44,\"centerX\":972,\"centerY\":60,\"candidateCount\":2,\"candidates\":[{\"text\":\"ポートフォリオ\",\"score\":100,\"href\":\"https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETpfR001Control&_PageID=DefaultPID&_ActionID=DefaultAID&_DataStoreID=DSWPLETpfR001Control&OutSide=on&getFlg=on&_scpr=intpr=hn_trade\",\"tag\":\"a\",\"type\":null,\"id\":null,\"name\":null,\"onclick\":null,\"formAction\":null},{\"text\":\"口座管理\",\"score\":100,\"href\":\"https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETacR001Control&_PageID=DefaultPID&_ActionID=DefaultAID&_DataStoreID=DSWPLETacR001Control&OutSide=on&getFlg=on&_scpr=intpr=hn_acc\",\"tag\":\"a\",\"type\":null,\"id\":null,\"name\":null,\"onclick\":null,\"formAction\":null}]}",
-    "Account-assets navigation result: {\"url\":\"https://site.sbisec.co.jp/account/assets\",\"readyState\":\"complete\",\"title\":\"My資産トップ｜SBI証券\",\"textSample\":\"銘柄 検索 国内株式 外国株式 投資信託 サイト 内検索 銀行 保険 ポートフォリオ 口座管理 取引 入出金 お知らせ My設定 サービス サポート ログアウト ホーム マーケット NISA 国内株式 外国株式 投資信託 債券 FX PICK UP おまかせ投資 NEW その他の商品 My資産トップ 実現損益詳細 配当金・分配金履歴 診断(ポトフォる) My資産 My資産とは 資産残高 資産推移 実現損益 資産残高 預り金を除外 更新 2026/5/25 20:56 5,44\",\"textLength\":1574,\"clickableCount\":53,\"formControlCount\":6}"
+    "Account-assets navigation result: {\"url\":\"https://site.sbisec.co.jp/account/assets\",\"readyState\":\"complete\",\"title\":\"My資産トップ｜SBI証券\",\"textSample\":\"銘柄 検索 国内株式 外国株式 投資信託 サイト 内検索 銀行 保険 ポートフォリオ 口座管理 取引 入出金 お知らせ My設定 サービス サポート ログアウト ホーム マーケット NISA 国内株式 外国株式 投資信託 債券 FX PICK UP おまかせ投資 NEW その他の商品 My資産トップ 実現損益詳細 配当金・分配金履歴 診断(ポトフォる) My資産 My資産とは 資産残高 資産推移 実現損益 資産残高 預り金を除外 更新 2026/5/25 21:14 5,44\",\"textLength\":1574,\"clickableCount\":52,\"formControlCount\":6}"
   ]
 }

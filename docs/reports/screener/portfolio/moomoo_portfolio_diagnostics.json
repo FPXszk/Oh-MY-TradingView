@@ -135,7 +135,7 @@
         ]
       },
       "balance": {
-        "power": 10545.364304,
+        "power": 10545.36126,
         "max_power_short": "N/A",
         "net_cash_power": "N/A",
         "total_assets": 14954.8213,
@@ -147,7 +147,7 @@
         "long_mv": "N/A",
         "short_mv": "N/A",
         "pending_asset": 0,
-        "interest_charged_amount": 38.305696,
+        "interest_charged_amount": 38.30874,
         "frozen_cash": 0,
         "avl_withdrawal_cash": 10545.36,
         "max_withdrawal": "N/A",
@@ -166,7 +166,7 @@
         "hkd_assets": 0,
         "us_cash": 10583.67,
         "us_avl_withdrawal_cash": 10545.36,
-        "usd_net_cash_power": 10545.364304,
+        "usd_net_cash_power": 10545.36126,
         "usd_assets": 14993.13,
         "cn_cash": "N/A",
         "cn_avl_withdrawal_cash": "N/A",
@@ -272,13 +272,13 @@
     "Read-only diagnostics only. No order, cancel, modify, or unlock methods are called.",
     "Portfolio totals prefer REAL accounts when present; SIMULATE accounts remain listed separately."
   ],
-  "retrieved_at": "2026-05-25T11:56:41.792Z",
+  "retrieved_at": "2026-05-25T12:14:22.713Z",
   "workflow": {
-    "runId": "26399249803",
+    "runId": "26399947995",
     "runAttempt": "1",
-    "runNumber": "14",
+    "runNumber": "15",
     "refName": "main",
-    "sha": "4621efdb85a8e3b231dad2bf5458ba977ea704e0",
-    "generatedAt": "2026-05-25T11:56:40.521Z"
+    "sha": "d4e21b73d804f6375cecdad02dcb840f73e9e795",
+    "generatedAt": "2026-05-25T12:14:21.299Z"
   }
 }
