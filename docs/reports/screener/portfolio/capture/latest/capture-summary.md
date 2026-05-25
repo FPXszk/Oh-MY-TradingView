@@ -1,9 +1,9 @@
 # SBI Portfolio Capture Summary
 
-- generated_at: 2026-05-21T10:56:45.995Z
+- generated_at: 2026-05-25T11:56:43.543Z
 - cdp_endpoint: 127.0.0.1:9222
-- target_title: My資産トップ｜SBI証券
-- target_url: https://site.sbisec.co.jp/account/assets
+- target_title: 配当金・分配金履歴｜SBI証券
+- target_url: https://site.sbisec.co.jp/account/assets/dividends?dispositionDateFrom=2022%2F01%2F01&dispositionDateTo=2026%2F05%2F25
 - dry_run: false
 
 ## Endpoint Probe
@@ -11,9 +11,9 @@
 - endpoint_reachable: true
 - version_ok: true
 - list_ok: true
-- browser: Chrome/148.0.7778.178
+- browser: Chrome/148.0.7778.179
 - protocol_version: 1.3
-- target_count: 10
+- target_count: 7
 
 ## Capture
 
@@ -25,8 +25,8 @@
 
 ## Downloaded Files
 
-- downloads\DISTRIBUTION_20260521195927.csv
-- downloads\ALLTYPE_20260521195913.csv
+- downloads\DISTRIBUTION_20260525210410.csv
+- downloads\ALLTYPE_20260525210356.csv
 - downloads\SaveFile.csv
 
 ## Route Captures
@@ -41,7 +41,7 @@
 - snapshot: us-stocks-page
 - form_controls: 3
 - csv_candidates: 0
-- note: Attempt 1: base navigation: {"url":"https://site.sbisec.co.jp/account/assets","readyState":"complete","title":"My資産トップ｜SBI証券","textSample":"銘柄 検索 国内株式 外国株式 投資信託 サイト 内検索 銀行 保険 ポートフォリオ 口座管理 取引 入出金 お知らせ My設定 サービス サポート ログアウト ホーム マーケット NISA 国内株式 外国株式 投資信託 債券 FX PICK UP おまかせ投資 その他の商品 My資産トップ 実現損益詳細 配当金・分配金履歴 診断(ポトフォる) My資産 My資産とは 資産残高 資産推移 実現損益 資産残高 預り金を除外 更新 2026/5/21 19:57 5,407,13","textLength":1566,"clickableCount":53,"formControlCount":6}
+- note: Attempt 1: base navigation: {"url":"https://site.sbisec.co.jp/account/assets","readyState":"complete","title":"My資産トップ｜SBI証券","textSample":"銘柄 検索 国内株式 外国株式 投資信託 サイト 内検索 銀行 保険 ポートフォリオ 口座管理 取引 入出金 お知らせ My設定 サービス サポート ログアウト ホーム マーケット NISA 国内株式 外国株式 投資信託 債券 FX PICK UP おまかせ投資 NEW その他の商品 My資産トップ 実現損益詳細 配当金・分配金履歴 診断(ポトフォる) My資産 My資産とは 資産残高 資産推移 実現損益 資産残高 預り金を除外 更新 2026/5/25 20:57 5,44","textLength":1574,"clickableCount":52,"formControlCount":6}
 - note: Attempt 1: click result: {"clicked":true,"matched":true,"text":"米国株式","href":"https://www.sbisec.co.jp/ETGate?_ControlID=WPLETsmR001Control&_PageID=WPLETsmR001Sdtl18&_ActionID=NoActionID&getFlg=on&OutSide=on&sw_param1=account&sw_param2=foreign&sw_param3=summary","tag":"a","type":null,"id":null,"name":null,"onclick":null,"formAction":null,"x":487,"y":444,"width":84,"height":22,"centerX":529,"centerY":455,"candidateCount":1,"candidates":[{"text":"米国株式","score":100,"href":"https://www.sbisec.co.jp/ETGate?_ControlID=WPLETsmR001Control&_PageID=WPLETsmR001Sdtl18&_ActionID=NoActionID&getFlg=on&OutSide=on&sw_param1=account&sw_param2=foreign&sw_param3=summary","tag":"a","type":null,"id":null,"name":null,"onclick":null,"formAction":null}]}
 - note: Attempt 1: post-navigation settle wait: 1500ms
 - note: Attempt 1: CSV diagnostics: {"candidateCount":0,"candidates":[]}
@@ -58,24 +58,24 @@
 - clicked: true
 - captured: true
 - csv_download_success: true
-- page_url: https://site.sbisec.co.jp/account/assets/profits?baseDateType=CONTRACT&baseDateFrom=2022%2F01%2F01&baseDateTo=2026%2F05%2F21&product=ALL
+- page_url: https://site.sbisec.co.jp/account/assets/profits?baseDateFrom=2022%2F01%2F01&baseDateTo=2026%2F05%2F25&baseDateType=CONTRACT&product=ALL
 - snapshot: realized-detail-page
 - form_controls: 5
 - csv_candidates: 1
 - csv_candidate_tag: button
 - csv_candidate_name: n/a
-- csv_candidate_form_action: https://site.sbisec.co.jp/account/assets/profits?baseDateType=CONTRACT&baseDateFrom=2022%2F01%2F01&baseDateTo=2026%2F05%2F21&product=ALL
+- csv_candidate_form_action: https://site.sbisec.co.jp/account/assets/profits?baseDateFrom=2022%2F01%2F01&baseDateTo=2026%2F05%2F25&baseDateType=CONTRACT&product=ALL
 - csv_candidate_form_method: n/a
-- downloaded_files: downloads\ALLTYPE_20260521195913.csv, downloads\SaveFile.csv
-- note: Attempt 1: base navigation: {"url":"https://site.sbisec.co.jp/account/assets","readyState":"complete","title":"My資産トップ｜SBI証券","textSample":"銘柄 検索 国内株式 外国株式 投資信託 サイト 内検索 銀行 保険 ポートフォリオ 口座管理 取引 入出金 お知らせ My設定 サービス サポート ログアウト ホーム マーケット NISA 国内株式 外国株式 投資信託 債券 FX PICK UP おまかせ投資 その他の商品 My資産トップ 実現損益詳細 配当金・分配金履歴 診断(ポトフォる) My資産 My資産とは 資産残高 資産推移 実現損益 資産残高 預り金を除外 更新 2026/5/21 19:58 5,407,13","textLength":1566,"clickableCount":53,"formControlCount":6}
+- downloaded_files: downloads\ALLTYPE_20260525210356.csv, downloads\SaveFile.csv
+- note: Attempt 1: base navigation: {"url":"https://site.sbisec.co.jp/account/assets","readyState":"complete","title":"My資産トップ｜SBI証券","textSample":"銘柄 検索 国内株式 外国株式 投資信託 サイト 内検索 銀行 保険 ポートフォリオ 口座管理 取引 入出金 お知らせ My設定 サービス サポート ログアウト ホーム マーケット NISA 国内株式 外国株式 投資信託 債券 FX PICK UP おまかせ投資 NEW その他の商品 My資産トップ 実現損益詳細 配当金・分配金履歴 診断(ポトフォる) My資産 My資産とは 資産残高 資産推移 実現損益 資産残高 預り金を除外 更新 2026/5/25 20:58 5,44","textLength":1574,"clickableCount":53,"formControlCount":6}
 - note: Attempt 1: click result: {"clicked":true,"matched":true,"text":"実現損益詳細","href":"https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETsmR001Control&_PageID=WPLETsmR001Sdtl18&_ActionID=NoActionID&OutSide=on&getFlg=on&sw_param1=account&sw_param2=assets&sw_param3=profits&_scpr=intpr=hn_i_my_profits","tag":"a","type":null,"id":null,"name":null,"onclick":null,"formAction":null,"x":454,"y":136,"width":108,"height":30,"centerX":508,"centerY":151,"candidateCount":1,"candidates":[{"text":"実現損益詳細","score":100,"href":"https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETsmR001Control&_PageID=WPLETsmR001Sdtl18&_ActionID=NoActionID&OutSide=on&getFlg=on&sw_param1=account&sw_param2=assets&sw_param3=profits&_scpr=intpr=hn_i_my_profits","tag":"a","type":null,"id":null,"name":null,"onclick":null,"formAction":null}]}
 - note: Attempt 1: post-navigation settle wait: 1500ms
 - note: Attempt 1: start-date fill result: {"updated":true,"candidateCount":2,"label":"","type":"text","value":"2022/01/01"}
-- note: Attempt 1: submit result: {"clicked":true,"matched":true,"text":"照会","href":null,"tag":"button","type":"button","id":null,"name":null,"onclick":null,"formAction":"https://site.sbisec.co.jp/account/assets/profits","x":873,"y":439,"width":160,"height":32,"centerX":953,"centerY":455,"candidateCount":1,"candidates":[{"text":"照会","score":100,"href":null,"tag":"button","type":"button","id":null,"name":null,"onclick":null,"formAction":"https://site.sbisec.co.jp/account/assets/profits"}],"settle":{"url":"https://site.sbisec.co.jp/account/assets/profits?baseDateType=CONTRACT&baseDateFrom=2026/05/01&baseDateTo=2026/05/21&product=ALL","readyState":"complete","title":"実現損益詳細｜SBI証券","textSample":"銘柄 検索 国内株式 外国株式 投資信託 サイト 内検索 銀行 保険 ポートフォリオ 口座管理 取引 入出金 お知らせ My設定 サービス サポート ログアウト ホーム マーケット NISA 国内株式 外国株式 投資信託 債券 FX PICK UP おまかせ投資 その他の商品 My資産トップ 実現損益詳細 配当金・分配金履歴 診断(ポトフォる) 実現損益詳細 実現損益詳細とは My資産トップ ／ 実現損益詳細 すべて 照会条件 すべて、 期間：約定日 2026/5/1～202","textLength":963,"clickableCount":45,"formControlCount":5}}
-- note: Attempt 1: range URL candidate: https://site.sbisec.co.jp/account/assets/profits?baseDateType=CONTRACT&baseDateFrom=2022%2F01%2F01&baseDateTo=2026%2F05%2F21&product=ALL
-- note: Attempt 1: forced range navigation: {"url":"https://site.sbisec.co.jp/account/assets/profits?baseDateType=CONTRACT&baseDateFrom=2022%2F01%2F01&baseDateTo=2026%2F05%2F21&product=ALL","readyState":"complete","title":"実現損益詳細｜SBI証券","textSample":"銘柄 検索 国内株式 外国株式 投資信託 サイト 内検索 銀行 保険 ポートフォリオ 口座管理 取引 入出金 お知らせ My設定 サービス サポート ログアウト ホーム マーケット NISA 国内株式 外国株式 投資信託 債券 FX PICK UP おまかせ投資 その他の商品 My資産トップ 実現損益詳細 配当金・分配金履歴 診断(ポトフォる) 実現損益詳細 実現損益詳細とは My資産トップ ／ 実現損益詳細 すべて 照会条件 すべて、 期間：約定日 2022/1/1～202","textLength":1023,"clickableCount":46,"formControlCount":5}
+- note: Attempt 1: submit result: {"clicked":true,"matched":true,"text":"照会","href":null,"tag":"button","type":"button","id":null,"name":null,"onclick":null,"formAction":"https://site.sbisec.co.jp/account/assets/profits","x":873,"y":439,"width":160,"height":32,"centerX":953,"centerY":455,"candidateCount":1,"candidates":[{"text":"照会","score":100,"href":null,"tag":"button","type":"button","id":null,"name":null,"onclick":null,"formAction":"https://site.sbisec.co.jp/account/assets/profits"}],"settle":{"url":"https://site.sbisec.co.jp/account/assets/profits","readyState":"complete","title":"実現損益詳細｜SBI証券","textSample":"銘柄 検索 国内株式 外国株式 投資信託 サイト 内検索 銀行 保険 ポートフォリオ 口座管理 取引 入出金 お知らせ My設定 サービス サポート ログアウト ホーム マーケット NISA 国内株式 外国株式 投資信託 債券 FX PICK UP おまかせ投資 NEW その他の商品 My資産トップ 実現損益詳細 配当金・分配金履歴 診断(ポトフォる) 実現損益詳細 実現損益詳細とは My資産トップ ／ 実現損益詳細 商品 すべて国内株式米国株式投資信託債券SBIラップ 期間","textLength":804,"clickableCount":40,"formControlCount":5}}
+- note: Attempt 1: range URL candidate: https://site.sbisec.co.jp/account/assets/profits?baseDateFrom=2022%2F01%2F01&baseDateTo=2026%2F05%2F25&baseDateType=CONTRACT&product=ALL
+- note: Attempt 1: forced range navigation: {"url":"https://site.sbisec.co.jp/account/assets/profits?baseDateFrom=2022%2F01%2F01&baseDateTo=2026%2F05%2F25&baseDateType=CONTRACT&product=ALL","readyState":"complete","title":"実現損益詳細｜SBI証券","textSample":"銘柄 検索 国内株式 外国株式 投資信託 サイト 内検索 銀行 保険 ポートフォリオ 口座管理 取引 入出金 お知らせ My設定 サービス サポート ログアウト ホーム マーケット NISA 国内株式 外国株式 投資信託 債券 FX PICK UP おまかせ投資 NEW その他の商品 My資産トップ 実現損益詳細 配当金・分配金履歴 診断(ポトフォる) 実現損益詳細 実現損益詳細とは My資産トップ ／ 実現損益詳細 すべて 照会条件 すべて、 期間：約定日 2022/1/1","textLength":1027,"clickableCount":46,"formControlCount":5}
 - note: Attempt 1: post-range-navigation settle wait: 1500ms
-- note: Attempt 1: CSV diagnostics: {"candidateCount":1,"candidates":[{"text":"CSVダウンロード","tag":"button","type":"button","id":null,"name":null,"value":null,"href":null,"onclick":null,"formAction":"https://site.sbisec.co.jp/account/assets/profits?baseDateType=CONTRACT&baseDateFrom=2022%2F01%2F01&baseDateTo=2026%2F05%2F21&product=ALL","outerHtml":"<button type=\"button\" class=\"text-xs link-light\"><span class=\"i-download\"></span>CSVダウンロード</button>","matchedKeywords":[["CSV"],["CSVダウンロード"]],"form":null}]}
+- note: Attempt 1: CSV diagnostics: {"candidateCount":1,"candidates":[{"text":"CSVダウンロード","tag":"button","type":"button","id":null,"name":null,"value":null,"href":null,"onclick":null,"formAction":"https://site.sbisec.co.jp/account/assets/profits?baseDateFrom=2022%2F01%2F01&baseDateTo=2026%2F05%2F25&baseDateType=CONTRACT&product=ALL","outerHtml":"<button type=\"button\" class=\"text-xs link-light\"><span class=\"i-download\"></span>CSVダウンロード</button>","matchedKeywords":[["CSV"],["CSVダウンロード"]],"form":null}]}
 
 ### 配当金・分配金履歴
 
@@ -83,26 +83,26 @@
 - clicked: true
 - captured: true
 - csv_download_success: true
-- page_url: https://site.sbisec.co.jp/account/assets/dividends?dispositionDateFrom=2022%2F01%2F01&dispositionDateTo=2026%2F05%2F21
+- page_url: https://site.sbisec.co.jp/account/assets/dividends?dispositionDateFrom=2022%2F01%2F01&dispositionDateTo=2026%2F05%2F25
 - snapshot: dividend-history-page
 - form_controls: 5
 - csv_candidates: 1
 - csv_candidate_tag: button
 - csv_candidate_name: n/a
-- csv_candidate_form_action: https://site.sbisec.co.jp/account/assets/dividends?dispositionDateFrom=2022%2F01%2F01&dispositionDateTo=2026%2F05%2F21
+- csv_candidate_form_action: https://site.sbisec.co.jp/account/assets/dividends?dispositionDateFrom=2022%2F01%2F01&dispositionDateTo=2026%2F05%2F25
 - csv_candidate_form_method: n/a
-- downloaded_files: downloads\DISTRIBUTION_20260521195927.csv, downloads\ALLTYPE_20260521195913.csv, downloads\SaveFile.csv
-- note: Attempt 1: base navigation: {"url":"https://site.sbisec.co.jp/account/assets","readyState":"complete","title":"My資産トップ｜SBI証券","textSample":"銘柄 検索 国内株式 外国株式 投資信託 サイト 内検索 銀行 保険 ポートフォリオ 口座管理 取引 入出金 お知らせ My設定 サービス サポート ログアウト ホーム マーケット NISA 国内株式 外国株式 投資信託 債券 FX PICK UP おまかせ投資 その他の商品 My資産トップ 実現損益詳細 配当金・分配金履歴 診断(ポトフォる) My資産 My資産とは 資産残高 資産推移 実現損益 資産残高 預り金を除外 更新 2026/5/21 19:59 5,407,13","textLength":1566,"clickableCount":53,"formControlCount":6}
+- downloaded_files: downloads\DISTRIBUTION_20260525210410.csv, downloads\ALLTYPE_20260525210356.csv, downloads\SaveFile.csv
+- note: Attempt 1: base navigation: {"url":"https://site.sbisec.co.jp/account/assets","readyState":"complete","title":"My資産トップ｜SBI証券","textSample":"銘柄 検索 国内株式 外国株式 投資信託 サイト 内検索 銀行 保険 ポートフォリオ 口座管理 取引 入出金 お知らせ My設定 サービス サポート ログアウト ホーム マーケット NISA 国内株式 外国株式 投資信託 債券 FX PICK UP おまかせ投資 NEW その他の商品 My資産トップ 実現損益詳細 配当金・分配金履歴 診断(ポトフォる) My資産 My資産とは 資産残高 資産推移 実現損益 資産残高 預り金を除外 更新 2026/5/25 21:03 5,44","textLength":1574,"clickableCount":53,"formControlCount":6}
 - note: Attempt 1: click result: {"clicked":true,"matched":true,"text":"配当金・分配金履歴","href":"https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETsmR001Control&_PageID=WPLETsmR001Sdtl18&_ActionID=NoActionID&OutSide=on&getFlg=on&sw_param1=account&sw_param2=assets&sw_param3=dividends&_scpr=intpr=hn_i_my_dividends","tag":"a","type":null,"id":null,"name":null,"onclick":null,"formAction":null,"x":566,"y":136,"width":150,"height":30,"centerX":641,"centerY":151,"candidateCount":2,"candidates":[{"text":"配当金・分配金履歴","score":100,"href":"https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETsmR001Control&_PageID=WPLETsmR001Sdtl18&_ActionID=NoActionID&OutSide=on&getFlg=on&sw_param1=account&sw_param2=assets&sw_param3=dividends&_scpr=intpr=hn_i_my_dividends","tag":"a","type":null,"id":null,"name":null,"onclick":null,"formAction":null},{"text":"配当金・分配金履歴はこちら","score":40,"href":"https://site.sbisec.co.jp/account/assets/dividends","tag":"a","type":null,"id":null,"name":null,"onclick":null,"formAction":null}]}
 - note: Attempt 1: post-navigation settle wait: 1500ms
 - note: Attempt 1: start-date fill result: {"updated":true,"candidateCount":2,"label":"","type":"text","value":"2022/01/01"}
-- note: Attempt 1: submit result: {"clicked":true,"matched":true,"text":"照会","href":null,"tag":"button","type":"button","id":null,"name":null,"onclick":null,"formAction":"https://site.sbisec.co.jp/account/assets/dividends","x":873,"y":439,"width":160,"height":32,"centerX":953,"centerY":455,"candidateCount":1,"candidates":[{"text":"照会","score":100,"href":null,"tag":"button","type":"button","id":null,"name":null,"onclick":null,"formAction":"https://site.sbisec.co.jp/account/assets/dividends"}],"settle":{"url":"https://site.sbisec.co.jp/account/assets/dividends?dispositionDateFrom=2026/05/01&dispositionDateTo=2026/05/21","readyState":"complete","title":"配当金・分配金履歴｜SBI証券","textSample":"銘柄 検索 国内株式 外国株式 投資信託 サイト 内検索 銀行 保険 ポートフォリオ 口座管理 取引 入出金 お知らせ My設定 サービス サポート ログアウト ホーム マーケット NISA 国内株式 外国株式 投資信託 債券 FX PICK UP おまかせ投資 その他の商品 My資産トップ 実現損益詳細 配当金・分配金履歴 診断(ポトフォる) 配当金・分配金履歴 配当金・分配金履歴とは My資産トップ ／ 配当金・分配金履歴 照会条件 期間：2026/5/1～2026/5/","textLength":736,"clickableCount":41,"formControlCount":5}}
-- note: Attempt 1: range URL candidate: https://site.sbisec.co.jp/account/assets/dividends?dispositionDateFrom=2022%2F01%2F01&dispositionDateTo=2026%2F05%2F21
-- note: Attempt 1: forced range navigation: {"url":"https://site.sbisec.co.jp/account/assets/dividends?dispositionDateFrom=2022%2F01%2F01&dispositionDateTo=2026%2F05%2F21","readyState":"complete","title":"配当金・分配金履歴｜SBI証券","textSample":"銘柄 検索 国内株式 外国株式 投資信託 サイト 内検索 銀行 保険 ポートフォリオ 口座管理 取引 入出金 お知らせ My設定 サービス サポート ログアウト ホーム マーケット NISA 国内株式 外国株式 投資信託 債券 FX PICK UP おまかせ投資 その他の商品 My資産トップ 実現損益詳細 配当金・分配金履歴 診断(ポトフォる) 配当金・分配金履歴 配当金・分配金履歴とは My資産トップ ／ 配当金・分配金履歴 照会条件 期間：2022/1/1～2026/5/","textLength":2362,"clickableCount":69,"formControlCount":5}
+- note: Attempt 1: submit result: {"clicked":true,"matched":true,"text":"照会","href":null,"tag":"button","type":"button","id":null,"name":null,"onclick":null,"formAction":"https://site.sbisec.co.jp/account/assets/dividends","x":873,"y":439,"width":160,"height":32,"centerX":953,"centerY":455,"candidateCount":1,"candidates":[{"text":"照会","score":100,"href":null,"tag":"button","type":"button","id":null,"name":null,"onclick":null,"formAction":"https://site.sbisec.co.jp/account/assets/dividends"}],"settle":{"url":"https://site.sbisec.co.jp/account/assets/dividends?dispositionDateFrom=2026/05/01&dispositionDateTo=2026/05/25","readyState":"complete","title":"配当金・分配金履歴｜SBI証券","textSample":"銘柄 検索 国内株式 外国株式 投資信託 サイト 内検索 銀行 保険 ポートフォリオ 口座管理 取引 入出金 お知らせ My設定 サービス サポート ログアウト ホーム マーケット NISA 国内株式 外国株式 投資信託 債券 FX PICK UP おまかせ投資 NEW その他の商品 My資産トップ 実現損益詳細 配当金・分配金履歴 診断(ポトフォる) 配当金・分配金履歴 配当金・分配金履歴とは My資産トップ ／ 配当金・分配金履歴 照会条件 期間：2026/5/1～202","textLength":740,"clickableCount":41,"formControlCount":5}}
+- note: Attempt 1: range URL candidate: https://site.sbisec.co.jp/account/assets/dividends?dispositionDateFrom=2022%2F01%2F01&dispositionDateTo=2026%2F05%2F25
+- note: Attempt 1: forced range navigation: {"url":"https://site.sbisec.co.jp/account/assets/dividends?dispositionDateFrom=2022%2F01%2F01&dispositionDateTo=2026%2F05%2F25","readyState":"complete","title":"配当金・分配金履歴｜SBI証券","textSample":"銘柄 検索 国内株式 外国株式 投資信託 サイト 内検索 銀行 保険 ポートフォリオ 口座管理 取引 入出金 お知らせ My設定 サービス サポート ログアウト ホーム マーケット NISA 国内株式 外国株式 投資信託 債券 FX PICK UP おまかせ投資 NEW その他の商品 My資産トップ 実現損益詳細 配当金・分配金履歴 診断(ポトフォる) 配当金・分配金履歴 配当金・分配金履歴とは My資産トップ ／ 配当金・分配金履歴 照会条件 期間：2022/1/1～202","textLength":2366,"clickableCount":69,"formControlCount":5}
 - note: Attempt 1: post-range-navigation settle wait: 1500ms
-- note: Attempt 1: CSV diagnostics: {"candidateCount":1,"candidates":[{"text":"CSVダウンロード","tag":"button","type":"button","id":null,"name":null,"value":null,"href":null,"onclick":null,"formAction":"https://site.sbisec.co.jp/account/assets/dividends?dispositionDateFrom=2022%2F01%2F01&dispositionDateTo=2026%2F05%2F21","outerHtml":"<button type=\"button\" class=\"text-xs link-light\"><span class=\"i-download\"></span>CSVダウンロード</button>","matchedKeywords":[["CSV"],["CSVダウンロード"]],"form":null}]}
+- note: Attempt 1: CSV diagnostics: {"candidateCount":1,"candidates":[{"text":"CSVダウンロード","tag":"button","type":"button","id":null,"name":null,"value":null,"href":null,"onclick":null,"formAction":"https://site.sbisec.co.jp/account/assets/dividends?dispositionDateFrom=2022%2F01%2F01&dispositionDateTo=2026%2F05%2F25","outerHtml":"<button type=\"button\" class=\"text-xs link-light\"><span class=\"i-download\"></span>CSVダウンロード</button>","matchedKeywords":[["CSV"],["CSVダウンロード"]],"form":null}]}
 
 ## Notes
 
 - Every-asset navigation click result: {"clicked":true,"matched":true,"text":"ポートフォリオ","href":"https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETpfR001Control&_PageID=DefaultPID&_ActionID=DefaultAID&_DataStoreID=DSWPLETpfR001Control&OutSide=on&getFlg=on&_scpr=intpr=hn_trade","tag":"a","type":null,"id":null,"name":null,"onclick":null,"formAction":null,"x":926,"y":38,"width":92,"height":44,"centerX":972,"centerY":60,"candidateCount":2,"candidates":[{"text":"ポートフォリオ","score":100,"href":"https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETpfR001Control&_PageID=DefaultPID&_ActionID=DefaultAID&_DataStoreID=DSWPLETpfR001Control&OutSide=on&getFlg=on&_scpr=intpr=hn_trade","tag":"a","type":null,"id":null,"name":null,"onclick":null,"formAction":null},{"text":"口座管理","score":100,"href":"https://www.sbisec.co.jp/ETGate/?_ControlID=WPLETacR001Control&_PageID=DefaultPID&_ActionID=DefaultAID&_DataStoreID=DSWPLETacR001Control&OutSide=on&getFlg=on&_scpr=intpr=hn_acc","tag":"a","type":null,"id":null,"name":null,"onclick":null,"formAction":null}]}
-- Account-assets navigation result: {"url":"https://site.sbisec.co.jp/account/assets","readyState":"complete","title":"My資産トップ｜SBI証券","textSample":"銘柄 検索 国内株式 外国株式 投資信託 サイト 内検索 銀行 保険 ポートフォリオ 口座管理 取引 入出金 お知らせ My設定 サービス サポート ログアウト ホーム マーケット NISA 国内株式 外国株式 投資信託 債券 FX PICK UP おまかせ投資 その他の商品 My資産トップ 実現損益詳細 配当金・分配金履歴 診断(ポトフォる) My資産 My資産とは 資産残高 資産推移 実現損益 資産残高 預り金を除外 更新 2026/5/21 19:56 5,407,13","textLength":1566,"clickableCount":53,"formControlCount":6}
+- Account-assets navigation result: {"url":"https://site.sbisec.co.jp/account/assets","readyState":"complete","title":"My資産トップ｜SBI証券","textSample":"銘柄 検索 国内株式 外国株式 投資信託 サイト 内検索 銀行 保険 ポートフォリオ 口座管理 取引 入出金 お知らせ My設定 サービス サポート ログアウト ホーム マーケット NISA 国内株式 外国株式 投資信託 債券 FX PICK UP おまかせ投資 NEW その他の商品 My資産トップ 実現損益詳細 配当金・分配金履歴 診断(ポトフォる) My資産 My資産とは 資産残高 資産推移 実現損益 資産残高 預り金を除外 更新 2026/5/25 20:56 5,44","textLength":1574,"clickableCount":53,"formControlCount":6}

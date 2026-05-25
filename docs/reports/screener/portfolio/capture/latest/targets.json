@@ -1,100 +1,72 @@
 [
   {
     "description": "",
-    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/inspector.html?ws=127.0.0.1:9222/devtools/page/6F52E4145454A0BF8B5CA7F3EC9B8744",
-    "faviconUrl": "https://github.githubassets.com/favicons/favicon-pending-dark.svg",
-    "id": "6F52E4145454A0BF8B5CA7F3EC9B8744",
-    "title": "Portfolio Health Check · FPXszk/Oh-MY-TradingView@ed2eb05",
+    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@4687a88676f95bfbce9ec62314791faae363fea6/inspector.html?ws=127.0.0.1:9222/devtools/page/8EFCF6533BF361856E2E4625CA3CF9DE",
+    "faviconUrl": "https://sbisec.akamaized.net/sbisec/images/common/favicon/favicon-32x32.png",
+    "id": "8EFCF6533BF361856E2E4625CA3CF9DE",
+    "title": "配当金・分配金履歴｜SBI証券",
     "type": "page",
-    "url": "https://github.com/FPXszk/Oh-MY-TradingView/actions/runs/26221593596",
-    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/6F52E4145454A0BF8B5CA7F3EC9B8744"
+    "url": "https://site.sbisec.co.jp/account/assets/dividends?dispositionDateFrom=2022%2F01%2F01&dispositionDateTo=2026%2F05%2F25",
+    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/8EFCF6533BF361856E2E4625CA3CF9DE"
   },
   {
     "description": "",
-    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/inspector.html?ws=127.0.0.1:9222/devtools/page/325680A6FE54B1A2021670D6F0A14474",
+    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@4687a88676f95bfbce9ec62314791faae363fea6/inspector.html?ws=127.0.0.1:9222/devtools/page/A23310CA0414B50468DB0FCC52C59B29",
     "faviconUrl": "https://sbisec.akamaized.net/sbisec/images/common/favicon/favicon-32x32.png",
-    "id": "325680A6FE54B1A2021670D6F0A14474",
-    "title": "My資産トップ｜SBI証券",
-    "type": "page",
-    "url": "https://site.sbisec.co.jp/account/assets",
-    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/325680A6FE54B1A2021670D6F0A14474"
-  },
-  {
-    "description": "",
-    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/inspector.html?ws=127.0.0.1:9222/devtools/page/A466BCEBBE675F430E72E0391AC92D78",
-    "faviconUrl": "https://sbisec.akamaized.net/sbisec/images/common/favicon/favicon-32x32.png",
-    "id": "A466BCEBBE675F430E72E0391AC92D78",
-    "parentId": "325680A6FE54B1A2021670D6F0A14474",
+    "id": "A23310CA0414B50468DB0FCC52C59B29",
+    "parentId": "8EFCF6533BF361856E2E4625CA3CF9DE",
     "title": "https://cdn.d2-apps.net/html/frame.html#https://tg.socdm.com/aux/idsync?client_id=900&amp;proto=primenumber",
     "type": "iframe",
     "url": "https://cdn.d2-apps.net/html/frame.html#https://tg.socdm.com/aux/idsync?client_id=900&proto=primenumber",
-    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/A466BCEBBE675F430E72E0391AC92D78"
+    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/A23310CA0414B50468DB0FCC52C59B29"
   },
   {
     "description": "",
-    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/inspector.html?ws=127.0.0.1:9222/devtools/page/DA92AB02A071C27D81ECF26AE2E21311",
+    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@4687a88676f95bfbce9ec62314791faae363fea6/inspector.html?ws=127.0.0.1:9222/devtools/page/CA750CE879BF12594EE436A8C058F00C",
     "faviconUrl": "https://www.gstatic.com/lamda/images/gemini_sparkle_aurora_33f86dc0c0257da337c63.svg",
-    "id": "DA92AB02A071C27D81ECF26AE2E21311",
-    "parentId": "AF415686BF8E7150329C632C19526BD0",
+    "id": "CA750CE879BF12594EE436A8C058F00C",
+    "parentId": "2FA422F8E99016E6F5008506DE9B9844",
     "title": "‎Google Gemini",
     "type": "webview",
     "url": "https://gemini.google.com/glic?hl=ja",
-    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/DA92AB02A071C27D81ECF26AE2E21311"
+    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/CA750CE879BF12594EE436A8C058F00C"
   },
   {
     "description": "",
-    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/inspector.html?ws=127.0.0.1:9222/devtools/page/6CD176CFBF095DFE4F25F6BC8FC5009E",
+    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@4687a88676f95bfbce9ec62314791faae363fea6/inspector.html?ws=127.0.0.1:9222/devtools/page/AA3572341359DC5C5C2C29BBFD65EEA7",
     "faviconUrl": "https://www.gstatic.com/lamda/images/gemini_sparkle_aurora_33f86dc0c0257da337c63.svg",
-    "id": "6CD176CFBF095DFE4F25F6BC8FC5009E",
-    "parentId": "DA92AB02A071C27D81ECF26AE2E21311",
+    "id": "AA3572341359DC5C5C2C29BBFD65EEA7",
+    "parentId": "CA750CE879BF12594EE436A8C058F00C",
     "title": "https://accounts.google.com/RotateCookiesPage?origin=https%3A%2F%2Fgemini.google.com&amp;hfcr_pid=2",
     "type": "iframe",
     "url": "https://accounts.google.com/RotateCookiesPage?origin=https%3A%2F%2Fgemini.google.com&hfcr_pid=2",
-    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/6CD176CFBF095DFE4F25F6BC8FC5009E"
+    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/AA3572341359DC5C5C2C29BBFD65EEA7"
   },
   {
     "description": "",
-    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/inspector.html?ws=127.0.0.1:9222/devtools/page/AF415686BF8E7150329C632C19526BD0",
-    "id": "AF415686BF8E7150329C632C19526BD0",
+    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@4687a88676f95bfbce9ec62314791faae363fea6/inspector.html?ws=127.0.0.1:9222/devtools/page/2FA422F8E99016E6F5008506DE9B9844",
+    "id": "2FA422F8E99016E6F5008506DE9B9844",
     "title": "chrome://glic",
     "type": "other",
     "url": "chrome://glic/",
-    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/AF415686BF8E7150329C632C19526BD0"
+    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/2FA422F8E99016E6F5008506DE9B9844"
   },
   {
     "description": "",
-    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/worker_app.html?ws=127.0.0.1:9222/devtools/page/71FFA751D8C331B45E5639944D2742A2",
-    "id": "71FFA751D8C331B45E5639944D2742A2",
-    "title": "github-socket-worker-v3-489b8e8886d580d2afe20646f675578274643dc3c708a1905bb6ab8af5114454",
-    "type": "shared_worker",
-    "url": "https://github.com/assets-cdn/worker/socket-worker-5074bd5c33c83e94.js?module=true",
-    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/71FFA751D8C331B45E5639944D2742A2"
-  },
-  {
-    "description": "",
-    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/worker_app.html?ws=127.0.0.1:9222/devtools/page/88F5D03564E5AC43B2F0A30116D2FAC0",
-    "id": "88F5D03564E5AC43B2F0A30116D2FAC0",
-    "title": "Service Worker chrome-extension://hehggadaopoacecdllhhajmbjkdcmajg/background.js",
-    "type": "service_worker",
-    "url": "chrome-extension://hehggadaopoacecdllhhajmbjkdcmajg/background.js",
-    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/88F5D03564E5AC43B2F0A30116D2FAC0"
-  },
-  {
-    "description": "",
-    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/worker_app.html?ws=127.0.0.1:9222/devtools/page/02660A5BD33461FD6E8A44CA0F7AD408",
-    "id": "02660A5BD33461FD6E8A44CA0F7AD408",
+    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@4687a88676f95bfbce9ec62314791faae363fea6/worker_app.html?ws=127.0.0.1:9222/devtools/page/96D3CC02CC8EF787558B3ADE04CC2FAD",
+    "id": "96D3CC02CC8EF787558B3ADE04CC2FAD",
     "title": "Service Worker chrome-extension://neebplgakaahbhdphmkckjjcegoiijjo/keepa.js",
     "type": "service_worker",
     "url": "chrome-extension://neebplgakaahbhdphmkckjjcegoiijjo/keepa.js",
-    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/02660A5BD33461FD6E8A44CA0F7AD408"
+    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/96D3CC02CC8EF787558B3ADE04CC2FAD"
   },
   {
     "description": "",
-    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@d096af1c9e98c45c3596e59620622b1a049bfecb/worker_app.html?ws=127.0.0.1:9222/devtools/page/12FC7F95C9FA57680FC254225E1C713A",
-    "id": "12FC7F95C9FA57680FC254225E1C713A",
-    "title": "Service Worker https://github.com/assets-cdn/worker/service-worker-83cbd54255e6cf42.js?current_user=FPXszk&amp;errors_url=https%3A%2F%2Fapi.github.com%2F_private%2Fbrowser%2Ferrors&amp;release=ce868f5c2a18a336b572ad0da21ab134bccc842f&amp;actor_id=106506797&amp;is_staff=false&amp;analytics_collector_url=https%3A%2F%2Fcollector.github.com%2Fgithub%2Fcollect&amp;module=true",
+    "devtoolsFrontendUrl": "https://chrome-devtools-frontend.appspot.com/serve_rev/@4687a88676f95bfbce9ec62314791faae363fea6/worker_app.html?ws=127.0.0.1:9222/devtools/page/12436E540CE96954FE1A375B3B297264",
+    "id": "12436E540CE96954FE1A375B3B297264",
+    "title": "Service Worker chrome-extension://hehggadaopoacecdllhhajmbjkdcmajg/background.js",
     "type": "service_worker",
-    "url": "https://github.com/assets-cdn/worker/service-worker-83cbd54255e6cf42.js?current_user=FPXszk&errors_url=https%3A%2F%2Fapi.github.com%2F_private%2Fbrowser%2Ferrors&release=ce868f5c2a18a336b572ad0da21ab134bccc842f&actor_id=106506797&is_staff=false&analytics_collector_url=https%3A%2F%2Fcollector.github.com%2Fgithub%2Fcollect&module=true",
-    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/12FC7F95C9FA57680FC254225E1C713A"
+    "url": "chrome-extension://hehggadaopoacecdllhhajmbjkdcmajg/background.js",
+    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/12436E540CE96954FE1A375B3B297264"
   }
 ]
