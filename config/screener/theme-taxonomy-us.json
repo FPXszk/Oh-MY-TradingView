@@ -212,6 +212,20 @@
       ]
     },
     {
+      "id": "connected-mobility",
+      "label": "Connected Mobility",
+      "sectors": ["Communications"],
+      "subthemes": [
+        {
+          "id": "telematics-fleet-connectivity",
+          "label": "Telematics & Fleet Connectivity",
+          "symbols": ["ITRN"],
+          "industry_keywords": ["specialty telecommunications", "wireless telecommunications"],
+          "company_keywords": ["telematics", "fleet management", "vehicle tracking", "stolen vehicle recovery"]
+        }
+      ]
+    },
+    {
       "id": "cloud-software",
       "label": "Cloud Software",
       "sectors": ["Technology Services"],

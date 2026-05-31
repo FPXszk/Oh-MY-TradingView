@@ -593,7 +593,7 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /## Phase2 セクター別ランキング/);
     assert.match(markdown, /Phase1 採用は上位 3 セクターのみです/);
     assert.match(markdown, /### 1位 Technology Services/);
-    assert.match(markdown, /\| セクター順位 \| セクター内順位 \| シンボル \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCF \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \|/);
+    assert.match(markdown, /\| セクター順位 \| セクター内順位 \| シンボル \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCF \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \(T\/F\) \|/);
     assert.match(markdown, /\| 1 \| 1 \| \*\*AAA\*\* \| NASDAQ \| \$12\.3B \|/);
     assert.doesNotMatch(markdown, /## 上位3件の選定理由/);
     assert.doesNotMatch(markdown, /### 1位 AAA \(NASDAQ\)/);
@@ -601,7 +601,9 @@ describe('buildMarkdown', () => {
     assert.doesNotMatch(markdown, /- テーマ: Cloud Software \/ Cloud Platforms/);
     assert.doesNotMatch(markdown, /低いほど良い/);
     assert.match(markdown, /Rule40/);
-    assert.match(markdown, /60\.0（Rule 40\+）/);
+    assert.match(markdown, /60\.0 \| 30\.0% \| 28\.0 \| 3\.2% \| 96\.00 \(T45\.1\/F50\.9\) \|/);
+    assert.doesNotMatch(markdown, /（Rule 40\+）/);
+    assert.doesNotMatch(markdown, /（20未満注意）/);
     assert.doesNotMatch(markdown, /## 超急騰候補/);
     assert.doesNotMatch(markdown, /## Phase2 通過銘柄のセクター内訳/);
     assert.doesNotMatch(markdown, /\| セクター順位 \| セクター \| 通過銘柄数 \| 平均3M \| 平均総合点 \|/);

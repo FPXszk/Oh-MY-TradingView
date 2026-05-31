@@ -14,6 +14,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(__dirname, '..', '..');
 const DEFAULT_REPORT_PATH = join(REPO_ROOT, 'docs', 'reports', 'screener', 'daily-ranking.md');
 const DEFAULT_CURRENCY_SYMBOL = '$';
+const TECHNICAL_BREAKDOWN_KEYS = ['priceMomentum', 'sectorStrength'];
+const FUNDAMENTAL_BREAKDOWN_KEYS = ['quality', 'growth', 'riskValue', 'ruleOf40'];
 const WEEKDAYS_JA = ['日', '月', '火', '水', '木', '金', '土'];
 
 function fmt(val, digits = 1, suffix = '') {
@@ -103,22 +105,96 @@ function buildRuleOf40Note(row, market = 'america') {
     const hasRevenue = row.revenueGrowthTtm !== null && row.revenueGrowthTtm !== undefined;
     const hasFcf = row.fcfMargin !== null && row.fcfMargin !== undefined;
     if (hasRevenue && hasFcf) {
-      const computed = Number((row.revenueGrowthTtm + row.fcfMargin).toFixed(1));
-      if (computed >= 40) return `${fmt(computed)}（Rule 40+）`;
-      if (computed < 20) return `${fmt(computed)}（20未満注意）`;
-      return fmt(computed);
+      return fmt(Number((row.revenueGrowthTtm + row.fcfMargin).toFixed(1)));
     }
     if (hasRevenue && !hasFcf) return `売上${fmt(row.revenueGrowthTtm)}% / FCF欠け`;
     if (!hasRevenue && hasFcf) return `FCF${fmt(row.fcfMargin)}% / 売上欠け`;
     return '売上欠け / FCF欠け';
   }
-  const value = fmt(row.ruleOf40);
-  if (row.ruleOf40 >= 40) return `${value}（Rule 40+）`;
-  if (row.ruleOf40 < 20) return `${value}（20未満注意）`;
-  return value;
+  return fmt(row.ruleOf40);
 }
 
-function buildRankingMetricCells(row, market) {
+function rankToPositiveScore(rank, populationSize) {
+  if (!Number.isFinite(rank) || !Number.isFinite(populationSize) || populationSize <= 0) {
+    return null;
+  }
+  return ((populationSize + 1 - rank) / populationSize) * 100;
+}
+
+function buildScoreContributionBreakdown(row, populationSize) {
+  if (!row.rankBreakdown || !Number.isFinite(row.rankScore)) {
+    return null;
+  }
+
+  const groups = [
+    { key: 'technical', blockKeys: TECHNICAL_BREAKDOWN_KEYS },
+    { key: 'fundamental', blockKeys: FUNDAMENTAL_BREAKDOWN_KEYS },
+  ];
+  const summaries = groups
+    .map((group) => {
+      const blocks = group.blockKeys.map((key) => row.rankBreakdown?.[key]).filter(Boolean);
+      const weight = blocks.reduce((sum, block) => sum + (Number.isFinite(block.weight) ? block.weight : 0), 0);
+      if (blocks.length === 0 || weight <= 0) {
+        return null;
+      }
+
+      const normalizedRank = blocks.reduce((sum, block) => sum + block.rank * (block.weight / weight), 0);
+      const normalizedScore = rankToPositiveScore(normalizedRank, populationSize);
+      if (!Number.isFinite(normalizedScore)) {
+        return null;
+      }
+
+      return { key: group.key, weight, normalizedScore };
+    })
+    .filter(Boolean);
+
+  if (summaries.length === 0) {
+    return null;
+  }
+
+  const totalWeight = summaries.reduce((sum, summary) => sum + summary.weight, 0);
+  if (!Number.isFinite(totalWeight) || totalWeight <= 0) {
+    return null;
+  }
+
+  const blendedScore = summaries.reduce(
+    (sum, summary) => sum + summary.normalizedScore * (summary.weight / totalWeight),
+    0,
+  );
+  if (!Number.isFinite(blendedScore) || blendedScore === 0) {
+    return null;
+  }
+
+  const scale = row.rankScore / blendedScore;
+  const values = Object.fromEntries(
+    summaries.map((summary) => [
+      summary.key,
+      summary.normalizedScore * (summary.weight / totalWeight) * scale,
+    ]),
+  );
+
+  if (!Number.isFinite(values.technical) || !Number.isFinite(values.fundamental)) {
+    return null;
+  }
+
+  return values;
+}
+
+function buildTotalScoreCell(row, market, populationSize) {
+  const total = fmt(row.rankScore, 2);
+  if (market !== 'america') {
+    return total;
+  }
+
+  const breakdown = buildScoreContributionBreakdown(row, populationSize);
+  if (!breakdown) {
+    return total;
+  }
+
+  return `${total} (T${fmt(breakdown.technical, 1)}/F${fmt(breakdown.fundamental, 1)})`;
+}
+
+function buildRankingMetricCells(row, market, populationSize) {
   return [
     fmtUsdMarketCap(row.marketCapUsd),
     `${fmt(row.perfY)}%`,
@@ -133,7 +209,7 @@ function buildRankingMetricCells(row, market) {
     `${fmt(row.epsGrowthTtm)}%`,
     fmt(row.pFcf, 1),
     `${fmt(row.atrPct)}%`,
-    fmt(row.rankScore, 2),
+    buildTotalScoreCell(row, market, populationSize),
   ];
 }
 
@@ -141,6 +217,10 @@ function formatThemeLine(row) {
   const primary = row.primaryTheme ?? 'Unclassified';
   const subthemes = row.subThemes?.length ? row.subThemes.join(', ') : '細粒度タグなし';
   return `${primary} / ${subthemes}`;
+}
+
+function buildRowLookupKey(row) {
+  return `${row.exchange ?? ''}:${row.symbol ?? ''}`;
 }
 
 function buildRuleOf40CoverageLines(result) {
@@ -311,6 +391,8 @@ export function buildMarkdown(result, options = {}) {
   const title = options.title ?? `スクリーニング結果 ${jst.dateWithWeekday}`;
   const currencySymbol = options.currencySymbol ?? DEFAULT_CURRENCY_SYMBOL;
   const market = result.scannerScope?.market;
+  const populationSize = result.results.length;
+  const resultRowsByKey = new Map((result.results ?? []).map((row) => [buildRowLookupKey(row), row]));
   const showRuleOf40CoverageSection = options.showRuleOf40CoverageSection ?? market !== 'america';
   const showPhase2SectorBreakdownSection = options.showPhase2SectorBreakdownSection ?? market !== 'america';
   const showTopSelectionReasonsSection = options.showTopSelectionReasonsSection ?? market !== 'america';
@@ -399,17 +481,19 @@ export function buildMarkdown(result, options = {}) {
     } else {
       result.sectorRanking.forEach((sector, index) => {
         const sectorRank = sector.phase1SectorRank ?? index + 1;
+        const scoreHeader = market === 'america' ? '総合点 (T/F)' : '総合点';
         lines.push(`### ${sectorRank}位 ${sector.sector}`);
         lines.push('');
         lines.push(`- 通過銘柄数: ${sector.count}`);
         lines.push(`- セクター平均3M: ${fmt(sector.averagePerf3m)}% / 平均総合点: ${fmt(sector.averageRankScore, 2)}`);
         lines.push('');
-        lines.push('| セクター順位 | セクター内順位 | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 |');
+        lines.push(`| セクター順位 | セクター内順位 | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | ${scoreHeader} |`);
         lines.push('|:---:|:---:|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|');
         (sector.topRows ?? []).slice(0, 30).forEach((row, rowIndex) => {
-          const metricCells = buildRankingMetricCells(row, result.scannerScope?.market).join(' | ');
+          const displayRow = resultRowsByKey.get(buildRowLookupKey(row)) ?? row;
+          const metricCells = buildRankingMetricCells(displayRow, result.scannerScope?.market, populationSize).join(' | ');
           lines.push(
-            `| ${sectorRank} | ${rowIndex + 1} | **${row.symbol}** | ${row.exchange ?? '-'} | ${metricCells} |`,
+            `| ${sectorRank} | ${rowIndex + 1} | **${displayRow.symbol}** | ${displayRow.exchange ?? '-'} | ${metricCells} |`,
           );
         });
         lines.push('');

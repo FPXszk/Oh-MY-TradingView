@@ -40,16 +40,16 @@ US 日次スクリーニングレポートについて、銘柄表の `総合点
 
 ## 実装ステップ
 
-- [ ] `buildMarkdown()` と関連 helper のうち、`総合点` / `Rule40` 表示に必要な最小変更点を特定する。
-- [ ] `tests/daily-screener-report.test.js` に新表示の RED を追加する。
-- [ ] `scripts/screener/run-fundamental-screening.mjs` を更新し、`総合点` の `T/F` 内訳表示と `Rule40` の簡素表示を実装する。
-- [ ] `Phase2 テーマランキング` の `Unclassified` について、現行 run 出力・taxonomy・会社/industry 情報を突き合わせて原因を確定する。
-- [ ] 原因に応じて `config/screener/theme-taxonomy-us.json` または `src/core/theme-taxonomy.js` を最小変更で修正する。
-- [ ] 必要なら `tests/theme-taxonomy.test.js` を追加し、該当銘柄の分類を固定化する。
-- [ ] `node --test tests/daily-screener-report.test.js tests/theme-taxonomy.test.js` を実行する（追加しない場合は既存テストのみ）。
-- [ ] `SCREENER_MARKET=america SCREENER_EXCHANGES=NASDAQ,NYSE node scripts/screener/run-fundamental-screening.mjs` を実行し、`docs/reports/screener/daily-ranking.md` を再生成する。
-- [ ] `git diff --check` を実行する。
-- [ ] 計画ファイルを completed へ移動し、変更をコミット・push する。
+- [x] `buildMarkdown()` と関連 helper のうち、`総合点` / `Rule40` 表示に必要な最小変更点を特定する。
+- [x] `tests/daily-screener-report.test.js` に新表示の RED を追加する。
+- [x] `scripts/screener/run-fundamental-screening.mjs` を更新し、`総合点` の `T/F` 内訳表示と `Rule40` の簡素表示を実装する。
+- [x] `Phase2 テーマランキング` の `Unclassified` について、現行 run 出力・taxonomy・会社/industry 情報を突き合わせて原因を確定する。
+- [x] 原因に応じて `config/screener/theme-taxonomy-us.json` または `src/core/theme-taxonomy.js` を最小変更で修正する。
+- [x] 必要なら `tests/theme-taxonomy.test.js` を追加し、該当銘柄の分類を固定化する。
+- [x] `node --test tests/daily-screener-report.test.js tests/theme-taxonomy.test.js` を実行する（追加しない場合は既存テストのみ）。
+- [x] `SCREENER_MARKET=america SCREENER_EXCHANGES=NASDAQ,NYSE node scripts/screener/run-fundamental-screening.mjs` を実行し、`docs/reports/screener/daily-ranking.md` を再生成する。
+- [x] `git diff --check` を実行する。
+- [x] 計画ファイルを completed へ移動し、変更をコミット・push する。
 
 ## 検証
 
