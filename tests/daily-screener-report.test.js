@@ -369,9 +369,36 @@ describe('buildMarkdown', () => {
               atrPct: 3.5,
               rankScore: 91,
             },
+            {
+              symbol: 'FFF',
+              exchange: 'NYSE',
+              sector: 'Technology Services',
+              marketCapUsd: null,
+              perfY: 30,
+              perf6m: 20,
+              perf3m: 15,
+              pctOf52wHigh: 80,
+              roic: 16,
+              grossProfitToAssets: 16,
+              fcfMargin: 13,
+              revenueGrowthTtm: null,
+              ruleOf40: null,
+              epsGrowthTtm: 14,
+              pFcf: 55,
+              atrPct: 6.5,
+              rankScore: 28,
+            },
           ],
         },
       ],
+      ruleOf40Coverage: {
+        total: 6,
+        complete: 5,
+        revenueOnly: 0,
+        fcfOnly: 1,
+        missingBoth: 0,
+        completePct: 83.3,
+      },
       results: [
         {
           symbol: 'AAA',
@@ -516,6 +543,10 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /更新: 12:00 JST/);
     assert.doesNotMatch(markdown, /2026-05-04T03:00:00.000Z/);
     assert.match(markdown, /セクター別取得候補 26銘柄 → ユニバース条件通過 26銘柄 → ランキング対象 14銘柄 → レポート掲載 6銘柄/);
+    assert.match(markdown, /## Rule of 40 算出状況/);
+    assert.match(markdown, /- Rule of 40 完全算出: 5\/6銘柄 \(83\.3%\)/);
+    assert.match(markdown, /- 欠損内訳: 売上のみあり 0件 \/ FCFのみあり 1件 \/ 両方欠け 0件/);
+    assert.match(markdown, /\| シンボル \| セクター \| 売上YoY \| FCF margin \| 状態 \|/);
     assert.match(markdown, /## Phase1 セクターランキング/);
     assert.match(markdown, /相対強度の基準: BATS:SPY（SPY）/);
     assert.match(markdown, /12M \/ 6M \/ 3M はセクター構成銘柄の平均リターンです/);
@@ -535,6 +566,7 @@ describe('buildMarkdown', () => {
     assert.doesNotMatch(markdown, /低いほど良い/);
     assert.match(markdown, /Rule40/);
     assert.match(markdown, /60\.0（Rule 40\+）/);
+    assert.match(markdown, /\| FFF \| Retail Trade \| N\/A% \| 13\.0% \| 売上欠け \|/);
     assert.doesNotMatch(markdown, /## 超急騰候補/);
     assert.match(markdown, /## Phase2 通過銘柄のセクター内訳/);
     assert.match(markdown, /\| セクター順位 \| セクター \| 通過銘柄数 \| 平均3M \| 平均総合点 \|/);

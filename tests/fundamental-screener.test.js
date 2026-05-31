@@ -394,6 +394,14 @@ describe('runFundamentalScreener', () => {
     assert.ok(result.results[0].rankScore > result.results[result.results.length - 1].rankScore);
     assert.equal(result.results.find((row) => row.symbol === 'ADEA').ruleOf40, 45);
     assert.equal(result.results.find((row) => row.symbol === 'MU').ruleOf40, 65);
+    assert.deepEqual(result.ruleOf40Coverage, {
+      total: 6,
+      complete: 2,
+      revenueOnly: 0,
+      fcfOnly: 4,
+      missingBoth: 0,
+      completePct: 33.3,
+    });
     assert.deepEqual(result.criteria.profile_summaries.map((profile) => profile.label), [
       'Technology Services',
       'Electronic Technology',
@@ -586,6 +594,7 @@ describe('runFundamentalScreener', () => {
     assert.equal(result.scannerScope.market, 'japan');
     assert.equal(result.scannerScope.scopeLabel, 'JPX Prime domestic stocks snapshot');
     assert.equal(result.results.find((row) => row.symbol === '8035').ruleOf40, null);
+    assert.equal(result.ruleOf40Coverage, null);
     assert.equal(result.criteria.rule_of_40_policy, undefined);
     assert.deepEqual(result.rankingFormula, ['priceMomentum', 'sectorStrength', 'quality', 'growth', 'riskValue']);
     assert.deepEqual(result.rankingBlocks.map((block) => ({ key: block.key, weight: block.weight })), [

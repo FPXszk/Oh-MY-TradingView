@@ -97,15 +97,28 @@ function buildRiskNote(row) {
   return notes.length > 0 ? notes.join('、') : '目立つ過熱/財務リスクなし';
 }
 
-function buildRuleOf40Note(row) {
-  if (row.ruleOf40 === null || row.ruleOf40 === undefined) return 'N/A';
+function buildRuleOf40Note(row, market = 'america') {
+  if (market !== 'america') return 'N/A';
+  if (row.ruleOf40 === null || row.ruleOf40 === undefined) {
+    const hasRevenue = row.revenueGrowthTtm !== null && row.revenueGrowthTtm !== undefined;
+    const hasFcf = row.fcfMargin !== null && row.fcfMargin !== undefined;
+    if (hasRevenue && hasFcf) {
+      const computed = Number((row.revenueGrowthTtm + row.fcfMargin).toFixed(1));
+      if (computed >= 40) return `${fmt(computed)}（Rule 40+）`;
+      if (computed < 20) return `${fmt(computed)}（20未満注意）`;
+      return fmt(computed);
+    }
+    if (hasRevenue && !hasFcf) return `売上${fmt(row.revenueGrowthTtm)}% / FCF欠け`;
+    if (!hasRevenue && hasFcf) return `FCF${fmt(row.fcfMargin)}% / 売上欠け`;
+    return '売上欠け / FCF欠け';
+  }
   const value = fmt(row.ruleOf40);
   if (row.ruleOf40 >= 40) return `${value}（Rule 40+）`;
   if (row.ruleOf40 < 20) return `${value}（20未満注意）`;
   return value;
 }
 
-function buildRankingMetricCells(row) {
+function buildRankingMetricCells(row, market) {
   return [
     fmtUsdMarketCap(row.marketCapUsd),
     `${fmt(row.perfY)}%`,
@@ -116,12 +129,27 @@ function buildRankingMetricCells(row) {
     `${fmt(row.grossProfitToAssets)}%`,
     `${fmt(row.fcfMargin)}%`,
     `${fmt(row.revenueGrowthTtm)}%`,
-    buildRuleOf40Note(row),
+    buildRuleOf40Note(row, market),
     `${fmt(row.epsGrowthTtm)}%`,
     fmt(row.pFcf, 1),
     `${fmt(row.atrPct)}%`,
     fmt(row.rankScore, 2),
   ];
+}
+
+function buildRuleOf40CoverageLines(result) {
+  const coverage = result.ruleOf40Coverage;
+  if (!coverage || result.scannerScope?.market !== 'america') return [];
+
+  return [
+    `- Rule of 40 完全算出: ${coverage.complete}/${coverage.total}銘柄 (${fmt(coverage.completePct)}%)`,
+    `- 欠損内訳: 売上のみあり ${coverage.revenueOnly}件 / FCFのみあり ${coverage.fcfOnly}件 / 両方欠け ${coverage.missingBoth}件`,
+  ];
+}
+
+function buildRuleOf40MissingRows(result) {
+  if (result.scannerScope?.market !== 'america') return [];
+  return (result.results ?? []).filter((row) => row.ruleOf40 === null || row.ruleOf40 === undefined);
 }
 
 function buildMarketLines(label, entries) {
@@ -283,6 +311,31 @@ export function buildMarkdown(result, options = {}) {
     '',
   ];
 
+  const ruleOf40CoverageLines = buildRuleOf40CoverageLines(result);
+  if (ruleOf40CoverageLines.length > 0) {
+    lines.push('## Rule of 40 算出状況');
+    lines.push('');
+    ruleOf40CoverageLines.forEach((line) => lines.push(line));
+    lines.push('');
+
+    const missingRows = buildRuleOf40MissingRows(result);
+    if (missingRows.length > 0) {
+      lines.push('| シンボル | セクター | 売上YoY | FCF margin | 状態 |');
+      lines.push('|:---|:---|---:|---:|:---|');
+      missingRows.forEach((row) => {
+        const hasRevenue = row.revenueGrowthTtm !== null && row.revenueGrowthTtm !== undefined;
+        const hasFcf = row.fcfMargin !== null && row.fcfMargin !== undefined;
+        const status = hasRevenue && !hasFcf
+          ? 'FCF欠け'
+          : !hasRevenue && hasFcf
+            ? '売上欠け'
+            : '両方欠け';
+        lines.push(`| ${row.symbol} | ${row.sector ?? '-'} | ${fmt(row.revenueGrowthTtm)}% | ${fmt(row.fcfMargin)}% | ${status} |`);
+      });
+      lines.push('');
+    }
+  }
+
   lines.push('## Phase1 セクターランキング');
   lines.push('');
   if (!result.sectorMomentum || !result.sectorMomentum.rankings || result.sectorMomentum.rankings.length === 0) {
@@ -326,7 +379,7 @@ export function buildMarkdown(result, options = {}) {
         lines.push('| セクター順位 | セクター内順位 | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 |');
         lines.push('|:---:|:---:|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|');
         (sector.topRows ?? []).slice(0, 30).forEach((row, rowIndex) => {
-          const metricCells = buildRankingMetricCells(row).join(' | ');
+          const metricCells = buildRankingMetricCells(row, result.scannerScope?.market).join(' | ');
           lines.push(
             `| ${sectorRank} | ${rowIndex + 1} | **${row.symbol}** | ${row.exchange ?? '-'} | ${metricCells} |`,
           );
@@ -358,7 +411,7 @@ export function buildMarkdown(result, options = {}) {
       lines.push(`### ${index + 1}位 ${row.symbol} (${row.exchange ?? '-'})`);
       lines.push(`- 総合点: ${fmt(row.rankScore, 2)}`);
       lines.push(`- ブロック: 価格 ${fmt(getBlock(row, 'priceMomentum')?.rank, 2)} / セクター ${fmt(getBlock(row, 'sectorStrength')?.rank, 2)} / 品質 ${fmt(getBlock(row, 'quality')?.rank, 2)} / 成長 ${fmt(getBlock(row, 'growth')?.rank, 2)} / リスク・割安 ${fmt(getBlock(row, 'riskValue')?.rank, 2)} / Rule40 ${fmt(getBlock(row, 'ruleOf40')?.rank, 2)}`);
-      lines.push(`- 主要指標: 12M ${fmt(row.perfY)}% / 6M ${fmt(row.perf6m)}% / 3M ${fmt(row.perf3m)}% / ROIC ${fmt(row.roic)}% / GP/A ${fmt(row.grossProfitToAssets)}% / FCF ${fmt(row.fcfMargin)}% / Rule40 ${buildRuleOf40Note(row)}`);
+      lines.push(`- 主要指標: 12M ${fmt(row.perfY)}% / 6M ${fmt(row.perf6m)}% / 3M ${fmt(row.perf3m)}% / ROIC ${fmt(row.roic)}% / GP/A ${fmt(row.grossProfitToAssets)}% / FCF ${fmt(row.fcfMargin)}% / Rule40 ${buildRuleOf40Note(row, result.scannerScope?.market)}`);
       lines.push(`- リスク確認: ${buildRiskNote(row)}`);
       lines.push(`- 理由: ${buildExplanation(row, index, rows)}`);
       lines.push('');

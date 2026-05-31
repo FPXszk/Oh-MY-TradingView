@@ -29,14 +29,14 @@ US 日次スクリーニングの `Rule of 40` について、現行実装が元
 
 ## 実装ステップ
 
-- [ ] `Rule of 40` の算出条件と、欠損時にどの値が足りないかを保持する最小変更点を整理する。
-- [ ] 結果全体に `Rule of 40` カバレッジ集計を追加する。
-- [ ] `Rule40` 表示を `N/A` から部分表示へ差し替える。
-- [ ] レポートに `Rule of 40` 算出率と欠損内訳の要約を追加する。
-- [ ] `tests/fundamental-screener.test.js` と `tests/daily-screener-report.test.js` を更新する。
-- [ ] `node --test tests/fundamental-screener.test.js tests/daily-screener-report.test.js` を実行する。
-- [ ] `SCREENER_MARKET=america SCREENER_EXCHANGES=NASDAQ,NYSE node scripts/screener/run-fundamental-screening.mjs` を実行して、実データで再現率を確認する。
-- [ ] `git diff --check` を実行する。
+- [x] `Rule of 40` の算出条件と、欠損時にどの値が足りないかを保持する最小変更点を整理する。
+- [x] 結果全体に `Rule of 40` カバレッジ集計を追加する。
+- [x] `Rule40` 表示を `N/A` から部分表示へ差し替える。
+- [x] レポートに `Rule of 40` 算出率と欠損内訳の要約を追加する。
+- [x] `tests/fundamental-screener.test.js` と `tests/daily-screener-report.test.js` を更新する。
+- [x] `node --test tests/fundamental-screener.test.js tests/daily-screener-report.test.js` を実行する。
+- [x] `SCREENER_MARKET=america SCREENER_EXCHANGES=NASDAQ,NYSE node scripts/screener/run-fundamental-screening.mjs` を実行して、実データで再現率を確認する。
+- [x] `git diff --check` を実行する。
 - [ ] 計画ファイルを completed へ移動し、実装変更をコミット・push する。
 
 ## 検証
@@ -49,6 +49,13 @@ US 日次スクリーニングの `Rule of 40` について、現行実装が元
 
 - `Rule of 40` は式自体は単純でも、元データ欠損が多い場合は「算出不可」が多く出る可能性がある。
 - 部分表示の文言が長すぎると表の視認性を崩すので、欠損表現は短くする必要がある。
+
+## 調査結果
+
+- 実データ再生成時点で、掲載 `69銘柄` のうち `66銘柄` は `Rule of 40` を完全算出でき、再現率は `95.7%` だった。
+- 欠損内訳は `売上のみあり 2件 / FCFのみあり 1件 / 両方欠け 0件`。
+- 欠損銘柄は `Q`（売上欠け）、`CYD`（FCF欠け）、`AVEX`（FCF欠け）。
+- 1位セクターは `30件` 表示上限があるため、欠損銘柄の一部は通常のセクター表に出ない。今回の対応で `Rule of 40 算出状況` 節に欠損銘柄一覧を追加し、表示上限の外にいる銘柄も見えるようにした。
 
 ## スコープ外
 

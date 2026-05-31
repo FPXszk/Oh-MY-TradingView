@@ -320,6 +320,44 @@ function isUsSoftwareRuleOf40Candidate(row, market) {
     && RULE_OF_40_INDUSTRY_PATTERN.test(row.industry);
 }
 
+function buildRuleOf40Coverage(rows, market) {
+  if (market !== DEFAULT_MARKET) return null;
+
+  const summary = {
+    total: rows.length,
+    complete: 0,
+    revenueOnly: 0,
+    fcfOnly: 0,
+    missingBoth: 0,
+    completePct: 0,
+  };
+
+  rows.forEach((row) => {
+    const hasRevenue = row.revenueGrowthTtm !== null && row.revenueGrowthTtm !== undefined;
+    const hasFcf = row.fcfMargin !== null && row.fcfMargin !== undefined;
+
+    if (hasRevenue && hasFcf) {
+      summary.complete += 1;
+      return;
+    }
+    if (hasRevenue) {
+      summary.revenueOnly += 1;
+      return;
+    }
+    if (hasFcf) {
+      summary.fcfOnly += 1;
+      return;
+    }
+    summary.missingBoth += 1;
+  });
+
+  summary.completePct = summary.total > 0
+    ? Number(((summary.complete / summary.total) * 100).toFixed(1))
+    : 0;
+
+  return summary;
+}
+
 function resolveSymbolAllowlist(symbolAllowlistKey, customAllowlists) {
   if (!symbolAllowlistKey) return null;
 
@@ -418,6 +456,13 @@ function annotateRowForProfile(row, profile, sectorRankLookup, market) {
     screeningRevenueGrowthMinPct: profile.thresholds.revenueGrowthMinPct,
     ruleOf40: market === DEFAULT_MARKET ? row.ruleOf40Raw : null,
     ruleOf40Score: isUsSoftwareRuleOf40Candidate(row, market) ? row.ruleOf40Raw : null,
+    ruleOf40Components: market === DEFAULT_MARKET
+      ? {
+        revenueGrowthTtm: row.revenueGrowthTtm,
+        fcfMargin: row.fcfMargin,
+        complete: row.ruleOf40Raw !== null && row.ruleOf40Raw !== undefined,
+      }
+      : null,
     extremeMomentum: buildExtremeMomentum(row),
   };
 }
@@ -804,6 +849,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   const ranked = applyBlockRanks(clientFiltered, rankingBlocks).sort((a, b) => b.rankScore - a.rankScore);
   const matched = ranked.slice(0, effectiveLimit).map(stripInternalFields);
   const sectorRanking = summarizeSectors(ranked);
+  const ruleOf40Coverage = buildRuleOf40Coverage(matched, market);
 
   const criteria = {
     market_cap_min_usd: 1_000_000_000,
@@ -876,6 +922,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     },
     sectorMomentum,
     sectorRanking,
+    ruleOf40Coverage,
     results: matched,
     retrieved_at: new Date().toISOString(),
     source: enrichWithYahoo ? 'tradingview_scanner+moomoo' : 'tradingview_scanner',
