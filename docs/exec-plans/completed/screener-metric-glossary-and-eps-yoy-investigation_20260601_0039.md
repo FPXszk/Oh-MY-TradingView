@@ -41,15 +41,15 @@
 
 ## 実装ステップ
 
-- [ ] 現行の銘柄ランキング表ヘッダと `スコア算出` 末尾の組み立て位置を確認し、説明表の列と文言を固定する。
-- [ ] `tests/daily-screener-report.test.js` に `指標説明` 表の期待値を追加する。
-- [ ] `scripts/screener/run-fundamental-screening.mjs` に `指標説明` 表を追加する。
-- [ ] `docs/reports/screener/TEMPLATE.md` を現行出力に合わせて更新する。
-- [ ] `node --test tests/daily-screener-report.test.js tests/fundamental-screener.test.js` を実行する。
-- [ ] `SCREENER_MARKET=america SCREENER_EXCHANGES=NASDAQ,NYSE node scripts/screener/run-fundamental-screening.mjs` を実行して `docs/reports/screener/daily-ranking.md` を再生成する。
-- [ ] `git diff --check` を実行する。
-- [ ] `src/core/fundamental-screener.js` の取得列・正規化・fallback 条件から `EPS YoY` の `N/A` 原因と代替可否を整理する。
-- [ ] 完了後に計画を `completed/` へ移動し、実装コミットと push を行う。
+- [x] 現行の銘柄ランキング表ヘッダと `スコア算出` 末尾の組み立て位置を確認し、説明表の列と文言を固定する。
+- [x] `tests/daily-screener-report.test.js` に `指標説明` 表の期待値を追加する。
+- [x] `scripts/screener/run-fundamental-screening.mjs` に `指標説明` 表を追加する。
+- [x] `docs/reports/screener/TEMPLATE.md` を現行出力に合わせて更新する。
+- [x] `node --test tests/daily-screener-report.test.js tests/fundamental-screener.test.js` を実行する。
+- [x] `SCREENER_MARKET=america SCREENER_EXCHANGES=NASDAQ,NYSE node scripts/screener/run-fundamental-screening.mjs` を実行して `docs/reports/screener/daily-ranking.md` を再生成する。
+- [x] `git diff --check` を実行する。
+- [x] `src/core/fundamental-screener.js` の取得列・正規化・fallback 条件から `EPS YoY` の `N/A` 原因と代替可否を整理する。
+- [x] 完了後に計画を `completed/` へ移動し、実装コミットと push を行う。
 
 ## 検証コマンド
 

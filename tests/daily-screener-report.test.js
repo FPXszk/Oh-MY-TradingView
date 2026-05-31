@@ -626,6 +626,14 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| Profitability \/ quality \| 25% \| ROIC, Gross profit \/ assets, Operating margin, FCF margin, Cash conversion \| 収益性とキャッシュ創出力を確認 \|/);
     assert.match(markdown, /\| Growth confirmation \| 10% \| Revenue YoY growth, EPS YoY growth, FCF YoY growth, Moomoo revenue growth \| 売上・EPS・FCF の成長確認 \|/);
     assert.match(markdown, /\| Risk \/ value guard \| 15% \| P\/FCF, EV\/EBITDA, ATR %, Beta 1Y, Debt \/ equity \| 過熱バリュエーションと変動リスクを抑制 \|/);
+    assert.match(markdown, /\*\*指標説明:\*\*/);
+    assert.match(markdown, /この表は Phase2 の銘柄ランキング列を対象にしています。Phase1 の 12M \/ 6M \/ 3M はセクター構成銘柄の平均リターンです。/);
+    assert.match(markdown, /Phase1 の `52w高値90%内` は、セクター構成銘柄のうち 52 週高値の 90% 以内にいる銘柄比率です。/);
+    assert.match(markdown, /\| 列名 \| 意味 \| 見方 \|/);
+    assert.match(markdown, /\| 12M \| 過去12か月の株価騰落率 \(Perf\.Y\) \| 長期モメンタム。高いほど 1 年で強い \|/);
+    assert.match(markdown, /\| 52w \| 現在株価が 52 週高値の何%位置か \| 100% に近いほど 52 週高値圏 \|/);
+    assert.match(markdown, /\| EPS YoY \| EPS の前年比成長率 \| 利益成長の確認。N\/A は元データ欠損 \|/);
+    assert.match(markdown, /\| 総合点 \(T\/F\) \| repo 独自の総合スコア \| 高いほど良い。T はテクニカル寄り、F はファンダ寄り \|/);
   });
 
   it('supports a Japan-specific title and currency symbol', () => {
@@ -768,5 +776,8 @@ describe('daily screener template', () => {
     assert.doesNotMatch(template, /## Phase2 通過銘柄のセクター内訳/);
     assert.match(template, /\| 区分 \| 項目 \| 条件・説明 \|/);
     assert.match(template, /\| ブロック \| 重み \| 主な評価項目 \| 役割 \|/);
+    assert.match(template, /\*\*指標説明:\*\*/);
+    assert.match(template, /\| 列名 \| 意味 \| 見方 \|/);
+    assert.match(template, /\| 12M \| 過去12か月の株価騰落率 \(Perf\.Y\) \| 長期モメンタム。高いほど 1 年で強い \|/);
   });
 });

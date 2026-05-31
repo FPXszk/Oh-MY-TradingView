@@ -292,6 +292,33 @@ function describeBlockRole(blockKey) {
   }
 }
 
+function buildMetricGlossaryRows(market) {
+  return [
+    ['セクター順位', 'Phase1 でのセクター順位', '1 が最上位セクター'],
+    ['セクター内順位', 'そのセクター内での順位', '1 がそのセクター内トップ'],
+    ['シンボル', '銘柄のティッカー', '例: NVDA, AAPL'],
+    ['市場', '上場市場', 'NASDAQ / NYSE / TSE など'],
+    ['時価総額', '企業規模の目安', '大型株かどうかの確認に使う'],
+    ['12M', '過去12か月の株価騰落率 (Perf.Y)', '長期モメンタム。高いほど 1 年で強い'],
+    ['6M', '過去6か月の株価騰落率 (Perf.6M)', '中期モメンタム'],
+    ['3M', '過去3か月の株価騰落率 (Perf.3M)', '足元の勢い。短中期モメンタム'],
+    ['52w', '現在株価が 52 週高値の何%位置か', '100% に近いほど 52 週高値圏'],
+    ['ROIC', '投下資本利益率', '事業に使った資本でどれだけ利益を生むか'],
+    ['GP/A', 'Gross Profit / Assets = 粗利益 ÷ 総資産', '資産に対する稼ぐ力を見る quality 指標'],
+    ['FCF', 'FCF margin = フリーキャッシュフロー ÷ 売上', '売上がどれだけ現金として残るか'],
+    ['売上YoY', '売上高の前年比成長率', '事業成長の確認'],
+    ['Rule40', '売上YoY + FCF margin', market === 'america'
+      ? '主に US software 系の成長と収益性をまとめて確認'
+      : '米国 software 向け補助指標。通常は N/A'],
+    ['EPS YoY', 'EPS の前年比成長率', '利益成長の確認。N/A は元データ欠損'],
+    ['P/FCF', '株価 ÷ FCF の倍率', '低いほど割高感が小さい傾向'],
+    ['ATR%', 'ATR ÷ 株価 × 100', '値動きの荒さ。高いほどボラティリティが高い'],
+    ['総合点 (T/F)', 'repo 独自の総合スコア', market === 'america'
+      ? '高いほど良い。T はテクニカル寄り、F はファンダ寄り'
+      : '高いほど良い総合スコア'],
+  ];
+}
+
 function formatJstDateParts(isoString) {
   const now = new Date(isoString);
   const jstDate = new Intl.DateTimeFormat('en-CA', {
@@ -543,6 +570,17 @@ export function buildMarkdown(result, options = {}) {
   lines.push('|:---|---:|:---|:---|');
   (result.rankingBlocks ?? []).forEach((block) => {
     lines.push(`| ${block.label} | ${block.weight}% | ${summarizeBlockFields(block)} | ${describeBlockRole(block.key)} |`);
+  });
+  lines.push('');
+  lines.push('**指標説明:**');
+  lines.push('');
+  lines.push('- この表は Phase2 の銘柄ランキング列を対象にしています。Phase1 の 12M / 6M / 3M はセクター構成銘柄の平均リターンです。');
+  lines.push('- Phase1 の `52w高値90%内` は、セクター構成銘柄のうち 52 週高値の 90% 以内にいる銘柄比率です。');
+  lines.push('');
+  lines.push('| 列名 | 意味 | 見方 |');
+  lines.push('|:---|:---|:---|');
+  buildMetricGlossaryRows(market).forEach((row) => {
+    lines.push(`| ${row[0]} | ${row[1]} | ${row[2]} |`);
   });
   lines.push('');
   lines.push('**フィルター条件と scoring guide:**');
