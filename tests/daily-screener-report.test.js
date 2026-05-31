@@ -215,7 +215,7 @@ describe('buildMarkdown', () => {
       quality: { label: 'Profitability / quality', weight: 25, rank, fields: { fcfMargin: rank } },
       growth: { label: 'Growth confirmation', weight: 10, rank, fields: { revenueGrowthTtm: rank } },
       riskValue: { label: 'Risk / value guard', weight: 15, rank, fields: { pFcf: rank } },
-      ruleOf40: { label: 'Rule of 40 (US software)', weight: 3, rank, fields: { ruleOf40: rank } },
+      ruleOf40: { label: 'Rule of 40 (US software)', weight: 3, rank, fields: { ruleOf40Score: rank } },
     };
   }
 

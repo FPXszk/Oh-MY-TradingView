@@ -275,6 +275,7 @@ describe('runFundamentalScreener', () => {
                   grossMargin: 35,
                   fcfMargin: 10,
                   fcfTtm: 50_000_000,
+                  revenueGrowthTtm: 55,
                   netDebt: 0,
                   volume: 700_000,
                 }),
@@ -392,7 +393,7 @@ describe('runFundamentalScreener', () => {
     assertRankScoresDescending(result.results);
     assert.ok(result.results[0].rankScore > result.results[result.results.length - 1].rankScore);
     assert.equal(result.results.find((row) => row.symbol === 'ADEA').ruleOf40, 45);
-    assert.equal(result.results.find((row) => row.symbol === 'MU').ruleOf40, null);
+    assert.equal(result.results.find((row) => row.symbol === 'MU').ruleOf40, 65);
     assert.deepEqual(result.criteria.profile_summaries.map((profile) => profile.label), [
       'Technology Services',
       'Electronic Technology',

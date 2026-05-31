@@ -31,13 +31,13 @@
 
 ## 実装ステップ
 
-- [ ] `Rule of 40` の現在の計算箇所と表示箇所を確認し、表示だけ `software` 制限から外す最小変更点を特定する。
-- [ ] `Rule of 40` の scoring block は `US software / SaaS` 限定のまま残すよう実装方針を固定する。
-- [ ] `tests/fundamental-screener.test.js` と `tests/daily-screener-report.test.js` を更新する。
-- [ ] `node --test tests/fundamental-screener.test.js tests/daily-screener-report.test.js` を実行する。
-- [ ] `SCREENER_MARKET=america SCREENER_EXCHANGES=NASDAQ,NYSE node scripts/screener/run-fundamental-screening.mjs` を実行し、`Rule of 40` の表示と 2位/3位セクターの掲載件数を確認する。
-- [ ] 2位/3位セクターが 30件未満の理由を、`sectorRanking` 集計と実レポート出力の両方から確認して記録する。
-- [ ] `git diff --check` を実行する。
+- [x] `Rule of 40` の現在の計算箇所と表示箇所を確認し、表示だけ `software` 制限から外す最小変更点を特定する。
+- [x] `Rule of 40` の scoring block は `US software / SaaS` 限定のまま残すよう実装方針を固定する。
+- [x] `tests/fundamental-screener.test.js` と `tests/daily-screener-report.test.js` を更新する。
+- [x] `node --test tests/fundamental-screener.test.js tests/daily-screener-report.test.js` を実行する。
+- [x] `SCREENER_MARKET=america SCREENER_EXCHANGES=NASDAQ,NYSE node scripts/screener/run-fundamental-screening.mjs` を実行し、`Rule of 40` の表示と 2位/3位セクターの掲載件数を確認する。
+- [x] 2位/3位セクターが 30件未満の理由を、`sectorRanking` 集計と実レポート出力の両方から確認して記録する。
+- [x] `git diff --check` を実行する。
 - [ ] 計画ファイルを completed へ移動し、実装変更をコミット・push する。
 
 ## 検証
@@ -50,6 +50,12 @@
 
 - `Rule of 40` は SaaS/Software 由来の指標なので、半導体や光通信機器で高値が出ても、表示上は参考値であることが伝わるようにしないとミスリードになり得る。
 - 2位/3位セクターの件数不足が単なる母数不足ではなく、どこかの profile 条件に起因する場合、今回の「調査のみ」から実装が派生する可能性がある。
+
+## 調査結果
+
+- `Phase2` の 2位 `Communications` は実際の通過母数が `4件`、3位 `Producer Manufacturing` は `20件` だった。
+- どちらも `scripts/screener/run-fundamental-screening.mjs` の表示上限 `30件` に引っかかって欠けているのではなく、`src/core/fundamental-screener.js` の `summarizeSectors()` 集計時点でその件数しか存在しない。
+- 今回確認した範囲では表示バグではなく、`Phase2` 通過条件を満たした銘柄数そのものが不足しているのが理由。
 
 ## スコープ外
 

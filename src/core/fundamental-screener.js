@@ -137,7 +137,7 @@ const RULE_OF_40_RANK_BLOCK = {
   weight: 3,
   missingRank: 'neutral',
   fields: [
-    { key: 'ruleOf40', label: 'Revenue growth + FCF margin', direction: 'desc' },
+    { key: 'ruleOf40Score', label: 'Revenue growth + FCF margin', direction: 'desc' },
   ],
 };
 
@@ -416,7 +416,8 @@ function annotateRowForProfile(row, profile, sectorRankLookup, market) {
     screeningThresholds: profile.thresholds,
     screeningPfcfMax: profile.getPfcfMax ? profile.getPfcfMax(row) : profile.thresholds.pFcfMax,
     screeningRevenueGrowthMinPct: profile.thresholds.revenueGrowthMinPct,
-    ruleOf40: isUsSoftwareRuleOf40Candidate(row, market) ? row.ruleOf40Raw : null,
+    ruleOf40: market === DEFAULT_MARKET ? row.ruleOf40Raw : null,
+    ruleOf40Score: isUsSoftwareRuleOf40Candidate(row, market) ? row.ruleOf40Raw : null,
     extremeMomentum: buildExtremeMomentum(row),
   };
 }
@@ -494,6 +495,7 @@ function stripInternalFields(row) {
     screeningPfcfMax,
     screeningRevenueGrowthMinPct,
     ruleOf40Raw,
+    ruleOf40Score,
     ...publicRow
   } = row;
   return publicRow;
