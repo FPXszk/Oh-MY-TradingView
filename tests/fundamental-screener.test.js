@@ -721,6 +721,129 @@ describe('runFundamentalScreener', () => {
     assert.equal(result.results.find((row) => row.symbol === 'MU').revenueGrowth, 0.12);
   });
 
+  it('backfills EPS YoY only when TradingView data is missing', async () => {
+    const result = await runFundamentalScreener({
+      limit: 10,
+      enrichWithYahoo: true,
+      _deps: {
+        getSymbolFundamentals: async (symbol) => ({
+          revenueGrowth: symbol === 'QCOM' ? 0.08 : 0.12,
+          earningsGrowth: symbol === 'MU' ? 0.27 : null,
+        }),
+        fetch: createMockFetch({
+          stockBodies: [],
+          phase1Payload: {
+            totalCount: 2,
+            data: [
+              buildPhase1StockRow('NASDAQ:NVDA', {
+                name: 'Nvidia',
+                sector: 'Electronic Technology',
+                perf1m: 25,
+                perf3m: 19,
+                perf6m: 40,
+                perfY: 80,
+                rsi: 73,
+                relativeVolume: 1.0,
+                marketCap: 3_000_000_000,
+              }),
+              buildPhase1StockRow('NASDAQ:MSFT', {
+                name: 'Microsoft',
+                sector: 'Technology Services',
+                perf1m: 20,
+                perf3m: 15,
+                perf6m: 35,
+                perfY: 70,
+                rsi: 69,
+                relativeVolume: 1.0,
+                marketCap: 2_500_000_000,
+              }),
+            ],
+          },
+          phase2PayloadsBySector: {
+            'Technology Services': {
+              totalCount: 1,
+              data: [
+                buildPhase2Row('NASDAQ:ADEA', {
+                  name: 'Adeia',
+                  sector: 'Technology Services',
+                  industry: 'Packaged Software',
+                  close: 13,
+                  rsi: 66,
+                  sma200: 10,
+                  sma50: 11,
+                  high52w: 14,
+                  perf3m: 25,
+                  relativeVolume: 1.4,
+                  marketCap: 1_500_000_000,
+                  eps: 1.2,
+                  epsGrowthTtm: 18,
+                  roe: 29,
+                  grossMargin: 72,
+                  fcfMargin: 29,
+                  fcfTtm: 90_000_000,
+                  revenueGrowthTtm: 16,
+                  netDebt: 0,
+                  volume: 300_000,
+                }),
+              ],
+            },
+            'Electronic Technology': {
+              totalCount: 2,
+              data: [
+                buildPhase2Row('NASDAQ:MU', {
+                  name: 'Micron',
+                  sector: 'Electronic Technology',
+                  industry: 'Semiconductors',
+                  close: 110,
+                  rsi: 63,
+                  sma200: 90,
+                  sma50: 100,
+                  high52w: 120,
+                  perf3m: 15,
+                  relativeVolume: 1.0,
+                  marketCap: 2_000_000_000,
+                  eps: 5,
+                  roe: 18,
+                  grossMargin: 35,
+                  fcfMargin: 10,
+                  fcfTtm: 30_000_000,
+                  revenueGrowthTtm: 20,
+                  netDebt: 0,
+                  volume: 700_000,
+                }),
+                buildPhase2Row('NASDAQ:QCOM', {
+                  name: 'Qualcomm',
+                  sector: 'Electronic Technology',
+                  industry: 'Semiconductors',
+                  close: 170,
+                  rsi: 64,
+                  sma200: 150,
+                  sma50: 160,
+                  high52w: 180,
+                  perf3m: 18,
+                  relativeVolume: 0.95,
+                  marketCap: 2_200_000_000,
+                  eps: 7,
+                  roe: 22,
+                  grossMargin: 56,
+                  fcfMargin: 26,
+                  fcfTtm: 70_000_000,
+                  revenueGrowthTtm: 14,
+                  netDebt: -5_000_000,
+                  volume: 800_000,
+                }),
+              ],
+            },
+          },
+        }),
+      },
+    });
+
+    assert.equal(result.results.find((row) => row.symbol === 'ADEA').epsGrowthTtm, 18);
+    assert.equal(result.results.find((row) => row.symbol === 'MU').epsGrowthTtm, 27);
+    assert.equal(result.results.find((row) => row.symbol === 'QCOM').epsGrowthTtm, null);
+  });
+
   it('keeps weak-fundamental momentum names below stronger all-around candidates', async () => {
     const result = await runFundamentalScreener({
       limit: 10,

@@ -45,8 +45,8 @@
 - Moomoo の `EPS_GROWTH_RATE` が TradingView `EPS YoY (TTM)` と完全一致しない銘柄がある可能性があるため、差分確認が必要。
 
 ## 実装ステップ
-- [ ] OpenD の接続経路を確定し、WSL 実行環境から health check を通す
-- [ ] 既存 Moomoo fundamentals 取得経路で `EPS_GROWTH_RATE` をシンボルへ結び付ける方法を確定する
-- [ ] `src/core/fundamental-screener.js` に TradingView → Moomoo fallback を実装する
-- [ ] fundamentals / report のテストを追加・更新する
-- [ ] 日次レポートを再生成し、`EPS YoY` 列の出力差分を確認する
+- [x] OpenD の接続経路を確定し、WSL 実行環境から health check を通す
+- [x] 既存 Moomoo fundamentals 取得経路で `EPS_GROWTH_RATE` をシンボルへ結び付ける方法を確定する
+- [x] `src/core/fundamental-screener.js` に TradingView → Moomoo fallback を実装する
+- [x] fundamentals / report のテストを追加・更新する
+- [x] 日次レポートを再生成し、`EPS YoY` 列の出力差分を確認する

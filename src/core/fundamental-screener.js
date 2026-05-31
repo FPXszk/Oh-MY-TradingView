@@ -744,11 +744,11 @@ async function sleep(ms) {
 }
 
 /**
- * Fetches revenueGrowth (YoY) from a dependency-injected fundamentals provider.
- * Processes in batches of YAHOO_BATCH_SIZE with a delay between batches.
- * On error, sets revenueGrowth to null (does not throw).
+ * Fetches supplemental growth metrics from a dependency-injected fundamentals
+ * provider. Processes in batches of YAHOO_BATCH_SIZE with a delay between
+ * batches. On error, leaves the supplemental metrics null.
  */
-async function batchFetchRevenueGrowth(symbols, getFundamentals) {
+async function batchFetchSupplementalGrowthMetrics(symbols, getFundamentals) {
   const results = {};
   for (let i = 0; i < symbols.length; i += YAHOO_BATCH_SIZE) {
     const batch = symbols.slice(i, i + YAHOO_BATCH_SIZE);
@@ -756,9 +756,15 @@ async function batchFetchRevenueGrowth(symbols, getFundamentals) {
       batch.map(async (symbol) => {
         try {
           const data = await getFundamentals(symbol);
-          results[symbol] = data.revenueGrowth ?? null;
+          results[symbol] = {
+            revenueGrowth: data?.revenueGrowth ?? null,
+            earningsGrowthPct: toPercentPoints(data?.earningsGrowth),
+          };
         } catch {
-          results[symbol] = null;
+          results[symbol] = {
+            revenueGrowth: null,
+            earningsGrowthPct: null,
+          };
         }
       }),
     );
@@ -769,13 +775,20 @@ async function batchFetchRevenueGrowth(symbols, getFundamentals) {
   return results;
 }
 
+function toPercentPoints(value, digits = 2) {
+  if (value === null || value === undefined) return null;
+  const normalized = Number(value);
+  if (!Number.isFinite(normalized)) return null;
+  return Number((normalized * 100).toFixed(digits));
+}
+
 function toMoomooMarket(market) {
   if (market === 'america') return 'US';
   if (market === 'japan') return 'JP';
   return 'US';
 }
 
-async function batchFetchMoomooRevenueGrowth(symbols, { market, _deps } = {}) {
+async function batchFetchMoomooGrowthMetrics(symbols, { market, _deps } = {}) {
   try {
     const response = await getMoomooFundamentalsBatch({
       symbols,
@@ -783,11 +796,25 @@ async function batchFetchMoomooRevenueGrowth(symbols, { market, _deps } = {}) {
       _deps,
     });
     return Object.fromEntries(
-      (response.fundamentals || []).map((entry) => [entry.symbol, entry.revenueGrowth ?? null]),
+      (response.fundamentals || []).map((entry) => [entry.symbol, {
+        revenueGrowth: entry.revenueGrowth ?? null,
+        earningsGrowthPct: toPercentPoints(entry.earningsGrowth),
+      }]),
     );
   } catch {
-    return Object.fromEntries(symbols.map((symbol) => [symbol, null]));
+    return Object.fromEntries(symbols.map((symbol) => [symbol, {
+      revenueGrowth: null,
+      earningsGrowthPct: null,
+    }]));
   }
+}
+
+function applySupplementalGrowthMetrics(row, metrics = {}) {
+  return {
+    ...row,
+    revenueGrowth: metrics.revenueGrowth ?? null,
+    epsGrowthTtm: row.epsGrowthTtm ?? metrics.earningsGrowthPct ?? null,
+  };
 }
 
 function validateLimit(limit) {
@@ -870,11 +897,11 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   if (enrichWithYahoo && clientFiltered.length > 0) {
     const symbols = clientFiltered.map((r) => r.symbol);
     const growthMap = getFundamentals
-      ? await batchFetchRevenueGrowth(symbols, getFundamentals)
-      : await batchFetchMoomooRevenueGrowth(symbols, { market, _deps });
+      ? await batchFetchSupplementalGrowthMetrics(symbols, getFundamentals)
+      : await batchFetchMoomooGrowthMetrics(symbols, { market, _deps });
 
     clientFiltered = clientFiltered
-      .map((r) => ({ ...r, revenueGrowth: growthMap[r.symbol] ?? null }));
+      .map((row) => applySupplementalGrowthMetrics(row, growthMap[row.symbol]));
   }
 
   const themedRows = applyThemeTaxonomy(clientFiltered, market);
@@ -1069,12 +1096,13 @@ export async function evaluateSymbolsAgainstFundamentalScreener({
   if (enrichWithYahoo && eligibleForGrowthCheck.length > 0) {
     const symbolsToCheck = eligibleForGrowthCheck.map((entry) => entry.symbol);
     const growthMap = getFundamentals
-      ? await batchFetchRevenueGrowth(symbolsToCheck, getFundamentals)
-      : await batchFetchMoomooRevenueGrowth(symbolsToCheck, { market, _deps });
+      ? await batchFetchSupplementalGrowthMetrics(symbolsToCheck, getFundamentals)
+      : await batchFetchMoomooGrowthMetrics(symbolsToCheck, { market, _deps });
 
     eligibleForGrowthCheck.forEach((entry) => {
-      const revenueGrowth = growthMap[entry.symbol] ?? null;
-      entry.revenueGrowth = revenueGrowth;
+      const withSupplementalMetrics = applySupplementalGrowthMetrics(entry, growthMap[entry.symbol]);
+      entry.revenueGrowth = withSupplementalMetrics.revenueGrowth;
+      entry.epsGrowthTtm = withSupplementalMetrics.epsGrowthTtm;
       entry.workflowEligible = entry.failureReasons.length === 0;
     });
   }
