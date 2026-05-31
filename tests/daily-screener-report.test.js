@@ -26,10 +26,10 @@ describe('Daily Fundamental Screener workflow', () => {
 
     assert.match(workflow, /SCREENER_EXCHANGES:\s+NASDAQ,NYSE/,
       'US workflow must limit the report universe to NASDAQ and NYSE');
-    assert.match(workflow, /SCREENER_RESULT_LIMIT:\s+'70'/,
-      'US workflow must widen the published report limit enough to surface ATH candidates like COHR');
-    assert.match(workflow, /SCREENER_SELECTED_SECTOR_COUNT:\s+'8'/,
-      'US workflow must narrow phase1 sector selection to focus the report on stronger active sectors');
+    assert.match(workflow, /SCREENER_RESULT_LIMIT:\s+'90'/,
+      'US workflow must publish up to 30 names for each of the top 3 sectors');
+    assert.match(workflow, /SCREENER_SELECTED_SECTOR_COUNT:\s+'3'/,
+      'US workflow must narrow phase1 sector selection to the strongest 3 sectors');
     assert.match(workflow, /SCREENER_GROSS_MARGIN_MIN_PCT:\s+'30'/,
       'US workflow must lower the gross-margin threshold to 30%');
     assert.match(workflow, /name:\s+Publish screener report to WSL main/,
@@ -271,7 +271,7 @@ describe('buildMarkdown', () => {
               gross_margin_min_pct: 30,
               fcf_margin_min_pct: 5,
               perf_3m_min_pct: 10,
-              p_fcf_max: '50 (fabless), 100 (IDM/foundry)',
+              p_fcf_max: '50 (fabless), 120 (IDM/foundry)',
             },
           },
         ],
@@ -523,13 +523,13 @@ describe('buildMarkdown', () => {
     assert.doesNotMatch(markdown, /採用セクター:/);
     assert.match(markdown, /\| 順位 \| セクター \| 平均12M \| 平均6M \| 平均3M \| SPY差12M \| SPY差6M \| SPY差3M \| SMA50上 \| SMA200上 \| 52w高値90%内 \| RSI \| 相対出来高 \| 構成数 \| 順位合計 \|/);
     assert.match(markdown, /\| 1 \| Technology Services \| 44\.2% \| 18\.4% \| 11\.1% \| 13\.7pt \| 0\.0pt \| 0\.9pt \| 100\.0% \| 100\.0% \| 66\.7% \| 73\.7 \| 1\.04x \| 3 \| 5 \|/);
-    assert.match(markdown, /## 銘柄ランキング/);
-    assert.match(markdown, /\| 順位 \| シンボル \| セクター \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCF \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \|/);
-    assert.match(markdown, /\| 1 \| \*\*AAA\*\* \| Technology Services \| NASDAQ \| \$12\.3B \|/);
-    assert.match(markdown, /\| 5 \| \*\*EEE\*\* \| Health Technology \| NASDAQ \| \$850\.0M \|/);
-    assert.match(markdown, /\| 6 \| \*\*FFF\*\* \| Retail Trade \| NYSE \| N\/A \|/);
-    assert.match(markdown, /## 上位5件の選定理由/);
-    assert.ok(markdown.indexOf('## 銘柄ランキング') < markdown.indexOf('## 上位5件の選定理由'));
+    assert.match(markdown, /## Phase2 セクター別ランキング/);
+    assert.match(markdown, /Phase1 採用は上位 3 セクターのみです/);
+    assert.match(markdown, /### 1位 Technology Services/);
+    assert.match(markdown, /\| セクター順位 \| セクター内順位 \| シンボル \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCF \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \|/);
+    assert.match(markdown, /\| 1 \| 1 \| \*\*AAA\*\* \| NASDAQ \| \$12\.3B \|/);
+    assert.match(markdown, /## 上位3件の選定理由/);
+    assert.ok(markdown.indexOf('## Phase2 セクター別ランキング') < markdown.indexOf('## 上位3件の選定理由'));
     assert.match(markdown, /### 1位 AAA \(NASDAQ\)/);
     assert.match(markdown, /- 総合点: 96\.00/);
     assert.doesNotMatch(markdown, /低いほど良い/);
@@ -537,18 +537,17 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /60\.0（Rule 40\+）/);
     assert.doesNotMatch(markdown, /## 超急騰候補/);
     assert.match(markdown, /## Phase2 通過銘柄のセクター内訳/);
-    assert.match(markdown, /\| セクター順位 \| セクター \| 通過銘柄数 \| セクター内順位 \| シンボル \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCF \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \|/);
-    assert.match(markdown, /\| 1 \| Technology Services \| 3 \| 1 \| \*\*AAA\*\* \| NASDAQ \| \$12\.3B \| 1200\.0% \| 55\.0% \| 40\.0% \| 98\.0% \| 32\.0% \| 42\.0% \| 25\.0% \| 35\.0% \| 60\.0（Rule 40\+） \| 30\.0% \| 28\.0 \| 3\.2% \| 96\.00 \|/);
-    assert.match(markdown, /\| 1 \| Technology Services \| 3 \| 2 \| \*\*BBB\*\* \| NASDAQ \| \$9\.8B \| 70\.0% \| 50\.0% \| 35\.0% \| 95\.0% \| 31\.0% \| 40\.0% \| 21\.0% \| 30\.0% \| 51\.0（Rule 40\+） \| 28\.0% \| 35\.0 \| 3\.5% \| 91\.00 \|/);
+    assert.match(markdown, /\| セクター順位 \| セクター \| 通過銘柄数 \| 平均3M \| 平均総合点 \|/);
+    assert.match(markdown, /\| 1 \| Technology Services \| 3 \| 32\.4% \| 91\.70 \|/);
     assert.doesNotMatch(markdown, /## 市場カバレッジ/);
     assert.match(markdown, /\| 区分 \| 項目 \| 条件・説明 \|/);
     assert.match(markdown, /\| 共通条件 \| ベース条件 \| 時価総額 > \$1B \/ EPS\(TTM\) > 0 \/ Close > SMA200 \/ Close > SMA50 \/ Close ≥ 52週高値 × 75% \|/);
     assert.doesNotMatch(markdown, /\| 補助ポリシー \| 超急騰 \|/);
     assert.match(markdown, /\| 補助ポリシー \| Rule of 40 \| US Technology Services software-like industries only \/ total_revenue_yoy_growth_ttm \+ free_cash_flow_margin_ttm \/ 40\+ を badge \/ 20 未満を warning \/ hard filter なし \|/);
     assert.match(markdown, /\| ユニバース \| 取引所 \| NASDAQ, NYSE \|/);
-    assert.match(markdown, /\| 補助ポリシー \| Moomoo 補完 \| 売上成長率 YoY はプロファイル別閾値を適用し、null は通過 \|/);
+    assert.match(markdown, /\| 補助ポリシー \| Moomoo 補完 \| 売上成長率 YoY は growth scoring の補助に使い、低値でも hard filter では落とさない \|/);
     assert.match(markdown, /\| セクタープロファイル \| Technology Services \| scope: Technology Services \/ hard gate: Perf\.3M > 10% \/ P\/FCF < 50/);
-    assert.match(markdown, /\| セクタープロファイル \| Electronic Technology \/ Semiconductors \| scope: Electronic Technology \/ hard gate: Perf\.3M > 10% \/ P\/FCF < 50 \(fabless\), 100 \(IDM\/foundry\)/);
+    assert.match(markdown, /\| セクタープロファイル \| Electronic Technology \/ Semiconductors \| scope: Electronic Technology \/ hard gate: Perf\.3M > 10% \/ P\/FCF < 50 \(fabless\), 120 \(IDM\/foundry\)/);
     assert.match(markdown, /12M 1200\.0%の超急騰/);
     assert.doesNotMatch(markdown, /## 採用した P0 \/ P1 指標/);
     assert.doesNotMatch(markdown, /## 今後改善できそうな点/);
@@ -672,7 +671,9 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /## Phase1 セクターランキング/);
     assert.match(markdown, /\| 1 \| Finance \| 32\.5% \| 20\.1% \| 11\.8% \| N\/Apt \| N\/Apt \| N\/Apt \| 75\.0% \| 87\.5% \| 62\.5% \| 62\.5 \| 1\.21x \| 8 \| 4 \|/);
     assert.doesNotMatch(markdown, /アプローチ:/);
-    assert.match(markdown, /\| 1 \| \*\*7203\*\* \| Consumer Durables \| TSE \| \$4\.50T \|/);
+    assert.match(markdown, /- Phase1 採用は上位 1 セクターのみです。4位以下のセクターは Phase1 失格として除外しています。/);
+    assert.match(markdown, /- 条件通過銘柄がないため、セクター別ランキングは算出できませんでした。/);
+    assert.match(markdown, /### 1位 7203 \(TSE\)/);
     assert.match(markdown, /\| ユニバース \| 取引所 \| TSE \|/);
     assert.match(markdown, /\| ユニバース \| 銘柄ユニバース \| jpx-prime \|/);
   });

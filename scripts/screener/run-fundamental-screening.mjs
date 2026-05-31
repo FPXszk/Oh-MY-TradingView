@@ -223,7 +223,7 @@ function buildGuideRows(result) {
     rows.push(`| ユニバース | 銘柄ユニバース | ${result.criteria.symbol_allowlist_key} |`);
   }
   if (result.enrichedWithYahoo) {
-    rows.push('| 補助ポリシー | Moomoo 補完 | 売上成長率 YoY はプロファイル別閾値を適用し、null は通過 |');
+    rows.push('| 補助ポリシー | Moomoo 補完 | 売上成長率 YoY は growth scoring の補助に使い、低値でも hard filter では落とさない |');
   }
   if (result.criteria.excluded_phase2_sectors?.length) {
     rows.push(`| ユニバース | Phase2 除外セクター | ${result.criteria.excluded_phase2_sectors.join(', ')} |`);
@@ -253,7 +253,7 @@ function getRuntimeConfig() {
     workflowLabel: process.env.SCREENER_WORKFLOW_LABEL || 'daily-screener',
     resultLimit: process.env.SCREENER_RESULT_LIMIT
       ? Number(process.env.SCREENER_RESULT_LIMIT)
-      : 30,
+      : 90,
     screenerOptions: {
       market: process.env.SCREENER_MARKET || 'america',
       exchangeAllowlist: parseExchangeAllowlist(process.env.SCREENER_EXCHANGES),
@@ -263,7 +263,7 @@ function getRuntimeConfig() {
       symbolAllowlistKey: process.env.SCREENER_SYMBOL_ALLOWLIST_KEY || undefined,
       selectedSectorCount: process.env.SCREENER_SELECTED_SECTOR_COUNT
         ? Number(process.env.SCREENER_SELECTED_SECTOR_COUNT)
-        : undefined,
+        : 3,
       scopeLabel: process.env.SCREENER_SCOPE_LABEL || undefined,
     },
   };
@@ -273,7 +273,6 @@ export function buildMarkdown(result, options = {}) {
   const jst = formatJstDateParts(result.retrieved_at);
   const title = options.title ?? `スクリーニング結果 ${jst.dateWithWeekday}`;
   const currencySymbol = options.currencySymbol ?? DEFAULT_CURRENCY_SYMBOL;
-  const topFive = result.results.slice(0, 5);
 
   const lines = [
     `# ${title}`,
@@ -309,30 +308,32 @@ export function buildMarkdown(result, options = {}) {
     lines.push('> 本日は条件を満たす銘柄がありませんでした。');
     lines.push('');
   } else {
-    lines.push('## 銘柄ランキング');
+    lines.push('## Phase2 セクター別ランキング');
     lines.push('');
-    lines.push('| 順位 | シンボル | セクター | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 |');
-    lines.push('|:---:|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|');
-    result.results.forEach((r, i) => {
-      const metricCells = buildRankingMetricCells(r).join(' | ');
-      lines.push(
-        `| ${i + 1} | **${r.symbol}** | ${r.sector ?? 'N/A'} | ${r.exchange ?? '-'} | ${metricCells} |`,
-      );
-    });
+    lines.push(`- Phase1 採用は上位 ${result.sectorMomentum?.selectedSectors?.length ?? 0} セクターのみです。4位以下のセクターは Phase1 失格として除外しています。`);
     lines.push('');
-
-    lines.push('## 上位5件の選定理由');
-    lines.push('');
-    topFive.forEach((row, index) => {
-      lines.push(`### ${index + 1}位 ${row.symbol} (${row.exchange ?? '-'})`);
-      lines.push(`- 総合点: ${fmt(row.rankScore, 2)}`);
-      lines.push(`- ブロック: 価格 ${fmt(getBlock(row, 'priceMomentum')?.rank, 2)} / セクター ${fmt(getBlock(row, 'sectorStrength')?.rank, 2)} / 品質 ${fmt(getBlock(row, 'quality')?.rank, 2)} / 成長 ${fmt(getBlock(row, 'growth')?.rank, 2)} / リスク・割安 ${fmt(getBlock(row, 'riskValue')?.rank, 2)} / Rule40 ${fmt(getBlock(row, 'ruleOf40')?.rank, 2)}`);
-      lines.push(`- 主要指標: 12M ${fmt(row.perfY)}% / 6M ${fmt(row.perf6m)}% / 3M ${fmt(row.perf3m)}% / ROIC ${fmt(row.roic)}% / GP/A ${fmt(row.grossProfitToAssets)}% / FCF ${fmt(row.fcfMargin)}% / Rule40 ${buildRuleOf40Note(row)}`);
-      lines.push(`- リスク確認: ${buildRiskNote(row)}`);
-      lines.push(`- 理由: ${buildExplanation(row, index, topFive)}`);
+    if (!result.sectorRanking || result.sectorRanking.length === 0) {
+      lines.push('- 条件通過銘柄がないため、セクター別ランキングは算出できませんでした。');
       lines.push('');
-    });
-
+    } else {
+      result.sectorRanking.forEach((sector, index) => {
+        const sectorRank = sector.phase1SectorRank ?? index + 1;
+        lines.push(`### ${sectorRank}位 ${sector.sector}`);
+        lines.push('');
+        lines.push(`- 通過銘柄数: ${sector.count}`);
+        lines.push(`- セクター平均3M: ${fmt(sector.averagePerf3m)}% / 平均総合点: ${fmt(sector.averageRankScore, 2)}`);
+        lines.push('');
+        lines.push('| セクター順位 | セクター内順位 | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 |');
+        lines.push('|:---:|:---:|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|');
+        (sector.topRows ?? []).slice(0, 30).forEach((row, rowIndex) => {
+          const metricCells = buildRankingMetricCells(row).join(' | ');
+          lines.push(
+            `| ${sectorRank} | ${rowIndex + 1} | **${row.symbol}** | ${row.exchange ?? '-'} | ${metricCells} |`,
+          );
+        });
+        lines.push('');
+      });
+    }
   }
 
   lines.push('## Phase2 通過銘柄のセクター内訳');
@@ -340,18 +341,28 @@ export function buildMarkdown(result, options = {}) {
   if (!result.sectorRanking || result.sectorRanking.length === 0) {
     lines.push('- 条件通過銘柄がないため、Phase2 のセクター内訳は算出できませんでした。');
   } else {
-    lines.push('| セクター順位 | セクター | 通過銘柄数 | セクター内順位 | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 |');
-    lines.push('|:---:|:---|---:|:---:|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|');
+    lines.push('| セクター順位 | セクター | 通過銘柄数 | 平均3M | 平均総合点 |');
+    lines.push('|:---:|:---|---:|---:|---:|');
     result.sectorRanking.forEach((sector, index) => {
       const sectorRank = sector.phase1SectorRank ?? index + 1;
-      (sector.topRows ?? []).forEach((row, rowIndex) => {
-        const metricCells = buildRankingMetricCells(row).join(' | ');
-        lines.push(
-          `| ${sectorRank} | ${sector.sector} | ${sector.count} | ${rowIndex + 1} | **${row.symbol}** | ${row.exchange ?? '-'} | ${metricCells} |`,
-        );
-      });
+      lines.push(
+        `| ${sectorRank} | ${sector.sector} | ${sector.count} | ${fmt(sector.averagePerf3m)}% | ${fmt(sector.averageRankScore, 2)} |`,
+      );
     });
   }
+  lines.push('');
+
+  lines.push('## 上位3件の選定理由');
+  lines.push('');
+  result.results.slice(0, 3).forEach((row, index, rows) => {
+      lines.push(`### ${index + 1}位 ${row.symbol} (${row.exchange ?? '-'})`);
+      lines.push(`- 総合点: ${fmt(row.rankScore, 2)}`);
+      lines.push(`- ブロック: 価格 ${fmt(getBlock(row, 'priceMomentum')?.rank, 2)} / セクター ${fmt(getBlock(row, 'sectorStrength')?.rank, 2)} / 品質 ${fmt(getBlock(row, 'quality')?.rank, 2)} / 成長 ${fmt(getBlock(row, 'growth')?.rank, 2)} / リスク・割安 ${fmt(getBlock(row, 'riskValue')?.rank, 2)} / Rule40 ${fmt(getBlock(row, 'ruleOf40')?.rank, 2)}`);
+      lines.push(`- 主要指標: 12M ${fmt(row.perfY)}% / 6M ${fmt(row.perf6m)}% / 3M ${fmt(row.perf3m)}% / ROIC ${fmt(row.roic)}% / GP/A ${fmt(row.grossProfitToAssets)}% / FCF ${fmt(row.fcfMargin)}% / Rule40 ${buildRuleOf40Note(row)}`);
+      lines.push(`- リスク確認: ${buildRiskNote(row)}`);
+      lines.push(`- 理由: ${buildExplanation(row, index, rows)}`);
+      lines.push('');
+  });
   lines.push('');
 
   lines.push('---');

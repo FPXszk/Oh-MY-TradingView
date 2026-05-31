@@ -28,6 +28,6 @@ export function isSemiconductorLike(rowOrSymbol) {
 
 export function getSemiconductorPfcfMax(symbol) {
   const model = getSemiconductorBusinessModel(symbol);
-  if (model === 'idm' || model === 'foundry') return 100;
+  if (model === 'idm' || model === 'foundry') return 120;
   return 50;
 }

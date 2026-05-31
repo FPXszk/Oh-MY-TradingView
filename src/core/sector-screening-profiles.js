@@ -149,7 +149,7 @@ const US_PROFILES = [
   }),
   usSectorProfile('electronic-technology-semiconductors', 'Electronic Technology', US_SEMICONDUCTOR_THRESHOLDS, {
     label: 'Electronic Technology / Semiconductors',
-    pFcfMaxLabel: '50 (fabless), 100 (IDM/foundry)',
+    pFcfMaxLabel: '50 (fabless), 120 (IDM/foundry)',
     includeRow: (row) => isSemiconductorLike(row),
     getPfcfMax: (row) => getSemiconductorPfcfMax(row.symbol),
   }),

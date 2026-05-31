@@ -628,7 +628,7 @@ function summarizeSectors(rows) {
         : null,
       topRows: entry.topRows
         .sort((a, b) => (b.rankScore ?? -Infinity) - (a.rankScore ?? -Infinity))
-        .slice(0, 5)
+        .slice(0, 30)
         .map((row) => stripInternalFields(row)),
     }))
     .sort((a, b) => {
@@ -795,9 +795,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       : await batchFetchMoomooRevenueGrowth(symbols, { market, _deps });
 
     clientFiltered = clientFiltered
-      .map((r) => ({ ...r, revenueGrowth: growthMap[r.symbol] ?? null }))
-      .filter((r) => r.revenueGrowth === null
-        || r.revenueGrowth > (r.screeningRevenueGrowthMinPct / 100));
+      .map((r) => ({ ...r, revenueGrowth: growthMap[r.symbol] ?? null }));
   }
 
   const rankingBlocks = getRankingBlocks(market);
@@ -837,7 +835,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     criteria.symbol_allowlist_key = symbolAllowlistKey;
   }
   if (enrichWithYahoo) {
-    criteria.revenue_growth_policy = 'Moomoo profile-specific minimum, null passes';
+    criteria.revenue_growth_policy = 'Moomoo revenue growth is used for growth scoring only; low values do not hard-fail';
   }
 
   return {
@@ -988,11 +986,6 @@ export async function evaluateSymbolsAgainstFundamentalScreener({
     eligibleForGrowthCheck.forEach((entry) => {
       const revenueGrowth = growthMap[entry.symbol] ?? null;
       entry.revenueGrowth = revenueGrowth;
-      if (revenueGrowth !== null && revenueGrowth <= (entry.screeningRevenueGrowthMinPct / 100)) {
-        entry.failureReasons.push(
-          `revenue_growth<=${entry.screeningRevenueGrowthMinPct}% (${Number((revenueGrowth * 100).toFixed(2))}%)`,
-        );
-      }
       entry.workflowEligible = entry.failureReasons.length === 0;
     });
   }

@@ -398,18 +398,17 @@ describe('runFundamentalScreener', () => {
       'Electronic Technology',
       'Electronic Technology / Semiconductors',
       'Producer Manufacturing',
-      'Finance',
     ]);
     assert.deepEqual(result.criteria.excluded_phase2_sectors, []);
-    assert.equal(result.scannerScope.profileRequestCount, 5);
+    assert.equal(result.scannerScope.profileRequestCount, 4);
     assert.deepEqual(
       stockBodies.map((body) => getFilterValue(body, 'sector')),
-      ['Technology Services', 'Electronic Technology', 'Electronic Technology', 'Producer Manufacturing', 'Finance'],
+      ['Technology Services', 'Electronic Technology', 'Electronic Technology', 'Producer Manufacturing'],
     );
     const technologyServices = result.sectorRanking.find((entry) => entry.sector === 'Technology Services');
     assert.ok(technologyServices);
     assert.equal(technologyServices.topRows[0].symbol, 'ADEA');
-    assert.ok(technologyServices.topRows.length <= 5);
+    assert.ok(technologyServices.topRows.length <= 30);
     const phase2Set = new Set(result.sectorRanking.map((entry) => entry.sector));
     const phase1Order = result.sectorMomentum.selectedSectors
       .map((entry) => entry.label)
@@ -598,7 +597,7 @@ describe('runFundamentalScreener', () => {
     assert.ok(stockBodies.every((body) => getFilterValue(body, 'sector') !== 'Finance'));
   });
 
-  it('applies profile-specific Moomoo revenue growth thresholds', async () => {
+  it('uses Moomoo revenue growth for scoring without hard-failing low-growth names', async () => {
     const result = await runFundamentalScreener({
       limit: 10,
       enrichWithYahoo: true,
@@ -692,8 +691,8 @@ describe('runFundamentalScreener', () => {
       },
     });
 
-    assert.deepEqual(result.results.map((row) => row.symbol), ['ADEA']);
-    assert.equal(result.criteria.revenue_growth_policy, 'Moomoo profile-specific minimum, null passes');
+    assert.deepEqual(result.results.map((row) => row.symbol), ['ADEA', 'MU']);
+    assert.equal(result.criteria.revenue_growth_policy, 'Moomoo revenue growth is used for growth scoring only; low values do not hard-fail');
     assert.equal(result.criteria.rule_of_40_policy.hard_filter, false);
     assert.deepEqual(result.rankingFormula, ['priceMomentum', 'sectorStrength', 'quality', 'growth', 'riskValue', 'ruleOf40']);
     assert.deepEqual(result.rankingBlocks.map((block) => block.key), result.rankingFormula);
@@ -705,6 +704,7 @@ describe('runFundamentalScreener', () => {
       { key: 'riskValue', weight: 15 },
       { key: 'ruleOf40', weight: 3 },
     ]);
+    assert.equal(result.results.find((row) => row.symbol === 'MU').revenueGrowth, 0.12);
   });
 
   it('keeps weak-fundamental momentum names below stronger all-around candidates', async () => {
