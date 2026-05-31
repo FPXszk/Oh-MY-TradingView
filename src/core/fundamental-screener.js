@@ -18,6 +18,7 @@ import { readFileSync } from 'node:fs';
 import { getMoomooFundamentalsBatch } from './moomoo.js';
 import { runSectorMomentumScan } from './sector-momentum.js';
 import { getProfilesForMarket, getSectorScreeningPlan } from './sector-screening-profiles.js';
+import { classifyUsTheme, summarizeThemes } from './theme-taxonomy.js';
 
 const DEFAULT_MARKET = 'america';
 const DEFAULT_LIMIT = 10;
@@ -704,6 +705,37 @@ function buildSectorRankLookup(sectorMomentum) {
   return lookup;
 }
 
+function applyThemeTaxonomy(rows, market) {
+  if (market !== DEFAULT_MARKET) {
+    return rows.map((row) => ({
+      ...row,
+      primaryThemeId: null,
+      primaryTheme: null,
+      subThemeIds: [],
+      subThemes: [],
+      themeMatchReason: null,
+      matchedThemeIds: [],
+      matchedThemes: [],
+      themeTaxonomyVersion: null,
+    }));
+  }
+
+  return rows.map((row) => {
+    const classification = classifyUsTheme(row);
+    return {
+      ...row,
+      themeTaxonomyVersion: classification.taxonomyVersion,
+      primaryThemeId: classification.primaryThemeId,
+      primaryTheme: classification.primaryTheme,
+      subThemeIds: classification.subThemeIds,
+      subThemes: classification.subThemes,
+      themeMatchReason: classification.themeMatchReason,
+      matchedThemeIds: classification.matchedThemeIds,
+      matchedThemes: classification.matchedThemes,
+    };
+  });
+}
+
 const YAHOO_BATCH_SIZE = 5;
 const YAHOO_BATCH_DELAY_MS = 500;
 
@@ -845,10 +877,12 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       .map((r) => ({ ...r, revenueGrowth: growthMap[r.symbol] ?? null }));
   }
 
+  const themedRows = applyThemeTaxonomy(clientFiltered, market);
   const rankingBlocks = getRankingBlocks(market);
-  const ranked = applyBlockRanks(clientFiltered, rankingBlocks).sort((a, b) => b.rankScore - a.rankScore);
+  const ranked = applyBlockRanks(themedRows, rankingBlocks).sort((a, b) => b.rankScore - a.rankScore);
   const matched = ranked.slice(0, effectiveLimit).map(stripInternalFields);
   const sectorRanking = summarizeSectors(ranked);
+  const themeRanking = market === DEFAULT_MARKET ? summarizeThemes(ranked) : [];
   const ruleOf40Coverage = buildRuleOf40Coverage(matched, market);
 
   const criteria = {
@@ -874,6 +908,11 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       pass_badge_min: 40,
       warning_below: 20,
       hard_filter: false,
+    };
+    criteria.theme_taxonomy_policy = {
+      version: themedRows[0]?.themeTaxonomyVersion ?? 'us-theme-prototype-v1',
+      scope: 'US Phase2 matched candidates only',
+      approach: 'repo custom theme taxonomy layered on top of TradingView sector/industry',
     };
   }
   if (exchangeAllowlist) {
@@ -922,6 +961,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     },
     sectorMomentum,
     sectorRanking,
+    themeRanking,
     ruleOf40Coverage,
     results: matched,
     retrieved_at: new Date().toISOString(),
@@ -1043,7 +1083,7 @@ export async function evaluateSymbolsAgainstFundamentalScreener({
     .filter((entry) => entry?.found && entry.matchedProfileId);
   let ranked = [];
   if (rankedCandidates.length > 0) {
-    ranked = applyBlockRanks(rankedCandidates, getRankingBlocks(market))
+    ranked = applyBlockRanks(applyThemeTaxonomy(rankedCandidates, market), getRankingBlocks(market))
       .sort((a, b) => b.rankScore - a.rankScore);
   }
   const rankLookup = new Map(ranked.map((row, index) => [`${row.exchange}:${row.symbol}`.toUpperCase(), {

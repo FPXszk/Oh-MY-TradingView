@@ -137,6 +137,12 @@ function buildRankingMetricCells(row, market) {
   ];
 }
 
+function formatThemeLine(row) {
+  const primary = row.primaryTheme ?? 'Unclassified';
+  const subthemes = row.subThemes?.length ? row.subThemes.join(', ') : '細粒度タグなし';
+  return `${primary} / ${subthemes}`;
+}
+
 function buildRuleOf40CoverageLines(result) {
   const coverage = result.ruleOf40Coverage;
   if (!coverage || result.scannerScope?.market !== 'america') return [];
@@ -243,6 +249,9 @@ function buildGuideRows(result) {
 
   if (result.criteria.rule_of_40_policy) {
     rows.push(`| 補助ポリシー | Rule of 40 | ${result.criteria.rule_of_40_policy.scope} / ${result.criteria.rule_of_40_policy.formula} / ${result.criteria.rule_of_40_policy.pass_badge_min}+ を badge / ${result.criteria.rule_of_40_policy.warning_below} 未満を warning / hard filter なし |`);
+  }
+  if (result.criteria.theme_taxonomy_policy) {
+    rows.push(`| 補助ポリシー | Theme taxonomy | ${result.criteria.theme_taxonomy_policy.scope} / ${result.criteria.theme_taxonomy_policy.approach} / version ${result.criteria.theme_taxonomy_policy.version} |`);
   }
   if (result.criteria.allowed_exchanges) {
     rows.push(`| ユニバース | 取引所 | ${result.criteria.allowed_exchanges.join(', ')} |`);
@@ -361,6 +370,21 @@ export function buildMarkdown(result, options = {}) {
     lines.push('> 本日は条件を満たす銘柄がありませんでした。');
     lines.push('');
   } else {
+    if (result.themeRanking && result.themeRanking.length > 0) {
+      lines.push('## Phase2 テーマランキング');
+      lines.push('');
+      lines.push('- 中粒度テーマは repo 独自 taxonomy による試作分類です。TradingView の sector とは別レイヤーで集計しています。');
+      lines.push('');
+      lines.push('| 順位 | テーマ | 通過銘柄数 | 平均3M | 平均総合点 | 主な細粒度タグ |');
+      lines.push('|:---:|:---|---:|---:|---:|:---|');
+      result.themeRanking.forEach((theme, index) => {
+        lines.push(
+          `| ${index + 1} | ${theme.theme} | ${theme.count} | ${fmt(theme.averagePerf3m)}% | ${fmt(theme.averageRankScore, 2)} | ${theme.topSubThemes?.join(', ') || 'N/A'} |`,
+        );
+      });
+      lines.push('');
+    }
+
     lines.push('## Phase2 セクター別ランキング');
     lines.push('');
     lines.push(`- Phase1 採用は上位 ${result.sectorMomentum?.selectedSectors?.length ?? 0} セクターのみです。4位以下のセクターは Phase1 失格として除外しています。`);
@@ -410,6 +434,7 @@ export function buildMarkdown(result, options = {}) {
   result.results.slice(0, 3).forEach((row, index, rows) => {
       lines.push(`### ${index + 1}位 ${row.symbol} (${row.exchange ?? '-'})`);
       lines.push(`- 総合点: ${fmt(row.rankScore, 2)}`);
+      lines.push(`- テーマ: ${formatThemeLine(row)}`);
       lines.push(`- ブロック: 価格 ${fmt(getBlock(row, 'priceMomentum')?.rank, 2)} / セクター ${fmt(getBlock(row, 'sectorStrength')?.rank, 2)} / 品質 ${fmt(getBlock(row, 'quality')?.rank, 2)} / 成長 ${fmt(getBlock(row, 'growth')?.rank, 2)} / リスク・割安 ${fmt(getBlock(row, 'riskValue')?.rank, 2)} / Rule40 ${fmt(getBlock(row, 'ruleOf40')?.rank, 2)}`);
       lines.push(`- 主要指標: 12M ${fmt(row.perfY)}% / 6M ${fmt(row.perf6m)}% / 3M ${fmt(row.perf3m)}% / ROIC ${fmt(row.roic)}% / GP/A ${fmt(row.grossProfitToAssets)}% / FCF ${fmt(row.fcfMargin)}% / Rule40 ${buildRuleOf40Note(row, result.scannerScope?.market)}`);
       lines.push(`- リスク確認: ${buildRiskNote(row)}`);

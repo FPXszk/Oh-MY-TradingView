@@ -394,6 +394,10 @@ describe('runFundamentalScreener', () => {
     assert.ok(result.results[0].rankScore > result.results[result.results.length - 1].rankScore);
     assert.equal(result.results.find((row) => row.symbol === 'ADEA').ruleOf40, 45);
     assert.equal(result.results.find((row) => row.symbol === 'MU').ruleOf40, 65);
+    assert.equal(result.results.find((row) => row.symbol === 'ADEA').primaryTheme, 'Cloud Software');
+    assert.ok(result.results.find((row) => row.symbol === 'MU').subThemes.includes('HBM/DRAM'));
+    assert.ok(result.themeRanking.some((entry) => entry.theme === 'Memory'));
+    assert.ok(result.themeRanking.some((entry) => entry.theme === 'Cloud Software'));
     assert.deepEqual(result.ruleOf40Coverage, {
       total: 6,
       complete: 2,

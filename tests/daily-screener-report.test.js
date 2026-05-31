@@ -290,6 +290,11 @@ describe('buildMarkdown', () => {
           warning_below: 20,
           hard_filter: false,
         },
+        theme_taxonomy_policy: {
+          version: 'us-theme-prototype-v1',
+          scope: 'US Phase2 matched candidates only',
+          approach: 'repo custom theme taxonomy layered on top of TradingView sector/industry',
+        },
       },
       sectorMomentum: {
         approach: 'stock-aggregation',
@@ -391,6 +396,22 @@ describe('buildMarkdown', () => {
           ],
         },
       ],
+      themeRanking: [
+        {
+          theme: 'Cloud Software',
+          count: 2,
+          averagePerf3m: 27.5,
+          averageRankScore: 88.4,
+          topSubThemes: ['Cloud Platforms', 'Data Infrastructure Software'],
+        },
+        {
+          theme: 'Memory',
+          count: 2,
+          averagePerf3m: 24.8,
+          averageRankScore: 76.2,
+          topSubThemes: ['HBM/DRAM', 'NAND/Storage'],
+        },
+      ],
       ruleOf40Coverage: {
         total: 6,
         complete: 5,
@@ -424,6 +445,8 @@ describe('buildMarkdown', () => {
             isExtreme: true,
             flags: ['perfY_gt_1000'],
           },
+          primaryTheme: 'Cloud Software',
+          subThemes: ['Cloud Platforms'],
           rankScore: 96,
           rankBreakdown: rankBreakdown(1),
         },
@@ -447,6 +470,8 @@ describe('buildMarkdown', () => {
           epsGrowthTtm: 28,
           pFcf: 35,
           atrPct: 3.5,
+          primaryTheme: 'Cloud Software',
+          subThemes: ['Data Infrastructure Software'],
           rankScore: 91,
           rankBreakdown: rankBreakdown(2),
         },
@@ -468,6 +493,8 @@ describe('buildMarkdown', () => {
           epsGrowthTtm: 22,
           pFcf: 25,
           atrPct: 2.8,
+          primaryTheme: 'Memory',
+          subThemes: ['HBM/DRAM'],
           rankScore: 78,
           rankBreakdown: rankBreakdown(3),
         },
@@ -489,6 +516,8 @@ describe('buildMarkdown', () => {
           epsGrowthTtm: 18,
           pFcf: 22,
           atrPct: 2.5,
+          primaryTheme: 'Power & Grid',
+          subThemes: ['Independent Power'],
           rankScore: 64,
           rankBreakdown: rankBreakdown(4),
         },
@@ -510,6 +539,8 @@ describe('buildMarkdown', () => {
           epsGrowthTtm: 16,
           pFcf: 50,
           atrPct: 5.5,
+          primaryTheme: 'Unclassified',
+          subThemes: [],
           rankScore: 42,
           rankBreakdown: rankBreakdown(5),
         },
@@ -531,6 +562,8 @@ describe('buildMarkdown', () => {
           epsGrowthTtm: 14,
           pFcf: 55,
           atrPct: 6.5,
+          primaryTheme: 'Electronic Components',
+          subThemes: ['MLCC & Passives'],
           rankScore: 28,
           rankBreakdown: rankBreakdown(6),
         },
@@ -554,6 +587,9 @@ describe('buildMarkdown', () => {
     assert.doesNotMatch(markdown, /採用セクター:/);
     assert.match(markdown, /\| 順位 \| セクター \| 平均12M \| 平均6M \| 平均3M \| SPY差12M \| SPY差6M \| SPY差3M \| SMA50上 \| SMA200上 \| 52w高値90%内 \| RSI \| 相対出来高 \| 構成数 \| 順位合計 \|/);
     assert.match(markdown, /\| 1 \| Technology Services \| 44\.2% \| 18\.4% \| 11\.1% \| 13\.7pt \| 0\.0pt \| 0\.9pt \| 100\.0% \| 100\.0% \| 66\.7% \| 73\.7 \| 1\.04x \| 3 \| 5 \|/);
+    assert.match(markdown, /## Phase2 テーマランキング/);
+    assert.match(markdown, /\| 順位 \| テーマ \| 通過銘柄数 \| 平均3M \| 平均総合点 \| 主な細粒度タグ \|/);
+    assert.match(markdown, /\| 1 \| Cloud Software \| 2 \| 27\.5% \| 88\.40 \| Cloud Platforms, Data Infrastructure Software \|/);
     assert.match(markdown, /## Phase2 セクター別ランキング/);
     assert.match(markdown, /Phase1 採用は上位 3 セクターのみです/);
     assert.match(markdown, /### 1位 Technology Services/);
@@ -563,6 +599,7 @@ describe('buildMarkdown', () => {
     assert.ok(markdown.indexOf('## Phase2 セクター別ランキング') < markdown.indexOf('## 上位3件の選定理由'));
     assert.match(markdown, /### 1位 AAA \(NASDAQ\)/);
     assert.match(markdown, /- 総合点: 96\.00/);
+    assert.match(markdown, /- テーマ: Cloud Software \/ Cloud Platforms/);
     assert.doesNotMatch(markdown, /低いほど良い/);
     assert.match(markdown, /Rule40/);
     assert.match(markdown, /60\.0（Rule 40\+）/);
@@ -576,6 +613,7 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| 共通条件 \| ベース条件 \| 時価総額 > \$1B \/ EPS\(TTM\) > 0 \/ Close > SMA200 \/ Close > SMA50 \/ Close ≥ 52週高値 × 75% \|/);
     assert.doesNotMatch(markdown, /\| 補助ポリシー \| 超急騰 \|/);
     assert.match(markdown, /\| 補助ポリシー \| Rule of 40 \| US Technology Services software-like industries only \/ total_revenue_yoy_growth_ttm \+ free_cash_flow_margin_ttm \/ 40\+ を badge \/ 20 未満を warning \/ hard filter なし \|/);
+    assert.match(markdown, /\| 補助ポリシー \| Theme taxonomy \| US Phase2 matched candidates only \/ repo custom theme taxonomy layered on top of TradingView sector\/industry \/ version us-theme-prototype-v1 \|/);
     assert.match(markdown, /\| ユニバース \| 取引所 \| NASDAQ, NYSE \|/);
     assert.match(markdown, /\| 補助ポリシー \| Moomoo 補完 \| 売上成長率 YoY は growth scoring の補助に使い、低値でも hard filter では落とさない \|/);
     assert.match(markdown, /\| セクタープロファイル \| Technology Services \| scope: Technology Services \/ hard gate: Perf\.3M > 10% \/ P\/FCF < 50/);
