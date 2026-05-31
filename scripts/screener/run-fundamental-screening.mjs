@@ -310,6 +310,10 @@ export function buildMarkdown(result, options = {}) {
   const jst = formatJstDateParts(result.retrieved_at);
   const title = options.title ?? `スクリーニング結果 ${jst.dateWithWeekday}`;
   const currencySymbol = options.currencySymbol ?? DEFAULT_CURRENCY_SYMBOL;
+  const market = result.scannerScope?.market;
+  const showRuleOf40CoverageSection = options.showRuleOf40CoverageSection ?? market !== 'america';
+  const showPhase2SectorBreakdownSection = options.showPhase2SectorBreakdownSection ?? market !== 'america';
+  const showTopSelectionReasonsSection = options.showTopSelectionReasonsSection ?? market !== 'america';
 
   const lines = [
     `# ${title}`,
@@ -321,7 +325,7 @@ export function buildMarkdown(result, options = {}) {
   ];
 
   const ruleOf40CoverageLines = buildRuleOf40CoverageLines(result);
-  if (ruleOf40CoverageLines.length > 0) {
+  if (showRuleOf40CoverageSection && ruleOf40CoverageLines.length > 0) {
     lines.push('## Rule of 40 算出状況');
     lines.push('');
     ruleOf40CoverageLines.forEach((line) => lines.push(line));
@@ -413,25 +417,28 @@ export function buildMarkdown(result, options = {}) {
     }
   }
 
-  lines.push('## Phase2 通過銘柄のセクター内訳');
-  lines.push('');
-  if (!result.sectorRanking || result.sectorRanking.length === 0) {
-    lines.push('- 条件通過銘柄がないため、Phase2 のセクター内訳は算出できませんでした。');
-  } else {
-    lines.push('| セクター順位 | セクター | 通過銘柄数 | 平均3M | 平均総合点 |');
-    lines.push('|:---:|:---|---:|---:|---:|');
-    result.sectorRanking.forEach((sector, index) => {
-      const sectorRank = sector.phase1SectorRank ?? index + 1;
-      lines.push(
-        `| ${sectorRank} | ${sector.sector} | ${sector.count} | ${fmt(sector.averagePerf3m)}% | ${fmt(sector.averageRankScore, 2)} |`,
-      );
-    });
+  if (showPhase2SectorBreakdownSection) {
+    lines.push('## Phase2 通過銘柄のセクター内訳');
+    lines.push('');
+    if (!result.sectorRanking || result.sectorRanking.length === 0) {
+      lines.push('- 条件通過銘柄がないため、Phase2 のセクター内訳は算出できませんでした。');
+    } else {
+      lines.push('| セクター順位 | セクター | 通過銘柄数 | 平均3M | 平均総合点 |');
+      lines.push('|:---:|:---|---:|---:|---:|');
+      result.sectorRanking.forEach((sector, index) => {
+        const sectorRank = sector.phase1SectorRank ?? index + 1;
+        lines.push(
+          `| ${sectorRank} | ${sector.sector} | ${sector.count} | ${fmt(sector.averagePerf3m)}% | ${fmt(sector.averageRankScore, 2)} |`,
+        );
+      });
+    }
+    lines.push('');
   }
-  lines.push('');
 
-  lines.push('## 上位3件の選定理由');
-  lines.push('');
-  result.results.slice(0, 3).forEach((row, index, rows) => {
+  if (showTopSelectionReasonsSection) {
+    lines.push('## 上位3件の選定理由');
+    lines.push('');
+    result.results.slice(0, 3).forEach((row, index, rows) => {
       lines.push(`### ${index + 1}位 ${row.symbol} (${row.exchange ?? '-'})`);
       lines.push(`- 総合点: ${fmt(row.rankScore, 2)}`);
       lines.push(`- テーマ: ${formatThemeLine(row)}`);
@@ -440,8 +447,9 @@ export function buildMarkdown(result, options = {}) {
       lines.push(`- リスク確認: ${buildRiskNote(row)}`);
       lines.push(`- 理由: ${buildExplanation(row, index, rows)}`);
       lines.push('');
-  });
-  lines.push('');
+    });
+    lines.push('');
+  }
 
   lines.push('---');
   lines.push('');
