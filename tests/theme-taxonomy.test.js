@@ -50,6 +50,39 @@ test('summarizeThemes groups the classified ITRN row under Connected Mobility', 
   assert.deepEqual(themes[1].topSubThemes, ['Telematics & Fleet Connectivity']);
   assert.equal(themes[0].externalConfirmationCount, 4);
   assert.deepEqual(themes[0].externalConfirmedBy, ['Morningstar', 'MSCI', 'Nasdaq', 'moomoo']);
+  assert.equal(themes[0].externalConfirmationScore, 5);
+  assert.equal(themes[0].spKenshoBonus, 0);
+  assert.equal(themes[0].themeHeatScore, 100.8);
+});
+
+test('summarizeThemes gives a small bonus to themes confirmed by S&P Kensho', () => {
+  const themes = summarizeThemes([
+    {
+      symbol: 'RKLB',
+      primaryThemeId: 'space',
+      primaryTheme: 'Space',
+      subThemes: ['Launch'],
+      perf3m: 20,
+      rankScore: 80,
+      externalConfirmedBy: ['Morningstar', 'MSCI', 'S&P Kensho', 'moomoo'],
+    },
+    {
+      symbol: 'CRWD',
+      primaryThemeId: 'cybersecurity',
+      primaryTheme: 'Cybersecurity',
+      subThemes: ['Endpoint Security'],
+      perf3m: 20,
+      rankScore: 80,
+      externalConfirmedBy: ['Morningstar', 'MSCI', 'Nasdaq', 'moomoo'],
+    },
+  ]);
+
+  assert.deepEqual(themes.map((entry) => entry.theme), ['Space', 'Cybersecurity']);
+  assert.equal(themes[0].hasSpKenshoConfirmation, true);
+  assert.equal(themes[0].spKenshoBonus, 1);
+  assert.equal(themes[0].themeHeatScore, 86);
+  assert.equal(themes[1].hasSpKenshoConfirmation, false);
+  assert.equal(themes[1].themeHeatScore, 85);
 });
 
 test('classifyUsTheme maps MU to Memory / HBM/DRAM', () => {

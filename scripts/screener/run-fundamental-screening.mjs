@@ -504,11 +504,11 @@ export function buildMarkdown(result, options = {}) {
       lines.push('');
       lines.push('- 中粒度テーマは repo 独自 taxonomy による試作分類です。TradingView の sector とは別レイヤーで集計しています。');
       lines.push('');
-      lines.push('| 順位 | テーマ | 通過銘柄数 | 平均3M | 平均総合点 | 外部確認数 | 外部確認 | 主な細粒度タグ |');
-      lines.push('|:---:|:---|---:|---:|---:|---:|:---|:---|');
+      lines.push('| 順位 | テーマ | 通過銘柄数 | 平均3M | 平均総合点 | Heat | 外部確認数 | 外部確認 | 主な細粒度タグ |');
+      lines.push('|:---:|:---|---:|---:|---:|---:|---:|:---|:---|');
       result.themeRanking.forEach((theme, index) => {
         lines.push(
-          `| ${index + 1} | ${theme.theme} | ${theme.count} | ${fmt(theme.averagePerf3m)}% | ${fmt(theme.averageRankScore, 2)} | ${theme.externalConfirmationCount ?? 0} | ${theme.externalConfirmedBy?.join(', ') || 'N/A'} | ${theme.topSubThemes?.join(', ') || 'N/A'} |`,
+          `| ${index + 1} | ${theme.theme} | ${theme.count} | ${fmt(theme.averagePerf3m)}% | ${fmt(theme.averageRankScore, 2)} | ${fmt(theme.themeHeatScore, 2)} | ${theme.externalConfirmationCount ?? 0} | ${theme.externalConfirmedBy?.join(', ') || 'N/A'} | ${theme.topSubThemes?.join(', ') || 'N/A'} |`,
         );
       });
       lines.push('');
