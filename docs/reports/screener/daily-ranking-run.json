@@ -2,9 +2,9 @@
   "workflow": "daily-screener",
   "report_path": "docs/reports/screener/daily-ranking.md",
   "run_id": "26715306825",
-  "run_attempt": "1",
+  "run_attempt": "2",
   "run_number": "17",
   "ref_name": "main",
   "sha": "c8dab7a866ae1d289be3b75527e7b8f75431ba5a",
-  "generated_at": "2026-05-31T14:29:44Z"
+  "generated_at": "2026-06-01T04:15:42Z"
 }
