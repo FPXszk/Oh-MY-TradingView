@@ -52,7 +52,7 @@
     },
     {
       "id": "optical-connectivity",
-      "label": "Optical Connectivity",
+      "label": "Optical / Photonics",
       "sectors": ["Electronic Technology", "Communications"],
       "subthemes": [
         {
@@ -64,14 +64,14 @@
         },
         {
           "id": "laser-light-source",
-          "label": "Laser Light Source",
+          "label": "Laser / Photonics",
           "symbols": ["COHR", "IPGP", "LITE"],
           "industry_keywords": ["electronic production equipment"],
           "company_keywords": ["laser", "photonics", "lightwave"]
         },
         {
           "id": "fiber-coherent-optics",
-          "label": "Fiber & Coherent Optics",
+          "label": "Coherent Optics",
           "symbols": ["CIEN", "INFN", "GLW"],
           "industry_keywords": ["telecommunications equipment", "computer communications"],
           "company_keywords": ["fiber", "coherent", "optic"]
@@ -180,6 +180,34 @@
           "symbols": ["KLAC", "TER", "KEYS", "COHU"],
           "industry_keywords": ["electronic production equipment"],
           "company_keywords": ["metrology", "test", "inspection"]
+        },
+        {
+          "id": "packaging-advanced-assembly",
+          "label": "Packaging / Advanced Assembly",
+          "symbols": ["ONTO", "CAMT"],
+          "industry_keywords": ["electronic production equipment"],
+          "company_keywords": ["packaging", "assembly", "panel"]
+        }
+      ]
+    },
+    {
+      "id": "connectivity-silicon",
+      "label": "Connectivity Silicon",
+      "sectors": ["Electronic Technology"],
+      "subthemes": [
+        {
+          "id": "high-speed-connectivity",
+          "label": "High-Speed Connectivity",
+          "symbols": ["CRDO", "ALAB"],
+          "industry_keywords": ["semiconductors"],
+          "company_keywords": ["connectivity", "interconnect", "retimer", "dsp", "cxl"]
+        },
+        {
+          "id": "rf-mobile-connectivity",
+          "label": "RF / Mobile Connectivity",
+          "symbols": ["QRVO", "SWKS", "MTSI"],
+          "industry_keywords": ["semiconductors"],
+          "company_keywords": ["rf", "wireless", "front-end", "connectivity"]
         }
       ]
     },
