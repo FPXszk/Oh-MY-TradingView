@@ -887,6 +887,10 @@ function applyThemeTaxonomy(rows, market) {
       matchedThemeIds: [],
       matchedThemes: [],
       themeTaxonomyVersion: null,
+      externalThemeReferenceVersion: null,
+      externalThemeReferences: [],
+      externalConfirmedBy: [],
+      externalConfirmationCount: 0,
     }));
   }
 
@@ -902,6 +906,10 @@ function applyThemeTaxonomy(rows, market) {
       themeMatchReason: classification.themeMatchReason,
       matchedThemeIds: classification.matchedThemeIds,
       matchedThemes: classification.matchedThemes,
+      externalThemeReferenceVersion: classification.externalThemeReferenceVersion,
+      externalThemeReferences: classification.externalThemeReferences,
+      externalConfirmedBy: classification.externalConfirmedBy,
+      externalConfirmationCount: classification.externalConfirmationCount,
     };
   });
 }

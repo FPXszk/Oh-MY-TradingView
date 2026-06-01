@@ -3,6 +3,9 @@ import { readFileSync } from 'node:fs';
 const US_THEME_TAXONOMY = JSON.parse(
   readFileSync(new URL('../../config/screener/theme-taxonomy-us.json', import.meta.url), 'utf8'),
 );
+const US_EXTERNAL_THEME_REFERENCE = JSON.parse(
+  readFileSync(new URL('../../config/screener/external-theme-reference-us.json', import.meta.url), 'utf8'),
+);
 
 function normalizeText(value) {
   return String(value || '').trim().toLowerCase();
@@ -15,6 +18,24 @@ function uniqueStrings(values) {
 function includesAny(text, needles) {
   const normalizedText = normalizeText(text);
   return (needles || []).find((needle) => normalizedText.includes(normalizeText(needle))) ?? null;
+}
+
+function getExternalThemeReference(themeId) {
+  return US_EXTERNAL_THEME_REFERENCE?.themes?.[themeId] ?? null;
+}
+
+function buildExternalConfirmation(themeId) {
+  const providers = getExternalThemeReference(themeId)?.providers ?? [];
+  return {
+    externalThemeReferenceVersion: US_EXTERNAL_THEME_REFERENCE.version,
+    externalThemeReferences: providers.map((provider) => ({
+      source: provider.source,
+      label: provider.label,
+      confidence: provider.confidence,
+    })),
+    externalConfirmedBy: uniqueStrings(providers.map((provider) => provider.source)),
+    externalConfirmationCount: uniqueStrings(providers.map((provider) => provider.source)).length,
+  };
 }
 
 function scoreDescriptor(row, descriptor, themeLabel) {
@@ -122,6 +143,7 @@ export function classifyUsTheme(row) {
     themeMatchReason: primary?.reasons?.join(', ') ?? 'no-theme-match',
     matchedThemeIds: matches.map((entry) => entry.id),
     matchedThemes: matches.map((entry) => entry.label),
+    ...buildExternalConfirmation(primary?.id ?? null),
   };
 }
 
@@ -137,6 +159,7 @@ export function summarizeThemes(rows) {
         perf3mCount: 0,
         totalRankScore: 0,
         subThemeCounts: new Map(),
+        externalConfirmedBy: [],
       });
     }
 
@@ -149,6 +172,11 @@ export function summarizeThemes(rows) {
     }
     (row.subThemes || []).forEach((subTheme) => {
       entry.subThemeCounts.set(subTheme, (entry.subThemeCounts.get(subTheme) ?? 0) + 1);
+    });
+    (row.externalConfirmedBy || []).forEach((provider) => {
+      if (!entry.externalConfirmedBy.includes(provider)) {
+        entry.externalConfirmedBy.push(provider);
+      }
     });
   }
 
@@ -166,6 +194,8 @@ export function summarizeThemes(rows) {
         .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
         .slice(0, 3)
         .map(([label]) => label),
+      externalConfirmedBy: entry.externalConfirmedBy,
+      externalConfirmationCount: entry.externalConfirmedBy.length,
     }))
     .sort((a, b) => {
       if (b.averageRankScore !== a.averageRankScore) {

@@ -17,23 +17,29 @@ test('classifyUsTheme maps ITRN to Connected Mobility instead of Unclassified', 
   assert.deepEqual(classification.subThemes, ['Telematics & Fleet Connectivity']);
   assert.match(classification.themeMatchReason, /Telematics & Fleet Connectivity:symbol=ITRN/);
   assert.ok(classification.matchedThemes.includes('Connected Mobility'));
+  assert.equal(classification.externalConfirmationCount, 4);
+  assert.deepEqual(classification.externalConfirmedBy, ['Morningstar', 'MSCI', 'Nasdaq', 'moomoo']);
 });
 
 test('summarizeThemes groups the classified ITRN row under Connected Mobility', () => {
   const themes = summarizeThemes([
     {
       symbol: 'ITRN',
+      primaryThemeId: 'connected-mobility',
       primaryTheme: 'Connected Mobility',
       subThemes: ['Telematics & Fleet Connectivity'],
       perf3m: 36.6,
       rankScore: 83.5,
+      externalConfirmedBy: ['Morningstar', 'MSCI', 'Nasdaq', 'moomoo'],
     },
     {
       symbol: 'MU',
+      primaryThemeId: 'memory',
       primaryTheme: 'Memory',
       subThemes: ['HBM/DRAM'],
       perf3m: 53.5,
       rankScore: 95.8,
+      externalConfirmedBy: ['Morningstar', 'MSCI', 'Nasdaq', 'moomoo'],
     },
   ]);
 
@@ -42,6 +48,8 @@ test('summarizeThemes groups the classified ITRN row under Connected Mobility', 
     ['Memory', 'Connected Mobility'],
   );
   assert.deepEqual(themes[1].topSubThemes, ['Telematics & Fleet Connectivity']);
+  assert.equal(themes[0].externalConfirmationCount, 4);
+  assert.deepEqual(themes[0].externalConfirmedBy, ['Morningstar', 'MSCI', 'Nasdaq', 'moomoo']);
 });
 
 test('classifyUsTheme maps MU to Memory / HBM/DRAM', () => {
@@ -57,6 +65,7 @@ test('classifyUsTheme maps MU to Memory / HBM/DRAM', () => {
   assert.equal(classification.primaryTheme, 'Memory');
   assert.equal(classification.subThemes[0], 'HBM/DRAM');
   assert.match(classification.themeMatchReason, /HBM\/DRAM:symbol=MU/);
+  assert.deepEqual(classification.externalConfirmedBy, ['Morningstar', 'MSCI', 'Nasdaq', 'moomoo']);
 });
 
 test('classifyUsTheme maps NVDA to AI Compute / AI Accelerators', () => {
