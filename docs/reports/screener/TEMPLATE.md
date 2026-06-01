@@ -66,7 +66,7 @@
 | FCF | FCF margin = フリーキャッシュフロー ÷ 売上 | 売上がどれだけ現金として残るか |
 | 売上YoY | 売上高の前年比成長率 | 事業成長の確認 |
 | Rule40 | 売上YoY + FCF margin | 主に US software 系の成長と収益性をまとめて確認 |
-| EPS YoY | EPS の前年比成長率 | 利益成長の確認。N/A は元データ欠損 |
+| EPS YoY | EPS の前年比成長率 | 利益成長の確認。N/A は TradingView 側の欠損 |
 | P/FCF | 株価 ÷ FCF の倍率 | 低いほど割高感が小さい傾向 |
 | ATR% | ATR ÷ 株価 × 100 | 値動きの荒さ。高いほどボラティリティが高い |
 | 総合点 (T/F) | repo 独自の総合スコア | 高いほど良い。T はテクニカル寄り、F はファンダ寄り |
@@ -79,5 +79,5 @@
 | 補助ポリシー | Theme taxonomy | repo 独自 taxonomy の版情報 |
 | ユニバース | 取引所 | NASDAQ, NYSE など |
 | ユニバース | 銘柄ユニバース | allowlist がある場合のみ |
-| 補助ポリシー | Moomoo 補完 | 売上成長率の補完方針 |
+| 補助ポリシー | Moomoo 補助 | 売上成長率の補助利用方針 |
 | セクタープロファイル | Technology Services | hard gate と scoring 条件 |

@@ -310,7 +310,7 @@ function buildMetricGlossaryRows(market) {
     ['Rule40', '売上YoY + FCF margin', market === 'america'
       ? '主に US software 系の成長と収益性をまとめて確認'
       : '米国 software 向け補助指標。通常は N/A'],
-    ['EPS YoY', 'EPS の前年比成長率', '利益成長の確認。N/A は TradingView / Moomoo の両方で欠損'],
+    ['EPS YoY', 'EPS の前年比成長率', '利益成長の確認。N/A は TradingView 側の欠損'],
     ['P/FCF', '株価 ÷ FCF の倍率', '低いほど割高感が小さい傾向'],
     ['ATR%', 'ATR ÷ 株価 × 100', '値動きの荒さ。高いほどボラティリティが高い'],
     ['総合点 (T/F)', 'repo 独自の総合スコア', market === 'america'
@@ -367,7 +367,7 @@ function buildGuideRows(result) {
     rows.push(`| ユニバース | 銘柄ユニバース | ${result.criteria.symbol_allowlist_key} |`);
   }
   if (result.enrichedWithYahoo) {
-    rows.push('| 補助ポリシー | Moomoo 補完 | 売上成長率 YoY は growth scoring の補助に使い、EPS YoY は TradingView 欠損時のみ Moomoo で補完する。低値でも hard filter では落とさない |');
+    rows.push('| 補助ポリシー | Moomoo 補助 | 売上成長率 YoY は growth scoring の補助に使う。EPS YoY は TradingView 値のみを使い、欠損時は N/A のままにする |');
   }
   if (result.criteria.excluded_phase2_sectors?.length) {
     rows.push(`| ユニバース | Phase2 除外セクター | ${result.criteria.excluded_phase2_sectors.join(', ')} |`);

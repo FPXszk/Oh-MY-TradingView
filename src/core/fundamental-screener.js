@@ -813,7 +813,7 @@ function applySupplementalGrowthMetrics(row, metrics = {}) {
   return {
     ...row,
     revenueGrowth: metrics.revenueGrowth ?? null,
-    epsGrowthTtm: row.epsGrowthTtm ?? metrics.earningsGrowthPct ?? null,
+    epsGrowthTtm: row.epsGrowthTtm ?? null,
   };
 }
 

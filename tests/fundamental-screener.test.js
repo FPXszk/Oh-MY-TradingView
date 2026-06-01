@@ -721,7 +721,7 @@ describe('runFundamentalScreener', () => {
     assert.equal(result.results.find((row) => row.symbol === 'MU').revenueGrowth, 0.12);
   });
 
-  it('backfills EPS YoY only when TradingView data is missing', async () => {
+  it('does not backfill EPS YoY from moomoo when TradingView data is missing', async () => {
     const result = await runFundamentalScreener({
       limit: 10,
       enrichWithYahoo: true,
@@ -840,7 +840,7 @@ describe('runFundamentalScreener', () => {
     });
 
     assert.equal(result.results.find((row) => row.symbol === 'ADEA').epsGrowthTtm, 18);
-    assert.equal(result.results.find((row) => row.symbol === 'MU').epsGrowthTtm, 27);
+    assert.equal(result.results.find((row) => row.symbol === 'MU').epsGrowthTtm, null);
     assert.equal(result.results.find((row) => row.symbol === 'QCOM').epsGrowthTtm, null);
   });
 
