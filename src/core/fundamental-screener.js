@@ -374,7 +374,12 @@ function resolveSymbolAllowlist(symbolAllowlistKey, customAllowlists) {
   return allowlist;
 }
 
+function isExcludedExchange(row, market) {
+  return market === DEFAULT_MARKET && row.exchange === 'OTC';
+}
+
 function passesScopeFilters(row, { exchangeAllowlist, symbolAllowlist }) {
+  if (isExcludedExchange(row, DEFAULT_MARKET)) return false;
   if (exchangeAllowlist && !exchangeAllowlist.includes(row.exchange)) return false;
   if (symbolAllowlist && !symbolAllowlist.has(row.symbol)) return false;
   return true;
@@ -1274,7 +1279,9 @@ export async function evaluateSymbolsAgainstFundamentalScreener({
       : row;
     const failureReasons = [];
 
-    if (exchangeAllowlist && !exchangeAllowlist.includes(row.exchange)) {
+    if (isExcludedExchange(row, market)) {
+      failureReasons.push(`exchange_not_allowed (${row.exchange})`);
+    } else if (exchangeAllowlist && !exchangeAllowlist.includes(row.exchange)) {
       failureReasons.push(`exchange_not_allowed (${row.exchange})`);
     }
     if (symbolAllowlist && !symbolAllowlist.has(row.symbol)) {

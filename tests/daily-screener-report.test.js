@@ -402,7 +402,6 @@ describe('buildMarkdown', () => {
           count: 2,
           averagePerf3m: 27.5,
           averageRankScore: 88.4,
-          themeHeatScore: 93.4,
           externalConfirmationCount: 4,
           externalConfirmedBy: ['Morningstar', 'MSCI', 'Nasdaq', 'moomoo'],
           topSubThemes: ['Cloud Platforms', 'Data Infrastructure Software'],
@@ -412,7 +411,6 @@ describe('buildMarkdown', () => {
           count: 2,
           averagePerf3m: 24.8,
           averageRankScore: 76.2,
-          themeHeatScore: 81.2,
           externalConfirmationCount: 4,
           externalConfirmedBy: ['Morningstar', 'MSCI', 'Nasdaq', 'moomoo'],
           topSubThemes: ['HBM / DRAM', 'NAND / Storage'],
@@ -678,9 +676,8 @@ describe('buildMarkdown', () => {
     assert.doesNotMatch(markdown, /採用セクター:/);
     assert.match(markdown, /\| 順位 \| セクター \| 平均12M \| 平均6M \| 平均3M \| SPY差12M \| SPY差6M \| SPY差3M \| SMA50上 \| SMA200上 \| 52w高値90%内 \| RSI \| 相対出来高 \| 構成数 \| 順位合計 \|/);
     assert.match(markdown, /\| 1 \| Technology Services \| 44\.2% \| 18\.4% \| 11\.1% \| 13\.7pt \| 0\.0pt \| 0\.9pt \| 100\.0% \| 100\.0% \| 66\.7% \| 73\.7 \| 1\.04x \| 3 \| 5 \|/);
-    assert.match(markdown, /## Phase2 テーマランキング/);
-    assert.match(markdown, /\| 順位 \| テーマ \| 通過銘柄数 \| 平均3M \| 平均総合点 \| Heat \| 外部確認数 \| 外部確認 \| 主な細粒度タグ \|/);
-    assert.match(markdown, /\| 1 \| Cloud Software \| 2 \| 27\.5% \| 88\.40 \| 93\.40 \| 4 \| Morningstar, MSCI, Nasdaq, moomoo \| Cloud Platforms, Data Infrastructure Software \|/);
+    assert.doesNotMatch(markdown, /## Phase2 テーマランキング/);
+    assert.doesNotMatch(markdown, /\| 順位 \| テーマ \| 通過銘柄数 \| 平均3M \| 平均総合点 \| Heat \| 外部確認数 \| 外部確認 \| 主な細粒度タグ \|/);
     assert.match(markdown, /## Phase2 中テーマランキング \(Electronic Technology\)/);
     assert.match(markdown, /\| 1 \| AI Compute \| 2 \| 31\.2% \| 94\.40 \| AI Accelerators \|/);
     assert.match(markdown, /\| 2 \| Memory \| 2 \| 24\.8% \| 76\.20 \| HBM \/ DRAM, NAND \/ Storage \|/);

@@ -129,7 +129,12 @@ function buildBenchmarkRequestBody(market, ticker) {
   };
 }
 
+function isExcludedExchange(row, market) {
+  return market === 'america' && row.exchange === 'OTC';
+}
+
 function passesScopeFilters(row, { exchangeAllowlist, symbolAllowlist }) {
+  if (isExcludedExchange(row, 'america')) return false;
   if (exchangeAllowlist && !exchangeAllowlist.includes(row.exchange)) return false;
   if (symbolAllowlist && !symbolAllowlist.has(row.symbol)) return false;
   return true;

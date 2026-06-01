@@ -236,7 +236,7 @@ describe('runFundamentalScreener', () => {
               ],
             },
             'Electronic Technology': {
-              totalCount: 5,
+              totalCount: 6,
               data: [
                 buildPhase2Row('NASDAQ:QCOM', {
                   name: 'Qualcomm',
@@ -341,6 +341,27 @@ describe('runFundamentalScreener', () => {
                   netDebt: 15_000_000,
                   volume: 850_000,
                 }),
+                buildPhase2Row('OTC:ASMVF', {
+                  name: 'ASM International',
+                  sector: 'Electronic Technology',
+                  industry: 'Electronic Production Equipment',
+                  close: 620,
+                  rsi: 66,
+                  sma200: 560,
+                  sma50: 590,
+                  high52w: 640,
+                  perf3m: 18,
+                  relativeVolume: 1.0,
+                  marketCap: 2_100_000_000,
+                  eps: 5,
+                  roe: 15,
+                  grossMargin: 48,
+                  fcfMargin: 20,
+                  fcfTtm: 40_000_000,
+                  revenueGrowthTtm: 12,
+                  netDebt: 0,
+                  volume: 120_000,
+                }),
               ],
             },
             'Producer Manufacturing': {
@@ -375,7 +396,7 @@ describe('runFundamentalScreener', () => {
       },
     });
 
-    assert.equal(result.totalScanned, 7);
+    assert.equal(result.totalScanned, 8);
     assert.equal(result.serverFiltered, 7);
     assert.equal(result.phase1Filtered, 7);
     assert.equal(result.clientFiltered, 6);
@@ -396,6 +417,7 @@ describe('runFundamentalScreener', () => {
     assert.equal(result.results.find((row) => row.symbol === 'MU').ruleOf40, 65);
     assert.equal(result.results.find((row) => row.symbol === 'ADEA').primaryTheme, 'Cloud Software');
     assert.ok(result.results.find((row) => row.symbol === 'MU').subThemes.includes('HBM / DRAM'));
+    assert.ok(result.results.every((row) => row.exchange !== 'OTC'));
     assert.ok(result.themeRanking.some((entry) => entry.theme === 'Memory'));
     assert.ok(result.themeRanking.some((entry) => entry.theme === 'Cloud Software'));
     assert.deepEqual(result.ruleOf40Coverage, {

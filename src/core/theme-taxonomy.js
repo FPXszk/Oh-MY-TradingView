@@ -23,9 +23,6 @@ function includesAny(text, needles) {
   return (needles || []).find((needle) => normalizedText.includes(normalizeText(needle))) ?? null;
 }
 
-const EXTERNAL_CONFIRMATION_POINT = 1.25;
-const SP_KENSHO_BONUS_POINT = 1.0;
-
 function getExternalThemeReference(themeId) {
   return US_EXTERNAL_THEME_REFERENCE?.themes?.[themeId] ?? null;
 }
@@ -217,23 +214,7 @@ export function summarizeThemes(rows) {
       externalConfirmedBy: entry.externalConfirmedBy,
       externalConfirmationCount: entry.externalConfirmedBy.length,
     }))
-    .map((entry) => {
-      const hasSpKenshoConfirmation = entry.externalConfirmedBy.includes('S&P Kensho');
-      const externalConfirmationScore = Number((entry.externalConfirmationCount * EXTERNAL_CONFIRMATION_POINT).toFixed(2));
-      const spKenshoBonus = hasSpKenshoConfirmation ? SP_KENSHO_BONUS_POINT : 0;
-      const baseRankScore = entry.averageRankScore ?? 0;
-      return {
-        ...entry,
-        hasSpKenshoConfirmation,
-        externalConfirmationScore,
-        spKenshoBonus,
-        themeHeatScore: Number((baseRankScore + externalConfirmationScore + spKenshoBonus).toFixed(2)),
-      };
-    })
     .sort((a, b) => {
-      if (b.themeHeatScore !== a.themeHeatScore) {
-        return (b.themeHeatScore ?? -Infinity) - (a.themeHeatScore ?? -Infinity);
-      }
       if (b.averageRankScore !== a.averageRankScore) {
         return (b.averageRankScore ?? -Infinity) - (a.averageRankScore ?? -Infinity);
       }
