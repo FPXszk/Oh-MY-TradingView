@@ -691,6 +691,176 @@ function summarizeSectors(rows) {
     });
 }
 
+function buildPrimarySmallTheme(row) {
+  return row?.subThemes?.[0] ?? null;
+}
+
+function summarizeFocusedMiddleThemes(rows) {
+  const grouped = new Map();
+  for (const row of rows) {
+    const middleTheme = row.primaryTheme ?? 'Unclassified';
+    if (!grouped.has(middleTheme)) {
+      grouped.set(middleTheme, {
+        middleTheme,
+        count: 0,
+        totalPerf3m: 0,
+        perf3mCount: 0,
+        totalRankScore: 0,
+        topRows: [],
+        smallThemeCounts: new Map(),
+      });
+    }
+    const entry = grouped.get(middleTheme);
+    entry.count += 1;
+    entry.totalRankScore += row.rankScore ?? 0;
+    if (row.perf3m !== null && row.perf3m !== undefined) {
+      entry.totalPerf3m += row.perf3m;
+      entry.perf3mCount += 1;
+    }
+    entry.topRows.push(row);
+    const primarySmallTheme = buildPrimarySmallTheme(row);
+    if (primarySmallTheme) {
+      entry.smallThemeCounts.set(primarySmallTheme, (entry.smallThemeCounts.get(primarySmallTheme) ?? 0) + 1);
+    }
+  }
+
+  return Array.from(grouped.values())
+    .map((entry) => ({
+      middleTheme: entry.middleTheme,
+      count: entry.count,
+      averagePerf3m: entry.perf3mCount > 0
+        ? Number((entry.totalPerf3m / entry.perf3mCount).toFixed(1))
+        : null,
+      averageRankScore: entry.count > 0
+        ? Number((entry.totalRankScore / entry.count).toFixed(1))
+        : null,
+      topSmallThemes: Array.from(entry.smallThemeCounts.entries())
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+        .slice(0, 3)
+        .map(([label]) => label),
+      topRows: entry.topRows
+        .sort((a, b) => (b.rankScore ?? -Infinity) - (a.rankScore ?? -Infinity))
+        .slice(0, 5)
+        .map((row) => stripInternalFields(row)),
+    }))
+    .sort((a, b) => {
+      if ((b.averageRankScore ?? -Infinity) !== (a.averageRankScore ?? -Infinity)) {
+        return (b.averageRankScore ?? -Infinity) - (a.averageRankScore ?? -Infinity);
+      }
+      if ((b.averagePerf3m ?? -Infinity) !== (a.averagePerf3m ?? -Infinity)) {
+        return (b.averagePerf3m ?? -Infinity) - (a.averagePerf3m ?? -Infinity);
+      }
+      if (b.count !== a.count) return b.count - a.count;
+      return a.middleTheme.localeCompare(b.middleTheme);
+    });
+}
+
+function summarizeFocusedSmallThemes(rows) {
+  const grouped = new Map();
+  for (const row of rows) {
+    const primarySmallTheme = buildPrimarySmallTheme(row);
+    if (!primarySmallTheme) continue;
+    const middleTheme = row.primaryTheme ?? 'Unclassified';
+    const key = `${middleTheme}::${primarySmallTheme}`;
+    if (!grouped.has(key)) {
+      grouped.set(key, {
+        middleTheme,
+        smallTheme: primarySmallTheme,
+        count: 0,
+        totalPerf3m: 0,
+        perf3mCount: 0,
+        totalRankScore: 0,
+        topRows: [],
+      });
+    }
+    const entry = grouped.get(key);
+    entry.count += 1;
+    entry.totalRankScore += row.rankScore ?? 0;
+    if (row.perf3m !== null && row.perf3m !== undefined) {
+      entry.totalPerf3m += row.perf3m;
+      entry.perf3mCount += 1;
+    }
+    entry.topRows.push(row);
+  }
+
+  return Array.from(grouped.values())
+    .map((entry) => ({
+      middleTheme: entry.middleTheme,
+      smallTheme: entry.smallTheme,
+      count: entry.count,
+      averagePerf3m: entry.perf3mCount > 0
+        ? Number((entry.totalPerf3m / entry.perf3mCount).toFixed(1))
+        : null,
+      averageRankScore: entry.count > 0
+        ? Number((entry.totalRankScore / entry.count).toFixed(1))
+        : null,
+      topRows: entry.topRows
+        .sort((a, b) => (b.rankScore ?? -Infinity) - (a.rankScore ?? -Infinity))
+        .slice(0, 5)
+        .map((row) => stripInternalFields(row)),
+    }))
+    .sort((a, b) => {
+      if ((b.averageRankScore ?? -Infinity) !== (a.averageRankScore ?? -Infinity)) {
+        return (b.averageRankScore ?? -Infinity) - (a.averageRankScore ?? -Infinity);
+      }
+      if ((b.averagePerf3m ?? -Infinity) !== (a.averagePerf3m ?? -Infinity)) {
+        return (b.averagePerf3m ?? -Infinity) - (a.averagePerf3m ?? -Infinity);
+      }
+      if (b.count !== a.count) return b.count - a.count;
+      if (a.middleTheme !== b.middleTheme) return a.middleTheme.localeCompare(b.middleTheme);
+      return a.smallTheme.localeCompare(b.smallTheme);
+    });
+}
+
+function buildFocusedHierarchy(rows, focusSector, {
+  topMiddleThemeCount = 3,
+  topSmallThemeCount = 5,
+  topStockCount = 20,
+} = {}) {
+  if (!focusSector) return null;
+
+  const sectorRows = rows.filter((row) => row.sector === focusSector);
+  if (sectorRows.length === 0) {
+    return {
+      focusSector,
+      candidateCount: 0,
+      middleThemeRanking: [],
+      selectedMiddleThemes: [],
+      smallThemeRanking: [],
+      selectedSmallThemes: [],
+      stockRanking: [],
+    };
+  }
+
+  const middleThemeRanking = summarizeFocusedMiddleThemes(sectorRows);
+  const selectedMiddleThemes = middleThemeRanking
+    .slice(0, topMiddleThemeCount)
+    .map((entry) => entry.middleTheme);
+  const smallThemeCandidates = summarizeFocusedSmallThemes(
+    sectorRows.filter((row) => selectedMiddleThemes.includes(row.primaryTheme)),
+  );
+  const selectedSmallThemes = smallThemeCandidates
+    .slice(0, topSmallThemeCount)
+    .map((entry) => ({ middleTheme: entry.middleTheme, smallTheme: entry.smallTheme }));
+  const selectedSmallThemeKeys = new Set(selectedSmallThemes.map((entry) => `${entry.middleTheme}::${entry.smallTheme}`));
+  const stockRanking = sectorRows
+    .filter((row) => selectedMiddleThemes.includes(row.primaryTheme))
+    .filter((row) => selectedSmallThemeKeys.has(`${row.primaryTheme ?? 'Unclassified'}::${buildPrimarySmallTheme(row) ?? ''}`))
+    .sort((a, b) => (b.rankScore ?? -Infinity) - (a.rankScore ?? -Infinity))
+    .slice(0, topStockCount)
+    .map((row) => stripInternalFields(row));
+
+  return {
+    focusSector,
+    candidateCount: sectorRows.length,
+    middleThemeRanking,
+    selectedMiddleThemes,
+    smallThemeRanking: smallThemeCandidates,
+    selectedSmallThemes,
+    stockRanking,
+  };
+}
+
 function buildSectorRankLookup(sectorMomentum) {
   const lookup = new Map();
   (sectorMomentum?.rankings ?? []).forEach((entry, index) => {
@@ -837,6 +1007,11 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   const selectedSectorCount = _deps?.selectedSectorCount;
   const resultLimit = _deps?.resultLimit ?? 30;
   const getFundamentals = _deps?.getSymbolFundamentals ?? null;
+  const forcedSelectedSectors = uniqueStrings(_deps?.forcePhase1Sectors ?? []);
+  const hierarchyFocusSector = _deps?.hierarchyFocusSector ?? null;
+  const hierarchyTopMiddleThemeCount = _deps?.hierarchyTopMiddleThemeCount ?? 3;
+  const hierarchyTopSmallThemeCount = _deps?.hierarchyTopSmallThemeCount ?? 5;
+  const hierarchyTopStockCount = _deps?.hierarchyTopStockCount ?? 20;
   const scannerUrl = `https://scanner.tradingview.com/${market}/scan`;
   const sectorMomentumScan = await runSectorMomentumScan({
     market,
@@ -847,7 +1022,10 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   });
   const sectorMomentum = sectorMomentumScan;
   const sectorRankLookup = buildSectorRankLookup(sectorMomentum);
-  const selectedSectorLabels = sectorMomentum.selectedSectors.map((entry) => entry.label);
+  const phase1SelectedSectorLabels = sectorMomentum.selectedSectors.map((entry) => entry.label);
+  const selectedSectorLabels = forcedSelectedSectors.length > 0
+    ? forcedSelectedSectors
+    : phase1SelectedSectorLabels;
   const { activeProfiles, excludedSelectedSectors, profileSummaries } = getSectorScreeningPlan({
     market,
     selectedSectors: selectedSectorLabels,
@@ -910,6 +1088,11 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   const matched = ranked.slice(0, effectiveLimit).map(stripInternalFields);
   const sectorRanking = summarizeSectors(ranked);
   const themeRanking = market === DEFAULT_MARKET ? summarizeThemes(ranked) : [];
+  const focusedHierarchy = buildFocusedHierarchy(ranked, hierarchyFocusSector, {
+    topMiddleThemeCount: hierarchyTopMiddleThemeCount,
+    topSmallThemeCount: hierarchyTopSmallThemeCount,
+    topStockCount: hierarchyTopStockCount,
+  });
   const ruleOf40Coverage = buildRuleOf40Coverage(matched, market);
 
   const criteria = {
@@ -927,6 +1110,18 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     excluded_phase2_sectors: excludedSelectedSectors,
     phase1_selected_sectors: selectedSectorLabels,
   };
+  if (forcedSelectedSectors.length > 0) {
+    criteria.phase1_selected_sectors_source = 'override';
+    criteria.phase1_selected_sectors_actual = phase1SelectedSectorLabels;
+  }
+  if (hierarchyFocusSector) {
+    criteria.hierarchy_focus_sector = hierarchyFocusSector;
+    criteria.hierarchy_selection = {
+      top_middle_themes: hierarchyTopMiddleThemeCount,
+      top_small_themes: hierarchyTopSmallThemeCount,
+      top_stocks: hierarchyTopStockCount,
+    };
+  }
   if (market === DEFAULT_MARKET) {
     criteria.rule_of_40_policy = {
       scope: 'US Technology Services software-like industries only',
@@ -989,6 +1184,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     sectorMomentum,
     sectorRanking,
     themeRanking,
+    focusedHierarchy,
     ruleOf40Coverage,
     results: matched,
     retrieved_at: new Date().toISOString(),

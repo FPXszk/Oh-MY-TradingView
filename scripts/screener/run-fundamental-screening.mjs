@@ -219,6 +219,11 @@ function formatThemeLine(row) {
   return `${primary} / ${subthemes}`;
 }
 
+function parseCsvList(value) {
+  if (!value) return [];
+  return value.split(',').map((entry) => entry.trim()).filter(Boolean);
+}
+
 function buildRowLookupKey(row) {
   return `${row.exchange ?? ''}:${row.symbol ?? ''}`;
 }
@@ -401,6 +406,17 @@ function getRuntimeConfig() {
     screenerOptions: {
       market: process.env.SCREENER_MARKET || 'america',
       exchangeAllowlist: parseExchangeAllowlist(process.env.SCREENER_EXCHANGES),
+      forcePhase1Sectors: parseCsvList(process.env.SCREENER_FORCE_PHASE1_SECTORS),
+      hierarchyFocusSector: process.env.SCREENER_HIERARCHY_SECTOR || undefined,
+      hierarchyTopMiddleThemeCount: process.env.SCREENER_HIERARCHY_TOP_MIDDLE_THEMES
+        ? Number(process.env.SCREENER_HIERARCHY_TOP_MIDDLE_THEMES)
+        : undefined,
+      hierarchyTopSmallThemeCount: process.env.SCREENER_HIERARCHY_TOP_SMALL_THEMES
+        ? Number(process.env.SCREENER_HIERARCHY_TOP_SMALL_THEMES)
+        : undefined,
+      hierarchyTopStockCount: process.env.SCREENER_HIERARCHY_TOP_STOCKS
+        ? Number(process.env.SCREENER_HIERARCHY_TOP_STOCKS)
+        : undefined,
       grossMarginMinPct: process.env.SCREENER_GROSS_MARGIN_MIN_PCT
         ? Number(process.env.SCREENER_GROSS_MARGIN_MIN_PCT)
         : undefined,
@@ -495,6 +511,56 @@ export function buildMarkdown(result, options = {}) {
           `| ${index + 1} | ${theme.theme} | ${theme.count} | ${fmt(theme.averagePerf3m)}% | ${fmt(theme.averageRankScore, 2)} | ${theme.topSubThemes?.join(', ') || 'N/A'} |`,
         );
       });
+      lines.push('');
+    }
+
+    if (result.focusedHierarchy?.focusSector) {
+      const focusSector = result.focusedHierarchy.focusSector;
+      lines.push(`## Phase2 中テーマランキング (${focusSector})`);
+      lines.push('');
+      lines.push(`- 対象: ${focusSector} の通過銘柄 ${result.focusedHierarchy.candidateCount}件`);
+      lines.push('');
+      if (!result.focusedHierarchy.middleThemeRanking || result.focusedHierarchy.middleThemeRanking.length === 0) {
+        lines.push('- 中テーマランキングは算出できませんでした。');
+      } else {
+        lines.push('| 順位 | 中テーマ | 通過銘柄数 | 平均3M | 平均総合点 | 主な小テーマ |');
+        lines.push('|:---:|:---|---:|---:|---:|:---|');
+        result.focusedHierarchy.middleThemeRanking.forEach((entry, index) => {
+          lines.push(`| ${index + 1} | ${entry.middleTheme} | ${entry.count} | ${fmt(entry.averagePerf3m)}% | ${fmt(entry.averageRankScore, 2)} | ${entry.topSmallThemes?.join(', ') || 'N/A'} |`);
+        });
+      }
+      lines.push('');
+
+      lines.push(`## Phase3 小テーマランキング (${focusSector})`);
+      lines.push('');
+      lines.push(`- Phase2 上位中テーマ: ${result.focusedHierarchy.selectedMiddleThemes?.join(', ') || 'なし'}`);
+      lines.push('');
+      if (!result.focusedHierarchy.smallThemeRanking || result.focusedHierarchy.smallThemeRanking.length === 0) {
+        lines.push('- 小テーマランキングは算出できませんでした。');
+      } else {
+        lines.push('| 順位 | 中テーマ | 小テーマ | 通過銘柄数 | 平均3M | 平均総合点 |');
+        lines.push('|:---:|:---|:---|---:|---:|---:|');
+        result.focusedHierarchy.smallThemeRanking.forEach((entry, index) => {
+          lines.push(`| ${index + 1} | ${entry.middleTheme} | ${entry.smallTheme} | ${entry.count} | ${fmt(entry.averagePerf3m)}% | ${fmt(entry.averageRankScore, 2)} |`);
+        });
+      }
+      lines.push('');
+
+      lines.push(`## Phase4 個別銘柄ランキング (${focusSector})`);
+      lines.push('');
+      lines.push(`- 通過小テーマ: ${(result.focusedHierarchy.selectedSmallThemes || []).map((entry) => `${entry.middleTheme} / ${entry.smallTheme}`).join(', ') || 'なし'}`);
+      lines.push('');
+      if (!result.focusedHierarchy.stockRanking || result.focusedHierarchy.stockRanking.length === 0) {
+        lines.push('- 個別銘柄ランキングは算出できませんでした。');
+      } else {
+        const scoreHeader = market === 'america' ? '総合点 (T/F)' : '総合点';
+        lines.push(`| 順位 | 中テーマ | 小テーマ | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | ${scoreHeader} |`);
+        lines.push('|:---:|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|');
+        result.focusedHierarchy.stockRanking.forEach((row, index) => {
+          const metricCells = buildRankingMetricCells(row, result.scannerScope?.market, populationSize).join(' | ');
+          lines.push(`| ${index + 1} | ${row.primaryTheme ?? 'Unclassified'} | ${row.subThemes?.[0] ?? '細粒度タグなし'} | **${row.symbol}** | ${row.exchange ?? '-'} | ${metricCells} |`);
+        });
+      }
       lines.push('');
     }
 

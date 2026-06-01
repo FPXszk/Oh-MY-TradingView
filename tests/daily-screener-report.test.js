@@ -412,6 +412,91 @@ describe('buildMarkdown', () => {
           topSubThemes: ['HBM/DRAM', 'NAND/Storage'],
         },
       ],
+      focusedHierarchy: {
+        focusSector: 'Electronic Technology',
+        candidateCount: 4,
+        selectedMiddleThemes: ['AI Compute', 'Memory'],
+        selectedSmallThemes: [
+          { middleTheme: 'AI Compute', smallTheme: 'AI Accelerators' },
+          { middleTheme: 'Memory', smallTheme: 'HBM/DRAM' },
+        ],
+        middleThemeRanking: [
+          {
+            middleTheme: 'AI Compute',
+            count: 2,
+            averagePerf3m: 31.2,
+            averageRankScore: 94.4,
+            topSmallThemes: ['AI Accelerators'],
+          },
+          {
+            middleTheme: 'Memory',
+            count: 2,
+            averagePerf3m: 24.8,
+            averageRankScore: 76.2,
+            topSmallThemes: ['HBM/DRAM', 'NAND/Storage'],
+          },
+        ],
+        smallThemeRanking: [
+          {
+            middleTheme: 'AI Compute',
+            smallTheme: 'AI Accelerators',
+            count: 2,
+            averagePerf3m: 31.2,
+            averageRankScore: 94.4,
+          },
+          {
+            middleTheme: 'Memory',
+            smallTheme: 'HBM/DRAM',
+            count: 1,
+            averagePerf3m: 26.1,
+            averageRankScore: 80.4,
+          },
+        ],
+        stockRanking: [
+          {
+            symbol: 'NVDA',
+            exchange: 'NASDAQ',
+            primaryTheme: 'AI Compute',
+            subThemes: ['AI Accelerators'],
+            marketCapUsd: 3_100_000_000_000,
+            perfY: 180,
+            perf6m: 72,
+            perf3m: 38,
+            pctOf52wHigh: 97,
+            roic: 43,
+            grossProfitToAssets: 50,
+            fcfMargin: 41,
+            revenueGrowthTtm: 88,
+            ruleOf40: 129,
+            epsGrowthTtm: 74,
+            pFcf: 42,
+            atrPct: 3.8,
+            rankScore: 98,
+            rankBreakdown: rankBreakdown(1),
+          },
+          {
+            symbol: 'MU',
+            exchange: 'NASDAQ',
+            primaryTheme: 'Memory',
+            subThemes: ['HBM/DRAM', 'Memory Controllers'],
+            marketCapUsd: 130_000_000_000,
+            perfY: 62,
+            perf6m: 28,
+            perf3m: 15,
+            pctOf52wHigh: 92,
+            roic: 18,
+            grossProfitToAssets: 19,
+            fcfMargin: 10,
+            revenueGrowthTtm: 55,
+            ruleOf40: 65,
+            epsGrowthTtm: 41,
+            pFcf: 26,
+            atrPct: 4.1,
+            rankScore: 82,
+            rankBreakdown: rankBreakdown(2),
+          },
+        ],
+      },
       ruleOf40Coverage: {
         total: 6,
         complete: 5,
@@ -590,6 +675,15 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /## Phase2 テーマランキング/);
     assert.match(markdown, /\| 順位 \| テーマ \| 通過銘柄数 \| 平均3M \| 平均総合点 \| 主な細粒度タグ \|/);
     assert.match(markdown, /\| 1 \| Cloud Software \| 2 \| 27\.5% \| 88\.40 \| Cloud Platforms, Data Infrastructure Software \|/);
+    assert.match(markdown, /## Phase2 中テーマランキング \(Electronic Technology\)/);
+    assert.match(markdown, /\| 1 \| AI Compute \| 2 \| 31\.2% \| 94\.40 \| AI Accelerators \|/);
+    assert.match(markdown, /\| 2 \| Memory \| 2 \| 24\.8% \| 76\.20 \| HBM\/DRAM, NAND\/Storage \|/);
+    assert.match(markdown, /## Phase3 小テーマランキング \(Electronic Technology\)/);
+    assert.match(markdown, /\| 1 \| AI Compute \| AI Accelerators \| 2 \| 31\.2% \| 94\.40 \|/);
+    assert.match(markdown, /\| 2 \| Memory \| HBM\/DRAM \| 1 \| 26\.1% \| 80\.40 \|/);
+    assert.match(markdown, /## Phase4 個別銘柄ランキング \(Electronic Technology\)/);
+    assert.match(markdown, /\| 1 \| AI Compute \| AI Accelerators \| \*\*NVDA\*\* \| NASDAQ \|/);
+    assert.match(markdown, /\| 2 \| Memory \| HBM\/DRAM \| \*\*MU\*\* \| NASDAQ \|/);
     assert.match(markdown, /## Phase2 セクター別ランキング/);
     assert.match(markdown, /Phase1 採用は上位 3 セクターのみです/);
     assert.match(markdown, /### 1位 Technology Services/);
