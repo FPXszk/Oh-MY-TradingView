@@ -1,5 +1,5 @@
 {
-  "version": "us-external-theme-reference-v1",
+  "version": "us-external-theme-reference-v2",
   "themes": {
     "ai-compute": {
       "providers": [
@@ -17,7 +17,7 @@
         { "source": "moomoo", "label": "Memory / storage related concept plate when available", "confidence": 0.45 }
       ]
     },
-    "optical-connectivity": {
+    "optical-photonics": {
       "providers": [
         { "source": "Morningstar", "label": "Hyperconnectivity", "confidence": 0.9 },
         { "source": "MSCI", "label": "Digital infrastructure thematic exposure", "confidence": 0.75 },
@@ -25,31 +25,23 @@
         { "source": "moomoo", "label": "Optical communication / data center concept plate when available", "confidence": 0.4 }
       ]
     },
-    "space": {
-      "providers": [
-        { "source": "Morningstar", "label": "Space", "confidence": 0.95 },
-        { "source": "MSCI", "label": "Transformative technologies thematic exposure", "confidence": 0.7 },
-        { "source": "S&P Kensho", "label": "Space and related new economies index family", "confidence": 0.95 },
-        { "source": "moomoo", "label": "Space / satellite concept plate when available", "confidence": 0.45 }
-      ]
-    },
-    "power-grid": {
-      "providers": [
-        { "source": "Morningstar", "label": "Energy Transition", "confidence": 0.95 },
-        { "source": "MSCI", "label": "Environment and resources thematic exposure", "confidence": 0.8 },
-        { "source": "S&P Kensho", "label": "Smart grids / intelligent infrastructure / clean power index family", "confidence": 0.9 },
-        { "source": "moomoo", "label": "Power grid / energy infrastructure concept plate when available", "confidence": 0.45 }
-      ]
-    },
-    "defense-tech": {
+    "defense-space-electronics": {
       "providers": [
         { "source": "MSCI", "label": "Security and resilience thematic exposure", "confidence": 0.7 },
-        { "source": "S&P Kensho", "label": "Future security index family", "confidence": 0.95 },
-        { "source": "Nasdaq", "label": "Autonomy and defense-adjacent innovation index family", "confidence": 0.45 },
-        { "source": "moomoo", "label": "Defense / military technology concept plate when available", "confidence": 0.4 }
+        { "source": "S&P Kensho", "label": "Future security and space infrastructure index family", "confidence": 0.95 },
+        { "source": "Nasdaq", "label": "Autonomy, defense, and communications infrastructure index family", "confidence": 0.45 },
+        { "source": "moomoo", "label": "Defense / satellite / space electronics concept plate when available", "confidence": 0.4 }
       ]
     },
-    "semi-equipment": {
+    "industrial-power-electronics": {
+      "providers": [
+        { "source": "Morningstar", "label": "Energy Transition and robotics", "confidence": 0.9 },
+        { "source": "MSCI", "label": "Automation, electrification, and resources thematic exposure", "confidence": 0.8 },
+        { "source": "S&P Kensho", "label": "Robotics / intelligent infrastructure / clean power index family", "confidence": 0.9 },
+        { "source": "moomoo", "label": "Industrial electrification / power electronics concept plate when available", "confidence": 0.45 }
+      ]
+    },
+    "semiconductor-equipment": {
       "providers": [
         { "source": "Morningstar", "label": "Artificial Intelligence and Big Data", "confidence": 0.7 },
         { "source": "MSCI", "label": "Semiconductor manufacturing exposure", "confidence": 0.85 },
@@ -57,20 +49,12 @@
         { "source": "moomoo", "label": "Semiconductor equipment concept plate when available", "confidence": 0.45 }
       ]
     },
-    "connectivity-silicon": {
-      "providers": [
-        { "source": "Morningstar", "label": "Hyperconnectivity", "confidence": 0.85 },
-        { "source": "MSCI", "label": "Digital infrastructure thematic exposure", "confidence": 0.75 },
-        { "source": "Nasdaq", "label": "Digital economy and AI infrastructure index family", "confidence": 0.65 },
-        { "source": "moomoo", "label": "Connectivity / CXL / RF concept plate when available", "confidence": 0.4 }
-      ]
-    },
-    "network-infrastructure": {
+    "connectivity-networking": {
       "providers": [
         { "source": "Morningstar", "label": "Hyperconnectivity", "confidence": 0.95 },
         { "source": "MSCI", "label": "Digital infrastructure thematic exposure", "confidence": 0.8 },
-        { "source": "Nasdaq", "label": "Cloud and communications infrastructure index family", "confidence": 0.7 },
-        { "source": "moomoo", "label": "Network infrastructure concept plate when available", "confidence": 0.45 }
+        { "source": "Nasdaq", "label": "Cloud, communications, and connectivity infrastructure index family", "confidence": 0.7 },
+        { "source": "moomoo", "label": "Connectivity / networking concept plate when available", "confidence": 0.45 }
       ]
     },
     "connected-mobility": {

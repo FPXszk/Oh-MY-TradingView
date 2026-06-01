@@ -533,7 +533,7 @@ export function buildMarkdown(result, options = {}) {
 
       lines.push(`## Phase3 小テーマランキング (${focusSector})`);
       lines.push('');
-      lines.push(`- Phase2 上位中テーマ: ${result.focusedHierarchy.selectedMiddleThemes?.join(', ') || 'なし'}`);
+      lines.push(`- Phase2 上位中テーマ（上位半分・切り上げ）: ${result.focusedHierarchy.selectedMiddleThemes?.join(', ') || 'なし'}`);
       lines.push('');
       if (!result.focusedHierarchy.smallThemeRanking || result.focusedHierarchy.smallThemeRanking.length === 0) {
         lines.push('- 小テーマランキングは算出できませんでした。');
@@ -548,7 +548,7 @@ export function buildMarkdown(result, options = {}) {
 
       lines.push(`## Phase4 個別銘柄ランキング (${focusSector})`);
       lines.push('');
-      lines.push(`- 通過小テーマ: ${(result.focusedHierarchy.selectedSmallThemes || []).map((entry) => `${entry.middleTheme} / ${entry.smallTheme}`).join(', ') || 'なし'}`);
+      lines.push(`- Phase3 上位3小テーマ: ${(result.focusedHierarchy.selectedSmallThemes || []).map((entry) => `${entry.middleTheme} / ${entry.smallTheme}`).join(', ') || 'なし'}`);
       lines.push('');
       if (!result.focusedHierarchy.stockRanking || result.focusedHierarchy.stockRanking.length === 0) {
         lines.push('- 個別銘柄ランキングは算出できませんでした。');

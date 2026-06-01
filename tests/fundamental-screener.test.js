@@ -395,7 +395,7 @@ describe('runFundamentalScreener', () => {
     assert.equal(result.results.find((row) => row.symbol === 'ADEA').ruleOf40, 45);
     assert.equal(result.results.find((row) => row.symbol === 'MU').ruleOf40, 65);
     assert.equal(result.results.find((row) => row.symbol === 'ADEA').primaryTheme, 'Cloud Software');
-    assert.ok(result.results.find((row) => row.symbol === 'MU').subThemes.includes('HBM/DRAM'));
+    assert.ok(result.results.find((row) => row.symbol === 'MU').subThemes.includes('HBM / DRAM'));
     assert.ok(result.themeRanking.some((entry) => entry.theme === 'Memory'));
     assert.ok(result.themeRanking.some((entry) => entry.theme === 'Cloud Software'));
     assert.deepEqual(result.ruleOf40Coverage, {
@@ -430,14 +430,10 @@ describe('runFundamentalScreener', () => {
     assert.deepEqual(phase2Order.slice(0, phase1Order.length), phase1Order);
   });
 
-  it('builds focused Electronic Technology hierarchy rankings when requested', async () => {
+  it('builds hierarchy rankings automatically for the top sector when a config exists', async () => {
     const result = await runFundamentalScreener({
       limit: 10,
       _deps: {
-        forcePhase1Sectors: ['Electronic Technology'],
-        hierarchyFocusSector: 'Electronic Technology',
-        hierarchyTopMiddleThemeCount: 3,
-        hierarchyTopSmallThemeCount: 3,
         hierarchyTopStockCount: 5,
         fetch: createMockFetch({
           stockBodies: [],
@@ -648,15 +644,17 @@ describe('runFundamentalScreener', () => {
       },
     });
 
-    assert.equal(result.criteria.phase1_selected_sectors_source, 'override');
     assert.equal(result.focusedHierarchy.focusSector, 'Electronic Technology');
+    assert.equal(result.criteria.hierarchy_focus_sector, 'Electronic Technology');
+    assert.equal(result.criteria.hierarchy_selection.top_middle_themes_rule, 'top-half-ceil');
+    assert.equal(result.criteria.hierarchy_selection.top_small_themes_rule, 'top-3');
     assert.equal(result.focusedHierarchy.middleThemeRanking[0].middleTheme, 'AI Compute');
     assert.ok(result.focusedHierarchy.middleThemeRanking.some((entry) => entry.middleTheme === 'Memory'));
     assert.ok(result.focusedHierarchy.smallThemeRanking.some((entry) => entry.smallTheme === 'AI Accelerators'));
-    assert.ok(result.focusedHierarchy.smallThemeRanking.some((entry) => entry.smallTheme === 'HBM/DRAM'));
+    assert.ok(result.focusedHierarchy.smallThemeRanking.some((entry) => entry.smallTheme === 'HBM / DRAM'));
     assert.ok(result.focusedHierarchy.stockRanking.length > 0);
     assert.equal(result.focusedHierarchy.stockRanking[0].symbol, 'NVDA');
-    assert.ok(result.focusedHierarchy.selectedMiddleThemes.length <= 3);
+    assert.equal(result.focusedHierarchy.selectedMiddleThemes.length, 3);
     assert.ok(result.focusedHierarchy.selectedSmallThemes.length <= 3);
   });
 

@@ -291,7 +291,7 @@ describe('buildMarkdown', () => {
           hard_filter: false,
         },
         theme_taxonomy_policy: {
-          version: 'us-theme-prototype-v1',
+          version: 'us-theme-prototype-v2',
           scope: 'US Phase2 matched candidates only',
           approach: 'repo custom theme taxonomy layered on top of TradingView sector/industry',
         },
@@ -415,7 +415,7 @@ describe('buildMarkdown', () => {
           themeHeatScore: 81.2,
           externalConfirmationCount: 4,
           externalConfirmedBy: ['Morningstar', 'MSCI', 'Nasdaq', 'moomoo'],
-          topSubThemes: ['HBM/DRAM', 'NAND/Storage'],
+          topSubThemes: ['HBM / DRAM', 'NAND / Storage'],
         },
       ],
       focusedHierarchy: {
@@ -424,7 +424,7 @@ describe('buildMarkdown', () => {
         selectedMiddleThemes: ['AI Compute', 'Memory'],
         selectedSmallThemes: [
           { middleTheme: 'AI Compute', smallTheme: 'AI Accelerators' },
-          { middleTheme: 'Memory', smallTheme: 'HBM/DRAM' },
+          { middleTheme: 'Memory', smallTheme: 'HBM / DRAM' },
         ],
         middleThemeRanking: [
           {
@@ -439,7 +439,7 @@ describe('buildMarkdown', () => {
             count: 2,
             averagePerf3m: 24.8,
             averageRankScore: 76.2,
-            topSmallThemes: ['HBM/DRAM', 'NAND/Storage'],
+            topSmallThemes: ['HBM / DRAM', 'NAND / Storage'],
           },
         ],
         smallThemeRanking: [
@@ -452,7 +452,7 @@ describe('buildMarkdown', () => {
           },
           {
             middleTheme: 'Memory',
-            smallTheme: 'HBM/DRAM',
+            smallTheme: 'HBM / DRAM',
             count: 1,
             averagePerf3m: 26.1,
             averageRankScore: 80.4,
@@ -484,7 +484,7 @@ describe('buildMarkdown', () => {
             symbol: 'MU',
             exchange: 'NASDAQ',
             primaryTheme: 'Memory',
-            subThemes: ['HBM/DRAM', 'Memory Controllers'],
+            subThemes: ['HBM / DRAM', 'Memory Controllers / Interface IP'],
             marketCapUsd: 130_000_000_000,
             perfY: 62,
             perf6m: 28,
@@ -585,7 +585,7 @@ describe('buildMarkdown', () => {
           pFcf: 25,
           atrPct: 2.8,
           primaryTheme: 'Memory',
-          subThemes: ['HBM/DRAM'],
+          subThemes: ['HBM / DRAM'],
           rankScore: 78,
           rankBreakdown: rankBreakdown(3),
         },
@@ -607,8 +607,8 @@ describe('buildMarkdown', () => {
           epsGrowthTtm: 18,
           pFcf: 22,
           atrPct: 2.5,
-          primaryTheme: 'Power & Grid',
-          subThemes: ['Independent Power'],
+          primaryTheme: 'Industrial / Power Electronics',
+          subThemes: ['Industrial Electrification'],
           rankScore: 64,
           rankBreakdown: rankBreakdown(4),
         },
@@ -654,7 +654,7 @@ describe('buildMarkdown', () => {
           pFcf: 55,
           atrPct: 6.5,
           primaryTheme: 'Electronic Components',
-          subThemes: ['MLCC & Passives'],
+          subThemes: ['MLCC / Passive Components'],
           rankScore: 28,
           rankBreakdown: rankBreakdown(6),
         },
@@ -683,13 +683,13 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| 1 \| Cloud Software \| 2 \| 27\.5% \| 88\.40 \| 93\.40 \| 4 \| Morningstar, MSCI, Nasdaq, moomoo \| Cloud Platforms, Data Infrastructure Software \|/);
     assert.match(markdown, /## Phase2 中テーマランキング \(Electronic Technology\)/);
     assert.match(markdown, /\| 1 \| AI Compute \| 2 \| 31\.2% \| 94\.40 \| AI Accelerators \|/);
-    assert.match(markdown, /\| 2 \| Memory \| 2 \| 24\.8% \| 76\.20 \| HBM\/DRAM, NAND\/Storage \|/);
+    assert.match(markdown, /\| 2 \| Memory \| 2 \| 24\.8% \| 76\.20 \| HBM \/ DRAM, NAND \/ Storage \|/);
     assert.match(markdown, /## Phase3 小テーマランキング \(Electronic Technology\)/);
     assert.match(markdown, /\| 1 \| AI Compute \| AI Accelerators \| 2 \| 31\.2% \| 94\.40 \|/);
-    assert.match(markdown, /\| 2 \| Memory \| HBM\/DRAM \| 1 \| 26\.1% \| 80\.40 \|/);
+    assert.match(markdown, /\| 2 \| Memory \| HBM \/ DRAM \| 1 \| 26\.1% \| 80\.40 \|/);
     assert.match(markdown, /## Phase4 個別銘柄ランキング \(Electronic Technology\)/);
     assert.match(markdown, /\| 1 \| AI Compute \| AI Accelerators \| \*\*NVDA\*\* \| NASDAQ \|/);
-    assert.match(markdown, /\| 2 \| Memory \| HBM\/DRAM \| \*\*MU\*\* \| NASDAQ \|/);
+    assert.match(markdown, /\| 2 \| Memory \| HBM \/ DRAM \| \*\*MU\*\* \| NASDAQ \|/);
     assert.match(markdown, /## Phase2 セクター別ランキング/);
     assert.match(markdown, /Phase1 採用は上位 3 セクターのみです/);
     assert.match(markdown, /### 1位 Technology Services/);
@@ -713,7 +713,7 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| 共通条件 \| ベース条件 \| 時価総額 > \$1B \/ EPS\(TTM\) > 0 \/ Close > SMA200 \/ Close > SMA50 \/ Close ≥ 52週高値 × 75% \|/);
     assert.doesNotMatch(markdown, /\| 補助ポリシー \| 超急騰 \|/);
     assert.match(markdown, /\| 補助ポリシー \| Rule of 40 \| US Technology Services software-like industries only \/ total_revenue_yoy_growth_ttm \+ free_cash_flow_margin_ttm \/ 40\+ を badge \/ 20 未満を warning \/ hard filter なし \|/);
-    assert.match(markdown, /\| 補助ポリシー \| Theme taxonomy \| US Phase2 matched candidates only \/ repo custom theme taxonomy layered on top of TradingView sector\/industry \/ version us-theme-prototype-v1 \|/);
+    assert.match(markdown, /\| 補助ポリシー \| Theme taxonomy \| US Phase2 matched candidates only \/ repo custom theme taxonomy layered on top of TradingView sector\/industry \/ version us-theme-prototype-v2 \|/);
     assert.match(markdown, /\| ユニバース \| 取引所 \| NASDAQ, NYSE \|/);
     assert.match(markdown, /\| 補助ポリシー \| Moomoo 補助 \| 売上成長率 YoY は growth scoring の補助に使う。EPS YoY は TradingView 値のみを使い、欠損時は N\/A のままにする \|/);
     assert.match(markdown, /\| セクタープロファイル \| Technology Services \| scope: Technology Services \/ hard gate: Perf\.3M > 10% \/ P\/FCF < 50/);

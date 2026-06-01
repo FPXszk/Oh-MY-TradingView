@@ -18,7 +18,7 @@ import { readFileSync } from 'node:fs';
 import { getMoomooFundamentalsBatch } from './moomoo.js';
 import { runSectorMomentumScan } from './sector-momentum.js';
 import { getProfilesForMarket, getSectorScreeningPlan } from './sector-screening-profiles.js';
-import { classifyUsTheme, summarizeThemes } from './theme-taxonomy.js';
+import { classifyUsTheme, getUsSectorThemeHierarchy, summarizeThemes } from './theme-taxonomy.js';
 
 const DEFAULT_MARKET = 'america';
 const DEFAULT_LIMIT = 10;
@@ -813,15 +813,18 @@ function summarizeFocusedSmallThemes(rows) {
 }
 
 function buildFocusedHierarchy(rows, focusSector, {
-  topMiddleThemeCount = 3,
-  topSmallThemeCount = 5,
+  topMiddleThemeCount = null,
+  topSmallThemeCount = 3,
   topStockCount = 20,
 } = {}) {
   if (!focusSector) return null;
+  const hierarchyDefinition = getUsSectorThemeHierarchy(focusSector);
+  if (!hierarchyDefinition || hierarchyDefinition.middleThemes.length === 0) return null;
 
   const sectorRows = rows.filter((row) => row.sector === focusSector);
   if (sectorRows.length === 0) {
     return {
+      hierarchyVersion: hierarchyDefinition.version,
       focusSector,
       candidateCount: 0,
       middleThemeRanking: [],
@@ -832,12 +835,15 @@ function buildFocusedHierarchy(rows, focusSector, {
     };
   }
 
-  const middleThemeRanking = summarizeFocusedMiddleThemes(sectorRows);
+  const allowedMiddleThemes = new Set(hierarchyDefinition.middleThemes.map((entry) => entry.label));
+  const classifiedSectorRows = sectorRows.filter((row) => allowedMiddleThemes.has(row.primaryTheme));
+  const middleThemeRanking = summarizeFocusedMiddleThemes(classifiedSectorRows);
+  const selectedMiddleThemeLimit = topMiddleThemeCount ?? Math.max(1, Math.ceil(middleThemeRanking.length / 2));
   const selectedMiddleThemes = middleThemeRanking
-    .slice(0, topMiddleThemeCount)
+    .slice(0, selectedMiddleThemeLimit)
     .map((entry) => entry.middleTheme);
   const smallThemeCandidates = summarizeFocusedSmallThemes(
-    sectorRows.filter((row) => selectedMiddleThemes.includes(row.primaryTheme)),
+    classifiedSectorRows.filter((row) => selectedMiddleThemes.includes(row.primaryTheme)),
   );
   const selectedSmallThemes = smallThemeCandidates
     .slice(0, topSmallThemeCount)
@@ -851,6 +857,7 @@ function buildFocusedHierarchy(rows, focusSector, {
     .map((row) => stripInternalFields(row));
 
   return {
+    hierarchyVersion: hierarchyDefinition.version,
     focusSector,
     candidateCount: sectorRows.length,
     middleThemeRanking,
@@ -1016,9 +1023,9 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   const resultLimit = _deps?.resultLimit ?? 30;
   const getFundamentals = _deps?.getSymbolFundamentals ?? null;
   const forcedSelectedSectors = uniqueStrings(_deps?.forcePhase1Sectors ?? []);
-  const hierarchyFocusSector = _deps?.hierarchyFocusSector ?? null;
-  const hierarchyTopMiddleThemeCount = _deps?.hierarchyTopMiddleThemeCount ?? 3;
-  const hierarchyTopSmallThemeCount = _deps?.hierarchyTopSmallThemeCount ?? 5;
+  const hierarchyFocusSectorOverride = _deps?.hierarchyFocusSector ?? null;
+  const hierarchyTopMiddleThemeCount = _deps?.hierarchyTopMiddleThemeCount ?? null;
+  const hierarchyTopSmallThemeCount = _deps?.hierarchyTopSmallThemeCount ?? 3;
   const hierarchyTopStockCount = _deps?.hierarchyTopStockCount ?? 20;
   const scannerUrl = `https://scanner.tradingview.com/${market}/scan`;
   const sectorMomentumScan = await runSectorMomentumScan({
@@ -1096,6 +1103,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   const matched = ranked.slice(0, effectiveLimit).map(stripInternalFields);
   const sectorRanking = summarizeSectors(ranked);
   const themeRanking = market === DEFAULT_MARKET ? summarizeThemes(ranked) : [];
+  const hierarchyFocusSector = hierarchyFocusSectorOverride ?? phase1SelectedSectorLabels[0] ?? null;
   const focusedHierarchy = buildFocusedHierarchy(ranked, hierarchyFocusSector, {
     topMiddleThemeCount: hierarchyTopMiddleThemeCount,
     topSmallThemeCount: hierarchyTopSmallThemeCount,
@@ -1122,11 +1130,13 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     criteria.phase1_selected_sectors_source = 'override';
     criteria.phase1_selected_sectors_actual = phase1SelectedSectorLabels;
   }
-  if (hierarchyFocusSector) {
-    criteria.hierarchy_focus_sector = hierarchyFocusSector;
+  if (focusedHierarchy?.focusSector) {
+    criteria.hierarchy_focus_sector = focusedHierarchy.focusSector;
     criteria.hierarchy_selection = {
-      top_middle_themes: hierarchyTopMiddleThemeCount,
-      top_small_themes: hierarchyTopSmallThemeCount,
+      top_middle_themes: focusedHierarchy.selectedMiddleThemes.length,
+      top_middle_themes_rule: hierarchyTopMiddleThemeCount === null ? 'top-half-ceil' : 'override',
+      top_small_themes: focusedHierarchy.selectedSmallThemes.length,
+      top_small_themes_rule: hierarchyTopSmallThemeCount === 3 ? 'top-3' : 'override',
       top_stocks: hierarchyTopStockCount,
     };
   }
@@ -1140,7 +1150,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       hard_filter: false,
     };
     criteria.theme_taxonomy_policy = {
-      version: themedRows[0]?.themeTaxonomyVersion ?? 'us-theme-prototype-v1',
+      version: themedRows[0]?.themeTaxonomyVersion ?? 'us-theme-prototype-v2',
       scope: 'US Phase2 matched candidates only',
       approach: 'repo custom theme taxonomy layered on top of TradingView sector/industry',
     };

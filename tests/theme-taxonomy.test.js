@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { classifyUsTheme, summarizeThemes } from '../src/core/theme-taxonomy.js';
+import { classifyUsTheme, getUsSectorThemeHierarchy, summarizeThemes } from '../src/core/theme-taxonomy.js';
 
 test('classifyUsTheme maps ITRN to Connected Mobility instead of Unclassified', () => {
   const row = {
@@ -36,7 +36,7 @@ test('summarizeThemes groups the classified ITRN row under Connected Mobility', 
       symbol: 'MU',
       primaryThemeId: 'memory',
       primaryTheme: 'Memory',
-      subThemes: ['HBM/DRAM'],
+      subThemes: ['HBM / DRAM'],
       perf3m: 53.5,
       rankScore: 95.8,
       externalConfirmedBy: ['Morningstar', 'MSCI', 'Nasdaq', 'moomoo'],
@@ -85,7 +85,7 @@ test('summarizeThemes gives a small bonus to themes confirmed by S&P Kensho', ()
   assert.equal(themes[1].themeHeatScore, 85);
 });
 
-test('classifyUsTheme maps MU to Memory / HBM/DRAM', () => {
+test('classifyUsTheme maps MU to Memory / HBM / DRAM', () => {
   const row = {
     symbol: 'MU',
     sector: 'Electronic Technology',
@@ -96,8 +96,8 @@ test('classifyUsTheme maps MU to Memory / HBM/DRAM', () => {
   const classification = classifyUsTheme(row);
 
   assert.equal(classification.primaryTheme, 'Memory');
-  assert.equal(classification.subThemes[0], 'HBM/DRAM');
-  assert.match(classification.themeMatchReason, /HBM\/DRAM:symbol=MU/);
+  assert.equal(classification.subThemes[0], 'HBM / DRAM');
+  assert.match(classification.themeMatchReason, /HBM \/ DRAM:symbol=MU/);
   assert.deepEqual(classification.externalConfirmedBy, ['Morningstar', 'MSCI', 'Nasdaq', 'moomoo']);
 });
 
@@ -116,7 +116,7 @@ test('classifyUsTheme maps NVDA to AI Compute / AI Accelerators', () => {
   assert.match(classification.themeMatchReason, /AI Accelerators:symbol=NVDA/);
 });
 
-test('classifyUsTheme maps STX to Memory / NAND/Storage', () => {
+test('classifyUsTheme maps STX to Memory / NAND / Storage', () => {
   const row = {
     symbol: 'STX',
     sector: 'Electronic Technology',
@@ -127,11 +127,11 @@ test('classifyUsTheme maps STX to Memory / NAND/Storage', () => {
   const classification = classifyUsTheme(row);
 
   assert.equal(classification.primaryTheme, 'Memory');
-  assert.equal(classification.subThemes[0], 'NAND/Storage');
-  assert.match(classification.themeMatchReason, /NAND\/Storage:symbol=STX/);
+  assert.equal(classification.subThemes[0], 'NAND / Storage');
+  assert.match(classification.themeMatchReason, /NAND \/ Storage:symbol=STX/);
 });
 
-test('classifyUsTheme maps KLAC to Semiconductor Equipment / Test & Metrology', () => {
+test('classifyUsTheme maps KLAC to Semiconductor Equipment / Test / Metrology / Inspection', () => {
   const row = {
     symbol: 'KLAC',
     sector: 'Electronic Technology',
@@ -142,8 +142,8 @@ test('classifyUsTheme maps KLAC to Semiconductor Equipment / Test & Metrology', 
   const classification = classifyUsTheme(row);
 
   assert.equal(classification.primaryTheme, 'Semiconductor Equipment');
-  assert.equal(classification.subThemes[0], 'Test & Metrology');
-  assert.match(classification.themeMatchReason, /Test & Metrology:symbol=KLAC/);
+  assert.equal(classification.subThemes[0], 'Test / Metrology / Inspection');
+  assert.match(classification.themeMatchReason, /Test \/ Metrology \/ Inspection:symbol=KLAC/);
 });
 
 test('classifyUsTheme maps COHR to Optical / Photonics / Laser / Photonics', () => {
@@ -161,7 +161,7 @@ test('classifyUsTheme maps COHR to Optical / Photonics / Laser / Photonics', () 
   assert.match(classification.themeMatchReason, /Laser \/ Photonics:symbol=COHR/);
 });
 
-test('classifyUsTheme maps QRVO to Connectivity Silicon / RF / Mobile Connectivity', () => {
+test('classifyUsTheme maps QRVO to Connectivity / Networking / RF / Mobile Connectivity', () => {
   const row = {
     symbol: 'QRVO',
     sector: 'Electronic Technology',
@@ -171,7 +171,27 @@ test('classifyUsTheme maps QRVO to Connectivity Silicon / RF / Mobile Connectivi
 
   const classification = classifyUsTheme(row);
 
-  assert.equal(classification.primaryTheme, 'Connectivity Silicon');
+  assert.equal(classification.primaryTheme, 'Connectivity / Networking');
   assert.equal(classification.subThemes[0], 'RF / Mobile Connectivity');
   assert.match(classification.themeMatchReason, /RF \/ Mobile Connectivity:symbol=QRVO/);
+});
+
+test('getUsSectorThemeHierarchy exposes the external Electronic Technology hierarchy definition', () => {
+  const hierarchy = getUsSectorThemeHierarchy('Electronic Technology');
+
+  assert.equal(hierarchy?.version, 'us-theme-hierarchy-v1');
+  assert.equal(hierarchy?.middleThemes.length, 8);
+  assert.deepEqual(
+    hierarchy?.middleThemes.map((entry) => entry.label),
+    [
+      'AI Compute',
+      'Memory',
+      'Semiconductor Equipment',
+      'Connectivity / Networking',
+      'Optical / Photonics',
+      'Electronic Components',
+      'Defense / Space Electronics',
+      'Industrial / Power Electronics',
+    ],
+  );
 });

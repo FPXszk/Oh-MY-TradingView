@@ -1,0 +1,92 @@
+{
+  "version": "us-theme-hierarchy-v1",
+  "sectors": {
+    "Electronic Technology": {
+      "middle_themes": [
+        {
+          "id": "ai-compute",
+          "label": "AI Compute",
+          "small_themes": [
+            "AI Accelerators",
+            "AI Servers / Systems",
+            "AI Interconnect / CXL / Data Center Fabric"
+          ]
+        },
+        {
+          "id": "memory",
+          "label": "Memory",
+          "small_themes": [
+            "HBM / DRAM",
+            "NAND / Storage",
+            "Memory Controllers / Interface IP"
+          ]
+        },
+        {
+          "id": "semiconductor-equipment",
+          "label": "Semiconductor Equipment",
+          "small_themes": [
+            "Wafer Fab Equipment",
+            "Test / Metrology / Inspection",
+            "Advanced Packaging / Assembly"
+          ]
+        },
+        {
+          "id": "connectivity-networking",
+          "label": "Connectivity / Networking",
+          "small_themes": [
+            "Ethernet Switching / Routing",
+            "RF / Mobile Connectivity",
+            "Carrier / Optical Networking",
+            "Wireless Infrastructure"
+          ]
+        },
+        {
+          "id": "optical-photonics",
+          "label": "Optical / Photonics",
+          "small_themes": [
+            "Optical Transceivers",
+            "Coherent Optics / Fiber",
+            "Laser / Photonics"
+          ]
+        },
+        {
+          "id": "electronic-components",
+          "label": "Electronic Components",
+          "small_themes": [
+            "MLCC / Passive Components",
+            "Connectors / Interconnect",
+            "Sensors / Precision Components"
+          ]
+        },
+        {
+          "id": "defense-space-electronics",
+          "label": "Defense / Space Electronics",
+          "small_themes": [
+            "Secure Comms / Sensors",
+            "Drone / Autonomy Electronics",
+            "Satellite / Space Communications"
+          ]
+        },
+        {
+          "id": "industrial-power-electronics",
+          "label": "Industrial / Power Electronics",
+          "small_themes": [
+            "Factory Automation / Motion Control",
+            "Industrial Electrification",
+            "Grid Equipment / Power Conversion",
+            "Power Cooling / Thermal Management"
+          ]
+        }
+      ]
+    },
+    "Producer Manufacturing": {
+      "middle_themes": []
+    },
+    "Communications": {
+      "middle_themes": []
+    },
+    "Technology Services": {
+      "middle_themes": []
+    }
+  }
+}

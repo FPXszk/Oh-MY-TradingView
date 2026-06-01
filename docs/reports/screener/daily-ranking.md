@@ -1,22 +1,22 @@
 # スクリーニング結果 2026/06/01（月）
 
-更新: 16:52 JST
+更新: 18:15 JST
 
-セクター別取得候補 224銘柄 → ユニバース条件通過 224銘柄 → ランキング対象 136銘柄 → レポート掲載 90銘柄
+セクター別取得候補 223銘柄 → ユニバース条件通過 223銘柄 → ランキング対象 136銘柄 → レポート掲載 90銘柄
 
 ## Phase1 セクターランキング
 
-- Phase1 ソース候補数: 4077 / reported 4077
+- Phase1 ソース候補数: 4074 / reported 4074
 - 相対強度の基準: AMEX:SPY（SPY）
 - 12M / 6M / 3M はセクター構成銘柄の平均リターンです。
 
 | 順位 | セクター | 平均12M | 平均6M | 平均3M | SPY差12M | SPY差6M | SPY差3M | SMA50上 | SMA200上 | 52w高値90%内 | RSI | 相対出来高 | 構成数 | 順位合計 |
 |:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| 1 | Electronic Technology | 237.6% | 84.5% | 47.7% | 210.0pt | 73.4pt | 37.0pt | 82.3% | 81.0% | 47.1% | 60.0 | 1.46x | 289 | 15 |
-| 2 | Producer Manufacturing | 101.0% | 178518.8% | 11.3% | 73.4pt | 178507.7pt | 0.6pt | 66.0% | 71.5% | 41.9% | 54.0 | 1.18x | 271 | 30 |
-| 3 | Industrial Services | 61.5% | 27.3% | 7.4% | 33.9pt | 16.2pt | -3.3pt | 50.0% | 78.8% | 35.8% | 46.7 | 1.82x | 137 | 63 |
+| 1 | Electronic Technology | 237.5% | 84.4% | 47.6% | 209.9pt | 73.3pt | 36.9pt | 82.0% | 80.6% | 46.7% | 59.8 | 1.45x | 289 | 15 |
+| 2 | Producer Manufacturing | 101.2% | 179850.7% | 11.3% | 73.6pt | 179839.6pt | 0.6pt | 65.8% | 71.3% | 41.8% | 54.0 | 1.16x | 269 | 30 |
+| 3 | Industrial Services | 60.9% | 27.3% | 7.2% | 33.3pt | 16.2pt | -3.5pt | 49.6% | 78.6% | 35.3% | 46.6 | 1.83x | 136 | 63 |
 | 4 | Communications | 45.9% | 19.2% | 8.4% | 18.3pt | 8.1pt | -2.3pt | 62.1% | 68.3% | 40.3% | 53.6 | 1.79x | 67 | 67 |
-| 5 | Non-Energy Minerals | 130.5% | 35.2% | -4.8% | 102.9pt | 24.1pt | -15.5pt | 59.6% | 81.9% | 25.2% | 53.5 | 1.43x | 222 | 68 |
+| 5 | Non-Energy Minerals | 130.5% | 35.2% | -4.9% | 102.9pt | 24.1pt | -15.6pt | 59.6% | 81.9% | 25.2% | 53.5 | 1.43x | 222 | 68 |
 | 6 | Energy Minerals | 51.4% | 28.0% | 10.0% | 23.8pt | 16.9pt | -0.7pt | 34.5% | 83.3% | 16.5% | 45.7 | 1.56x | 121 | 71 |
 | 7 | Transportation | 34.2% | 20.6% | 1.1% | 6.6pt | 9.5pt | -9.6pt | 64.7% | 79.8% | 41.0% | 52.8 | 1.29x | 139 | 76 |
 | 8 | Process Industries | 46.4% | 24.6% | 3.9% | 18.8pt | 13.5pt | -6.8pt | 43.2% | 69.5% | 27.3% | 49.6 | 1.20x | 132 | 86 |
@@ -27,11 +27,11 @@
 | 13 | Miscellaneous | 26.5% | 12.5% | 6.0% | -1.1pt | 1.4pt | -4.7pt | 39.4% | 55.6% | 38.2% | 47.5 | 1.23x | 34 | 98 |
 | 14 | Utilities | 26.1% | 11.4% | 0.4% | -1.5pt | 0.3pt | -10.3pt | 45.6% | 69.5% | 58.0% | 49.2 | 2.59x | 131 | 107 |
 | 15 | Consumer Services | 15.3% | 8.0% | 5.6% | -12.3pt | -3.1pt | -5.1pt | 56.3% | 50.8% | 33.3% | 52.5 | 1.56x | 147 | 110 |
-| 16 | Finance | 12.6% | 3.9% | 0.4% | -15.0pt | -7.2pt | -10.3pt | 59.4% | 52.3% | 49.9% | 50.4 | 1.71x | 1051 | 117 |
+| 16 | Finance | 12.6% | 3.9% | 0.5% | -15.0pt | -7.2pt | -10.2pt | 59.4% | 52.3% | 49.9% | 50.4 | 1.71x | 1051 | 117 |
 | 17 | Commercial Services | 8.2% | 2.7% | 5.6% | -19.4pt | -8.4pt | -5.1pt | 55.0% | 34.7% | 21.6% | 51.2 | 1.22x | 116 | 140 |
-| 18 | Consumer Durables | 12.5% | -1.0% | -6.9% | -15.1pt | -12.1pt | -17.6pt | 53.7% | 40.7% | 23.4% | 51.0 | 2.73x | 128 | 157 |
+| 18 | Consumer Durables | 12.5% | -1.0% | -6.8% | -15.1pt | -12.1pt | -17.5pt | 53.7% | 40.7% | 23.4% | 51.0 | 2.73x | 128 | 157 |
 | 19 | Retail Trade | 11.0% | -0.3% | -4.7% | -16.6pt | -11.4pt | -15.4pt | 44.5% | 46.3% | 22.0% | 49.8 | 1.46x | 132 | 158 |
-| 20 | Consumer Non-Durables | 0.9% | 0.5% | -8.3% | -26.7pt | -10.6pt | -19.0pt | 52.1% | 44.4% | 28.0% | 50.7 | 1.04x | 168 | 159 |
+| 20 | Consumer Non-Durables | 0.9% | 0.4% | -8.3% | -26.7pt | -10.7pt | -19.0pt | 52.1% | 44.4% | 28.0% | 50.7 | 1.04x | 168 | 159 |
 
 ## Phase2 テーマランキング
 
@@ -39,17 +39,58 @@
 
 | 順位 | テーマ | 通過銘柄数 | 平均3M | 平均総合点 | Heat | 外部確認数 | 外部確認 | 主な細粒度タグ |
 |:---:|:---|---:|---:|---:|---:|---:|:---|:---|
-| 1 | Memory | 7 | 74.1% | 60.10 | 65.10 | 4 | Morningstar, MSCI, Nasdaq, moomoo | NAND/Storage, HBM/DRAM, Memory Controllers |
-| 2 | Network Infrastructure | 3 | 57.6% | 59.60 | 64.60 | 4 | Morningstar, MSCI, Nasdaq, moomoo | Ethernet Switching, Carrier / Optical Networking, Wireless Infrastructure |
-| 3 | Semiconductor Equipment | 1 | 11.2% | 57.70 | 62.70 | 4 | Morningstar, MSCI, Nasdaq, moomoo | Test & Metrology |
-| 4 | Electronic Components | 11 | 57.0% | 54.60 | 60.60 | 4 | MSCI, S&P Kensho, Nasdaq, moomoo | MLCC & Passives, Sensing & Precision Components, Connectors & Interconnect |
-| 5 | Optical / Photonics | 11 | 54.9% | 54.50 | 59.50 | 4 | Morningstar, MSCI, Nasdaq, moomoo | Optical Transceivers, Laser / Photonics, Coherent Optics |
-| 6 | AI Compute | 19 | 81.7% | 53.50 | 58.50 | 4 | Morningstar, MSCI, Nasdaq, moomoo | AI Accelerators, AI Servers |
-| 7 | Defense Tech | 9 | 26.9% | 52.30 | 58.30 | 4 | MSCI, S&P Kensho, Nasdaq, moomoo | Secure Comms & Sensors |
-| 8 | Space | 11 | 16.8% | 47.80 | 53.80 | 4 | Morningstar, MSCI, S&P Kensho, moomoo | Launch |
-| 9 | Power & Grid | 61 | 42.1% | 45.70 | 51.70 | 4 | Morningstar, MSCI, S&P Kensho, moomoo | Independent Power, Grid Equipment, Power Cooling |
-| 10 | Connectivity Silicon | 2 | 29.5% | 45.90 | 50.90 | 4 | Morningstar, MSCI, Nasdaq, moomoo | High-Speed Connectivity, RF / Mobile Connectivity |
-| 11 | Industrial Automation | 1 | 11.1% | 43.90 | 49.90 | 4 | Morningstar, MSCI, S&P Kensho, moomoo | Factory Automation, Industrial Electrification, Motion Control & Robotics |
+| 1 | Memory | 7 | 74.1% | 60.10 | 65.10 | 4 | Morningstar, MSCI, Nasdaq, moomoo | NAND / Storage, HBM / DRAM, Memory Controllers / Interface IP |
+| 2 | Semiconductor Equipment | 1 | 11.2% | 57.70 | 62.70 | 4 | Morningstar, MSCI, Nasdaq, moomoo | Test / Metrology / Inspection |
+| 3 | Electronic Components | 11 | 57.0% | 54.60 | 60.60 | 4 | MSCI, S&P Kensho, Nasdaq, moomoo | MLCC / Passive Components, Sensors / Precision Components, Connectors / Interconnect |
+| 4 | Optical / Photonics | 11 | 54.9% | 54.50 | 59.50 | 4 | Morningstar, MSCI, Nasdaq, moomoo | Optical Transceivers, Laser / Photonics, Coherent Optics / Fiber |
+| 5 | Connectivity / Networking | 5 | 46.3% | 54.10 | 59.10 | 4 | Morningstar, MSCI, Nasdaq, moomoo | Ethernet Switching / Routing, RF / Mobile Connectivity, Carrier / Optical Networking |
+| 6 | AI Compute | 19 | 81.7% | 53.50 | 58.50 | 4 | Morningstar, MSCI, Nasdaq, moomoo | AI Interconnect / CXL / Data Center Fabric, AI Accelerators, AI Servers / Systems |
+| 7 | Defense / Space Electronics | 20 | 21.4% | 49.90 | 55.90 | 4 | MSCI, S&P Kensho, Nasdaq, moomoo | Secure Comms / Sensors, Drone / Autonomy Electronics, Satellite / Space Communications |
+| 8 | Industrial / Power Electronics | 44 | 47.8% | 46.10 | 52.10 | 4 | Morningstar, MSCI, S&P Kensho, moomoo | Industrial Electrification, Grid Equipment / Power Conversion, Factory Automation / Motion Control |
+| 9 | Unclassified | 18 | 26.4% | 44.60 | 44.60 | 0 | N/A | N/A |
+
+## Phase2 中テーマランキング (Electronic Technology)
+
+- 対象: Electronic Technology の通過銘柄 74件
+
+| 順位 | 中テーマ | 通過銘柄数 | 平均3M | 平均総合点 | 主な小テーマ |
+|:---:|:---|---:|---:|---:|:---|
+| 1 | Memory | 7 | 74.1% | 60.10 | NAND / Storage, HBM / DRAM |
+| 2 | Semiconductor Equipment | 1 | 11.2% | 57.70 | Test / Metrology / Inspection |
+| 3 | Electronic Components | 11 | 57.0% | 54.60 | Connectors / Interconnect, MLCC / Passive Components |
+| 4 | Optical / Photonics | 11 | 54.9% | 54.50 | Laser / Photonics, Coherent Optics / Fiber |
+| 5 | Connectivity / Networking | 5 | 46.3% | 54.10 | Ethernet Switching / Routing, RF / Mobile Connectivity |
+| 6 | AI Compute | 19 | 81.7% | 53.50 | AI Accelerators, AI Servers / Systems, AI Interconnect / CXL / Data Center Fabric |
+| 7 | Defense / Space Electronics | 20 | 21.4% | 49.90 | Drone / Autonomy Electronics, Secure Comms / Sensors |
+
+## Phase3 小テーマランキング (Electronic Technology)
+
+- Phase2 上位中テーマ（上位半分・切り上げ）: Memory, Semiconductor Equipment, Electronic Components, Optical / Photonics
+
+| 順位 | 中テーマ | 小テーマ | 通過銘柄数 | 平均3M | 平均総合点 |
+|:---:|:---|:---|---:|---:|---:|
+| 1 | Memory | HBM / DRAM | 2 | 94.9% | 64.00 |
+| 2 | Memory | NAND / Storage | 5 | 65.8% | 58.60 |
+| 3 | Semiconductor Equipment | Test / Metrology / Inspection | 1 | 11.2% | 57.70 |
+| 4 | Optical / Photonics | Coherent Optics / Fiber | 5 | 23.6% | 55.70 |
+| 5 | Electronic Components | MLCC / Passive Components | 4 | 57.0% | 55.00 |
+| 6 | Electronic Components | Connectors / Interconnect | 7 | 57.0% | 54.40 |
+| 7 | Optical / Photonics | Laser / Photonics | 6 | 81.0% | 53.50 |
+
+## Phase4 個別銘柄ランキング (Electronic Technology)
+
+- Phase3 上位3小テーマ: Memory / HBM / DRAM, Memory / NAND / Storage, Semiconductor Equipment / Test / Metrology / Inspection
+
+| 順位 | 中テーマ | 小テーマ | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 (T/F) |
+|:---:|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|
+| 1 | Memory | HBM / DRAM | **MU** | NASDAQ | $1.10T | 884.9% | 312.1% | 141.7% | 99.0% | 33.1% | 33.5% | 17.7% | 85.5% | 103.2 | 409.1% | 107.9 | 5.8% | 71.47 (T43.8/F27.7) |
+| 2 | Memory | NAND / Storage | **SNDK** | NASDAQ | $251.0B | 4241.6% | 652.5% | 170.3% | 99.2% | 35.7% | 43.3% | 33.8% | 82.8% | 116.6 | N/A% | 59.7 | 6.5% | 71.18 (T44.7/F26.5) |
+| 3 | Memory | NAND / Storage | **NTAP** | NASDAQ | $34.4B | 74.3% | 58.9% | 76.7% | 90.4% | 33.7% | 45.5% | 27.0% | 5.3% | 32.3 | 11.9% | 18.6 | 4.7% | 64.29 (T29.2/F35.1) |
+| 4 | Memory | NAND / Storage | **LOGI** | NASDAQ | $17.2B | 43.8% | 9.2% | 32.5% | 98.6% | 30.1% | 52.8% | 20.2% | 6.6% | 26.8 | 16.3% | 18.3 | 3.3% | 60.49 (T20.8/F39.7) |
+| 5 | Semiconductor Equipment | Test / Metrology / Inspection | **KEYS** | NYSE | $58.0B | 111.5% | 72.2% | 11.2% | 91.4% | 12.7% | 35.2% | 22.3% | 19.2% | 41.5 | 42.6% | 43.1 | 3.8% | 57.73 (T25.3/F32.4) |
+| 6 | Memory | HBM / DRAM | **RMBS** | NASDAQ | $15.7B | 162.8% | 53.2% | 48.2% | 89.9% | 17.7% | 35.0% | 46.5% | 19.1% | 65.6 | 10.2% | 47.6 | 6.8% | 56.49 (T21.2/F35.3) |
+| 7 | Memory | NAND / Storage | **PBTDF** | OTC | $1.3B | 60.6% | 36.6% | 14.0% | 77.0% | 77.6% | 60.2% | 40.8% | 11.1% | 51.9 | 18.7% | 23.8 | 11.9% | 50.41 (T-5.0/F55.4) |
+| 8 | Memory | NAND / Storage | **FXCNF** | OTC | $2.6B | 180.8% | 67.9% | 35.5% | 94.6% | 3.5% | 5.4% | -1.6% | 16.5% | 15.0 | N/A% | N/A | 6.3% | 46.42 (T52.4/F-6.0) |
 
 ## Phase2 セクター別ランキング
 
@@ -204,7 +245,7 @@
 |:---|:---|:---|
 | 共通条件 | ベース条件 | 時価総額 > $1B / EPS(TTM) > 0 / Close > SMA200 / Close > SMA50 / Close ≥ 52週高値 × 75% |
 | 補助ポリシー | Rule of 40 | US Technology Services software-like industries only / total_revenue_yoy_growth_ttm + free_cash_flow_margin_ttm / 40+ を badge / 20 未満を warning / hard filter なし |
-| 補助ポリシー | Theme taxonomy | US Phase2 matched candidates only / repo custom theme taxonomy layered on top of TradingView sector/industry / version us-theme-prototype-v1 |
+| 補助ポリシー | Theme taxonomy | US Phase2 matched candidates only / repo custom theme taxonomy layered on top of TradingView sector/industry / version us-theme-prototype-v2 |
 | 補助ポリシー | Moomoo 補助 | 売上成長率 YoY は growth scoring の補助に使う。EPS YoY は TradingView 値のみを使い、欠損時は N/A のままにする |
 | セクタープロファイル | Electronic Technology | scope: Electronic Technology / hard gate: Perf.3M > 10% / P/FCF < 50 / scoring: RSI 60+、相対出来高 1.00x+、ROE 20%+、粗利率 40%+、FCFマージン 15%+ |
 | セクタープロファイル | Electronic Technology / Semiconductors | scope: Electronic Technology / hard gate: Perf.3M > 10% / P/FCF < 50 (fabless), 120 (IDM/foundry) / scoring: RSI 60+、相対出来高 0.90x+、ROE 15%+、粗利率 30%+、FCFマージン 5%+ |

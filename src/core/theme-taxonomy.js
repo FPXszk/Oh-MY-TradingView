@@ -3,6 +3,9 @@ import { readFileSync } from 'node:fs';
 const US_THEME_TAXONOMY = JSON.parse(
   readFileSync(new URL('../../config/screener/theme-taxonomy-us.json', import.meta.url), 'utf8'),
 );
+const US_THEME_HIERARCHY = JSON.parse(
+  readFileSync(new URL('../../config/screener/theme-hierarchy-us.json', import.meta.url), 'utf8'),
+);
 const US_EXTERNAL_THEME_REFERENCE = JSON.parse(
   readFileSync(new URL('../../config/screener/external-theme-reference-us.json', import.meta.url), 'utf8'),
 );
@@ -25,6 +28,20 @@ const SP_KENSHO_BONUS_POINT = 1.0;
 
 function getExternalThemeReference(themeId) {
   return US_EXTERNAL_THEME_REFERENCE?.themes?.[themeId] ?? null;
+}
+
+export function getUsSectorThemeHierarchy(sector) {
+  const definition = US_THEME_HIERARCHY?.sectors?.[sector] ?? null;
+  if (!definition) return null;
+  return {
+    version: US_THEME_HIERARCHY.version,
+    sector,
+    middleThemes: (definition.middle_themes ?? []).map((entry) => ({
+      id: entry.id,
+      label: entry.label,
+      smallThemes: [...(entry.small_themes ?? [])],
+    })),
+  };
 }
 
 function buildExternalConfirmation(themeId) {

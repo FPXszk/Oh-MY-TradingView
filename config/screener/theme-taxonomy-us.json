@@ -1,5 +1,5 @@
 {
-  "version": "us-theme-prototype-v1",
+  "version": "us-theme-prototype-v2",
   "medium_themes": [
     {
       "id": "ai-compute",
@@ -8,7 +8,7 @@
       "subthemes": [
         {
           "id": "ai-servers",
-          "label": "AI Servers",
+          "label": "AI Servers / Systems",
           "symbols": ["DELL", "SMCI", "HPE"],
           "industry_keywords": ["computer processing hardware", "computer communications"],
           "company_keywords": ["server", "compute"]
@@ -19,6 +19,13 @@
           "symbols": ["NVDA", "AMD", "AVGO", "MRVL"],
           "industry_keywords": ["semiconductors"],
           "company_keywords": ["gpu", "accelerator", "ai"]
+        },
+        {
+          "id": "ai-interconnect-cxl-data-center-fabric",
+          "label": "AI Interconnect / CXL / Data Center Fabric",
+          "symbols": ["ALAB", "CRDO"],
+          "industry_keywords": ["semiconductors", "computer communications"],
+          "company_keywords": ["cxl", "retimer", "dsp", "interconnect", "fabric"]
         }
       ]
     },
@@ -29,21 +36,21 @@
       "subthemes": [
         {
           "id": "hbm-dram",
-          "label": "HBM/DRAM",
+          "label": "HBM / DRAM",
           "symbols": ["MU", "RMBS"],
           "industry_keywords": ["semiconductors"],
           "company_keywords": ["dram", "hbm", "memory"]
         },
         {
           "id": "nand-storage",
-          "label": "NAND/Storage",
+          "label": "NAND / Storage",
           "symbols": ["WDC", "SNDK", "STX"],
           "industry_keywords": ["computer peripherals", "semiconductors"],
           "company_keywords": ["nand", "flash", "storage", "ssd"]
         },
         {
           "id": "memory-controllers",
-          "label": "Memory Controllers",
+          "label": "Memory Controllers / Interface IP",
           "symbols": ["RMBS", "SIMO"],
           "industry_keywords": ["semiconductors"],
           "company_keywords": ["controller", "memory interface"]
@@ -51,7 +58,7 @@
       ]
     },
     {
-      "id": "optical-connectivity",
+      "id": "optical-photonics",
       "label": "Optical / Photonics",
       "sectors": ["Electronic Technology", "Communications"],
       "subthemes": [
@@ -71,7 +78,7 @@
         },
         {
           "id": "fiber-coherent-optics",
-          "label": "Coherent Optics",
+          "label": "Coherent Optics / Fiber",
           "symbols": ["CIEN", "INFN", "GLW"],
           "industry_keywords": ["telecommunications equipment", "computer communications"],
           "company_keywords": ["fiber", "coherent", "optic"]
@@ -79,55 +86,62 @@
       ]
     },
     {
-      "id": "space",
-      "label": "Space",
+      "id": "defense-space-electronics",
+      "label": "Defense / Space Electronics",
       "sectors": ["Communications", "Electronic Technology", "Producer Manufacturing", "Industrial Services"],
       "subthemes": [
         {
-          "id": "satellite",
-          "label": "Satellite",
-          "symbols": ["ASTS", "IRDM", "VSAT", "GSAT"],
-          "industry_keywords": ["telecommunications equipment", "wireless telecommunications"],
-          "company_keywords": ["satellite", "orbital", "constellation"]
+          "id": "secure-comms-sensors",
+          "label": "Secure Comms / Sensors",
+          "symbols": ["LHX", "TDY", "PLTR"],
+          "industry_keywords": ["aerospace & defense", "electronic equipment"],
+          "company_keywords": ["sensor", "mission", "secure", "comms"]
         },
         {
-          "id": "launch",
-          "label": "Launch",
-          "symbols": ["RKLB", "LUNR", "RDW", "PL"],
+          "id": "drone-autonomy-electronics",
+          "label": "Drone / Autonomy Electronics",
+          "symbols": ["AVAV", "KTOS", "PLTR"],
           "industry_keywords": ["aerospace & defense"],
-          "company_keywords": ["launch", "rocket", "space systems"]
+          "company_keywords": ["drone", "autonomy", "unmanned"]
         },
         {
-          "id": "space-comms",
-          "label": "Space Communications",
-          "symbols": ["ASTS", "IRDM", "VSAT"],
-          "industry_keywords": ["telecommunications equipment"],
-          "company_keywords": ["satcom", "space communication", "direct-to-cell"]
+          "id": "satellite-space-communications",
+          "label": "Satellite / Space Communications",
+          "symbols": ["ASTS", "IRDM", "VSAT", "GSAT", "RKLB", "LUNR", "RDW", "PL"],
+          "industry_keywords": ["telecommunications equipment", "wireless telecommunications", "aerospace & defense"],
+          "company_keywords": ["satcom", "space communication", "direct-to-cell", "satellite", "orbital", "constellation", "launch", "rocket", "space systems"]
         }
       ]
     },
     {
-      "id": "power-grid",
-      "label": "Power & Grid",
+      "id": "industrial-power-electronics",
+      "label": "Industrial / Power Electronics",
       "sectors": ["Utilities", "Producer Manufacturing", "Electronic Technology", "Industrial Services"],
       "subthemes": [
         {
-          "id": "independent-power",
-          "label": "Independent Power",
-          "symbols": ["VST", "CEG", "NRG", "TLN"],
-          "company_keywords": ["energy", "power generation", "nuclear"],
-          "allow_sector_only": true
+          "id": "factory-automation-motion-control",
+          "label": "Factory Automation / Motion Control",
+          "symbols": ["ROK", "EMR", "HON", "PH", "AME"],
+          "industry_keywords": ["industrial machinery", "electronic production equipment", "electronic equipment"],
+          "company_keywords": ["automation", "factory", "industrial software", "robot", "motion", "precision"]
         },
         {
-          "id": "grid-equipment",
-          "label": "Grid Equipment",
+          "id": "industrial-electrification",
+          "label": "Industrial Electrification",
+          "symbols": ["ETN", "HUBB", "PH"],
+          "industry_keywords": ["electrical products", "industrial machinery"],
+          "company_keywords": ["electrification", "power quality", "controls"]
+        },
+        {
+          "id": "grid-equipment-power-conversion",
+          "label": "Grid Equipment / Power Conversion",
           "symbols": ["ETN", "HUBB", "GEV", "PWR"],
           "industry_keywords": ["electrical products", "engineering & construction"],
-          "company_keywords": ["grid", "transformer", "electrical"]
+          "company_keywords": ["grid", "transformer", "electrical", "power conversion"]
         },
         {
           "id": "power-cooling",
-          "label": "Power Cooling",
+          "label": "Power Cooling / Thermal Management",
           "symbols": ["VRT", "TT", "MOD"],
           "industry_keywords": ["electronic production equipment", "industrial machinery"],
           "company_keywords": ["cooling", "thermal", "power management"]
@@ -135,35 +149,7 @@
       ]
     },
     {
-      "id": "defense-tech",
-      "label": "Defense Tech",
-      "sectors": ["Electronic Technology", "Producer Manufacturing", "Industrial Services"],
-      "subthemes": [
-        {
-          "id": "defense-platforms",
-          "label": "Defense Platforms",
-          "symbols": ["LMT", "RTX", "NOC", "GD", "HII"],
-          "industry_keywords": ["aerospace & defense"],
-          "company_keywords": ["defense", "missile", "naval"]
-        },
-        {
-          "id": "drone-autonomy",
-          "label": "Drone & Autonomy",
-          "symbols": ["AVAV", "KTOS", "PLTR"],
-          "industry_keywords": ["aerospace & defense", "electronic production equipment"],
-          "company_keywords": ["drone", "autonomy", "unmanned"]
-        },
-        {
-          "id": "secure-comms-sensors",
-          "label": "Secure Comms & Sensors",
-          "symbols": ["LHX", "TDY", "PLTR"],
-          "industry_keywords": ["aerospace & defense", "electronic equipment"],
-          "company_keywords": ["sensor", "mission", "secure"]
-        }
-      ]
-    },
-    {
-      "id": "semi-equipment",
+      "id": "semiconductor-equipment",
       "label": "Semiconductor Equipment",
       "sectors": ["Electronic Technology"],
       "subthemes": [
@@ -176,14 +162,14 @@
         },
         {
           "id": "test-metrology",
-          "label": "Test & Metrology",
+          "label": "Test / Metrology / Inspection",
           "symbols": ["KLAC", "TER", "KEYS", "COHU"],
           "industry_keywords": ["electronic production equipment"],
           "company_keywords": ["metrology", "test", "inspection"]
         },
         {
           "id": "packaging-advanced-assembly",
-          "label": "Packaging / Advanced Assembly",
+          "label": "Advanced Packaging / Assembly",
           "symbols": ["ONTO", "CAMT"],
           "industry_keywords": ["electronic production equipment"],
           "company_keywords": ["packaging", "assembly", "panel"]
@@ -191,16 +177,16 @@
       ]
     },
     {
-      "id": "connectivity-silicon",
-      "label": "Connectivity Silicon",
+      "id": "connectivity-networking",
+      "label": "Connectivity / Networking",
       "sectors": ["Electronic Technology"],
       "subthemes": [
         {
-          "id": "high-speed-connectivity",
-          "label": "High-Speed Connectivity",
-          "symbols": ["CRDO", "ALAB"],
-          "industry_keywords": ["semiconductors"],
-          "company_keywords": ["connectivity", "interconnect", "retimer", "dsp", "cxl"]
+          "id": "ethernet-switching-routing",
+          "label": "Ethernet Switching / Routing",
+          "symbols": ["ANET", "CSCO", "EXTR", "JNPR"],
+          "industry_keywords": ["computer communications", "telecommunications equipment"],
+          "company_keywords": ["switch", "routing", "ethernet"]
         },
         {
           "id": "rf-mobile-connectivity",
@@ -208,25 +194,11 @@
           "symbols": ["QRVO", "SWKS", "MTSI"],
           "industry_keywords": ["semiconductors"],
           "company_keywords": ["rf", "wireless", "front-end", "connectivity"]
-        }
-      ]
-    },
-    {
-      "id": "network-infrastructure",
-      "label": "Network Infrastructure",
-      "sectors": ["Communications", "Electronic Technology", "Technology Services"],
-      "subthemes": [
-        {
-          "id": "ethernet-switching",
-          "label": "Ethernet Switching",
-          "symbols": ["ANET", "CSCO", "EXTR", "JNPR"],
-          "industry_keywords": ["computer communications", "telecommunications equipment"],
-          "company_keywords": ["switch", "routing", "ethernet"]
         },
         {
           "id": "carrier-optical-networking",
           "label": "Carrier / Optical Networking",
-          "symbols": ["CIEN", "INFN", "CALX"],
+          "symbols": ["CALX"],
           "industry_keywords": ["telecommunications equipment"],
           "company_keywords": ["carrier", "transport", "networking"]
         },
@@ -310,55 +282,27 @@
       ]
     },
     {
-      "id": "industrial-automation",
-      "label": "Industrial Automation",
-      "sectors": ["Producer Manufacturing", "Industrial Services", "Electronic Technology"],
-      "subthemes": [
-        {
-          "id": "factory-automation",
-          "label": "Factory Automation",
-          "symbols": ["ROK", "EMR", "HON"],
-          "industry_keywords": ["industrial machinery", "electronic production equipment"],
-          "company_keywords": ["automation", "factory", "industrial software"]
-        },
-        {
-          "id": "motion-control-robotics",
-          "label": "Motion Control & Robotics",
-          "symbols": ["PH", "ROK", "AME"],
-          "industry_keywords": ["industrial machinery", "electronic equipment"],
-          "company_keywords": ["robot", "motion", "precision"]
-        },
-        {
-          "id": "industrial-electrification",
-          "label": "Industrial Electrification",
-          "symbols": ["ETN", "HUBB", "PH"],
-          "industry_keywords": ["electrical products", "industrial machinery"],
-          "company_keywords": ["electrification", "power quality", "controls"]
-        }
-      ]
-    },
-    {
       "id": "electronic-components",
       "label": "Electronic Components",
       "sectors": ["Electronic Technology", "Producer Manufacturing"],
       "subthemes": [
         {
           "id": "mlcc-passives",
-          "label": "MLCC & Passives",
+          "label": "MLCC / Passive Components",
           "symbols": ["VPG", "CTS", "BELFA", "BELFB"],
           "industry_keywords": ["electronic components", "electronic equipment"],
           "company_keywords": ["capacitor", "passive", "ceramic"]
         },
         {
           "id": "connectors-interconnect",
-          "label": "Connectors & Interconnect",
+          "label": "Connectors / Interconnect",
           "symbols": ["AMPH", "TEL", "GLW"],
           "industry_keywords": ["electronic components", "computer communications"],
           "company_keywords": ["connector", "interconnect", "cable"]
         },
         {
           "id": "sensing-precision-components",
-          "label": "Sensing & Precision Components",
+          "label": "Sensors / Precision Components",
           "symbols": ["VPG", "CTS", "BELFA", "BELFB"],
           "industry_keywords": ["electronic components", "electronic equipment"],
           "company_keywords": ["sensor", "precision", "measurement"]
