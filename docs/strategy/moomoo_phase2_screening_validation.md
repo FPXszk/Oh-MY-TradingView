@@ -67,7 +67,7 @@ live inventory (`moomoo_stock_filter_fields`) の取得結果:
 | `operating_margin_ttm` | quality | `OPERATING_MARGIN_TTM` | direct | financial field |
 | `free_cash_flow_margin_ttm` | quality | 直接は無し | unavailable | Phase 2 時点では未確認 |
 | `total_revenue_yoy_growth_ttm` | growth | `SUM_OF_BUSINESS_GROWTH` 近辺 | partial | 名寄せ要追加。即採用は保留 |
-| `earnings_per_share_diluted_yoy_growth_ttm` | growth | `EPS_GROWTH_RATE` | direct | financial field |
+| `earnings_per_share_diluted_yoy_growth_ttm` | growth | `EPS_GROWTH_RATE` | partial | moomoo 側は annual report ベースの EPS YoY。TradingView の diluted EPS TTM YoY と live 差分確認が必要 |
 | `free_cash_flow_yoy_growth_ttm` | growth | 直接は無し | unavailable | 未確認 |
 | `price_free_cash_flow_ttm` | valuation | `PCF_TTM` が近い | partial | `P/FCF` そのものではない |
 | `enterprise_value_ebitda_ttm` | valuation | 直接は無し | unavailable | 未確認 |

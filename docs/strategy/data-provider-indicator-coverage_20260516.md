@@ -69,7 +69,7 @@ Yahoo Finance は **通常運用では使わない方向へ寄せる**。chart /
 | 売上 | `total_revenue_ttm` | `SUM_OF_BUSINESS` | quoteSummary 前提だが現在 401 |
 | 売上成長 | `total_revenue_yoy_growth_ttm` | `SUM_OF_BUSINESS_GROWTH`, normalized `revenueGrowth` | quoteSummary 前提だが現在 401 |
 | EPS | `earnings_per_share_diluted_ttm`, `earnings_per_share_basic_ttm` | `BASIC_EPS`, `DILUTED_EPS`, snapshot `earning_per_share` | quoteSummary 前提だが現在 401 |
-| EPS 成長 | `earnings_per_share_diluted_yoy_growth_ttm` | `EPS_GROWTH_RATE` | quoteSummary 前提だが現在 401 |
+| EPS 成長 | `earnings_per_share_diluted_yoy_growth_ttm` | `EPS_GROWTH_RATE` は候補だが要注意 | TradingView は diluted EPS の TTM YoY。moomoo 側は annual quarter 指定の EPS YoY で、同義未検証 |
 | EBITDA | `ebitda_ttm`, `ebitda_yoy_growth_ttm` | `EBITDA`, `EBITDA_MARGIN` | quoteSummary 前提だが現在 401 |
 | Net income / margin | `net_income_ttm`, `net_margin_ttm` | `NET_PROFIT`, `NET_PROFIT_RATE`, `SHAREHOLDER_NET_PROFIT_TTM` | quoteSummary 前提だが現在 401 |
 | Gross profit / margin | `gross_profit_ttm`, `gross_margin_ttm` | `GROSS_PROFIT_RATE` は取れるが `gross_profit_ttm / total_assets` の exact source は不足 | quoteSummary 前提だが現在 401 |
