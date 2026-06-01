@@ -60,12 +60,12 @@
 
 ## 実装ステップ
 
-- [ ] repo 現行 taxonomy から `Electronic Technology` 配下の中テーマ / 小テーマを抽出する
-- [ ] `daily-ranking.md` の現行結果から ET 周りの上位テーマを確認する
-- [ ] 外部の標準分類とテーマ分類を公式ソースで確認する
-- [ ] `docs/strategy/electronic-technology-middle-theme-research_20260601.md` に調査結果をまとめる
-- [ ] 内容を自己レビューして、ユーザー向け要約を作る
-- [ ] plan を `completed/` へ移動する
+- [x] repo 現行 taxonomy から `Electronic Technology` 配下の中テーマ / 小テーマを抽出する
+- [x] `daily-ranking.md` の現行結果から ET 周りの上位テーマを確認する
+- [x] 外部の標準分類とテーマ分類を公式ソースで確認する
+- [x] `docs/strategy/electronic-technology-middle-theme-research_20260601.md` に調査結果をまとめる
+- [x] 内容を自己レビューして、ユーザー向け要約を作る
+- [x] plan を `completed/` へ移動する
 
 ## テスト / 検証
 
