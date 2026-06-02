@@ -93,7 +93,12 @@ function isPhase2StockRequest(body) {
 }
 
 function isBenchmarkRequest(body) {
-  return body.symbols?.tickers?.some((ticker) => ticker.includes('SPY'));
+  return body.symbols?.tickers?.some((ticker) => (
+    ticker.includes('SPY')
+    || ticker.includes('1306')
+    || ticker.includes('1308')
+    || ticker.includes('1475')
+  ));
 }
 
 function getFilterValue(body, left) {
@@ -695,7 +700,26 @@ describe('runFundamentalScreener', () => {
         scopeLabel: 'JPX Prime domestic stocks snapshot',
         fetch: createMockFetch({
           stockBodies,
-          benchmarkPayload: null,
+          benchmarkPayload: {
+            totalCount: 1,
+            data: [
+              buildPhase1StockRow('TSE:1306', {
+                name: 'TOPIX ETF',
+                sector: 'Benchmark',
+                close: 3000,
+                sma200: 2800,
+                sma50: 2950,
+                high52w: 3100,
+                perf1m: 3,
+                perf3m: 9,
+                perf6m: 16,
+                perfY: 22,
+                rsi: 58,
+                relativeVolume: 1.0,
+                marketCap: 5_000_000_000,
+              }),
+            ],
+          },
           phase1Payload: {
             totalCount: 4,
             data: [
@@ -849,12 +873,15 @@ describe('runFundamentalScreener', () => {
     assert.equal(result.scannerScope.market, 'japan');
     assert.equal(result.scannerScope.scopeLabel, 'JPX Prime domestic stocks snapshot');
     assert.equal(result.results.find((row) => row.symbol === '8035').companyName, 'Tokyo Electron');
+    assert.equal(result.results.find((row) => row.symbol === '8035').companyNameJa, '東京エレクトロン');
     assert.equal(result.results.find((row) => row.symbol === '8035').primaryTheme, 'Semiconductor Equipment');
     assert.deepEqual(result.results.find((row) => row.symbol === '8035').subThemes, ['Semiconductor Production Equipment']);
     assert.equal(result.results.find((row) => row.symbol === '8035').ruleOf40, null);
     assert.equal(result.ruleOf40Coverage, null);
     assert.equal(result.criteria.rule_of_40_policy, undefined);
     assert.equal(result.criteria.theme_taxonomy_policy?.version, 'jp-theme-prototype-v1');
+    assert.equal(result.sectorMomentum.benchmark?.symbol, '1306');
+    assert.equal(result.sectorMomentum.benchmark?.label, 'TOPIX');
     assert.deepEqual(result.themeRanking.map((entry) => entry.theme), [
       'Semiconductor Equipment',
       'Chemicals / Materials',

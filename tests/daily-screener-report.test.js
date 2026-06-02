@@ -61,6 +61,8 @@ describe('Daily Fundamental Screener workflow', () => {
       'Japan workflow must write a dedicated markdown report');
     assert.match(workflow, /SCREENER_METADATA_PATH:\s+docs\/reports\/screener\/daily-ranking-jp-run\.json/,
       'Japan workflow must write dedicated metadata');
+    assert.doesNotMatch(workflow, /SCREENER_REPORT_TITLE:/,
+      'Japan workflow should rely on the shared date-based default title');
   });
 });
 
@@ -306,7 +308,7 @@ describe('buildMarkdown', () => {
           { key: 'Finance', label: 'Finance', memberCount: 2 },
         ],
         selectedStockSectors: ['Technology Services', 'Electronic Technology', 'Finance'],
-        benchmark: { symbol: 'SPY', exchange: 'BATS', perf3m: 10.2, perf6m: 18.4, perfY: 30.5 },
+        benchmark: { symbol: 'SPY', exchange: 'BATS', label: 'SPY', columnLabel: 'SPY', perf3m: 10.2, perf6m: 18.4, perfY: 30.5 },
         rankingFormula: ['perfY', 'perf6m', 'perf3m', 'relativeStrengthY', 'relativeStrength6m', 'relativeStrength3m', 'pctAboveSma50', 'pctAboveSma200', 'pctNear52WeekHigh'],
         coverage: { totalCandidatesReported: 20, scopedCandidates: 20, serverLimit: 20 },
         rankings: [
@@ -787,8 +789,8 @@ describe('buildMarkdown', () => {
           { key: 'Finance', label: 'Finance', memberCount: 8 },
         ],
         selectedStockSectors: ['Finance'],
-        benchmark: null,
-        rankingFormula: ['perfY', 'perf6m', 'perf3m', 'pctAboveSma50', 'pctAboveSma200', 'pctNear52WeekHigh'],
+        benchmark: { symbol: '1306', exchange: 'TSE', label: 'TOPIX', columnLabel: 'TOPIX', perf3m: 8.4, perf6m: 14.8, perfY: 25.1 },
+        rankingFormula: ['perfY', 'perf6m', 'perf3m', 'relativeStrengthY', 'relativeStrength6m', 'relativeStrength3m', 'pctAboveSma50', 'pctAboveSma200', 'pctNear52WeekHigh'],
         coverage: { totalCandidatesReported: 1200, scopedCandidates: 420, serverLimit: 2000 },
         rankings: [
           {
@@ -796,9 +798,9 @@ describe('buildMarkdown', () => {
             perf3m: 11.8,
             perf6m: 20.1,
             perfY: 32.5,
-            relativeStrength3m: null,
-            relativeStrength6m: null,
-            relativeStrengthY: null,
+            relativeStrength3m: 3.4,
+            relativeStrength6m: 5.3,
+            relativeStrengthY: 7.4,
             pctAboveSma50: 75.0,
             pctAboveSma200: 87.5,
             pctNear52WeekHigh: 62.5,
@@ -849,6 +851,7 @@ describe('buildMarkdown', () => {
           {
             symbol: '7203',
             companyName: 'Toyota Motor Corporation',
+            companyNameJa: 'トヨタ自動車',
             exchange: 'TSE',
             primaryTheme: 'Electronic Components',
             subThemes: ['Passives / RF Modules'],
@@ -874,6 +877,7 @@ describe('buildMarkdown', () => {
         {
           symbol: '7203',
           companyName: 'Toyota Motor Corporation',
+          companyNameJa: 'トヨタ自動車',
           exchange: 'TSE',
           sector: 'Consumer Durables',
           marketCapUsd: 4_500_000_000_000,
@@ -897,21 +901,22 @@ describe('buildMarkdown', () => {
     };
 
     const markdown = buildMarkdown(result, {
-      title: '日本株 ファンダメンタル × モメンタム スクリーニング 上位20件',
       currencySymbol: '¥',
     });
 
-    assert.match(markdown, /# 日本株 ファンダメンタル × モメンタム スクリーニング 上位20件/);
+    assert.match(markdown, /# スクリーニング結果 2026\/05\/04（月）/);
     assert.match(markdown, /更新: 12:00 JST/);
     assert.match(markdown, /## Phase1 セクターランキング/);
+    assert.match(markdown, /相対強度の基準: TSE:1306（TOPIX）/);
     assert.match(markdown, /## Phase2 テーマランキング/);
     assert.match(markdown, /\| 1 \| Electronic Components \| 1 \| 12\.0% \| 4\.00 \| Passives \/ RF Modules \| Minkabu \|/);
-    assert.match(markdown, /\| 1 \| Finance \| 32\.5% \| 20\.1% \| 11\.8% \| N\/Apt \| N\/Apt \| N\/Apt \| 75\.0% \| 87\.5% \| 62\.5% \| 62\.5 \| 1\.21x \| 8 \| 4 \|/);
+    assert.match(markdown, /\| 順位 \| セクター \| 平均12M \| 平均6M \| 平均3M \| TOPIX差12M \| TOPIX差6M \| TOPIX差3M \| SMA50上 \| SMA200上 \| 52w高値90%内 \| RSI \| 相対出来高 \| 構成数 \| 順位合計 \|/);
+    assert.match(markdown, /\| 1 \| Finance \| 32\.5% \| 20\.1% \| 11\.8% \| 7\.4pt \| 5\.3pt \| 3\.4pt \| 75\.0% \| 87\.5% \| 62\.5% \| 62\.5 \| 1\.21x \| 8 \| 4 \|/);
     assert.doesNotMatch(markdown, /アプローチ:/);
     assert.match(markdown, /- Phase1 採用は上位 1 セクターのみです。4位以下のセクターは Phase1 失格として除外しています。/);
     assert.match(markdown, /- 条件通過銘柄がないため、セクター別ランキングは算出できませんでした。/);
-    assert.match(markdown, /### 1位 7203 \(Toyota Motor Corporation\) \(TSE\)/);
-    assert.match(markdown, /\| 1 \| Electronic Components \| Passives \/ RF Modules \| \*\*7203 \(Toyota Motor Corporation\)\*\* \| TSE \|/);
+    assert.match(markdown, /### 1位 7203 \(トヨタ自動車\) \(TSE\)/);
+    assert.match(markdown, /\| 1 \| Electronic Components \| Passives \/ RF Modules \| \*\*7203 \(トヨタ自動車\)\*\* \| TSE \|/);
     assert.match(markdown, /\| ユニバース \| 取引所 \| TSE \|/);
     assert.match(markdown, /\| ユニバース \| 銘柄ユニバース \| jpx-prime \|/);
   });
@@ -926,6 +931,8 @@ describe('daily screener template', () => {
     assert.match(template, /セクター別取得候補 XXX銘柄 → ユニバース条件通過 XXX銘柄 → ランキング対象 XXX銘柄 → レポート掲載 XX銘柄/);
     assert.match(template, /実際の出力ロジックの正本は/);
     assert.match(template, /時価総額で確認/);
+    assert.match(template, /相対強度の基準: benchmark/);
+    assert.match(template, /benchmark差/);
     assert.doesNotMatch(template, /## 市場カバレッジ/);
     assert.doesNotMatch(template, /## 採用した P0 \/ P1 指標/);
     assert.doesNotMatch(template, /## 今後改善できそうな点/);

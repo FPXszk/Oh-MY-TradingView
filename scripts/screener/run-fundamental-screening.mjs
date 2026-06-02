@@ -221,8 +221,20 @@ function formatThemeLine(row) {
 
 function formatSymbolWithCompanyName(row) {
   const symbol = row?.symbol ?? 'N/A';
-  const companyName = row?.companyName ? String(row.companyName).trim() : '';
+  const companyName = row?.companyNameJa
+    ? String(row.companyNameJa).trim()
+    : row?.companyName
+      ? String(row.companyName).trim()
+      : '';
   return companyName ? `${symbol} (${companyName})` : symbol;
+}
+
+function getBenchmarkDisplay(result) {
+  const benchmark = result.sectorMomentum?.benchmark;
+  const market = result.scannerScope?.market;
+  if (benchmark?.columnLabel) return benchmark.columnLabel;
+  if (market === 'japan') return 'TOPIX';
+  return 'SPY';
 }
 
 function parseCsvList(value) {
@@ -441,6 +453,7 @@ export function buildMarkdown(result, options = {}) {
   const currencySymbol = options.currencySymbol ?? DEFAULT_CURRENCY_SYMBOL;
   const market = result.scannerScope?.market;
   const populationSize = result.results.length;
+  const benchmarkLabel = getBenchmarkDisplay(result);
   const resultRowsByKey = new Map((result.results ?? []).map((row) => [buildRowLookupKey(row), row]));
   const showRuleOf40CoverageSection = options.showRuleOf40CoverageSection ?? market !== 'america';
   const showPhase2SectorBreakdownSection = options.showPhase2SectorBreakdownSection ?? market !== 'america';
@@ -487,11 +500,11 @@ export function buildMarkdown(result, options = {}) {
   } else {
     lines.push(`- Phase1 ソース候補数: ${result.sectorMomentum.coverage?.scopedCandidates ?? 'N/A'} / reported ${result.sectorMomentum.coverage?.totalCandidatesReported ?? 'N/A'}`);
     if (result.sectorMomentum.benchmark?.symbol) {
-      lines.push(`- 相対強度の基準: ${result.sectorMomentum.benchmark.exchange ?? '-'}:${result.sectorMomentum.benchmark.symbol}（SPY）`);
+      lines.push(`- 相対強度の基準: ${result.sectorMomentum.benchmark.exchange ?? '-'}:${result.sectorMomentum.benchmark.symbol}（${benchmarkLabel}）`);
     }
     lines.push('- 12M / 6M / 3M はセクター構成銘柄の平均リターンです。');
     lines.push('');
-    lines.push('| 順位 | セクター | 平均12M | 平均6M | 平均3M | SPY差12M | SPY差6M | SPY差3M | SMA50上 | SMA200上 | 52w高値90%内 | RSI | 相対出来高 | 構成数 | 順位合計 |');
+    lines.push(`| 順位 | セクター | 平均12M | 平均6M | 平均3M | ${benchmarkLabel}差12M | ${benchmarkLabel}差6M | ${benchmarkLabel}差3M | SMA50上 | SMA200上 | 52w高値90%内 | RSI | 相対出来高 | 構成数 | 順位合計 |`);
     lines.push('|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|');
     result.sectorMomentum.rankings.forEach((entry, index) => {
       lines.push(

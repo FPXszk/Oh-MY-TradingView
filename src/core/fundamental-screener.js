@@ -30,6 +30,9 @@ const BUILTIN_SYMBOL_ALLOWLISTS = new Map([
     new Set(JSON.parse(readFileSync(new URL('../../config/screener/jpx-prime-symbols.json', import.meta.url), 'utf8')).symbols),
   ],
 ]);
+const JP_COMPANY_NAMES_JA = JSON.parse(
+  readFileSync(new URL('../../config/screener/jpx-company-names-ja.json', import.meta.url), 'utf8'),
+);
 
 const COLUMNS = [
   'name',
@@ -315,6 +318,23 @@ function normalizeRow(row) {
     netDebt,
     volume,
   };
+}
+
+function resolveJapaneseCompanyName(row, market) {
+  if (market !== 'japan') return null;
+  return JP_COMPANY_NAMES_JA.names?.[row.symbol] ?? null;
+}
+
+function applyLocalizedCompanyNames(rows, market) {
+  return rows.map((row) => {
+    const companyNameJa = resolveJapaneseCompanyName(row, market);
+    return companyNameJa
+      ? {
+        ...row,
+        companyNameJa,
+      }
+      : row;
+  });
 }
 
 function isUsSoftwareRuleOf40Candidate(row, market) {
@@ -1089,7 +1109,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       .map((row) => applySupplementalGrowthMetrics(row, growthMap[row.symbol]));
   }
 
-  const themedRows = applyThemeTaxonomy(clientFiltered, market);
+  const themedRows = applyLocalizedCompanyNames(applyThemeTaxonomy(clientFiltered, market), market);
   const rankingBlocks = getRankingBlocks(market);
   const ranked = applyBlockRanks(themedRows, rankingBlocks).sort((a, b) => b.rankScore - a.rankScore);
   const matched = ranked.slice(0, effectiveLimit).map(stripInternalFields);
@@ -1240,11 +1260,11 @@ export async function evaluateSymbolsAgainstFundamentalScreener({
   const allProfiles = getProfilesForMarket(market);
   const sectorRankLookup = buildSectorRankLookup(sectorMomentum);
 
-  const fetchedRows = await fetchRowsForSymbols({
+  const fetchedRows = applyLocalizedCompanyNames(await fetchRowsForSymbols({
     symbols: requestedSymbols,
     market,
     fetchFn,
-  });
+  }), market);
 
   const byRequestedSymbol = new Map();
   for (const requestedSymbol of requestedSymbols) {
@@ -1322,7 +1342,10 @@ export async function evaluateSymbolsAgainstFundamentalScreener({
     .filter((entry) => entry?.found && entry.matchedProfileId);
   let ranked = [];
   if (rankedCandidates.length > 0) {
-    ranked = applyBlockRanks(applyThemeTaxonomy(rankedCandidates, market), getRankingBlocks(market))
+    ranked = applyBlockRanks(
+      applyLocalizedCompanyNames(applyThemeTaxonomy(rankedCandidates, market), market),
+      getRankingBlocks(market),
+    )
       .sort((a, b) => b.rankScore - a.rankScore);
   }
   const rankLookup = new Map(ranked.map((row, index) => [`${row.exchange}:${row.symbol}`.toUpperCase(), {

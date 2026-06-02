@@ -4,7 +4,18 @@ const DEFAULT_US_SELECTED_SECTOR_COUNT = 3;
 const STOCK_PAGE_SIZE = 1000;
 const MARKET_CAP_MIN_USD = 1_000_000_000;
 const MAX_SELECTED_STOCK_SECTOR_COUNT = 20;
-const AMERICA_BENCHMARK_TICKERS = ['BATS:SPY', 'AMEX:SPY'];
+const MARKET_BENCHMARKS = {
+  america: {
+    label: 'SPY',
+    columnLabel: 'SPY',
+    tickers: ['BATS:SPY', 'AMEX:SPY'],
+  },
+  japan: {
+    label: 'TOPIX',
+    columnLabel: 'TOPIX',
+    tickers: ['TSE:1306', 'TSE:1308', 'TSE:1475'],
+  },
+};
 
 const STOCK_COLUMNS = [
   'name',
@@ -180,16 +191,21 @@ async function requestScanner(url, body, fetchFn) {
 }
 
 async function requestBenchmarkSnapshot(market, fetchFn) {
-  if (market !== 'america') return null;
+  const benchmarkConfig = MARKET_BENCHMARKS[market];
+  if (!benchmarkConfig) return null;
 
-  for (const ticker of AMERICA_BENCHMARK_TICKERS) {
+  for (const ticker of benchmarkConfig.tickers) {
     const payload = await requestScanner(
       `https://scanner.tradingview.com/${market}/scan`,
       buildBenchmarkRequestBody(market, ticker),
       fetchFn,
     );
     if (payload.data.length > 0) {
-      return normalizeStockRow(payload.data[0]);
+      return {
+        ...normalizeStockRow(payload.data[0]),
+        label: benchmarkConfig.label,
+        columnLabel: benchmarkConfig.columnLabel,
+      };
     }
   }
 
@@ -364,6 +380,8 @@ async function runStockAggregation({
       ? {
         symbol: benchmark.symbol,
         exchange: benchmark.exchange,
+        label: benchmark.label,
+        columnLabel: benchmark.columnLabel,
         perf3m: benchmark.perf3m,
         perf6m: benchmark.perf6m,
         perfY: benchmark.perfY,

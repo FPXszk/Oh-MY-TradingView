@@ -19,7 +19,6 @@ jobs:
       SCREENER_SYMBOL_ALLOWLIST_KEY: jpx-prime
       SCREENER_GROSS_MARGIN_MIN_PCT: '30'
       SCREENER_SCOPE_LABEL: JPX Prime domestic stocks snapshot (2026-03-31)
-      SCREENER_REPORT_TITLE: 日本株 ファンダメンタル × モメンタム スクリーニング 上位20件
       SCREENER_CURRENCY_SYMBOL: ¥
 
     steps:
