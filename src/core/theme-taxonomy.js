@@ -3,11 +3,20 @@ import { readFileSync } from 'node:fs';
 const US_THEME_TAXONOMY = JSON.parse(
   readFileSync(new URL('../../config/screener/theme-taxonomy-us.json', import.meta.url), 'utf8'),
 );
+const JP_THEME_TAXONOMY = JSON.parse(
+  readFileSync(new URL('../../config/screener/theme-taxonomy-jp.json', import.meta.url), 'utf8'),
+);
 const US_THEME_HIERARCHY = JSON.parse(
   readFileSync(new URL('../../config/screener/theme-hierarchy-us.json', import.meta.url), 'utf8'),
 );
+const JP_THEME_HIERARCHY = JSON.parse(
+  readFileSync(new URL('../../config/screener/theme-hierarchy-jp.json', import.meta.url), 'utf8'),
+);
 const US_EXTERNAL_THEME_REFERENCE = JSON.parse(
   readFileSync(new URL('../../config/screener/external-theme-reference-us.json', import.meta.url), 'utf8'),
+);
+const JP_EXTERNAL_THEME_REFERENCE = JSON.parse(
+  readFileSync(new URL('../../config/screener/external-theme-reference-jp.json', import.meta.url), 'utf8'),
 );
 
 function normalizeText(value) {
@@ -23,15 +32,32 @@ function includesAny(text, needles) {
   return (needles || []).find((needle) => normalizedText.includes(normalizeText(needle))) ?? null;
 }
 
-function getExternalThemeReference(themeId) {
-  return US_EXTERNAL_THEME_REFERENCE?.themes?.[themeId] ?? null;
+function getThemeAssetsForMarket(market = 'america') {
+  if (market === 'japan') {
+    return {
+      taxonomy: JP_THEME_TAXONOMY,
+      hierarchy: JP_THEME_HIERARCHY,
+      externalReference: JP_EXTERNAL_THEME_REFERENCE,
+    };
+  }
+
+  return {
+    taxonomy: US_THEME_TAXONOMY,
+    hierarchy: US_THEME_HIERARCHY,
+    externalReference: US_EXTERNAL_THEME_REFERENCE,
+  };
 }
 
-export function getUsSectorThemeHierarchy(sector) {
-  const definition = US_THEME_HIERARCHY?.sectors?.[sector] ?? null;
+function getExternalThemeReference(themeId, market = 'america') {
+  return getThemeAssetsForMarket(market).externalReference?.themes?.[themeId] ?? null;
+}
+
+export function getSectorThemeHierarchyForMarket(market, sector) {
+  const hierarchy = getThemeAssetsForMarket(market).hierarchy;
+  const definition = hierarchy?.sectors?.[sector] ?? null;
   if (!definition) return null;
   return {
-    version: US_THEME_HIERARCHY.version,
+    version: hierarchy.version,
     sector,
     middleThemes: (definition.middle_themes ?? []).map((entry) => ({
       id: entry.id,
@@ -41,10 +67,15 @@ export function getUsSectorThemeHierarchy(sector) {
   };
 }
 
-function buildExternalConfirmation(themeId) {
-  const providers = getExternalThemeReference(themeId)?.providers ?? [];
+export function getUsSectorThemeHierarchy(sector) {
+  return getSectorThemeHierarchyForMarket('america', sector);
+}
+
+function buildExternalConfirmation(themeId, market = 'america') {
+  const externalReference = getThemeAssetsForMarket(market).externalReference;
+  const providers = getExternalThemeReference(themeId, market)?.providers ?? [];
   return {
-    externalThemeReferenceVersion: US_EXTERNAL_THEME_REFERENCE.version,
+    externalThemeReferenceVersion: externalReference.version,
     externalThemeReferences: providers.map((provider) => ({
       source: provider.source,
       label: provider.label,
@@ -140,8 +171,9 @@ function classifyTheme(row, theme) {
   };
 }
 
-export function classifyUsTheme(row) {
-  const matches = (US_THEME_TAXONOMY.medium_themes || [])
+export function classifyThemeForMarket(row, market = 'america') {
+  const assets = getThemeAssetsForMarket(market);
+  const matches = (assets.taxonomy.medium_themes || [])
     .map((theme, index) => {
       const match = classifyTheme(row, theme);
       return match ? { ...match, index } : null;
@@ -152,7 +184,7 @@ export function classifyUsTheme(row) {
   const primary = matches[0] ?? null;
 
   return {
-    taxonomyVersion: US_THEME_TAXONOMY.version,
+    taxonomyVersion: assets.taxonomy.version,
     primaryThemeId: primary?.id ?? null,
     primaryTheme: primary?.label ?? 'Unclassified',
     subThemeIds: uniqueStrings(primary?.subThemes?.map((entry) => entry.id) ?? []),
@@ -160,8 +192,12 @@ export function classifyUsTheme(row) {
     themeMatchReason: primary?.reasons?.join(', ') ?? 'no-theme-match',
     matchedThemeIds: matches.map((entry) => entry.id),
     matchedThemes: matches.map((entry) => entry.label),
-    ...buildExternalConfirmation(primary?.id ?? null),
+    ...buildExternalConfirmation(primary?.id ?? null, market),
   };
+}
+
+export function classifyUsTheme(row) {
+  return classifyThemeForMarket(row, 'america');
 }
 
 export function summarizeThemes(rows) {

@@ -1,0 +1,47 @@
+{
+  "version": "jp-theme-hierarchy-v1",
+  "sectors": {
+    "Electronic Technology": {
+      "middle_themes": [
+        {
+          "id": "semiconductor-equipment",
+          "label": "Semiconductor Equipment",
+          "small_themes": ["Semiconductor Production Equipment"]
+        },
+        {
+          "id": "electronic-components",
+          "label": "Electronic Components",
+          "small_themes": ["Passives / RF Modules"]
+        },
+        {
+          "id": "ai-data-center",
+          "label": "AI / Data Center",
+          "small_themes": ["Data Center Memory"]
+        }
+      ]
+    },
+    "Producer Manufacturing": {
+      "middle_themes": [
+        {
+          "id": "semiconductor-equipment",
+          "label": "Semiconductor Equipment",
+          "small_themes": ["Semiconductor Production Equipment"]
+        },
+        {
+          "id": "electric-wire-grid",
+          "label": "Electric Wire / Grid",
+          "small_themes": ["Electric Wire / Harness"]
+        }
+      ]
+    },
+    "Communications": {
+      "middle_themes": [
+        {
+          "id": "ai-data-center",
+          "label": "AI / Data Center",
+          "small_themes": ["AI Infrastructure"]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "version": "jp-theme-prototype-v1",
+  "medium_themes": [
+    {
+      "id": "ai-data-center",
+      "label": "AI / Data Center",
+      "sectors": ["Electronic Technology", "Technology Services", "Communications"],
+      "company_keywords": ["softbank", "ソフトバンク", "kioxia", "キオクシア"],
+      "subthemes": [
+        {
+          "id": "ai-infrastructure",
+          "label": "AI Infrastructure",
+          "symbols": ["9984"],
+          "company_keywords": ["softbank", "ソフトバンク"],
+          "industry_keywords": ["internet", "telecommunications", "data processing"]
+        },
+        {
+          "id": "data-center-memory",
+          "label": "Data Center Memory",
+          "symbols": ["285A"],
+          "company_keywords": ["kioxia", "キオクシア"],
+          "industry_keywords": ["semiconductor", "memory"]
+        }
+      ]
+    },
+    {
+      "id": "semiconductor-equipment",
+      "label": "Semiconductor Equipment",
+      "sectors": ["Producer Manufacturing", "Electronic Technology"],
+      "subthemes": [
+        {
+          "id": "semiconductor-production-equipment",
+          "label": "Semiconductor Production Equipment",
+          "symbols": ["8035", "6857"],
+          "company_keywords": ["tokyo electron", "東京エレクトロン", "advantest", "アドバンテスト"],
+          "industry_keywords": ["electronic production equipment", "semiconductor"]
+        }
+      ]
+    },
+    {
+      "id": "electronic-components",
+      "label": "Electronic Components",
+      "sectors": ["Electronic Technology"],
+      "allow_sector_only": true,
+      "subthemes": [
+        {
+          "id": "passives-rf-modules",
+          "label": "Passives / RF Modules",
+          "symbols": ["6981"],
+          "company_keywords": ["murata", "村田製作所"],
+          "industry_keywords": ["electronic components", "communications equipment"]
+        }
+      ]
+    },
+    {
+      "id": "electric-wire-grid",
+      "label": "Electric Wire / Grid",
+      "sectors": ["Producer Manufacturing"],
+      "subthemes": [
+        {
+          "id": "electric-wire-harness",
+          "label": "Electric Wire / Harness",
+          "symbols": ["5802", "5801"],
+          "company_keywords": ["sumitomo electric", "住友電工", "furukawa electric", "古河電工"],
+          "industry_keywords": ["electrical products", "wire", "cable"]
+        }
+      ]
+    },
+    {
+      "id": "chemicals-materials",
+      "label": "Chemicals / Materials",
+      "sectors": ["Process Industries", "Non-Energy Minerals"],
+      "allow_sector_only": true,
+      "subthemes": [
+        {
+          "id": "advanced-materials",
+          "label": "Advanced Materials",
+          "industry_keywords": ["chemicals", "specialty", "materials"]
+        }
+      ]
+    }
+  ]
+}

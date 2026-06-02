@@ -676,7 +676,7 @@ describe('buildMarkdown', () => {
     assert.doesNotMatch(markdown, /採用セクター:/);
     assert.match(markdown, /\| 順位 \| セクター \| 平均12M \| 平均6M \| 平均3M \| SPY差12M \| SPY差6M \| SPY差3M \| SMA50上 \| SMA200上 \| 52w高値90%内 \| RSI \| 相対出来高 \| 構成数 \| 順位合計 \|/);
     assert.match(markdown, /\| 1 \| Technology Services \| 44\.2% \| 18\.4% \| 11\.1% \| 13\.7pt \| 0\.0pt \| 0\.9pt \| 100\.0% \| 100\.0% \| 66\.7% \| 73\.7 \| 1\.04x \| 3 \| 5 \|/);
-    assert.doesNotMatch(markdown, /## Phase2 テーマランキング/);
+    assert.match(markdown, /## Phase2 テーマランキング/);
     assert.doesNotMatch(markdown, /\| 順位 \| テーマ \| 通過銘柄数 \| 平均3M \| 平均総合点 \| Heat \| 外部確認数 \| 外部確認 \| 主な細粒度タグ \|/);
     assert.match(markdown, /## Phase2 中テーマランキング \(Electronic Technology\)/);
     assert.match(markdown, /\| 1 \| AI Compute \| 2 \| 31\.2% \| 94\.40 \| AI Accelerators \|/);
@@ -809,10 +809,71 @@ describe('buildMarkdown', () => {
           },
         ],
       },
+      themeRanking: [
+        {
+          theme: 'Electronic Components',
+          count: 1,
+          averagePerf3m: 12,
+          averageRankScore: 4,
+          externalConfirmationCount: 1,
+          externalConfirmedBy: ['Minkabu'],
+          topSubThemes: ['Passives / RF Modules'],
+        },
+      ],
+      focusedHierarchy: {
+        focusSector: 'Electronic Technology',
+        candidateCount: 1,
+        selectedMiddleThemes: ['Electronic Components'],
+        selectedSmallThemes: [
+          { middleTheme: 'Electronic Components', smallTheme: 'Passives / RF Modules' },
+        ],
+        middleThemeRanking: [
+          {
+            middleTheme: 'Electronic Components',
+            count: 1,
+            averagePerf3m: 12,
+            averageRankScore: 4,
+            topSmallThemes: ['Passives / RF Modules'],
+          },
+        ],
+        smallThemeRanking: [
+          {
+            middleTheme: 'Electronic Components',
+            smallTheme: 'Passives / RF Modules',
+            count: 1,
+            averagePerf3m: 12,
+            averageRankScore: 4,
+          },
+        ],
+        stockRanking: [
+          {
+            symbol: '7203',
+            companyName: 'Toyota Motor Corporation',
+            exchange: 'TSE',
+            primaryTheme: 'Electronic Components',
+            subThemes: ['Passives / RF Modules'],
+            marketCapUsd: 4_500_000_000_000,
+            perfY: 30,
+            perf6m: 20,
+            perf3m: 12,
+            pctOf52wHigh: 86,
+            roic: 17,
+            grossProfitToAssets: 16,
+            fcfMargin: 11,
+            revenueGrowthTtm: 22,
+            ruleOf40: null,
+            epsGrowthTtm: 18,
+            pFcf: 18,
+            atrPct: 2.4,
+            rankScore: 4,
+          },
+        ],
+      },
       sectorRanking: [],
       results: [
         {
           symbol: '7203',
+          companyName: 'Toyota Motor Corporation',
           exchange: 'TSE',
           sector: 'Consumer Durables',
           marketCapUsd: 4_500_000_000_000,
@@ -843,11 +904,14 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /# 日本株 ファンダメンタル × モメンタム スクリーニング 上位20件/);
     assert.match(markdown, /更新: 12:00 JST/);
     assert.match(markdown, /## Phase1 セクターランキング/);
+    assert.match(markdown, /## Phase2 テーマランキング/);
+    assert.match(markdown, /\| 1 \| Electronic Components \| 1 \| 12\.0% \| 4\.00 \| Passives \/ RF Modules \| Minkabu \|/);
     assert.match(markdown, /\| 1 \| Finance \| 32\.5% \| 20\.1% \| 11\.8% \| N\/Apt \| N\/Apt \| N\/Apt \| 75\.0% \| 87\.5% \| 62\.5% \| 62\.5 \| 1\.21x \| 8 \| 4 \|/);
     assert.doesNotMatch(markdown, /アプローチ:/);
     assert.match(markdown, /- Phase1 採用は上位 1 セクターのみです。4位以下のセクターは Phase1 失格として除外しています。/);
     assert.match(markdown, /- 条件通過銘柄がないため、セクター別ランキングは算出できませんでした。/);
-    assert.match(markdown, /### 1位 7203 \(TSE\)/);
+    assert.match(markdown, /### 1位 7203 \(Toyota Motor Corporation\) \(TSE\)/);
+    assert.match(markdown, /\| 1 \| Electronic Components \| Passives \/ RF Modules \| \*\*7203 \(Toyota Motor Corporation\)\*\* \| TSE \|/);
     assert.match(markdown, /\| ユニバース \| 取引所 \| TSE \|/);
     assert.match(markdown, /\| ユニバース \| 銘柄ユニバース \| jpx-prime \|/);
   });

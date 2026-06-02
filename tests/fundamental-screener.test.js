@@ -847,9 +847,23 @@ describe('runFundamentalScreener', () => {
     assert.deepEqual(result.criteria.excluded_phase2_sectors, ['Finance']);
     assert.equal(result.scannerScope.market, 'japan');
     assert.equal(result.scannerScope.scopeLabel, 'JPX Prime domestic stocks snapshot');
+    assert.equal(result.results.find((row) => row.symbol === '8035').companyName, 'Tokyo Electron');
+    assert.equal(result.results.find((row) => row.symbol === '8035').primaryTheme, 'Semiconductor Equipment');
+    assert.deepEqual(result.results.find((row) => row.symbol === '8035').subThemes, ['Semiconductor Production Equipment']);
     assert.equal(result.results.find((row) => row.symbol === '8035').ruleOf40, null);
     assert.equal(result.ruleOf40Coverage, null);
     assert.equal(result.criteria.rule_of_40_policy, undefined);
+    assert.equal(result.criteria.theme_taxonomy_policy?.version, 'jp-theme-prototype-v1');
+    assert.deepEqual(result.themeRanking.map((entry) => entry.theme), [
+      'Semiconductor Equipment',
+      'Chemicals / Materials',
+    ]);
+    assert.equal(result.focusedHierarchy.focusSector, 'Electronic Technology');
+    assert.deepEqual(result.focusedHierarchy.selectedMiddleThemes, ['Semiconductor Equipment']);
+    assert.deepEqual(result.focusedHierarchy.selectedSmallThemes, [
+      { middleTheme: 'Semiconductor Equipment', smallTheme: 'Semiconductor Production Equipment' },
+    ]);
+    assert.equal(result.focusedHierarchy.stockRanking[0].symbol, '8035');
     assert.deepEqual(result.rankingFormula, ['priceMomentum', 'sectorStrength', 'quality', 'growth', 'riskValue']);
     assert.deepEqual(result.rankingBlocks.map((block) => ({ key: block.key, weight: block.weight })), [
       { key: 'priceMomentum', weight: 35 },

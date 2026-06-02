@@ -1,7 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { classifyUsTheme, getUsSectorThemeHierarchy, summarizeThemes } from '../src/core/theme-taxonomy.js';
+import {
+  classifyThemeForMarket,
+  classifyUsTheme,
+  getSectorThemeHierarchyForMarket,
+  getUsSectorThemeHierarchy,
+  summarizeThemes,
+} from '../src/core/theme-taxonomy.js';
 
 test('classifyUsTheme maps ITRN to Connected Mobility instead of Unclassified', () => {
   const row = {
@@ -188,5 +194,61 @@ test('getUsSectorThemeHierarchy exposes the external Electronic Technology hiera
       'Defense / Space Electronics',
       'Industrial / Power Electronics',
     ],
+  );
+});
+
+test('classifyThemeForMarket maps 6981 to Electronic Components / Passives / RF Modules in japan', () => {
+  const row = {
+    symbol: '6981',
+    sector: 'Electronic Technology',
+    industry: 'Electronic Components',
+    companyName: 'Murata Manufacturing Co., Ltd.',
+  };
+
+  const classification = classifyThemeForMarket(row, 'japan');
+
+  assert.equal(classification.primaryTheme, 'Electronic Components');
+  assert.equal(classification.subThemes[0], 'Passives / RF Modules');
+  assert.match(classification.themeMatchReason, /Passives \/ RF Modules:symbol=6981/);
+  assert.deepEqual(classification.externalConfirmedBy, ['Minkabu']);
+});
+
+test('classifyThemeForMarket maps 9984 to AI / Data Center / AI Infrastructure in japan', () => {
+  const row = {
+    symbol: '9984',
+    sector: 'Communications',
+    industry: 'Wireless Telecommunications',
+    companyName: 'SoftBank Group Corp.',
+  };
+
+  const classification = classifyThemeForMarket(row, 'japan');
+
+  assert.equal(classification.primaryTheme, 'AI / Data Center');
+  assert.equal(classification.subThemes[0], 'AI Infrastructure');
+  assert.match(classification.themeMatchReason, /AI Infrastructure:symbol=9984/);
+});
+
+test('classifyThemeForMarket maps 285A to AI / Data Center / Data Center Memory in japan', () => {
+  const row = {
+    symbol: '285A',
+    sector: 'Electronic Technology',
+    industry: 'Semiconductors',
+    companyName: 'Kioxia Holdings Corporation',
+  };
+
+  const classification = classifyThemeForMarket(row, 'japan');
+
+  assert.equal(classification.primaryTheme, 'AI / Data Center');
+  assert.equal(classification.subThemes[0], 'Data Center Memory');
+  assert.match(classification.themeMatchReason, /Data Center Memory:symbol=285A/);
+});
+
+test('getSectorThemeHierarchyForMarket exposes the Japan Producer Manufacturing hierarchy definition', () => {
+  const hierarchy = getSectorThemeHierarchyForMarket('japan', 'Producer Manufacturing');
+
+  assert.equal(hierarchy?.version, 'jp-theme-hierarchy-v1');
+  assert.deepEqual(
+    hierarchy?.middleThemes.map((entry) => entry.label),
+    ['Semiconductor Equipment', 'Electric Wire / Grid'],
   );
 });

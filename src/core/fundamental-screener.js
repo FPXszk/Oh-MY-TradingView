@@ -18,7 +18,7 @@ import { readFileSync } from 'node:fs';
 import { getMoomooFundamentalsBatch } from './moomoo.js';
 import { runSectorMomentumScan } from './sector-momentum.js';
 import { getProfilesForMarket, getSectorScreeningPlan } from './sector-screening-profiles.js';
-import { classifyUsTheme, getUsSectorThemeHierarchy, summarizeThemes } from './theme-taxonomy.js';
+import { classifyThemeForMarket, getSectorThemeHierarchyForMarket, summarizeThemes } from './theme-taxonomy.js';
 
 const DEFAULT_MARKET = 'america';
 const DEFAULT_LIMIT = 10;
@@ -818,12 +818,13 @@ function summarizeFocusedSmallThemes(rows) {
 }
 
 function buildFocusedHierarchy(rows, focusSector, {
+  market = DEFAULT_MARKET,
   topMiddleThemeCount = null,
   topSmallThemeCount = 3,
   topStockCount = 20,
 } = {}) {
   if (!focusSector) return null;
-  const hierarchyDefinition = getUsSectorThemeHierarchy(focusSector);
+  const hierarchyDefinition = getSectorThemeHierarchyForMarket(market, focusSector);
   if (!hierarchyDefinition || hierarchyDefinition.middleThemes.length === 0) return null;
 
   const sectorRows = rows.filter((row) => row.sector === focusSector);
@@ -888,26 +889,8 @@ function buildSectorRankLookup(sectorMomentum) {
 }
 
 function applyThemeTaxonomy(rows, market) {
-  if (market !== DEFAULT_MARKET) {
-    return rows.map((row) => ({
-      ...row,
-      primaryThemeId: null,
-      primaryTheme: null,
-      subThemeIds: [],
-      subThemes: [],
-      themeMatchReason: null,
-      matchedThemeIds: [],
-      matchedThemes: [],
-      themeTaxonomyVersion: null,
-      externalThemeReferenceVersion: null,
-      externalThemeReferences: [],
-      externalConfirmedBy: [],
-      externalConfirmationCount: 0,
-    }));
-  }
-
   return rows.map((row) => {
-    const classification = classifyUsTheme(row);
+    const classification = classifyThemeForMarket(row, market);
     return {
       ...row,
       themeTaxonomyVersion: classification.taxonomyVersion,
@@ -1107,9 +1090,10 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   const ranked = applyBlockRanks(themedRows, rankingBlocks).sort((a, b) => b.rankScore - a.rankScore);
   const matched = ranked.slice(0, effectiveLimit).map(stripInternalFields);
   const sectorRanking = summarizeSectors(ranked);
-  const themeRanking = market === DEFAULT_MARKET ? summarizeThemes(ranked) : [];
+  const themeRanking = summarizeThemes(ranked);
   const hierarchyFocusSector = hierarchyFocusSectorOverride ?? phase1SelectedSectorLabels[0] ?? null;
   const focusedHierarchy = buildFocusedHierarchy(ranked, hierarchyFocusSector, {
+    market,
     topMiddleThemeCount: hierarchyTopMiddleThemeCount,
     topSmallThemeCount: hierarchyTopSmallThemeCount,
     topStockCount: hierarchyTopStockCount,
@@ -1145,6 +1129,13 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       top_stocks: hierarchyTopStockCount,
     };
   }
+  if (ranked.length > 0) {
+    criteria.theme_taxonomy_policy = {
+      version: themedRows[0]?.themeTaxonomyVersion ?? `${market}-theme-prototype-v1`,
+      scope: `${market} Phase2 matched candidates only`,
+      approach: 'repo custom theme taxonomy layered on top of TradingView sector/industry',
+    };
+  }
   if (market === DEFAULT_MARKET) {
     criteria.rule_of_40_policy = {
       scope: 'US Technology Services software-like industries only',
@@ -1153,11 +1144,6 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       pass_badge_min: 40,
       warning_below: 20,
       hard_filter: false,
-    };
-    criteria.theme_taxonomy_policy = {
-      version: themedRows[0]?.themeTaxonomyVersion ?? 'us-theme-prototype-v2',
-      scope: 'US Phase2 matched candidates only',
-      approach: 'repo custom theme taxonomy layered on top of TradingView sector/industry',
     };
   }
   if (exchangeAllowlist) {

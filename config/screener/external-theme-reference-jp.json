@@ -1,0 +1,31 @@
+{
+  "version": "jp-external-theme-reference-v1",
+  "themes": {
+    "ai-data-center": {
+      "providers": [
+        { "source": "Minkabu", "label": "AI", "confidence": "medium" },
+        { "source": "Minkabu", "label": "Data Center", "confidence": "medium" }
+      ]
+    },
+    "semiconductor-equipment": {
+      "providers": [
+        { "source": "Minkabu", "label": "Semiconductor-related", "confidence": "high" }
+      ]
+    },
+    "electronic-components": {
+      "providers": [
+        { "source": "Minkabu", "label": "Electronic Components", "confidence": "medium" }
+      ]
+    },
+    "electric-wire-grid": {
+      "providers": [
+        { "source": "Minkabu", "label": "Electric Wire", "confidence": "medium" }
+      ]
+    },
+    "chemicals-materials": {
+      "providers": [
+        { "source": "Minkabu", "label": "Materials", "confidence": "low" }
+      ]
+    }
+  }
+}
