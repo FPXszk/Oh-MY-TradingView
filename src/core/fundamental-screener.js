@@ -33,6 +33,7 @@ const BUILTIN_SYMBOL_ALLOWLISTS = new Map([
 
 const COLUMNS = [
   'name',
+  'description',
   'sector',
   'industry',
   'close',
@@ -200,7 +201,9 @@ function normalizeRow(row) {
   const symbol = colonIdx !== -1 ? rawSymbol.slice(colonIdx + 1) : rawSymbol;
 
   const close = d[COL['close']] ?? null;
-  const companyName = d[COL['name']] ?? null;
+  const shortName = d[COL['name']] ?? null;
+  const description = d[COL['description']] ?? null;
+  const companyName = description ?? shortName;
   const sector = d[COL['sector']] ?? null;
   const industry = d[COL['industry']] ?? null;
   const rsi14 = d[COL['RSI']] ?? null;
@@ -272,6 +275,7 @@ function normalizeRow(row) {
   return {
     symbol,
     companyName,
+    shortName,
     exchange,
     sector,
     industry,

@@ -8,6 +8,7 @@ function buildPhase2Row(symbol, values) {
     s: symbol,
     d: [
       values.name,
+      values.description ?? values.name,
       values.sector,
       values.industry,
       values.close,
