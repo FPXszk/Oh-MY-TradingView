@@ -6,10 +6,10 @@
 
 今回のゴール:
 
-- `docs/reports/screener/daily-ranking.md` から、セクター配下の上段 `Phase2 中テーマランキング` を削除する
+- `docs/reports/screener/daily-ranking.md` から、上段の `Phase2 テーマランキング` を削除する
 - 米国株の `Phase4 個別銘柄ランキング` と `Phase2 セクター別ランキング` では、シンボルを `NVDA` のようにティッカーのみ表示し、`(Company Name)` を付けない
 - 日本株の `7203 (トヨタ自動車)` 表示は維持する
-- 章立ては「セクタランキング → 1位セクターの小テーマランキング → その配下の個別銘柄ランキング」で読める形にする
+- 章立ては「セクタランキング → 1位セクターの中テーマランキング → その配下の小テーマランキング → 個別銘柄ランキング」で読める形にする
 
 ## 直前セッションからの引き継ぎ
 
@@ -25,7 +25,7 @@
 |---|---|---|
 | `docs/exec-plans/active/us-screener-hierarchy-layout-trim_20260604_0145.md` | CREATE | 本計画 |
 | `scripts/screener/run-fundamental-screening.mjs` | MODIFY | US レポートの hierarchy 見出しとシンボル表示を調整する |
-| `tests/daily-screener-report.test.js` | MODIFY | US は中テーマ表なし・ティッカーのみ、JP は社名付き維持を固定する |
+| `tests/daily-screener-report.test.js` | MODIFY | US は上段テーマ表なし・ティッカーのみ、JP は社名付き維持を固定する |
 | `docs/exec-plans/completed/us-screener-hierarchy-layout-trim_20260604_0145.md` | MOVE | 完了時に移動 |
 
 ## 影響範囲
@@ -44,10 +44,10 @@
 
 ## 実装方針
 
-### 1. US の上段中テーマ表は section ごと削除する
+### 1. US の上段テーマ表は section ごと削除する
 
-- `market !== 'japan'` で出している `Phase2 中テーマランキング` を出力しない
-- `Phase3 小テーマランキング` と `Phase4 個別銘柄ランキング` はそのまま残す
+- `Phase2 テーマランキング` は US だけ出力しない
+- `Phase2 中テーマランキング` / `Phase3 小テーマランキング` / `Phase4 個別銘柄ランキング` はそのまま残す
 
 ### 2. シンボル表示は market-aware に分ける
 
@@ -61,7 +61,7 @@
   - 確認: 今回の 2 要件に関係する出力箇所だけを触る
 
 - [ ] Step 2: RED として US レポート期待値を更新する
-  - 確認: US で `Phase2 中テーマランキング` が出ない
+  - 確認: US で `Phase2 テーマランキング` が出ない
   - 確認: US の `**NVDA**` 形式が維持される
   - 確認: JP の `**7203 (トヨタ自動車)**` は残る
 
@@ -93,7 +93,7 @@
 ## リスク・注意点
 
 - symbol formatter は複数 section で共有されているため、意図せず US 全 section の表記が変わる可能性がある
-- `Phase2 中テーマランキング` を消すことで、章番号は `Phase1 → Phase3 → Phase4` のまま残る。そのまま維持するかは今回の指示どおり最小変更を優先する
+- US と JP で `Phase2 テーマランキング` の有無が分かれるため、market 条件の枝を増やしすぎないよう注意する
 - `docs/reports/screener/daily-ranking.md` は生成物なので、必要なら再生成差分が出る
 
 ## 競合確認

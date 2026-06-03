@@ -461,6 +461,7 @@ describe('buildMarkdown', () => {
         stockRanking: [
           {
             symbol: 'NVDA',
+            companyName: 'NVIDIA Corporation',
             exchange: 'NASDAQ',
             primaryTheme: 'AI Compute',
             subThemes: ['AI Accelerators'],
@@ -482,6 +483,7 @@ describe('buildMarkdown', () => {
           },
           {
             symbol: 'MU',
+            companyName: 'Micron Technology, Inc.',
             exchange: 'NASDAQ',
             primaryTheme: 'Memory',
             subThemes: ['HBM / DRAM', 'Memory Controllers / Interface IP'],
@@ -514,6 +516,7 @@ describe('buildMarkdown', () => {
       results: [
         {
           symbol: 'AAA',
+          companyName: 'Alpha Apps Inc.',
           exchange: 'NASDAQ',
           sector: 'Technology Services',
           phase1SectorRank: 1,
@@ -543,6 +546,7 @@ describe('buildMarkdown', () => {
         },
         {
           symbol: 'BBB',
+          companyName: 'Beta Backends Corp.',
           exchange: 'NASDAQ',
           sector: 'Technology Services',
           phase1SectorRank: 1,
@@ -678,7 +682,7 @@ describe('buildMarkdown', () => {
     assert.doesNotMatch(markdown, /採用セクター:/);
     assert.match(markdown, /\| 順位 \| セクター \| 平均12M \| 平均6M \| 平均3M \| SPY差12M \| SPY差6M \| SPY差3M \| SMA50上 \| SMA200上 \| 52w高値90%内 \| RSI \| 相対出来高 \| 構成数 \| 順位合計 \|/);
     assert.match(markdown, /\| 1 \| Technology Services \| 44\.2% \| 18\.4% \| 11\.1% \| 13\.7pt \| 0\.0pt \| 0\.9pt \| 100\.0% \| 100\.0% \| 66\.7% \| 73\.7 \| 1\.04x \| 3 \| 5 \|/);
-    assert.match(markdown, /## Phase2 テーマランキング/);
+    assert.doesNotMatch(markdown, /## Phase2 テーマランキング/);
     assert.match(markdown, /## Phase2 中テーマランキング \(Electronic Technology\)/);
     assert.doesNotMatch(markdown, /\| 順位 \| テーマ \| 通過銘柄数 \| 平均3M \| 平均総合点 \| Heat \| 外部確認数 \| 外部確認 \| 主な細粒度タグ \|/);
     assert.match(markdown, /\| 1 \| AI Compute \| 2 \| 31\.2% \| 94\.40 \| AI Accelerators \|/);
@@ -689,6 +693,8 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /## Phase4 個別銘柄ランキング \(Electronic Technology\)/);
     assert.match(markdown, /\| 1 \| AI Compute \| AI Accelerators \| \*\*NVDA\*\* \| NASDAQ \|/);
     assert.match(markdown, /\| 2 \| Memory \| HBM \/ DRAM \| \*\*MU\*\* \| NASDAQ \|/);
+    assert.doesNotMatch(markdown, /\*\*NVDA \(NVIDIA Corporation\)\*\*/);
+    assert.doesNotMatch(markdown, /\*\*AAA \(Alpha Apps Inc\.\)\*\*/);
     assert.match(markdown, /## Phase2 セクター別ランキング/);
     assert.match(markdown, /Phase1 採用は上位 3 セクターのみです/);
     assert.match(markdown, /### 1位 Technology Services/);

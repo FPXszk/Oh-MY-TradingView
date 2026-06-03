@@ -219,8 +219,9 @@ function formatThemeLine(row) {
   return `${primary} / ${subthemes}`;
 }
 
-function formatSymbolWithCompanyName(row) {
+function formatSymbolWithCompanyName(row, market) {
   const symbol = row?.symbol ?? 'N/A';
+  if (market === 'america') return symbol;
   const companyName = row?.companyNameJa
     ? String(row.companyNameJa).trim()
     : row?.companyName
@@ -518,7 +519,7 @@ export function buildMarkdown(result, options = {}) {
     lines.push('> 本日は条件を満たす銘柄がありませんでした。');
     lines.push('');
   } else {
-    if (result.themeRanking?.length) {
+    if (result.themeRanking?.length && market === 'japan') {
       lines.push('## Phase2 テーマランキング');
       lines.push('');
       if (market === 'japan' && result.focusedHierarchy?.focusSector) {
@@ -580,7 +581,7 @@ export function buildMarkdown(result, options = {}) {
         lines.push('|:---:|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|');
         result.focusedHierarchy.stockRanking.forEach((row, index) => {
           const metricCells = buildRankingMetricCells(row, result.scannerScope?.market, populationSize).join(' | ');
-          lines.push(`| ${index + 1} | ${row.primaryTheme ?? 'Unclassified'} | ${row.subThemes?.[0] ?? '細粒度タグなし'} | **${formatSymbolWithCompanyName(row)}** | ${row.exchange ?? '-'} | ${metricCells} |`);
+          lines.push(`| ${index + 1} | ${row.primaryTheme ?? 'Unclassified'} | ${row.subThemes?.[0] ?? '細粒度タグなし'} | **${formatSymbolWithCompanyName(row, market)}** | ${row.exchange ?? '-'} | ${metricCells} |`);
         });
       }
       lines.push('');
@@ -608,7 +609,7 @@ export function buildMarkdown(result, options = {}) {
           const displayRow = resultRowsByKey.get(buildRowLookupKey(row)) ?? row;
           const metricCells = buildRankingMetricCells(displayRow, result.scannerScope?.market, populationSize).join(' | ');
           lines.push(
-            `| ${sectorRank} | ${rowIndex + 1} | **${formatSymbolWithCompanyName(displayRow)}** | ${displayRow.exchange ?? '-'} | ${metricCells} |`,
+            `| ${sectorRank} | ${rowIndex + 1} | **${formatSymbolWithCompanyName(displayRow, market)}** | ${displayRow.exchange ?? '-'} | ${metricCells} |`,
           );
         });
         lines.push('');
@@ -638,7 +639,7 @@ export function buildMarkdown(result, options = {}) {
     lines.push('## 上位3件の選定理由');
     lines.push('');
     result.results.slice(0, 3).forEach((row, index, rows) => {
-      lines.push(`### ${index + 1}位 ${formatSymbolWithCompanyName(row)} (${row.exchange ?? '-'})`);
+      lines.push(`### ${index + 1}位 ${formatSymbolWithCompanyName(row, market)} (${row.exchange ?? '-'})`);
       lines.push(`- 総合点: ${fmt(row.rankScore, 2)}`);
       lines.push(`- テーマ: ${formatThemeLine(row)}`);
       lines.push(`- ブロック: 価格 ${fmt(getBlock(row, 'priceMomentum')?.rank, 2)} / セクター ${fmt(getBlock(row, 'sectorStrength')?.rank, 2)} / 品質 ${fmt(getBlock(row, 'quality')?.rank, 2)} / 成長 ${fmt(getBlock(row, 'growth')?.rank, 2)} / リスク・割安 ${fmt(getBlock(row, 'riskValue')?.rank, 2)} / Rule40 ${fmt(getBlock(row, 'ruleOf40')?.rank, 2)}`);
