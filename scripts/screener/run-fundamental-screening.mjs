@@ -273,7 +273,7 @@ function buildProfileConditionLine(profile) {
   const relativeVolume = thresholds.relative_volume_min === undefined
     ? 'N/A'
     : Number(thresholds.relative_volume_min).toFixed(2);
-  return `- ${profile.label}: scope は ${profile.scope_labels?.join(', ') || profile.label}。hard gate は Perf.3M > ${thresholds.perf_3m_min_pct}% / P/FCF < ${thresholds.p_fcf_max}。RSI ${thresholds.rsi14_min}+、相対出来高 ${relativeVolume}x+、ROE ${thresholds.roe_min_pct}%+、粗利率 ${thresholds.gross_margin_min_pct}%+、FCFマージン ${thresholds.fcf_margin_min_pct}%+ は scoring で評価`;
+  return `- ${profile.label}: scope は ${profile.scope_labels?.join(', ') || profile.label}。hard gate は Perf.3M > ${thresholds.perf_3m_min_pct}%。RSI ${thresholds.rsi14_min}+、相対出来高 ${relativeVolume}x+、ROE ${thresholds.roe_min_pct}%+、粗利率 ${thresholds.gross_margin_min_pct}%+、FCFマージン ${thresholds.fcf_margin_min_pct}%+、P/FCF ${thresholds.p_fcf_max} は scoring / risk penalty で評価`;
 }
 
 function buildProfileGuideRow(profile) {
@@ -281,7 +281,7 @@ function buildProfileGuideRow(profile) {
   const relativeVolume = thresholds.relative_volume_min === undefined
     ? 'N/A'
     : Number(thresholds.relative_volume_min).toFixed(2);
-  return `| セクタープロファイル | ${profile.label} | scope: ${profile.scope_labels?.join(', ') || profile.label} / hard gate: Perf.3M > ${thresholds.perf_3m_min_pct}% / P/FCF < ${thresholds.p_fcf_max} / scoring: RSI ${thresholds.rsi14_min}+、相対出来高 ${relativeVolume}x+、ROE ${thresholds.roe_min_pct}%+、粗利率 ${thresholds.gross_margin_min_pct}%+、FCFマージン ${thresholds.fcf_margin_min_pct}%+ |`;
+  return `| セクタープロファイル | ${profile.label} | scope: ${profile.scope_labels?.join(', ') || profile.label} / hard gate: Perf.3M > ${thresholds.perf_3m_min_pct}% / scoring: RSI ${thresholds.rsi14_min}+、相対出来高 ${relativeVolume}x+、ROE ${thresholds.roe_min_pct}%+、粗利率 ${thresholds.gross_margin_min_pct}%+、FCFマージン ${thresholds.fcf_margin_min_pct}%+、P/FCF ${thresholds.p_fcf_max} は risk penalty |`;
 }
 
 function formatBlockWeights(result) {

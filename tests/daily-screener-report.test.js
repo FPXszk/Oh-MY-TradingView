@@ -715,8 +715,8 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| 補助ポリシー \| Theme taxonomy \| US Phase2 matched candidates only \/ repo custom theme taxonomy layered on top of TradingView sector\/industry \/ version us-theme-prototype-v2 \|/);
     assert.match(markdown, /\| ユニバース \| 取引所 \| NASDAQ, NYSE \|/);
     assert.match(markdown, /\| 補助ポリシー \| Moomoo 補助 \| 売上成長率 YoY は growth scoring の補助に使う。EPS YoY は TradingView 値のみを使い、欠損時は N\/A のままにする \|/);
-    assert.match(markdown, /\| セクタープロファイル \| Technology Services \| scope: Technology Services \/ hard gate: Perf\.3M > 10% \/ P\/FCF < 50/);
-    assert.match(markdown, /\| セクタープロファイル \| Electronic Technology \/ Semiconductors \| scope: Electronic Technology \/ hard gate: Perf\.3M > 10% \/ P\/FCF < 50 \(fabless\), 120 \(IDM\/foundry\)/);
+    assert.match(markdown, /\| セクタープロファイル \| Technology Services \| scope: Technology Services \/ hard gate: Perf\.3M > 10% \/ scoring: RSI 60\+、相対出来高 1\.00x\+、ROE 20%\+、粗利率 40%\+、FCFマージン 15%\+、P\/FCF 50 は risk penalty \|/);
+    assert.match(markdown, /\| セクタープロファイル \| Electronic Technology \/ Semiconductors \| scope: Electronic Technology \/ hard gate: Perf\.3M > 10% \/ scoring: RSI 60\+、相対出来高 0\.90x\+、ROE 15%\+、粗利率 30%\+、FCFマージン 5%\+、P\/FCF 50 \(fabless\), 120 \(IDM\/foundry\) は risk penalty \|/);
     assert.doesNotMatch(markdown, /## 採用した P0 \/ P1 指標/);
     assert.doesNotMatch(markdown, /## 今後改善できそうな点/);
     assert.match(markdown, /\| ブロック \| 重み \| 主な評価項目 \| 役割 \|/);
@@ -773,7 +773,7 @@ describe('buildMarkdown', () => {
               gross_margin_min_pct: 25,
               fcf_margin_min_pct: 5,
               perf_3m_min_pct: 8,
-              p_fcf_max: 80,
+              p_fcf_max: 140,
             },
           },
         ],

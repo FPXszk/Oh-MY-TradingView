@@ -1028,6 +1028,150 @@ describe('runFundamentalScreener', () => {
     assert.ok(result.results.some((row) => row.symbol === '285A'));
   });
 
+  it('keeps high P/FCF US names eligible and uses riskValue as the penalty instead of hard filtering', async () => {
+    const result = await runFundamentalScreener({
+      limit: 10,
+      _deps: {
+        fetch: createMockFetch({
+          stockBodies: [],
+          benchmarkPayload: {
+            totalCount: 1,
+            data: [
+              buildPhase1StockRow('BATS:SPY', {
+                name: 'SPY',
+                sector: 'Benchmark',
+                close: 100,
+                sma200: 95,
+                sma50: 98,
+                high52w: 104,
+                perf1m: 6,
+                perf3m: 12,
+                perf6m: 24,
+                perfY: 48,
+                rsi: 61,
+                relativeVolume: 1.0,
+                marketCap: 1_000_000_000,
+              }),
+            ],
+          },
+          phase1Payload: {
+            totalCount: 2,
+            data: [
+              buildPhase1StockRow('NASDAQ:HIGH', {
+                name: 'High Multiple',
+                sector: 'Technology Services',
+                perf1m: 24,
+                perf3m: 40,
+                perf6m: 85,
+                perfY: 160,
+                rsi: 72,
+                relativeVolume: 1.2,
+                marketCap: 2_600_000_000,
+              }),
+              buildPhase1StockRow('NASDAQ:VALUE', {
+                name: 'Value Compounder',
+                sector: 'Technology Services',
+                perf1m: 16,
+                perf3m: 24,
+                perf6m: 48,
+                perfY: 96,
+                rsi: 66,
+                relativeVolume: 1.0,
+                marketCap: 2_500_000_000,
+              }),
+            ],
+          },
+          phase2PayloadsBySector: {
+            'Technology Services': {
+              totalCount: 2,
+              data: [
+                buildPhase2Row('NASDAQ:HIGH', {
+                  name: 'High Multiple',
+                  sector: 'Technology Services',
+                  industry: 'Packaged Software',
+                  close: 140,
+                  rsi: 72,
+                  sma200: 100,
+                  sma50: 118,
+                  high52w: 150,
+                  perf3m: 40,
+                  perf6m: 85,
+                  perfY: 160,
+                  relativeVolume: 1.2,
+                  atr: 5.5,
+                  beta1y: 1.4,
+                  marketCap: 2_600_000_000,
+                  eps: 2.5,
+                  roe: 24,
+                  roic: 22,
+                  grossMargin: 66,
+                  grossProfitTtm: 1_000_000_000,
+                  totalAssets: 2_500_000_000,
+                  operatingMargin: 20,
+                  fcfMargin: 18,
+                  fcfTtm: 30_000_000,
+                  fcfGrowthTtm: 25,
+                  cashFromOperationsTtm: 90_000_000,
+                  netIncomeTtm: 70_000_000,
+                  revenueGrowthTtm: 28,
+                  evEbitda: 24,
+                  pFcfDirect: 85,
+                  debtToEquity: 20,
+                  netDebt: -50_000_000,
+                  volume: 900_000,
+                }),
+                buildPhase2Row('NASDAQ:VALUE', {
+                  name: 'Value Compounder',
+                  sector: 'Technology Services',
+                  industry: 'Packaged Software',
+                  close: 92,
+                  rsi: 66,
+                  sma200: 74,
+                  sma50: 84,
+                  high52w: 100,
+                  perf3m: 24,
+                  perf6m: 48,
+                  perfY: 96,
+                  relativeVolume: 1.0,
+                  atr: 3.0,
+                  beta1y: 1.0,
+                  marketCap: 2_500_000_000,
+                  eps: 3.8,
+                  roe: 25,
+                  roic: 23,
+                  grossMargin: 68,
+                  grossProfitTtm: 1_100_000_000,
+                  totalAssets: 2_600_000_000,
+                  operatingMargin: 22,
+                  fcfMargin: 24,
+                  fcfTtm: 120_000_000,
+                  fcfGrowthTtm: 20,
+                  cashFromOperationsTtm: 150_000_000,
+                  netIncomeTtm: 120_000_000,
+                  revenueGrowthTtm: 20,
+                  evEbitda: 14,
+                  pFcfDirect: 22,
+                  debtToEquity: 10,
+                  netDebt: -80_000_000,
+                  volume: 700_000,
+                }),
+              ],
+            },
+          },
+        }),
+      },
+    });
+
+    assert.deepEqual(result.results.map((row) => row.symbol), ['HIGH', 'VALUE']);
+    assert.ok(result.results.every((row) => row.sector === 'Technology Services'));
+    assert.ok(result.results.find((row) => row.symbol === 'HIGH'));
+    assert.ok(result.results.find((row) => row.symbol === 'VALUE'));
+    assert.ok(
+      result.results.find((row) => row.symbol === 'HIGH').rankBreakdown.riskValue.rank
+      > result.results.find((row) => row.symbol === 'VALUE').rankBreakdown.riskValue.rank,
+    );
+  });
+
   it('uses Moomoo revenue growth for scoring without hard-failing low-growth names', async () => {
     const result = await runFundamentalScreener({
       limit: 10,

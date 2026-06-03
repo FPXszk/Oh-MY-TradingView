@@ -429,16 +429,13 @@ function passesProfileClientFilters(row) {
     sma50,
     pctOf52wHigh,
     perf3m,
-    pFcf,
     screeningThresholds,
-    screeningPfcfMax,
   } = row;
 
   if (screeningThresholds.priceAboveSma200 && close !== null && sma200 !== null && close <= sma200) return false;
   if (screeningThresholds.priceAboveSma50 && close !== null && sma50 !== null && close <= sma50) return false;
   if (pctOf52wHigh !== null && pctOf52wHigh < screeningThresholds.pricePctOf52wHighMin) return false;
   if (perf3m !== null && perf3m <= screeningThresholds.perf3mMinPct) return false;
-  if (pFcf !== null && pFcf >= screeningPfcfMax) return false;
 
   return true;
 }
@@ -451,9 +448,7 @@ function collectClientFilterFailures(row) {
     sma50,
     pctOf52wHigh,
     perf3m,
-    pFcf,
     screeningThresholds,
-    screeningPfcfMax,
   } = row;
 
   if (screeningThresholds.priceAboveSma200 && close !== null && sma200 !== null && close <= sma200) {
@@ -467,9 +462,6 @@ function collectClientFilterFailures(row) {
   }
   if (perf3m !== null && perf3m <= screeningThresholds.perf3mMinPct) {
     failures.push(`perf3m<=${screeningThresholds.perf3mMinPct}% (${perf3m}%)`);
-  }
-  if (pFcf !== null && pFcf >= screeningPfcfMax) {
-    failures.push(`p_fcf>=${screeningPfcfMax} (${pFcf})`);
   }
 
   return failures;
