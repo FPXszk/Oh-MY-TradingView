@@ -724,6 +724,35 @@ function buildPrimarySmallTheme(row) {
   return row?.subThemes?.[0] ?? null;
 }
 
+function getFocusedHierarchySource(rows, focusSector, market = DEFAULT_MARKET) {
+  if (!focusSector) {
+    return {
+      hierarchyDefinition: null,
+      sectorRows: [],
+      classifiedSectorRows: [],
+    };
+  }
+
+  const hierarchyDefinition = getSectorThemeHierarchyForMarket(market, focusSector);
+  const sectorRows = rows.filter((row) => row.sector === focusSector);
+  if (!hierarchyDefinition || hierarchyDefinition.middleThemes.length === 0) {
+    return {
+      hierarchyDefinition,
+      sectorRows,
+      classifiedSectorRows: [],
+    };
+  }
+
+  const allowedMiddleThemes = new Set(hierarchyDefinition.middleThemes.map((entry) => entry.label));
+  const classifiedSectorRows = sectorRows.filter((row) => allowedMiddleThemes.has(row.primaryTheme));
+
+  return {
+    hierarchyDefinition,
+    sectorRows,
+    classifiedSectorRows,
+  };
+}
+
 function summarizeFocusedMiddleThemes(rows) {
   const grouped = new Map();
   for (const row of rows) {
@@ -848,10 +877,13 @@ function buildFocusedHierarchy(rows, focusSector, {
   topStockCount = 20,
 } = {}) {
   if (!focusSector) return null;
-  const hierarchyDefinition = getSectorThemeHierarchyForMarket(market, focusSector);
+  const {
+    hierarchyDefinition,
+    sectorRows,
+    classifiedSectorRows,
+  } = getFocusedHierarchySource(rows, focusSector, market);
   if (!hierarchyDefinition || hierarchyDefinition.middleThemes.length === 0) return null;
 
-  const sectorRows = rows.filter((row) => row.sector === focusSector);
   if (sectorRows.length === 0) {
     return {
       hierarchyVersion: hierarchyDefinition.version,
@@ -865,8 +897,6 @@ function buildFocusedHierarchy(rows, focusSector, {
     };
   }
 
-  const allowedMiddleThemes = new Set(hierarchyDefinition.middleThemes.map((entry) => entry.label));
-  const classifiedSectorRows = sectorRows.filter((row) => allowedMiddleThemes.has(row.primaryTheme));
   const middleThemeRanking = summarizeFocusedMiddleThemes(classifiedSectorRows);
   const selectedMiddleThemeLimit = topMiddleThemeCount ?? Math.max(1, Math.ceil(middleThemeRanking.length / 2));
   const selectedMiddleThemes = middleThemeRanking
@@ -1114,14 +1144,17 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   const ranked = applyBlockRanks(themedRows, rankingBlocks).sort((a, b) => b.rankScore - a.rankScore);
   const matched = ranked.slice(0, effectiveLimit).map(stripInternalFields);
   const sectorRanking = summarizeSectors(ranked);
-  const themeRanking = summarizeThemes(ranked);
-  const hierarchyFocusSector = hierarchyFocusSectorOverride ?? phase1SelectedSectorLabels[0] ?? null;
+  const hierarchyFocusSector = hierarchyFocusSectorOverride ?? selectedSectorLabels[0] ?? null;
   const focusedHierarchy = buildFocusedHierarchy(ranked, hierarchyFocusSector, {
     market,
     topMiddleThemeCount: hierarchyTopMiddleThemeCount,
     topSmallThemeCount: hierarchyTopSmallThemeCount,
     topStockCount: hierarchyTopStockCount,
   });
+  const themeRankingSource = market === 'japan' && hierarchyFocusSector
+    ? getFocusedHierarchySource(ranked, hierarchyFocusSector, market).classifiedSectorRows
+    : ranked;
+  const themeRanking = summarizeThemes(themeRankingSource);
   const ruleOf40Coverage = buildRuleOf40Coverage(matched, market);
 
   const criteria = {

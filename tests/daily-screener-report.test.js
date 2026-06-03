@@ -679,8 +679,8 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| 順位 \| セクター \| 平均12M \| 平均6M \| 平均3M \| SPY差12M \| SPY差6M \| SPY差3M \| SMA50上 \| SMA200上 \| 52w高値90%内 \| RSI \| 相対出来高 \| 構成数 \| 順位合計 \|/);
     assert.match(markdown, /\| 1 \| Technology Services \| 44\.2% \| 18\.4% \| 11\.1% \| 13\.7pt \| 0\.0pt \| 0\.9pt \| 100\.0% \| 100\.0% \| 66\.7% \| 73\.7 \| 1\.04x \| 3 \| 5 \|/);
     assert.match(markdown, /## Phase2 テーマランキング/);
-    assert.doesNotMatch(markdown, /\| 順位 \| テーマ \| 通過銘柄数 \| 平均3M \| 平均総合点 \| Heat \| 外部確認数 \| 外部確認 \| 主な細粒度タグ \|/);
     assert.match(markdown, /## Phase2 中テーマランキング \(Electronic Technology\)/);
+    assert.doesNotMatch(markdown, /\| 順位 \| テーマ \| 通過銘柄数 \| 平均3M \| 平均総合点 \| Heat \| 外部確認数 \| 外部確認 \| 主な細粒度タグ \|/);
     assert.match(markdown, /\| 1 \| AI Compute \| 2 \| 31\.2% \| 94\.40 \| AI Accelerators \|/);
     assert.match(markdown, /\| 2 \| Memory \| 2 \| 24\.8% \| 76\.20 \| HBM \/ DRAM, NAND \/ Storage \|/);
     assert.match(markdown, /## Phase3 小テーマランキング \(Electronic Technology\)/);
@@ -909,14 +909,18 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /## Phase1 セクターランキング/);
     assert.match(markdown, /相対強度の基準: TSE:1306（TOPIX）/);
     assert.match(markdown, /## Phase2 テーマランキング/);
+    assert.match(markdown, /対象セクター: Electronic Technology（Phase1 1位 \/ TradingView sector）/);
+    assert.match(markdown, /集計対象: Electronic Technology の通過銘柄 1件を、みんかぶ対応テーマへ分類/);
     assert.match(markdown, /\| 1 \| Electronic Components \| 1 \| 12\.0% \| 4\.00 \| Passives \/ RF Modules \| Minkabu \|/);
     assert.match(markdown, /\| 順位 \| セクター \| 平均12M \| 平均6M \| 平均3M \| TOPIX差12M \| TOPIX差6M \| TOPIX差3M \| SMA50上 \| SMA200上 \| 52w高値90%内 \| RSI \| 相対出来高 \| 構成数 \| 順位合計 \|/);
     assert.match(markdown, /\| 1 \| Finance \| 32\.5% \| 20\.1% \| 11\.8% \| 7\.4pt \| 5\.3pt \| 3\.4pt \| 75\.0% \| 87\.5% \| 62\.5% \| 62\.5 \| 1\.21x \| 8 \| 4 \|/);
     assert.doesNotMatch(markdown, /アプローチ:/);
+    assert.doesNotMatch(markdown, /## Phase2 中テーマランキング \(Electronic Technology\)/);
     assert.match(markdown, /- Phase1 採用は上位 1 セクターのみです。4位以下のセクターは Phase1 失格として除外しています。/);
     assert.match(markdown, /- 条件通過銘柄がないため、セクター別ランキングは算出できませんでした。/);
     assert.match(markdown, /### 1位 7203 \(トヨタ自動車\) \(TSE\)/);
     assert.match(markdown, /\| 1 \| Electronic Components \| Passives \/ RF Modules \| \*\*7203 \(トヨタ自動車\)\*\* \| TSE \|/);
+    assert.match(markdown, /- Phase2 上位テーマ（上位半分・切り上げ）: Electronic Components/);
     assert.match(markdown, /\| ユニバース \| 取引所 \| TSE \|/);
     assert.match(markdown, /\| ユニバース \| 銘柄ユニバース \| jpx-prime \|/);
   });

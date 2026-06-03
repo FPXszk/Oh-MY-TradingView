@@ -884,7 +884,6 @@ describe('runFundamentalScreener', () => {
     assert.equal(result.sectorMomentum.benchmark?.label, 'TOPIX');
     assert.deepEqual(result.themeRanking.map((entry) => entry.theme), [
       'Semiconductor Equipment',
-      'Chemicals / Materials',
     ]);
     assert.equal(result.focusedHierarchy.focusSector, 'Electronic Technology');
     assert.deepEqual(result.focusedHierarchy.selectedMiddleThemes, ['Semiconductor Equipment']);

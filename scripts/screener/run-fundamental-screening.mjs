@@ -521,6 +521,11 @@ export function buildMarkdown(result, options = {}) {
     if (result.themeRanking?.length) {
       lines.push('## Phase2 テーマランキング');
       lines.push('');
+      if (market === 'japan' && result.focusedHierarchy?.focusSector) {
+        lines.push(`- 対象セクター: ${result.focusedHierarchy.focusSector}（Phase1 1位 / TradingView sector）`);
+        lines.push(`- 集計対象: ${result.focusedHierarchy.focusSector} の通過銘柄 ${result.focusedHierarchy.candidateCount}件を、みんかぶ対応テーマへ分類`);
+        lines.push('');
+      }
       lines.push('| 順位 | テーマ | 通過銘柄数 | 平均3M | 平均総合点 | 主な小テーマ | 外部確認 |');
       lines.push('|:---:|:---|---:|---:|---:|:---|:---|');
       result.themeRanking.forEach((entry, index) => {
@@ -531,24 +536,26 @@ export function buildMarkdown(result, options = {}) {
 
     if (result.focusedHierarchy?.focusSector) {
       const focusSector = result.focusedHierarchy.focusSector;
-      lines.push(`## Phase2 中テーマランキング (${focusSector})`);
-      lines.push('');
-      lines.push(`- 対象: ${focusSector} の通過銘柄 ${result.focusedHierarchy.candidateCount}件`);
-      lines.push('');
-      if (!result.focusedHierarchy.middleThemeRanking || result.focusedHierarchy.middleThemeRanking.length === 0) {
-        lines.push('- 中テーマランキングは算出できませんでした。');
-      } else {
-        lines.push('| 順位 | 中テーマ | 通過銘柄数 | 平均3M | 平均総合点 | 主な小テーマ |');
-        lines.push('|:---:|:---|---:|---:|---:|:---|');
-        result.focusedHierarchy.middleThemeRanking.forEach((entry, index) => {
-          lines.push(`| ${index + 1} | ${entry.middleTheme} | ${entry.count} | ${fmt(entry.averagePerf3m)}% | ${fmt(entry.averageRankScore, 2)} | ${entry.topSmallThemes?.join(', ') || 'N/A'} |`);
-        });
+      if (market !== 'japan') {
+        lines.push(`## Phase2 中テーマランキング (${focusSector})`);
+        lines.push('');
+        lines.push(`- 対象: ${focusSector} の通過銘柄 ${result.focusedHierarchy.candidateCount}件`);
+        lines.push('');
+        if (!result.focusedHierarchy.middleThemeRanking || result.focusedHierarchy.middleThemeRanking.length === 0) {
+          lines.push('- 中テーマランキングは算出できませんでした。');
+        } else {
+          lines.push('| 順位 | 中テーマ | 通過銘柄数 | 平均3M | 平均総合点 | 主な小テーマ |');
+          lines.push('|:---:|:---|---:|---:|---:|:---|');
+          result.focusedHierarchy.middleThemeRanking.forEach((entry, index) => {
+            lines.push(`| ${index + 1} | ${entry.middleTheme} | ${entry.count} | ${fmt(entry.averagePerf3m)}% | ${fmt(entry.averageRankScore, 2)} | ${entry.topSmallThemes?.join(', ') || 'N/A'} |`);
+          });
+        }
+        lines.push('');
       }
-      lines.push('');
 
       lines.push(`## Phase3 小テーマランキング (${focusSector})`);
       lines.push('');
-      lines.push(`- Phase2 上位中テーマ（上位半分・切り上げ）: ${result.focusedHierarchy.selectedMiddleThemes?.join(', ') || 'なし'}`);
+      lines.push(`- Phase2 上位テーマ（上位半分・切り上げ）: ${result.focusedHierarchy.selectedMiddleThemes?.join(', ') || 'なし'}`);
       lines.push('');
       if (!result.focusedHierarchy.smallThemeRanking || result.focusedHierarchy.smallThemeRanking.length === 0) {
         lines.push('- 小テーマランキングは算出できませんでした。');

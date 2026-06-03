@@ -252,3 +252,13 @@ test('getSectorThemeHierarchyForMarket exposes the Japan Producer Manufacturing 
     ['Semiconductor Equipment', 'Electric Wire / Grid'],
   );
 });
+
+test('getSectorThemeHierarchyForMarket exposes the Japan Electronic Technology hierarchy definition', () => {
+  const hierarchy = getSectorThemeHierarchyForMarket('japan', 'Electronic Technology');
+
+  assert.equal(hierarchy?.version, 'jp-theme-hierarchy-v1');
+  assert.deepEqual(
+    hierarchy?.middleThemes.map((entry) => entry.label),
+    ['Semiconductor Equipment', 'Electronic Components', 'AI / Data Center'],
+  );
+});
