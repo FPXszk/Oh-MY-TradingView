@@ -902,6 +902,132 @@ describe('runFundamentalScreener', () => {
     assert.ok(stockBodies.every((body) => getFilterValue(body, 'sector') !== 'Finance'));
   });
 
+  it('keeps Kioxia eligible in Japan despite elevated P/FCF when momentum and quality are strong', async () => {
+    const stockBodies = [];
+    const result = await runFundamentalScreener({
+      limit: 10,
+      _deps: {
+        market: 'japan',
+        exchangeAllowlist: ['TSE'],
+        symbolAllowlistKey: 'jp-prime-mini',
+        symbolAllowlistByKey: {
+          'jp-prime-mini': ['285A', '8035'],
+        },
+        fetch: createMockFetch({
+          stockBodies,
+          benchmarkPayload: {
+            totalCount: 1,
+            data: [
+              buildPhase1StockRow('TSE:1306', {
+                name: 'TOPIX ETF',
+                sector: 'Benchmark',
+                close: 3000,
+                sma200: 2800,
+                sma50: 2950,
+                high52w: 3100,
+                perf1m: 3,
+                perf3m: 9,
+                perf6m: 16,
+                perfY: 22,
+                rsi: 58,
+                relativeVolume: 1.0,
+                marketCap: 5_000_000_000,
+              }),
+            ],
+          },
+          phase1Payload: {
+            totalCount: 2,
+            data: [
+              buildPhase1StockRow('TSE:285A', {
+                name: 'Kioxia Holdings Corporation',
+                sector: 'Electronic Technology',
+                perf1m: 35,
+                perf3m: 120,
+                perf6m: 240,
+                perfY: 900,
+                rsi: 78,
+                relativeVolume: 1.1,
+                marketCap: 4_200_000_000,
+              }),
+              buildPhase1StockRow('TSE:8035', {
+                name: 'Tokyo Electron',
+                sector: 'Electronic Technology',
+                perf1m: 12,
+                perf3m: 24,
+                perf6m: 60,
+                perfY: 130,
+                rsi: 68,
+                relativeVolume: 1.0,
+                marketCap: 3_500_000_000,
+              }),
+            ],
+          },
+          phase2PayloadsBySector: {
+            'Electronic Technology': {
+              totalCount: 2,
+              data: [
+                buildPhase2Row('TSE:285A', {
+                  name: 'Kioxia Holdings Corporation',
+                  sector: 'Electronic Technology',
+                  industry: 'Computer Peripherals',
+                  close: 78080,
+                  rsi: 81.4,
+                  sma200: 18043.4,
+                  sma50: 39466.4,
+                  high52w: 83140,
+                  perf3m: 281.25,
+                  perf6m: 767.3,
+                  perfY: 3800.1,
+                  relativeVolume: 1.11,
+                  marketCap: 42_363_139_425_049,
+                  eps: 1009.1459,
+                  roe: 51.9,
+                  roic: 28.6,
+                  grossMargin: 43.3,
+                  fcfMargin: 14.35,
+                  fcfTtm: 331_340_000_000,
+                  revenueGrowthTtm: 36.99,
+                  pFcfDirect: 127.88,
+                  netDebt: -10_000_000,
+                  volume: 1_000_000,
+                }),
+                buildPhase2Row('TSE:8035', {
+                  name: 'Tokyo Electron',
+                  sector: 'Electronic Technology',
+                  industry: 'Electronic Production Equipment',
+                  close: 22000,
+                  rsi: 58,
+                  sma200: 20000,
+                  sma50: 21000,
+                  high52w: 24000,
+                  perf3m: 12,
+                  perf6m: 20,
+                  perfY: 60,
+                  relativeVolume: 0.9,
+                  marketCap: 3_500_000_000,
+                  eps: 10,
+                  roe: 18,
+                  grossMargin: 60,
+                  fcfMargin: 35,
+                  fcfTtm: 54_000_000,
+                  revenueGrowthTtm: 20,
+                  pFcfDirect: 74.6,
+                  netDebt: -10_000_000,
+                  volume: 400_000,
+                }),
+              ],
+            },
+          },
+        }),
+      },
+    });
+
+    assert.equal(result.results[0].symbol, '285A');
+    assert.equal(result.results[0].primaryTheme, 'AI / Data Center');
+    assert.deepEqual(result.results[0].subThemes, ['Data Center Memory']);
+    assert.ok(result.results.some((row) => row.symbol === '285A'));
+  });
+
   it('uses Moomoo revenue growth for scoring without hard-failing low-growth names', async () => {
     const result = await runFundamentalScreener({
       limit: 10,

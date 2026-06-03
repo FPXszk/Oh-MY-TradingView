@@ -191,7 +191,7 @@ const JP_PROFILES = [
       roeMinPct: 12,
       perf3mMinPct: 8,
       revenueGrowthMinPct: 5,
-      pFcfMax: 80,
+      pFcfMax: 140,
     },
   },
   {
