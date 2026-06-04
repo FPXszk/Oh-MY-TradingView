@@ -556,7 +556,7 @@ export function buildMarkdown(result, options = {}) {
 
       lines.push(`## Phase3 小テーマランキング (${focusSector})`);
       lines.push('');
-      lines.push(`- Phase2 上位テーマ（上位半分・切り上げ）: ${result.focusedHierarchy.selectedMiddleThemes?.join(', ') || 'なし'}`);
+      lines.push(`- Phase2 掲載中テーマ: ${result.focusedHierarchy.selectedMiddleThemes?.join(', ') || 'なし'}`);
       lines.push('');
       if (!result.focusedHierarchy.smallThemeRanking || result.focusedHierarchy.smallThemeRanking.length === 0) {
         lines.push('- 小テーマランキングは算出できませんでした。');
@@ -571,7 +571,7 @@ export function buildMarkdown(result, options = {}) {
 
       lines.push(`## Phase4 個別銘柄ランキング (${focusSector})`);
       lines.push('');
-      lines.push(`- Phase3 上位3小テーマ: ${(result.focusedHierarchy.selectedSmallThemes || []).map((entry) => `${entry.middleTheme} / ${entry.smallTheme}`).join(', ') || 'なし'}`);
+      lines.push(`- Phase3 掲載小テーマ: ${(result.focusedHierarchy.selectedSmallThemes || []).map((entry) => `${entry.middleTheme} / ${entry.smallTheme}`).join(', ') || 'なし'}`);
       lines.push('');
       if (!result.focusedHierarchy.stockRanking || result.focusedHierarchy.stockRanking.length === 0) {
         lines.push('- 個別銘柄ランキングは算出できませんでした。');
@@ -587,33 +587,35 @@ export function buildMarkdown(result, options = {}) {
       lines.push('');
     }
 
-    lines.push('## Phase2 セクター別ランキング');
-    lines.push('');
-    lines.push(`- Phase1 採用は上位 ${result.sectorMomentum?.selectedSectors?.length ?? 0} セクターのみです。4位以下のセクターは Phase1 失格として除外しています。`);
-    lines.push('');
-    if (!result.sectorRanking || result.sectorRanking.length === 0) {
-      lines.push('- 条件通過銘柄がないため、セクター別ランキングは算出できませんでした。');
+    if (showPhase2SectorBreakdownSection) {
+      lines.push('## Phase2 セクター別ランキング');
       lines.push('');
-    } else {
-      result.sectorRanking.forEach((sector, index) => {
-        const sectorRank = sector.phase1SectorRank ?? index + 1;
-        const scoreHeader = market === 'america' ? '総合点 (T/F)' : '総合点';
-        lines.push(`### ${sectorRank}位 ${sector.sector}`);
+      lines.push(`- Phase1 採用は上位 ${result.sectorMomentum?.selectedSectors?.length ?? 0} セクターのみです。4位以下のセクターは Phase1 失格として除外しています。`);
+      lines.push('');
+      if (!result.sectorRanking || result.sectorRanking.length === 0) {
+        lines.push('- 条件通過銘柄がないため、セクター別ランキングは算出できませんでした。');
         lines.push('');
-        lines.push(`- 通過銘柄数: ${sector.count}`);
-        lines.push(`- セクター平均3M: ${fmt(sector.averagePerf3m)}% / 平均総合点: ${fmt(sector.averageRankScore, 2)}`);
-        lines.push('');
-        lines.push(`| セクター順位 | セクター内順位 | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | ${scoreHeader} |`);
-        lines.push('|:---:|:---:|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|');
-        (sector.topRows ?? []).slice(0, 30).forEach((row, rowIndex) => {
-          const displayRow = resultRowsByKey.get(buildRowLookupKey(row)) ?? row;
-          const metricCells = buildRankingMetricCells(displayRow, result.scannerScope?.market, populationSize).join(' | ');
-          lines.push(
-            `| ${sectorRank} | ${rowIndex + 1} | **${formatSymbolWithCompanyName(displayRow, market)}** | ${displayRow.exchange ?? '-'} | ${metricCells} |`,
-          );
+      } else {
+        result.sectorRanking.forEach((sector, index) => {
+          const sectorRank = sector.phase1SectorRank ?? index + 1;
+          const scoreHeader = market === 'america' ? '総合点 (T/F)' : '総合点';
+          lines.push(`### ${sectorRank}位 ${sector.sector}`);
+          lines.push('');
+          lines.push(`- 通過銘柄数: ${sector.count}`);
+          lines.push(`- セクター平均3M: ${fmt(sector.averagePerf3m)}% / 平均総合点: ${fmt(sector.averageRankScore, 2)}`);
+          lines.push('');
+          lines.push(`| セクター順位 | セクター内順位 | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | ${scoreHeader} |`);
+          lines.push('|:---:|:---:|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|');
+          (sector.topRows ?? []).slice(0, 30).forEach((row, rowIndex) => {
+            const displayRow = resultRowsByKey.get(buildRowLookupKey(row)) ?? row;
+            const metricCells = buildRankingMetricCells(displayRow, result.scannerScope?.market, populationSize).join(' | ');
+            lines.push(
+              `| ${sectorRank} | ${rowIndex + 1} | **${formatSymbolWithCompanyName(displayRow, market)}** | ${displayRow.exchange ?? '-'} | ${metricCells} |`,
+            );
+          });
+          lines.push('');
         });
-        lines.push('');
-      });
+      }
     }
   }
 

@@ -1058,9 +1058,12 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   const getFundamentals = _deps?.getSymbolFundamentals ?? null;
   const forcedSelectedSectors = uniqueStrings(_deps?.forcePhase1Sectors ?? []);
   const hierarchyFocusSectorOverride = _deps?.hierarchyFocusSector ?? null;
-  const hierarchyTopMiddleThemeCount = _deps?.hierarchyTopMiddleThemeCount ?? null;
-  const hierarchyTopSmallThemeCount = _deps?.hierarchyTopSmallThemeCount ?? 3;
-  const hierarchyTopStockCount = _deps?.hierarchyTopStockCount ?? 20;
+  const hierarchyTopMiddleThemeCount = _deps?.hierarchyTopMiddleThemeCount
+    ?? (market === DEFAULT_MARKET ? Number.POSITIVE_INFINITY : null);
+  const hierarchyTopSmallThemeCount = _deps?.hierarchyTopSmallThemeCount
+    ?? (market === DEFAULT_MARKET ? Number.POSITIVE_INFINITY : 3);
+  const hierarchyTopStockCount = _deps?.hierarchyTopStockCount
+    ?? (market === DEFAULT_MARKET ? Number.POSITIVE_INFINITY : 20);
   const scannerUrl = `https://scanner.tradingview.com/${market}/scan`;
   const sectorMomentumScan = await runSectorMomentumScan({
     market,
@@ -1169,13 +1172,27 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     criteria.phase1_selected_sectors_actual = phase1SelectedSectorLabels;
   }
   if (focusedHierarchy?.focusSector) {
+    const topMiddleThemesRule = hierarchyTopMiddleThemeCount === null
+      ? 'top-half-ceil'
+      : hierarchyTopMiddleThemeCount === Number.POSITIVE_INFINITY
+        ? 'all-ranked'
+        : 'override';
+    const topSmallThemesRule = hierarchyTopSmallThemeCount === Number.POSITIVE_INFINITY
+      ? 'all-ranked'
+      : hierarchyTopSmallThemeCount === 3
+        ? 'top-3'
+        : 'override';
+    const topStocksRule = hierarchyTopStockCount === Number.POSITIVE_INFINITY
+      ? 'all-ranked'
+      : 'override';
     criteria.hierarchy_focus_sector = focusedHierarchy.focusSector;
     criteria.hierarchy_selection = {
       top_middle_themes: focusedHierarchy.selectedMiddleThemes.length,
-      top_middle_themes_rule: hierarchyTopMiddleThemeCount === null ? 'top-half-ceil' : 'override',
+      top_middle_themes_rule: topMiddleThemesRule,
       top_small_themes: focusedHierarchy.selectedSmallThemes.length,
-      top_small_themes_rule: hierarchyTopSmallThemeCount === 3 ? 'top-3' : 'override',
-      top_stocks: hierarchyTopStockCount,
+      top_small_themes_rule: topSmallThemesRule,
+      top_stocks: focusedHierarchy.stockRanking.length,
+      top_stocks_rule: topStocksRule,
     };
   }
   if (ranked.length > 0) {

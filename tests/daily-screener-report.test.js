@@ -421,10 +421,11 @@ describe('buildMarkdown', () => {
       focusedHierarchy: {
         focusSector: 'Electronic Technology',
         candidateCount: 4,
-        selectedMiddleThemes: ['AI Compute', 'Memory'],
+        selectedMiddleThemes: ['AI Compute', 'Memory', 'Semiconductor Equipment'],
         selectedSmallThemes: [
           { middleTheme: 'AI Compute', smallTheme: 'AI Accelerators' },
           { middleTheme: 'Memory', smallTheme: 'HBM / DRAM' },
+          { middleTheme: 'Semiconductor Equipment', smallTheme: 'Test / Metrology / Inspection' },
         ],
         middleThemeRanking: [
           {
@@ -441,6 +442,13 @@ describe('buildMarkdown', () => {
             averageRankScore: 76.2,
             topSmallThemes: ['HBM / DRAM', 'NAND / Storage'],
           },
+          {
+            middleTheme: 'Semiconductor Equipment',
+            count: 1,
+            averagePerf3m: 23.4,
+            averageRankScore: 74.1,
+            topSmallThemes: ['Test / Metrology / Inspection'],
+          },
         ],
         smallThemeRanking: [
           {
@@ -456,6 +464,13 @@ describe('buildMarkdown', () => {
             count: 1,
             averagePerf3m: 26.1,
             averageRankScore: 80.4,
+          },
+          {
+            middleTheme: 'Semiconductor Equipment',
+            smallTheme: 'Test / Metrology / Inspection',
+            count: 1,
+            averagePerf3m: 23.4,
+            averageRankScore: 74.1,
           },
         ],
         stockRanking: [
@@ -502,6 +517,28 @@ describe('buildMarkdown', () => {
             atrPct: 4.1,
             rankScore: 82,
             rankBreakdown: rankBreakdown(2),
+          },
+          {
+            symbol: 'KLAC',
+            companyName: 'KLA Corporation',
+            exchange: 'NASDAQ',
+            primaryTheme: 'Semiconductor Equipment',
+            subThemes: ['Test / Metrology / Inspection'],
+            marketCapUsd: 95_000_000_000,
+            perfY: 74,
+            perf6m: 34,
+            perf3m: 23,
+            pctOf52wHigh: 94,
+            roic: 26,
+            grossProfitToAssets: 37,
+            fcfMargin: 29,
+            revenueGrowthTtm: 21,
+            ruleOf40: 50,
+            epsGrowthTtm: 20,
+            pFcf: 30,
+            atrPct: 3.2,
+            rankScore: 77,
+            rankBreakdown: rankBreakdown(3),
           },
         ],
       },
@@ -687,26 +724,27 @@ describe('buildMarkdown', () => {
     assert.doesNotMatch(markdown, /\| 順位 \| テーマ \| 通過銘柄数 \| 平均3M \| 平均総合点 \| Heat \| 外部確認数 \| 外部確認 \| 主な細粒度タグ \|/);
     assert.match(markdown, /\| 1 \| AI Compute \| 2 \| 31\.2% \| 94\.40 \| AI Accelerators \|/);
     assert.match(markdown, /\| 2 \| Memory \| 2 \| 24\.8% \| 76\.20 \| HBM \/ DRAM, NAND \/ Storage \|/);
+    assert.match(markdown, /\| 3 \| Semiconductor Equipment \| 1 \| 23\.4% \| 74\.10 \| Test \/ Metrology \/ Inspection \|/);
     assert.match(markdown, /## Phase3 小テーマランキング \(Electronic Technology\)/);
+    assert.match(markdown, /- Phase2 掲載中テーマ: AI Compute, Memory, Semiconductor Equipment/);
     assert.match(markdown, /\| 1 \| AI Compute \| AI Accelerators \| 2 \| 31\.2% \| 94\.40 \|/);
     assert.match(markdown, /\| 2 \| Memory \| HBM \/ DRAM \| 1 \| 26\.1% \| 80\.40 \|/);
+    assert.match(markdown, /\| 3 \| Semiconductor Equipment \| Test \/ Metrology \/ Inspection \| 1 \| 23\.4% \| 74\.10 \|/);
     assert.match(markdown, /## Phase4 個別銘柄ランキング \(Electronic Technology\)/);
+    assert.match(markdown, /- Phase3 掲載小テーマ: AI Compute \/ AI Accelerators, Memory \/ HBM \/ DRAM, Semiconductor Equipment \/ Test \/ Metrology \/ Inspection/);
     assert.match(markdown, /\| 1 \| AI Compute \| AI Accelerators \| \*\*NVDA\*\* \| NASDAQ \|/);
     assert.match(markdown, /\| 2 \| Memory \| HBM \/ DRAM \| \*\*MU\*\* \| NASDAQ \|/);
+    assert.match(markdown, /\| 3 \| Semiconductor Equipment \| Test \/ Metrology \/ Inspection \| \*\*KLAC\*\* \| NASDAQ \|/);
     assert.doesNotMatch(markdown, /\*\*NVDA \(NVIDIA Corporation\)\*\*/);
     assert.doesNotMatch(markdown, /\*\*AAA \(Alpha Apps Inc\.\)\*\*/);
-    assert.match(markdown, /## Phase2 セクター別ランキング/);
-    assert.match(markdown, /Phase1 採用は上位 3 セクターのみです/);
-    assert.match(markdown, /### 1位 Technology Services/);
-    assert.match(markdown, /\| セクター順位 \| セクター内順位 \| シンボル \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCF \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \(T\/F\) \|/);
-    assert.match(markdown, /\| 1 \| 1 \| \*\*AAA\*\* \| NASDAQ \| \$12\.3B \|/);
+    assert.doesNotMatch(markdown, /## Phase2 セクター別ランキング/);
     assert.doesNotMatch(markdown, /## 上位3件の選定理由/);
     assert.doesNotMatch(markdown, /### 1位 AAA \(NASDAQ\)/);
     assert.doesNotMatch(markdown, /- 総合点: 96\.00/);
     assert.doesNotMatch(markdown, /- テーマ: Cloud Software \/ Cloud Platforms/);
     assert.doesNotMatch(markdown, /低いほど良い/);
     assert.match(markdown, /Rule40/);
-    assert.match(markdown, /60\.0 \| 30\.0% \| 28\.0 \| 3\.2% \| 96\.00 \(T45\.1\/F50\.9\) \|/);
+    assert.match(markdown, /129\.0 \| 74\.0% \| 42\.0 \| 3\.8% \| 98\.00 \(T46\.1\/F51\.9\) \|/);
     assert.doesNotMatch(markdown, /（Rule 40\+）/);
     assert.doesNotMatch(markdown, /（20未満注意）/);
     assert.doesNotMatch(markdown, /## 超急騰候補/);
@@ -926,7 +964,8 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /- 条件通過銘柄がないため、セクター別ランキングは算出できませんでした。/);
     assert.match(markdown, /### 1位 7203 \(トヨタ自動車\) \(TSE\)/);
     assert.match(markdown, /\| 1 \| Electronic Components \| Passives \/ RF Modules \| \*\*7203 \(トヨタ自動車\)\*\* \| TSE \|/);
-    assert.match(markdown, /- Phase2 上位テーマ（上位半分・切り上げ）: Electronic Components/);
+    assert.match(markdown, /- Phase2 掲載中テーマ: Electronic Components/);
+    assert.match(markdown, /- Phase3 掲載小テーマ: Electronic Components \/ Passives \/ RF Modules/);
     assert.match(markdown, /\| ユニバース \| 取引所 \| TSE \|/);
     assert.match(markdown, /\| ユニバース \| 銘柄ユニバース \| jpx-prime \|/);
   });

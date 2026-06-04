@@ -462,7 +462,6 @@ describe('runFundamentalScreener', () => {
     const result = await runFundamentalScreener({
       limit: 10,
       _deps: {
-        hierarchyTopStockCount: 5,
         fetch: createMockFetch({
           stockBodies: [],
           benchmarkPayload: {
@@ -674,16 +673,18 @@ describe('runFundamentalScreener', () => {
 
     assert.equal(result.focusedHierarchy.focusSector, 'Electronic Technology');
     assert.equal(result.criteria.hierarchy_focus_sector, 'Electronic Technology');
-    assert.equal(result.criteria.hierarchy_selection.top_middle_themes_rule, 'top-half-ceil');
-    assert.equal(result.criteria.hierarchy_selection.top_small_themes_rule, 'top-3');
+    assert.equal(result.criteria.hierarchy_selection.top_middle_themes_rule, 'all-ranked');
+    assert.equal(result.criteria.hierarchy_selection.top_small_themes_rule, 'all-ranked');
+    assert.equal(result.criteria.hierarchy_selection.top_stocks_rule, 'all-ranked');
     assert.equal(result.focusedHierarchy.middleThemeRanking[0].middleTheme, 'AI Compute');
     assert.ok(result.focusedHierarchy.middleThemeRanking.some((entry) => entry.middleTheme === 'Memory'));
     assert.ok(result.focusedHierarchy.smallThemeRanking.some((entry) => entry.smallTheme === 'AI Accelerators'));
     assert.ok(result.focusedHierarchy.smallThemeRanking.some((entry) => entry.smallTheme === 'HBM / DRAM'));
     assert.ok(result.focusedHierarchy.stockRanking.length > 0);
     assert.equal(result.focusedHierarchy.stockRanking[0].symbol, 'NVDA');
-    assert.equal(result.focusedHierarchy.selectedMiddleThemes.length, 3);
-    assert.ok(result.focusedHierarchy.selectedSmallThemes.length <= 3);
+    assert.equal(result.focusedHierarchy.selectedMiddleThemes.length, 5);
+    assert.equal(result.focusedHierarchy.selectedSmallThemes.length, 6);
+    assert.equal(result.focusedHierarchy.stockRanking.length, 6);
   });
 
   it('applies Japan-specific profiles and skips finance even when phase1 selects it', async () => {
