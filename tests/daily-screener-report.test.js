@@ -732,9 +732,9 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| 3 \| Semiconductor Equipment \| Test \/ Metrology \/ Inspection \| 1 \| 23\.4% \| 74\.10 \|/);
     assert.match(markdown, /## Phase4 個別銘柄ランキング \(Electronic Technology\)/);
     assert.match(markdown, /- Phase3 掲載小テーマ: AI Compute \/ AI Accelerators, Memory \/ HBM \/ DRAM, Semiconductor Equipment \/ Test \/ Metrology \/ Inspection/);
-    assert.match(markdown, /\| 1 \| AI Compute \| AI Accelerators \| \*\*NVDA\*\* \| NASDAQ \| \$3\.10T \(L\) \|/);
-    assert.match(markdown, /\| 2 \| Memory \| HBM \/ DRAM \| \*\*MU\*\* \| NASDAQ \| \$130\.0B \(L\) \|/);
-    assert.match(markdown, /\| 3 \| Semiconductor Equipment \| Test \/ Metrology \/ Inspection \| \*\*KLAC\*\* \| NASDAQ \| \$95\.0B \(L\) \|/);
+    assert.match(markdown, /\| 1 \| AI Compute \| AI Accelerators \| \*\*NVDA\*\* \| NASDAQ \| \$3\.10T \(XL\) \|/);
+    assert.match(markdown, /\| 2 \| Memory \| HBM \/ DRAM \| \*\*MU\*\* \| NASDAQ \| \$130\.0B \(L\+\) \|/);
+    assert.match(markdown, /\| 3 \| Semiconductor Equipment \| Test \/ Metrology \/ Inspection \| \*\*KLAC\*\* \| NASDAQ \| \$95\.0B \(L\+\) \|/);
     assert.doesNotMatch(markdown, /\*\*NVDA \(NVIDIA Corporation\)\*\*/);
     assert.doesNotMatch(markdown, /\*\*AAA \(Alpha Apps Inc\.\)\*\*/);
     assert.doesNotMatch(markdown, /## Phase2 セクター別ランキング/);
@@ -961,7 +961,7 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| 1 \| Finance \| 32\.5% \| 20\.1% \| 11\.8% \| 7\.4pt \| 5\.3pt \| 3\.4pt \| 75\.0% \| 87\.5% \| 62\.5% \| 62\.5 \| 1\.21x \| 8 \| 4 \|/);
     assert.doesNotMatch(markdown, /アプローチ:/);
     assert.doesNotMatch(markdown, /## Phase2 中テーマランキング \(Electronic Technology\)/);
-    assert.match(markdown, /\| 1 \| Electronic Components \| Passives \/ RF Modules \| \*\*7203 \(トヨタ自動車\)\*\* \| TSE \| \$4\.50T \(L\) \|/);
+    assert.match(markdown, /\| 1 \| Electronic Components \| Passives \/ RF Modules \| \*\*7203 \(トヨタ自動車\)\*\* \| TSE \| ¥4\.50T \(L\) \|/);
     assert.match(markdown, /- Phase2 掲載中テーマ: Electronic Components/);
     assert.match(markdown, /- Phase3 掲載小テーマ: Electronic Components \/ Passives \/ RF Modules/);
     assert.doesNotMatch(markdown, /## Phase2 セクター別ランキング/);

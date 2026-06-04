@@ -17,31 +17,48 @@ const DEFAULT_CURRENCY_SYMBOL = '$';
 const TECHNICAL_BREAKDOWN_KEYS = ['priceMomentum', 'sectorStrength'];
 const FUNDAMENTAL_BREAKDOWN_KEYS = ['quality', 'growth', 'riskValue', 'ruleOf40'];
 const WEEKDAYS_JA = ['日', '月', '火', '水', '木', '金', '土'];
+const MARKET_CAP_BANDS_BY_MARKET = {
+  america: [
+    { min: 200_000_000_000, label: 'XL' },
+    { min: 50_000_000_000, label: 'L+' },
+    { min: 10_000_000_000, label: 'L' },
+    { min: 5_000_000_000, label: 'M+' },
+    { min: 2_000_000_000, label: 'M' },
+    { min: 1_000_000_000, label: 'M-' },
+    { min: 0, label: 'S' },
+  ],
+  japan: [
+    { min: 10_000_000_000_000, label: 'XL' },
+    { min: 5_000_000_000_000, label: 'L+' },
+    { min: 1_000_000_000_000, label: 'L' },
+    { min: 500_000_000_000, label: 'M+' },
+    { min: 250_000_000_000, label: 'M' },
+    { min: 100_000_000_000, label: 'M-' },
+    { min: 0, label: 'S' },
+  ],
+};
 
 function fmt(val, digits = 1, suffix = '') {
   if (val === null || val === undefined) return 'N/A';
   return Number(val).toFixed(digits) + suffix;
 }
 
-function fmtUsdMarketCap(val) {
+function getMarketCapBand(abs, market) {
+  const bands = MARKET_CAP_BANDS_BY_MARKET[market] ?? MARKET_CAP_BANDS_BY_MARKET.america;
+  return bands.find((band) => abs >= band.min)?.label ?? 'S';
+}
+
+function fmtMarketCap(val, market, currencySymbol) {
   if (val === null || val === undefined) return 'N/A';
   const abs = Math.abs(Number(val));
-  const sizeBand = abs >= 10_000_000_000
-    ? 'L'
-    : abs >= 5_000_000_000
-      ? 'M+'
-      : abs >= 2_000_000_000
-        ? 'M'
-        : abs >= 1_000_000_000
-          ? 'M-'
-          : 'S';
+  const sizeBand = getMarketCapBand(abs, market);
   const marketCapLabel = abs >= 1_000_000_000_000
-    ? `$${(val / 1_000_000_000_000).toFixed(2)}T`
+    ? `${currencySymbol}${(val / 1_000_000_000_000).toFixed(2)}T`
     : abs >= 1_000_000_000
-      ? `$${(val / 1_000_000_000).toFixed(1)}B`
+      ? `${currencySymbol}${(val / 1_000_000_000).toFixed(1)}B`
       : abs >= 1_000_000
-        ? `$${(val / 1_000_000).toFixed(1)}M`
-        : `$${Number(val).toLocaleString('en-US')}`;
+        ? `${currencySymbol}${(val / 1_000_000).toFixed(1)}M`
+        : `${currencySymbol}${Number(val).toLocaleString('en-US')}`;
   return `${marketCapLabel} (${sizeBand})`;
 }
 
@@ -203,9 +220,9 @@ function buildTotalScoreCell(row, market, populationSize) {
   return `${total} (T${fmt(breakdown.technical, 1)}/F${fmt(breakdown.fundamental, 1)})`;
 }
 
-function buildRankingMetricCells(row, market, populationSize) {
+function buildRankingMetricCells(row, market, populationSize, currencySymbol) {
   return [
-    fmtUsdMarketCap(row.marketCapUsd),
+    fmtMarketCap(row.marketCapUsd, market, currencySymbol),
     `${fmt(row.perfY)}%`,
     `${fmt(row.perf6m)}%`,
     `${fmt(row.perf3m)}%`,
@@ -587,7 +604,7 @@ export function buildMarkdown(result, options = {}) {
         lines.push(`| 順位 | 中テーマ | 小テーマ | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | ${scoreHeader} |`);
         lines.push('|:---:|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|');
         result.focusedHierarchy.stockRanking.forEach((row, index) => {
-          const metricCells = buildRankingMetricCells(row, result.scannerScope?.market, populationSize).join(' | ');
+          const metricCells = buildRankingMetricCells(row, result.scannerScope?.market, populationSize, currencySymbol).join(' | ');
           lines.push(`| ${index + 1} | ${row.primaryTheme ?? 'Unclassified'} | ${row.subThemes?.[0] ?? '細粒度タグなし'} | **${formatSymbolWithCompanyName(row, market)}** | ${row.exchange ?? '-'} | ${metricCells} |`);
         });
       }
@@ -615,7 +632,7 @@ export function buildMarkdown(result, options = {}) {
           lines.push('|:---:|:---:|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|');
           (sector.topRows ?? []).slice(0, 30).forEach((row, rowIndex) => {
             const displayRow = resultRowsByKey.get(buildRowLookupKey(row)) ?? row;
-            const metricCells = buildRankingMetricCells(displayRow, result.scannerScope?.market, populationSize).join(' | ');
+            const metricCells = buildRankingMetricCells(displayRow, result.scannerScope?.market, populationSize, currencySymbol).join(' | ');
             lines.push(
               `| ${sectorRank} | ${rowIndex + 1} | **${formatSymbolWithCompanyName(displayRow, market)}** | ${displayRow.exchange ?? '-'} | ${metricCells} |`,
             );
