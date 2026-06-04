@@ -15,6 +15,7 @@
  */
 
 import { readFileSync } from 'node:fs';
+import { getEdinetSupplementalFundamentalsBatch } from './edinet.js';
 import { getMoomooFundamentalsBatch } from './moomoo.js';
 import { runSectorMomentumScan } from './sector-momentum.js';
 import { getProfilesForMarket, getSectorScreeningPlan } from './sector-screening-profiles.js';
@@ -305,6 +306,7 @@ function normalizeRow(row) {
     totalAssets,
     grossProfitToAssets,
     operatingMargin,
+    fcfTtm,
     fcfMargin,
     fcfGrowthTtm,
     cashFromOperationsTtm,
@@ -346,8 +348,6 @@ function isUsSoftwareRuleOf40Candidate(row, market) {
 }
 
 function buildRuleOf40Coverage(rows, market) {
-  if (market !== DEFAULT_MARKET) return null;
-
   const summary = {
     total: rows.length,
     complete: 0,
@@ -476,15 +476,14 @@ function annotateRowForProfile(row, profile, sectorRankLookup, market) {
     screeningThresholds: profile.thresholds,
     screeningPfcfMax: profile.getPfcfMax ? profile.getPfcfMax(row) : profile.thresholds.pFcfMax,
     screeningRevenueGrowthMinPct: profile.thresholds.revenueGrowthMinPct,
-    ruleOf40: market === DEFAULT_MARKET ? row.ruleOf40Raw : null,
+    ruleOf40: row.ruleOf40Raw,
     ruleOf40Score: isUsSoftwareRuleOf40Candidate(row, market) ? row.ruleOf40Raw : null,
-    ruleOf40Components: market === DEFAULT_MARKET
-      ? {
-        revenueGrowthTtm: row.revenueGrowthTtm,
-        fcfMargin: row.fcfMargin,
-        complete: row.ruleOf40Raw !== null && row.ruleOf40Raw !== undefined,
-      }
-      : null,
+    ruleOf40Components: {
+      revenueGrowthTtm: row.revenueGrowthTtm,
+      fcfMargin: row.fcfMargin,
+      complete: row.ruleOf40Raw !== null && row.ruleOf40Raw !== undefined,
+      scoreEligible: market === DEFAULT_MARKET && isUsSoftwareRuleOf40Candidate(row, market),
+    },
     extremeMomentum: buildExtremeMomentum(row),
   };
 }
@@ -1036,6 +1035,53 @@ function applySupplementalGrowthMetrics(row, metrics = {}) {
   };
 }
 
+function shouldUseEdinetSupplement(row) {
+  return row?.exchange === 'TSE' && (
+    row.fcfMargin === null
+    || row.fcfGrowthTtm === null
+    || row.pFcf === null
+    || row.cashConversion === null
+    || row.ruleOf40Raw === null
+  );
+}
+
+function applyEdinetSupplementalMetrics(row, metrics = {}) {
+  const merged = {
+    ...row,
+    revenueGrowthTtm: row.revenueGrowthTtm ?? metrics.revenueGrowthTtm ?? null,
+    fcfTtm: row.fcfTtm ?? metrics.fcfTtm ?? null,
+    fcfMargin: row.fcfMargin ?? metrics.fcfMargin ?? null,
+    fcfGrowthTtm: row.fcfGrowthTtm ?? metrics.fcfGrowthTtm ?? null,
+    cashFromOperationsTtm: row.cashFromOperationsTtm ?? metrics.cashFromOperationsTtm ?? null,
+    netIncomeTtm: row.netIncomeTtm ?? metrics.netIncomeTtm ?? null,
+    cashConversion: row.cashConversion ?? metrics.cashConversion ?? null,
+    pFcf: row.pFcf ?? metrics.pFcf ?? null,
+    edinetSupplement: metrics.source === 'edinet'
+      ? {
+        docId: metrics.docId ?? null,
+        submitDateTime: metrics.submitDateTime ?? null,
+        docDescription: metrics.docDescription ?? null,
+      }
+      : null,
+  };
+
+  const ruleOf40Raw = merged.revenueGrowthTtm !== null && merged.fcfMargin !== null
+    ? Number((merged.revenueGrowthTtm + merged.fcfMargin).toFixed(2))
+    : metrics.ruleOf40 ?? null;
+
+  return {
+    ...merged,
+    ruleOf40Raw,
+    ruleOf40: ruleOf40Raw,
+    ruleOf40Components: {
+      revenueGrowthTtm: merged.revenueGrowthTtm,
+      fcfMargin: merged.fcfMargin,
+      complete: ruleOf40Raw !== null && ruleOf40Raw !== undefined,
+      scoreEligible: false,
+    },
+  };
+}
+
 function validateLimit(limit) {
   if (limit === undefined || limit === null) return DEFAULT_LIMIT;
   const n = Number(limit);
@@ -1061,6 +1107,8 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   const hierarchyTopMiddleThemeCount = _deps?.hierarchyTopMiddleThemeCount ?? Number.POSITIVE_INFINITY;
   const hierarchyTopSmallThemeCount = _deps?.hierarchyTopSmallThemeCount ?? Number.POSITIVE_INFINITY;
   const hierarchyTopStockCount = _deps?.hierarchyTopStockCount ?? Number.POSITIVE_INFINITY;
+  const edinetApiKey = _deps?.edinetApiKey ?? process.env.EDINET_API_KEY ?? '';
+  const getJapanSupplementalFundamentals = _deps?.getJapanSupplementalFundamentals ?? null;
   const scannerUrl = `https://scanner.tradingview.com/${market}/scan`;
   const sectorMomentumScan = await runSectorMomentumScan({
     market,
@@ -1129,6 +1177,21 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
 
     clientFiltered = clientFiltered
       .map((row) => applySupplementalGrowthMetrics(row, growthMap[row.symbol]));
+  }
+
+  let edinetSupplementMeta = null;
+  if (market === 'japan' && clientFiltered.length > 0) {
+    const supplementTargets = clientFiltered.filter(shouldUseEdinetSupplement);
+    const supplementPayload = getJapanSupplementalFundamentals
+      ? await getJapanSupplementalFundamentals(supplementTargets)
+      : await getEdinetSupplementalFundamentalsBatch(supplementTargets, {
+        apiKey: edinetApiKey,
+        fetch: fetchFn,
+      });
+
+    const supplementalMap = supplementPayload?.rows ?? {};
+    edinetSupplementMeta = supplementPayload?.meta ?? null;
+    clientFiltered = clientFiltered.map((row) => applyEdinetSupplementalMetrics(row, supplementalMap[row.symbol]));
   }
 
   const themedRows = applyLocalizedCompanyNames(applyThemeTaxonomy(clientFiltered, market), market);
@@ -1218,6 +1281,9 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   if (enrichWithYahoo) {
     criteria.revenue_growth_policy = 'Moomoo revenue growth is used for growth scoring only; low values do not hard-fail';
   }
+  if (market === 'japan') {
+    criteria.japan_fundamentals_policy = 'TradingView を主軸にしつつ、FCF / PFCF / cash-conversion の欠損は EDINET 公式開示で補完する';
+  }
 
   return {
     success: true,
@@ -1258,9 +1324,16 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     themeRanking,
     focusedHierarchy,
     ruleOf40Coverage,
+    sourceDetails: {
+      edinet: edinetSupplementMeta,
+    },
     results: matched,
     retrieved_at: new Date().toISOString(),
-    source: enrichWithYahoo ? 'tradingview_scanner+moomoo' : 'tradingview_scanner',
+    source: market === 'japan' && edinetSupplementMeta?.enabled
+      ? (enrichWithYahoo ? 'tradingview_scanner+moomoo+edinet' : 'tradingview_scanner+edinet')
+      : enrichWithYahoo
+        ? 'tradingview_scanner+moomoo'
+        : 'tradingview_scanner',
   };
 }
 

@@ -877,10 +877,20 @@ describe('runFundamentalScreener', () => {
     assert.equal(result.results.find((row) => row.symbol === '8035').companyNameJa, '東京エレクトロン');
     assert.equal(result.results.find((row) => row.symbol === '8035').primaryTheme, 'Semiconductor Equipment');
     assert.deepEqual(result.results.find((row) => row.symbol === '8035').subThemes, ['Semiconductor Production Equipment']);
-    assert.equal(result.results.find((row) => row.symbol === '8035').ruleOf40, null);
-    assert.equal(result.ruleOf40Coverage, null);
+    assert.equal(result.results.find((row) => row.symbol === '8035').ruleOf40, 55);
+    assert.deepEqual(result.ruleOf40Coverage, {
+      total: 2,
+      complete: 1,
+      revenueOnly: 0,
+      fcfOnly: 1,
+      missingBoth: 0,
+      completePct: 50,
+    });
     assert.equal(result.criteria.rule_of_40_policy, undefined);
+    assert.equal(result.criteria.japan_fundamentals_policy, 'TradingView を主軸にしつつ、FCF / PFCF / cash-conversion の欠損は EDINET 公式開示で補完する');
     assert.equal(result.criteria.theme_taxonomy_policy?.version, 'jp-theme-prototype-v1');
+    assert.equal(result.sourceDetails.edinet.enabled, false);
+    assert.equal(result.sourceDetails.edinet.reason, 'missing_api_key');
     assert.equal(result.sectorMomentum.benchmark?.symbol, '1306');
     assert.equal(result.sectorMomentum.benchmark?.label, 'TOPIX');
     assert.deepEqual(result.themeRanking.map((entry) => entry.theme), [
@@ -904,6 +914,161 @@ describe('runFundamentalScreener', () => {
       { key: 'riskValue', weight: 15 },
     ]);
     assert.ok(stockBodies.every((body) => getFilterValue(body, 'sector') !== 'Finance'));
+  });
+
+  it('supplements missing Japan FCF metrics from EDINET before ranking', async () => {
+    const result = await runFundamentalScreener({
+      limit: 10,
+      enrichWithYahoo: false,
+      _deps: {
+        market: 'japan',
+        exchangeAllowlist: ['TSE'],
+        symbolAllowlistKey: 'jp-prime-mini',
+        symbolAllowlistByKey: {
+          'jp-prime-mini': ['4063', '8035'],
+        },
+        getJapanSupplementalFundamentals: async (rows) => ({
+          rows: Object.fromEntries(rows.map((row) => [row.symbol, row.symbol === '4063'
+            ? {
+              source: 'edinet',
+              fcfMargin: 14,
+              fcfGrowthTtm: 18,
+              pFcf: 22,
+              cashConversion: 1.3,
+              fcfTtm: 88_000_000,
+              cashFromOperationsTtm: 120_000_000,
+              netIncomeTtm: 68_000_000,
+              revenueGrowthTtm: 16,
+              ruleOf40: 30,
+              docId: 'S100TEST',
+              submitDateTime: '2026-05-10T00:00:00+09:00',
+              docDescription: '四半期報告書',
+            }
+            : {}])),
+          meta: {
+            enabled: true,
+            reason: 'active',
+            requestedSymbols: rows.length,
+            matchedFilings: 1,
+            supplementedRows: 1,
+            lookbackDays: 120,
+            asOfDate: '2026-06-04',
+          },
+        }),
+        fetch: createMockFetch({
+          stockBodies: [],
+          benchmarkPayload: {
+            totalCount: 1,
+            data: [
+              buildPhase1StockRow('TSE:1306', {
+                name: 'TOPIX ETF',
+                sector: 'Benchmark',
+                close: 3000,
+                sma200: 2800,
+                sma50: 2950,
+                high52w: 3100,
+                perf1m: 3,
+                perf3m: 9,
+                perf6m: 16,
+                perfY: 22,
+                rsi: 58,
+                relativeVolume: 1.0,
+                marketCap: 5_000_000_000,
+              }),
+            ],
+          },
+          phase1Payload: {
+            totalCount: 2,
+            data: [
+              buildPhase1StockRow('TSE:8035', {
+                name: 'Tokyo Electron',
+                sector: 'Electronic Technology',
+                perf1m: 15,
+                perf3m: 22,
+                perf6m: 34,
+                perfY: 58,
+                rsi: 64,
+                relativeVolume: 1.0,
+                marketCap: 3_500_000_000,
+              }),
+              buildPhase1StockRow('TSE:4063', {
+                name: 'Shin-Etsu Chemical',
+                sector: 'Process Industries',
+                perf1m: 12,
+                perf3m: 18,
+                perf6m: 24,
+                perfY: 46,
+                rsi: 60,
+                relativeVolume: 1.0,
+                marketCap: 2_900_000_000,
+              }),
+            ],
+          },
+          phase2PayloadsBySector: {
+            'Electronic Technology': {
+              totalCount: 1,
+              data: [
+                buildPhase2Row('TSE:8035', {
+                  name: 'Tokyo Electron',
+                  sector: 'Electronic Technology',
+                  industry: 'Electronic Production Equipment',
+                  close: 22000,
+                  rsi: 58,
+                  sma200: 20000,
+                  sma50: 21000,
+                  high52w: 24000,
+                  perf3m: 12,
+                  relativeVolume: 0.9,
+                  marketCap: 3_500_000_000,
+                  eps: 10,
+                  roe: 18,
+                  grossMargin: 60,
+                  fcfMargin: 35,
+                  fcfTtm: 54_000_000,
+                  revenueGrowthTtm: 20,
+                  netDebt: -10_000_000,
+                  volume: 400_000,
+                }),
+              ],
+            },
+            'Process Industries': {
+              totalCount: 1,
+              data: [
+                buildPhase2Row('TSE:4063', {
+                  name: 'Shin-Etsu Chemical',
+                  sector: 'Process Industries',
+                  industry: 'Chemicals: Specialty',
+                  close: 6200,
+                  rsi: 60,
+                  sma200: 5600,
+                  sma50: 5900,
+                  high52w: 7000,
+                  perf3m: 7,
+                  relativeVolume: 1.0,
+                  marketCap: 2_900_000_000,
+                  eps: 9,
+                  roe: 11,
+                  grossMargin: 34,
+                  netDebt: -10_000_000,
+                  volume: 500_000,
+                }),
+              ],
+            },
+          },
+        }),
+      },
+    });
+
+    const supplemented = result.results.find((row) => row.symbol === '4063');
+    assert.equal(supplemented.fcfMargin, 14);
+    assert.equal(supplemented.fcfGrowthTtm, 18);
+    assert.equal(supplemented.pFcf, 22);
+    assert.equal(supplemented.cashConversion, 1.3);
+    assert.equal(supplemented.ruleOf40, 30);
+    assert.equal(supplemented.edinetSupplement.docId, 'S100TEST');
+    assert.equal(result.sourceDetails.edinet.enabled, true);
+    assert.equal(result.sourceDetails.edinet.supplementedRows, 1);
+    assert.match(result.source, /edinet/);
   });
 
   it('keeps Kioxia eligible in Japan despite elevated P/FCF when momentum and quality are strong', async () => {

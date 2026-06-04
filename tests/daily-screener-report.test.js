@@ -61,6 +61,8 @@ describe('Daily Fundamental Screener workflow', () => {
       'Japan workflow must write a dedicated markdown report');
     assert.match(workflow, /SCREENER_METADATA_PATH:\s+docs\/reports\/screener\/daily-ranking-jp-run\.json/,
       'Japan workflow must write dedicated metadata');
+    assert.match(workflow, /EDINET_API_KEY:\s+\$\{\{\s*secrets\.EDINET_API_KEY\s*\}\}/,
+      'Japan workflow must pass the EDINET API key when available');
     assert.doesNotMatch(workflow, /SCREENER_REPORT_TITLE:/,
       'Japan workflow should rely on the shared date-based default title');
   });
@@ -788,6 +790,23 @@ describe('buildMarkdown', () => {
       clientFiltered: 2,
       matched: 2,
       enrichedWithYahoo: true,
+      sourceDetails: {
+        edinet: {
+          enabled: false,
+          reason: 'missing_api_key',
+          requestedSymbols: 2,
+          matchedFilings: 0,
+          supplementedRows: 0,
+        },
+      },
+      ruleOf40Coverage: {
+        total: 1,
+        complete: 1,
+        revenueOnly: 0,
+        fcfOnly: 0,
+        missingBoth: 0,
+        completePct: 100,
+      },
       rankingFormula: rankingBlocksJapan.map((block) => block.key),
       rankingBlocks: rankingBlocksJapan,
       scannerScope: {
@@ -824,6 +843,7 @@ describe('buildMarkdown', () => {
         excluded_phase2_sectors: ['Finance'],
         allowed_exchanges: ['TSE'],
         symbol_allowlist_key: 'jpx-prime',
+        japan_fundamentals_policy: 'TradingView を主軸にしつつ、FCF / PFCF / cash-conversion の欠損は EDINET 公式開示で補完する',
       },
       sectorMomentum: {
         approach: 'stock-aggregation',
@@ -908,7 +928,7 @@ describe('buildMarkdown', () => {
             grossProfitToAssets: 16,
             fcfMargin: 11,
             revenueGrowthTtm: 22,
-            ruleOf40: null,
+            ruleOf40: 33,
             epsGrowthTtm: 18,
             pFcf: 18,
             atrPct: 2.4,
@@ -936,6 +956,7 @@ describe('buildMarkdown', () => {
           grossProfitToAssets: 16,
           fcfMargin: 11,
           revenueGrowthTtm: 22,
+          ruleOf40: 33,
           epsGrowthTtm: 18,
           pFcf: 18,
           atrPct: 2.4,
@@ -951,6 +972,10 @@ describe('buildMarkdown', () => {
 
     assert.match(markdown, /# スクリーニング結果 2026\/05\/04（月）/);
     assert.match(markdown, /更新: 12:00 JST/);
+    assert.match(markdown, /## データソース状況/);
+    assert.match(markdown, /- EDINET: disabled \(no API key\)/);
+    assert.match(markdown, /## Rule of 40 算出状況/);
+    assert.match(markdown, /- Rule of 40 \(参考表示\) 完全算出: 1\/1銘柄 \(100\.0%\)/);
     assert.match(markdown, /## Phase1 セクターランキング/);
     assert.match(markdown, /相対強度の基準: TSE:1306（TOPIX）/);
     assert.match(markdown, /## Phase2 テーマランキング/);
@@ -967,6 +992,7 @@ describe('buildMarkdown', () => {
     assert.doesNotMatch(markdown, /## Phase2 セクター別ランキング/);
     assert.doesNotMatch(markdown, /## 上位3件の選定理由/);
     assert.match(markdown, /\| 順位 \| 中テーマ \| 小テーマ \| シンボル \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCF \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \(T\/F\) \|/);
+    assert.match(markdown, /\| 補助ポリシー \| 日本株ファンダ補完 \| TradingView を主軸にしつつ、FCF \/ PFCF \/ cash-conversion の欠損は EDINET 公式開示で補完する \|/);
     assert.match(markdown, /2\.4% \| 4\.00 \(T1\.9\/F2\.1\) \|/);
     assert.match(markdown, /\| ユニバース \| 取引所 \| TSE \|/);
     assert.match(markdown, /\| ユニバース \| 銘柄ユニバース \| jpx-prime \|/);

@@ -130,7 +130,6 @@ function buildRiskNote(row) {
 }
 
 function buildRuleOf40Note(row, market = 'america') {
-  if (market !== 'america') return 'N/A';
   if (row.ruleOf40 === null || row.ruleOf40 === undefined) {
     const hasRevenue = row.revenueGrowthTtm !== null && row.revenueGrowthTtm !== undefined;
     const hasFcf = row.fcfMargin !== null && row.fcfMargin !== undefined;
@@ -275,17 +274,34 @@ function buildRowLookupKey(row) {
 
 function buildRuleOf40CoverageLines(result) {
   const coverage = result.ruleOf40Coverage;
-  if (!coverage || result.scannerScope?.market !== 'america') return [];
+  if (!coverage) return [];
+
+  const marketLabel = result.scannerScope?.market === 'america'
+    ? 'Rule of 40'
+    : 'Rule of 40 (参考表示)';
 
   return [
-    `- Rule of 40 完全算出: ${coverage.complete}/${coverage.total}銘柄 (${fmt(coverage.completePct)}%)`,
+    `- ${marketLabel} 完全算出: ${coverage.complete}/${coverage.total}銘柄 (${fmt(coverage.completePct)}%)`,
     `- 欠損内訳: 売上のみあり ${coverage.revenueOnly}件 / FCFのみあり ${coverage.fcfOnly}件 / 両方欠け ${coverage.missingBoth}件`,
   ];
 }
 
 function buildRuleOf40MissingRows(result) {
-  if (result.scannerScope?.market !== 'america') return [];
   return (result.results ?? []).filter((row) => row.ruleOf40 === null || row.ruleOf40 === undefined);
+}
+
+function buildSourceCoverageLines(result) {
+  const edinet = result.sourceDetails?.edinet;
+  if (!edinet) return [];
+
+  if (!edinet.enabled) {
+    return ['- EDINET: disabled (no API key)'];
+  }
+
+  return [
+    `- EDINET: ${edinet.reason} / 対象 ${edinet.requestedSymbols}銘柄 / 書類一致 ${edinet.matchedFilings}件 / 指標補完 ${edinet.supplementedRows}銘柄`,
+    `- EDINET lookback: ${edinet.lookbackDays ?? 'N/A'}日 / as-of ${edinet.asOfDate ?? 'N/A'}`,
+  ];
 }
 
 function buildMarketLines(label, entries) {
@@ -359,7 +375,7 @@ function buildMetricGlossaryRows(market) {
     ['売上YoY', '売上高の前年比成長率', '事業成長の確認'],
     ['Rule40', '売上YoY + FCF margin', market === 'america'
       ? '主に US software 系の成長と収益性をまとめて確認'
-      : '米国 software 向け補助指標。通常は N/A'],
+      : '日本株では参考表示のみ。EDINET 補完で埋まる場合がある'],
     ['EPS YoY', 'EPS の前年比成長率', '利益成長の確認。N/A は TradingView 側の欠損'],
     ['P/FCF', '株価 ÷ FCF の倍率', '低いほど割高感が小さい傾向'],
     ['ATR%', 'ATR ÷ 株価 × 100', '値動きの荒さ。高いほどボラティリティが高い'],
@@ -417,6 +433,9 @@ function buildGuideRows(result) {
   if (result.enrichedWithYahoo) {
     rows.push('| 補助ポリシー | Moomoo 補助 | 売上成長率 YoY は growth scoring の補助に使う。EPS YoY は TradingView 値のみを使い、欠損時は N/A のままにする |');
   }
+  if (result.criteria.japan_fundamentals_policy) {
+    rows.push(`| 補助ポリシー | 日本株ファンダ補完 | ${result.criteria.japan_fundamentals_policy} |`);
+  }
   if (result.criteria.excluded_phase2_sectors?.length) {
     rows.push(`| ユニバース | Phase2 除外セクター | ${result.criteria.excluded_phase2_sectors.join(', ')} |`);
   }
@@ -468,6 +487,7 @@ function getRuntimeConfig() {
         ? Number(process.env.SCREENER_SELECTED_SECTOR_COUNT)
         : 3,
       scopeLabel: process.env.SCREENER_SCOPE_LABEL || undefined,
+      edinetApiKey: process.env.EDINET_API_KEY || undefined,
     },
   };
 }
@@ -494,6 +514,13 @@ export function buildMarkdown(result, options = {}) {
   ];
 
   const ruleOf40CoverageLines = buildRuleOf40CoverageLines(result);
+  const sourceCoverageLines = buildSourceCoverageLines(result);
+  if (sourceCoverageLines.length > 0) {
+    lines.push('## データソース状況');
+    lines.push('');
+    sourceCoverageLines.forEach((line) => lines.push(line));
+    lines.push('');
+  }
   if (showRuleOf40CoverageSection && ruleOf40CoverageLines.length > 0) {
     lines.push('## Rule of 40 算出状況');
     lines.push('');
