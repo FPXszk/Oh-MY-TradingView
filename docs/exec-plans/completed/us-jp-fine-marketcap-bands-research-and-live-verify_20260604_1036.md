@@ -44,8 +44,8 @@
 
 ## 実装ステップ
 
-- [ ] US/JP の時価総額サイズ区分の根拠を調査し、適用方針を確定する
-- [ ] `scripts/screener/run-fundamental-screening.mjs` の時価総額表示を US/JP 別の細かめ版に更新する
-- [ ] `tests/daily-screener-report.test.js` の期待値を新表示に合わせて更新する
-- [ ] ローカルテストと diff チェックを実行する
-- [ ] US/JP の workflow を実行し、生成レポートで表示を確認する
+- [x] US/JP の時価総額サイズ区分の根拠を調査し、適用方針を確定する
+- [x] `scripts/screener/run-fundamental-screening.mjs` の時価総額表示を US/JP 別の細かめ版に更新する
+- [x] `tests/daily-screener-report.test.js` の期待値を新表示に合わせて更新する
+- [x] ローカルテストと diff チェックを実行する
+- [x] US/JP の workflow を実行し、生成レポートで表示を確認する
