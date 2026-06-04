@@ -732,9 +732,9 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| 3 \| Semiconductor Equipment \| Test \/ Metrology \/ Inspection \| 1 \| 23\.4% \| 74\.10 \|/);
     assert.match(markdown, /## Phase4 個別銘柄ランキング \(Electronic Technology\)/);
     assert.match(markdown, /- Phase3 掲載小テーマ: AI Compute \/ AI Accelerators, Memory \/ HBM \/ DRAM, Semiconductor Equipment \/ Test \/ Metrology \/ Inspection/);
-    assert.match(markdown, /\| 1 \| AI Compute \| AI Accelerators \| \*\*NVDA\*\* \| NASDAQ \|/);
-    assert.match(markdown, /\| 2 \| Memory \| HBM \/ DRAM \| \*\*MU\*\* \| NASDAQ \|/);
-    assert.match(markdown, /\| 3 \| Semiconductor Equipment \| Test \/ Metrology \/ Inspection \| \*\*KLAC\*\* \| NASDAQ \|/);
+    assert.match(markdown, /\| 1 \| AI Compute \| AI Accelerators \| \*\*NVDA\*\* \| NASDAQ \| \$3\.10T \(L\) \|/);
+    assert.match(markdown, /\| 2 \| Memory \| HBM \/ DRAM \| \*\*MU\*\* \| NASDAQ \| \$130\.0B \(L\) \|/);
+    assert.match(markdown, /\| 3 \| Semiconductor Equipment \| Test \/ Metrology \/ Inspection \| \*\*KLAC\*\* \| NASDAQ \| \$95\.0B \(L\) \|/);
     assert.doesNotMatch(markdown, /\*\*NVDA \(NVIDIA Corporation\)\*\*/);
     assert.doesNotMatch(markdown, /\*\*AAA \(Alpha Apps Inc\.\)\*\*/);
     assert.doesNotMatch(markdown, /## Phase2 セクター別ランキング/);
@@ -913,6 +913,7 @@ describe('buildMarkdown', () => {
             pFcf: 18,
             atrPct: 2.4,
             rankScore: 4,
+            rankBreakdown: rankBreakdown(1),
           },
         ],
       },
@@ -960,13 +961,16 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| 1 \| Finance \| 32\.5% \| 20\.1% \| 11\.8% \| 7\.4pt \| 5\.3pt \| 3\.4pt \| 75\.0% \| 87\.5% \| 62\.5% \| 62\.5 \| 1\.21x \| 8 \| 4 \|/);
     assert.doesNotMatch(markdown, /アプローチ:/);
     assert.doesNotMatch(markdown, /## Phase2 中テーマランキング \(Electronic Technology\)/);
-    assert.match(markdown, /\| 1 \| Electronic Components \| Passives \/ RF Modules \| \*\*7203 \(トヨタ自動車\)\*\* \| TSE \|/);
+    assert.match(markdown, /\| 1 \| Electronic Components \| Passives \/ RF Modules \| \*\*7203 \(トヨタ自動車\)\*\* \| TSE \| \$4\.50T \(L\) \|/);
     assert.match(markdown, /- Phase2 掲載中テーマ: Electronic Components/);
     assert.match(markdown, /- Phase3 掲載小テーマ: Electronic Components \/ Passives \/ RF Modules/);
     assert.doesNotMatch(markdown, /## Phase2 セクター別ランキング/);
     assert.doesNotMatch(markdown, /## 上位3件の選定理由/);
+    assert.match(markdown, /\| 順位 \| 中テーマ \| 小テーマ \| シンボル \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCF \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \(T\/F\) \|/);
+    assert.match(markdown, /2\.4% \| 4\.00 \(T1\.9\/F2\.1\) \|/);
     assert.match(markdown, /\| ユニバース \| 取引所 \| TSE \|/);
     assert.match(markdown, /\| ユニバース \| 銘柄ユニバース \| jpx-prime \|/);
+    assert.match(markdown, /\| 総合点 \(T\/F\) \| repo 独自の総合スコア \| 高いほど良い。T はテクニカル寄り、F はファンダ寄り \|/);
   });
 });
 

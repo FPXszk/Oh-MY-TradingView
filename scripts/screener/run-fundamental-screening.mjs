@@ -26,10 +26,23 @@ function fmt(val, digits = 1, suffix = '') {
 function fmtUsdMarketCap(val) {
   if (val === null || val === undefined) return 'N/A';
   const abs = Math.abs(Number(val));
-  if (abs >= 1_000_000_000_000) return `$${(val / 1_000_000_000_000).toFixed(2)}T`;
-  if (abs >= 1_000_000_000) return `$${(val / 1_000_000_000).toFixed(1)}B`;
-  if (abs >= 1_000_000) return `$${(val / 1_000_000).toFixed(1)}M`;
-  return `$${Number(val).toLocaleString('en-US')}`;
+  const sizeBand = abs >= 10_000_000_000
+    ? 'L'
+    : abs >= 5_000_000_000
+      ? 'M+'
+      : abs >= 2_000_000_000
+        ? 'M'
+        : abs >= 1_000_000_000
+          ? 'M-'
+          : 'S';
+  const marketCapLabel = abs >= 1_000_000_000_000
+    ? `$${(val / 1_000_000_000_000).toFixed(2)}T`
+    : abs >= 1_000_000_000
+      ? `$${(val / 1_000_000_000).toFixed(1)}B`
+      : abs >= 1_000_000
+        ? `$${(val / 1_000_000).toFixed(1)}M`
+        : `$${Number(val).toLocaleString('en-US')}`;
+  return `${marketCapLabel} (${sizeBand})`;
 }
 
 function fmtCountOrVolume(entry) {
@@ -182,10 +195,6 @@ function buildScoreContributionBreakdown(row, populationSize) {
 
 function buildTotalScoreCell(row, market, populationSize) {
   const total = fmt(row.rankScore, 2);
-  if (market !== 'america') {
-    return total;
-  }
-
   const breakdown = buildScoreContributionBreakdown(row, populationSize);
   if (!breakdown) {
     return total;
@@ -337,9 +346,7 @@ function buildMetricGlossaryRows(market) {
     ['EPS YoY', 'EPS の前年比成長率', '利益成長の確認。N/A は TradingView 側の欠損'],
     ['P/FCF', '株価 ÷ FCF の倍率', '低いほど割高感が小さい傾向'],
     ['ATR%', 'ATR ÷ 株価 × 100', '値動きの荒さ。高いほどボラティリティが高い'],
-    ['総合点 (T/F)', 'repo 独自の総合スコア', market === 'america'
-      ? '高いほど良い。T はテクニカル寄り、F はファンダ寄り'
-      : '高いほど良い総合スコア'],
+    ['総合点 (T/F)', 'repo 独自の総合スコア', '高いほど良い。T はテクニカル寄り、F はファンダ寄り'],
   ];
 }
 
@@ -576,7 +583,7 @@ export function buildMarkdown(result, options = {}) {
       if (!result.focusedHierarchy.stockRanking || result.focusedHierarchy.stockRanking.length === 0) {
         lines.push('- 個別銘柄ランキングは算出できませんでした。');
       } else {
-        const scoreHeader = market === 'america' ? '総合点 (T/F)' : '総合点';
+        const scoreHeader = '総合点 (T/F)';
         lines.push(`| 順位 | 中テーマ | 小テーマ | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | ${scoreHeader} |`);
         lines.push('|:---:|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|');
         result.focusedHierarchy.stockRanking.forEach((row, index) => {
@@ -598,7 +605,7 @@ export function buildMarkdown(result, options = {}) {
       } else {
         result.sectorRanking.forEach((sector, index) => {
           const sectorRank = sector.phase1SectorRank ?? index + 1;
-          const scoreHeader = market === 'america' ? '総合点 (T/F)' : '総合点';
+          const scoreHeader = '総合点 (T/F)';
           lines.push(`### ${sectorRank}位 ${sector.sector}`);
           lines.push('');
           lines.push(`- 通過銘柄数: ${sector.count}`);
