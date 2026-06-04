@@ -29,15 +29,15 @@
 
 ## 実装ステップ
 
-- [ ] Step 1: Yahoo の現行 401 原因と代替 endpoint を再確認する
+- [x] Step 1: Yahoo の現行 401 原因と代替 endpoint を再確認する
   - 確認: `quoteSummary` は US/JP とも 401、`fundamentals-timeseries` は 200
-- [ ] Step 2: `market-intel.js` の Yahoo fundamentals 実装を差し替える
+- [x] Step 2: `market-intel.js` の Yahoo fundamentals 実装を差し替える
   - 確認: 必須返却フィールドを新経路で埋める
-- [ ] Step 3: テストを新経路に合わせて更新する
+- [x] Step 3: テストを新経路に合わせて更新する
   - 確認: `tests/market-intel.test.js` が通る
-- [ ] Step 4: 代表銘柄で US/JP 実取得確認を行う
+- [x] Step 4: 代表銘柄で US/JP 実取得確認を行う
   - 確認: `AAPL` と `6806.T` などで成功レスポンス
-- [ ] Step 5: EDINET の説明と、Yahoo/EDINET の役割分担を整理して報告する
+- [x] Step 5: EDINET の説明と、Yahoo/EDINET の役割分担を整理して報告する
   - 確認: 無料/登録要否/向き不向きを説明できる
 
 ## テスト・検証方針

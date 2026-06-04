@@ -13,7 +13,7 @@ import {
 
 const YAHOO_QUOTE_BASE = 'https://query1.finance.yahoo.com/v8/finance/chart';
 const YAHOO_SEARCH_BASE = 'https://query1.finance.yahoo.com/v1/finance/search';
-const YAHOO_QUOTESUMMARY_BASE = 'https://query1.finance.yahoo.com/v10/finance/quoteSummary';
+const YAHOO_FUNDAMENTALS_TIMESERIES_BASE = 'https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries';
 
 const DEFAULT_TIMEOUT_MS = 10000;
 const CONFLUENCE_MAX_SYMBOLS = 20;
@@ -168,35 +168,126 @@ export async function getSymbolFundamentals(symbol, options = {}) {
 }
 
 async function getYahooSymbolFundamentals(ticker) {
-  const modules = 'summaryDetail,defaultKeyStatistics,financialData';
-  const url = `${YAHOO_QUOTESUMMARY_BASE}/${encodeURIComponent(ticker)}?modules=${modules}`;
-  const data = await fetchJson(url);
+  const nowSeconds = Math.floor(Date.now() / 1000);
+  const tenYearsAgoSeconds = nowSeconds - (10 * 365 * 24 * 60 * 60);
+  const types = [
+    'annualTotalRevenue',
+    'annualNetIncome',
+    'annualGrossProfit',
+    'annualStockholdersEquity',
+    'annualTotalLiabilitiesNetMinorityInterest',
+    'annualDilutedEPS',
+    'annualOrdinarySharesNumber',
+    'trailingPeRatio',
+  ];
+  const url = `${YAHOO_FUNDAMENTALS_TIMESERIES_BASE}/${encodeURIComponent(ticker)}?type=${types.join(',')}&period1=${tenYearsAgoSeconds}&period2=${nowSeconds}`;
+  const [timeseriesResult, quoteResult] = await Promise.allSettled([
+    fetchJson(url),
+    getYahooSymbolQuote(ticker),
+  ]);
+  if (timeseriesResult.status !== 'fulfilled') {
+    throw timeseriesResult.reason;
+  }
+  const timeseriesData = timeseriesResult.value;
+  const quoteData = quoteResult.status === 'fulfilled' ? quoteResult.value : null;
 
-  const qsResult = data?.quoteSummary?.result?.[0];
-  if (!qsResult) {
+  const result = timeseriesData?.timeseries?.result;
+  if (!Array.isArray(result) || result.length === 0) {
     throw new Error(`No fundamentals data for symbol "${ticker}"`);
   }
 
-  const summary = qsResult.summaryDetail || {};
-  const keyStats = qsResult.defaultKeyStatistics || {};
-  const financials = qsResult.financialData || {};
+  const latest = (type) => getLatestTimeseriesValue(result, type);
+  const previous = (type) => getPreviousTimeseriesValue(result, type);
+
+  const totalRevenue = latest('annualTotalRevenue');
+  const priorRevenue = previous('annualTotalRevenue');
+  const netIncome = latest('annualNetIncome');
+  const priorNetIncome = previous('annualNetIncome');
+  const grossProfit = latest('annualGrossProfit');
+  const stockholdersEquity = latest('annualStockholdersEquity');
+  const totalLiabilities = latest('annualTotalLiabilitiesNetMinorityInterest');
+  const dilutedEps = latest('annualDilutedEPS');
+  const ordinaryShares = latest('annualOrdinarySharesNumber');
+  const trailingPe = latest('trailingPeRatio');
+  const marketCap = (
+    quoteData?.regularMarketPrice !== null
+      && quoteData?.regularMarketPrice !== undefined
+      && ordinaryShares !== null
+      && ordinaryShares !== undefined
+      ? Number((quoteData.regularMarketPrice * ordinaryShares).toFixed(2))
+      : null
+  );
+  const profitMargins = ratioOrNull(netIncome, totalRevenue);
+  const revenueGrowth = growthOrNull(totalRevenue, priorRevenue);
+  const earningsGrowth = growthOrNull(netIncome, priorNetIncome);
+  const returnOnEquity = ratioOrNull(netIncome, stockholdersEquity);
+  const debtToEquity = ratioPercentOrNull(totalLiabilities, stockholdersEquity);
 
   return {
     success: true,
     symbol: ticker,
-    marketCap: normalizeNumber(summary.marketCap?.raw),
-    trailingPE: normalizeNumber(summary.trailingPE?.raw),
-    forwardPE: normalizeNumber(summary.forwardPE?.raw ?? keyStats.forwardPE?.raw),
-    dividendYield: normalizeNumber(summary.dividendYield?.raw),
-    beta: normalizeNumber(summary.beta?.raw ?? keyStats.beta?.raw),
-    profitMargins: normalizeNumber(financials.profitMargins?.raw),
-    revenueGrowth: normalizeNumber(financials.revenueGrowth?.raw),
-    earningsGrowth: normalizeNumber(financials.earningsGrowth?.raw),
-    returnOnEquity: normalizeNumber(financials.returnOnEquity?.raw),
-    debtToEquity: normalizeNumber(financials.debtToEquity?.raw),
+    marketCap,
+    trailingPE: trailingPe,
+    forwardPE: null,
+    dividendYield: null,
+    beta: null,
+    profitMargins,
+    revenueGrowth,
+    earningsGrowth,
+    returnOnEquity,
+    debtToEquity,
+    grossProfit: normalizeNumber(grossProfit),
+    totalRevenue: normalizeNumber(totalRevenue),
+    netIncome: normalizeNumber(netIncome),
     retrieved_at: new Date().toISOString(),
     source: 'yahoo_finance',
   };
+}
+
+function getTimeseriesEntries(result, type) {
+  const match = result.find((entry) => entry?.meta?.type?.[0] === type);
+  if (!match || !Array.isArray(match[type])) return [];
+  return match[type]
+    .map((entry) => ({
+      asOfDate: entry?.asOfDate ?? '',
+      raw: normalizeNumber(entry?.reportedValue?.raw),
+    }))
+    .filter((entry) => entry.raw !== null)
+    .sort((left, right) => String(left.asOfDate).localeCompare(String(right.asOfDate)));
+}
+
+function getLatestTimeseriesValue(result, type) {
+  const entries = getTimeseriesEntries(result, type);
+  return entries.at(-1)?.raw ?? null;
+}
+
+function getPreviousTimeseriesValue(result, type) {
+  const entries = getTimeseriesEntries(result, type);
+  return entries.length > 1 ? entries.at(-2)?.raw ?? null : null;
+}
+
+function ratioOrNull(numerator, denominator, digits = 6) {
+  const numeratorValue = normalizeNumber(numerator);
+  const denominatorValue = normalizeNumber(denominator);
+  if (numeratorValue === null || denominatorValue === null || denominatorValue === 0) {
+    return null;
+  }
+  return Number((numeratorValue / denominatorValue).toFixed(digits));
+}
+
+function ratioPercentOrNull(numerator, denominator, digits = 2) {
+  const ratio = ratioOrNull(numerator, denominator, digits + 4);
+  if (ratio === null) return null;
+  return Number((ratio * 100).toFixed(digits));
+}
+
+function growthOrNull(current, previous, digits = 6) {
+  const currentValue = normalizeNumber(current);
+  const previousValue = normalizeNumber(previous);
+  if (currentValue === null || previousValue === null || previousValue === 0) {
+    return null;
+  }
+  return Number((((currentValue - previousValue) / Math.abs(previousValue))).toFixed(digits));
 }
 
 /**

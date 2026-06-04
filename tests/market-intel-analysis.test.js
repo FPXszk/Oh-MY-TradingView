@@ -81,31 +81,78 @@ function buildChartResponse(symbol, closes) {
 }
 
 function buildFundamentalsResponse(overrides = {}) {
+  const trailingPE = overrides.summaryDetail?.trailingPE?.raw ?? 28.5;
+  const profitMargins = overrides.financialData?.profitMargins?.raw ?? 0.25;
+  const revenueGrowth = overrides.financialData?.revenueGrowth?.raw ?? 0.08;
+  const earningsGrowth = overrides.financialData?.earningsGrowth?.raw ?? 0.12;
+  const returnOnEquity = overrides.financialData?.returnOnEquity?.raw ?? 0.15;
+  const debtToEquity = overrides.financialData?.debtToEquity?.raw ?? 120;
+  const latestRevenue = 1000;
+  const priorRevenue = Number((latestRevenue / (1 + revenueGrowth)).toFixed(4));
+  const latestNetIncome = Number((latestRevenue * profitMargins).toFixed(4));
+  const priorNetIncome = Number((latestNetIncome / (1 + earningsGrowth)).toFixed(4));
+  const latestEquity = returnOnEquity === 0 || returnOnEquity === null ? null : Number((latestNetIncome / returnOnEquity).toFixed(4));
+  const latestLiabilities = (
+    latestEquity === null || debtToEquity === null
+      ? null
+      : Number((latestEquity * (debtToEquity / 100)).toFixed(4))
+  );
+
   return {
-    quoteSummary: {
+    timeseries: {
       result: [{
-        summaryDetail: {
-          marketCap: { raw: 3000000000000 },
-          trailingPE: { raw: 28.5 },
-          forwardPE: { raw: 25.0 },
-          dividendYield: { raw: 0.005 },
-          beta: { raw: 1.2 },
-          ...overrides.summaryDetail,
-        },
-        defaultKeyStatistics: {
-          ...overrides.defaultKeyStatistics,
-        },
-        financialData: {
-          profitMargins: { raw: 0.25 },
-          revenueGrowth: { raw: 0.08 },
-          earningsGrowth: { raw: 0.12 },
-          returnOnEquity: { raw: 0.15 },
-          debtToEquity: { raw: 120 },
-          ...overrides.financialData,
-        },
+        meta: { symbol: ['AAPL'], type: ['annualTotalRevenue'] },
+        annualTotalRevenue: [
+          { asOfDate: '2024-09-30', reportedValue: { raw: priorRevenue } },
+          { asOfDate: '2025-09-30', reportedValue: { raw: latestRevenue } },
+        ],
+      }, {
+        meta: { symbol: ['AAPL'], type: ['annualNetIncome'] },
+        annualNetIncome: [
+          { asOfDate: '2024-09-30', reportedValue: { raw: priorNetIncome } },
+          { asOfDate: '2025-09-30', reportedValue: { raw: latestNetIncome } },
+        ],
+      }, {
+        meta: { symbol: ['AAPL'], type: ['annualGrossProfit'] },
+        annualGrossProfit: [
+          { asOfDate: '2025-09-30', reportedValue: { raw: 400 } },
+        ],
+      }, {
+        meta: { symbol: ['AAPL'], type: ['annualStockholdersEquity'] },
+        annualStockholdersEquity: latestEquity === null ? [] : [
+          { asOfDate: '2025-09-30', reportedValue: { raw: latestEquity } },
+        ],
+      }, {
+        meta: { symbol: ['AAPL'], type: ['annualTotalLiabilitiesNetMinorityInterest'] },
+        annualTotalLiabilitiesNetMinorityInterest: latestLiabilities === null ? [] : [
+          { asOfDate: '2025-09-30', reportedValue: { raw: latestLiabilities } },
+        ],
+      }, {
+        meta: { symbol: ['AAPL'], type: ['annualDilutedEPS'] },
+        annualDilutedEPS: [
+          { asOfDate: '2025-09-30', reportedValue: { raw: 6 } },
+        ],
+      }, {
+        meta: { symbol: ['AAPL'], type: ['annualOrdinarySharesNumber'] },
+        annualOrdinarySharesNumber: [
+          { asOfDate: '2025-09-30', reportedValue: { raw: 14251781473 } },
+        ],
+      }, {
+        meta: { symbol: ['AAPL'], type: ['trailingPeRatio'] },
+        trailingPeRatio: [
+          { asOfDate: '2025-09-30', reportedValue: { raw: trailingPE } },
+        ],
       }],
     },
   };
+}
+
+function buildFundamentalsResponseForSymbol(symbol, overrides = {}) {
+  const payload = buildFundamentalsResponse(overrides);
+  payload.timeseries.result.forEach((entry) => {
+    entry.meta.symbol = [symbol];
+  });
+  return payload;
 }
 
 function buildNewsResponse(newsItems = []) {
@@ -120,7 +167,7 @@ function buildNewsResponse(newsItems = []) {
 function buildRoutedMock({ quote, chart, fundamentals, news }) {
   return async (url) => {
     const urlStr = String(url);
-    if (urlStr.includes('quoteSummary')) {
+    if (urlStr.includes('fundamentals-timeseries')) {
       return { ok: true, json: async () => fundamentals };
     }
     if (urlStr.includes('search')) {
@@ -562,7 +609,7 @@ describe('getSymbolAnalysis — partial data failure', () => {
   it('succeeds when fundamentals fail but quote/ta/news work', async () => {
     const mock = async (url) => {
       const urlStr = String(url);
-      if (urlStr.includes('quoteSummary')) {
+      if (urlStr.includes('fundamentals-timeseries')) {
         return { ok: false, status: 404, json: async () => ({}) };
       }
       if (urlStr.includes('search')) {
@@ -588,7 +635,7 @@ describe('getSymbolAnalysis — partial data failure', () => {
       if (urlStr.includes('search')) {
         return { ok: false, status: 500, json: async () => ({}) };
       }
-      if (urlStr.includes('quoteSummary')) {
+      if (urlStr.includes('fundamentals-timeseries')) {
         return { ok: true, json: async () => buildFundamentalsResponse() };
       }
       if (urlStr.includes('range=3mo')) {
@@ -608,7 +655,7 @@ describe('getSymbolAnalysis — partial data failure', () => {
   it('returns degraded schema when quote fetch fails but other inputs exist', async () => {
     const mock = async (url) => {
       const urlStr = String(url);
-      if (urlStr.includes('quoteSummary')) {
+      if (urlStr.includes('fundamentals-timeseries')) {
         return { ok: true, json: async () => buildFundamentalsResponse() };
       }
       if (urlStr.includes('search')) {
@@ -683,7 +730,7 @@ describe('getSymbolAnalysis — partial data failure', () => {
   it('surfaces provider status and missing reason when fundamentals fail', async () => {
     const mock = async (url) => {
       const urlStr = String(url);
-      if (urlStr.includes('quoteSummary')) {
+      if (urlStr.includes('fundamentals-timeseries')) {
         return { ok: false, status: 503, json: async () => ({}) };
       }
       if (urlStr.includes('search')) {
@@ -706,7 +753,7 @@ describe('getSymbolAnalysis — partial data failure', () => {
   it('surfaces fetch_failed when TA summary resolves with a provider error', async () => {
     const mock = async (url) => {
       const urlStr = String(url);
-      if (urlStr.includes('quoteSummary')) {
+      if (urlStr.includes('fundamentals-timeseries')) {
         return { ok: true, json: async () => buildFundamentalsResponse() };
       }
       if (urlStr.includes('search')) {
@@ -748,7 +795,7 @@ describe('getSymbolAnalysis — partial data failure', () => {
   it('keeps overall summary mixed when only fundamentals are available', async () => {
     const mock = async (url) => {
       const urlStr = String(url);
-      if (urlStr.includes('quoteSummary')) {
+      if (urlStr.includes('fundamentals-timeseries')) {
         return { ok: true, json: async () => buildFundamentalsResponse() };
       }
       return { ok: false, status: 503, json: async () => ({}) };

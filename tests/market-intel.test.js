@@ -722,31 +722,78 @@ describe('rankSymbolsByConfluence — mocked fetch', () => {
   }
 
   function buildFundamentalsResponse(overrides = {}) {
+    const trailingPE = overrides.summaryDetail?.trailingPE?.raw ?? 28.5;
+    const profitMargins = overrides.financialData?.profitMargins?.raw ?? 0.25;
+    const revenueGrowth = overrides.financialData?.revenueGrowth?.raw ?? 0.08;
+    const earningsGrowth = overrides.financialData?.earningsGrowth?.raw ?? 0.12;
+    const returnOnEquity = overrides.financialData?.returnOnEquity?.raw ?? 0.15;
+    const debtToEquity = overrides.financialData?.debtToEquity?.raw ?? 120;
+    const latestRevenue = 1000;
+    const priorRevenue = Number((latestRevenue / (1 + revenueGrowth)).toFixed(4));
+    const latestNetIncome = Number((latestRevenue * profitMargins).toFixed(4));
+    const priorNetIncome = Number((latestNetIncome / (1 + earningsGrowth)).toFixed(4));
+    const latestEquity = returnOnEquity === 0 ? null : Number((latestNetIncome / returnOnEquity).toFixed(4));
+    const latestLiabilities = (
+      latestEquity === null || debtToEquity === null
+        ? null
+        : Number((latestEquity * (debtToEquity / 100)).toFixed(4))
+    );
+
     return {
-      quoteSummary: {
+      timeseries: {
         result: [{
-          summaryDetail: {
-            marketCap: { raw: 3000000000000 },
-            trailingPE: { raw: 28.5 },
-            forwardPE: { raw: 25.0 },
-            dividendYield: { raw: 0.005 },
-            beta: { raw: 1.0 },
-            ...overrides.summaryDetail,
-          },
-          defaultKeyStatistics: {
-            ...overrides.defaultKeyStatistics,
-          },
-          financialData: {
-            profitMargins: { raw: 0.25 },
-            revenueGrowth: { raw: 0.08 },
-            earningsGrowth: { raw: 0.12 },
-            returnOnEquity: { raw: 0.15 },
-            debtToEquity: { raw: 120 },
-            ...overrides.financialData,
-          },
+          meta: { symbol: ['AAPL'], type: ['annualTotalRevenue'] },
+          annualTotalRevenue: [
+            { asOfDate: '2024-09-30', reportedValue: { raw: priorRevenue } },
+            { asOfDate: '2025-09-30', reportedValue: { raw: latestRevenue } },
+          ],
+        }, {
+          meta: { symbol: ['AAPL'], type: ['annualNetIncome'] },
+          annualNetIncome: [
+            { asOfDate: '2024-09-30', reportedValue: { raw: priorNetIncome } },
+            { asOfDate: '2025-09-30', reportedValue: { raw: latestNetIncome } },
+          ],
+        }, {
+          meta: { symbol: ['AAPL'], type: ['annualGrossProfit'] },
+          annualGrossProfit: [
+            { asOfDate: '2025-09-30', reportedValue: { raw: 400 } },
+          ],
+        }, {
+          meta: { symbol: ['AAPL'], type: ['annualStockholdersEquity'] },
+          annualStockholdersEquity: latestEquity === null ? [] : [
+            { asOfDate: '2025-09-30', reportedValue: { raw: latestEquity } },
+          ],
+        }, {
+          meta: { symbol: ['AAPL'], type: ['annualTotalLiabilitiesNetMinorityInterest'] },
+          annualTotalLiabilitiesNetMinorityInterest: latestLiabilities === null ? [] : [
+            { asOfDate: '2025-09-30', reportedValue: { raw: latestLiabilities } },
+          ],
+        }, {
+          meta: { symbol: ['AAPL'], type: ['annualDilutedEPS'] },
+          annualDilutedEPS: [
+            { asOfDate: '2025-09-30', reportedValue: { raw: 6 } },
+          ],
+        }, {
+          meta: { symbol: ['AAPL'], type: ['annualOrdinarySharesNumber'] },
+          annualOrdinarySharesNumber: [
+            { asOfDate: '2025-09-30', reportedValue: { raw: 14251781473 } },
+          ],
+        }, {
+          meta: { symbol: ['AAPL'], type: ['trailingPeRatio'] },
+          trailingPeRatio: [
+            { asOfDate: '2025-09-30', reportedValue: { raw: trailingPE } },
+          ],
         }],
       },
     };
+  }
+
+  function buildFundamentalsResponseForSymbol(symbol, overrides = {}) {
+    const payload = buildFundamentalsResponse(overrides);
+    payload.timeseries.result.forEach((entry) => {
+      entry.meta.symbol = [symbol];
+    });
+    return payload;
   }
 
   function buildNewsResponse(symbol) {
@@ -772,7 +819,7 @@ describe('rankSymbolsByConfluence — mocked fetch', () => {
       if (!config || config.fail) {
         return { ok: false, status: 503, json: async () => ({}) };
       }
-      if (urlStr.includes('quoteSummary')) {
+      if (urlStr.includes('fundamentals-timeseries')) {
         return { ok: true, json: async () => config.fundamentals };
       }
       if (urlStr.includes('search')) {
@@ -793,14 +840,13 @@ describe('rankSymbolsByConfluence — mocked fetch', () => {
       AAPL: {
         quote: buildQuoteResponse('AAPL', { regularMarketPrice: 210, fiftyTwoWeekHigh: 260, fiftyTwoWeekLow: 160 }),
         chart: buildChartResponse('AAPL', UPTREND_CLOSES),
-        fundamentals: buildFundamentalsResponse(),
+        fundamentals: buildFundamentalsResponseForSymbol('AAPL'),
         news: buildNewsResponse('AAPL'),
       },
       MSFT: {
         quote: buildQuoteResponse('MSFT', { regularMarketPrice: 175, fiftyTwoWeekHigh: 280, fiftyTwoWeekLow: 170 }),
         chart: buildChartResponse('MSFT', DOWNTREND_CLOSES),
-        fundamentals: buildFundamentalsResponse({
-          summaryDetail: { beta: { raw: 1.7 }, forwardPE: { raw: 38 } },
+        fundamentals: buildFundamentalsResponseForSymbol('MSFT', {
           financialData: {
             profitMargins: { raw: 0.08 },
             revenueGrowth: { raw: -0.04 },
@@ -825,13 +871,13 @@ describe('rankSymbolsByConfluence — mocked fetch', () => {
       AMZN: {
         quote: buildQuoteResponse('AMZN'),
         chart: buildChartResponse('AMZN', UPTREND_CLOSES),
-        fundamentals: buildFundamentalsResponse(),
+        fundamentals: buildFundamentalsResponseForSymbol('AMZN'),
         news: buildNewsResponse('AMZN'),
       },
       AAPL: {
         quote: buildQuoteResponse('AAPL'),
         chart: buildChartResponse('AAPL', UPTREND_CLOSES),
-        fundamentals: buildFundamentalsResponse(),
+        fundamentals: buildFundamentalsResponseForSymbol('AAPL'),
         news: buildNewsResponse('AAPL'),
       },
     }), async () => {
@@ -847,7 +893,7 @@ describe('rankSymbolsByConfluence — mocked fetch', () => {
       AAPL: {
         quote: buildQuoteResponse('AAPL'),
         chart: buildChartResponse('AAPL', UPTREND_CLOSES),
-        fundamentals: buildFundamentalsResponse(),
+        fundamentals: buildFundamentalsResponseForSymbol('AAPL'),
         news: buildNewsResponse('AAPL'),
       },
       BAD: {
@@ -868,7 +914,7 @@ describe('rankSymbolsByConfluence — mocked fetch', () => {
       AAPL: {
         quote: buildQuoteResponse('AAPL'),
         chart: buildChartResponse('AAPL', UPTREND_CLOSES),
-        fundamentals: buildFundamentalsResponse(),
+        fundamentals: buildFundamentalsResponseForSymbol('AAPL'),
         news: buildNewsResponse('AAPL'),
       },
     }), async () => {
@@ -883,7 +929,7 @@ describe('rankSymbolsByConfluence — mocked fetch', () => {
       AAPL: {
         quote: buildQuoteResponse('AAPL'),
         chart: buildChartResponse('AAPL', UPTREND_CLOSES),
-        fundamentals: buildFundamentalsResponse(),
+        fundamentals: buildFundamentalsResponseForSymbol('AMZN'),
         news: buildNewsResponse('AAPL'),
       },
       AMZN: {
@@ -895,8 +941,7 @@ describe('rankSymbolsByConfluence — mocked fetch', () => {
       MSFT: {
         quote: buildQuoteResponse('MSFT', { regularMarketPrice: 175, fiftyTwoWeekHigh: 280, fiftyTwoWeekLow: 170 }),
         chart: buildChartResponse('MSFT', DOWNTREND_CLOSES),
-        fundamentals: buildFundamentalsResponse({
-          summaryDetail: { beta: { raw: 1.7 }, forwardPE: { raw: 38 } },
+        fundamentals: buildFundamentalsResponseForSymbol('MSFT', {
           financialData: {
             profitMargins: { raw: 0.08 },
             revenueGrowth: { raw: -0.04 },
@@ -937,11 +982,11 @@ describe('rankSymbolsByConfluence — mocked fetch', () => {
 
     await withMockFetch(async (url) => {
       const urlStr = String(url);
-      const symbolMatch = urlStr.match(/quoteSummary\/([^?]+)|chart\/([^?]+)/);
+      const symbolMatch = urlStr.match(/timeseries\/([^?]+)|chart\/([^?]+)/);
       const symbol = (symbolMatch?.[1] || symbolMatch?.[2] || 'AAPL').toUpperCase();
 
-      if (urlStr.includes('quoteSummary')) {
-        return { ok: true, json: async () => buildFundamentalsResponse() };
+      if (urlStr.includes('fundamentals-timeseries')) {
+        return { ok: true, json: async () => buildFundamentalsResponseForSymbol(symbol) };
       }
       if (urlStr.includes('search')) {
         return { ok: true, json: async () => buildNewsResponse(symbol) };
