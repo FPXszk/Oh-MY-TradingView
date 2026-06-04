@@ -457,8 +457,8 @@ export function buildMarkdown(result, options = {}) {
   const benchmarkLabel = getBenchmarkDisplay(result);
   const resultRowsByKey = new Map((result.results ?? []).map((row) => [buildRowLookupKey(row), row]));
   const showRuleOf40CoverageSection = options.showRuleOf40CoverageSection ?? market !== 'america';
-  const showPhase2SectorBreakdownSection = options.showPhase2SectorBreakdownSection ?? market !== 'america';
-  const showTopSelectionReasonsSection = options.showTopSelectionReasonsSection ?? market !== 'america';
+  const showPhase2SectorBreakdownSection = options.showPhase2SectorBreakdownSection ?? false;
+  const showTopSelectionReasonsSection = options.showTopSelectionReasonsSection ?? false;
 
   const lines = [
     `# ${title}`,

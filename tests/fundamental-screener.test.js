@@ -887,6 +887,9 @@ describe('runFundamentalScreener', () => {
       'Semiconductor Equipment',
     ]);
     assert.equal(result.focusedHierarchy.focusSector, 'Electronic Technology');
+    assert.equal(result.criteria.hierarchy_selection.top_middle_themes_rule, 'all-ranked');
+    assert.equal(result.criteria.hierarchy_selection.top_small_themes_rule, 'all-ranked');
+    assert.equal(result.criteria.hierarchy_selection.top_stocks_rule, 'all-ranked');
     assert.deepEqual(result.focusedHierarchy.selectedMiddleThemes, ['Semiconductor Equipment']);
     assert.deepEqual(result.focusedHierarchy.selectedSmallThemes, [
       { middleTheme: 'Semiconductor Equipment', smallTheme: 'Semiconductor Production Equipment' },

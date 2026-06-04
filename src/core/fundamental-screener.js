@@ -1058,12 +1058,9 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   const getFundamentals = _deps?.getSymbolFundamentals ?? null;
   const forcedSelectedSectors = uniqueStrings(_deps?.forcePhase1Sectors ?? []);
   const hierarchyFocusSectorOverride = _deps?.hierarchyFocusSector ?? null;
-  const hierarchyTopMiddleThemeCount = _deps?.hierarchyTopMiddleThemeCount
-    ?? (market === DEFAULT_MARKET ? Number.POSITIVE_INFINITY : null);
-  const hierarchyTopSmallThemeCount = _deps?.hierarchyTopSmallThemeCount
-    ?? (market === DEFAULT_MARKET ? Number.POSITIVE_INFINITY : 3);
-  const hierarchyTopStockCount = _deps?.hierarchyTopStockCount
-    ?? (market === DEFAULT_MARKET ? Number.POSITIVE_INFINITY : 20);
+  const hierarchyTopMiddleThemeCount = _deps?.hierarchyTopMiddleThemeCount ?? Number.POSITIVE_INFINITY;
+  const hierarchyTopSmallThemeCount = _deps?.hierarchyTopSmallThemeCount ?? Number.POSITIVE_INFINITY;
+  const hierarchyTopStockCount = _deps?.hierarchyTopStockCount ?? Number.POSITIVE_INFINITY;
   const scannerUrl = `https://scanner.tradingview.com/${market}/scan`;
   const sectorMomentumScan = await runSectorMomentumScan({
     market,

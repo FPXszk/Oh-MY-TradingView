@@ -960,12 +960,11 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| 1 \| Finance \| 32\.5% \| 20\.1% \| 11\.8% \| 7\.4pt \| 5\.3pt \| 3\.4pt \| 75\.0% \| 87\.5% \| 62\.5% \| 62\.5 \| 1\.21x \| 8 \| 4 \|/);
     assert.doesNotMatch(markdown, /アプローチ:/);
     assert.doesNotMatch(markdown, /## Phase2 中テーマランキング \(Electronic Technology\)/);
-    assert.match(markdown, /- Phase1 採用は上位 1 セクターのみです。4位以下のセクターは Phase1 失格として除外しています。/);
-    assert.match(markdown, /- 条件通過銘柄がないため、セクター別ランキングは算出できませんでした。/);
-    assert.match(markdown, /### 1位 7203 \(トヨタ自動車\) \(TSE\)/);
     assert.match(markdown, /\| 1 \| Electronic Components \| Passives \/ RF Modules \| \*\*7203 \(トヨタ自動車\)\*\* \| TSE \|/);
     assert.match(markdown, /- Phase2 掲載中テーマ: Electronic Components/);
     assert.match(markdown, /- Phase3 掲載小テーマ: Electronic Components \/ Passives \/ RF Modules/);
+    assert.doesNotMatch(markdown, /## Phase2 セクター別ランキング/);
+    assert.doesNotMatch(markdown, /## 上位3件の選定理由/);
     assert.match(markdown, /\| ユニバース \| 取引所 \| TSE \|/);
     assert.match(markdown, /\| ユニバース \| 銘柄ユニバース \| jpx-prime \|/);
   });
