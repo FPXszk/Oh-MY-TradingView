@@ -754,8 +754,11 @@ async function main() {
   if (result.sourceDetails?.edinet) {
     const edinet = result.sourceDetails.edinet;
     console.log(
-      `[screener] edinet enabled=${edinet.enabled} reason=${edinet.reason ?? 'n/a'} requested=${edinet.requestedSymbols ?? 0} secCodeMatched=${edinet.secCodeMatchedSymbols ?? 0} eligibleDoc=${edinet.eligibleDescriptionMatchedSymbols ?? 0} csvEligible=${edinet.csvEligibleMatchedSymbols ?? 0} matchedFilings=${edinet.matchedFilings ?? 0} supplemented=${edinet.supplementedRows ?? 0}`,
+      `[screener] edinet enabled=${edinet.enabled} reason=${edinet.reason ?? 'n/a'} requested=${edinet.requestedSymbols ?? 0} secCodeMatched=${edinet.secCodeMatchedSymbols ?? 0} eligibleDoc=${edinet.eligibleDescriptionMatchedSymbols ?? 0} csvEligible=${edinet.csvEligibleMatchedSymbols ?? 0} matchedFilings=${edinet.matchedFilings ?? 0} supplemented=${edinet.supplementedRows ?? 0} docsWithSecCode=${edinet.documentsWithSecCode ?? 0} eligibleDocsWithSecCode=${edinet.eligibleDocumentsWithSecCode ?? 0}`,
     );
+    if ((edinet.secCodeMatchedSymbols ?? 0) === 0 && Array.isArray(edinet.sampleEligibleDocuments) && edinet.sampleEligibleDocuments.length > 0) {
+      console.log(`[screener] edinet sampleEligibleDocuments=${JSON.stringify(edinet.sampleEligibleDocuments)}`);
+    }
   }
 
   const md = buildMarkdown(result, {

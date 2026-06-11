@@ -64,12 +64,14 @@ function normalizeText(value) {
 
 function normalizeSecurityCode(value) {
   return String(value ?? '')
+    .normalize('NFKC')
     .toUpperCase()
     .replace(/[^0-9A-Z]/g, '');
 }
 
 function normalizeSymbol(value) {
   return String(value ?? '')
+    .normalize('NFKC')
     .trim()
     .toUpperCase();
 }
@@ -372,11 +374,30 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
   const secCodeMatchedSymbols = new Set();
   const eligibleDescriptionMatchedSymbols = new Set();
   const csvEligibleMatchedSymbols = new Set();
+  let documentsWithSecCode = 0;
+  let eligibleDocumentsWithSecCode = 0;
+  const sampleEligibleDocuments = [];
 
   for (let offset = 0; offset < lookbackDays && bestDocumentBySymbol.size < symbols.length; offset += 1) {
     const dateString = toIsoDate(shiftDate(asOfDate, -offset));
     const documents = await fetchDocumentListByDate(dateString, { apiKey, fetchFn });
     documents.forEach((doc) => {
+      const normalizedSecCode = normalizeSecurityCode(doc.secCode);
+      if (normalizedSecCode) {
+        documentsWithSecCode += 1;
+      }
+      if (normalizedSecCode && ELIGIBLE_DOCUMENT_PATTERN.test(doc.docDescription ?? '')) {
+        eligibleDocumentsWithSecCode += 1;
+        if (sampleEligibleDocuments.length < 5) {
+          sampleEligibleDocuments.push({
+            docID: doc.docID ?? null,
+            secCode: doc.secCode ?? null,
+            filerName: doc.filerName ?? null,
+            docDescription: doc.docDescription ?? null,
+            submitDateTime: doc.submitDateTime ?? null,
+          });
+        }
+      }
       const matchingSymbol = symbols.find((symbol) => matchesSecurityCode(symbol, doc.secCode));
       if (!matchingSymbol) return;
       secCodeMatchedSymbols.add(matchingSymbol);
@@ -442,6 +463,9 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
       secCodeMatchedSymbols: secCodeMatchedSymbols.size,
       eligibleDescriptionMatchedSymbols: eligibleDescriptionMatchedSymbols.size,
       csvEligibleMatchedSymbols: csvEligibleMatchedSymbols.size,
+      documentsWithSecCode,
+      eligibleDocumentsWithSecCode,
+      sampleEligibleDocuments,
       supplementedRows,
       lookbackDays,
       asOfDate: toIsoDate(asOfDate),
