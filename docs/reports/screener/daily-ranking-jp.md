@@ -1,54 +1,36 @@
 # スクリーニング結果 2026/06/12（金）
 
-更新: 01:25 JST
+更新: 01:29 JST
 
 セクター別取得候補 308銘柄 → ユニバース条件通過 218銘柄 → ランキング対象 176銘柄 → レポート掲載 60銘柄
 
 ## データソース状況
 
-- EDINET: no_extractable_metrics / 対象 126銘柄 / 書類一致 53件 / 指標補完 0銘柄
+- EDINET: active / 対象 126銘柄 / 書類一致 53件 / 指標補完 53銘柄
 - EDINET lookback: 180日 / as-of 2026-06-11
 
 ## Rule of 40 算出状況
 
-- Rule of 40 (参考表示) 完全算出: 27/60銘柄 (45.0%)
-- 欠損内訳: 売上のみあり 33件 / FCFのみあり 0件 / 両方欠け 0件
+- Rule of 40 (参考表示) 完全算出: 45/60銘柄 (75.0%)
+- 欠損内訳: 売上のみあり 15件 / FCFのみあり 0件 / 両方欠け 0件
 
 | シンボル | セクター | 売上YoY | FCF margin | 状態 |
 |:---|:---|---:|---:|:---|
-| 6278 | Producer Manufacturing | 29.2% | N/A% | FCF欠け |
-| 4971 | Process Industries | 23.8% | N/A% | FCF欠け |
 | 4109 | Process Industries | 1.4% | N/A% | FCF欠け |
-| 4025 | Process Industries | 8.6% | N/A% | FCF欠け |
-| 4099 | Process Industries | 7.0% | N/A% | FCF欠け |
 | 1979 | Distribution Services | 3.6% | N/A% | FCF欠け |
-| 5384 | Process Industries | 11.0% | N/A% | FCF欠け |
 | 4047 | Process Industries | 4.9% | N/A% | FCF欠け |
 | 5186 | Process Industries | 1.7% | N/A% | FCF欠け |
 | 4095 | Process Industries | 4.4% | N/A% | FCF欠け |
 | 4975 | Process Industries | 4.6% | N/A% | FCF欠け |
-| 6856 | Producer Manufacturing | 8.4% | N/A% | FCF欠け |
 | 3156 | Distribution Services | 12.5% | N/A% | FCF欠け |
 | 5333 | Producer Manufacturing | 8.2% | N/A% | FCF欠け |
-| 6055 | Process Industries | 10.1% | N/A% | FCF欠け |
-| 6136 | Producer Manufacturing | 5.7% | N/A% | FCF欠け |
-| 7818 | Process Industries | 11.6% | N/A% | FCF欠け |
 | 6013 | Producer Manufacturing | 9.6% | N/A% | FCF欠け |
 | 7729 | Producer Manufacturing | 10.8% | N/A% | FCF欠け |
-| 4272 | Process Industries | 8.7% | N/A% | FCF欠け |
-| 6866 | Electronic Technology | 5.3% | N/A% | FCF欠け |
-| 7609 | Distribution Services | 50.8% | N/A% | FCF欠け |
 | 5332 | Producer Manufacturing | 1.8% | N/A% | FCF欠け |
 | 7995 | Producer Manufacturing | -2.6% | N/A% | FCF欠け |
 | 3107 | Distribution Services | 18.8% | N/A% | FCF欠け |
 | 6617 | Producer Manufacturing | 5.1% | N/A% | FCF欠け |
 | 2108 | Process Industries | 6.0% | N/A% | FCF欠け |
-| 6387 | Electronic Technology | 19.3% | N/A% | FCF欠け |
-| 3445 | Producer Manufacturing | 27.3% | N/A% | FCF欠け |
-| 6914 | Electronic Technology | 9.9% | N/A% | FCF欠け |
-| 7762 | Electronic Technology | 9.4% | N/A% | FCF欠け |
-| 4004 | Process Industries | -4.0% | N/A% | FCF欠け |
-| 4118 | Process Industries | 0.5% | N/A% | FCF欠け |
 
 ## Phase1 セクターランキング
 
@@ -85,9 +67,9 @@
 
 | 順位 | テーマ | 通過銘柄数 | 平均3M | 平均総合点 | 主な小テーマ | 外部確認 |
 |:---:|:---|---:|---:|---:|:---|:---|
-| 1 | AI / Data Center | 5 | 85.5% | 50.90 | Data Center Memory | Minkabu |
-| 2 | Electronic Components | 25 | 58.6% | 48.50 | Passives / RF Modules | Minkabu |
-| 3 | Semiconductor Equipment | 8 | 67.4% | 45.40 | Semiconductor Production Equipment | Minkabu |
+| 1 | AI / Data Center | 5 | 85.5% | 51.10 | Data Center Memory | Minkabu |
+| 2 | Electronic Components | 25 | 58.6% | 48.70 | Passives / RF Modules | Minkabu |
+| 3 | Semiconductor Equipment | 8 | 67.4% | 44.70 | Semiconductor Production Equipment | Minkabu |
 
 ## Phase3 小テーマランキング (Electronic Technology)
 
@@ -95,9 +77,9 @@
 
 | 順位 | 中テーマ | 小テーマ | 通過銘柄数 | 平均3M | 平均総合点 |
 |:---:|:---|:---|---:|---:|---:|
-| 1 | AI / Data Center | Data Center Memory | 5 | 85.5% | 50.90 |
-| 2 | Electronic Components | Passives / RF Modules | 12 | 82.6% | 47.00 |
-| 3 | Semiconductor Equipment | Semiconductor Production Equipment | 8 | 67.4% | 45.40 |
+| 1 | AI / Data Center | Data Center Memory | 5 | 85.5% | 51.10 |
+| 2 | Electronic Components | Passives / RF Modules | 12 | 82.6% | 47.10 |
+| 3 | Semiconductor Equipment | Semiconductor Production Equipment | 8 | 67.4% | 44.70 |
 
 ## Phase4 個別銘柄ランキング (Electronic Technology)
 
@@ -105,31 +87,31 @@
 
 | 順位 | 中テーマ | 小テーマ | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 (T/F) |
 |:---:|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|
-| 1 | AI / Data Center | Data Center Memory | **285A (キオクシアホールディングス)** | TSE | ¥38.52T (XL) | 3344.7% | 670.6% | 272.6% | 90.7% | 28.6% | 27.4% | 14.4% | 37.0% | 51.3 | 99.8% | 123.6 | 7.7% | 69.18 (T29.8/F39.4) |
-| 2 | Electronic Components | Passives / RF Modules | **6981 (村田製作所)** | TSE | ¥15.95T (XL) | 317.9% | 167.1% | 150.5% | 80.6% | 8.7% | 24.2% | 10.6% | 5.0% | 15.6 | 2.0% | 84.9 | 9.2% | 60.97 (T42.4/F18.6) |
-| 3 | Semiconductor Equipment | Semiconductor Production Equipment | **6387 (サムコ)** | TSE | ¥94.5B (S) | 295.4% | 162.7% | 70.1% | 77.3% | 13.1% | 25.5% | N/A% | 19.3% | 売上19.3% / FCF欠け | 20.5% | N/A | 9.3% | 56.20 (T37.7/F18.5) |
-| 4 | Electronic Components | Passives / RF Modules | **6762 (ＴＤＫ)** | TSE | ¥6.91T (L+) | 127.9% | 54.2% | 71.0% | 82.5% | 8.2% | 17.7% | 8.3% | 13.6% | 21.9 | 17.0% | 32.4 | 6.7% | 56.01 (T39.9/F16.1) |
-| 5 | Electronic Components | Passives / RF Modules | **6806 (ヒロセ電機)** | TSE | ¥847.2B (M+) | 58.0% | 55.2% | 26.8% | 90.5% | 8.7% | 20.6% | 12.2% | 11.5% | 23.8 | 1.6% | 34.5 | 4.2% | 55.97 (T63.3/F-7.3) |
-| 6 | Electronic Components | Passives / RF Modules | **7762 (シチズン時計)** | TSE | ¥532.7B (M+) | 154.0% | 63.6% | 33.8% | 90.5% | 9.5% | 31.9% | N/A% | 9.4% | 売上9.4% / FCF欠け | 30.2% | N/A | 3.9% | 55.56 (T33.8/F21.7) |
-| 7 | Electronic Components | Passives / RF Modules | **4062 (イビデン)** | TSE | ¥4.88T (L) | 521.5% | 183.4% | 144.4% | 78.7% | 8.7% | 13.3% | 0.1% | 12.7% | 12.7 | 88.3% | 18577.2 | 9.4% | 54.36 (T17.9/F36.4) |
-| 8 | Semiconductor Equipment | Semiconductor Production Equipment | **4064 (日本カーバイド工業)** | TSE | ¥33.5B (S) | 104.8% | 44.3% | 26.5% | 95.3% | 6.4% | 26.3% | N/A% | 2.4% | 売上2.4% / FCF欠け | 17.8% | N/A | 4.1% | 52.76 (T35.7/F17.1) |
-| 9 | Semiconductor Equipment | Semiconductor Production Equipment | **6779 (日本電波工業)** | TSE | ¥93.9B (S) | 520.7% | 371.9% | 243.3% | 87.2% | 3.5% | 19.3% | -2.7% | 2.9% | 0.2 | 15.4% | N/A | 11.3% | 52.23 (T11.2/F41.1) |
-| 10 | Semiconductor Equipment | Semiconductor Production Equipment | **7717 (ブイ・テクノロジー)** | TSE | ¥57.2B (S) | 83.7% | 100.9% | 35.5% | 94.6% | 4.8% | 20.2% | N/A% | 14.7% | 売上14.7% / FCF欠け | 183.3% | N/A | 7.6% | 51.18 (T20.8/F30.4) |
-| 11 | Electronic Components | Passives / RF Modules | **6976 (太陽誘電)** | TSE | ¥1.97T (L) | 577.4% | 349.2% | 330.8% | 90.7% | 3.1% | 13.2% | N/A% | 4.1% | 売上4.1% / FCF欠け | 959.8% | N/A | 9.8% | 51.12 (T-2.7/F53.8) |
-| 12 | AI / Data Center | Data Center Memory | **6323 (ローツェ)** | TSE | ¥680.8B (M+) | 114.9% | 75.4% | 36.1% | 83.7% | 14.0% | 25.1% | N/A% | 3.5% | 売上3.5% / FCF欠け | -18.5% | N/A | 6.8% | 50.46 (T29.3/F21.2) |
-| 13 | Electronic Components | Passives / RF Modules | **6996 (ニチコン)** | TSE | ¥284.7B (M) | 225.4% | 133.2% | 114.7% | 86.8% | 4.8% | 15.3% | 0.6% | -3.4% | -2.8 | 17.8% | 245.8 | 8.4% | 50.15 (T11.6/F38.5) |
-| 14 | AI / Data Center | Data Center Memory | **6479 (ミネベアミツミ)** | TSE | ¥1.78T (L) | 116.8% | 30.0% | 57.3% | 84.9% | 9.1% | 16.1% | 0.9% | 9.3% | 10.2 | 67.1% | 112.0 | 5.5% | 49.97 (T29.9/F20.1) |
+| 1 | AI / Data Center | Data Center Memory | **285A (キオクシアホールディングス)** | TSE | ¥38.52T (XL) | 3344.7% | 670.6% | 272.6% | 90.7% | 28.6% | 27.4% | 14.4% | 37.0% | 51.3 | 99.8% | 123.6 | 7.7% | 67.39 (T63.9/F3.5) |
+| 2 | Electronic Components | Passives / RF Modules | **6981 (村田製作所)** | TSE | ¥15.95T (XL) | 317.9% | 167.1% | 150.5% | 80.6% | 8.7% | 24.2% | 10.6% | 5.0% | 15.6 | 2.0% | 84.9 | 9.2% | 59.11 (T29.9/F29.2) |
+| 3 | AI / Data Center | Data Center Memory | **6323 (ローツェ)** | TSE | ¥680.8B (M+) | 114.9% | 75.4% | 36.1% | 83.7% | 14.0% | 25.1% | 38.3% | 3.5% | 41.8 | -18.5% | 25.5 | 6.8% | 56.41 (T53.2/F3.2) |
+| 4 | Electronic Components | Passives / RF Modules | **6976 (太陽誘電)** | TSE | ¥1.97T (L) | 577.4% | 349.2% | 330.8% | 90.7% | 3.1% | 13.2% | 10.0% | 4.1% | 14.1 | 959.8% | 116.8 | 9.8% | 55.67 (T-4.2/F59.9) |
+| 5 | Semiconductor Equipment | Semiconductor Production Equipment | **6387 (サムコ)** | TSE | ¥94.5B (S) | 295.4% | 162.7% | 70.1% | 77.3% | 13.1% | 25.5% | -12.7% | 19.3% | 6.6 | 20.5% | N/A | 9.3% | 55.34 (T34.1/F21.2) |
+| 6 | Electronic Components | Passives / RF Modules | **7762 (シチズン時計)** | TSE | ¥532.7B (M+) | 154.0% | 63.6% | 33.8% | 90.5% | 9.5% | 31.9% | 0.3% | 9.4% | 9.7 | 30.2% | 22197.9 | 3.9% | 55.19 (T32.4/F22.7) |
+| 7 | Electronic Components | Passives / RF Modules | **6806 (ヒロセ電機)** | TSE | ¥847.2B (M+) | 58.0% | 55.2% | 26.8% | 90.5% | 8.7% | 20.6% | 12.2% | 11.5% | 23.8 | 1.6% | 34.5 | 4.2% | 54.32 (T52.7/F1.6) |
+| 8 | Electronic Components | Passives / RF Modules | **6762 (ＴＤＫ)** | TSE | ¥6.91T (L+) | 127.9% | 54.2% | 71.0% | 82.5% | 8.2% | 17.7% | 8.3% | 13.6% | 21.9 | 17.0% | 32.4 | 6.7% | 54.30 (T33.0/F21.3) |
+| 9 | Semiconductor Equipment | Semiconductor Production Equipment | **4064 (日本カーバイド工業)** | TSE | ¥33.5B (S) | 104.8% | 44.3% | 26.5% | 95.3% | 6.4% | 26.3% | N/A% | 2.4% | 売上2.4% / FCF欠け | 17.8% | N/A | 4.1% | 52.76 (T35.7/F17.1) |
+| 10 | Electronic Components | Passives / RF Modules | **4062 (イビデン)** | TSE | ¥4.88T (L) | 521.5% | 183.4% | 144.4% | 78.7% | 8.7% | 13.3% | 0.1% | 12.7% | 12.7 | 88.3% | 18577.2 | 9.4% | 52.34 (T14.7/F37.7) |
+| 11 | Semiconductor Equipment | Semiconductor Production Equipment | **7717 (ブイ・テクノロジー)** | TSE | ¥57.2B (S) | 83.7% | 100.9% | 35.5% | 94.6% | 4.8% | 20.2% | N/A% | 14.7% | 売上14.7% / FCF欠け | 183.3% | N/A | 7.6% | 51.18 (T20.8/F30.4) |
+| 12 | Semiconductor Equipment | Semiconductor Production Equipment | **6779 (日本電波工業)** | TSE | ¥93.9B (S) | 520.7% | 371.9% | 243.3% | 87.2% | 3.5% | 19.3% | -2.7% | 2.9% | 0.2 | 15.4% | N/A | 11.3% | 49.32 (T8.7/F40.6) |
+| 13 | Electronic Components | Passives / RF Modules | **6996 (ニチコン)** | TSE | ¥284.7B (M) | 225.4% | 133.2% | 114.7% | 86.8% | 4.8% | 15.3% | 0.6% | -3.4% | -2.8 | 17.8% | 245.8 | 8.4% | 47.16 (T9.2/F38.0) |
+| 14 | AI / Data Center | Data Center Memory | **6479 (ミネベアミツミ)** | TSE | ¥1.78T (L) | 116.8% | 30.0% | 57.3% | 84.9% | 9.1% | 16.1% | 0.9% | 9.3% | 10.2 | 67.1% | 112.0 | 5.5% | 47.08 (T23.9/F23.2) |
 | 15 | Semiconductor Equipment | Semiconductor Production Equipment | **6999 (ＫＯＡ)** | TSE | ¥88.9B (S) | 211.4% | 84.6% | 54.9% | 85.6% | 3.2% | 14.4% | N/A% | 12.7% | 売上12.7% / FCF欠け | 1420.2% | N/A | 6.9% | 46.12 (T16.0/F30.1) |
 | 16 | AI / Data Center | Data Center Memory | **8154 (加賀電子)** | TSE | ¥228.4B (M-) | 62.7% | 17.5% | 16.9% | 90.3% | 16.6% | 21.1% | N/A% | 20.3% | 売上20.3% / FCF欠け | 94.1% | N/A | 3.7% | 45.40 (T38.9/F6.5) |
-| 17 | Semiconductor Equipment | Semiconductor Production Equipment | **6817 (スミダコーポレーション)** | TSE | ¥48.8B (S) | 44.6% | 21.4% | 26.7% | 87.8% | 4.5% | 13.0% | 6.8% | 5.0% | 11.9 | 357.5% | 4.6 | 4.7% | 44.63 (T39.5/F5.2) |
-| 18 | Electronic Components | Passives / RF Modules | **6958 (日本シイエムケイ)** | TSE | ¥50.8B (S) | 121.0% | 49.6% | 30.0% | 92.2% | 3.7% | 9.9% | N/A% | 4.9% | 売上4.9% / FCF欠け | 6.2% | N/A | 6.0% | 42.45 (T15.8/F26.6) |
-| 19 | Electronic Components | Passives / RF Modules | **6875 (メガチップス)** | TSE | ¥172.4B (M-) | 114.1% | 30.8% | 22.2% | 79.1% | N/A% | 2.2% | 9.4% | -14.5% | -5.2 | 100.2% | 50.2 | 6.6% | 40.16 (T24.6/F15.5) |
-| 20 | AI / Data Center | Data Center Memory | **6616 (トレックス・セミコンダクター)** | TSE | ¥25.4B (S) | 91.1% | 62.1% | 44.4% | 76.6% | 4.4% | 17.8% | N/A% | 4.7% | 売上4.7% / FCF欠け | N/A% | N/A | 7.8% | 39.28 (T20.1/F19.2) |
-| 21 | Electronic Components | Passives / RF Modules | **7725 (インターアクション)** | TSE | ¥20.5B (S) | 57.3% | 43.9% | 35.4% | 80.2% | 5.0% | 19.7% | N/A% | -38.0% | 売上-38.0% / FCF欠け | -59.2% | N/A | 6.1% | 38.91 (T24.7/F14.2) |
+| 17 | Electronic Components | Passives / RF Modules | **7725 (インターアクション)** | TSE | ¥20.5B (S) | 57.3% | 43.9% | 35.4% | 80.2% | 5.0% | 19.7% | 55.6% | -38.0% | 17.6 | -59.2% | 9.1 | 6.1% | 45.15 (T37.3/F7.8) |
+| 18 | Semiconductor Equipment | Semiconductor Production Equipment | **6817 (スミダコーポレーション)** | TSE | ¥48.8B (S) | 44.6% | 21.4% | 26.7% | 87.8% | 4.5% | 13.0% | 6.8% | 5.0% | 11.9 | 357.5% | 4.6 | 4.7% | 43.59 (T36.7/F6.8) |
+| 19 | Electronic Components | Passives / RF Modules | **6958 (日本シイエムケイ)** | TSE | ¥50.8B (S) | 121.0% | 49.6% | 30.0% | 92.2% | 3.7% | 9.9% | N/A% | 4.9% | 売上4.9% / FCF欠け | 6.2% | N/A | 6.0% | 42.45 (T15.8/F26.6) |
+| 20 | Electronic Components | Passives / RF Modules | **6965 (浜松ホトニクス)** | TSE | ¥732.0B (M+) | 59.1% | 35.8% | 23.0% | 78.3% | 4.0% | 21.2% | 8.5% | 5.4% | 13.8 | -24.1% | 81.0 | 7.3% | 40.23 (T27.8/F12.5) |
+| 21 | AI / Data Center | Data Center Memory | **6616 (トレックス・セミコンダクター)** | TSE | ¥25.4B (S) | 91.1% | 62.1% | 44.4% | 76.6% | 4.4% | 17.8% | N/A% | 4.7% | 売上4.7% / FCF欠け | N/A% | N/A | 7.8% | 39.28 (T20.1/F19.2) |
 | 22 | Semiconductor Equipment | Semiconductor Production Equipment | **6962 (大真空)** | TSE | ¥35.1B (S) | 87.9% | 85.5% | 65.4% | 86.0% | 0.8% | 9.3% | N/A% | 2.4% | 売上2.4% / FCF欠け | -25.3% | N/A | 9.0% | 38.81 (T13.3/F25.5) |
-| 23 | Electronic Components | Passives / RF Modules | **6965 (浜松ホトニクス)** | TSE | ¥732.0B (M+) | 59.1% | 35.8% | 23.0% | 78.3% | 4.0% | 21.2% | N/A% | 5.4% | 売上5.4% / FCF欠け | -24.1% | N/A | 7.3% | 37.25 (T23.0/F14.2) |
-| 24 | Semiconductor Equipment | Semiconductor Production Equipment | **6966 (三井ハイテック)** | TSE | ¥141.4B (M-) | 3.9% | -3.2% | 16.7% | 75.7% | 1.8% | 13.4% | N/A% | 1.6% | 売上1.6% / FCF欠け | -74.2% | N/A | 6.5% | 21.51 (T13.7/F7.8) |
-| 25 | Electronic Components | Passives / RF Modules | **6763 (帝国通信工業)** | TSE | ¥28.7B (S) | 33.6% | 10.0% | 8.3% | 89.6% | N/A% | 14.2% | N/A% | 2.8% | 売上2.8% / FCF欠け | -35.8% | N/A | 3.8% | 21.36 (T12.2/F9.2) |
+| 23 | Electronic Components | Passives / RF Modules | **6875 (メガチップス)** | TSE | ¥172.4B (M-) | 114.1% | 30.8% | 22.2% | 79.1% | N/A% | 2.2% | 9.4% | -14.5% | -5.2 | 100.2% | 50.2 | 6.6% | 38.16 (T21.7/F16.4) |
+| 24 | Electronic Components | Passives / RF Modules | **6763 (帝国通信工業)** | TSE | ¥28.7B (S) | 33.6% | 10.0% | 8.3% | 89.6% | N/A% | 14.2% | N/A% | 2.8% | 売上2.8% / FCF欠け | -35.8% | N/A | 3.8% | 21.36 (T12.2/F9.2) |
+| 25 | Semiconductor Equipment | Semiconductor Production Equipment | **6966 (三井ハイテック)** | TSE | ¥141.4B (M-) | 3.9% | -3.2% | 16.7% | 75.7% | 1.8% | 13.4% | -3.4% | 1.6% | -1.8 | -74.2% | N/A | 6.5% | 20.69 (T12.9/F7.7) |
 
 ---
 
