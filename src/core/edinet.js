@@ -377,10 +377,14 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
   let documentsWithSecCode = 0;
   let eligibleDocumentsWithSecCode = 0;
   const sampleEligibleDocuments = [];
+  let sampleDocument = null;
 
   for (let offset = 0; offset < lookbackDays && bestDocumentBySymbol.size < symbols.length; offset += 1) {
     const dateString = toIsoDate(shiftDate(asOfDate, -offset));
     const documents = await fetchDocumentListByDate(dateString, { apiKey, fetchFn });
+    if (!sampleDocument && documents.length > 0) {
+      sampleDocument = documents[0];
+    }
     documents.forEach((doc) => {
       const normalizedSecCode = normalizeSecurityCode(doc.secCode);
       if (normalizedSecCode) {
@@ -466,6 +470,7 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
       documentsWithSecCode,
       eligibleDocumentsWithSecCode,
       sampleEligibleDocuments,
+      sampleDocument,
       supplementedRows,
       lookbackDays,
       asOfDate: toIsoDate(asOfDate),

@@ -759,6 +759,9 @@ async function main() {
     if ((edinet.secCodeMatchedSymbols ?? 0) === 0 && Array.isArray(edinet.sampleEligibleDocuments) && edinet.sampleEligibleDocuments.length > 0) {
       console.log(`[screener] edinet sampleEligibleDocuments=${JSON.stringify(edinet.sampleEligibleDocuments)}`);
     }
+    if ((edinet.documentsWithSecCode ?? 0) === 0 && edinet.sampleDocument) {
+      console.log(`[screener] edinet sampleDocument=${JSON.stringify(edinet.sampleDocument)}`);
+    }
   }
 
   const md = buildMarkdown(result, {
