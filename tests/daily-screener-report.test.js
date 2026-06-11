@@ -42,6 +42,14 @@ describe('Daily Fundamental Screener workflow', () => {
       'workflow must generate and handle per-run metadata');
     assert.match(workflow, /actions\/upload-artifact@v4[\s\S]*?path:\s*\|[\s\S]*?\$\{\{\s*env\.SCREENER_REPORT_PATH\s*\}\}[\s\S]*?\$\{\{\s*env\.SCREENER_METADATA_PATH\s*\}\}/,
       'artifact upload must keep both the report and the run metadata');
+    assert.match(workflow, /name:\s+Notify LINE on success/,
+      'US workflow must send a LINE notification after a successful run');
+    assert.match(workflow, /name:\s+Notify LINE on failure/,
+      'US workflow must send a LINE notification when the run fails');
+    assert.match(workflow, /LINE_CHANNEL_ACCESS_TOKEN:\s+\$\{\{\s*secrets\.LINE_CHANNEL_ACCESS_TOKEN\s*\}\}/,
+      'US workflow must pass the LINE channel access token secret');
+    assert.match(workflow, /LINE_TO_USER_ID:\s+\$\{\{\s*secrets\.LINE_TO_USER_ID\s*\}\}/,
+      'US workflow must pass the LINE destination user id secret');
   });
 
   it('defines a separate Japan workflow with TSE Prime scope', () => {
@@ -63,6 +71,10 @@ describe('Daily Fundamental Screener workflow', () => {
       'Japan workflow must write dedicated metadata');
     assert.match(workflow, /EDINET_API_KEY:\s+\$\{\{\s*secrets\.EDINET_API_KEY\s*\}\}/,
       'Japan workflow must pass the EDINET API key when available');
+    assert.match(workflow, /name:\s+Notify LINE on success/,
+      'Japan workflow must send a LINE notification after a successful run');
+    assert.match(workflow, /name:\s+Notify LINE on failure/,
+      'Japan workflow must send a LINE notification when the run fails');
     assert.doesNotMatch(workflow, /SCREENER_REPORT_TITLE:/,
       'Japan workflow should rely on the shared date-based default title');
   });
