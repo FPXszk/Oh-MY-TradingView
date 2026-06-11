@@ -2,7 +2,7 @@ import { strFromU8, unzipSync } from 'fflate';
 
 const EDINET_BASE_URL = 'https://api.edinet-fsa.go.jp/api/v2';
 const DEFAULT_LOOKBACK_DAYS = 180;
-const DEFAULT_DOCUMENT_LIST_TYPE = 2;
+const DEFAULT_DOCUMENT_LIST_TYPE = 1;
 const DEFAULT_DOCUMENT_DOWNLOAD_TYPE = 5;
 const ELIGIBLE_DOCUMENT_PATTERN = /有価証券報告書|四半期報告書|半期報告書/i;
 
