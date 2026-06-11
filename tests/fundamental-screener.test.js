@@ -2,6 +2,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { evaluateSymbolsAgainstFundamentalScreener, runFundamentalScreener } from '../src/core/fundamental-screener.js';
+import { getEdinetSupplementalFundamentalsBatch } from '../src/core/edinet.js';
 
 function buildPhase2Row(symbol, values) {
   return {
@@ -138,6 +139,29 @@ function assertRankScoresDescending(rows) {
 }
 
 describe('runFundamentalScreener', () => {
+  it('marks EDINET invalid_api_key when the API returns a 401 payload in-body', async () => {
+    const result = await getEdinetSupplementalFundamentalsBatch(
+      [{ symbol: '4063', marketCapUsd: 2_900_000_000 }],
+      {
+        apiKey: 'dummy-key',
+        lookbackDays: 1,
+        asOfDate: '2026-06-11',
+        fetch: async () => ({
+          ok: true,
+          json: async () => ({
+            StatusCode: 401,
+            message: 'Access denied due to invalid subscription key.',
+          }),
+        }),
+      },
+    );
+
+    assert.deepEqual(result.rows, {});
+    assert.equal(result.meta.enabled, true);
+    assert.equal(result.meta.reason, 'invalid_api_key');
+    assert.match(result.meta.error, /invalid subscription key/i);
+  });
+
   it('uses TradingView stock-sector US profiles and activates producer manufacturing', async () => {
     const stockBodies = [];
     const result = await runFundamentalScreener({

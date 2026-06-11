@@ -5,7 +5,6 @@ const DEFAULT_LOOKBACK_DAYS = 180;
 const DEFAULT_DOCUMENT_LIST_TYPE = 1;
 const DEFAULT_DOCUMENT_DOWNLOAD_TYPE = 5;
 const ELIGIBLE_DOCUMENT_PATTERN = /有価証券報告書|四半期報告書|半期報告書/i;
-let loggedUnexpectedDocumentListPayload = false;
 
 const METRIC_SPECS = {
   revenue: {
@@ -320,9 +319,8 @@ async function fetchDocumentListByDate(dateString, { apiKey, fetchFn }) {
   }
 
   const payload = await response.json();
-  if (!Array.isArray(payload?.results) && !loggedUnexpectedDocumentListPayload) {
-    loggedUnexpectedDocumentListPayload = true;
-    console.log(`[edinet] unexpected documents payload date=${dateString} keys=${Object.keys(payload ?? {}).join(',')} sample=${JSON.stringify(payload).slice(0, 600)}`);
+  if (payload?.StatusCode && Number(payload.StatusCode) >= 400) {
+    throw new Error(`EDINET documents list API error: ${payload.StatusCode} ${payload.message ?? ''}`.trim());
   }
   return Array.isArray(payload?.results) ? payload.results : [];
 }
@@ -375,110 +373,94 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
     };
   }
 
-  const bestDocumentBySymbol = new Map();
-  const secCodeMatchedSymbols = new Set();
-  const eligibleDescriptionMatchedSymbols = new Set();
-  const csvEligibleMatchedSymbols = new Set();
-  let documentsWithSecCode = 0;
-  let eligibleDocumentsWithSecCode = 0;
-  const sampleEligibleDocuments = [];
-  let sampleDocument = null;
+  try {
+    const bestDocumentBySymbol = new Map();
 
-  for (let offset = 0; offset < lookbackDays && bestDocumentBySymbol.size < symbols.length; offset += 1) {
-    const dateString = toIsoDate(shiftDate(asOfDate, -offset));
-    const documents = await fetchDocumentListByDate(dateString, { apiKey, fetchFn });
-    if (!sampleDocument && documents.length > 0) {
-      sampleDocument = documents[0];
-    }
-    documents.forEach((doc) => {
-      const normalizedSecCode = normalizeSecurityCode(doc.secCode);
-      if (normalizedSecCode) {
-        documentsWithSecCode += 1;
-      }
-      if (normalizedSecCode && ELIGIBLE_DOCUMENT_PATTERN.test(doc.docDescription ?? '')) {
-        eligibleDocumentsWithSecCode += 1;
-        if (sampleEligibleDocuments.length < 5) {
-          sampleEligibleDocuments.push({
-            docID: doc.docID ?? null,
-            secCode: doc.secCode ?? null,
-            filerName: doc.filerName ?? null,
-            docDescription: doc.docDescription ?? null,
-            submitDateTime: doc.submitDateTime ?? null,
-          });
+    for (let offset = 0; offset < lookbackDays && bestDocumentBySymbol.size < symbols.length; offset += 1) {
+      const dateString = toIsoDate(shiftDate(asOfDate, -offset));
+      const documents = await fetchDocumentListByDate(dateString, { apiKey, fetchFn });
+      documents.forEach((doc) => {
+        const matchingSymbol = symbols.find((symbol) => matchesSecurityCode(symbol, doc.secCode));
+        if (!matchingSymbol) return;
+        if (!ELIGIBLE_DOCUMENT_PATTERN.test(doc.docDescription ?? '')) return;
+        if (!(doc.csvFlag === '1' || doc.csvFlag === 1)) return;
+
+        const nextScore = buildDocumentCandidateScore(doc);
+        const current = bestDocumentBySymbol.get(matchingSymbol);
+        if (!current || nextScore > current.score) {
+          bestDocumentBySymbol.set(matchingSymbol, { doc, score: nextScore });
         }
-      }
-      const matchingSymbol = symbols.find((symbol) => matchesSecurityCode(symbol, doc.secCode));
-      if (!matchingSymbol) return;
-      secCodeMatchedSymbols.add(matchingSymbol);
-      if (!ELIGIBLE_DOCUMENT_PATTERN.test(doc.docDescription ?? '')) return;
-      eligibleDescriptionMatchedSymbols.add(matchingSymbol);
-      if (!(doc.csvFlag === '1' || doc.csvFlag === 1)) return;
-      csvEligibleMatchedSymbols.add(matchingSymbol);
-
-      const nextScore = buildDocumentCandidateScore(doc);
-      const current = bestDocumentBySymbol.get(matchingSymbol);
-      if (!current || nextScore > current.score) {
-        bestDocumentBySymbol.set(matchingSymbol, { doc, score: nextScore });
-      }
-    });
-  }
-
-  const results = {};
-  for (const row of rows) {
-    const symbol = normalizeSymbol(row.symbol);
-    const selected = bestDocumentBySymbol.get(symbol);
-    if (!selected?.doc?.docID) continue;
-
-    try {
-      const archive = await downloadDocumentCsv(selected.doc.docID, { apiKey, fetchFn });
-      const csvFiles = parseCsvZip(archive);
-      const factRows = collectFactRows(csvFiles);
-      const metrics = deriveSupplementalMetrics({
-        marketCapUsd: row.marketCapUsd,
-        factRows,
       });
-
-      results[symbol] = {
-        ...metrics,
-        source: 'edinet',
-        docId: selected.doc.docID,
-        secCode: selected.doc.secCode ?? null,
-        docDescription: selected.doc.docDescription ?? null,
-        submitDateTime: selected.doc.submitDateTime ?? null,
-      };
-    } catch (error) {
-      results[symbol] = {
-        source: 'edinet',
-        error: error.message,
-      };
     }
+
+    const results = {};
+    for (const row of rows) {
+      const symbol = normalizeSymbol(row.symbol);
+      const selected = bestDocumentBySymbol.get(symbol);
+      if (!selected?.doc?.docID) continue;
+
+      try {
+        const archive = await downloadDocumentCsv(selected.doc.docID, { apiKey, fetchFn });
+        const csvFiles = parseCsvZip(archive);
+        const factRows = collectFactRows(csvFiles);
+        const metrics = deriveSupplementalMetrics({
+          marketCapUsd: row.marketCapUsd,
+          factRows,
+        });
+
+        results[symbol] = {
+          ...metrics,
+          source: 'edinet',
+          docId: selected.doc.docID,
+          secCode: selected.doc.secCode ?? null,
+          docDescription: selected.doc.docDescription ?? null,
+          submitDateTime: selected.doc.submitDateTime ?? null,
+        };
+      } catch (error) {
+        results[symbol] = {
+          source: 'edinet',
+          error: error.message,
+        };
+      }
+    }
+
+    const supplementedRows = Object.values(results).filter((entry) => (
+      entry.fcfMargin !== null
+      || entry.fcfGrowthTtm !== null
+      || entry.pFcf !== null
+      || entry.cashConversion !== null
+      || entry.revenueGrowthTtm !== null
+    )).length;
+
+    return {
+      rows: results,
+      meta: {
+        enabled: true,
+        reason: supplementedRows > 0 ? 'active' : 'no_extractable_metrics',
+        requestedSymbols: symbols.length,
+        matchedFilings: bestDocumentBySymbol.size,
+        supplementedRows,
+        lookbackDays,
+        asOfDate: toIsoDate(asOfDate),
+      },
+    };
+  } catch (error) {
+    const loweredMessage = String(error?.message ?? '').toLowerCase();
+    const reason = loweredMessage.includes('invalid subscription key') || loweredMessage.includes('401')
+      ? 'invalid_api_key'
+      : 'api_error';
+    return {
+      rows: {},
+      meta: {
+        enabled: true,
+        reason,
+        requestedSymbols: symbols.length,
+        matchedFilings: 0,
+        supplementedRows: 0,
+        lookbackDays,
+        asOfDate: toIsoDate(asOfDate),
+        error: error.message,
+      },
+    };
   }
-
-  const supplementedRows = Object.values(results).filter((entry) => (
-    entry.fcfMargin !== null
-    || entry.fcfGrowthTtm !== null
-    || entry.pFcf !== null
-    || entry.cashConversion !== null
-    || entry.revenueGrowthTtm !== null
-  )).length;
-
-  return {
-    rows: results,
-    meta: {
-      enabled: true,
-      reason: supplementedRows > 0 ? 'active' : 'no_extractable_metrics',
-      requestedSymbols: symbols.length,
-      matchedFilings: bestDocumentBySymbol.size,
-      secCodeMatchedSymbols: secCodeMatchedSymbols.size,
-      eligibleDescriptionMatchedSymbols: eligibleDescriptionMatchedSymbols.size,
-      csvEligibleMatchedSymbols: csvEligibleMatchedSymbols.size,
-      documentsWithSecCode,
-      eligibleDocumentsWithSecCode,
-      sampleEligibleDocuments,
-      sampleDocument,
-      supplementedRows,
-      lookbackDays,
-      asOfDate: toIsoDate(asOfDate),
-    },
-  };
 }

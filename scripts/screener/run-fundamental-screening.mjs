@@ -298,6 +298,14 @@ function buildSourceCoverageLines(result) {
     return ['- EDINET: disabled (no API key)'];
   }
 
+  if (edinet.reason === 'invalid_api_key') {
+    return ['- EDINET: invalid API key'];
+  }
+
+  if (edinet.reason === 'api_error') {
+    return [`- EDINET: api_error (${edinet.error ?? 'unknown'})`];
+  }
+
   return [
     `- EDINET: ${edinet.reason} / 対象 ${edinet.requestedSymbols}銘柄 / 書類一致 ${edinet.matchedFilings}件 / 指標補完 ${edinet.supplementedRows}銘柄`,
     `- EDINET lookback: ${edinet.lookbackDays ?? 'N/A'}日 / as-of ${edinet.asOfDate ?? 'N/A'}`,
@@ -754,13 +762,10 @@ async function main() {
   if (result.sourceDetails?.edinet) {
     const edinet = result.sourceDetails.edinet;
     console.log(
-      `[screener] edinet enabled=${edinet.enabled} reason=${edinet.reason ?? 'n/a'} requested=${edinet.requestedSymbols ?? 0} secCodeMatched=${edinet.secCodeMatchedSymbols ?? 0} eligibleDoc=${edinet.eligibleDescriptionMatchedSymbols ?? 0} csvEligible=${edinet.csvEligibleMatchedSymbols ?? 0} matchedFilings=${edinet.matchedFilings ?? 0} supplemented=${edinet.supplementedRows ?? 0} docsWithSecCode=${edinet.documentsWithSecCode ?? 0} eligibleDocsWithSecCode=${edinet.eligibleDocumentsWithSecCode ?? 0}`,
+      `[screener] edinet enabled=${edinet.enabled} reason=${edinet.reason ?? 'n/a'} requested=${edinet.requestedSymbols ?? 0} matchedFilings=${edinet.matchedFilings ?? 0} supplemented=${edinet.supplementedRows ?? 0}`,
     );
-    if ((edinet.secCodeMatchedSymbols ?? 0) === 0 && Array.isArray(edinet.sampleEligibleDocuments) && edinet.sampleEligibleDocuments.length > 0) {
-      console.log(`[screener] edinet sampleEligibleDocuments=${JSON.stringify(edinet.sampleEligibleDocuments)}`);
-    }
-    if ((edinet.documentsWithSecCode ?? 0) === 0 && edinet.sampleDocument) {
-      console.log(`[screener] edinet sampleDocument=${JSON.stringify(edinet.sampleDocument)}`);
+    if (edinet.error) {
+      console.log(`[screener] edinet error=${edinet.error}`);
     }
   }
 

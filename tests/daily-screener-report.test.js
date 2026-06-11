@@ -1010,6 +1010,50 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| ユニバース \| 銘柄ユニバース \| jpx-prime \|/);
     assert.match(markdown, /\| 総合点 \(T\/F\) \| repo 独自の総合スコア \| 高いほど良い。T はテクニカル寄り、F はファンダ寄り \|/);
   });
+
+  it('renders an explicit EDINET invalid API key state', () => {
+    const markdown = buildMarkdown({
+      retrieved_at: '2026-06-11T06:45:00.000Z',
+      totalScanned: 10,
+      serverFiltered: 2,
+      phase1Filtered: 2,
+      clientFiltered: 2,
+      matched: 2,
+      sourceDetails: {
+        edinet: {
+          enabled: true,
+          reason: 'invalid_api_key',
+          error: 'EDINET documents list API error: 401 Access denied due to invalid subscription key.',
+        },
+      },
+      ruleOf40Coverage: {
+        total: 0,
+        complete: 0,
+        revenueOnly: 0,
+        fcfOnly: 0,
+        missingBoth: 0,
+        completePct: 0,
+      },
+      rankingBlocks: [],
+      scannerScope: {
+        market: 'japan',
+      },
+      sectorMomentum: {
+        benchmark: { symbol: '1306', label: 'TOPIX' },
+        selectedSectors: [],
+        rankings: [],
+      },
+      criteria: {},
+      themeRanking: [],
+      focusedHierarchy: null,
+      sectorRanking: [],
+      results: [],
+    }, {
+      currencySymbol: '¥',
+    });
+
+    assert.match(markdown, /- EDINET: invalid API key/);
+  });
 });
 
 describe('daily screener template', () => {
