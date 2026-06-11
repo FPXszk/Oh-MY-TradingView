@@ -85,20 +85,16 @@ function matchesSecurityCode(symbol, secCode) {
     || normalizedSymbol.startsWith(normalizedCode);
 }
 
-function createHeaders(apiKey) {
-  return {
-    'Content-Type': 'application/json',
-    'Subscription-Key': apiKey,
-  };
-}
-
-function buildUrl(pathname, params) {
+function buildUrl(pathname, params, apiKey) {
   const url = new URL(`${EDINET_BASE_URL}${pathname}`);
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== '') {
       url.searchParams.set(key, String(value));
     }
   });
+  if (hasEdinetApiKey(apiKey)) {
+    url.searchParams.set('Subscription-Key', apiKey.trim());
+  }
   return url;
 }
 
@@ -310,9 +306,7 @@ async function fetchDocumentListByDate(dateString, { apiKey, fetchFn }) {
   const response = await fetchFn(buildUrl('/documents.json', {
     date: dateString,
     type: DEFAULT_DOCUMENT_LIST_TYPE,
-  }), {
-    headers: createHeaders(apiKey),
-  });
+  }, apiKey));
 
   if (!response.ok) {
     throw new Error(`EDINET documents list request failed: HTTP ${response.status} (${dateString})`);
@@ -328,9 +322,7 @@ async function fetchDocumentListByDate(dateString, { apiKey, fetchFn }) {
 async function downloadDocumentCsv(docId, { apiKey, fetchFn }) {
   const response = await fetchFn(buildUrl(`/documents/${docId}`, {
     type: DEFAULT_DOCUMENT_DOWNLOAD_TYPE,
-  }), {
-    headers: createHeaders(apiKey),
-  });
+  }, apiKey));
 
   if (!response.ok) {
     throw new Error(`EDINET document download failed: HTTP ${response.status} (${docId})`);

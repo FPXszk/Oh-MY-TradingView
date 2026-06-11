@@ -139,6 +139,64 @@ function assertRankScoresDescending(rows) {
 }
 
 describe('runFundamentalScreener', () => {
+  it('sends EDINET Subscription-Key as a query parameter for list and download requests', async () => {
+    const calls = [];
+    const result = await getEdinetSupplementalFundamentalsBatch(
+      [{ symbol: '4063', marketCapUsd: 2_900_000_000 }],
+      {
+        apiKey: ' dummy-key ',
+        lookbackDays: 1,
+        asOfDate: '2026-06-11',
+        fetch: async (url, options) => {
+          calls.push({
+            url: String(url),
+            headers: options?.headers ?? null,
+          });
+
+          if (calls.length === 1) {
+            return {
+              ok: true,
+              json: async () => ({
+                results: [
+                  {
+                    docID: 'S100TEST',
+                    secCode: '40630',
+                    docDescription: '四半期報告書',
+                    csvFlag: '1',
+                    legalStatus: '1',
+                    submitDateTime: '2026-06-10T00:00:00+09:00',
+                  },
+                ],
+              }),
+            };
+          }
+
+          return {
+            ok: false,
+            status: 500,
+            arrayBuffer: async () => new ArrayBuffer(0),
+          };
+        },
+      },
+    );
+
+    assert.equal(calls.length, 2);
+
+    const listUrl = new URL(calls[0].url);
+    assert.equal(listUrl.pathname, '/api/v2/documents.json');
+    assert.equal(listUrl.searchParams.get('Subscription-Key'), 'dummy-key');
+    assert.equal(calls[0].headers, null);
+
+    const downloadUrl = new URL(calls[1].url);
+    assert.equal(downloadUrl.pathname, '/api/v2/documents/S100TEST');
+    assert.equal(downloadUrl.searchParams.get('Subscription-Key'), 'dummy-key');
+    assert.equal(calls[1].headers, null);
+
+    assert.equal(result.meta.enabled, true);
+    assert.equal(result.meta.matchedFilings, 1);
+    assert.equal(result.rows['4063'].error, 'EDINET document download failed: HTTP 500 (S100TEST)');
+  });
+
   it('marks EDINET invalid_api_key when the API returns a 401 payload in-body', async () => {
     const result = await getEdinetSupplementalFundamentalsBatch(
       [{ symbol: '4063', marketCapUsd: 2_900_000_000 }],
