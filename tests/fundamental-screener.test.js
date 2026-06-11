@@ -1,5 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { zipSync } from 'fflate';
 
 import { evaluateSymbolsAgainstFundamentalScreener, runFundamentalScreener } from '../src/core/fundamental-screener.js';
 import { getEdinetSupplementalFundamentalsBatch } from '../src/core/edinet.js';
@@ -219,6 +220,64 @@ describe('runFundamentalScreener', () => {
     assert.equal(result.meta.enabled, true);
     assert.equal(result.meta.reason, 'invalid_api_key');
     assert.match(result.meta.error, /invalid subscription key/i);
+  });
+
+  it('parses EDINET CSV downloads as UTF-16LE tab-delimited files', async () => {
+    const tsv = [
+      '"要素ID"\t"項目名"\t"コンテキストID"\t"相対年度"\t"連結・個別"\t"期間・時点"\t"ユニットID"\t"単位"\t"値"',
+      '"jppfs_cor:NetSales"\t"NetSales"\t"CurrentYearDuration"\t"当期"\t"連結"\t"期間"\t"JPY"\t"円"\t"1000"',
+      '"jppfs_cor:NetSales"\t"NetSales"\t"Prior1YearDuration"\t"前期"\t"連結"\t"期間"\t"JPY"\t"円"\t"800"',
+      '"jppfs_cor:NetCashProvidedByUsedInOperatingActivities"\t"OperatingCF"\t"CurrentYearDuration"\t"当期"\t"連結"\t"期間"\t"JPY"\t"円"\t"150"',
+      '"jppfs_cor:NetCashProvidedByUsedInOperatingActivities"\t"OperatingCF"\t"Prior1YearDuration"\t"前期"\t"連結"\t"期間"\t"JPY"\t"円"\t"120"',
+      '"jppfs_cor:PurchaseOfPropertyPlantAndEquipment"\t"Capex"\t"CurrentYearDuration"\t"当期"\t"連結"\t"期間"\t"JPY"\t"円"\t"20"',
+      '"jppfs_cor:PurchaseOfPropertyPlantAndEquipment"\t"Capex"\t"Prior1YearDuration"\t"前期"\t"連結"\t"期間"\t"JPY"\t"円"\t"10"',
+      '"jppfs_cor:ProfitLoss"\t"ProfitLoss"\t"CurrentYearDuration"\t"当期"\t"連結"\t"期間"\t"JPY"\t"円"\t"90"',
+    ].join('\r\n');
+    const archive = zipSync({
+      'facts.csv': Buffer.from(`\uFEFF${tsv}`, 'utf16le'),
+    });
+
+    const result = await getEdinetSupplementalFundamentalsBatch(
+      [{ symbol: '4063', marketCapUsd: 2_900_000_000 }],
+      {
+        apiKey: 'dummy-key',
+        lookbackDays: 1,
+        asOfDate: '2026-06-11',
+        fetch: async (url) => {
+          const requestUrl = new URL(String(url));
+          if (requestUrl.pathname.endsWith('/documents.json')) {
+            return {
+              ok: true,
+              json: async () => ({
+                results: [
+                  {
+                    docID: 'S100UTF16',
+                    secCode: '40630',
+                    docDescription: '有価証券報告書',
+                    csvFlag: '1',
+                    legalStatus: '1',
+                    submitDateTime: '2026-06-10T00:00:00+09:00',
+                  },
+                ],
+              }),
+            };
+          }
+          return {
+            ok: true,
+            arrayBuffer: async () => archive.buffer.slice(archive.byteOffset, archive.byteOffset + archive.byteLength),
+          };
+        },
+      },
+    );
+
+    assert.equal(result.meta.matchedFilings, 1);
+    assert.equal(result.meta.downloadedRows, 1);
+    assert.equal(result.meta.rowsWithFactRows, 1);
+    assert.equal(result.meta.supplementedRows, 1);
+    assert.equal(result.rows['4063'].factRowCount > 0, true);
+    assert.equal(result.rows['4063'].fcfMargin, 13);
+    assert.equal(result.rows['4063'].revenueGrowthTtm, 25);
+    assert.equal(result.rows['4063'].cashConversion, 1.44);
   });
 
   it('uses TradingView stock-sector US profiles and activates producer manufacturing', async () => {

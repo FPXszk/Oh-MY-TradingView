@@ -117,7 +117,7 @@ function parseLooseNumber(value) {
   return Number.isFinite(numeric) ? numeric : null;
 }
 
-function parseCsv(text) {
+function parseDelimited(text, delimiter = ',') {
   const rows = [];
   let row = [];
   let cell = '';
@@ -134,7 +134,7 @@ function parseCsv(text) {
       }
       continue;
     }
-    if (char === ',' && !inQuotes) {
+    if (char === delimiter && !inQuotes) {
       row.push(cell);
       cell = '';
       continue;
@@ -156,6 +156,26 @@ function parseCsv(text) {
   }
 
   return rows.filter((entry) => entry.some((value) => String(value ?? '').trim() !== ''));
+}
+
+function decodeCsvText(bytes) {
+  const hasUtf16LeBom = bytes[0] === 0xff && bytes[1] === 0xfe;
+  const looksUtf16Le = hasUtf16LeBom || (
+    bytes.length >= 4
+    && bytes[1] === 0x00
+    && bytes[3] === 0x00
+  );
+  if (looksUtf16Le) {
+    return new TextDecoder('utf-16le').decode(bytes).replace(/^\uFEFF/, '');
+  }
+  return strFromU8(bytes).replace(/^\uFEFF/, '');
+}
+
+function detectDelimiter(text) {
+  const firstLine = String(text ?? '').split(/\r?\n/, 1)[0] ?? '';
+  const tabCount = (firstLine.match(/\t/g) ?? []).length;
+  const commaCount = (firstLine.match(/,/g) ?? []).length;
+  return tabCount > commaCount ? '\t' : ',';
 }
 
 function scoreFactRow(joined, period) {
@@ -196,7 +216,7 @@ function collectFactRows(csvFiles) {
   const factRows = [];
 
   csvFiles.forEach((file) => {
-    const rows = parseCsv(file.text);
+    const rows = parseDelimited(file.text, detectDelimiter(file.text));
     rows.forEach((cells) => {
       const numericValues = cells.map(parseLooseNumber).filter((value) => value !== null);
       if (numericValues.length === 0) return;
@@ -283,7 +303,7 @@ function parseCsvZip(buffer) {
   return Object.entries(files)
     .filter(([name]) => name.toLowerCase().endsWith('.csv'))
     .sort(([left], [right]) => left.localeCompare(right))
-    .map(([name, bytes]) => ({ name, text: strFromU8(bytes) }));
+    .map(([name, bytes]) => ({ name, text: decodeCsvText(bytes) }));
 }
 
 function buildDocumentCandidateScore(doc) {
