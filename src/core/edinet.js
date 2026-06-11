@@ -370,11 +370,23 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
     const secCodeMatchedSymbols = new Set();
     const eligibleDescriptionMatchedSymbols = new Set();
     const csvEligibleMatchedSymbols = new Set();
+    let documentCount = 0;
+    let documentsWithSecCode = 0;
+    let sampleCodeFields = null;
 
     for (let offset = 0; offset < lookbackDays && bestDocumentBySymbol.size < symbols.length; offset += 1) {
       const dateString = toIsoDate(shiftDate(asOfDate, -offset));
       const documents = await fetchDocumentListByDate(dateString, { apiKey, fetchFn });
+      documentCount += documents.length;
       documents.forEach((doc) => {
+        if (sampleCodeFields === null) {
+          sampleCodeFields = Object.fromEntries(
+            Object.entries(doc).filter(([key]) => /code/i.test(key)).slice(0, 10),
+          );
+        }
+        if (normalizeSecurityCode(doc.secCode)) {
+          documentsWithSecCode += 1;
+        }
         const matchingSymbol = symbols.find((symbol) => matchesSecurityCode(symbol, doc.secCode));
         if (!matchingSymbol) return;
         secCodeMatchedSymbols.add(matchingSymbol);
@@ -436,6 +448,9 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
         enabled: true,
         reason: supplementedRows > 0 ? 'active' : 'no_extractable_metrics',
         requestedSymbols: symbols.length,
+        documentCount,
+        documentsWithSecCode,
+        sampleCodeFields,
         matchedFilings: bestDocumentBySymbol.size,
         secCodeMatchedSymbols: secCodeMatchedSymbols.size,
         eligibleDescriptionMatchedSymbols: eligibleDescriptionMatchedSymbols.size,
