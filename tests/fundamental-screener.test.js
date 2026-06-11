@@ -184,6 +184,7 @@ describe('runFundamentalScreener', () => {
 
     const listUrl = new URL(calls[0].url);
     assert.equal(listUrl.pathname, '/api/v2/documents.json');
+    assert.equal(listUrl.searchParams.get('type'), '2');
     assert.equal(listUrl.searchParams.get('Subscription-Key'), 'dummy-key');
     assert.equal(calls[0].headers, null);
 
