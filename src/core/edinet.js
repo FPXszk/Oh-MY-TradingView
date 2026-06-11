@@ -5,6 +5,7 @@ const DEFAULT_LOOKBACK_DAYS = 180;
 const DEFAULT_DOCUMENT_LIST_TYPE = 1;
 const DEFAULT_DOCUMENT_DOWNLOAD_TYPE = 5;
 const ELIGIBLE_DOCUMENT_PATTERN = /有価証券報告書|四半期報告書|半期報告書/i;
+let loggedUnexpectedDocumentListPayload = false;
 
 const METRIC_SPECS = {
   revenue: {
@@ -319,6 +320,10 @@ async function fetchDocumentListByDate(dateString, { apiKey, fetchFn }) {
   }
 
   const payload = await response.json();
+  if (!Array.isArray(payload?.results) && !loggedUnexpectedDocumentListPayload) {
+    loggedUnexpectedDocumentListPayload = true;
+    console.log(`[edinet] unexpected documents payload date=${dateString} keys=${Object.keys(payload ?? {}).join(',')} sample=${JSON.stringify(payload).slice(0, 600)}`);
+  }
   return Array.isArray(payload?.results) ? payload.results : [];
 }
 
