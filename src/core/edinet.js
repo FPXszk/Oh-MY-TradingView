@@ -367,6 +367,9 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
 
   try {
     const bestDocumentBySymbol = new Map();
+    const secCodeMatchedSymbols = new Set();
+    const eligibleDescriptionMatchedSymbols = new Set();
+    const csvEligibleMatchedSymbols = new Set();
 
     for (let offset = 0; offset < lookbackDays && bestDocumentBySymbol.size < symbols.length; offset += 1) {
       const dateString = toIsoDate(shiftDate(asOfDate, -offset));
@@ -374,8 +377,11 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
       documents.forEach((doc) => {
         const matchingSymbol = symbols.find((symbol) => matchesSecurityCode(symbol, doc.secCode));
         if (!matchingSymbol) return;
+        secCodeMatchedSymbols.add(matchingSymbol);
         if (!ELIGIBLE_DOCUMENT_PATTERN.test(doc.docDescription ?? '')) return;
+        eligibleDescriptionMatchedSymbols.add(matchingSymbol);
         if (!(doc.csvFlag === '1' || doc.csvFlag === 1)) return;
+        csvEligibleMatchedSymbols.add(matchingSymbol);
 
         const nextScore = buildDocumentCandidateScore(doc);
         const current = bestDocumentBySymbol.get(matchingSymbol);
@@ -431,6 +437,9 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
         reason: supplementedRows > 0 ? 'active' : 'no_extractable_metrics',
         requestedSymbols: symbols.length,
         matchedFilings: bestDocumentBySymbol.size,
+        secCodeMatchedSymbols: secCodeMatchedSymbols.size,
+        eligibleDescriptionMatchedSymbols: eligibleDescriptionMatchedSymbols.size,
+        csvEligibleMatchedSymbols: csvEligibleMatchedSymbols.size,
         supplementedRows,
         lookbackDays,
         asOfDate: toIsoDate(asOfDate),
