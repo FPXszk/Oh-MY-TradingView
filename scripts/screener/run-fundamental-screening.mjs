@@ -762,10 +762,13 @@ async function main() {
   if (result.sourceDetails?.edinet) {
     const edinet = result.sourceDetails.edinet;
     console.log(
-      `[screener] edinet enabled=${edinet.enabled} reason=${edinet.reason ?? 'n/a'} requested=${edinet.requestedSymbols ?? 0} documents=${edinet.documentCount ?? 0} docsWithSecCode=${edinet.documentsWithSecCode ?? 0} secCodeMatched=${edinet.secCodeMatchedSymbols ?? 0} eligibleDoc=${edinet.eligibleDescriptionMatchedSymbols ?? 0} csvEligible=${edinet.csvEligibleMatchedSymbols ?? 0} matchedFilings=${edinet.matchedFilings ?? 0} supplemented=${edinet.supplementedRows ?? 0}`,
+      `[screener] edinet enabled=${edinet.enabled} reason=${edinet.reason ?? 'n/a'} requested=${edinet.requestedSymbols ?? 0} documents=${edinet.documentCount ?? 0} docsWithSecCode=${edinet.documentsWithSecCode ?? 0} secCodeMatched=${edinet.secCodeMatchedSymbols ?? 0} eligibleDoc=${edinet.eligibleDescriptionMatchedSymbols ?? 0} csvEligible=${edinet.csvEligibleMatchedSymbols ?? 0} matchedFilings=${edinet.matchedFilings ?? 0} downloaded=${edinet.downloadedRows ?? 0} factRows=${edinet.rowsWithFactRows ?? 0} errors=${edinet.errorRows ?? 0} supplemented=${edinet.supplementedRows ?? 0}`,
     );
     if ((edinet.documentsWithSecCode ?? 0) === 0 && edinet.sampleCodeFields) {
       console.log(`[screener] edinet sampleCodeFields=${JSON.stringify(edinet.sampleCodeFields)}`);
+    }
+    if (edinet.sampleError) {
+      console.log(`[screener] edinet sampleError=${edinet.sampleError}`);
     }
     if (edinet.error) {
       console.log(`[screener] edinet error=${edinet.error}`);

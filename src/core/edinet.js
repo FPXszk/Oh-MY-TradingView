@@ -404,6 +404,10 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
     }
 
     const results = {};
+    let downloadedRows = 0;
+    let rowsWithFactRows = 0;
+    let errorRows = 0;
+    let sampleError = null;
     for (const row of rows) {
       const symbol = normalizeSymbol(row.symbol);
       const selected = bestDocumentBySymbol.get(symbol);
@@ -413,6 +417,10 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
         const archive = await downloadDocumentCsv(selected.doc.docID, { apiKey, fetchFn });
         const csvFiles = parseCsvZip(archive);
         const factRows = collectFactRows(csvFiles);
+        downloadedRows += 1;
+        if (factRows.length > 0) {
+          rowsWithFactRows += 1;
+        }
         const metrics = deriveSupplementalMetrics({
           marketCapUsd: row.marketCapUsd,
           factRows,
@@ -425,8 +433,14 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
           secCode: selected.doc.secCode ?? null,
           docDescription: selected.doc.docDescription ?? null,
           submitDateTime: selected.doc.submitDateTime ?? null,
+          csvFileCount: csvFiles.length,
+          factRowCount: factRows.length,
         };
       } catch (error) {
+        errorRows += 1;
+        if (!sampleError) {
+          sampleError = error.message;
+        }
         results[symbol] = {
           source: 'edinet',
           error: error.message,
@@ -452,6 +466,10 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
         documentsWithSecCode,
         sampleCodeFields,
         matchedFilings: bestDocumentBySymbol.size,
+        downloadedRows,
+        rowsWithFactRows,
+        errorRows,
+        sampleError,
         secCodeMatchedSymbols: secCodeMatchedSymbols.size,
         eligibleDescriptionMatchedSymbols: eligibleDescriptionMatchedSymbols.size,
         csvEligibleMatchedSymbols: csvEligibleMatchedSymbols.size,
