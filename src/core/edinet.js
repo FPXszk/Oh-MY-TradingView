@@ -408,6 +408,7 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
     let rowsWithFactRows = 0;
     let errorRows = 0;
     let sampleError = null;
+    const sampleDownloads = [];
     for (const row of rows) {
       const symbol = normalizeSymbol(row.symbol);
       const selected = bestDocumentBySymbol.get(symbol);
@@ -436,6 +437,15 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
           csvFileCount: csvFiles.length,
           factRowCount: factRows.length,
         };
+        if (sampleDownloads.length < 5) {
+          sampleDownloads.push({
+            symbol,
+            docId: selected.doc.docID ?? null,
+            docDescription: selected.doc.docDescription ?? null,
+            csvFileCount: csvFiles.length,
+            factRowCount: factRows.length,
+          });
+        }
       } catch (error) {
         errorRows += 1;
         if (!sampleError) {
@@ -470,6 +480,7 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
         rowsWithFactRows,
         errorRows,
         sampleError,
+        sampleDownloads,
         secCodeMatchedSymbols: secCodeMatchedSymbols.size,
         eligibleDescriptionMatchedSymbols: eligibleDescriptionMatchedSymbols.size,
         csvEligibleMatchedSymbols: csvEligibleMatchedSymbols.size,

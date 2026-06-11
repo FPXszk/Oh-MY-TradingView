@@ -767,6 +767,9 @@ async function main() {
     if ((edinet.documentsWithSecCode ?? 0) === 0 && edinet.sampleCodeFields) {
       console.log(`[screener] edinet sampleCodeFields=${JSON.stringify(edinet.sampleCodeFields)}`);
     }
+    if (Array.isArray(edinet.sampleDownloads) && edinet.sampleDownloads.length > 0) {
+      console.log(`[screener] edinet sampleDownloads=${JSON.stringify(edinet.sampleDownloads)}`);
+    }
     if (edinet.sampleError) {
       console.log(`[screener] edinet sampleError=${edinet.sampleError}`);
     }
