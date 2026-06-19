@@ -45,7 +45,21 @@ foreach ($relativePath in $RelativePaths) {
 }
 
 $origin = (& git remote get-url origin).Trim()
-if ($LASTEXITCODE -ne 0 -or ($origin -notmatch '^(git@|ssh://)')) {
+if ($LASTEXITCODE -ne 0) {
+    throw 'git remote get-url origin failed'
+}
+if ($origin -notmatch '^(git@|ssh://)') {
+    if ([string]::IsNullOrWhiteSpace($env:GITHUB_REPOSITORY)) {
+        throw 'origin must use SSH before publishing reports'
+    }
+    $sshOrigin = "git@github.com:$($env:GITHUB_REPOSITORY).git"
+    & git remote set-url origin $sshOrigin
+    if ($LASTEXITCODE -ne 0) {
+        throw 'git remote set-url origin failed'
+    }
+    $origin = (& git remote get-url origin).Trim()
+}
+if ($origin -notmatch '^(git@|ssh://)') {
     throw 'origin must use SSH before publishing reports'
 }
 
