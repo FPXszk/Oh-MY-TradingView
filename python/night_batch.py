@@ -44,8 +44,8 @@ def resolve_results_dir() -> Path:
 
 
 RESULTS_DIR = resolve_results_dir()
-DEFAULT_HOST = '172.31.144.1'
-DEFAULT_PORT = 9223
+DEFAULT_HOST = '127.0.0.1'
+DEFAULT_PORT = 9222
 DEFAULT_STARTUP_CHECK_HOST = '127.0.0.1'
 DEFAULT_STARTUP_CHECK_PORT = 9222
 DEFAULT_SHORTCUT_PATH = r'C:\TradingView\TradingView.exe - ショートカット.lnk'
@@ -328,7 +328,7 @@ def build_parser() -> argparse.ArgumentParser:
     common.add_argument('--recovery-timeout-sec', type=int, default=DEFAULT_RECOVERY_TIMEOUT_SEC)
 
     parser = argparse.ArgumentParser(
-        description='WSL-first orchestrator for TradingView backtest night runs.',
+        description='Windows-native orchestrator for TradingView backtest night runs.',
     )
     subparsers = parser.add_subparsers(dest='command', required=True)
 

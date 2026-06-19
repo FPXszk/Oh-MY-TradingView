@@ -9,7 +9,6 @@ jobs:
       - self-hosted
       - windows
     env:
-      WSL_REPO_PATH: /home/fpxszk/code/Oh-MY-TradingView
       SCREENER_WORKFLOW_LABEL: daily-screener-japan
       SCREENER_REPORT_PATH: docs/reports/screener/daily-ranking-jp.md
       SCREENER_METADATA_PATH: docs/reports/screener/daily-ranking-jp-run.json
@@ -77,12 +76,11 @@ jobs:
             ${{ env.SCREENER_METADATA_PATH }}
           if-no-files-found: warn
 
-      - name: Publish screener report to WSL main
+      - name: Publish screener report to main
         if: success()
         shell: pwsh
         run: |
-          powershell -NoProfile -ExecutionPolicy Bypass -File scripts/windows/github-actions/sync-daily-screener-report-to-wsl.ps1 `
-            -WslRepoPath "${{ env.WSL_REPO_PATH }}" `
+          powershell -NoProfile -ExecutionPolicy Bypass -File scripts/windows/github-actions/sync-daily-screener-report-to-main.ps1 `
             -ReportPath "${{ env.SCREENER_REPORT_PATH }}" `
             -MetadataPath "${{ env.SCREENER_METADATA_PATH }}" `
             -CommitMessage "docs: daily screener japan report run ${{ github.run_id }}-${{ github.run_attempt }}"

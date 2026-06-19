@@ -8,7 +8,7 @@ import { buildMarkdown } from '../scripts/screener/run-fundamental-screening.mjs
 const PROJECT_ROOT = process.cwd();
 const WORKFLOW_PATH = join(PROJECT_ROOT, '.github', 'workflows', 'daily-screener.yml');
 const JP_WORKFLOW_PATH = join(PROJECT_ROOT, '.github', 'workflows', 'daily-screener-japan.yml');
-const SYNC_SCRIPT_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'github-actions', 'sync-daily-screener-report-to-wsl.ps1');
+const SYNC_SCRIPT_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'github-actions', 'sync-daily-screener-report-to-main.ps1');
 const REPORT_TEMPLATE_PATH = join(PROJECT_ROOT, 'docs', 'reports', 'screener', 'TEMPLATE.md');
 
 describe('Daily Fundamental Screener workflow', () => {
@@ -21,7 +21,7 @@ describe('Daily Fundamental Screener workflow', () => {
       'workflow must not enable setup-node npm cache on the Windows self-hosted runner');
   });
 
-  it('publishes the report into the WSL checkout and uploads run metadata', () => {
+  it('publishes the report from the Windows checkout and uploads run metadata', () => {
     const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
 
     assert.match(workflow, /SCREENER_EXCHANGES:\s+NASDAQ,NYSE/,
@@ -32,12 +32,12 @@ describe('Daily Fundamental Screener workflow', () => {
       'US workflow must narrow phase1 sector selection to the strongest 3 sectors');
     assert.match(workflow, /SCREENER_GROSS_MARGIN_MIN_PCT:\s+'30'/,
       'US workflow must lower the gross-margin threshold to 30%');
-    assert.match(workflow, /name:\s+Publish screener report to WSL main/,
-      'workflow must run a dedicated WSL publish step after report generation');
+    assert.match(workflow, /name:\s+Publish screener report to main/,
+      'workflow must run a dedicated publish step after report generation');
     assert.match(workflow, /name:\s+Validate screener report output/,
       'workflow must fail fast if the screener did not emit the markdown report');
-    assert.match(workflow, /sync-daily-screener-report-to-wsl\.ps1/,
-      'workflow must call the WSL sync PowerShell script');
+    assert.match(workflow, /sync-daily-screener-report-to-main\.ps1/,
+      'workflow must call the Windows native sync PowerShell script');
     assert.match(workflow, /SCREENER_METADATA_PATH:\s+docs\/reports\/screener\/daily-ranking-run\.json/,
       'workflow must generate and handle per-run metadata');
     assert.match(workflow, /actions\/upload-artifact@v4[\s\S]*?path:\s*\|[\s\S]*?\$\{\{\s*env\.SCREENER_REPORT_PATH\s*\}\}[\s\S]*?\$\{\{\s*env\.SCREENER_METADATA_PATH\s*\}\}/,
@@ -80,24 +80,20 @@ describe('Daily Fundamental Screener workflow', () => {
   });
 });
 
-describe('daily screener WSL publish script', () => {
-  it('copies only screener report files into WSL and pushes main', () => {
+describe('daily screener Windows native publish script', () => {
+  it('stages only screener report files and pushes main', () => {
     const script = readFileSync(SYNC_SCRIPT_PATH, 'utf8');
 
-    assert.match(script, /wsl\.exe/,
-      'publish script must use WSL to reach the live checkout');
-    assert.match(script, /\$normalizedWindowsPath\s*=\s*\$WindowsPath\s*-replace\s+'\\\\',\s*'\/'/,
-      'publish script must normalize Windows backslashes before invoking wslpath');
-    assert.match(script, /wsl\.exe wslpath -a \$normalizedWindowsPath/,
-      'publish script must convert the normalized Windows path through wslpath');
+    assert.doesNotMatch(script, /wsl\.exe|wslpath|bash -lc/,
+      'publish script must not depend on WSL');
     assert.match(script, /\[string\]\$ReportPath = 'docs\/reports\/screener\/daily-ranking\.md'/,
       'publish script must accept an overridable report path');
     assert.match(script, /\[string\]\$MetadataPath = 'docs\/reports\/screener\/daily-ranking-run\.json'/,
       'publish script must accept an overridable metadata path');
-    assert.match(script, /git add -- '\$ReportPath' '\$MetadataPath'/,
+    assert.match(script, /git add -- \$ReportPath \$MetadataPath/,
       'publish script must stage only the configured screener report files');
-    assert.match(script, /git push origin main/,
-      'publish script must push the WSL checkout to main');
+    assert.match(script, /git push origin HEAD:main/,
+      'publish script must push the Windows checkout commit to main');
   });
 });
 

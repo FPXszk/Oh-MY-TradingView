@@ -186,8 +186,8 @@ async function main() {
   const { values } = parseArgs({
     args: process.argv.slice(2),
     options: {
-      host: { type: 'string', default: process.env.TV_CDP_HOST || '172.31.144.1' },
-      ports: { type: 'string', default: process.env.TV_CAMPAIGN_PORTS || '9223' },
+      host: { type: 'string', default: process.env.TV_CDP_HOST || '127.0.0.1' },
+      ports: { type: 'string', default: process.env.TV_CAMPAIGN_PORTS || '9222' },
       phases: { type: 'string', default: 'smoke,full' },
       'us-campaign': { type: 'string', default: '' },
       'jp-campaign': { type: 'string', default: '' },
@@ -258,7 +258,7 @@ async function main() {
     if (!preflightPassed) {
       throw new Error(
         `No requested worker port passed status preflight (${requestedPorts.join(',')}). ` +
-          'Ensure the Windows-local 9222 TradingView instance is exposed to WSL on the requested port (default 9223).',
+          'Ensure TradingView Desktop is running with CDP on the requested Windows-local port (default 9222).',
       );
     }
   }

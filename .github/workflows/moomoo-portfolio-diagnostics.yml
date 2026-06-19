@@ -42,7 +42,6 @@ jobs:
       - self-hosted
       - windows
     env:
-      WSL_REPO_PATH: /home/fpxszk/code/Oh-MY-TradingView
       MOOMOO_HOST: ${{ inputs.opend_host }}
       MOOMOO_PORT: ${{ inputs.opend_port }}
       MOOMOO_PORTFOLIO_MARKET: ${{ inputs.market }}
@@ -100,11 +99,10 @@ jobs:
             ${{ env.MOOMOO_PORTFOLIO_JSON_PATH }}
           if-no-files-found: warn
 
-      - name: Publish portfolio diagnostics to WSL main
+      - name: Publish portfolio diagnostics to main
         if: success()
         shell: pwsh
         run: |
-          powershell -NoProfile -ExecutionPolicy Bypass -File scripts/windows/github-actions/sync-portfolio-reports-to-wsl.ps1 `
-            -WslRepoPath "${{ env.WSL_REPO_PATH }}" `
+          powershell -NoProfile -ExecutionPolicy Bypass -File scripts/windows/github-actions/sync-portfolio-reports-to-main.ps1 `
             -CommitMessage "docs: moomoo portfolio diagnostics run ${{ github.run_id }}-${{ github.run_attempt }}" `
             -RelativePaths "${{ env.MOOMOO_PORTFOLIO_REPORT_PATH }}","${{ env.MOOMOO_PORTFOLIO_JSON_PATH }}"

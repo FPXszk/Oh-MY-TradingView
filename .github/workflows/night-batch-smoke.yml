@@ -19,12 +19,10 @@ jobs:
         with:
           clean: false
 
-      - name: Install dependencies in WSL workspace
+      - name: Install dependencies
         shell: cmd
         run: |
-          for /f "usebackq delims=" %%I in (`wsl.exe wslpath -a "%CD%"`) do set "REPO_WSL=%%I"
-          if not defined REPO_WSL exit /b 1
-          wsl.exe bash -lc "cd \"%REPO_WSL%\" && npm ci --silent"
+          npm ci --silent
 
       - name: Ensure TradingView is running
         shell: powershell -NoProfile -ExecutionPolicy Bypass -command ". '{0}'"
@@ -77,38 +75,27 @@ jobs:
           }
 
       - name: Readiness diagnostics (non-blocking)
-        shell: cmd
+        shell: pwsh
         run: |
-          for /f "usebackq delims=" %%I in (`wsl.exe wslpath -a "%CD%"`) do set "REPO_WSL=%%I"
-          if not defined REPO_WSL exit /b 0
-          set "NIGHT_BATCH_CONFIG=${{ inputs.config_path }}"
-          if "%NIGHT_BATCH_CONFIG%"=="" set "NIGHT_BATCH_CONFIG=config/night_batch/bundle-foreground-reuse-config.json"
-          echo [readiness-diag] Checking port connectivity and readiness
-          echo [readiness-diag] startup_check_port (local):
-          wsl.exe bash -lc "cd \"%REPO_WSL%\" && python3 -c \"import json,sys; c=json.load(open(sys.argv[1])); h=c.get('runtime',{}).get('startup_check_host','localhost'); p=c.get('runtime',{}).get('startup_check_port',9222); print(f'  host={h} port={p}'); import urllib.request; urllib.request.urlopen(f'http://{h}:{p}/json/list',timeout=3); print('  status=reachable')\" \"%NIGHT_BATCH_CONFIG%\"" 2>&1 || echo [readiness-diag] startup_check_port: UNREACHABLE
-          echo [readiness-diag] bridge port (WSL):
-          wsl.exe bash -lc "cd \"%REPO_WSL%\" && python3 -c \"import json,sys; c=json.load(open(sys.argv[1])); h=c.get('runtime',{}).get('host','172.31.144.1'); p=c.get('runtime',{}).get('port',9223); print(f'  host={h} port={p}'); import urllib.request; urllib.request.urlopen(f'http://{h}:{p}/json/list',timeout=3); print('  status=reachable')\" \"%NIGHT_BATCH_CONFIG%\"" 2>&1 || echo [readiness-diag] bridge port: UNREACHABLE
-          echo [readiness-diag] tv status readiness:
-          wsl.exe bash -lc "cd \"%REPO_WSL%\" && python3 -c \"import json, os, subprocess, sys; c=json.load(open(sys.argv[1])); runtime=c.get('runtime',{}); host=str(runtime.get('host','172.31.144.1')); port=str(runtime.get('port',9223)); print(f'  host={host} port={port}'); env=dict(os.environ, TV_CDP_HOST=host, TV_CDP_PORT=port); proc=subprocess.run(['node','src/cli/index.js','status'], env=env, text=True, capture_output=True); sys.stdout.write(proc.stdout); sys.stderr.write(proc.stderr); raise SystemExit(proc.returncode)\" \"%NIGHT_BATCH_CONFIG%\"" 2>&1 || echo [readiness-diag] tv status: FAILED
-          echo [readiness-diag] done
+          $configPath = '${{ inputs.config_path }}'
+          if (-not $configPath) {
+            $configPath = 'config/night_batch/bundle-foreground-reuse-config.json'
+          }
+          & scripts/windows/github-actions/test-night-batch-readiness.ps1 -ConfigPath $configPath
         continue-on-error: true
 
       - name: Wait for TradingView connection (required gate)
         shell: cmd
         run: |
-          for /f "usebackq delims=" %%I in (`wsl.exe wslpath -a "%CD%"`) do set "REPO_WSL=%%I"
-          if not defined REPO_WSL exit /b 1
           set "NIGHT_BATCH_CONFIG=${{ inputs.config_path }}"
           if "%NIGHT_BATCH_CONFIG%"=="" set "NIGHT_BATCH_CONFIG=config/night_batch/bundle-foreground-reuse-config.json"
           echo [connection-gate] Waiting for TradingView connection before smoke
-          wsl.exe bash -lc "cd \"%REPO_WSL%\" && node scripts/backtest/wait-for-tradingview-readiness.mjs --config \"%NIGHT_BATCH_CONFIG%\" --timeout-sec 180 --interval-sec 5"
+          node scripts/backtest/wait-for-tradingview-readiness.mjs --config "%NIGHT_BATCH_CONFIG%" --timeout-sec 180 --interval-sec 5
 
       - name: Run smoke test only
         shell: cmd
         run: |
           set "NIGHT_BATCH_CONFIG=${{ inputs.config_path }}"
           if "%NIGHT_BATCH_CONFIG%"=="" set "NIGHT_BATCH_CONFIG=config/night_batch/bundle-foreground-reuse-config.json"
-          for /f "usebackq delims=" %%I in (`wsl.exe wslpath -a "%CD%"`) do set "REPO_WSL=%%I"
-          if not defined REPO_WSL exit /b 1
           echo [diag] config_path=%NIGHT_BATCH_CONFIG%
-          wsl.exe bash -lc "cd \"%REPO_WSL%\" && python3 python/night_batch.py smoke-prod --config \"%NIGHT_BATCH_CONFIG%\" --smoke-only"
+          python python/night_batch.py smoke-prod --config "%NIGHT_BATCH_CONFIG%" --smoke-only

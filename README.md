@@ -1,7 +1,7 @@
 # Oh-MY-TradingView
 
 TradingView Desktop を **Codex CLI 主経路** で扱う MCP / CLI ブリッジです。  
-現在は **Windows + WSL** を主軸に、**CDP 接続 / market observation / night batch backtest / research docs 導線** までをまとめて扱います。
+現在は **Windows native** を主軸に、**CDP 接続 / market observation / night batch backtest / research docs 導線** までをまとめて扱います。WSL 経路は legacy/troubleshooting 用として残します。
 
 - **この README が repo の一次入口**
 - docs 全体の入口: `docs/README.md`
@@ -32,7 +32,7 @@ TradingView Desktop を **Codex CLI 主経路** で扱う MCP / CLI ブリッジ
 - **`market_minervini_screener` は TradingView Scanner API 利用**: TradingView の内部スキャナー API（`scanner.tradingview.com/america/scan`）を使用します。認証不要ですが非公式 API のため変更リスクあり
 - **`x_*` は read-only**: `x_status` / `x_whoami` / `x_search_posts` / `x_user_profile` / `x_user_posts` / `x_tweet_detail` はローカルの `twitter-cli` と認証済みブラウザ cookies または `TWITTER_AUTH_TOKEN` / `TWITTER_CT0` を使います
 - **`reach_*` は Twitter 以外の目**: `reach_status` / `reach_read_web` / `reach_read_rss` / `reach_search_reddit` / `reach_read_reddit_post` / `reach_read_youtube` は read-only の external observation layer です
-- **要ユーザー起動**: 現行前提は **Windows で `9222` 起動 / WSL からは `9223` 接続** です
+- **要ユーザー起動**: 現行前提は **Windows で `9222` 起動 / Windows native CLI から `127.0.0.1:9222` 接続** です
 
 ## できること
 
@@ -299,7 +299,7 @@ Windows（current default: `9222`）:
 
 1. Windows local `9222` を先に確認する
 2. 応答しなければ `C:\TradingView\TradingView.exe - ショートカット.lnk` で起動する
-3. その後に WSL から `172.31.144.1:9223` を確認する
+3. Windows native CLI / workflow は `127.0.0.1:9222` に接続する
 
 Windows local の確認:
 
@@ -313,11 +313,11 @@ powershell.exe -NoProfile -Command "Invoke-WebRequest -UseBasicParsing http://12
 powershell.exe -NoProfile -Command "Start-Process -FilePath 'C:\TradingView\TradingView.exe - ショートカット.lnk'"
 ```
 
-> 現行運用は **Windows 側の `9222` 個体を起動し、WSL からは Windows host IP 経由の `9223` に接続** です。`localhost` が届かない場合があるため、WSL では通常 `172.31.144.1:9223` のような Windows host IP を使います。`9223` が応答しない場合、CLI の default は他ポートへ暗黙フォールバックしません。
+> 現行運用は **Windows 側の `9222` 個体を起動し、Windows native CLI / workflow から `127.0.0.1:9222` に接続** します。WSL から操作する場合だけ、Windows host IP + portproxy などの legacy 経路を使います。
 
-### 3. WSL から Windows 側 CDP へ接続
+### 3. WSL legacy: Windows 側 CDP へ接続
 
-WSL から `localhost:<port>` に届かない場合があります。  
+通常運用では不要です。WSL から `localhost:<port>` に届かない場合があります。
 このケースではまず Windows 側の CDP port が **127.0.0.1 のみに bind** されていないか確認してください。
 
 WSL 側の候補 IP:
@@ -349,6 +349,17 @@ curl http://172.31.144.1:9223/json/list
 
 この repository では [.codex/config.toml](.codex/config.toml) に `oh-my-tradingview` MCP server を定義しています。Codex CLI 側で同じ設定をグローバルに追加したい場合は次を使います。
 
+Windows native:
+
+```powershell
+codex mcp add oh-my-tradingview `
+  --env TV_CDP_HOST=127.0.0.1 `
+  --env TV_CDP_PORT=9222 `
+  -- node C:\path\to\Oh-MY-TradingView\src\server.js
+```
+
+WSL legacy:
+
 ```bash
 codex mcp add oh-my-tradingview \
   --env TV_CDP_HOST=172.31.144.1 \
@@ -366,8 +377,8 @@ codex mcp add oh-my-tradingview \
       "command": "node",
       "args": ["/path/to/Oh-MY-TradingView/src/server.js"],
         "env": {
-          "TV_CDP_HOST": "172.x.x.x",
-          "TV_CDP_PORT": "9223"
+          "TV_CDP_HOST": "127.0.0.1",
+          "TV_CDP_PORT": "9222"
         }
       }
     }
@@ -378,8 +389,8 @@ codex mcp add oh-my-tradingview \
 
 | 変数 | デフォルト | 説明 |
 |---|---|---|
-| `TV_CDP_HOST` | `localhost` | CDP host。WSL では Windows host IP を指定 |
-| `TV_CDP_PORT` | `9222` | CDP port。WSL からは通常 `9223` を使う |
+| `TV_CDP_HOST` | `localhost` | CDP host。Windows native では `127.0.0.1` / `localhost` を使う |
+| `TV_CDP_PORT` | `9222` | CDP port。Windows native の既定は `9222` |
 | `TV_WINDOWS_USER` | unset | WSL で browser fallback の Windows user 候補を明示したいときに指定 |
 | `TWITTER_AUTH_TOKEN` | unset | Twitter/X read-only 用の auth_token |
 | `TWITTER_CT0` | unset | Twitter/X read-only 用の ct0 |
@@ -567,36 +578,36 @@ npm run tv -- workspace watchlist-list
 
 ### Python night batch
 
-夜間自動化は **Python が WSL 側の `9223` 接続を preflight し、TradingView 操作本体は既存 Node script を subprocess 実行する** 構成を想定しています。CDP/backtest 本体を Python に再実装しません。
+夜間自動化は **Python が Windows local `9222` 接続を preflight し、TradingView 操作本体は既存 Node script を subprocess 実行する** 構成を想定しています。CDP/backtest 本体を Python に再実装しません。
 
-```bash
+```powershell
 # US/JP 12x10 bundle を smoke -> full foreground で監視実行
-python3 python/night_batch.py smoke-prod --config config/night_batch/bundle-foreground-reuse-config.json
+python python/night_batch.py smoke-prod --config config/night_batch/bundle-foreground-reuse-config.json
 
 # ローカル都合で detached 実行したい場合はこちら
-python3 python/night_batch.py smoke-prod --config config/night_batch/bundle-detached-reuse-config.json
+python python/night_batch.py smoke-prod --config config/night_batch/bundle-detached-reuse-config.json
 
 # JSON config を読んで startup check -> smoke -> detached production
-python3 python/night_batch.py smoke-prod --config config/night_batch/nightly.default.json
+python python/night_batch.py smoke-prod --config config/night_batch/nightly.default.json
 
 # strategy だけ一時的に差し替えたい場合は CLI override も可能
-python3 python/night_batch.py smoke-prod \
-  --config config/night_batch/nightly.default.json \
+python python/night_batch.py smoke-prod `
+  --config config/night_batch/nightly.default.json `
   --smoke-cli "backtest nvda-ma"
 
 # runner / wrapper 用の事前確認
-python3 python/night_batch.py smoke-prod --config config/night_batch/nightly.default.json --dry-run
+python python/night_batch.py smoke-prod --config config/night_batch/nightly.default.json --dry-run
 
 # fine-tune bundle を夜間実行
-python3 python/night_batch.py bundle --host 172.31.144.1 --port 9223
+python python/night_batch.py bundle --host 127.0.0.1 --port 9222
 
 # bundle 後に rich report まで一続きで実行
-python3 python/night_batch.py nightly --host 172.31.144.1 --port 9223
+python python/night_batch.py nightly --host 127.0.0.1 --port 9222
 
 # 朝の report だけ再生成
-python3 python/night_batch.py report \
-  --us artifacts/campaigns/next-long-run-us-finetune-100x10/full/recovered-results.json \
-  --jp artifacts/campaigns/next-long-run-jp-finetune-100x10/full/recovered-results.json \
+python python/night_batch.py report `
+  --us artifacts/campaigns/next-long-run-us-finetune-100x10/full/recovered-results.json `
+  --jp artifacts/campaigns/next-long-run-jp-finetune-100x10/full/recovered-results.json `
   --out artifacts/night-batch/morning-report.md
 ```
 
@@ -605,9 +616,9 @@ python3 python/night_batch.py report \
 
 `config/night_batch/nightly.default.json` は single-backtest ベースのサンプルです。日中に戦略案を差し替えたいときは、この JSON の `strategies.smoke.cli` / `strategies.production.cli` を更新するか、CLI override を使います。
 
-`smoke-prod` は **Windows local `9222` の startup check** を先に行い、TradingView chart target が見つからなければ current verified shortcut `C:\TradingView\TradingView.exe - ショートカット.lnk` を使って launch します。その後に **WSL `9223` の preflight** を通し、smoke backtest を実行します。config の `detach_after_smoke: false` なら production を foreground で最後まで監視し、`bundle-foreground-state.json` の `updated_at` を heartbeat として更新します。`detach_after_smoke: true` のときだけ detached child を使います。
+`smoke-prod` は **Windows local `9222` の startup check** を先に行い、TradingView chart target が見つからなければ current verified shortcut `C:\TradingView\TradingView.exe - ショートカット.lnk` を使って launch します。その後に `127.0.0.1:9222` の preflight を通し、smoke backtest を実行します。config の `detach_after_smoke: false` なら production を foreground で最後まで監視し、`bundle-foreground-state.json` の `updated_at` を heartbeat として更新します。`detach_after_smoke: true` のときだけ detached child を使います。
 
-Python スクリプトは `artifacts/night-batch/` に run summary / log / state を残します。`bundle` / `campaign` / `recover` / `report` / `nightly` / `smoke-prod` をサポートし、CDP が必要なコマンドでは 9223 preflight が通らない限り停止します。summary JSON / Markdown には `termination_reason`、`failed_step`、`last_checkpoint` が含まれます。
+Python スクリプトは `artifacts/night-batch/` に run summary / log / state を残します。`bundle` / `campaign` / `recover` / `report` / `nightly` / `smoke-prod` をサポートし、CDP が必要なコマンドでは `9222` preflight が通らない限り停止します。summary JSON / Markdown には `termination_reason`、`failed_step`、`last_checkpoint` が含まれます。
 
 ### Self-hosted GitHub Actions / Windows manual entrypoint
 

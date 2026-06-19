@@ -24,8 +24,8 @@ command = "node"
 args = ["/home/fpxszk/code/Oh-MY-TradingView/src/server.js"]
 
 [mcp_servers.oh-my-tradingview.env]
-TV_CDP_HOST = "172.31.144.1"
-TV_CDP_PORT = "9223"
+TV_CDP_HOST = "127.0.0.1"
+TV_CDP_PORT = "9222"
 
 [sandbox_workspace_write]
 network_access = true

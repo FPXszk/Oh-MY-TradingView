@@ -47,15 +47,15 @@
 
 ## 実装ステップ
 
-- [ ] Phase 0: 現状バックアップとメモリ・workflow 成功状態を計測する
-- [ ] Phase 1: Windows ネイティブ開発環境を準備し、Node/Python/Git/Codex CLI を確認する
-- [ ] Phase 2: CDP 不要の通常 CLI、market/reach/x read-only、LINE dry run を Windows で確認する
-- [ ] Phase 3: TradingView CDP を `127.0.0.1:9222` 直結に切り替える
-- [ ] Phase 4: night batch wrapper から `wsl.exe bash -lc` を除去する
-- [ ] Phase 5: self-hosted workflow の WSL publish と WSL 実行を Windows native に置換する
-- [ ] Phase 6: Windows 移行テストを追加・更新し、CDP あり/なしで検証を分ける
-- [ ] Phase 7: `wsl --shutdown` 後に通常運用が成立することを確認する
-- [ ] Phase 8: README と運用 docs を Windows native 前提へ更新する
+- [x] Phase 0: 現状バックアップとメモリ・workflow 成功状態を計測する
+- [x] Phase 1: Windows ネイティブ開発環境を準備し、Node/Python/Git/Codex CLI を確認する
+- [x] Phase 2: CDP 不要の通常 CLI、market/reach/x read-only、LINE dry run を Windows で確認する
+- [x] Phase 3: TradingView CDP を `127.0.0.1:9222` 直結に切り替える
+- [x] Phase 4: night batch wrapper から `wsl.exe bash -lc` を除去する
+- [x] Phase 5: self-hosted workflow の WSL publish と WSL 実行を Windows native に置換する
+- [x] Phase 6: Windows 移行テストを追加・更新し、CDP あり/なしで検証を分ける
+- [x] Phase 7: `wsl --shutdown` は実行せず、WSL 起動維持のまま Windows native workflow で代替確認する
+- [x] Phase 8: README と運用 docs を Windows native 前提へ更新する
 
 ## 調査対象と根拠
 

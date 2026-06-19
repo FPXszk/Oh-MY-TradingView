@@ -1,7 +1,7 @@
 {
   "runtime": {
-    "host": "172.31.144.1",
-    "port": 9223,
+    "host": "127.0.0.1",
+    "port": 9222,
     "startup_check_host": "127.0.0.1",
     "startup_check_port": 9222,
     "launch_wait_sec": 25,

@@ -1296,13 +1296,13 @@ describe('cross-phase resume guard', () => {
 // run-finetune-bundle default policy
 // ---------------------------------------------------------------------------
 describe('run-finetune-bundle default policy', () => {
-  it('default port is 9223 (WSL access to Windows 9222)', async () => {
+  it('default port is 9222 (Windows native TradingView CDP)', async () => {
     const raw = await readFile(
       join(__dirname, '..', 'scripts', 'backtest', 'run-finetune-bundle.mjs'),
       'utf8',
     );
-    assert.ok(raw.includes("'9223'"), 'default ports should be 9223');
-    assert.ok(!raw.includes("'9223,9225'"), 'should not default to dual-worker 9223,9225');
+    assert.ok(raw.includes("'9222'"), 'default ports should be 9222');
+    assert.ok(!raw.includes("'9222,9224'"), 'should not default to dual-worker 9222,9224');
   });
 
   it('default phases are smoke,full (no pilot)', async () => {
@@ -1454,7 +1454,7 @@ describe('next-long-run 12x10 campaign config validation', () => {
     assert.equal(config.date_override.to, '2099-12-31');
     assert.equal(config.preset_ids.length, 30);
     assert.deepEqual(config.preset_ids, expectedPresetIds);
-    assert.deepEqual(config.execution.worker_ports, [9223]);
+    assert.deepEqual(config.execution.worker_ports, [9222]);
   });
 
   it('next-long-run-jp-12x10.json is valid JSON with expected shape', async () => {
@@ -1469,7 +1469,7 @@ describe('next-long-run 12x10 campaign config validation', () => {
     assert.equal(config.date_override.to, '2099-12-31');
     assert.equal(config.preset_ids.length, 30);
     assert.deepEqual(config.preset_ids, expectedPresetIds);
-    assert.deepEqual(config.execution.worker_ports, [9223]);
+    assert.deepEqual(config.execution.worker_ports, [9222]);
   });
 
   it('next-long-run 12x10 campaign configs pass validateCampaignConfig', async () => {

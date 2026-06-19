@@ -6,11 +6,13 @@ import { join } from 'node:path';
 const PROJECT_ROOT = process.cwd();
 const WORKFLOW_PATH = join(PROJECT_ROOT, '.github', 'workflows', 'night-batch-self-hosted.yml');
 const WRAPPER_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'run-night-batch-self-hosted.cmd');
+const WRAPPER_HELPER_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'run-night-batch-self-hosted.ps1');
 const BOOTSTRAP_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'bootstrap-self-hosted-runner.cmd');
 const RUNNER_WRAPPER_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'run-self-hosted-runner-with-bootstrap.cmd');
 const AUTOSTART_SCRIPT_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'register-self-hosted-runner-autostart.cmd');
 const FIND_OUTPUTS_SCRIPT_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'github-actions', 'find-night-batch-outputs.ps1');
 const APPEND_SUMMARY_SCRIPT_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'github-actions', 'append-night-batch-workflow-summary.ps1');
+const READINESS_SCRIPT_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'github-actions', 'test-night-batch-readiness.ps1');
 const GITATTRIBUTES_PATH = join(PROJECT_ROOT, '.gitattributes');
 const README_PATH = join(PROJECT_ROOT, 'README.md');
 const BUNDLE_FG_CONFIG_PATH = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
@@ -21,37 +23,32 @@ const BASELINE_WRITER_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'github-ac
 const WINDOWS_RUNNER_SCRIPT_PATHS = [BOOTSTRAP_PATH, RUNNER_WRAPPER_PATH, AUTOSTART_SCRIPT_PATH];
 
 describe('run-night-batch-self-hosted.cmd', () => {
-  it('passes config through cmd expansion instead of bash-side variables', () => {
+  it('delegates night batch execution to the Windows-native PowerShell helper', () => {
     const script = readFileSync(WRAPPER_PATH, 'utf8');
 
-    assert.match(script, /--config \\"%CONFIG_PATH%\\" --round-mode resume-current-round/);
-    assert.match(script, /--config \\"%CONFIG_PATH%\\" --round-mode advance-next-round/);
-    assert.match(script, /--config \\"%CONFIG_PATH%\\" --round-mode \\"%ROUND_MODE%\\"/);
-    assert.match(script, /archive-rounds/,
-      'wrapper must archive completed rounds before and after manual runs');
-    assert.match(script, /GITHUB_ACTIONS/,
-      'wrapper must skip post-run archive cleanup inside GitHub Actions');
-    assert.ok(
-      script.indexOf('archive-rounds') < script.indexOf('ROUND_MODE'),
-      'wrapper must clean completed rounds before selecting the round mode',
-    );
-    assert.doesNotMatch(script, /--config \\"\$CONFIG_PATH\\"/);
-    assert.doesNotMatch(script, /--round-mode \\"\$ROUND_MODE\\"/);
+    assert.match(script, /run-night-batch-self-hosted\.ps1/,
+      'cmd wrapper must delegate implementation logic to PowerShell');
+    assert.match(script, /-ConfigPath "%CONFIG_PATH%"/,
+      'cmd wrapper must pass the config path through Windows cmd expansion');
+    assert.match(script, /-RoundMode "%ROUND_MODE%"/,
+      'cmd wrapper must pass an explicit round mode when provided');
+    assert.doesNotMatch(script, /wsl\.exe|bash -lc/,
+      'cmd wrapper must not depend on WSL');
   });
 
   it('falls back to advance-next-round when resume hits a fingerprint mismatch', () => {
-    const script = readFileSync(WRAPPER_PATH, 'utf8');
+    const script = readFileSync(WRAPPER_HELPER_PATH, 'utf8');
 
     assert.match(script, /Latest round fingerprint does not match the current strategy set/);
     assert.match(script, /fingerprint mismatch on resume-current-round; retrying with advance-next-round/);
-    assert.match(script, /grep -q 'Latest round fingerprint does not match the current strategy set'/);
+    assert.match(script, /Select-String[\s\S]*Latest round fingerprint does not match the current strategy set/);
   });
 
-  it('keeps the WSL working directory anchored to the resolved repo path', () => {
+  it('keeps the working directory anchored to the Windows repo path', () => {
     const script = readFileSync(WRAPPER_PATH, 'utf8');
 
-    assert.match(script, /cd \\"%REPO_WSL%\\"/);
-    assert.doesNotMatch(script, /cd \\"\$REPO_WSL\\"/);
+    assert.match(script, /pushd "%REPO_WIN%"/);
+    assert.doesNotMatch(script, /REPO_WSL|wsl\.exe/);
   });
 
   it('does not contain runner startup logic', () => {
@@ -368,7 +365,7 @@ describe('night-batch-self-hosted workflow', () => {
     assert.match(workflow, /append-night-batch-workflow-summary\.ps1/,
       'workflow must call the summary script that writes to GITHUB_STEP_SUMMARY');
     assert.match(workflow, /Ensure TradingView is running/,
-      'workflow must ensure TradingView is running before invoking the WSL smoke run');
+      'workflow must ensure TradingView is running before invoking the smoke run');
     assert.match(workflow, /ConvertFrom-Json/,
       'workflow must inspect the config path before starting TradingView');
     assert.match(workflow, /Start-Process -FilePath \$launch\.shortcut_path/,
@@ -395,7 +392,7 @@ describe('night-batch-self-hosted workflow', () => {
       'workflow must invoke the latest-doc cleanup script');
     assert.ok(
       workflow.indexOf('Ensure TradingView is running') < workflow.indexOf('Run foreground production'),
-      'workflow must launch TradingView before the WSL smoke run',
+      'workflow must launch TradingView before the smoke run',
     );
     assert.ok(
       workflow.indexOf('Archive completed night batch rounds') > workflow.indexOf('actions/upload-artifact@v4'),
@@ -768,21 +765,27 @@ describe('night-batch-self-hosted workflow readiness diagnostics', () => {
       'readiness diagnostics must appear before the smoke gate step');
   });
 
-  it('readiness diagnostics checks both 9222 and 9223 port connectivity', () => {
+  it('readiness diagnostics checks startup and runtime port connectivity', () => {
     const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
+    const script = readFileSync(READINESS_SCRIPT_PATH, 'utf8');
     assert.match(workflow, /startup_check_port/,
       'readiness diagnostics must reference startup_check_port (local 9222)');
-    assert.match(workflow, /\bport\b.*readiness|readiness.*\bport\b/i,
-      'readiness diagnostics must reference the WSL bridge port');
+    assert.match(script, /\bport\b.*readiness|readiness.*\bport\b/i,
+      'readiness diagnostics must reference the runtime port');
+    assert.doesNotMatch(workflow, /wsl\.exe|bash -lc/,
+      'night batch workflow must not depend on WSL');
   });
 
   it('readiness diagnostics invokes tv status for api_available verification', () => {
     const workflow = readFileSync(WORKFLOW_PATH, 'utf8');
+    const script = readFileSync(READINESS_SCRIPT_PATH, 'utf8');
     const diagSection = workflow.slice(
       workflow.indexOf('Readiness diagnostics'),
       workflow.indexOf('Run foreground production'),
     );
-    assert.match(diagSection, /status/,
+    assert.match(diagSection, /test-night-batch-readiness\.ps1/,
+      'workflow must delegate readiness diagnostics to the helper script');
+    assert.match(script, /status/,
       'readiness diagnostics must invoke status command');
   });
 
