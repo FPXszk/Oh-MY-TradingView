@@ -3,7 +3,7 @@
 import { execFile } from 'node:child_process';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, dirname, relative } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import { RESEARCH_RESULTS_DIR } from '../../src/core/repo-paths.js';
 import {
@@ -16,6 +16,10 @@ import {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const PROJECT_ROOT = join(__dirname, '..', '..');
+
+function importLocalModule(path) {
+  return import(pathToFileURL(path).href);
+}
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -143,7 +147,7 @@ async function main() {
   const campaignId = positionals[0] || 'long-run-cross-market-100x5';
   const phase = values.phase || 'full';
 
-  const campaignModule = await import(join(PROJECT_ROOT, 'src', 'core', 'campaign.js'));
+  const campaignModule = await importLocalModule(join(PROJECT_ROOT, 'src', 'core', 'campaign.js'));
   const {
     loadCampaign,
     partitionRuns,
@@ -423,8 +427,8 @@ async function main() {
   // --- Experiment gating (additive artifacts) ---
   const gatingConfig = campaign.config.experiment_gating;
   if (gatingConfig?.enabled) {
-    const { buildGatedSummary } = await import(join(PROJECT_ROOT, 'src', 'core', 'experiment-gating.js'));
-    const { getMultiSymbolAnalysis } = await import(join(PROJECT_ROOT, 'src', 'core', 'market-intel.js'));
+    const { buildGatedSummary } = await importLocalModule(join(PROJECT_ROOT, 'src', 'core', 'experiment-gating.js'));
+    const { getMultiSymbolAnalysis } = await importLocalModule(join(PROJECT_ROOT, 'src', 'core', 'market-intel.js'));
     const gatingThresholds = gatingConfig.thresholds ?? undefined;
     const symbols = [...new Set(effectiveRuns.map((entry) => entry.symbol).filter(Boolean))];
     const marketIntelSnapshots = symbols.length > 0
