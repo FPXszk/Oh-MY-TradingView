@@ -4,16 +4,15 @@ approval_policy = "never"
 sandbox_mode = "danger-full-access"
 network = "enabled"
 
-[projects."/home/fpxszk/code/Oh-MY-TradingView"]
+[projects.'C:\00_mycode\Oh-MY-TradingView']
 trust_level = "trusted"
 writable_roots = [
-"/home/fpxszk/code/Oh-MY-TradingView",
-"/home/fpxszk/code/Oh-MY-TradingView/.git",
-"/tmp",
-"/home/fpxszk/.codex/memories",
+'C:\00_mycode\Oh-MY-TradingView',
+'C:\00_mycode\Oh-MY-TradingView\.git',
+'C:\Users\szk\.codex\memories',
 ]
 
-[projects."/mnt/c/actions-runner/_work"]
+[projects.'C:\actions-runner\_work']
 trust_level = "trusted"
 
 [plugins."github@openai-curated"]
@@ -21,7 +20,7 @@ enabled = true
 
 [mcp_servers.oh-my-tradingview]
 command = "node"
-args = ["/home/fpxszk/code/Oh-MY-TradingView/src/server.js"]
+args = ['C:\00_mycode\Oh-MY-TradingView\src\server.js']
 
 [mcp_servers.oh-my-tradingview.env]
 TV_CDP_HOST = "127.0.0.1"

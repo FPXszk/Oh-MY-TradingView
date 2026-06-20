@@ -1,5 +1,6 @@
 import { access, constants } from 'node:fs/promises';
 import { execFile } from 'node:child_process';
+import { platform } from 'node:os';
 import { join } from 'node:path';
 import { promisify } from 'node:util';
 
@@ -133,6 +134,10 @@ async function resolvePythonBin({ access: accessFn, cwd, env }) {
     return env.MOOMOO_PYTHON_BIN.trim();
   }
 
+  if (typeof env.PYTHON === 'string' && env.PYTHON.trim() !== '') {
+    return env.PYTHON.trim();
+  }
+
   const localBin = join(cwd(), 'python', '.venv', 'bin', 'python3');
   if (await canExecute(localBin, accessFn)) {
     return localBin;
@@ -143,7 +148,7 @@ async function resolvePythonBin({ access: accessFn, cwd, env }) {
     return localWindowsBin;
   }
 
-  if (env.OS === 'Windows_NT') {
+  if (platform() === 'win32') {
     return 'python';
   }
 
@@ -165,7 +170,7 @@ function buildExecError(label, error) {
     .trim();
 
   if (error?.code === 'ENOENT' || /ENOENT|not found/i.test(details)) {
-    return new Error('Python runtime for moomoo adapter was not found. Set `MOOMOO_PYTHON_BIN` or ensure `python3` is available.');
+    return new Error('Python runtime for moomoo adapter was not found. Set `MOOMOO_PYTHON_BIN` / `PYTHON` or ensure Python is available.');
   }
 
   if (/moomoo-api is not installed/i.test(details)) {

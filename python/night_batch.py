@@ -613,6 +613,24 @@ def next_archive_backup_target(target_dir: Path) -> Path:
 
 
 def process_is_running(pid: int) -> bool:
+    if pid <= 0:
+        return False
+    if sys.platform == 'win32':
+        import ctypes
+
+        kernel32 = ctypes.WinDLL('kernel32', use_last_error=True)
+        process_query_limited_information = 0x1000
+        still_active = 259
+        handle = kernel32.OpenProcess(process_query_limited_information, False, pid)
+        if not handle:
+            return ctypes.get_last_error() == 5
+        try:
+            exit_code = ctypes.c_ulong()
+            if not kernel32.GetExitCodeProcess(handle, ctypes.byref(exit_code)):
+                return False
+            return exit_code.value == still_active
+        finally:
+            kernel32.CloseHandle(handle)
     try:
         os.kill(pid, 0)
     except ProcessLookupError:
@@ -1048,7 +1066,10 @@ def run_process(
         if progress_callback:
             progress_callback(current_checkpoint_rel, False)
 
-        time.sleep(2)
+        try:
+            process.wait(timeout=0.1)
+        except subprocess.TimeoutExpired:
+            pass
 
     process.wait()
     stdout_thread.join(timeout=1)
@@ -1594,7 +1615,7 @@ def normalize_logged_repo_path(raw_path: str | None) -> str | None:
         return normalized
     project_root_posix = PROJECT_ROOT.as_posix()
     if normalized.startswith(f'{project_root_posix}/'):
-        return relative_path(Path(normalized))
+        return relative_path(Path(normalized)).replace('\\', '/')
     marker = f'/{PROJECT_ROOT.name}/'
     if marker in normalized:
         return normalized.rsplit(marker, 1)[-1].lstrip('/')

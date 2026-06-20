@@ -2,12 +2,16 @@
 
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, isAbsolute, join, relative } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const PROJECT_ROOT = join(__dirname, '..', '..');
+
+function importLocal(path) {
+  return import(pathToFileURL(path).href);
+}
 
 function fmtNumber(value, digits = 2) {
   if (!Number.isFinite(value)) {
@@ -184,8 +188,8 @@ async function main() {
     usUniverse,
     jpUniverse,
   ] = await Promise.all([
-    import(join(PROJECT_ROOT, 'src', 'core', 'campaign-report.js')),
-    import(join(PROJECT_ROOT, 'src', 'core', 'strategy-catalog.js')),
+    importLocal(join(PROJECT_ROOT, 'src', 'core', 'campaign-report.js')),
+    importLocal(join(PROJECT_ROOT, 'src', 'core', 'strategy-catalog.js')),
     readJson(values.us),
     readJson(values.jp),
     readJson(values['catalog-path']),

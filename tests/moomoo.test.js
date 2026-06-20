@@ -27,6 +27,8 @@ import {
   sanitizePortfolioDiagnosticsResult,
 } from '../scripts/moomoo/run-portfolio-diagnostics.mjs';
 
+const DEFAULT_PYTHON_BIN = process.platform === 'win32' ? 'python' : 'python3';
+
 function mockDeps(execImpl, extra = {}) {
   return {
     _deps: {
@@ -387,8 +389,8 @@ describe('moomoo success paths', () => {
 
     assert.equal(result.count, 2);
     assert.equal(calls.length, 1);
-    assert.equal(calls[0].file, 'python3');
-    assert.match(calls[0].args[0], /python\/moomoo_adapter\.py$/);
+    assert.equal(calls[0].file, DEFAULT_PYTHON_BIN);
+    assert.match(calls[0].args[0].replaceAll('\\', '/'), /python\/moomoo_adapter\.py$/);
     assert.equal(calls[0].args[1], 'snapshot');
     const payload = JSON.parse(calls[0].args[2]);
     assert.deepEqual(payload.symbols, ['US.AAPL', 'US.TSLA']);

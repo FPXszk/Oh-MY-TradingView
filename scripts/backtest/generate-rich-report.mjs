@@ -2,12 +2,16 @@
 
 import { readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const PROJECT_ROOT = join(__dirname, '..', '..');
+
+function importLocal(path) {
+  return import(pathToFileURL(path).href);
+}
 
 function fmtNumber(value, digits = 2) {
   if (!Number.isFinite(value)) {
@@ -146,7 +150,7 @@ async function main() {
     usRuns,
     jpRuns,
   ] = await Promise.all([
-    import(join(PROJECT_ROOT, 'src', 'core', 'campaign-report.js')),
+    importLocal(join(PROJECT_ROOT, 'src', 'core', 'campaign-report.js')),
     readFile(values.us, 'utf8').then((raw) => JSON.parse(raw)),
     readFile(values.jp, 'utf8').then((raw) => JSON.parse(raw)),
   ]);
@@ -173,8 +177,8 @@ async function main() {
 
   const catalogPath = values['catalog-path'] || join(PROJECT_ROOT, 'config', 'backtest', 'strategy-catalog.json');
   if (values['diff-out'] || values['catalog-out']) {
-    const { loadCatalog } = await import(join(PROJECT_ROOT, 'src', 'core', 'strategy-catalog.js'));
-    const { buildDiffArtifact } = await import(join(PROJECT_ROOT, 'src', 'core', 'strategy-live-retired-diff.js'));
+    const { loadCatalog } = await importLocal(join(PROJECT_ROOT, 'src', 'core', 'strategy-catalog.js'));
+    const { buildDiffArtifact } = await importLocal(join(PROJECT_ROOT, 'src', 'core', 'strategy-live-retired-diff.js'));
     const catalog = await loadCatalog(catalogPath);
     if (values['catalog-out']) {
       await writeFile(values['catalog-out'], `${JSON.stringify(catalog, null, 2)}\n`);

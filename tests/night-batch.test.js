@@ -12,18 +12,46 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { createServer } from 'node:http';
-import { tmpdir } from 'node:os';
-import { join, relative } from 'node:path';
+import { platform, tmpdir } from 'node:os';
+import { basename, isAbsolute, join, relative } from 'node:path';
 import { spawn } from 'node:child_process';
 
 const PROJECT_ROOT = join(process.cwd());
 const SCRIPT_PATH = join(PROJECT_ROOT, 'python', 'night_batch.py');
+const PYTHON_BIN = process.env.PYTHON || (platform() === 'win32' ? 'python' : 'python3');
+const GIT_BASH_BIN = 'C:\\Program Files\\Git\\bin\\bash.exe';
 let RESULTS_DIR = join(PROJECT_ROOT, 'results', 'night-batch');
 const ROUND_MODE_COMMANDS = new Set(['bundle', 'campaign', 'recover', 'nightly', 'smoke-prod']);
 const FOREGROUND_BUNDLE_CONFIG_PATH = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
 
 function toRepoRelativePath(path) {
   return relative(PROJECT_ROOT, path).replaceAll('\\', '/');
+}
+
+function safeIdFromPath(path) {
+  return basename(path).replace(/[^A-Za-z0-9_.-]/g, '-');
+}
+
+function windowsShellShim(scriptPath) {
+  if (platform() !== 'win32' || !String(scriptPath).endsWith('.sh')) {
+    return scriptPath;
+  }
+  const bashPath = scriptPath
+    .replace(/^([A-Za-z]):\\/, (_, drive) => `/${drive.toLowerCase()}/`)
+    .replaceAll('\\', '/');
+  const shimPath = `${scriptPath}.cmd`;
+  writeFileSync(shimPath, `@echo off\r\n"${GIT_BASH_BIN}" "${bashPath}" %*\r\n`, 'utf8');
+  return shimPath;
+}
+
+function normalizeExecutableArgs(args) {
+  if (platform() !== 'win32') {
+    return args;
+  }
+  const executableFlags = new Set(['--node-bin', '--launch-script', '--recovery-script']);
+  return args.map((arg, index) =>
+    executableFlags.has(args[index - 1]) ? windowsShellShim(arg) : arg
+  );
 }
 
 function readJson(filePath) {
@@ -74,8 +102,9 @@ function runPython(args, options = {}) {
       && !effectiveArgs.includes('--detached-state-file')) {
     effectiveArgs.push('--detached-state-file', join(RESULTS_DIR, 'detached-production-state.json'));
   }
+  const commandArgs = normalizeExecutableArgs(effectiveArgs);
   return new Promise((resolve, reject) => {
-    const child = spawn('python3', effectiveArgs, {
+    const child = spawn(PYTHON_BIN, commandArgs, {
       cwd: PROJECT_ROOT,
       stdio: ['ignore', 'pipe', 'pipe'],
       env: {
@@ -90,7 +119,7 @@ function runPython(args, options = {}) {
     const timeoutMs = options.timeoutMs ?? 30000;
     const timer = setTimeout(() => {
       child.kill('SIGKILL');
-      reject(new Error(`python night_batch.py timed out after ${timeoutMs}ms: ${effectiveArgs.join(' ')}`));
+      reject(new Error(`python night_batch.py timed out after ${timeoutMs}ms: ${commandArgs.join(' ')}`));
     }, timeoutMs);
     child.stdout.on('data', (chunk) => {
       stdout += String(chunk);
@@ -170,7 +199,7 @@ function readSummaryFromResult(result) {
   const match = result.stdout.match(/Summary written: (.+-summary\.md)/);
   assert.ok(match, `expected summary path in stdout:\n${result.stdout}`);
   const rawSummaryPath = match[1].trim();
-  const summaryPath = rawSummaryPath.startsWith('/')
+  const summaryPath = isAbsolute(rawSummaryPath)
     ? rawSummaryPath.replace(/-summary\.md$/, '-summary.json')
     : join(PROJECT_ROOT, rawSummaryPath.replace(/-summary\.md$/, '-summary.json'));
   return JSON.parse(readFileSync(summaryPath, 'utf8'));
@@ -200,19 +229,48 @@ async function waitFor(check, timeoutMs = 4000, intervalMs = 100) {
   assert.fail('timed out waiting for condition');
 }
 
+async function removeDirectoryWithRetry(path, attempts = 8) {
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      rmSync(path, { recursive: true, force: true });
+      return;
+    } catch (error) {
+      if (attempt === attempts || !['EBUSY', 'ENOTEMPTY', 'EPERM'].includes(error?.code)) {
+        throw error;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 150 * attempt));
+    }
+  }
+}
+
+async function closeHttpServer(server) {
+  await new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      server.closeAllConnections?.();
+      resolve();
+    }, 1000);
+    server.close((error) => {
+      clearTimeout(timer);
+      if (error) {
+        reject(error);
+        return;
+      }
+      resolve();
+    });
+    server.closeIdleConnections?.();
+  });
+}
+
 function listenOnLocalhost(server, requestedPort = 0) {
   return new Promise((resolve, reject) => {
     const onError = (error) => {
-      server.off('listening', onListening);
       reject(error);
     };
-    const onListening = () => {
+    server.once('error', onError);
+    server.listen(requestedPort, '127.0.0.1', () => {
       server.off('error', onError);
       resolve();
-    };
-    server.once('error', onError);
-    server.once('listening', onListening);
-    server.listen(requestedPort, '127.0.0.1');
+    });
   });
 }
 
@@ -229,7 +287,7 @@ async function listenOrSkip(testContext, server, requestedPort = 0) {
   return true;
 }
 
-describe('night_batch.py CLI', () => {
+describe('night_batch.py CLI', { timeout: 120000 }, () => {
   let server = null;
   let port = null;
   let tempDir = null;
@@ -274,12 +332,12 @@ describe('night_batch.py CLI', () => {
 
   afterEach(async () => {
     if (server) {
-      await new Promise((resolve) => server.close(resolve));
+      await closeHttpServer(server);
       server = null;
     }
     port = null;
     if (tempDir) {
-      rmSync(tempDir, { recursive: true, force: true });
+      await removeDirectoryWithRetry(tempDir);
       tempDir = null;
     }
     RESULTS_DIR = join(PROJECT_ROOT, 'results', 'night-batch');
@@ -363,7 +421,8 @@ describe('night_batch.py CLI', () => {
   });
 
   it('report writes a deterministic latest backtest summary when recovered results exist', async () => {
-    const fakeNodePath = join(tempDir, 'fake-report-node.sh');
+    const fakeNodePath = join(tempDir, platform() === 'win32' ? 'fake-report-node.cmd' : 'fake-report-node.sh');
+    const fakeNodeRunnerPath = join(tempDir, 'fake-report-node-runner.mjs');
     const fakeNodeLog = join(tempDir, 'fake-report-node.log');
     const usPath = join(tempDir, 'us-recovered-results.json');
     const jpPath = join(tempDir, 'jp-recovered-results.json');
@@ -371,62 +430,42 @@ describe('night_batch.py CLI', () => {
     const latestSummaryPath = join(tempDir, 'main-backtest-current-summary.md');
     const latestRankingPath = join(tempDir, 'main-backtest-current-combined-ranking.json');
 
-    writeExecutable(
-      fakeNodePath,
-      `#!/bin/sh
-${STATUS_OK_SNIPPET}script="$1"
-out=""
-rankout=""
-catalogout=""
-strategyout=""
-symbolout=""
-printf '%s\n' "$*" >> "${fakeNodeLog}"
-while [ "$#" -gt 0 ]; do
-  if [ "$1" = "--out" ]; then
-    out="$2"
-    shift 2
-    continue
-  fi
-  if [ "$1" = "--ranking-out" ]; then
-    rankout="$2"
-    shift 2
-    continue
-  fi
-  if [ "$1" = "--catalog-out" ]; then
-    catalogout="$2"
-    shift 2
-    continue
-  fi
-  if [ "$1" = "--strategy-out" ]; then
-    strategyout="$2"
-    shift 2
-    continue
-  fi
-  if [ "$1" = "--symbol-out" ]; then
-    symbolout="$2"
-    shift 2
-    continue
-  fi
-  shift
-done
-case "$script" in
-  *generate-strategy-reference.mjs)
-    printf '# fake strategy reference\\n' > "$strategyout"
-    printf '# fake symbol reference\\n' > "$symbolout"
-    ;;
-  *)
-    printf '# fake rich report\\n' > "$out"
-    if [ -n "$rankout" ]; then
-      printf '[{"presetId":"preset-a","composite_score":2}]\\n' > "$rankout"
-    fi
-    if [ -n "$catalogout" ]; then
-      printf '{"strategies":[{"id":"preset-a","lifecycle":{"status":"live"}}]}\\n' > "$catalogout"
-    fi
-    ;;
-esac
-exit 0
-`,
-    );
+    writeFileSync(fakeNodeRunnerPath, `
+import { appendFileSync, writeFileSync } from 'node:fs';
+
+const args = process.argv.slice(2);
+const script = args[0] || '';
+const valueAfter = (flag) => {
+  const index = args.indexOf(flag);
+  return index >= 0 ? args[index + 1] : '';
+};
+
+appendFileSync(${JSON.stringify(fakeNodeLog)}, args.join(' ') + '\\n');
+if (script.includes('status')) {
+  process.stdout.write('{"success":true,"api_available":true}\\n');
+  process.exit(0);
+}
+if (script.includes('generate-strategy-reference.mjs')) {
+  writeFileSync(valueAfter('--strategy-out'), '# fake strategy reference\\n');
+  writeFileSync(valueAfter('--symbol-out'), '# fake symbol reference\\n');
+  process.exit(0);
+}
+const out = valueAfter('--out');
+const rankout = valueAfter('--ranking-out');
+const catalogout = valueAfter('--catalog-out');
+writeFileSync(out, '# fake rich report\\n');
+if (rankout) {
+  writeFileSync(rankout, '[{"presetId":"preset-a","composite_score":2}]\\n');
+}
+if (catalogout) {
+  writeFileSync(catalogout, '{"strategies":[{"id":"preset-a","lifecycle":{"status":"live"}}]}\\n');
+}
+`, 'utf8');
+    if (platform() === 'win32') {
+      writeFileSync(fakeNodePath, `@echo off\r\n"${process.execPath}" "${fakeNodeRunnerPath}" %*\r\n`, 'utf8');
+    } else {
+      writeExecutable(fakeNodePath, `#!/bin/sh\nexec "${process.execPath}" "${fakeNodeRunnerPath}" "$@"\n`);
+    }
 
     writeFileSync(usPath, JSON.stringify([
       {
@@ -1017,6 +1056,7 @@ exit 0
     const detachedState = JSON.parse(readFileSync(detachedStateFile, 'utf8'));
     assert.equal(typeof detachedState.pid, 'number');
     assert.match(detachedState.production_command.join(' '), /rsi-mean-reversion/);
+    await waitFor(() => JSON.parse(readFileSync(detachedStateFile, 'utf8')).status === 'completed');
   });
 
   it('smoke-prod accepts a Windows-style backslash config path', async () => {
@@ -1217,7 +1257,7 @@ exit 0
   });
 
   it('run-finetune smoke gate fails when Strategy Tester metrics are unreadable', async () => {
-    const campaignId = `smoke-gate-unreadable-${tempDir.split('/').pop()}`;
+    const campaignId = `smoke-gate-unreadable-${safeIdFromPath(tempDir)}`;
     const campaignDir = join(PROJECT_ROOT, 'artifacts', 'campaigns', campaignId);
     const fakeRunnerPath = join(tempDir, 'fake-run-long-campaign.mjs');
     writeFileSync(
@@ -1275,7 +1315,7 @@ process.stdout.write('fake smoke complete\\n');
   });
 
   it('run-finetune smoke gate passes when all smoke runs have direct metrics', async () => {
-    const campaignId = `smoke-gate-readable-${tempDir.split('/').pop()}`;
+    const campaignId = `smoke-gate-readable-${safeIdFromPath(tempDir)}`;
     const campaignDir = join(PROJECT_ROOT, 'artifacts', 'campaigns', campaignId);
     const fakeRunnerPath = join(tempDir, 'fake-run-long-campaign-readable.mjs');
     writeFileSync(
@@ -1409,7 +1449,7 @@ exit 0
     const missingStrategyReferencePath = join(tempDir, 'missing-current-strategy-reference.md');
     const missingSymbolReferencePath = join(tempDir, 'missing-current-symbol-reference.md');
     const outputDir = join(tempDir, 'night-batch-output');
-    const suffix = tempDir.split('/').pop();
+    const suffix = safeIdFromPath(tempDir);
     const usCampaign = `test-detached-us-${suffix}`;
     const jpCampaign = `test-detached-jp-${suffix}`;
     const usResultsDir = join(PROJECT_ROOT, 'artifacts', 'campaigns', usCampaign, 'full');
@@ -1563,28 +1603,34 @@ exit 0
   it('advance-next-round writes a campaign artifact manifest when the summary captures output paths', async () => {
     const fakeNodePath = join(tempDir, 'fake-node-manifest.sh');
     const fakeNodeLog = join(tempDir, 'fake-node-manifest.log');
+    const campaignRoot = platform() === 'win32'
+      ? join(PROJECT_ROOT, 'artifacts', 'campaigns', 'demo-campaign').replaceAll('\\', '/')
+      : '/mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/demo-campaign';
+    const scoreboardsPath = platform() === 'win32'
+      ? join(PROJECT_ROOT, 'docs', 'research', 'current', 'artifacts-backtest-scoreboards.md').replaceAll('\\', '/')
+      : '/mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/docs/research/current/artifacts-backtest-scoreboards.md';
     writeExecutable(
       fakeNodePath,
       `#!/bin/sh
 ${STATUS_OK_SNIPPET}printf '%s\\n' "$*" >> "${fakeNodeLog}"
 case "$*" in
   *2024-01-01*2024-12-31*)
-    printf '  → checkpoint saved: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/demo-campaign/smoke/checkpoint-1.json\\n'
-    printf '  Raw results: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/demo-campaign/smoke/final-results.json\\n'
-    printf '  Recovered results: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/demo-campaign/smoke/recovered-results.json\\n'
-    printf '  Summary: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/demo-campaign/smoke/recovered-summary.json\\n'
-    printf '  Strategy ranking JSON: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/demo-campaign/smoke/strategy-ranking.json\\n'
-    printf '  Strategy ranking MD: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/demo-campaign/smoke/strategy-ranking.md\\n'
+    printf '  → checkpoint saved: ${campaignRoot}/smoke/checkpoint-1.json\\n'
+    printf '  Raw results: ${campaignRoot}/smoke/final-results.json\\n'
+    printf '  Recovered results: ${campaignRoot}/smoke/recovered-results.json\\n'
+    printf '  Summary: ${campaignRoot}/smoke/recovered-summary.json\\n'
+    printf '  Strategy ranking JSON: ${campaignRoot}/smoke/strategy-ranking.json\\n'
+    printf '  Strategy ranking MD: ${campaignRoot}/smoke/strategy-ranking.md\\n'
     exit 0
     ;;
   *2000-01-01*2099-12-31*)
-    printf '  → checkpoint saved: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/demo-campaign/full/checkpoint-40.json\\n'
-    printf '  Raw results: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/demo-campaign/full/final-results.json\\n'
-    printf '  Recovered results: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/demo-campaign/full/recovered-results.json\\n'
-    printf '  Summary: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/demo-campaign/full/recovered-summary.json\\n'
-    printf '  Strategy ranking JSON: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/demo-campaign/full/strategy-ranking.json\\n'
-    printf '  Strategy ranking MD: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/artifacts/campaigns/demo-campaign/full/strategy-ranking.md\\n'
-    printf '  Current scoreboards: /mnt/c/actions-runner/_work/Oh-MY-TradingView/Oh-MY-TradingView/docs/research/current/artifacts-backtest-scoreboards.md\\n'
+    printf '  → checkpoint saved: ${campaignRoot}/full/checkpoint-40.json\\n'
+    printf '  Raw results: ${campaignRoot}/full/final-results.json\\n'
+    printf '  Recovered results: ${campaignRoot}/full/recovered-results.json\\n'
+    printf '  Summary: ${campaignRoot}/full/recovered-summary.json\\n'
+    printf '  Strategy ranking JSON: ${campaignRoot}/full/strategy-ranking.json\\n'
+    printf '  Strategy ranking MD: ${campaignRoot}/full/strategy-ranking.md\\n'
+    printf '  Current scoreboards: ${scoreboardsPath}\\n'
     exit 0
     ;;
   *)
@@ -1619,10 +1665,10 @@ esac
     assert.equal(Array.isArray(summary.campaign_artifacts), true);
     assert.equal(summary.campaign_artifacts.length, 2);
 
-    const manifestJsonPath = summary.campaign_manifest_json_path.startsWith('/')
+    const manifestJsonPath = isAbsolute(summary.campaign_manifest_json_path)
       ? summary.campaign_manifest_json_path
       : join(PROJECT_ROOT, summary.campaign_manifest_json_path);
-    const manifestMdPath = summary.campaign_manifest_md_path.startsWith('/')
+    const manifestMdPath = isAbsolute(summary.campaign_manifest_md_path)
       ? summary.campaign_manifest_md_path
       : join(PROJECT_ROOT, summary.campaign_manifest_md_path);
     assert.equal(existsSync(manifestJsonPath), true);
@@ -2175,7 +2221,7 @@ exit 0
   });
 });
 
-describe('night_batch.py readiness contract alignment', () => {
+describe('night_batch.py readiness contract alignment', { timeout: 60000 }, () => {
   let server = null;
   let port = null;
   let tempDir = null;
@@ -2190,7 +2236,7 @@ describe('night_batch.py readiness contract alignment', () => {
 
   afterEach(async () => {
     if (server) {
-      await new Promise((resolve) => server.close(resolve));
+      await closeHttpServer(server);
       server = null;
     }
     port = null;
@@ -2415,7 +2461,7 @@ sys.exit(3)
 `;
 
     const result = await new Promise((resolve, reject) => {
-      const child = spawn('python3', ['-c', script], {
+      const child = spawn(PYTHON_BIN, ['-c', script], {
         cwd: PROJECT_ROOT,
         stdio: ['ignore', 'pipe', 'pipe'],
       });

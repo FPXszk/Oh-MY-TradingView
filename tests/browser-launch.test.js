@@ -171,7 +171,7 @@ describe('buildBrowserLaunchCommand', () => {
         env: { WSL_DISTRO_NAME: 'Ubuntu', USER: 'alice' },
         wslUserBaseDir: fakeUsersDir,
       });
-      assert.ok(result.command.endsWith('alice/AppData/Local/Google/Chrome/Application/chrome.exe'));
+      assert.ok(result.command.replaceAll('\\', '/').endsWith('alice/AppData/Local/Google/Chrome/Application/chrome.exe'));
     } finally {
       rmSync(tempBase, { recursive: true, force: true });
     }
@@ -225,7 +225,9 @@ describe('buildBrowserLaunchCommand', () => {
         env: { WSL_DISTRO_NAME: 'Ubuntu', USER: 'ubuntu' },
         wslUserBaseDir: fakeUsersDir,
       });
-      assert.ok(result.candidatePaths.some((path) => path.endsWith('alice/AppData/Local/Google/Chrome/Application/chrome.exe')));
+      assert.ok(result.candidatePaths.some((path) =>
+        path.replaceAll('\\', '/').endsWith('alice/AppData/Local/Google/Chrome/Application/chrome.exe')
+      ));
     } finally {
       rmSync(tempBase, { recursive: true, force: true });
     }
@@ -413,7 +415,7 @@ describe('launchBrowserFallback real launch', () => {
 
   it('rejects when launched process exits immediately', async () => {
     await assert.rejects(
-      () => launchBrowserFallback({ executablePath: '/bin/true', port: 9222 }),
+      () => launchBrowserFallback({ executablePath: process.execPath, port: 9222 }),
       /exited immediately/,
     );
   });

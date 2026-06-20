@@ -1,4 +1,6 @@
 # sync-portfolio-reports-to-wsl.ps1
+# LEGACY WSL publish helper. Current Windows-native workflows publish with
+# sync-portfolio-reports-to-main.ps1 from the Windows checkout.
 # Copy portfolio workflow outputs from the Windows GitHub Actions checkout
 # into the WSL live checkout, then commit and push only those paths to main.
 

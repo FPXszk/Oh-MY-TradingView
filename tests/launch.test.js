@@ -83,7 +83,7 @@ describe('buildLaunchCommand', () => {
         env: { WSL_DISTRO_NAME: 'Ubuntu' },
         wslUserBaseDir: fakeUsersDir,
       });
-      assert.ok(result.command.endsWith('alice/AppData/Local/TradingView/TradingView.exe'));
+      assert.ok(result.command.replaceAll('\\', '/').endsWith('alice/AppData/Local/TradingView/TradingView.exe'));
     } finally {
       rmSync(tempBase, { recursive: true, force: true });
     }
@@ -120,9 +120,9 @@ describe('verifyExecutable', () => {
   });
 
   it('returns exists=true for an existing file', async () => {
-    const result = await verifyExecutable('/usr/bin/env');
+    const result = await verifyExecutable(process.execPath);
     assert.equal(result.exists, true);
-    assert.equal(result.path, '/usr/bin/env');
+    assert.equal(result.path, process.execPath);
   });
 });
 
@@ -130,10 +130,9 @@ describe('pickFirstExistingPath', () => {
   it('returns the first path that exists', async () => {
     const result = await pickFirstExistingPath([
       '/nonexistent/path/to/binary',
-      '/usr/bin/env',
-      '/bin/echo',
+      process.execPath,
     ]);
-    assert.equal(result, '/usr/bin/env');
+    assert.equal(result, process.execPath);
   });
 
   it('returns null when no candidates exist', async () => {
@@ -148,7 +147,7 @@ describe('pickFirstExistingPath', () => {
 describe('launchDesktop', () => {
   it('rejects when the launched process exits immediately', async () => {
     await assert.rejects(
-      () => launchDesktop({ executablePath: '/bin/true', port: 9222 }),
+      () => launchDesktop({ executablePath: process.execPath, port: 9222 }),
       /exited immediately/,
     );
   });

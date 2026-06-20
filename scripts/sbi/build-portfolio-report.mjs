@@ -2,9 +2,12 @@
 
 import { readFile, writeFile, mkdir, readdir, stat } from 'node:fs/promises';
 import { basename, dirname, join, resolve } from 'node:path';
+import { homedir, platform } from 'node:os';
 import { fileURLToPath } from 'node:url';
 
-const DEFAULT_DOWNLOADS_DIR = '/mnt/c/Users/szk/Downloads';
+const DEFAULT_DOWNLOADS_DIR = platform() === 'win32'
+  ? join(homedir(), 'Downloads')
+  : '/mnt/c/Users/szk/Downloads';
 const DEFAULT_OUTPUT_DIR = 'docs/reports/screener/portfolio';
 const DEFAULT_OUTPUT_NAME = 'sbi_portfolio_report.md';
 

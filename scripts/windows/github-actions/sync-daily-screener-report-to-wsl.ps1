@@ -1,4 +1,6 @@
 # sync-daily-screener-report-to-wsl.ps1
+# LEGACY WSL publish helper. Current Windows-native workflows publish with
+# sync-daily-screener-report-to-main.ps1 from the Windows checkout.
 # Copy the latest daily screener report files from the Windows GitHub Actions checkout
 # into the WSL live checkout, then commit and push only those files to main.
 
