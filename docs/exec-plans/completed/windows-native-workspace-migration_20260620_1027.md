@@ -29,38 +29,49 @@ WSL 側の既存リポジトリ `/home/fpxszk/code/Oh-MY-TradingView` を、Wind
 
 ## Steps
 
-- [ ] Verify WSL source state:
+- [x] Verify WSL source state:
   - `git status -sb`
   - `git log --oneline -1`
   - `git remote -v`
   - `git fetch origin`
   - `git rev-list --left-right --count main...origin/main`
-- [ ] Create Windows destination:
+- [x] Create Windows destination:
   - `mkdir -p /mnt/c/00_mycode/Oh-MY-TradingView`
-- [ ] Sync repository to Windows destination:
+- [x] Sync repository to Windows destination:
   - use `rsync -a --delete`
   - include `.git`
   - exclude `node_modules`, `.next`, `dist`, `coverage`, `.cache`
-- [ ] Verify Windows destination with Windows PowerShell where available:
+- [x] Verify Windows destination with Windows PowerShell where available:
   - `git status -sb`
   - `git log --oneline -1`
   - `git remote -v`
   - `node -p "process.platform"`
   - `node -p "process.cwd()"`
-- [ ] Run Windows-side dependency/test checks where available:
+- [x] Run Windows-side dependency/test checks where available:
   - `npm install`
   - `npm run test:unit`
   - `npm run test:night-batch`
-- [ ] Check GitHub diff state from the Windows destination:
+- [x] Check GitHub diff state from the Windows destination:
   - `git fetch origin`
   - `git status -sb`
   - `git diff --stat`
   - `git diff --check`
-- [ ] Commit/push only necessary tracked changes:
+- [x] Commit/push only necessary tracked changes:
   - plan completion move
   - session handoff log
   - any required migration-related tracked change after review
-- [ ] Record final handoff session log with command results, blockers, and next path.
+- [x] Record final handoff session log with command results, blockers, and next path.
+
+## Completion Notes
+
+- Destination created and synced: `C:\00_mycode\Oh-MY-TradingView`.
+- `.git` was included and generated directories were excluded during sync.
+- WSL source remains at `/home/fpxszk/code/Oh-MY-TradingView` as backup.
+- `powershell.exe` and `cmd.exe` could not be executed from this WSL session due to `Exec format error`, so direct Windows process verification was blocked.
+- Fallback validation ran on the Windows filesystem path via WSL Node:
+  - `npm install`: passed
+  - `npm run test:unit`: passed, 992 tests
+  - `npm run test:night-batch`: passed, 129 tests
 
 ## Validation
 
