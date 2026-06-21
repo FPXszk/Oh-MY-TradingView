@@ -11,6 +11,8 @@ const COMMON_LIMITS = {
   priceAboveSma200: true,
 };
 
+const US_MARKET_CAP_MIN_USD = 30_000_000_000;
+
 function profileSummary(profile) {
   return {
     id: profile.id,
@@ -48,6 +50,7 @@ function usSectorProfile(id, sector, thresholds, extra = {}) {
     ],
     thresholds: {
       ...COMMON_LIMITS,
+      marketCapMinUsd: US_MARKET_CAP_MIN_USD,
       ...thresholds,
     },
     ...extra,

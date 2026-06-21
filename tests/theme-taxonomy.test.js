@@ -117,6 +117,21 @@ test('classifyUsTheme maps NVDA to AI Compute / AI Accelerators', () => {
   assert.match(classification.themeMatchReason, /AI Accelerators:symbol=NVDA/);
 });
 
+test('classifyUsTheme maps NBIS to AI Compute / AI Cloud / Neocloud', () => {
+  const row = {
+    symbol: 'NBIS',
+    sector: 'Technology Services',
+    industry: 'Packaged Software',
+    companyName: 'Nebius Group N.V.',
+  };
+
+  const classification = classifyUsTheme(row);
+
+  assert.equal(classification.primaryTheme, 'AI Compute');
+  assert.equal(classification.subThemes[0], 'AI Cloud / Neocloud');
+  assert.match(classification.themeMatchReason, /AI Cloud \/ Neocloud:symbol=NBIS/);
+});
+
 test('classifyUsTheme maps STX to Memory / NAND / Storage', () => {
   const row = {
     symbol: 'STX',
@@ -195,6 +210,21 @@ test('getUsSectorThemeHierarchy exposes the external Electronic Technology hiera
       'Industrial / Power Electronics',
     ],
   );
+});
+
+test('getUsSectorThemeHierarchy exposes Technology Services AI Compute hierarchy', () => {
+  const hierarchy = getUsSectorThemeHierarchy('Technology Services');
+
+  assert.equal(hierarchy?.version, 'us-theme-hierarchy-v1');
+  assert.deepEqual(
+    hierarchy?.middleThemes.map((entry) => entry.label),
+    ['AI Compute', 'Cloud Software', 'Cybersecurity'],
+  );
+  assert.deepEqual(hierarchy?.middleThemes[0].smallThemes, [
+    'AI Cloud / Neocloud',
+    'AI Servers / Systems',
+    'AI Interconnect / CXL / Data Center Fabric',
+  ]);
 });
 
 test('classifyThemeForMarket maps 6981 to Electronic Components / Passives / RF Modules in japan', () => {

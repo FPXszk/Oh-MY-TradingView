@@ -26,6 +26,13 @@
           "symbols": ["ALAB", "CRDO"],
           "industry_keywords": ["semiconductors", "computer communications"],
           "company_keywords": ["cxl", "retimer", "dsp", "interconnect", "fabric"]
+        },
+        {
+          "id": "ai-cloud-neocloud",
+          "label": "AI Cloud / Neocloud",
+          "symbols": ["NBIS", "CRWV"],
+          "industry_keywords": [],
+          "company_keywords": ["ai cloud", "neocloud", "cloud infrastructure", "gpu cloud", "ai infrastructure"]
         }
       ]
     },

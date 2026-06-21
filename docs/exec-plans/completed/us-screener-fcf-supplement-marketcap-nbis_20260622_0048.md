@@ -25,7 +25,7 @@
 | `docs/exec-plans/active/us-screener-fcf-supplement-marketcap-nbis_20260622_0048.md` | CREATE | 本計画 |
 | `src/core/fundamental-screener.js` | MODIFY | US FCF 欠損補完、$30B gate、補完メタデータ、NBIS評価経路の反映 |
 | `src/core/sector-screening-profiles.js` | MODIFY | US market cap threshold を $30B へ引き上げ、必要なら Technology Services / AI cloud profile の扱いを調整 |
-| `src/core/theme-taxonomy.js` | MODIFY | 必要最小限で AI Cloud / Neocloud テーマ分類を通す |
+| `src/core/theme-taxonomy.js` | NO CHANGE | 既存の JSON 駆動分類で足りたため変更しない |
 | `config/screener/theme-taxonomy-us.json` | MODIFY | NBIS / CRWV を AI cloud / neocloud 小テーマに追加 |
 | `scripts/screener/run-fundamental-screening.mjs` | MODIFY | 補完済み FCF の表示・注記、$30B gate の説明、複数セクター階層表示の整合 |
 | `.github/workflows/daily-screener.yml` | MODIFY | 必要なら `SCREENER_FORCE_PHASE1_SECTORS` または関連 env を追加し、Technology Services を候補に含める |
@@ -67,16 +67,16 @@
 
 ## 実装ステップ
 
-- [ ] 現行 Phase1 採用ロジックと hierarchy focus の表示差をテスト・コードで確認する
-- [ ] $30B gate の RED テストを追加する
-- [ ] FCF 欠損補完の RED テストを追加する
-- [ ] AI Cloud / Neocloud taxonomy の RED テストを追加する
-- [ ] US profile / screener 本体へ $30B gate を実装する
-- [ ] FCF 補完処理と補完メタデータを実装する
-- [ ] NBIS が Technology Services 経由で候補化できる最小変更を実装する
-- [ ] レポート表示と説明文を更新する
-- [ ] ローカルテストと live screener 実行で検証する
-- [ ] 差分レビュー後、plan を `completed/` に移動する
+- [x] 現行 Phase1 採用ロジックと hierarchy focus の表示差をテスト・コードで確認する
+- [x] $30B gate の RED テストを追加する
+- [x] FCF 欠損補完の RED テストを追加する
+- [x] AI Cloud / Neocloud taxonomy の RED テストを追加する
+- [x] US profile / screener 本体へ $30B gate を実装する
+- [x] FCF 補完処理と補完メタデータを実装する
+- [x] NBIS が Technology Services 経由で候補化できる最小変更を実装する
+- [x] レポート表示と説明文を更新する
+- [x] ローカルテストと live screener 実行で検証する
+- [x] 差分レビュー後、plan を `completed/` に移動する
 
 ## テスト戦略
 

@@ -285,6 +285,7 @@ describe('runFundamentalScreener', () => {
     const result = await runFundamentalScreener({
       limit: 10,
       _deps: {
+        marketCapMinUsd: 1_000_000_000,
         fetch: createMockFetch({
           stockBodies,
           benchmarkPayload: {
@@ -600,10 +601,230 @@ describe('runFundamentalScreener', () => {
     assert.deepEqual(phase2Order.slice(0, phase1Order.length), phase1Order);
   });
 
+  it('excludes US candidates below the default $30B market-cap gate', async () => {
+    const result = await runFundamentalScreener({
+      limit: 10,
+      _deps: {
+        fetch: createMockFetch({
+          stockBodies: [],
+          benchmarkPayload: {
+            totalCount: 1,
+            data: [
+              buildPhase1StockRow('BATS:SPY', {
+                name: 'SPY',
+                sector: 'Benchmark',
+                close: 100,
+                sma200: 95,
+                sma50: 98,
+                high52w: 104,
+                perf1m: 6,
+                perf3m: 12,
+                perf6m: 24,
+                perfY: 48,
+                rsi: 61,
+                relativeVolume: 1.0,
+                marketCap: 400_000_000_000,
+              }),
+            ],
+          },
+          phase1Payload: {
+            totalCount: 2,
+            data: [
+              buildPhase1StockRow('NASDAQ:BIG', {
+                name: 'Big Tech',
+                sector: 'Technology Services',
+                perf1m: 18,
+                perf3m: 32,
+                perf6m: 60,
+                perfY: 120,
+                rsi: 68,
+                relativeVolume: 1.2,
+                marketCap: 40_000_000_000,
+              }),
+              buildPhase1StockRow('NASDAQ:SMALL', {
+                name: 'Small Tech',
+                sector: 'Technology Services',
+                perf1m: 20,
+                perf3m: 40,
+                perf6m: 80,
+                perfY: 160,
+                rsi: 70,
+                relativeVolume: 1.5,
+                marketCap: 20_000_000_000,
+              }),
+            ],
+          },
+          phase2PayloadsBySector: {
+            'Technology Services': {
+              totalCount: 2,
+              data: [
+                buildPhase2Row('NASDAQ:BIG', {
+                  name: 'Big Tech',
+                  sector: 'Technology Services',
+                  industry: 'Packaged Software',
+                  close: 120,
+                  rsi: 68,
+                  sma200: 90,
+                  sma50: 100,
+                  high52w: 125,
+                  perf3m: 32,
+                  perf6m: 60,
+                  perfY: 120,
+                  relativeVolume: 1.2,
+                  marketCap: 40_000_000_000,
+                  eps: 3,
+                  roe: 24,
+                  grossMargin: 58,
+                  fcfMargin: 21,
+                  fcfTtm: 200_000_000,
+                  revenueGrowthTtm: 18,
+                  pFcfDirect: 18,
+                  volume: 100_000,
+                  netDebt: -10_000_000,
+                }),
+                buildPhase2Row('NASDAQ:SMALL', {
+                  name: 'Small Tech',
+                  sector: 'Technology Services',
+                  industry: 'Packaged Software',
+                  close: 80,
+                  rsi: 70,
+                  sma200: 60,
+                  sma50: 70,
+                  high52w: 82,
+                  perf3m: 40,
+                  perf6m: 80,
+                  perfY: 160,
+                  relativeVolume: 1.5,
+                  marketCap: 20_000_000_000,
+                  eps: 2,
+                  roe: 28,
+                  grossMargin: 62,
+                  fcfMargin: 30,
+                  fcfTtm: 150_000_000,
+                  revenueGrowthTtm: 30,
+                  pFcfDirect: 12,
+                  volume: 90_000,
+                  netDebt: 0,
+                }),
+              ],
+            },
+          },
+        }),
+        market: 'america',
+        exchangeAllowlist: ['NASDAQ', 'NYSE'],
+        selectedSectorCount: 1,
+      },
+    });
+
+    assert.equal(result.criteria.market_cap_min_usd, 30_000_000_000);
+    assert.deepEqual(result.results.map((row) => row.symbol), ['BIG']);
+    assert.equal(result.clientFiltered, 1);
+  });
+
+  it('supplements missing US FCF fields from configured official data before ranking', async () => {
+    const result = await runFundamentalScreener({
+      limit: 10,
+      _deps: {
+        fetch: createMockFetch({
+          stockBodies: [],
+          benchmarkPayload: {
+            totalCount: 1,
+            data: [
+              buildPhase1StockRow('BATS:SPY', {
+                name: 'SPY',
+                sector: 'Benchmark',
+                close: 100,
+                sma200: 95,
+                sma50: 98,
+                high52w: 104,
+                perf1m: 6,
+                perf3m: 12,
+                perf6m: 24,
+                perfY: 48,
+                rsi: 61,
+                relativeVolume: 1.0,
+                marketCap: 400_000_000_000,
+              }),
+            ],
+          },
+          phase1Payload: {
+            totalCount: 1,
+            data: [
+              buildPhase1StockRow('NASDAQ:NVDA', {
+                name: 'NVIDIA',
+                sector: 'Electronic Technology',
+                perf1m: 18,
+                perf3m: 30,
+                perf6m: 50,
+                perfY: 100,
+                rsi: 66,
+                relativeVolume: 1.1,
+                marketCap: 3_000_000_000_000,
+              }),
+            ],
+          },
+          phase2PayloadsBySector: {
+            'Technology Services': {
+              totalCount: 1,
+              data: [
+                buildPhase2Row('NASDAQ:NBIS', {
+                  name: 'NBIS',
+                  description: 'Nebius Group N.V.',
+                  sector: 'Technology Services',
+                  industry: 'Packaged Software',
+                  close: 286,
+                  rsi: 70,
+                  sma200: 125,
+                  sma50: 197,
+                  high52w: 299,
+                  perf3m: 138,
+                  perf6m: 255,
+                  perfY: 490,
+                  relativeVolume: 2.1,
+                  marketCap: 72_000_000_000,
+                  eps: 3,
+                  roe: 10,
+                  roic: 7.5,
+                  grossMargin: null,
+                  grossProfitTtm: 65_700_000,
+                  totalAssets: 22_303_300_000,
+                  fcfMargin: null,
+                  fcfTtm: null,
+                  cashFromOperationsTtm: null,
+                  netIncomeTtm: 836_400_000,
+                  revenueGrowthTtm: 443.93,
+                  pFcfDirect: null,
+                  volume: 10_000_000,
+                  netDebt: 198_000_000,
+                }),
+              ],
+            },
+          },
+        }),
+        market: 'america',
+        exchangeAllowlist: ['NASDAQ', 'NYSE'],
+        selectedSectorCount: 1,
+        extraPhase1Sectors: ['Technology Services'],
+      },
+    });
+
+    const nbis = result.results.find((row) => row.symbol === 'NBIS');
+    assert.ok(nbis);
+    assert.equal(nbis.primaryTheme, 'AI Compute');
+    assert.deepEqual(nbis.subThemes, ['AI Cloud / Neocloud']);
+    assert.equal(nbis.fcfTtm, -214_900_000);
+    assert.equal(nbis.fcfMargin, -53.86);
+    assert.equal(nbis.ruleOf40, 390.07);
+    assert.equal(nbis.fundamentalSupplement.source, 'nebius-q1-2026-earnings-release');
+    assert.deepEqual(result.sourceDetails.usFundamentalSupplement.symbols, ['NBIS']);
+    assert.equal(result.criteria.phase1_selected_sectors_source, 'phase1_plus_extra');
+  });
+
   it('builds hierarchy rankings automatically for the top sector when a config exists', async () => {
     const result = await runFundamentalScreener({
       limit: 10,
       _deps: {
+        marketCapMinUsd: 1_000_000_000,
         fetch: createMockFetch({
           stockBodies: [],
           benchmarkPayload: {
@@ -834,6 +1055,7 @@ describe('runFundamentalScreener', () => {
     const result = await runFundamentalScreener({
       limit: 10,
       _deps: {
+        marketCapMinUsd: 1_000_000_000,
         market: 'japan',
         exchangeAllowlist: ['TSE'],
         symbolAllowlistKey: 'jp-prime-mini',
@@ -1063,6 +1285,7 @@ describe('runFundamentalScreener', () => {
       limit: 10,
       enrichWithYahoo: false,
       _deps: {
+        marketCapMinUsd: 1_000_000_000,
         market: 'japan',
         exchangeAllowlist: ['TSE'],
         symbolAllowlistKey: 'jp-prime-mini',
@@ -1218,6 +1441,7 @@ describe('runFundamentalScreener', () => {
     const result = await runFundamentalScreener({
       limit: 10,
       _deps: {
+        marketCapMinUsd: 1_000_000_000,
         market: 'japan',
         exchangeAllowlist: ['TSE'],
         symbolAllowlistKey: 'jp-prime-mini',
@@ -1343,6 +1567,7 @@ describe('runFundamentalScreener', () => {
     const result = await runFundamentalScreener({
       limit: 10,
       _deps: {
+        marketCapMinUsd: 1_000_000_000,
         fetch: createMockFetch({
           stockBodies: [],
           benchmarkPayload: {
@@ -1488,6 +1713,7 @@ describe('runFundamentalScreener', () => {
       limit: 10,
       enrichWithYahoo: true,
       _deps: {
+        marketCapMinUsd: 1_000_000_000,
         getSymbolFundamentals: async (symbol) => ({
           revenueGrowth: symbol === 'MU' ? 0.12 : 0.12,
         }),
@@ -1598,6 +1824,7 @@ describe('runFundamentalScreener', () => {
       limit: 10,
       enrichWithYahoo: true,
       _deps: {
+        marketCapMinUsd: 1_000_000_000,
         getSymbolFundamentals: async (symbol) => ({
           revenueGrowth: symbol === 'QCOM' ? 0.08 : 0.12,
           earningsGrowth: symbol === 'MU' ? 0.27 : null,
@@ -1720,6 +1947,7 @@ describe('runFundamentalScreener', () => {
     const result = await runFundamentalScreener({
       limit: 10,
       _deps: {
+        marketCapMinUsd: 1_000_000_000,
         fetch: createMockFetch({
           stockBodies: [],
           phase1Payload: {
@@ -1843,6 +2071,7 @@ describe('runFundamentalScreener', () => {
     const result = await runFundamentalScreener({
       limit: 10,
       _deps: {
+        marketCapMinUsd: 1_000_000_000,
         fetch: createMockFetch({
           stockBodies: [],
           phase1Payload: {
@@ -2140,6 +2369,7 @@ describe('evaluateSymbolsAgainstFundamentalScreener', () => {
     const result = await evaluateSymbolsAgainstFundamentalScreener({
       symbols: ['NASDAQ:AAA', 'NYSE:BBB'],
       _deps: {
+        marketCapMinUsd: 1_000_000_000,
         fetch,
         market: 'america',
         exchangeAllowlist: ['NASDAQ', 'NYSE'],

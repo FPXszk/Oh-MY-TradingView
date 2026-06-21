@@ -34,6 +34,9 @@ const BUILTIN_SYMBOL_ALLOWLISTS = new Map([
 const JP_COMPANY_NAMES_JA = JSON.parse(
   readFileSync(new URL('../../config/screener/jpx-company-names-ja.json', import.meta.url), 'utf8'),
 );
+const US_FUNDAMENTAL_SUPPLEMENTS = JSON.parse(
+  readFileSync(new URL('../../config/screener/us-fundamental-supplements.json', import.meta.url), 'utf8'),
+);
 
 const COLUMNS = [
   'name',
@@ -424,6 +427,7 @@ function findMatchingProfile(row, profiles) {
 
 function passesProfileClientFilters(row) {
   const {
+    marketCapUsd,
     close,
     sma200,
     sma50,
@@ -432,6 +436,11 @@ function passesProfileClientFilters(row) {
     screeningThresholds,
   } = row;
 
+  if (
+    marketCapUsd !== null
+    && marketCapUsd !== undefined
+    && marketCapUsd < screeningThresholds.marketCapMinUsd
+  ) return false;
   if (screeningThresholds.priceAboveSma200 && close !== null && sma200 !== null && close <= sma200) return false;
   if (screeningThresholds.priceAboveSma50 && close !== null && sma50 !== null && close <= sma50) return false;
   if (pctOf52wHigh !== null && pctOf52wHigh < screeningThresholds.pricePctOf52wHighMin) return false;
@@ -443,6 +452,7 @@ function passesProfileClientFilters(row) {
 function collectClientFilterFailures(row) {
   const failures = [];
   const {
+    marketCapUsd,
     close,
     sma200,
     sma50,
@@ -451,6 +461,13 @@ function collectClientFilterFailures(row) {
     screeningThresholds,
   } = row;
 
+  if (
+    marketCapUsd !== null
+    && marketCapUsd !== undefined
+    && marketCapUsd < screeningThresholds.marketCapMinUsd
+  ) {
+    failures.push(`market_cap<${screeningThresholds.marketCapMinUsd} (${marketCapUsd})`);
+  }
   if (screeningThresholds.priceAboveSma200 && close !== null && sma200 !== null && close <= sma200) {
     failures.push(`close<=SMA200 (${close} <= ${sma200})`);
   }
@@ -486,6 +503,123 @@ function annotateRowForProfile(row, profile, sectorRankLookup, market) {
     },
     extremeMomentum: buildExtremeMomentum(row),
   };
+}
+
+function withMarketCapThresholdOverride(profile, marketCapMinUsd) {
+  if (marketCapMinUsd === null || marketCapMinUsd === undefined) return profile;
+  return {
+    ...profile,
+    thresholds: {
+      ...profile.thresholds,
+      marketCapMinUsd,
+    },
+  };
+}
+
+function applyMarketCapThresholdOverride(profiles, marketCapMinUsd) {
+  return profiles.map((profile) => withMarketCapThresholdOverride(profile, marketCapMinUsd));
+}
+
+function applyProfileSummaryMarketCapThresholdOverride(profileSummaries, marketCapMinUsd) {
+  if (marketCapMinUsd === null || marketCapMinUsd === undefined) return profileSummaries;
+  return profileSummaries.map((profile) => ({
+    ...profile,
+    thresholds: {
+      ...profile.thresholds,
+      market_cap_min_usd: marketCapMinUsd,
+    },
+  }));
+}
+
+function computeFcfSupplementMetrics(entry, row) {
+  const revenue = Number.isFinite(entry?.revenue) ? entry.revenue : null;
+  const cashFromOperations = Number.isFinite(entry?.cashFromOperations) ? entry.cashFromOperations : null;
+  const capitalExpenditures = Number.isFinite(entry?.capitalExpenditures) ? entry.capitalExpenditures : null;
+  const netIncome = Number.isFinite(entry?.netIncome) ? entry.netIncome : null;
+  const fcfTtm = cashFromOperations !== null && capitalExpenditures !== null
+    ? cashFromOperations + capitalExpenditures
+    : null;
+  const fcfMargin = fcfTtm !== null && revenue !== null && revenue !== 0
+    ? Number(((fcfTtm / revenue) * 100).toFixed(2))
+    : null;
+  const pFcf = row.marketCapUsd !== null && fcfTtm !== null && fcfTtm > 0
+    ? Number((row.marketCapUsd / fcfTtm).toFixed(1))
+    : null;
+  const cashConversion = fcfTtm !== null && netIncome !== null && netIncome > 0
+    ? Number((fcfTtm / netIncome).toFixed(2))
+    : null;
+
+  return {
+    fcfTtm,
+    fcfMargin,
+    pFcf,
+    cashConversion,
+    cashFromOperationsTtm: cashFromOperations,
+  };
+}
+
+function applyFundamentalSupplement(row, metrics = {}, meta = null) {
+  const merged = {
+    ...row,
+    fcfTtm: row.fcfTtm ?? metrics.fcfTtm ?? null,
+    fcfMargin: row.fcfMargin ?? metrics.fcfMargin ?? null,
+    fcfGrowthTtm: row.fcfGrowthTtm ?? metrics.fcfGrowthTtm ?? null,
+    cashFromOperationsTtm: row.cashFromOperationsTtm ?? metrics.cashFromOperationsTtm ?? null,
+    cashConversion: row.cashConversion ?? metrics.cashConversion ?? null,
+    pFcf: row.pFcf ?? metrics.pFcf ?? null,
+    fundamentalSupplement: meta,
+  };
+  const ruleOf40Raw = merged.revenueGrowthTtm !== null && merged.fcfMargin !== null
+    ? Number((merged.revenueGrowthTtm + merged.fcfMargin).toFixed(2))
+    : row.ruleOf40Raw ?? null;
+
+  return {
+    ...merged,
+    ruleOf40Raw,
+    ruleOf40: ruleOf40Raw,
+    ruleOf40Score: row.ruleOf40Components?.scoreEligible ? ruleOf40Raw : row.ruleOf40Score ?? null,
+    ruleOf40Components: {
+      revenueGrowthTtm: merged.revenueGrowthTtm,
+      fcfMargin: merged.fcfMargin,
+      complete: ruleOf40Raw !== null && ruleOf40Raw !== undefined,
+      scoreEligible: row.ruleOf40Components?.scoreEligible ?? false,
+    },
+  };
+}
+
+function shouldUseUsFundamentalSupplement(row) {
+  return row?.exchange !== 'OTC' && (
+    row.fcfMargin === null
+    || row.fcfTtm === null
+    || row.pFcf === null
+    || row.cashConversion === null
+    || row.ruleOf40Raw === null
+  );
+}
+
+async function applyUsFundamentalSupplements(rows, { getSupplementalFundamentals } = {}) {
+  if (rows.length === 0) return rows;
+  const targets = rows.filter(shouldUseUsFundamentalSupplement);
+  if (targets.length === 0) return rows;
+  const supplementalRows = getSupplementalFundamentals
+    ? await getSupplementalFundamentals(targets)
+    : {};
+
+  return rows.map((row) => {
+    if (!shouldUseUsFundamentalSupplement(row)) return row;
+    const symbol = row.symbol?.toUpperCase();
+    const external = supplementalRows?.[symbol] ?? null;
+    const staticEntry = US_FUNDAMENTAL_SUPPLEMENTS.symbols?.[symbol] ?? null;
+    const metrics = external ?? (staticEntry ? computeFcfSupplementMetrics(staticEntry, row) : null);
+    if (!metrics) return row;
+    const source = external?.source ?? staticEntry?.source ?? 'supplemental';
+    return applyFundamentalSupplement(row, metrics, {
+      source,
+      sourceUrl: external?.sourceUrl ?? staticEntry?.sourceUrl ?? null,
+      period: external?.period ?? staticEntry?.period ?? null,
+      notes: external?.notes ?? staticEntry?.notes ?? null,
+    });
+  });
 }
 
 function normalizeRequestedSymbol(symbol) {
@@ -1103,6 +1237,8 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   const resultLimit = _deps?.resultLimit ?? 30;
   const getFundamentals = _deps?.getSymbolFundamentals ?? null;
   const forcedSelectedSectors = uniqueStrings(_deps?.forcePhase1Sectors ?? []);
+  const extraSelectedSectors = uniqueStrings(_deps?.extraPhase1Sectors ?? []);
+  const marketCapMinUsd = _deps?.marketCapMinUsd ?? null;
   const hierarchyFocusSectorOverride = _deps?.hierarchyFocusSector ?? null;
   const hierarchyTopMiddleThemeCount = _deps?.hierarchyTopMiddleThemeCount ?? Number.POSITIVE_INFINITY;
   const hierarchyTopSmallThemeCount = _deps?.hierarchyTopSmallThemeCount ?? Number.POSITIVE_INFINITY;
@@ -1122,15 +1258,17 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   const phase1SelectedSectorLabels = sectorMomentum.selectedSectors.map((entry) => entry.label);
   const selectedSectorLabels = forcedSelectedSectors.length > 0
     ? forcedSelectedSectors
-    : phase1SelectedSectorLabels;
+    : uniqueStrings([...phase1SelectedSectorLabels, ...extraSelectedSectors]);
   const { activeProfiles, excludedSelectedSectors, profileSummaries } = getSectorScreeningPlan({
     market,
     selectedSectors: selectedSectorLabels,
   });
+  const effectiveActiveProfiles = applyMarketCapThresholdOverride(activeProfiles, marketCapMinUsd);
+  const effectiveProfileSummaries = applyProfileSummaryMarketCapThresholdOverride(profileSummaries, marketCapMinUsd);
 
   // Fetch more candidates than needed so client filters have enough to work with
   const serverLimit = Math.min(effectiveLimit * 8, 400);
-  const requestPlans = activeProfiles.flatMap((profile) => profile.requestScopes.map((scope) => ({ profile, scope })));
+  const requestPlans = effectiveActiveProfiles.flatMap((profile) => profile.requestScopes.map((scope) => ({ profile, scope })));
   const phase2Responses = await Promise.all(
     requestPlans.map(async ({ profile, scope }) => {
       const response = await fetchFn(scannerUrl, {
@@ -1179,6 +1317,20 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       .map((row) => applySupplementalGrowthMetrics(row, growthMap[row.symbol]));
   }
 
+  let usFundamentalSupplementMeta = null;
+  if (market === DEFAULT_MARKET && clientFiltered.length > 0) {
+    clientFiltered = await applyUsFundamentalSupplements(clientFiltered, {
+      getSupplementalFundamentals: _deps?.getUsSupplementalFundamentals ?? null,
+    });
+    const supplementedRows = clientFiltered.filter((row) => row.fundamentalSupplement);
+    usFundamentalSupplementMeta = {
+      enabled: true,
+      supplementedRows: supplementedRows.length,
+      symbols: supplementedRows.map((row) => row.symbol),
+      version: US_FUNDAMENTAL_SUPPLEMENTS.version,
+    };
+  }
+
   let edinetSupplementMeta = null;
   if (market === 'japan' && clientFiltered.length > 0) {
     const supplementTargets = clientFiltered.filter(shouldUseEdinetSupplement);
@@ -1213,7 +1365,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   const ruleOf40Coverage = buildRuleOf40Coverage(matched, market);
 
   const criteria = {
-    market_cap_min_usd: 1_000_000_000,
+    market_cap_min_usd: effectiveProfileSummaries[0]?.thresholds?.market_cap_min_usd ?? 1_000_000_000,
     eps_min: 0,
     price_above_sma200: true,
     price_above_sma50: true,
@@ -1223,12 +1375,16 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       perf_y_extreme_pct: 1000,
       action: 'retain_and_flag',
     },
-    profile_summaries: profileSummaries,
+    profile_summaries: effectiveProfileSummaries,
     excluded_phase2_sectors: excludedSelectedSectors,
     phase1_selected_sectors: selectedSectorLabels,
   };
   if (forcedSelectedSectors.length > 0) {
     criteria.phase1_selected_sectors_source = 'override';
+    criteria.phase1_selected_sectors_actual = phase1SelectedSectorLabels;
+  } else if (extraSelectedSectors.length > 0) {
+    criteria.phase1_selected_sectors_source = 'phase1_plus_extra';
+    criteria.phase1_selected_sectors_extra = extraSelectedSectors;
     criteria.phase1_selected_sectors_actual = phase1SelectedSectorLabels;
   }
   if (focusedHierarchy?.focusSector) {
@@ -1271,6 +1427,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       warning_below: 20,
       hard_filter: false,
     };
+    criteria.us_fundamental_supplement_policy = 'TradingView FCF gaps are supplemented from configured official/adapter data when available; supplemented rows keep source metadata.';
   }
   if (exchangeAllowlist) {
     criteria.allowed_exchanges = exchangeAllowlist;
@@ -1325,6 +1482,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     focusedHierarchy,
     ruleOf40Coverage,
     sourceDetails: {
+      usFundamentalSupplement: usFundamentalSupplementMeta,
       edinet: edinetSupplementMeta,
     },
     results: matched,
@@ -1356,6 +1514,8 @@ export async function evaluateSymbolsAgainstFundamentalScreener({
   const selectedSectorCount = _deps?.selectedSectorCount;
   const resultLimit = _deps?.resultLimit ?? 30;
   const getFundamentals = _deps?.getSymbolFundamentals ?? null;
+  const extraSelectedSectors = uniqueStrings(_deps?.extraPhase1Sectors ?? []);
+  const marketCapMinUsd = _deps?.marketCapMinUsd ?? null;
 
   const sectorMomentum = await runSectorMomentumScan({
     market,
@@ -1365,11 +1525,13 @@ export async function evaluateSymbolsAgainstFundamentalScreener({
     fetch: fetchFn,
   });
   const selectedSectorLabels = sectorMomentum.selectedSectors.map((entry) => entry.label);
+  const activeSectorLabels = uniqueStrings([...selectedSectorLabels, ...extraSelectedSectors]);
   const { activeProfiles, excludedSelectedSectors } = getSectorScreeningPlan({
     market,
-    selectedSectors: selectedSectorLabels,
+    selectedSectors: activeSectorLabels,
   });
-  const allProfiles = getProfilesForMarket(market);
+  const effectiveActiveProfiles = applyMarketCapThresholdOverride(activeProfiles, marketCapMinUsd);
+  const allProfiles = applyMarketCapThresholdOverride(getProfilesForMarket(market), marketCapMinUsd);
   const sectorRankLookup = buildSectorRankLookup(sectorMomentum);
 
   const fetchedRows = applyLocalizedCompanyNames(await fetchRowsForSymbols({
@@ -1395,7 +1557,7 @@ export async function evaluateSymbolsAgainstFundamentalScreener({
     }
 
     const matchedProfile = findMatchingProfile(row, allProfiles);
-    const activeProfile = findMatchingProfile(row, activeProfiles);
+    const activeProfile = findMatchingProfile(row, effectiveActiveProfiles);
     const annotatedRow = matchedProfile
       ? annotateRowForProfile(row, matchedProfile, sectorRankLookup, market)
       : row;
@@ -1450,6 +1612,15 @@ export async function evaluateSymbolsAgainstFundamentalScreener({
     });
   }
 
+  if (market === DEFAULT_MARKET && eligibleForGrowthCheck.length > 0) {
+    const supplemented = await applyUsFundamentalSupplements(eligibleForGrowthCheck, {
+      getSupplementalFundamentals: _deps?.getUsSupplementalFundamentals ?? null,
+    });
+    supplemented.forEach((entry) => {
+      byRequestedSymbol.set(entry.requestedSymbol, entry);
+    });
+  }
+
   const rankedCandidates = [...byRequestedSymbol.values()]
     .filter((entry) => entry?.found && entry.matchedProfileId);
   let ranked = [];
@@ -1497,7 +1668,7 @@ export async function evaluateSymbolsAgainstFundamentalScreener({
     requestedSymbols,
     evaluatedCount: results.length,
     workflowResult,
-    phase1SelectedSectors: selectedSectorLabels,
+    phase1SelectedSectors: activeSectorLabels,
     excludedPhase2Sectors: excludedSelectedSectors,
     scopeLabel,
     results,

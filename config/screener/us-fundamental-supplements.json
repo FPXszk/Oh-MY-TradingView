@@ -1,0 +1,16 @@
+{
+  "version": "us-fundamental-supplements-v1",
+  "symbols": {
+    "NBIS": {
+      "source": "nebius-q1-2026-earnings-release",
+      "sourceUrl": "https://www.eqs-news.com/news/corporate/nebius-reports-first-quarter-2026-financial-results/c781662c-959a-4553-8738-762a5fcf0c88_en",
+      "period": "Q1 2026",
+      "revenue": 399000000,
+      "cashFromOperations": 2258000000,
+      "capitalExpenditures": -2472900000,
+      "cashAndRestrictedCash": 9626900000,
+      "netIncome": 621200000,
+      "notes": "Quarterly official data. FCF is computed as operating cash flow plus capex purchases; not a TTM TradingView replacement."
+    }
+  }
+}

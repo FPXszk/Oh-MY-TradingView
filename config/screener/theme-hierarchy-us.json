@@ -86,7 +86,35 @@
       "middle_themes": []
     },
     "Technology Services": {
-      "middle_themes": []
+      "middle_themes": [
+        {
+          "id": "ai-compute",
+          "label": "AI Compute",
+          "small_themes": [
+            "AI Cloud / Neocloud",
+            "AI Servers / Systems",
+            "AI Interconnect / CXL / Data Center Fabric"
+          ]
+        },
+        {
+          "id": "cloud-software",
+          "label": "Cloud Software",
+          "small_themes": [
+            "Cloud Platforms",
+            "Data Infrastructure Software",
+            "Developer Tooling"
+          ]
+        },
+        {
+          "id": "cybersecurity",
+          "label": "Cybersecurity",
+          "small_themes": [
+            "Endpoint Security",
+            "Identity Security",
+            "Network Security"
+          ]
+        }
+      ]
     }
   }
 }

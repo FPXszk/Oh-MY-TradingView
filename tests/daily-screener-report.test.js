@@ -30,6 +30,8 @@ describe('Daily Fundamental Screener workflow', () => {
       'US workflow must publish up to 30 names for each of the top 3 sectors');
     assert.match(workflow, /SCREENER_SELECTED_SECTOR_COUNT:\s+'3'/,
       'US workflow must narrow phase1 sector selection to the strongest 3 sectors');
+    assert.match(workflow, /SCREENER_EXTRA_PHASE1_SECTORS:\s+Technology Services/,
+      'US workflow must keep AI cloud names such as NBIS observable even when Technology Services is outside the top 3 sectors');
     assert.match(workflow, /SCREENER_GROSS_MARGIN_MIN_PCT:\s+'30'/,
       'US workflow must lower the gross-margin threshold to 30%');
     assert.match(workflow, /name:\s+Publish screener report to main/,
@@ -740,11 +742,11 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| 1 \| AI Compute \| AI Accelerators \| 2 \| 31\.2% \| 94\.40 \|/);
     assert.match(markdown, /\| 2 \| Memory \| HBM \/ DRAM \| 1 \| 26\.1% \| 80\.40 \|/);
     assert.match(markdown, /\| 3 \| Semiconductor Equipment \| Test \/ Metrology \/ Inspection \| 1 \| 23\.4% \| 74\.10 \|/);
-    assert.match(markdown, /## Phase4 個別銘柄ランキング \(Electronic Technology\)/);
-    assert.match(markdown, /- Phase3 掲載小テーマ: AI Compute \/ AI Accelerators, Memory \/ HBM \/ DRAM, Semiconductor Equipment \/ Test \/ Metrology \/ Inspection/);
-    assert.match(markdown, /\| 1 \| AI Compute \| AI Accelerators \| \*\*NVDA\*\* \| NASDAQ \| \$3\.10T \(XL\) \|/);
-    assert.match(markdown, /\| 2 \| Memory \| HBM \/ DRAM \| \*\*MU\*\* \| NASDAQ \| \$130\.0B \(L\+\) \|/);
-    assert.match(markdown, /\| 3 \| Semiconductor Equipment \| Test \/ Metrology \/ Inspection \| \*\*KLAC\*\* \| NASDAQ \| \$95\.0B \(L\+\) \|/);
+    assert.match(markdown, /## Phase4 個別銘柄ランキング \(採用セクター全体\)/);
+    assert.match(markdown, /- 対象: 採用セクター の通過銘柄 6件/);
+    assert.match(markdown, /\| 1 \| Cloud Software \| Cloud Platforms \| \*\*AAA\*\* \| NASDAQ \| \$12\.3B \(L\) \|/);
+    assert.match(markdown, /\| 2 \| Cloud Software \| Data Infrastructure Software \| \*\*BBB\*\* \| NASDAQ \| \$9\.8B \(M\+\) \|/);
+    assert.match(markdown, /\| 3 \| Memory \| HBM \/ DRAM \| \*\*CCC\*\* \| NYSE \| \$4\.3B \(M\) \|/);
     assert.doesNotMatch(markdown, /\*\*NVDA \(NVIDIA Corporation\)\*\*/);
     assert.doesNotMatch(markdown, /\*\*AAA \(Alpha Apps Inc\.\)\*\*/);
     assert.doesNotMatch(markdown, /## Phase2 セクター別ランキング/);
@@ -754,7 +756,7 @@ describe('buildMarkdown', () => {
     assert.doesNotMatch(markdown, /- テーマ: Cloud Software \/ Cloud Platforms/);
     assert.doesNotMatch(markdown, /低いほど良い/);
     assert.match(markdown, /Rule40/);
-    assert.match(markdown, /129\.0 \| 74\.0% \| 42\.0 \| 3\.8% \| 98\.00 \(T46\.1\/F51\.9\) \|/);
+    assert.match(markdown, /35\.0% \| 60\.0 \| 30\.0% \| 28\.0 \| 3\.2% \| 96\.00 \(T45\.1\/F50\.9\) \|/);
     assert.doesNotMatch(markdown, /（Rule 40\+）/);
     assert.doesNotMatch(markdown, /（20未満注意）/);
     assert.doesNotMatch(markdown, /## 超急騰候補/);
