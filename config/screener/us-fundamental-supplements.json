@@ -10,6 +10,12 @@
       "capitalExpenditures": -2472900000,
       "cashAndRestrictedCash": 9626900000,
       "netIncome": 621200000,
+      "metricSupplement": {
+        "epsGrowthTtm": null,
+        "pFcf": null,
+        "source": "nebius-q1-2026-earnings-release",
+        "notes": "EPS YoY is not numerically supplemented because the official YoY income change is not meaningful; P/FCF remains null while FCF is negative."
+      },
       "notes": "Quarterly official data. FCF is computed as operating cash flow plus capex purchases; not a TTM TradingView replacement."
     }
   }

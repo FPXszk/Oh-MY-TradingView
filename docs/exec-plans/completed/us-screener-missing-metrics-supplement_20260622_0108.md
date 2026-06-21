@@ -50,12 +50,12 @@
 
 ## 実装ステップ
 
-- [ ] 既存の Moomoo 補助経路と Phase4 表の N/A列を確認する
-- [ ] EPS YoY / P/FCF / ATR% 補完の RED テストを追加する
-- [ ] US missing metrics 補完レイヤーを実装する
-- [ ] レポートの補完件数・N/A説明を更新する
-- [ ] ローカルテストと live screener 実行で検証する
-- [ ] 差分レビュー後、plan を `completed/` に移動する
+- [x] 既存の Moomoo 補助経路と Phase4 表の N/A列を確認する
+- [x] EPS YoY / P/FCF / ATR% 補完の RED テストを追加する
+- [x] US missing metrics 補完レイヤーを実装する
+- [x] レポートの補完件数・N/A説明を更新する
+- [x] ローカルテストと live screener 実行で検証する
+- [x] 差分レビュー後、plan を `completed/` に移動する
 
 ## テスト戦略
 

@@ -1819,7 +1819,7 @@ describe('runFundamentalScreener', () => {
     assert.equal(result.results.find((row) => row.symbol === 'MU').revenueGrowth, 0.12);
   });
 
-  it('does not backfill EPS YoY from moomoo when TradingView data is missing', async () => {
+  it('supplements missing US table metrics from moomoo and adapters when available', async () => {
     const result = await runFundamentalScreener({
       limit: 10,
       enrichWithYahoo: true,
@@ -1828,6 +1828,14 @@ describe('runFundamentalScreener', () => {
         getSymbolFundamentals: async (symbol) => ({
           revenueGrowth: symbol === 'QCOM' ? 0.08 : 0.12,
           earningsGrowth: symbol === 'MU' ? 0.27 : null,
+          pFcf: symbol === 'MU' ? 22.4 : -3.2,
+          source: 'moomoo',
+        }),
+        getUsMissingMetricSupplementals: async () => ({
+          MU: {
+            source: 'price-history-adapter',
+            atrPct: 4.25,
+          },
         }),
         fetch: createMockFetch({
           stockBodies: [],
@@ -1905,8 +1913,10 @@ describe('runFundamentalScreener', () => {
                   roe: 18,
                   grossMargin: 35,
                   fcfMargin: 10,
-                  fcfTtm: 30_000_000,
+                  fcfTtm: null,
                   revenueGrowthTtm: 20,
+                  pFcfDirect: null,
+                  atr: null,
                   netDebt: 0,
                   volume: 700_000,
                 }),
@@ -1926,8 +1936,9 @@ describe('runFundamentalScreener', () => {
                   roe: 22,
                   grossMargin: 56,
                   fcfMargin: 26,
-                  fcfTtm: 70_000_000,
+                  fcfTtm: null,
                   revenueGrowthTtm: 14,
+                  pFcfDirect: null,
                   netDebt: -5_000_000,
                   volume: 800_000,
                 }),
@@ -1939,8 +1950,21 @@ describe('runFundamentalScreener', () => {
     });
 
     assert.equal(result.results.find((row) => row.symbol === 'ADEA').epsGrowthTtm, 18);
-    assert.equal(result.results.find((row) => row.symbol === 'MU').epsGrowthTtm, null);
+    assert.equal(result.results.find((row) => row.symbol === 'MU').epsGrowthTtm, 27);
+    assert.equal(result.results.find((row) => row.symbol === 'MU').pFcf, 22.4);
+    assert.equal(result.results.find((row) => row.symbol === 'MU').atrPct, 4.25);
+    assert.deepEqual(result.results.find((row) => row.symbol === 'MU').missingMetricSupplement, {
+      sources: ['moomoo', 'price-history-adapter'],
+      fields: ['epsGrowthTtm', 'pFcf', 'atrPct'],
+    });
     assert.equal(result.results.find((row) => row.symbol === 'QCOM').epsGrowthTtm, null);
+    assert.equal(result.results.find((row) => row.symbol === 'QCOM').pFcf, null);
+    assert.equal(result.sourceDetails.usMissingMetricSupplement.supplementedRows, 1);
+    assert.deepEqual(result.sourceDetails.usMissingMetricSupplement.fields, {
+      epsGrowthTtm: 1,
+      pFcf: 1,
+      atrPct: 1,
+    });
   });
 
   it('keeps weak-fundamental momentum names below stronger all-around candidates', async () => {

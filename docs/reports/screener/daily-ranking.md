@@ -1,12 +1,13 @@
 # スクリーニング結果 2026/06/22（月）
 
-更新: 01:02 JST
+更新: 01:14 JST
 
 セクター別取得候補 108銘柄 → ユニバース条件通過 73銘柄 → ランキング対象 63銘柄 → レポート掲載 63銘柄
 
 ## データソース状況
 
 - US FCF補完: 1銘柄 (NBIS)
+- US 指標補完: 0銘柄
 
 ## Phase1 セクターランキング
 
@@ -129,10 +130,10 @@
 | 48 | Defense / Space Electronics | Drone / Autonomy Electronics | **TDG** | NYSE | $74.3B (L+) | -6.6% | 5.1% | 11.4% | 81.8% | 9.2% | 21.5% | 19.5% | 13.3% | 32.7 | 8.2% | 41.8 | 2.8% | 42.05 (T13.2/F28.9) |
 | 49 | Cloud Software | Cloud Platforms | **GOOGL** | NASDAQ | $4.46T (XL) | 109.1% | 22.0% | 20.5% | 90.1% | 34.0% | 36.3% | 15.2% | 17.8% | 33.0 | 46.2% | 69.9 | 2.9% | 41.40 (T11.4/F30.0) |
 | 50 | Defense / Space Electronics | Drone / Autonomy Electronics | **HEI.A** | NYSE | $39.5B (L) | 2.7% | 1.5% | 15.5% | 88.5% | 11.6% | 21.9% | 18.9% | 18.8% | 37.7 | 30.9% | 37.7 | 3.5% | 41.27 (T13.4/F27.9) |
-| 51 | AI Compute | AI Accelerators | **MCHPP** | NASDAQ | $54.1B (L+) | 31.6% | 40.8% | 48.7% | 95.0% | 1.9% | 14.3% | 18.5% | 7.1% | 25.6 | N/A% | 52.6 | 4.1% | 40.51 (T20.9/F19.6) |
-| 52 | AI Compute | AI Accelerators | **MCHP** | NASDAQ | $54.1B (L+) | 46.7% | 55.1% | 58.4% | 94.2% | 1.9% | 14.3% | 18.5% | 7.1% | 25.6 | N/A% | 62.8 | 5.2% | 40.17 (T22.4/F17.8) |
-| 53 | AI Compute | AI Cloud / Neocloud | **NBIS** | NASDAQ | $72.1B (L+) | 489.6% | 255.5% | 138.0% | 96.0% | 7.5% | 0.3% | -53.9% | 443.9% | 390.1 | N/A% | N/A | 8.4% | 40.00 (T27.0/F13.0) |
-| 54 | Industrial / Power Electronics | Factory Automation / Motion Control | **JBL** | NYSE | $39.2B (L) | 86.2% | 70.9% | 39.9% | 86.7% | 19.9% | 14.9% | 3.9% | 17.8% | 21.7 | 55.9% | 30.3 | 5.3% | 39.83 (T16.2/F23.7) |
+| 51 | AI Compute | AI Accelerators | **MCHP** | NASDAQ | $54.1B (L+) | 46.7% | 55.1% | 58.4% | 94.2% | 1.9% | 14.3% | 18.5% | 7.1% | 25.6 | N/A% | 62.8 | 5.2% | 40.98 (T22.6/F18.4) |
+| 52 | AI Compute | AI Cloud / Neocloud | **NBIS** | NASDAQ | $72.1B (L+) | 489.6% | 255.5% | 138.0% | 96.0% | 7.5% | 0.3% | -53.9% | 443.9% | 390.1 | N/A% | N/A | 8.4% | 40.00 (T27.0/F13.0) |
+| 53 | Industrial / Power Electronics | Factory Automation / Motion Control | **JBL** | NYSE | $39.2B (L) | 86.2% | 70.9% | 39.9% | 86.7% | 19.9% | 14.9% | 3.9% | 17.8% | 21.7 | 55.9% | 30.3 | 5.3% | 39.83 (T16.2/F23.7) |
+| 54 | AI Compute | AI Accelerators | **MCHPP** | NASDAQ | $54.1B (L+) | 31.6% | 40.8% | 48.7% | 95.0% | 1.9% | 14.3% | 18.5% | 7.1% | 25.6 | N/A% | 52.6 | 4.1% | 39.68 (T20.6/F19.1) |
 | 55 | Unclassified | 細粒度タグなし | **WAB** | NYSE | $46.5B (L) | 36.5% | 27.7% | 15.6% | 98.4% | 8.0% | 15.8% | 13.1% | 9.6% | 22.7 | 10.7% | 31.1 | 2.5% | 39.41 (T14.9/F24.5) |
 | 56 | Unclassified | 細粒度タグなし | **ODFL** | NASDAQ | $46.0B (L) | 41.0% | 39.8% | 21.2% | 87.7% | 23.2% | 30.4% | 18.7% | -4.8% | 13.9 | -10.3% | 45.5 | 4.3% | 38.73 (T10.4/F28.3) |
 | 57 | Optical / Photonics | Laser / Photonics | **COHR** | NYSE | $76.2B (L+) | 386.8% | 118.0% | 38.9% | 88.5% | 3.6% | 14.5% | -8.2% | 18.0% | 9.8 | N/A% | N/A | 8.6% | 38.19 (T25.6/F12.5) |
@@ -177,7 +178,7 @@
 | FCF | FCF margin = フリーキャッシュフロー ÷ 売上 | 売上がどれだけ現金として残るか |
 | 売上YoY | 売上高の前年比成長率 | 事業成長の確認 |
 | Rule40 | 売上YoY + FCF margin | 主に US software 系の成長と収益性をまとめて確認 |
-| EPS YoY | EPS の前年比成長率 | 利益成長の確認。N/A は TradingView 側の欠損 |
+| EPS YoY | EPS の前年比成長率 | 利益成長の確認。TradingView 欠損時は補助データで補完、なければ N/A |
 | P/FCF | 株価 ÷ FCF の倍率 | 低いほど割高感が小さい傾向 |
 | ATR% | ATR ÷ 株価 × 100 | 値動きの荒さ。高いほどボラティリティが高い |
 | 総合点 (T/F) | repo 独自の総合スコア | 高いほど良い。T はテクニカル寄り、F はファンダ寄り |
@@ -189,9 +190,10 @@
 | 共通条件 | ベース条件 | 時価総額 > $30B / EPS(TTM) > 0 / Close > SMA200 / Close > SMA50 / Close ≥ 52週高値 × 75% |
 | 補助ポリシー | Rule of 40 | US Technology Services software-like industries only / total_revenue_yoy_growth_ttm + free_cash_flow_margin_ttm / 40+ を badge / 20 未満を warning / hard filter なし |
 | 補助ポリシー | US FCF補完 | TradingView FCF gaps are supplemented from configured official/adapter data when available; supplemented rows keep source metadata. |
+| 補助ポリシー | US 指標補完 | TradingView missing table metrics are supplemented from Moomoo/adapter data when available; unavailable or non-meaningful values stay N/A. |
 | 補助ポリシー | Theme taxonomy | america Phase2 matched candidates only / repo custom theme taxonomy layered on top of TradingView sector/industry / version us-theme-prototype-v2 |
 | ユニバース | 取引所 | NASDAQ, NYSE |
-| 補助ポリシー | Moomoo 補助 | 売上成長率 YoY は growth scoring の補助に使う。EPS YoY は TradingView 値のみを使い、欠損時は N/A のままにする |
+| 補助ポリシー | Moomoo 補助 | 売上成長率 YoY は growth scoring に使い、EPS YoY / P/FCF は TradingView 欠損時の表内指標補完に使う |
 | セクタープロファイル | Technology Services | scope: Technology Services / hard gate: Perf.3M > 10% / scoring: RSI 60+、相対出来高 1.00x+、ROE 20%+、粗利率 40%+、FCFマージン 15%+、P/FCF 50 は risk penalty |
 | セクタープロファイル | Electronic Technology | scope: Electronic Technology / hard gate: Perf.3M > 10% / scoring: RSI 60+、相対出来高 1.00x+、ROE 20%+、粗利率 40%+、FCFマージン 15%+、P/FCF 50 は risk penalty |
 | セクタープロファイル | Electronic Technology / Semiconductors | scope: Electronic Technology / hard gate: Perf.3M > 10% / scoring: RSI 60+、相対出来高 0.90x+、ROE 15%+、粗利率 30%+、FCFマージン 5%+、P/FCF 50 (fabless), 120 (IDM/foundry) は risk penalty |

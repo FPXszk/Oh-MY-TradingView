@@ -293,11 +293,19 @@ function buildRuleOf40MissingRows(result) {
 function buildSourceCoverageLines(result) {
   const edinet = result.sourceDetails?.edinet;
   const usSupplement = result.sourceDetails?.usFundamentalSupplement;
+  const usMissingSupplement = result.sourceDetails?.usMissingMetricSupplement;
   const lines = [];
 
   if (usSupplement?.enabled) {
     const symbols = usSupplement.symbols?.length ? ` (${usSupplement.symbols.join(', ')})` : '';
     lines.push(`- US FCF補完: ${usSupplement.supplementedRows}銘柄${symbols}`);
+  }
+  if (usMissingSupplement?.enabled) {
+    const fieldSummary = Object.entries(usMissingSupplement.fields ?? {})
+      .map(([field, count]) => `${field} ${count}`)
+      .join(', ');
+    const suffix = fieldSummary ? ` / ${fieldSummary}` : '';
+    lines.push(`- US 指標補完: ${usMissingSupplement.supplementedRows}銘柄${suffix}`);
   }
 
   if (!edinet) return lines;
@@ -393,7 +401,7 @@ function buildMetricGlossaryRows(market) {
     ['Rule40', '売上YoY + FCF margin', market === 'america'
       ? '主に US software 系の成長と収益性をまとめて確認'
       : '日本株では参考表示のみ。EDINET 補完で埋まる場合がある'],
-    ['EPS YoY', 'EPS の前年比成長率', '利益成長の確認。N/A は TradingView 側の欠損'],
+    ['EPS YoY', 'EPS の前年比成長率', '利益成長の確認。TradingView 欠損時は補助データで補完、なければ N/A'],
     ['P/FCF', '株価 ÷ FCF の倍率', '低いほど割高感が小さい傾向'],
     ['ATR%', 'ATR ÷ 株価 × 100', '値動きの荒さ。高いほどボラティリティが高い'],
     ['総合点 (T/F)', 'repo 独自の総合スコア', '高いほど良い。T はテクニカル寄り、F はファンダ寄り'],
@@ -441,6 +449,9 @@ function buildGuideRows(result) {
   if (result.criteria.us_fundamental_supplement_policy) {
     rows.push(`| 補助ポリシー | US FCF補完 | ${result.criteria.us_fundamental_supplement_policy} |`);
   }
+  if (result.criteria.us_missing_metric_supplement_policy) {
+    rows.push(`| 補助ポリシー | US 指標補完 | ${result.criteria.us_missing_metric_supplement_policy} |`);
+  }
   if (result.criteria.theme_taxonomy_policy) {
     rows.push(`| 補助ポリシー | Theme taxonomy | ${result.criteria.theme_taxonomy_policy.scope} / ${result.criteria.theme_taxonomy_policy.approach} / version ${result.criteria.theme_taxonomy_policy.version} |`);
   }
@@ -451,7 +462,7 @@ function buildGuideRows(result) {
     rows.push(`| ユニバース | 銘柄ユニバース | ${result.criteria.symbol_allowlist_key} |`);
   }
   if (result.enrichedWithYahoo) {
-    rows.push('| 補助ポリシー | Moomoo 補助 | 売上成長率 YoY は growth scoring の補助に使う。EPS YoY は TradingView 値のみを使い、欠損時は N/A のままにする |');
+    rows.push('| 補助ポリシー | Moomoo 補助 | 売上成長率 YoY は growth scoring に使い、EPS YoY / P/FCF は TradingView 欠損時の表内指標補完に使う |');
   }
   if (result.criteria.japan_fundamentals_policy) {
     rows.push(`| 補助ポリシー | 日本株ファンダ補完 | ${result.criteria.japan_fundamentals_policy} |`);

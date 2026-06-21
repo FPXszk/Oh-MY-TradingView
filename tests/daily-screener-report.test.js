@@ -304,6 +304,8 @@ describe('buildMarkdown', () => {
           warning_below: 20,
           hard_filter: false,
         },
+        us_fundamental_supplement_policy: 'TradingView FCF gaps are supplemented from configured official/adapter data when available; supplemented rows keep source metadata.',
+        us_missing_metric_supplement_policy: 'TradingView missing table metrics are supplemented from Moomoo/adapter data when available; unavailable or non-meaningful values stay N/A.',
         theme_taxonomy_policy: {
           version: 'us-theme-prototype-v2',
           scope: 'US Phase2 matched candidates only',
@@ -770,7 +772,8 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| 補助ポリシー \| Rule of 40 \| US Technology Services software-like industries only \/ total_revenue_yoy_growth_ttm \+ free_cash_flow_margin_ttm \/ 40\+ を badge \/ 20 未満を warning \/ hard filter なし \|/);
     assert.match(markdown, /\| 補助ポリシー \| Theme taxonomy \| US Phase2 matched candidates only \/ repo custom theme taxonomy layered on top of TradingView sector\/industry \/ version us-theme-prototype-v2 \|/);
     assert.match(markdown, /\| ユニバース \| 取引所 \| NASDAQ, NYSE \|/);
-    assert.match(markdown, /\| 補助ポリシー \| Moomoo 補助 \| 売上成長率 YoY は growth scoring の補助に使う。EPS YoY は TradingView 値のみを使い、欠損時は N\/A のままにする \|/);
+    assert.match(markdown, /\| 補助ポリシー \| US 指標補完 \| TradingView missing table metrics are supplemented from Moomoo\/adapter data when available; unavailable or non-meaningful values stay N\/A\. \|/);
+    assert.match(markdown, /\| 補助ポリシー \| Moomoo 補助 \| 売上成長率 YoY は growth scoring に使い、EPS YoY \/ P\/FCF は TradingView 欠損時の表内指標補完に使う \|/);
     assert.match(markdown, /\| セクタープロファイル \| Technology Services \| scope: Technology Services \/ hard gate: Perf\.3M > 10% \/ scoring: RSI 60\+、相対出来高 1\.00x\+、ROE 20%\+、粗利率 40%\+、FCFマージン 15%\+、P\/FCF 50 は risk penalty \|/);
     assert.match(markdown, /\| セクタープロファイル \| Electronic Technology \/ Semiconductors \| scope: Electronic Technology \/ hard gate: Perf\.3M > 10% \/ scoring: RSI 60\+、相対出来高 0\.90x\+、ROE 15%\+、粗利率 30%\+、FCFマージン 5%\+、P\/FCF 50 \(fabless\), 120 \(IDM\/foundry\) は risk penalty \|/);
     assert.doesNotMatch(markdown, /## 採用した P0 \/ P1 指標/);
@@ -787,7 +790,7 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| 列名 \| 意味 \| 見方 \|/);
     assert.match(markdown, /\| 12M \| 過去12か月の株価騰落率 \(Perf\.Y\) \| 長期モメンタム。高いほど 1 年で強い \|/);
     assert.match(markdown, /\| 52w \| 現在株価が 52 週高値の何%位置か \| 100% に近いほど 52 週高値圏 \|/);
-    assert.match(markdown, /\| EPS YoY \| EPS の前年比成長率 \| 利益成長の確認。N\/A は TradingView 側の欠損 \|/);
+    assert.match(markdown, /\| EPS YoY \| EPS の前年比成長率 \| 利益成長の確認。TradingView 欠損時は補助データで補完、なければ N\/A \|/);
     assert.match(markdown, /\| 総合点 \(T\/F\) \| repo 独自の総合スコア \| 高いほど良い。T はテクニカル寄り、F はファンダ寄り \|/);
   });
 

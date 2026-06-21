@@ -558,6 +558,19 @@ function computeFcfSupplementMetrics(entry, row) {
   };
 }
 
+function computeStaticMissingMetricSupplement(entry) {
+  const metrics = entry?.metricSupplement ?? {};
+  return {
+    earningsGrowthPct: normalizeMetric(metrics.epsGrowthTtm ?? metrics.earningsGrowthPct),
+    pFcf: normalizePositiveRatio(metrics.pFcf ?? metrics.pcfTtm),
+    atrPct: normalizeMetric(metrics.atrPct),
+    beta1y: normalizeMetric(metrics.beta1y ?? metrics.beta),
+    evEbitda: normalizeMetric(metrics.evEbitda),
+    debtToEquity: normalizeMetric(metrics.debtToEquity),
+    source: metrics.source ?? entry?.source ?? null,
+  };
+}
+
 function applyFundamentalSupplement(row, metrics = {}, meta = null) {
   const merged = {
     ...row,
@@ -1111,11 +1124,23 @@ async function batchFetchSupplementalGrowthMetrics(symbols, getFundamentals) {
           results[symbol] = {
             revenueGrowth: data?.revenueGrowth ?? null,
             earningsGrowthPct: toPercentPoints(data?.earningsGrowth),
+            pFcf: normalizePositiveRatio(data?.pFcf ?? data?.pcfTtm),
+            atrPct: normalizeMetric(data?.atrPct),
+            beta1y: normalizeMetric(data?.beta1y ?? data?.beta),
+            evEbitda: normalizeMetric(data?.evEbitda),
+            debtToEquity: normalizeMetric(data?.debtToEquity),
+            source: data?.source ?? 'supplemental',
           };
         } catch {
           results[symbol] = {
             revenueGrowth: null,
             earningsGrowthPct: null,
+            pFcf: null,
+            atrPct: null,
+            beta1y: null,
+            evEbitda: null,
+            debtToEquity: null,
+            source: null,
           };
         }
       }),
@@ -1132,6 +1157,18 @@ function toPercentPoints(value, digits = 2) {
   const normalized = Number(value);
   if (!Number.isFinite(normalized)) return null;
   return Number((normalized * 100).toFixed(digits));
+}
+
+function normalizeMetric(value, digits = 4) {
+  if (value === null || value === undefined) return null;
+  const normalized = Number(value);
+  if (!Number.isFinite(normalized)) return null;
+  return Number(normalized.toFixed(digits));
+}
+
+function normalizePositiveRatio(value, digits = 4) {
+  const normalized = normalizeMetric(value, digits);
+  return normalized !== null && normalized > 0 ? normalized : null;
 }
 
 function toMoomooMarket(market) {
@@ -1151,12 +1188,16 @@ async function batchFetchMoomooGrowthMetrics(symbols, { market, _deps } = {}) {
       (response.fundamentals || []).map((entry) => [entry.symbol, {
         revenueGrowth: entry.revenueGrowth ?? null,
         earningsGrowthPct: toPercentPoints(entry.earningsGrowth),
+        pFcf: normalizePositiveRatio(entry.pcfTtm),
+        source: entry.source ?? 'moomoo',
       }]),
     );
   } catch {
     return Object.fromEntries(symbols.map((symbol) => [symbol, {
       revenueGrowth: null,
       earningsGrowthPct: null,
+      pFcf: null,
+      source: null,
     }]));
   }
 }
@@ -1167,6 +1208,99 @@ function applySupplementalGrowthMetrics(row, metrics = {}) {
     revenueGrowth: metrics.revenueGrowth ?? null,
     epsGrowthTtm: row.epsGrowthTtm ?? null,
   };
+}
+
+function mergeMissingMetricSupplement(row, source, fields) {
+  if (!fields || fields.length === 0) return row.missingMetricSupplement ?? null;
+  const existing = row.missingMetricSupplement ?? { sources: [], fields: [] };
+  return {
+    sources: uniqueStrings([...existing.sources, source].filter(Boolean)),
+    fields: uniqueStrings([...existing.fields, ...fields]),
+  };
+}
+
+function applyUsMissingMetricSupplement(row, metrics = {}, source = 'supplemental') {
+  if (!metrics) return row;
+  const fields = [];
+  const merged = { ...row };
+
+  if (merged.epsGrowthTtm === null && metrics.earningsGrowthPct !== null && metrics.earningsGrowthPct !== undefined) {
+    merged.epsGrowthTtm = metrics.earningsGrowthPct;
+    fields.push('epsGrowthTtm');
+  }
+  if (merged.pFcf === null && metrics.pFcf !== null && metrics.pFcf !== undefined && metrics.pFcf > 0) {
+    merged.pFcf = metrics.pFcf;
+    fields.push('pFcf');
+  }
+  if (merged.atrPct === null && metrics.atrPct !== null && metrics.atrPct !== undefined) {
+    merged.atrPct = metrics.atrPct;
+    fields.push('atrPct');
+  }
+  if (merged.beta1y === null && metrics.beta1y !== null && metrics.beta1y !== undefined) {
+    merged.beta1y = metrics.beta1y;
+    fields.push('beta1y');
+  }
+  if (merged.evEbitda === null && metrics.evEbitda !== null && metrics.evEbitda !== undefined) {
+    merged.evEbitda = metrics.evEbitda;
+    fields.push('evEbitda');
+  }
+  if (merged.debtToEquity === null && metrics.debtToEquity !== null && metrics.debtToEquity !== undefined) {
+    merged.debtToEquity = metrics.debtToEquity;
+    fields.push('debtToEquity');
+  }
+
+  if (fields.length === 0) return row;
+  return {
+    ...merged,
+    missingMetricSupplement: mergeMissingMetricSupplement(row, source, fields),
+  };
+}
+
+function buildMissingMetricSupplementMeta(rows) {
+  const supplementedRows = rows.filter((row) => row.missingMetricSupplement);
+  const fields = {};
+  supplementedRows.forEach((row) => {
+    row.missingMetricSupplement.fields.forEach((field) => {
+      fields[field] = (fields[field] ?? 0) + 1;
+    });
+  });
+  return {
+    enabled: true,
+    supplementedRows: supplementedRows.length,
+    symbols: supplementedRows.map((row) => row.symbol),
+    fields,
+  };
+}
+
+async function applyUsMissingMetricSupplements(rows, {
+  growthMap = {},
+  getMissingMetricSupplementals = null,
+} = {}) {
+  if (rows.length === 0) return rows;
+  const externalMap = getMissingMetricSupplementals
+    ? await getMissingMetricSupplementals(rows)
+    : {};
+
+  return rows.map((row) => {
+    const symbol = row.symbol?.toUpperCase();
+    const staticEntry = US_FUNDAMENTAL_SUPPLEMENTS.symbols?.[symbol] ?? null;
+    const staticMetrics = computeStaticMissingMetricSupplement(staticEntry);
+    const withGrowthProvider = applyUsMissingMetricSupplement(
+      row,
+      growthMap?.[symbol],
+      growthMap?.[symbol]?.source ?? 'moomoo',
+    );
+    const withStaticProvider = applyUsMissingMetricSupplement(
+      withGrowthProvider,
+      staticMetrics,
+      staticMetrics?.source ?? 'static-supplement',
+    );
+    return applyUsMissingMetricSupplement(
+      withStaticProvider,
+      externalMap?.[symbol],
+      externalMap?.[symbol]?.source ?? 'supplemental',
+    );
+  });
 }
 
 function shouldUseEdinetSupplement(row) {
@@ -1307,9 +1441,10 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   const phase1Filtered = scopeFiltered;
   let clientFiltered = phase1Filtered.filter(passesProfileClientFilters);
 
+  let growthMap = {};
   if (enrichWithYahoo && clientFiltered.length > 0) {
     const symbols = clientFiltered.map((r) => r.symbol);
-    const growthMap = getFundamentals
+    growthMap = getFundamentals
       ? await batchFetchSupplementalGrowthMetrics(symbols, getFundamentals)
       : await batchFetchMoomooGrowthMetrics(symbols, { market, _deps });
 
@@ -1329,6 +1464,15 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       symbols: supplementedRows.map((row) => row.symbol),
       version: US_FUNDAMENTAL_SUPPLEMENTS.version,
     };
+  }
+
+  let usMissingMetricSupplementMeta = null;
+  if (market === DEFAULT_MARKET && clientFiltered.length > 0) {
+    clientFiltered = await applyUsMissingMetricSupplements(clientFiltered, {
+      growthMap,
+      getMissingMetricSupplementals: _deps?.getUsMissingMetricSupplementals ?? null,
+    });
+    usMissingMetricSupplementMeta = buildMissingMetricSupplementMeta(clientFiltered);
   }
 
   let edinetSupplementMeta = null;
@@ -1428,6 +1572,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       hard_filter: false,
     };
     criteria.us_fundamental_supplement_policy = 'TradingView FCF gaps are supplemented from configured official/adapter data when available; supplemented rows keep source metadata.';
+    criteria.us_missing_metric_supplement_policy = 'TradingView missing table metrics are supplemented from Moomoo/adapter data when available; unavailable or non-meaningful values stay N/A.';
   }
   if (exchangeAllowlist) {
     criteria.allowed_exchanges = exchangeAllowlist;
@@ -1483,6 +1628,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     ruleOf40Coverage,
     sourceDetails: {
       usFundamentalSupplement: usFundamentalSupplementMeta,
+      usMissingMetricSupplement: usMissingMetricSupplementMeta,
       edinet: edinetSupplementMeta,
     },
     results: matched,
@@ -1596,11 +1742,12 @@ export async function evaluateSymbolsAgainstFundamentalScreener({
     });
   }
 
-  const eligibleForGrowthCheck = [...byRequestedSymbol.values()]
+  let eligibleForGrowthCheck = [...byRequestedSymbol.values()]
     .filter((entry) => entry?.found && entry.matchedProfileId);
+  let growthMap = {};
   if (enrichWithYahoo && eligibleForGrowthCheck.length > 0) {
     const symbolsToCheck = eligibleForGrowthCheck.map((entry) => entry.symbol);
-    const growthMap = getFundamentals
+    growthMap = getFundamentals
       ? await batchFetchSupplementalGrowthMetrics(symbolsToCheck, getFundamentals)
       : await batchFetchMoomooGrowthMetrics(symbolsToCheck, { market, _deps });
 
@@ -1615,6 +1762,17 @@ export async function evaluateSymbolsAgainstFundamentalScreener({
   if (market === DEFAULT_MARKET && eligibleForGrowthCheck.length > 0) {
     const supplemented = await applyUsFundamentalSupplements(eligibleForGrowthCheck, {
       getSupplementalFundamentals: _deps?.getUsSupplementalFundamentals ?? null,
+    });
+    supplemented.forEach((entry) => {
+      byRequestedSymbol.set(entry.requestedSymbol, entry);
+    });
+    eligibleForGrowthCheck = supplemented;
+  }
+
+  if (market === DEFAULT_MARKET && eligibleForGrowthCheck.length > 0) {
+    const supplemented = await applyUsMissingMetricSupplements(eligibleForGrowthCheck, {
+      growthMap,
+      getMissingMetricSupplementals: _deps?.getUsMissingMetricSupplementals ?? null,
     });
     supplemented.forEach((entry) => {
       byRequestedSymbol.set(entry.requestedSymbol, entry);
