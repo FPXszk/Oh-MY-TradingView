@@ -790,8 +790,86 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| 列名 \| 意味 \| 見方 \|/);
     assert.match(markdown, /\| 12M \| 過去12か月の株価騰落率 \(Perf\.Y\) \| 長期モメンタム。高いほど 1 年で強い \|/);
     assert.match(markdown, /\| 52w \| 現在株価が 52 週高値の何%位置か \| 100% に近いほど 52 週高値圏 \|/);
-    assert.match(markdown, /\| EPS YoY \| EPS の前年比成長率 \| 利益成長の確認。TradingView 欠損時は補助データで補完、なければ N\/A \|/);
+    assert.match(markdown, /\| EPS YoY \| EPS の前年比成長率 \| 利益成長の確認。赤字分母由来の黒字転換は強調表示し、TradingView raw 値は併記する \|/);
     assert.match(markdown, /\| 総合点 \(T\/F\) \| repo 独自の総合スコア \| 高いほど良い。T はテクニカル寄り、F はファンダ寄り \|/);
+  });
+
+  it('highlights EPS turnaround labels in ranking tables', () => {
+    const markdown = buildMarkdown({
+      retrieved_at: '2026-05-04T03:00:00.000Z',
+      totalScanned: 1,
+      serverFiltered: 1,
+      phase1Filtered: 1,
+      clientFiltered: 1,
+      matched: 1,
+      enrichedWithYahoo: false,
+      scannerScope: { market: 'america' },
+      criteria: {
+        market_cap_min_usd: 1_000_000_000,
+        eps_min: 0,
+        price_pct_of_52wk_high_min: 75,
+      },
+      rankingBlocks,
+      sectorMomentum: {
+        approach: 'stock-aggregation',
+        benchmarkSymbol: 'BATS:SPY',
+        benchmarkLabel: 'SPY',
+      },
+      phase1SectorRanking: [],
+      focusedHierarchy: {
+        focusSector: 'Electronic Technology',
+        candidateCount: 1,
+        selectedMiddleThemes: ['Memory'],
+        selectedSmallThemes: [
+          { middleTheme: 'Memory', smallTheme: 'NAND / Storage' },
+        ],
+        middleThemeRanking: [
+          {
+            middleTheme: 'Memory',
+            count: 1,
+            averagePerf3m: 25,
+            averageRankScore: 90,
+            topSmallThemes: ['NAND / Storage'],
+          },
+        ],
+        smallThemeRanking: [
+          {
+            middleTheme: 'Memory',
+            smallTheme: 'NAND / Storage',
+            count: 1,
+            averagePerf3m: 25,
+            averageRankScore: 90,
+          },
+        ],
+      },
+      results: [
+        {
+          symbol: 'SNDK',
+          exchange: 'NASDAQ',
+          sector: 'Electronic Technology',
+          marketCapUsd: 5_000_000_000,
+          perfY: 80,
+          perf6m: 40,
+          perf3m: 25,
+          pctOf52wHigh: 95,
+          roic: 25,
+          grossProfitToAssets: 30,
+          fcfMargin: 20,
+          revenueGrowthTtm: 30,
+          ruleOf40: null,
+          epsGrowthTtm: -144.5,
+          epsGrowthDisplay: '黒字転換 (raw -144.5%)',
+          pFcf: 20,
+          atrPct: 3.2,
+          primaryTheme: 'Memory',
+          subThemes: ['NAND / Storage'],
+          rankScore: 90,
+          rankBreakdown: rankBreakdown(1),
+        },
+      ],
+    });
+
+    assert.match(markdown, /\| 1 \| Memory \| NAND \/ Storage \| \*\*SNDK\*\* \| NASDAQ \| \$5\.0B \(M\+\) \| 80\.0% \| 40\.0% \| 25\.0% \| 95\.0% \| 25\.0% \| 30\.0% \| 20\.0% \| 30\.0% \| 50\.0 \| 黒字転換 \(raw -144\.5%\) \| 20\.0 \| 3\.2% \|/);
   });
 
   it('supports a Japan-specific title and currency symbol', () => {

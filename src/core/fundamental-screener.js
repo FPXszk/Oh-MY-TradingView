@@ -120,7 +120,7 @@ const RANK_BLOCKS = [
     missingRank: 'neutral',
     fields: [
       { key: 'revenueGrowthTtm', label: 'Revenue YoY growth', direction: 'desc' },
-      { key: 'epsGrowthTtm', label: 'EPS YoY growth', direction: 'desc' },
+      { key: 'epsGrowthScoreValue', label: 'EPS YoY growth', direction: 'desc' },
       { key: 'fcfGrowthTtm', label: 'FCF YoY growth', direction: 'desc' },
       { key: 'revenueGrowth', label: 'Moomoo revenue growth', direction: 'desc' },
     ],
@@ -152,6 +152,8 @@ const RULE_OF_40_RANK_BLOCK = {
 
 const RULE_OF_40_SECTOR = 'Technology Services';
 const RULE_OF_40_INDUSTRY_PATTERN = /software|saas|cloud|application|infrastructure/i;
+const EPS_TURNAROUND_SCORE = 120;
+const EPS_PROFIT_TO_LOSS_SCORE = -120;
 
 function getRankingBlocks(market) {
   if (market !== DEFAULT_MARKET) return RANK_BLOCKS;
@@ -193,6 +195,50 @@ function buildTickerRequestBody(tickers, market) {
     columns: COLUMNS,
     sort: { sortBy: 'market_cap_basic', sortOrder: 'desc' },
     range: [0, Math.max(50, tickers.length)],
+  };
+}
+
+function formatSignedPct(value) {
+  if (value === null || value === undefined) return 'N/A';
+  return `${Number(value).toFixed(1)}%`;
+}
+
+function buildEpsGrowthMeta({ eps, epsGrowthTtm }) {
+  if (epsGrowthTtm === null || epsGrowthTtm === undefined) {
+    return {
+      epsGrowthStatus: 'missing',
+      epsGrowthDisplay: null,
+      epsGrowthScoreValue: null,
+    };
+  }
+
+  if (eps !== null && eps !== undefined && eps > 0 && epsGrowthTtm < -100) {
+    return {
+      epsGrowthStatus: 'turnaround_to_profit',
+      epsGrowthDisplay: `黒字転換 (raw ${formatSignedPct(epsGrowthTtm)})`,
+      epsGrowthScoreValue: EPS_TURNAROUND_SCORE,
+    };
+  }
+
+  if (eps !== null && eps !== undefined && eps <= 0 && epsGrowthTtm < -100) {
+    return {
+      epsGrowthStatus: 'profit_to_loss',
+      epsGrowthDisplay: `赤字転落 (raw ${formatSignedPct(epsGrowthTtm)})`,
+      epsGrowthScoreValue: EPS_PROFIT_TO_LOSS_SCORE,
+    };
+  }
+
+  return {
+    epsGrowthStatus: 'normal',
+    epsGrowthDisplay: null,
+    epsGrowthScoreValue: epsGrowthTtm,
+  };
+}
+
+function applyEpsGrowthMeta(row) {
+  return {
+    ...row,
+    ...buildEpsGrowthMeta({ eps: row.eps, epsGrowthTtm: row.epsGrowthTtm }),
   };
 }
 
@@ -278,6 +324,7 @@ function normalizeRow(row) {
     revenueGrowthTtm !== null && fcfMargin !== null
       ? Number((revenueGrowthTtm + fcfMargin).toFixed(2))
       : null;
+  const epsGrowthMeta = buildEpsGrowthMeta({ eps, epsGrowthTtm });
 
   return {
     symbol,
@@ -302,6 +349,7 @@ function normalizeRow(row) {
     marketCapUsd,
     eps,
     epsGrowthTtm,
+    ...epsGrowthMeta,
     roe,
     roic,
     grossMargin,
@@ -1250,10 +1298,10 @@ function applyUsMissingMetricSupplement(row, metrics = {}, source = 'supplementa
   }
 
   if (fields.length === 0) return row;
-  return {
+  return applyEpsGrowthMeta({
     ...merged,
     missingMetricSupplement: mergeMissingMetricSupplement(row, source, fields),
-  };
+  });
 }
 
 function buildMissingMetricSupplementMeta(rows) {

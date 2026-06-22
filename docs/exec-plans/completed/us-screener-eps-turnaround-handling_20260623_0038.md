@@ -19,6 +19,7 @@
 | `scripts/screener/run-fundamental-screening.mjs` | MODIFY | EPS YoY 列で黒字転換を強調表示し、説明文を更新する |
 | `tests/fundamental-screener.test.js` | MODIFY | 黒字転換が `epsGrowthScoreValue` で加点され、raw YoY が残ることを固定する |
 | `tests/daily-screener-report.test.js` | MODIFY | レポートの EPS YoY 表示に `黒字転換` が出ることを固定する |
+| `docs/reports/screener/TEMPLATE.md` | MODIFY | EPS YoY の説明を黒字転換強調表示に合わせる |
 | `docs/reports/screener/daily-ranking.md` | MODIFY候補 | 実行確認で生成差分が出た場合のみ更新する |
 | `docs/reports/screener/daily-ranking-run.json` | MODIFY候補 | 実行確認で生成差分が出た場合のみ更新する |
 | `docs/exec-plans/active/us-screener-eps-turnaround-handling_20260623_0038.md` | CREATE | 本計画 |
@@ -42,18 +43,35 @@
 
 ## Implementation Steps
 
-- [ ] Step 1: 現行 EPS rank / 表示 / テスト fixture を確認し、差し込み点を確定する。
+- [x] Step 1: 現行 EPS rank / 表示 / テスト fixture を確認し、差し込み点を確定する。
   - 確認: `epsGrowthTtm` の rank と report cell が限定的に把握できている。
-- [ ] Step 2: fundamental screener に EPS 状態判定を追加する。
+- [x] Step 2: fundamental screener に EPS 状態判定を追加する。
   - 確認: 黒字転換では raw `epsGrowthTtm` を残しつつ `epsGrowthStatus`, `epsGrowthDisplay`, `epsGrowthScoreValue` が付く。
-- [ ] Step 3: growth rank の EPS field を `epsGrowthScoreValue` に変更する。
+- [x] Step 3: growth rank の EPS field を `epsGrowthScoreValue` に変更する。
   - 確認: 黒字転換銘柄が raw negative YoY で不利にならない。
-- [ ] Step 4: report の EPS YoY 表示と説明文を更新する。
+- [x] Step 4: report の EPS YoY 表示と説明文を更新する。
   - 確認: 表示に `黒字転換` と raw 値が出る。
-- [ ] Step 5: focused tests を追加/更新する。
+- [x] Step 5: focused tests を追加/更新する。
   - 確認: RED/GREEN で `tests/fundamental-screener.test.js` と `tests/daily-screener-report.test.js` が通る。
-- [ ] Step 6: 必要なローカル検証を実行し、差分をレビューする。
+- [x] Step 6: 必要なローカル検証を実行し、差分をレビューする。
   - 確認: `node --test tests/fundamental-screener.test.js tests/daily-screener-report.test.js` が通る。
+
+## Implementation Summary
+
+- `epsGrowthTtm` は TradingView raw 値として残し、`epsGrowthStatus`, `epsGrowthDisplay`, `epsGrowthScoreValue` を追加した。
+- `eps > 0 && epsGrowthTtm < -100` は `turnaround_to_profit` として `黒字転換 (raw x%)` 表示にし、growth block では `120` 相当として加点する。
+- `eps <= 0 && epsGrowthTtm < -100` は `profit_to_loss` として赤字転落表示・減点値を用意した。ただし現行 US screener は EPS(TTM) > 0 gate があるため、通常ランキングには出にくい。
+- US missing metric 補完で EPS YoY が後から埋まる場合も EPS メタデータを再計算する。
+- Markdown の EPS YoY 列は文字ラベルを出せるように表示関数と列揃えを更新した。
+
+## Validation Result
+
+```powershell
+node --test tests/fundamental-screener.test.js tests/daily-screener-report.test.js
+npm run test:unit
+```
+
+Both commands passed.
 
 ## Validation Commands
 

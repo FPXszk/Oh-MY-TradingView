@@ -143,6 +143,11 @@ function buildRuleOf40Note(row, market = 'america') {
   return fmt(row.ruleOf40);
 }
 
+function formatEpsGrowthCell(row) {
+  if (row.epsGrowthDisplay) return row.epsGrowthDisplay;
+  return `${fmt(row.epsGrowthTtm)}%`;
+}
+
 function rankToPositiveScore(rank, populationSize) {
   if (!Number.isFinite(rank) || !Number.isFinite(populationSize) || populationSize <= 0) {
     return null;
@@ -231,7 +236,7 @@ function buildRankingMetricCells(row, market, populationSize, currencySymbol) {
     `${fmt(row.fcfMargin)}%`,
     `${fmt(row.revenueGrowthTtm)}%`,
     buildRuleOf40Note(row, market),
-    `${fmt(row.epsGrowthTtm)}%`,
+    formatEpsGrowthCell(row),
     fmt(row.pFcf, 1),
     `${fmt(row.atrPct)}%`,
     buildTotalScoreCell(row, market, populationSize),
@@ -401,7 +406,7 @@ function buildMetricGlossaryRows(market) {
     ['Rule40', '売上YoY + FCF margin', market === 'america'
       ? '主に US software 系の成長と収益性をまとめて確認'
       : '日本株では参考表示のみ。EDINET 補完で埋まる場合がある'],
-    ['EPS YoY', 'EPS の前年比成長率', '利益成長の確認。TradingView 欠損時は補助データで補完、なければ N/A'],
+    ['EPS YoY', 'EPS の前年比成長率', '利益成長の確認。赤字分母由来の黒字転換は強調表示し、TradingView raw 値は併記する'],
     ['P/FCF', '株価 ÷ FCF の倍率', '低いほど割高感が小さい傾向'],
     ['ATR%', 'ATR ÷ 株価 × 100', '値動きの荒さ。高いほどボラティリティが高い'],
     ['総合点 (T/F)', 'repo 独自の総合スコア', '高いほど良い。T はテクニカル寄り、F はファンダ寄り'],
@@ -682,7 +687,7 @@ export function buildMarkdown(result, options = {}) {
       } else {
         const scoreHeader = '総合点 (T/F)';
         lines.push(`| 順位 | 中テーマ | 小テーマ | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | ${scoreHeader} |`);
-        lines.push('|:---:|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|');
+        lines.push('|:---:|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|:---|---:|---:|---:|');
         phase4Rows.forEach((row, index) => {
           const metricCells = buildRankingMetricCells(row, result.scannerScope?.market, populationSize, currencySymbol).join(' | ');
           lines.push(`| ${index + 1} | ${row.primaryTheme ?? 'Unclassified'} | ${row.subThemes?.[0] ?? '細粒度タグなし'} | **${formatSymbolWithCompanyName(row, market)}** | ${row.exchange ?? '-'} | ${metricCells} |`);
@@ -709,7 +714,7 @@ export function buildMarkdown(result, options = {}) {
           lines.push(`- セクター平均3M: ${fmt(sector.averagePerf3m)}% / 平均総合点: ${fmt(sector.averageRankScore, 2)}`);
           lines.push('');
           lines.push(`| セクター順位 | セクター内順位 | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | ${scoreHeader} |`);
-          lines.push('|:---:|:---:|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|');
+          lines.push('|:---:|:---:|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|:---|---:|---:|---:|');
           (sector.topRows ?? []).slice(0, 30).forEach((row, rowIndex) => {
             const displayRow = resultRowsByKey.get(buildRowLookupKey(row)) ?? row;
             const metricCells = buildRankingMetricCells(displayRow, result.scannerScope?.market, populationSize, currencySymbol).join(' | ');

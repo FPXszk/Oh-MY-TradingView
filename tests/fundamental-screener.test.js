@@ -1967,6 +1967,143 @@ describe('runFundamentalScreener', () => {
     });
   });
 
+  it('treats negative TradingView EPS YoY with positive EPS as a turnaround for scoring', async () => {
+    const result = await runFundamentalScreener({
+      limit: 10,
+      _deps: {
+        marketCapMinUsd: 1_000_000_000,
+        fetch: createMockFetch({
+          stockBodies: [],
+          phase1Payload: {
+            totalCount: 1,
+            data: [
+              buildPhase1StockRow('NASDAQ:MSFT', {
+                name: 'Microsoft',
+                sector: 'Technology Services',
+                perf1m: 20,
+                perf3m: 18,
+                perf6m: 35,
+                perfY: 70,
+                rsi: 69,
+                relativeVolume: 1.0,
+                marketCap: 2_500_000_000,
+              }),
+            ],
+          },
+          phase2PayloadsBySector: {
+            'Technology Services': {
+              totalCount: 3,
+              data: [
+                buildPhase2Row('NASDAQ:SNDK', {
+                  name: 'Sandisk',
+                  sector: 'Technology Services',
+                  industry: 'Packaged Software',
+                  close: 100,
+                  rsi: 66,
+                  sma200: 80,
+                  sma50: 90,
+                  high52w: 105,
+                  perf3m: 25,
+                  perf6m: 40,
+                  perfY: 80,
+                  relativeVolume: 1.1,
+                  marketCap: 5_000_000_000,
+                  eps: 23.03,
+                  epsGrowthTtm: -144.5,
+                  roe: 25,
+                  roic: 25,
+                  grossMargin: 60,
+                  grossProfitTtm: 600_000_000,
+                  totalAssets: 2_000_000_000,
+                  operatingMargin: 30,
+                  fcfMargin: 20,
+                  fcfTtm: 400_000_000,
+                  fcfGrowthTtm: 20,
+                  revenueGrowthTtm: 30,
+                  pFcfDirect: 20,
+                  netDebt: 0,
+                  volume: 500_000,
+                }),
+                buildPhase2Row('NASDAQ:GOOD', {
+                  name: 'Good Growth',
+                  sector: 'Technology Services',
+                  industry: 'Packaged Software',
+                  close: 100,
+                  rsi: 66,
+                  sma200: 80,
+                  sma50: 90,
+                  high52w: 105,
+                  perf3m: 25,
+                  perf6m: 40,
+                  perfY: 80,
+                  relativeVolume: 1.1,
+                  marketCap: 5_000_000_000,
+                  eps: 5,
+                  epsGrowthTtm: 45,
+                  roe: 25,
+                  roic: 25,
+                  grossMargin: 60,
+                  grossProfitTtm: 600_000_000,
+                  totalAssets: 2_000_000_000,
+                  operatingMargin: 30,
+                  fcfMargin: 20,
+                  fcfTtm: 400_000_000,
+                  fcfGrowthTtm: 20,
+                  revenueGrowthTtm: 30,
+                  pFcfDirect: 20,
+                  netDebt: 0,
+                  volume: 500_000,
+                }),
+                buildPhase2Row('NASDAQ:LOW', {
+                  name: 'Low Growth',
+                  sector: 'Technology Services',
+                  industry: 'Packaged Software',
+                  close: 100,
+                  rsi: 66,
+                  sma200: 80,
+                  sma50: 90,
+                  high52w: 105,
+                  perf3m: 25,
+                  perf6m: 40,
+                  perfY: 80,
+                  relativeVolume: 1.1,
+                  marketCap: 5_000_000_000,
+                  eps: 4,
+                  epsGrowthTtm: 5,
+                  roe: 25,
+                  roic: 25,
+                  grossMargin: 60,
+                  grossProfitTtm: 600_000_000,
+                  totalAssets: 2_000_000_000,
+                  operatingMargin: 30,
+                  fcfMargin: 20,
+                  fcfTtm: 400_000_000,
+                  fcfGrowthTtm: 20,
+                  revenueGrowthTtm: 30,
+                  pFcfDirect: 20,
+                  netDebt: 0,
+                  volume: 500_000,
+                }),
+              ],
+            },
+          },
+        }),
+      },
+    });
+
+    const sndk = result.results.find((row) => row.symbol === 'SNDK');
+    const good = result.results.find((row) => row.symbol === 'GOOD');
+
+    assert.equal(sndk.epsGrowthTtm, -144.5);
+    assert.equal(sndk.epsGrowthStatus, 'turnaround_to_profit');
+    assert.equal(sndk.epsGrowthDisplay, '黒字転換 (raw -144.5%)');
+    assert.equal(sndk.epsGrowthScoreValue, 120);
+    assert.ok(
+      sndk.rankBreakdown.growth.fields.epsGrowthScoreValue < good.rankBreakdown.growth.fields.epsGrowthScoreValue,
+      'turnaround EPS should outrank ordinary positive EPS growth inside the growth block',
+    );
+  });
+
   it('keeps weak-fundamental momentum names below stronger all-around candidates', async () => {
     const result = await runFundamentalScreener({
       limit: 10,
