@@ -59,18 +59,35 @@
 
 ## Implementation Steps
 
-- [ ] Step 1: static supplement の schema を最小拡張する。
+- [x] Step 1: static supplement の schema を最小拡張する。
   - 確認: existing NBIS 補助との互換性を壊さない。
-- [ ] Step 2: `computeStaticMissingMetricSupplement` / EPS metadata 適用を拡張する。
+- [x] Step 2: `computeStaticMissingMetricSupplement` / EPS metadata 適用を拡張する。
   - 確認: TradingView 欠損時だけ static EPS turnaround が使われる。
-- [ ] Step 3: SEC-backed supplement entries を追加する。
+- [x] Step 3: SEC-backed supplement entries を追加する。
   - 確認: SNDK/GFS/MTSI/MCHP/MCHPP/NBIS が `turnaround_to_profit` になる。
-- [ ] Step 4: focused tests を追加/更新する。
+- [x] Step 4: focused tests を追加/更新する。
   - 確認: core と markdown 表示の両方で `黒字転換` が出る。
-- [ ] Step 5: US screener report を再生成する。
+- [x] Step 5: US screener report を再生成する。
   - 確認: `docs/reports/screener/daily-ranking.md` の SNDK が `N/A%` ではなく `黒字転換` になる。
-- [ ] Step 6: 検証とレビュー。
+- [x] Step 6: 検証とレビュー。
   - 確認: focused tests と `npm run test:unit` が通る。
+
+## Implementation Summary
+
+- `config/screener/us-fundamental-supplements.json` に SEC companyfacts backed の `epsTurnaround` entries を追加した。
+- static supplement は EPS YoY の数値を捏造せず、`epsGrowthStatus`, `epsGrowthDisplay`, `epsGrowthScoreValue`, `epsGrowthSourceDetail` を付与する形にした。
+- TradingView EPS YoY が null の場合でも、SEC で確認済みなら `黒字転換 (SEC previous -> current)` と表示する。
+- `docs/reports/screener/daily-ranking.md` を再生成し、SNDK/GFS/MTSI/MCHP/MCHPP/NBIS の EPS YoY 表示を更新した。
+- MRVL/COHR は SEC same-period comparison が黒字転換ではないため、無理に補完せず N/A のままにした。
+
+## Validation Result
+
+```powershell
+node --test tests/fundamental-screener.test.js tests/daily-screener-report.test.js
+npm run test:unit
+```
+
+Both commands passed. `npm run test:unit` passed with 997 tests.
 
 ## Validation Commands
 

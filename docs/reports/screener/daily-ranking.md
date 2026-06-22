@@ -1,57 +1,57 @@
 # スクリーニング結果 2026/06/23（火）
 
-更新: 00:18 JST
+更新: 01:03 JST
 
-セクター別取得候補 115銘柄 → ユニバース条件通過 79銘柄 → ランキング対象 66銘柄 → レポート掲載 66銘柄
+セクター別取得候補 116銘柄 → ユニバース条件通過 79銘柄 → ランキング対象 67銘柄 → レポート掲載 67銘柄
 
 ## データソース状況
 
 - US FCF補完: 1銘柄 (NBIS)
-- US 指標補完: 6銘柄 / epsGrowthTtm 6, pFcf 2
+- US 指標補完: 6銘柄 / epsGrowthStatus 6
 
 ## Phase1 セクターランキング
 
-- Phase1 ソース候補数: 2652 / reported 4059
+- Phase1 ソース候補数: 2656 / reported 4068
 - 相対強度の基準: AMEX:SPY（SPY）
 - 12M / 6M / 3M はセクター構成銘柄の平均リターンです。
 
 | 順位 | セクター | 平均12M | 平均6M | 平均3M | SPY差12M | SPY差6M | SPY差3M | SMA50上 | SMA200上 | 52w高値90%内 | RSI | 相対出来高 | 構成数 | 順位合計 |
 |:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| 1 | Electronic Technology | 224.5% | 72.4% | 54.2% | 200.0pt | 64.1pt | 39.8pt | 70.1% | 79.3% | 49.7% | 55.4 | 0.25x | 193 | 15 |
-| 2 | Producer Manufacturing | 76.4% | 32.6% | 23.4% | 51.9pt | 24.3pt | 9.0pt | 81.6% | 71.8% | 47.4% | 58.2 | 0.20x | 156 | 29 |
-| 3 | Transportation | 44.0% | 26.3% | 17.3% | 19.5pt | 18.0pt | 2.9pt | 63.7% | 86.3% | 51.9% | 54.0 | 0.26x | 81 | 42 |
-| 4 | Health Services | 23.9% | 22.9% | 42.6% | -0.6pt | 14.6pt | 28.2pt | 68.9% | 61.4% | 37.8% | 55.2 | 0.17x | 45 | 58 |
-| 5 | Health Technology | 92.0% | 14.7% | 18.6% | 67.5pt | 6.4pt | 4.2pt | 63.1% | 64.9% | 31.2% | 55.2 | 0.39x | 260 | 60 |
-| 6 | Industrial Services | 58.7% | 30.8% | 9.2% | 34.2pt | 22.5pt | -5.2pt | 35.5% | 78.7% | 32.3% | 45.5 | 0.19x | 93 | 68 |
-| 7 | Non-Energy Minerals | 95.2% | 14.9% | 16.2% | 70.7pt | 6.6pt | 1.8pt | 41.8% | 57.0% | 20.0% | 51.3 | 0.26x | 80 | 75 |
-| 8 | Process Industries | 33.0% | 18.5% | 9.1% | 8.5pt | 10.2pt | -5.3pt | 54.9% | 75.3% | 26.8% | 50.8 | 0.15x | 82 | 84 |
-| 9 | Distribution Services | 24.9% | 14.9% | 13.2% | 0.4pt | 6.6pt | -1.2pt | 56.1% | 50.0% | 41.5% | 55.6 | 0.17x | 41 | 88 |
-| 10 | Consumer Services | 15.7% | 11.5% | 14.9% | -8.8pt | 3.2pt | 0.5pt | 64.2% | 62.3% | 45.0% | 54.2 | 0.18x | 109 | 91 |
-| 11 | Finance | 12.4% | 4.0% | 9.3% | -12.1pt | -4.3pt | -5.1pt | 56.5% | 52.8% | 57.7% | 52.8 | 0.26x | 749 | 110 |
-| 12 | Utilities | 19.4% | 8.0% | 2.4% | -5.1pt | -0.3pt | -12.0pt | 46.8% | 67.5% | 53.8% | 50.2 | 0.16x | 78 | 113 |
-| 13 | Consumer Durables | 13.7% | -2.0% | 9.6% | -10.8pt | -10.3pt | -4.8pt | 71.4% | 52.7% | 30.4% | 55.4 | 0.16x | 56 | 118 |
-| 14 | Miscellaneous | 26.2% | 10.6% | 7.8% | 1.7pt | 2.3pt | -6.6pt | 19.0% | 40.0% | 27.3% | 43.6 | 0.42x | 22 | 121 |
-| 15 | Technology Services | 16.5% | 1.9% | 18.7% | -8.0pt | -6.4pt | 4.3pt | 40.9% | 35.6% | 13.5% | 45.9 | 0.26x | 267 | 124 |
-| 16 | Energy Minerals | 21.9% | 19.4% | -12.1% | -2.6pt | 11.1pt | -26.5pt | 1.7% | 62.1% | 0.0% | 36.4 | 0.20x | 58 | 125 |
-| 17 | Retail Trade | 19.4% | 0.3% | 7.8% | -5.1pt | -8.0pt | -6.6pt | 61.0% | 49.4% | 26.5% | 52.5 | 0.20x | 83 | 128 |
-| 18 | Communications | 34.9% | 12.1% | 0.4% | 10.4pt | 3.8pt | -14.0pt | 17.9% | 35.7% | 10.3% | 39.1 | 0.25x | 29 | 130 |
-| 19 | Consumer Non-Durables | 3.2% | 2.4% | 4.8% | -21.3pt | -5.9pt | -9.6pt | 52.3% | 51.7% | 22.7% | 49.6 | 0.24x | 88 | 143 |
-| 20 | Commercial Services | 1.1% | -7.6% | 4.5% | -23.4pt | -15.9pt | -9.9pt | 35.4% | 34.2% | 15.9% | 45.8 | 0.19x | 82 | 168 |
+| 1 | Electronic Technology | 225.2% | 72.8% | 54.7% | 200.6pt | 64.4pt | 40.2pt | 71.1% | 79.3% | 50.8% | 55.8 | 0.32x | 193 | 14 |
+| 2 | Producer Manufacturing | 76.9% | 32.9% | 23.7% | 52.3pt | 24.5pt | 9.2pt | 82.9% | 71.8% | 46.8% | 58.5 | 0.26x | 156 | 29 |
+| 3 | Transportation | 44.1% | 26.4% | 17.4% | 19.5pt | 18.0pt | 2.9pt | 62.5% | 86.3% | 51.9% | 54.0 | 0.33x | 81 | 44 |
+| 4 | Health Services | 24.2% | 22.4% | 43.3% | -0.4pt | 14.0pt | 28.8pt | 69.6% | 66.7% | 34.8% | 56.0 | 0.23x | 46 | 53 |
+| 5 | Health Technology | 93.4% | 15.6% | 19.5% | 68.8pt | 7.2pt | 5.0pt | 67.2% | 65.9% | 32.6% | 56.2 | 0.49x | 261 | 55 |
+| 6 | Industrial Services | 59.1% | 31.2% | 9.4% | 34.5pt | 22.8pt | -5.1pt | 34.4% | 78.7% | 33.3% | 46.0 | 0.26x | 93 | 71 |
+| 7 | Non-Energy Minerals | 94.7% | 14.7% | 16.0% | 70.1pt | 6.3pt | 1.5pt | 43.0% | 58.2% | 18.8% | 51.2 | 0.33x | 80 | 78 |
+| 8 | Process Industries | 33.3% | 18.8% | 9.4% | 8.7pt | 10.4pt | -5.1pt | 56.1% | 75.3% | 26.8% | 51.3 | 0.21x | 82 | 81 |
+| 9 | Distribution Services | 25.0% | 15.0% | 13.2% | 0.4pt | 6.6pt | -1.3pt | 56.1% | 52.5% | 41.5% | 55.8 | 0.24x | 41 | 89 |
+| 10 | Consumer Services | 15.8% | 11.5% | 15.0% | -8.8pt | 3.1pt | 0.5pt | 65.1% | 61.3% | 45.0% | 54.3 | 0.23x | 109 | 92 |
+| 11 | Technology Services | 23.5% | 4.8% | 22.0% | -1.1pt | -3.6pt | 7.5pt | 40.0% | 35.9% | 14.2% | 45.7 | 0.34x | 268 | 112 |
+| 12 | Finance | 12.5% | 4.0% | 9.4% | -12.1pt | -4.4pt | -5.1pt | 56.2% | 52.8% | 57.8% | 52.9 | 0.34x | 749 | 113 |
+| 13 | Utilities | 19.2% | 7.8% | 2.2% | -5.4pt | -0.6pt | -12.3pt | 37.7% | 66.2% | 53.8% | 49.4 | 0.23x | 78 | 118 |
+| 14 | Miscellaneous | 26.2% | 10.6% | 7.9% | 1.6pt | 2.2pt | -6.6pt | 19.0% | 40.0% | 27.3% | 43.9 | 0.53x | 22 | 119 |
+| 15 | Consumer Durables | 13.8% | -2.0% | 9.7% | -10.8pt | -10.4pt | -4.8pt | 67.9% | 52.7% | 30.4% | 55.5 | 0.22x | 56 | 121 |
+| 16 | Energy Minerals | 22.2% | 19.7% | -11.9% | -2.4pt | 11.3pt | -26.4pt | 1.7% | 62.1% | 1.7% | 36.7 | 0.27x | 58 | 127 |
+| 17 | Retail Trade | 19.6% | 0.5% | 7.9% | -5.0pt | -7.9pt | -6.6pt | 64.6% | 49.4% | 25.3% | 52.8 | 0.26x | 83 | 129 |
+| 18 | Communications | 33.3% | 10.3% | -0.9% | 8.7pt | 1.9pt | -15.4pt | 17.2% | 34.5% | 10.0% | 38.4 | 0.32x | 30 | 135 |
+| 19 | Consumer Non-Durables | 3.5% | 2.8% | 5.2% | -21.1pt | -5.6pt | -9.3pt | 53.4% | 55.2% | 23.9% | 50.2 | 0.32x | 88 | 143 |
+| 20 | Commercial Services | 1.3% | -7.5% | 4.7% | -23.3pt | -15.9pt | -9.8pt | 36.6% | 34.2% | 14.6% | 46.1 | 0.25x | 82 | 167 |
 
 ## Phase2 中テーマランキング (Electronic Technology)
 
-- 対象: Electronic Technology の通過銘柄 39件
+- 対象: Electronic Technology の通過銘柄 40件
 
 | 順位 | 中テーマ | 通過銘柄数 | 平均3M | 平均総合点 | 主な小テーマ |
 |:---:|:---|---:|---:|---:|:---|
-| 1 | Memory | 5 | 164.8% | 67.30 | NAND / Storage, HBM / DRAM |
-| 2 | Semiconductor Equipment | 3 | 52.5% | 61.90 | Test / Metrology / Inspection |
-| 3 | Connectivity / Networking | 3 | 51.5% | 56.30 | Ethernet Switching / Routing, RF / Mobile Connectivity |
-| 4 | Electronic Components | 2 | 40.3% | 55.80 | Connectors / Interconnect |
-| 5 | AI Compute | 15 | 115.5% | 54.40 | AI Accelerators, AI Servers / Systems, AI Interconnect / CXL / Data Center Fabric |
+| 1 | Memory | 5 | 161.3% | 66.00 | NAND / Storage, HBM / DRAM |
+| 2 | Semiconductor Equipment | 3 | 52.8% | 61.50 | Test / Metrology / Inspection |
+| 3 | Connectivity / Networking | 3 | 51.3% | 56.70 | Ethernet Switching / Routing, RF / Mobile Connectivity |
+| 4 | Electronic Components | 2 | 39.2% | 54.50 | Connectors / Interconnect |
+| 5 | AI Compute | 16 | 109.0% | 54.20 | AI Accelerators, AI Servers / Systems, AI Interconnect / CXL / Data Center Fabric |
 | 6 | Industrial / Power Electronics | 2 | 26.8% | 51.80 | Factory Automation / Motion Control, Power Cooling / Thermal Management |
-| 7 | Optical / Photonics | 3 | 70.8% | 49.40 | Laser / Photonics, Coherent Optics / Fiber |
-| 8 | Defense / Space Electronics | 6 | 24.3% | 48.00 | Drone / Autonomy Electronics, Secure Comms / Sensors |
+| 7 | Optical / Photonics | 3 | 70.8% | 49.50 | Laser / Photonics, Coherent Optics / Fiber |
+| 8 | Defense / Space Electronics | 6 | 24.8% | 47.90 | Drone / Autonomy Electronics, Secure Comms / Sensors |
 
 ## Phase3 小テーマランキング (Electronic Technology)
 
@@ -59,94 +59,95 @@
 
 | 順位 | 中テーマ | 小テーマ | 通過銘柄数 | 平均3M | 平均総合点 |
 |:---:|:---|:---|---:|---:|---:|
-| 1 | Memory | HBM / DRAM | 1 | 197.5% | 70.00 |
-| 2 | AI Compute | AI Interconnect / CXL / Data Center Fabric | 1 | 251.3% | 67.60 |
-| 3 | Memory | NAND / Storage | 4 | 156.7% | 66.70 |
-| 4 | Semiconductor Equipment | Test / Metrology / Inspection | 3 | 52.5% | 61.90 |
-| 5 | Industrial / Power Electronics | Power Cooling / Thermal Management | 1 | 35.5% | 61.20 |
-| 6 | Optical / Photonics | Coherent Optics / Fiber | 1 | 19.9% | 61.00 |
-| 7 | Connectivity / Networking | Ethernet Switching / Routing | 2 | 40.8% | 60.70 |
-| 8 | AI Compute | AI Servers / Systems | 3 | 128.6% | 56.80 |
-| 9 | Electronic Components | Connectors / Interconnect | 2 | 40.3% | 55.80 |
-| 10 | Defense / Space Electronics | Secure Comms / Sensors | 1 | 53.9% | 55.40 |
-| 11 | AI Compute | AI Accelerators | 11 | 99.6% | 52.60 |
-| 12 | Connectivity / Networking | RF / Mobile Connectivity | 1 | 73.0% | 47.40 |
-| 13 | Defense / Space Electronics | Drone / Autonomy Electronics | 5 | 18.4% | 46.50 |
-| 14 | Optical / Photonics | Laser / Photonics | 2 | 96.2% | 43.50 |
-| 15 | Industrial / Power Electronics | Factory Automation / Motion Control | 1 | 18.1% | 42.40 |
+| 1 | Memory | HBM / DRAM | 1 | 193.7% | 67.50 |
+| 2 | Memory | NAND / Storage | 4 | 153.2% | 65.60 |
+| 3 | AI Compute | AI Interconnect / CXL / Data Center Fabric | 1 | 242.4% | 64.10 |
+| 4 | Semiconductor Equipment | Test / Metrology / Inspection | 3 | 52.8% | 61.50 |
+| 5 | Optical / Photonics | Coherent Optics / Fiber | 1 | 20.1% | 61.10 |
+| 6 | Industrial / Power Electronics | Power Cooling / Thermal Management | 1 | 35.4% | 60.50 |
+| 7 | Connectivity / Networking | Ethernet Switching / Routing | 2 | 39.9% | 60.30 |
+| 8 | AI Compute | AI Servers / Systems | 3 | 128.3% | 56.40 |
+| 9 | Defense / Space Electronics | Secure Comms / Sensors | 1 | 55.1% | 55.90 |
+| 10 | Electronic Components | Connectors / Interconnect | 2 | 39.2% | 54.50 |
+| 11 | AI Compute | AI Accelerators | 12 | 93.1% | 52.80 |
+| 12 | Connectivity / Networking | RF / Mobile Connectivity | 1 | 74.0% | 49.30 |
+| 13 | Defense / Space Electronics | Drone / Autonomy Electronics | 5 | 18.8% | 46.30 |
+| 14 | Optical / Photonics | Laser / Photonics | 2 | 96.2% | 43.60 |
+| 15 | Industrial / Power Electronics | Factory Automation / Motion Control | 1 | 18.2% | 43.10 |
 
 ## Phase4 個別銘柄ランキング (採用セクター全体)
 
-- 対象: Electronic Technology, Producer Manufacturing, Transportation, Technology Services の通過銘柄 66件
+- 対象: Electronic Technology, Producer Manufacturing, Transportation, Technology Services の通過銘柄 67件
 
 | 順位 | 中テーマ | 小テーマ | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 (T/F) |
-|:---:|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|
-| 1 | Memory | NAND / Storage | **SNDK** | NASDAQ | $346.3B (XL) | 4877.5% | 854.8% | 237.1% | 99.8% | 35.7% | 43.3% | 33.8% | 82.8% | 116.6 | -144.5% | 82.3 | 6.5% | 71.14 (T41.0/F30.2) |
-| 2 | Memory | NAND / Storage | **STX** | NASDAQ | $248.2B (XL) | 737.5% | 293.2% | 174.8% | 96.7% | 51.7% | 51.4% | 21.9% | 28.9% | 50.8 | 52.2% | 105.1 | 5.6% | 70.95 (T41.1/F29.8) |
-| 3 | Memory | HBM / DRAM | **MU** | NASDAQ | $1.35T (XL) | 872.4% | 329.4% | 197.5% | 99.1% | 33.1% | 33.5% | 17.7% | 85.5% | 103.2 | 409.1% | 132.6 | 6.6% | 69.95 (T40.4/F29.5) |
-| 4 | Memory | NAND / Storage | **WDC** | NASDAQ | $260.8B (XL) | 1163.5% | 322.2% | 156.9% | 94.6% | 63.1% | 35.5% | 24.7% | -18.4% | 6.2 | 218.5% | 100.8 | 6.1% | 68.32 (T39.9/F28.4) |
-| 5 | AI Compute | AI Interconnect / CXL / Data Center Fabric | **ALAB** | NASDAQ | $73.8B (L+) | 324.9% | 154.7% | 251.3% | 97.6% | 20.8% | 45.9% | 34.2% | 104.2% | 138.4 | 532.4% | 227.5 | 7.3% | 67.61 (T35.4/F32.2) |
-| 6 | AI Compute | AI Servers / Systems | **DELL** | NYSE | $278.0B (XL) | 262.4% | 238.5% | 162.1% | 91.3% | 38.1% | 22.3% | 7.0% | 38.9% | 45.9 | 100.6% | 29.8 | 6.5% | 64.58 (T37.1/F27.5) |
-| 7 | Semiconductor Equipment | Test / Metrology / Inspection | **KLAC** | NASDAQ | $347.6B (XL) | 201.1% | 109.6% | 79.2% | 98.6% | 42.5% | 46.5% | 30.7% | 13.4% | 44.1 | 28.6% | 87.4 | 5.5% | 63.71 (T34.0/F29.7) |
-| 8 | Connectivity / Networking | Ethernet Switching / Routing | **ANET** | NYSE | $214.2B (XL) | 87.3% | 29.7% | 26.7% | 94.6% | 31.5% | 28.5% | 54.4% | 30.6% | 84.9 | 23.5% | 41.1 | 4.6% | 62.82 (T26.1/F36.7) |
-| 9 | AI Compute | AI Accelerators | **AMD** | NASDAQ | $891.4B (XL) | 323.8% | 154.3% | 171.4% | 97.1% | 7.6% | 22.1% | 22.9% | 35.0% | 57.9 | 123.3% | 105.2 | 6.0% | 62.70 (T35.8/F26.9) |
-| 10 | Industrial / Power Electronics | Factory Automation / Motion Control | **LRCX** | NASDAQ | $493.0B (XL) | 323.6% | 124.9% | 71.3% | 98.0% | 48.7% | 52.1% | 27.7% | 26.5% | 54.2 | 47.6% | 82.5 | 5.5% | 62.20 (T30.3/F31.9) |
-| 11 | Semiconductor Equipment | Test / Metrology / Inspection | **KEYS** | NYSE | $63.6B (L+) | 131.3% | 81.2% | 30.0% | 99.3% | 13.0% | 33.1% | 22.3% | 19.2% | 41.5 | 42.6% | 47.5 | 3.6% | 61.23 (T31.5/F29.8) |
-| 12 | Industrial / Power Electronics | Power Cooling / Thermal Management | **VRT** | NYSE | $133.3B (L+) | 190.0% | 109.0% | 35.5% | 91.3% | 23.6% | 28.3% | 21.0% | 29.0% | 50.0 | 131.0% | 59.6 | 5.5% | 61.17 (T29.4/F31.7) |
-| 13 | Optical / Photonics | Coherent Optics / Fiber | **AAPL** | NASDAQ | $4.41T (XL) | 51.5% | 10.3% | 19.9% | 94.6% | 75.1% | 58.2% | 28.6% | 12.8% | 41.4 | 29.0% | 34.2 | 2.3% | 60.97 (T24.2/F36.8) |
-| 14 | Semiconductor Equipment | Test / Metrology / Inspection | **TER** | NASDAQ | $69.7B (L+) | 408.7% | 124.2% | 48.3% | 96.9% | 28.2% | 50.0% | 14.6% | 30.3% | 44.9 | 52.9% | 126.8 | 6.3% | 60.61 (T34.2/F26.4) |
-| 15 | AI Compute | AI Accelerators | **TXN** | NASDAQ | $302.5B (XL) | 66.0% | 87.6% | 77.9% | 99.5% | 18.1% | 30.7% | 20.2% | 14.9% | 35.1 | 10.8% | 81.6 | 4.0% | 59.61 (T31.2/F28.5) |
-| 16 | AI Compute | AI Accelerators | **ADI** | NASDAQ | $214.4B (XL) | 89.9% | 58.8% | 41.4% | 99.1% | 8.0% | 15.6% | 35.8% | 29.8% | 65.6 | 83.2% | 47.3 | 4.0% | 59.20 (T28.0/F31.2) |
-| 17 | Connectivity / Networking | Ethernet Switching / Routing | **CSCO** | NASDAQ | $478.4B (XL) | 82.5% | 55.6% | 54.9% | 93.1% | 17.5% | 30.7% | 19.4% | 9.2% | 28.6 | 25.7% | 41.0 | 3.1% | 58.58 (T29.9/F28.6) |
-| 18 | Electronic Components | Connectors / Interconnect | **APH** | NYSE | $204.0B (XL) | 76.1% | 20.9% | 28.9% | 98.3% | 18.7% | 23.3% | 17.9% | 54.4% | 72.3 | 68.6% | 46.2 | 3.7% | 57.86 (T27.8/F30.0) |
-| 19 | AI Compute | AI Interconnect / CXL / Data Center Fabric | **CRDO** | NASDAQ | $56.4B (L+) | 248.6% | 105.6% | 186.9% | 97.9% | 34.0% | 39.5% | 30.5% | 205.7% | 236.2 | 789.8% | 143.1 | 8.2% | 57.14 (T25.1/F32.1) |
-| 20 | Memory | NAND / Storage | **NTAP** | NASDAQ | $31.1B (L) | 53.3% | 44.6% | 58.0% | 82.3% | 32.8% | 45.5% | 27.0% | 5.3% | 32.3 | 11.9% | 16.9 | 4.9% | 56.24 (T22.2/F34.0) |
-| 21 | AI Compute | AI Accelerators | **MRVL** | NASDAQ | $267.9B (XL) | 297.4% | 251.0% | 244.8% | 92.8% | 12.5% | 16.4% | 19.1% | 34.1% | 53.2 | 403.9% | 164.3 | 9.0% | 55.71 (T33.3/F22.4) |
-| 22 | Defense / Space Electronics | Secure Comms / Sensors | **Q** | NYSE | $36.6B (L) | 148.2% | 109.8% | 53.9% | 99.4% | 5.8% | 14.8% | 18.1% | 10.8% | 28.9 | -13.8% | 41.0 | 4.9% | 55.44 (T33.5/F22.0) |
-| 23 | Cybersecurity | Network Security | **FTNT** | NASDAQ | $107.1B (L+) | 44.3% | 81.5% | 77.5% | 97.4% | 99.1% | 57.8% | 34.3% | 15.7% | 50.0 | 6.5% | 44.6 | 3.9% | 55.38 (T19.2/F36.2) |
-| 24 | Industrial / Power Electronics | Factory Automation / Motion Control | **AMAT** | NASDAQ | $497.8B (XL) | 259.4% | 141.0% | 75.1% | 98.0% | 31.2% | 35.3% | 18.4% | 3.4% | 21.8 | 29.5% | 93.8 | 5.1% | 54.77 (T30.9/F23.9) |
-| 25 | AI Compute | AI Servers / Systems | **HPE** | NYSE | $64.6B (L+) | 170.8% | 98.4% | 120.1% | 76.0% | 3.9% | 15.3% | 10.3% | 23.3% | 33.6 | 7.8% | 17.5 | 6.0% | 54.30 (T29.2/F25.1) |
-| 26 | Electronic Components | Connectors / Interconnect | **GLW** | NYSE | $171.8B (L+) | 292.9% | 123.1% | 51.6% | 94.2% | 9.3% | 18.6% | 9.2% | 20.1% | 29.2 | 298.7% | 115.9 | 6.6% | 53.73 (T32.9/F20.8) |
-| 27 | AI Compute | AI Accelerators | **TSEM** | NASDAQ | $33.2B (L) | 632.5% | 143.2% | 71.2% | 98.0% | 8.3% | 10.8% | 19.7% | 10.5% | 30.2 | 19.2% | 106.3 | 6.8% | 52.92 (T31.9/F21.0) |
-| 28 | Defense / Space Electronics | Drone / Autonomy Electronics | **HWM** | NYSE | $111.5B (L+) | 62.3% | 32.3% | 19.2% | 95.9% | 19.5% | 20.9% | 19.2% | 14.2% | 33.5 | 40.6% | 67.8 | 3.3% | 52.23 (T24.5/F27.7) |
-| 29 | AI Compute | AI Servers / Systems | **HPE/PC** | NYSE | $62.8B (L+) | 134.4% | 84.5% | 103.7% | 76.6% | 3.9% | 15.3% | 10.3% | 23.3% | 33.6 | 7.8% | 44.9 | 5.3% | 51.64 (T27.9/F23.8) |
-| 30 | Defense / Space Electronics | Drone / Autonomy Electronics | **GE** | NYSE | $373.5B (XL) | 49.3% | 13.3% | 24.4% | 98.2% | 23.0% | 13.4% | 15.4% | 21.7% | 37.2 | 26.5% | 50.6 | 2.9% | 51.50 (T26.9/F24.6) |
-| 31 | AI Compute | AI Accelerators | **QCOM** | NASDAQ | $240.9B (XL) | 48.2% | 30.6% | 78.1% | 87.9% | 23.9% | 42.7% | 28.1% | 5.2% | 33.3 | -6.4% | 19.6 | 7.3% | 51.05 (T20.8/F30.3) |
-| 32 | AI Compute | AI Accelerators | **GFS** | NASDAQ | $49.4B (L) | 139.4% | 151.0% | 108.0% | 97.4% | 6.0% | 10.6% | 15.7% | 0.8% | 16.5 | N/A% | 47.1 | 5.7% | 50.98 (T30.3/F20.6) |
-| 33 | AI Compute | AI Accelerators | **NXPI** | NASDAQ | $82.3B (L+) | 52.7% | 43.9% | 70.9% | 95.8% | 12.8% | 25.0% | 22.1% | 2.4% | 24.5 | 13.8% | 29.6 | 4.7% | 50.76 (T23.7/F27.1) |
-| 34 | AI Compute | AI Accelerators | **ON** | NASDAQ | $51.1B (L+) | 142.9% | 133.5% | 120.7% | 96.6% | 5.2% | 18.5% | 19.5% | -9.0% | 10.4 | -2.7% | 43.5 | 6.3% | 50.64 (T29.8/F20.8) |
-| 35 | Unclassified | 細粒度タグなし | **CAT** | NYSE | $468.5B (XL) | 180.2% | 74.6% | 46.6% | 99.9% | 20.2% | 23.6% | 11.2% | 11.8% | 23.0 | -2.0% | 60.0 | 3.3% | 49.33 (T27.7/F21.6) |
-| 36 | Connectivity / Networking | RF / Mobile Connectivity | **MTSI** | NASDAQ | $30.0B (L) | 189.9% | 121.1% | 73.0% | 94.0% | 10.4% | 28.8% | 15.6% | 27.0% | 42.7 | -168.2% | 182.1 | 5.5% | 47.42 (T26.2/F21.2) |
-| 37 | Optical / Photonics | Laser / Photonics | **FLEX** | NASDAQ | $55.4B (L+) | 225.3% | 137.7% | 134.3% | 90.7% | 10.1% | 11.6% | 3.8% | 8.1% | 11.9 | 10.4% | 53.8 | 5.8% | 47.12 (T32.0/F15.1) |
-| 38 | Unclassified | 細粒度タグなし | **CMI** | NYSE | $100.4B (L+) | 129.4% | 40.6% | 34.5% | 98.7% | 15.0% | 24.7% | 7.9% | 0.1% | 7.9 | -4.2% | 37.8 | 3.5% | 46.89 (T23.0/F23.9) |
-| 39 | Industrial / Power Electronics | Grid Equipment / Power Conversion | **GEV** | NYSE | $300.3B (XL) | 126.4% | 69.2% | 29.3% | 94.5% | 74.0% | 10.5% | 19.1% | 10.2% | 29.3 | 389.8% | 40.4 | 4.3% | 44.55 (T20.2/F24.3) |
-| 40 | Cybersecurity | Endpoint Security | **PANW** | NASDAQ | $236.3B (XL) | 44.2% | 54.7% | 78.9% | 95.7% | 4.5% | 16.5% | 35.8% | 19.5% | 55.3 | -30.4% | 61.2 | 4.2% | 44.33 (T17.2/F27.1) |
-| 41 | Industrial / Power Electronics | Factory Automation / Motion Control | **ROK** | NYSE | $53.0B (L+) | 46.6% | 19.5% | 33.6% | 99.3% | 17.1% | 36.8% | 15.2% | 10.4% | 25.7 | 21.2% | 40.0 | 2.7% | 44.08 (T18.1/F26.0) |
-| 42 | Industrial / Power Electronics | Factory Automation / Motion Control | **AME** | NYSE | $54.9B (L+) | 33.4% | 14.6% | 14.0% | 98.5% | 12.8% | 18.9% | 22.4% | 9.5% | 31.9 | 8.4% | 32.3 | 2.1% | 44.03 (T13.7/F30.3) |
-| 43 | AI Compute | AI Accelerators | **MCHP** | NASDAQ | $55.8B (L+) | 48.2% | 56.9% | 61.6% | 97.3% | 1.9% | 14.3% | 18.5% | 7.1% | 25.6 | 2300.0% | 64.8 | 5.0% | 43.76 (T24.0/F19.8) |
-| 44 | Defense / Space Electronics | Drone / Autonomy Electronics | **HEI** | NYSE | $39.0B (L) | 6.0% | -2.2% | 19.8% | 91.9% | 11.6% | 21.9% | 18.9% | 18.8% | 37.7 | 30.9% | 50.6 | 3.1% | 43.65 (T15.7/F28.0) |
-| 45 | Industrial / Power Electronics | Power Cooling / Thermal Management | **TT** | NYSE | $107.3B (L+) | 15.0% | 23.7% | 15.5% | 96.4% | 24.5% | 34.1% | 14.9% | 6.4% | 21.3 | 7.6% | 33.6 | 2.8% | 42.97 (T13.4/F29.6) |
-| 46 | Defense / Space Electronics | Drone / Autonomy Electronics | **TDG** | NYSE | $72.7B (L+) | -8.5% | -0.9% | 13.4% | 80.0% | 9.2% | 21.5% | 19.5% | 13.3% | 32.7 | 8.2% | 40.9 | 2.9% | 42.94 (T13.7/F29.2) |
-| 47 | Industrial / Power Electronics | Factory Automation / Motion Control | **EMR** | NYSE | $84.5B (L+) | 16.5% | 11.3% | 18.1% | 91.3% | 8.7% | 20.9% | 17.0% | 4.0% | 21.0 | 3.4% | 27.3 | 2.8% | 42.36 (T17.5/F24.9) |
-| 48 | Defense / Space Electronics | Drone / Autonomy Electronics | **HEI.A** | NYSE | $39.0B (L) | -1.7% | -6.9% | 15.1% | 87.4% | 11.6% | 21.9% | 18.9% | 18.8% | 37.7 | 30.9% | 37.2 | 3.4% | 42.24 (T13.1/F29.2) |
-| 49 | Cloud Software | Data Infrastructure Software | **DDOG** | NASDAQ | $78.8B (L+) | 68.9% | 58.5% | 72.5% | 79.4% | 2.9% | 42.2% | 28.9% | 29.5% | 58.4 | -18.8% | 76.1 | 5.6% | 42.18 (T14.3/F27.9) |
-| 50 | AI Compute | AI Cloud / Neocloud | **NBIS** | NASDAQ | $71.8B (L+) | 486.2% | 216.1% | 145.5% | 95.1% | 7.5% | 0.3% | -53.9% | 443.9% | 390.1 | 114.9% | 25.1 | 8.3% | 41.94 (T25.5/F16.4) |
-| 51 | Cloud Software | Cloud Platforms | **CDNS** | NASDAQ | $105.5B (L+) | 27.6% | 21.1% | 32.1% | 91.8% | 14.2% | 38.9% | 25.9% | 13.4% | 39.3 | 8.5% | 73.2 | 4.1% | 41.64 (T9.0/F32.6) |
-| 52 | Unclassified | 細粒度タグなし | **WAB** | NYSE | $47.1B (L) | 38.1% | 26.4% | 16.1% | 99.8% | 8.0% | 15.8% | 13.1% | 9.6% | 22.7 | 10.7% | 31.5 | 2.4% | 41.36 (T16.4/F25.0) |
-| 53 | AI Compute | AI Accelerators | **MCHPP** | NASDAQ | $54.1B (L+) | 35.3% | 43.0% | 49.9% | 97.5% | 1.9% | 14.3% | 18.5% | 7.1% | 25.6 | N/A% | 53.9 | 3.9% | 41.12 (T21.7/F19.4) |
-| 54 | Industrial / Power Electronics | Grid Equipment / Power Conversion | **ETN** | NYSE | $167.1B (L+) | 28.2% | 33.1% | 19.6% | 98.8% | 12.1% | 19.1% | 13.2% | 12.7% | 25.9 | 3.3% | 44.4 | 3.5% | 40.97 (T18.1/F22.9) |
-| 55 | Optical / Photonics | Laser / Photonics | **COHR** | NYSE | $78.9B (L+) | 384.6% | 109.0% | 58.0% | 91.7% | 3.6% | 14.5% | -8.2% | 18.0% | 9.8 | 71.7% | 562.5 | 8.4% | 39.97 (T27.3/F12.6) |
-| 56 | Industrial / Power Electronics | Factory Automation / Motion Control | **JBL** | NYSE | $39.2B (L) | 81.1% | 57.7% | 40.5% | 86.6% | 19.9% | 14.9% | 3.9% | 17.8% | 21.7 | 55.9% | 30.3 | 5.3% | 38.21 (T15.8/F22.4) |
-| 57 | Unclassified | 細粒度タグなし | **DAL** | NYSE | $56.1B (L+) | 78.7% | 21.2% | 33.5% | 97.8% | 12.6% | 13.1% | 6.0% | 5.2% | 11.3 | 21.4% | 14.2 | 3.3% | 38.02 (T16.7/F21.3) |
-| 58 | Unclassified | 細粒度タグなし | **ODFL** | NASDAQ | $45.4B (L) | 38.7% | 37.4% | 18.1% | 86.5% | 23.2% | 30.4% | 18.7% | -4.8% | 13.9 | -10.3% | 44.9 | 4.3% | 36.71 (T8.8/F27.9) |
-| 59 | Unclassified | 細粒度タグなし | **FDX** | NYSE | $78.7B (L+) | 81.7% | 39.1% | 16.0% | 95.5% | 7.0% | 21.4% | 4.8% | 4.7% | 9.4 | 18.0% | 18.0 | 2.8% | 35.17 (T14.6/F20.5) |
-| 60 | Unclassified | 細粒度タグなし | **CNI** | NYSE | $69.6B (L+) | 11.9% | 16.3% | 15.1% | 93.7% | 11.3% | 13.0% | 20.7% | 3.9% | 24.6 | 10.1% | 27.3 | 2.0% | 34.91 (T7.7/F27.2) |
-| 61 | Unclassified | 細粒度タグなし | **CSX** | NASDAQ | $85.8B (L+) | 42.4% | 26.3% | 19.5% | 96.2% | 9.6% | 11.1% | 13.5% | -0.9% | 12.5 | -2.6% | 45.2 | 2.1% | 33.36 (T12.9/F20.5) |
-| 62 | Industrial / Power Electronics | Industrial Electrification | **JCI** | NYSE | $89.1B (L+) | 40.8% | 20.5% | 10.8% | 97.8% | 8.7% | 23.3% | 5.6% | -0.6% | 5.0 | 49.1% | 65.6 | 3.1% | 33.27 (T13.8/F19.5) |
-| 63 | Unclassified | 細粒度タグなし | **MMM** | NYSE | $85.0B (L+) | 13.7% | 1.8% | 12.4% | 91.9% | 17.6% | 27.9% | 8.2% | 2.1% | 10.3 | -34.5% | 42.2 | 2.5% | 30.77 (T8.2/F22.6) |
-| 64 | Industrial / Power Electronics | Factory Automation / Motion Control | **CARR** | NYSE | $59.6B (L+) | 1.9% | 34.0% | 24.9% | 88.5% | 5.2% | 14.8% | 7.7% | -5.1% | 2.6 | -65.1% | 35.9 | 3.4% | 30.09 (T11.0/F19.1) |
-| 65 | Unclassified | 細粒度タグなし | **UAL** | NASDAQ | $38.6B (L) | 59.8% | 4.9% | 29.9% | 95.2% | 8.6% | 21.4% | 5.3% | 4.7% | 10.0 | 2.2% | 12.1 | 4.3% | 28.89 (T11.9/F17.0) |
-| 66 | Unclassified | 細粒度タグなし | **UPS** | NYSE | $91.7B (L+) | 8.2% | 7.7% | 11.2% | 88.2% | 12.8% | 22.6% | 5.1% | -2.6% | 2.5 | -9.9% | 20.3 | 2.9% | 25.15 (T5.7/F19.4) |
+|:---:|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|:---|---:|---:|---:|
+| 1 | Memory | NAND / Storage | **SNDK** | NASDAQ | $340.6B (XL) | 4795.2% | 839.1% | 231.5% | 97.7% | 35.7% | 43.3% | 33.8% | 82.8% | 116.6 | 黒字転換 (SEC -11.16 -> 29.42) | 81.0 | 6.7% | 70.60 (T38.7/F31.9) |
+| 2 | Memory | NAND / Storage | **STX** | NASDAQ | $242.4B (XL) | 717.7% | 283.9% | 168.3% | 94.4% | 51.7% | 51.4% | 21.9% | 28.9% | 50.8 | 52.2% | 102.6 | 5.7% | 68.31 (T39.8/F28.5) |
+| 3 | Memory | HBM / DRAM | **MU** | NASDAQ | $1.33T (XL) | 860.0% | 324.0% | 193.7% | 97.8% | 33.1% | 33.5% | 17.7% | 85.5% | 103.2 | 409.1% | 130.9 | 6.7% | 67.55 (T39.2/F28.3) |
+| 4 | Memory | NAND / Storage | **WDC** | NASDAQ | $258.5B (XL) | 1152.3% | 318.4% | 154.6% | 93.8% | 63.1% | 35.5% | 24.7% | -18.4% | 6.2 | 218.5% | 99.9 | 6.1% | 66.97 (T39.8/F27.2) |
+| 5 | AI Compute | AI Interconnect / CXL / Data Center Fabric | **ALAB** | NASDAQ | $71.9B (L+) | 314.2% | 148.3% | 242.4% | 95.2% | 20.8% | 45.9% | 34.2% | 104.2% | 138.4 | 532.4% | 221.7 | 7.5% | 64.12 (T33.2/F31.0) |
+| 6 | AI Compute | AI Servers / Systems | **DELL** | NYSE | $275.5B (XL) | 259.2% | 235.5% | 159.8% | 90.5% | 38.1% | 22.3% | 7.0% | 38.9% | 45.9 | 100.6% | 29.5 | 6.6% | 63.51 (T36.8/F26.7) |
+| 7 | Semiconductor Equipment | Test / Metrology / Inspection | **KLAC** | NASDAQ | $348.9B (XL) | 202.2% | 110.4% | 79.9% | 99.0% | 42.5% | 46.5% | 30.7% | 13.4% | 44.1 | 28.6% | 87.7 | 5.5% | 63.06 (T34.5/F28.6) |
+| 8 | Industrial / Power Electronics | Factory Automation / Motion Control | **LRCX** | NASDAQ | $496.1B (XL) | 326.4% | 126.4% | 72.4% | 98.7% | 48.7% | 52.1% | 27.7% | 26.5% | 54.2 | 47.6% | 83.1 | 5.5% | 62.10 (T31.3/F30.8) |
+| 9 | AI Compute | AI Accelerators | **AMD** | NASDAQ | $886.6B (XL) | 321.5% | 152.9% | 170.0% | 96.6% | 7.6% | 22.1% | 22.9% | 35.0% | 57.9 | 123.3% | 104.6 | 6.0% | 61.90 (T36.0/F25.9) |
+| 10 | Connectivity / Networking | Ethernet Switching / Routing | **ANET** | NYSE | $212.8B (XL) | 86.0% | 28.9% | 25.9% | 94.0% | 31.5% | 28.5% | 54.4% | 30.6% | 84.9 | 23.5% | 40.8 | 4.6% | 61.82 (T26.2/F35.6) |
+| 11 | Optical / Photonics | Coherent Optics / Fiber | **AAPL** | NASDAQ | $4.42T (XL) | 51.7% | 10.4% | 20.1% | 94.8% | 75.1% | 58.2% | 28.6% | 12.8% | 41.4 | 29.0% | 34.3 | 2.3% | 61.09 (T24.3/F36.8) |
+| 12 | Semiconductor Equipment | Test / Metrology / Inspection | **TER** | NASDAQ | $70.1B (L+) | 412.0% | 125.6% | 49.3% | 97.5% | 28.2% | 50.0% | 14.6% | 30.3% | 44.9 | 52.9% | 127.6 | 6.3% | 60.88 (T35.1/F25.7) |
+| 13 | Semiconductor Equipment | Test / Metrology / Inspection | **KEYS** | NYSE | $63.3B (L+) | 130.1% | 80.3% | 29.3% | 98.8% | 13.0% | 33.1% | 22.3% | 19.2% | 41.5 | 42.6% | 47.3 | 3.6% | 60.70 (T31.1/F29.6) |
+| 14 | Industrial / Power Electronics | Power Cooling / Thermal Management | **VRT** | NYSE | $133.1B (L+) | 189.7% | 108.8% | 35.4% | 91.2% | 23.6% | 28.3% | 21.0% | 29.0% | 50.0 | 131.0% | 59.6 | 5.5% | 60.45 (T29.7/F30.7) |
+| 15 | AI Compute | AI Accelerators | **ADI** | NASDAQ | $216.1B (XL) | 91.5% | 60.1% | 42.6% | 99.9% | 8.0% | 15.6% | 35.8% | 29.8% | 65.6 | 83.2% | 47.7 | 4.0% | 59.10 (T28.9/F30.2) |
+| 16 | AI Compute | AI Accelerators | **TXN** | NASDAQ | $302.1B (XL) | 65.6% | 87.2% | 77.5% | 99.4% | 18.1% | 30.7% | 20.2% | 14.9% | 35.1 | 10.8% | 81.5 | 4.0% | 58.97 (T31.0/F27.9) |
+| 17 | Connectivity / Networking | Ethernet Switching / Routing | **CSCO** | NASDAQ | $475.6B (XL) | 81.5% | 54.7% | 54.0% | 92.6% | 17.5% | 30.7% | 19.4% | 9.2% | 28.6 | 25.7% | 40.8 | 3.1% | 58.84 (T29.9/F28.9) |
+| 18 | Memory | NAND / Storage | **NTAP** | NASDAQ | $31.2B (L) | 53.8% | 45.1% | 58.5% | 82.6% | 32.8% | 45.5% | 27.0% | 5.3% | 32.3 | 11.9% | 17.0 | 4.8% | 56.61 (T22.6/F34.0) |
+| 19 | Electronic Components | Connectors / Interconnect | **APH** | NYSE | $202.8B (XL) | 75.1% | 20.2% | 28.2% | 97.7% | 18.7% | 23.3% | 17.9% | 54.4% | 72.3 | 68.6% | 45.9 | 3.8% | 56.07 (T27.4/F28.7) |
+| 20 | Defense / Space Electronics | Secure Comms / Sensors | **Q** | NYSE | $36.9B (L) | 150.1% | 111.5% | 55.1% | 100.1% | 5.8% | 14.8% | 18.1% | 10.8% | 28.9 | -13.8% | 41.3 | 4.8% | 55.91 (T34.3/F21.6) |
+| 21 | Industrial / Power Electronics | Factory Automation / Motion Control | **AMAT** | NASDAQ | $498.6B (XL) | 259.9% | 141.3% | 75.3% | 98.2% | 31.2% | 35.3% | 18.4% | 3.4% | 21.8 | 29.5% | 93.9 | 5.1% | 55.12 (T31.1/F24.0) |
+| 22 | AI Compute | AI Interconnect / CXL / Data Center Fabric | **CRDO** | NASDAQ | $55.2B (L+) | 241.2% | 101.2% | 180.7% | 95.8% | 34.0% | 39.5% | 30.5% | 205.7% | 236.2 | 789.8% | 140.0 | 8.3% | 54.36 (T23.6/F30.7) |
+| 23 | Cybersecurity | Network Security | **FTNT** | NASDAQ | $106.3B (L+) | 43.3% | 80.3% | 76.3% | 96.7% | 99.1% | 57.8% | 34.3% | 15.7% | 50.0 | 6.5% | 44.3 | 4.0% | 54.25 (T18.8/F35.5) |
+| 24 | AI Compute | AI Servers / Systems | **HPE** | NYSE | $64.5B (L+) | 170.1% | 97.9% | 119.5% | 75.8% | 3.9% | 15.3% | 10.3% | 23.3% | 33.6 | 7.8% | 17.5 | 6.0% | 53.94 (T29.3/F24.6) |
+| 25 | AI Compute | AI Accelerators | **NVDA** | NASDAQ | $5.09T (XL) | 44.5% | 11.8% | 20.2% | 88.9% | 106.2% | 72.4% | 41.8% | 70.7% | 112.5 | 110.3% | 48.3 | 3.5% | 53.90 (T16.9/F37.0) |
+| 26 | AI Compute | AI Accelerators | **TSEM** | NASDAQ | $33.4B (L) | 637.0% | 144.6% | 72.3% | 98.5% | 8.3% | 10.8% | 19.7% | 10.5% | 30.2 | 19.2% | 106.9 | 6.8% | 53.48 (T32.6/F20.8) |
+| 27 | AI Compute | AI Accelerators | **MRVL** | NASDAQ | $265.5B (XL) | 293.8% | 247.8% | 241.6% | 92.0% | 12.5% | 16.4% | 19.1% | 34.1% | 53.2 | N/A% | 162.8 | 9.1% | 53.19 (T33.1/F20.1) |
+| 28 | Electronic Components | Connectors / Interconnect | **GLW** | NYSE | $170.1B (L+) | 289.1% | 120.9% | 50.1% | 93.3% | 9.3% | 18.6% | 9.2% | 20.1% | 29.2 | 298.7% | 114.8 | 6.7% | 53.00 (T32.8/F20.2) |
+| 29 | AI Compute | AI Accelerators | **ON** | NASDAQ | $51.6B (L+) | 145.5% | 136.0% | 123.1% | 97.6% | 5.2% | 18.5% | 19.5% | -9.0% | 10.4 | -2.7% | 43.9 | 6.3% | 52.64 (T30.9/F21.7) |
+| 30 | Defense / Space Electronics | Drone / Autonomy Electronics | **HWM** | NYSE | $111.5B (L+) | 62.3% | 32.3% | 19.3% | 95.9% | 19.5% | 20.9% | 19.2% | 14.2% | 33.5 | 40.6% | 67.8 | 3.3% | 52.28 (T24.9/F27.3) |
+| 31 | AI Compute | AI Accelerators | **GFS** | NASDAQ | $49.4B (L) | 139.4% | 151.0% | 108.1% | 97.4% | 6.0% | 10.6% | 15.7% | 0.8% | 16.5 | 黒字転換 (SEC -0.48 -> 1.59) | 47.1 | 5.7% | 52.12 (T30.7/F21.4) |
+| 32 | AI Compute | AI Accelerators | **NXPI** | NASDAQ | $82.3B (L+) | 52.8% | 44.0% | 71.1% | 95.9% | 12.8% | 25.0% | 22.1% | 2.4% | 24.5 | 13.8% | 29.7 | 4.7% | 52.01 (T24.3/F27.7) |
+| 33 | AI Compute | AI Servers / Systems | **HPE/PC** | NYSE | $62.8B (L+) | 136.6% | 86.2% | 105.5% | 77.3% | 3.9% | 15.3% | 10.3% | 23.3% | 33.6 | 7.8% | 45.4 | 5.2% | 51.67 (T28.0/F23.7) |
+| 34 | Defense / Space Electronics | Drone / Autonomy Electronics | **GE** | NYSE | $374.6B (XL) | 49.8% | 13.6% | 24.8% | 98.5% | 23.0% | 13.4% | 15.4% | 21.7% | 37.2 | 26.5% | 50.8 | 2.8% | 51.31 (T27.4/F23.9) |
+| 35 | AI Compute | AI Accelerators | **QCOM** | NASDAQ | $242.9B (XL) | 49.4% | 31.7% | 79.6% | 88.7% | 23.9% | 42.7% | 28.1% | 5.2% | 33.3 | -6.4% | 19.8 | 7.2% | 50.82 (T21.2/F29.7) |
+| 36 | Unclassified | 細粒度タグなし | **CAT** | NYSE | $467.9B (XL) | 179.9% | 74.3% | 46.4% | 99.7% | 20.2% | 23.6% | 11.2% | 11.8% | 23.0 | -2.0% | 59.9 | 3.3% | 49.49 (T27.6/F21.9) |
+| 37 | Connectivity / Networking | RF / Mobile Connectivity | **MTSI** | NASDAQ | $30.2B (L) | 191.5% | 122.3% | 74.0% | 94.5% | 10.4% | 28.8% | 15.6% | 27.0% | 42.7 | 黒字転換 (SEC -1.85 -> 1.23) | 183.1 | 5.4% | 49.30 (T27.2/F22.1) |
+| 38 | Unclassified | 細粒度タグなし | **CMI** | NYSE | $100.6B (L+) | 129.8% | 40.8% | 34.8% | 98.8% | 15.0% | 24.7% | 7.9% | 0.1% | 7.9 | -4.2% | 37.9 | 3.5% | 48.03 (T23.3/F24.7) |
+| 39 | Optical / Photonics | Laser / Photonics | **FLEX** | NASDAQ | $55.5B (L+) | 225.6% | 137.9% | 134.5% | 90.7% | 10.1% | 11.6% | 3.8% | 8.1% | 11.9 | 10.4% | 53.8 | 5.8% | 47.49 (T32.3/F15.2) |
+| 40 | Industrial / Power Electronics | Grid Equipment / Power Conversion | **GEV** | NYSE | $301.1B (XL) | 127.0% | 69.6% | 29.7% | 94.8% | 74.0% | 10.5% | 19.1% | 10.2% | 29.3 | 389.8% | 40.5 | 4.2% | 45.49 (T21.1/F24.4) |
+| 41 | Industrial / Power Electronics | Factory Automation / Motion Control | **ROK** | NYSE | $53.0B (L+) | 46.7% | 19.6% | 33.7% | 99.3% | 17.1% | 36.8% | 15.2% | 10.4% | 25.7 | 21.2% | 40.1 | 2.7% | 44.85 (T18.3/F26.6) |
+| 42 | Defense / Space Electronics | Drone / Autonomy Electronics | **HEI** | NYSE | $39.2B (L) | 6.6% | -1.6% | 20.5% | 92.4% | 11.6% | 21.9% | 18.9% | 18.8% | 37.7 | 30.9% | 50.9 | 3.1% | 44.18 (T16.3/F27.8) |
+| 43 | Industrial / Power Electronics | Factory Automation / Motion Control | **AME** | NYSE | $54.9B (L+) | 33.3% | 14.5% | 13.9% | 98.4% | 12.8% | 18.9% | 22.4% | 9.5% | 31.9 | 8.4% | 32.3 | 2.1% | 44.01 (T13.6/F30.4) |
+| 44 | Cybersecurity | Endpoint Security | **PANW** | NASDAQ | $235.3B (XL) | 43.6% | 54.0% | 78.1% | 95.3% | 4.5% | 16.5% | 35.8% | 19.5% | 55.3 | -30.4% | 61.0 | 4.2% | 43.72 (T17.3/F26.4) |
+| 45 | AI Compute | AI Accelerators | **MCHP** | NASDAQ | $55.8B (L+) | 48.1% | 56.8% | 61.5% | 97.2% | 1.9% | 14.3% | 18.5% | 7.1% | 25.6 | 黒字転換 (SEC -0.01 -> 0.22) | 64.8 | 5.0% | 43.63 (T24.1/F19.5) |
+| 46 | Industrial / Power Electronics | Power Cooling / Thermal Management | **TT** | NYSE | $107.4B (L+) | 15.2% | 23.8% | 15.6% | 96.5% | 24.5% | 34.1% | 14.9% | 6.4% | 21.3 | 7.6% | 33.6 | 2.7% | 43.37 (T13.8/F29.6) |
+| 47 | Industrial / Power Electronics | Factory Automation / Motion Control | **EMR** | NYSE | $84.5B (L+) | 16.6% | 11.4% | 18.2% | 91.4% | 8.7% | 20.9% | 17.0% | 4.0% | 21.0 | 3.4% | 27.3 | 2.8% | 43.13 (T17.8/F25.3) |
+| 48 | Defense / Space Electronics | Drone / Autonomy Electronics | **TDG** | NYSE | $72.9B (L+) | -8.2% | -0.6% | 13.8% | 80.3% | 9.2% | 21.5% | 19.5% | 13.3% | 32.7 | 8.2% | 41.0 | 2.9% | 42.54 (T13.7/F28.8) |
+| 49 | AI Compute | AI Accelerators | **MCHPP** | NASDAQ | $54.1B (L+) | 35.2% | 42.9% | 49.8% | 97.4% | 1.9% | 14.3% | 18.5% | 7.1% | 25.6 | 黒字転換 (SEC -0.01 -> 0.22) | 53.9 | 3.9% | 41.76 (T21.6/F20.2) |
+| 50 | Defense / Space Electronics | Drone / Autonomy Electronics | **HEI.A** | NYSE | $39.2B (L) | -1.3% | -6.6% | 15.6% | 87.8% | 11.6% | 21.9% | 18.9% | 18.8% | 37.7 | 30.9% | 37.4 | 3.4% | 41.33 (T12.9/F28.4) |
+| 51 | Unclassified | 細粒度タグなし | **WAB** | NYSE | $47.2B (L) | 38.1% | 26.5% | 16.2% | 99.6% | 8.0% | 15.8% | 13.1% | 9.6% | 22.7 | 10.7% | 31.5 | 2.5% | 41.28 (T16.3/F25.0) |
+| 52 | Cloud Software | Data Infrastructure Software | **DDOG** | NASDAQ | $78.9B (L+) | 69.0% | 58.6% | 72.7% | 79.5% | 2.9% | 42.2% | 28.9% | 29.5% | 58.4 | -18.8% | 76.2 | 5.6% | 41.24 (T14.4/F26.8) |
+| 53 | Cloud Software | Cloud Platforms | **CDNS** | NASDAQ | $105.7B (L+) | 27.9% | 21.3% | 32.3% | 91.9% | 14.2% | 38.9% | 25.9% | 13.4% | 39.3 | 8.5% | 73.3 | 4.1% | 41.18 (T9.3/F31.9) |
+| 54 | Industrial / Power Electronics | Grid Equipment / Power Conversion | **ETN** | NYSE | $167.4B (L+) | 28.4% | 33.3% | 19.9% | 99.0% | 12.1% | 19.1% | 13.2% | 12.7% | 25.9 | 3.3% | 44.4 | 3.5% | 41.09 (T18.4/F22.7) |
+| 55 | Optical / Photonics | Laser / Photonics | **COHR** | NYSE | $78.8B (L+) | 384.0% | 108.8% | 57.8% | 91.6% | 3.6% | 14.5% | -8.2% | 18.0% | 9.8 | N/A% | N/A | 8.4% | 39.79 (T27.2/F12.6) |
+| 56 | Unclassified | 細粒度タグなし | **DAL** | NYSE | $56.3B (L+) | 79.2% | 21.5% | 33.9% | 98.0% | 12.6% | 13.1% | 6.0% | 5.2% | 11.3 | 21.4% | 14.2 | 3.3% | 39.42 (T17.5/F21.9) |
+| 57 | AI Compute | AI Cloud / Neocloud | **NBIS** | NASDAQ | $71.1B (L+) | 480.5% | 213.0% | 143.1% | 94.2% | 7.5% | 0.3% | -53.9% | 443.9% | 390.1 | 黒字転換 (SEC -2.28 -> 0.33) | N/A | 8.5% | 39.28 (T25.3/F14.0) |
+| 58 | Industrial / Power Electronics | Factory Automation / Motion Control | **JBL** | NYSE | $39.2B (L) | 81.0% | 57.6% | 40.4% | 86.5% | 19.9% | 14.9% | 3.9% | 17.8% | 21.7 | 55.9% | 30.3 | 5.3% | 38.60 (T15.8/F22.8) |
+| 59 | Unclassified | 細粒度タグなし | **ODFL** | NASDAQ | $45.7B (L) | 39.8% | 38.5% | 19.0% | 87.2% | 23.2% | 30.4% | 18.7% | -4.8% | 13.9 | -10.3% | 45.2 | 4.2% | 37.64 (T9.0/F28.7) |
+| 60 | Unclassified | 細粒度タグなし | **FDX** | NYSE | $78.8B (L+) | 81.9% | 39.3% | 16.1% | 95.6% | 7.0% | 21.4% | 4.8% | 4.7% | 9.4 | 18.0% | 18.1 | 2.8% | 36.48 (T15.2/F21.2) |
+| 61 | Unclassified | 細粒度タグなし | **CNI** | NYSE | $69.5B (L+) | 11.8% | 16.1% | 14.9% | 93.6% | 11.3% | 13.0% | 20.7% | 3.9% | 24.6 | 10.1% | 27.3 | 2.0% | 35.34 (T8.0/F27.4) |
+| 62 | Unclassified | 細粒度タグなし | **CSX** | NASDAQ | $85.8B (L+) | 42.3% | 26.2% | 19.4% | 96.1% | 9.6% | 11.1% | 13.5% | -0.9% | 12.5 | -2.6% | 45.1 | 2.2% | 34.67 (T13.3/F21.4) |
+| 63 | Industrial / Power Electronics | Industrial Electrification | **JCI** | NYSE | $89.1B (L+) | 40.8% | 20.4% | 10.7% | 97.7% | 8.7% | 23.3% | 5.6% | -0.6% | 5.0 | 49.1% | 65.6 | 3.1% | 34.27 (T14.3/F20.0) |
+| 64 | Unclassified | 細粒度タグなし | **MMM** | NYSE | $85.2B (L+) | 13.9% | 2.0% | 12.6% | 92.0% | 17.6% | 27.9% | 8.2% | 2.1% | 10.3 | -34.5% | 42.2 | 2.5% | 31.54 (T8.3/F23.2) |
+| 65 | Industrial / Power Electronics | Factory Automation / Motion Control | **CARR** | NYSE | $60.0B (L+) | 2.6% | 34.9% | 25.8% | 89.1% | 5.2% | 14.8% | 7.7% | -5.1% | 2.6 | -65.1% | 36.1 | 3.4% | 31.27 (T11.2/F20.1) |
+| 66 | Unclassified | 細粒度タグなし | **UAL** | NASDAQ | $38.7B (L) | 60.4% | 5.3% | 30.4% | 95.6% | 8.6% | 21.4% | 5.3% | 4.7% | 10.0 | 2.2% | 12.2 | 4.3% | 29.96 (T12.6/F17.4) |
+| 67 | Unclassified | 細粒度タグなし | **UPS** | NYSE | $92.1B (L+) | 8.6% | 8.1% | 11.6% | 88.5% | 12.8% | 22.6% | 5.1% | -2.6% | 2.5 | -9.9% | 20.4 | 2.9% | 25.73 (T5.5/F20.2) |
 
 ---
 
@@ -182,7 +183,7 @@
 | FCF | FCF margin = フリーキャッシュフロー ÷ 売上 | 売上がどれだけ現金として残るか |
 | 売上YoY | 売上高の前年比成長率 | 事業成長の確認 |
 | Rule40 | 売上YoY + FCF margin | 主に US software 系の成長と収益性をまとめて確認 |
-| EPS YoY | EPS の前年比成長率 | 利益成長の確認。TradingView 欠損時は補助データで補完、なければ N/A |
+| EPS YoY | EPS の前年比成長率 | 利益成長の確認。赤字分母由来の黒字転換は強調表示し、TradingView raw 値は併記する |
 | P/FCF | 株価 ÷ FCF の倍率 | 低いほど割高感が小さい傾向 |
 | ATR% | ATR ÷ 株価 × 100 | 値動きの荒さ。高いほどボラティリティが高い |
 | 総合点 (T/F) | repo 独自の総合スコア | 高いほど良い。T はテクニカル寄り、F はファンダ寄り |

@@ -608,8 +608,26 @@ function computeFcfSupplementMetrics(entry, row) {
 
 function computeStaticMissingMetricSupplement(entry) {
   const metrics = entry?.metricSupplement ?? {};
+  const epsTurnaround = metrics.epsTurnaround ?? null;
   return {
     earningsGrowthPct: normalizeMetric(metrics.epsGrowthTtm ?? metrics.earningsGrowthPct),
+    epsGrowthStatus: epsTurnaround?.status ?? null,
+    epsGrowthDisplay: epsTurnaround?.status === 'turnaround_to_profit'
+      ? `黒字転換 (SEC ${epsTurnaround.previousEps} -> ${epsTurnaround.currentEps})`
+      : null,
+    epsGrowthScoreValue: epsTurnaround?.status === 'turnaround_to_profit'
+      ? EPS_TURNAROUND_SCORE
+      : null,
+    epsGrowthSourceDetail: epsTurnaround
+      ? {
+        source: epsTurnaround.source ?? metrics.source ?? entry?.source ?? null,
+        fact: epsTurnaround.fact ?? null,
+        currentPeriod: epsTurnaround.currentPeriod ?? null,
+        previousPeriod: epsTurnaround.previousPeriod ?? null,
+        currentEps: epsTurnaround.currentEps ?? null,
+        previousEps: epsTurnaround.previousEps ?? null,
+      }
+      : null,
     pFcf: normalizePositiveRatio(metrics.pFcf ?? metrics.pcfTtm),
     atrPct: normalizeMetric(metrics.atrPct),
     beta1y: normalizeMetric(metrics.beta1y ?? metrics.beta),
@@ -1276,6 +1294,19 @@ function applyUsMissingMetricSupplement(row, metrics = {}, source = 'supplementa
     merged.epsGrowthTtm = metrics.earningsGrowthPct;
     fields.push('epsGrowthTtm');
   }
+  if (
+    merged.epsGrowthTtm === null
+    && metrics.epsGrowthStatus === 'turnaround_to_profit'
+    && metrics.epsGrowthDisplay
+    && metrics.epsGrowthScoreValue !== null
+    && metrics.epsGrowthScoreValue !== undefined
+  ) {
+    merged.epsGrowthStatus = metrics.epsGrowthStatus;
+    merged.epsGrowthDisplay = metrics.epsGrowthDisplay;
+    merged.epsGrowthScoreValue = metrics.epsGrowthScoreValue;
+    merged.epsGrowthSourceDetail = metrics.epsGrowthSourceDetail ?? null;
+    fields.push('epsGrowthStatus');
+  }
   if (merged.pFcf === null && metrics.pFcf !== null && metrics.pFcf !== undefined && metrics.pFcf > 0) {
     merged.pFcf = metrics.pFcf;
     fields.push('pFcf');
@@ -1298,10 +1329,11 @@ function applyUsMissingMetricSupplement(row, metrics = {}, source = 'supplementa
   }
 
   if (fields.length === 0) return row;
-  return applyEpsGrowthMeta({
+  const supplemented = {
     ...merged,
     missingMetricSupplement: mergeMissingMetricSupplement(row, source, fields),
-  });
+  };
+  return fields.includes('epsGrowthStatus') ? supplemented : applyEpsGrowthMeta(supplemented);
 }
 
 function buildMissingMetricSupplementMeta(rows) {

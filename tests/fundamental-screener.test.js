@@ -2104,6 +2104,90 @@ describe('runFundamentalScreener', () => {
     );
   });
 
+  it('uses SEC-backed static supplements to label EPS turnarounds when TradingView EPS YoY is missing', async () => {
+    const result = await runFundamentalScreener({
+      limit: 10,
+      _deps: {
+        marketCapMinUsd: 1_000_000_000,
+        fetch: createMockFetch({
+          stockBodies: [],
+          phase1Payload: {
+            totalCount: 1,
+            data: [
+              buildPhase1StockRow('NASDAQ:NVDA', {
+                name: 'Nvidia',
+                sector: 'Electronic Technology',
+                perf1m: 20,
+                perf3m: 18,
+                perf6m: 35,
+                perfY: 70,
+                rsi: 69,
+                relativeVolume: 1.0,
+                marketCap: 2_500_000_000,
+              }),
+            ],
+          },
+          phase2PayloadsBySector: {
+            'Electronic Technology': {
+              totalCount: 1,
+              data: [
+                buildPhase2Row('NASDAQ:SNDK', {
+                  name: 'Sandisk',
+                  sector: 'Electronic Technology',
+                  industry: 'Semiconductors',
+                  close: 100,
+                  rsi: 66,
+                  sma200: 80,
+                  sma50: 90,
+                  high52w: 105,
+                  perf3m: 25,
+                  perf6m: 40,
+                  perfY: 80,
+                  relativeVolume: 1.1,
+                  marketCap: 5_000_000_000,
+                  eps: 28.76,
+                  epsGrowthTtm: null,
+                  roe: 25,
+                  roic: 25,
+                  grossMargin: 60,
+                  grossProfitTtm: 600_000_000,
+                  totalAssets: 2_000_000_000,
+                  operatingMargin: 30,
+                  fcfMargin: 20,
+                  fcfTtm: 400_000_000,
+                  fcfGrowthTtm: 20,
+                  revenueGrowthTtm: 30,
+                  pFcfDirect: 20,
+                  netDebt: 0,
+                  volume: 500_000,
+                }),
+              ],
+            },
+          },
+        }),
+      },
+    });
+
+    const sndk = result.results.find((row) => row.symbol === 'SNDK');
+
+    assert.equal(sndk.epsGrowthTtm, null);
+    assert.equal(sndk.epsGrowthStatus, 'turnaround_to_profit');
+    assert.equal(sndk.epsGrowthDisplay, '黒字転換 (SEC -11.16 -> 29.42)');
+    assert.equal(sndk.epsGrowthScoreValue, 120);
+    assert.deepEqual(sndk.epsGrowthSourceDetail, {
+      source: 'sec-companyfacts',
+      fact: 'us-gaap:EarningsPerShareDiluted',
+      currentPeriod: 'FY2026 Q3',
+      previousPeriod: 'FY2025 Q3',
+      currentEps: 29.42,
+      previousEps: -11.16,
+    });
+    assert.deepEqual(sndk.missingMetricSupplement, {
+      sources: ['sec-companyfacts-cik-0002023554'],
+      fields: ['epsGrowthStatus'],
+    });
+  });
+
   it('keeps weak-fundamental momentum names below stronger all-around candidates', async () => {
     const result = await runFundamentalScreener({
       limit: 10,

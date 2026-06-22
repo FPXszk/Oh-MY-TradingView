@@ -1,6 +1,96 @@
 {
   "version": "us-fundamental-supplements-v1",
   "symbols": {
+    "SNDK": {
+      "source": "sec-companyfacts-cik-0002023554",
+      "sourceUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0002023554.json",
+      "period": "FY2026 Q3",
+      "metricSupplement": {
+        "source": "sec-companyfacts-cik-0002023554",
+        "epsTurnaround": {
+          "status": "turnaround_to_profit",
+          "fact": "us-gaap:EarningsPerShareDiluted",
+          "currentPeriod": "FY2026 Q3",
+          "previousPeriod": "FY2025 Q3",
+          "currentEps": 29.42,
+          "previousEps": -11.16,
+          "source": "sec-companyfacts"
+        },
+        "notes": "TradingView EPS YoY can be null or misleading for Sandisk after the spin-off/re-listing. SEC companyfacts shows diluted EPS turned positive year over year for the same fiscal quarter."
+      }
+    },
+    "GFS": {
+      "source": "sec-companyfacts-cik-0001709048",
+      "sourceUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001709048.json",
+      "period": "FY2025",
+      "metricSupplement": {
+        "source": "sec-companyfacts-cik-0001709048",
+        "epsTurnaround": {
+          "status": "turnaround_to_profit",
+          "fact": "ifrs-full:DilutedEarningsLossPerShare",
+          "currentPeriod": "FY2025",
+          "previousPeriod": "FY2024",
+          "currentEps": 1.59,
+          "previousEps": -0.48,
+          "source": "sec-companyfacts"
+        },
+        "notes": "GFS reports IFRS facts in SEC companyfacts; diluted EPS moved from negative to positive on the latest annual same-period comparison."
+      }
+    },
+    "MTSI": {
+      "source": "sec-companyfacts-cik-0001493594",
+      "sourceUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001493594.json",
+      "period": "FY2026 Q2",
+      "metricSupplement": {
+        "source": "sec-companyfacts-cik-0001493594",
+        "epsTurnaround": {
+          "status": "turnaround_to_profit",
+          "fact": "us-gaap:EarningsPerShareDiluted",
+          "currentPeriod": "FY2026 Q2",
+          "previousPeriod": "FY2025 Q2",
+          "currentEps": 1.23,
+          "previousEps": -1.85,
+          "source": "sec-companyfacts"
+        },
+        "notes": "SEC companyfacts shows diluted EPS turned positive year over year for the same fiscal quarter."
+      }
+    },
+    "MCHP": {
+      "source": "sec-companyfacts-cik-0000827054",
+      "sourceUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000827054.json",
+      "period": "FY2026",
+      "metricSupplement": {
+        "source": "sec-companyfacts-cik-0000827054",
+        "epsTurnaround": {
+          "status": "turnaround_to_profit",
+          "fact": "us-gaap:EarningsPerShareDiluted",
+          "currentPeriod": "FY2026",
+          "previousPeriod": "FY2025",
+          "currentEps": 0.22,
+          "previousEps": -0.01,
+          "source": "sec-companyfacts"
+        },
+        "notes": "SEC companyfacts shows diluted EPS turned slightly positive year over year on the latest annual same-period comparison."
+      }
+    },
+    "MCHPP": {
+      "source": "sec-companyfacts-cik-0000827054",
+      "sourceUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000827054.json",
+      "period": "FY2026",
+      "metricSupplement": {
+        "source": "sec-companyfacts-cik-0000827054",
+        "epsTurnaround": {
+          "status": "turnaround_to_profit",
+          "fact": "us-gaap:EarningsPerShareDiluted",
+          "currentPeriod": "FY2026",
+          "previousPeriod": "FY2025",
+          "currentEps": 0.22,
+          "previousEps": -0.01,
+          "source": "sec-companyfacts"
+        },
+        "notes": "MCHPP maps to Microchip Technology company fundamentals; SEC companyfacts shows diluted EPS turned slightly positive year over year."
+      }
+    },
     "NBIS": {
       "source": "nebius-q1-2026-earnings-release",
       "sourceUrl": "https://www.eqs-news.com/news/corporate/nebius-reports-first-quarter-2026-financial-results/c781662c-959a-4553-8738-762a5fcf0c88_en",
@@ -14,6 +104,15 @@
         "epsGrowthTtm": null,
         "pFcf": null,
         "source": "nebius-q1-2026-earnings-release",
+        "epsTurnaround": {
+          "status": "turnaround_to_profit",
+          "fact": "us-gaap:EarningsPerShareDiluted",
+          "currentPeriod": "FY2025",
+          "previousPeriod": "FY2024",
+          "currentEps": 0.33,
+          "previousEps": -2.28,
+          "source": "sec-companyfacts"
+        },
         "notes": "EPS YoY is not numerically supplemented because the official YoY income change is not meaningful; P/FCF remains null while FCF is negative."
       },
       "notes": "Quarterly official data. FCF is computed as operating cash flow plus capex purchases; not a TTM TradingView replacement."
