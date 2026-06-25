@@ -745,6 +745,7 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| 2 \| Memory \| HBM \/ DRAM \| 1 \| 26\.1% \| 80\.40 \|/);
     assert.match(markdown, /\| 3 \| Semiconductor Equipment \| Test \/ Metrology \/ Inspection \| 1 \| 23\.4% \| 74\.10 \|/);
     assert.match(markdown, /## Phase4 個別銘柄ランキング \(採用セクター全体\)/);
+    assert.match(markdown, /\| 順位 \| 中テーマ \| 小テーマ \| シンボル \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCFマージン \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \(T\/F\) \|/);
     assert.match(markdown, /- 対象: 採用セクター の通過銘柄 6件/);
     assert.match(markdown, /\| 1 \| Cloud Software \| Cloud Platforms \| \*\*AAA\*\* \| NASDAQ \| \$12\.3B \(L\) \|/);
     assert.match(markdown, /\| 2 \| Cloud Software \| Data Infrastructure Software \| \*\*BBB\*\* \| NASDAQ \| \$9\.8B \(M\+\) \|/);
@@ -790,6 +791,7 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| 列名 \| 意味 \| 見方 \|/);
     assert.match(markdown, /\| 12M \| 過去12か月の株価騰落率 \(Perf\.Y\) \| 長期モメンタム。高いほど 1 年で強い \|/);
     assert.match(markdown, /\| 52w \| 現在株価が 52 週高値の何%位置か \| 100% に近いほど 52 週高値圏 \|/);
+    assert.match(markdown, /\| FCFマージン \| フリーキャッシュフロー ÷ 売上 \| 売上がどれだけ現金として残るか \|/);
     assert.match(markdown, /\| EPS YoY \| EPS の前年比成長率 \| 利益成長の確認。赤字分母由来の黒字転換は強調表示し、TradingView raw 値は併記する \|/);
     assert.match(markdown, /\| 総合点 \(T\/F\) \| repo 独自の総合スコア \| 高いほど良い。T はテクニカル寄り、F はファンダ寄り \|/);
 
@@ -1089,7 +1091,7 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /- Phase3 掲載小テーマ: Electronic Components \/ Passives \/ RF Modules/);
     assert.doesNotMatch(markdown, /## Phase2 セクター別ランキング/);
     assert.doesNotMatch(markdown, /## 上位3件の選定理由/);
-    assert.match(markdown, /\| 順位 \| 中テーマ \| 小テーマ \| シンボル \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCF \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \(T\/F\) \|/);
+    assert.match(markdown, /\| 順位 \| 中テーマ \| 小テーマ \| シンボル \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCFマージン \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \(T\/F\) \|/);
     assert.match(markdown, /\| 補助ポリシー \| 日本株ファンダ補完 \| TradingView を主軸にしつつ、FCF \/ PFCF \/ cash-conversion の欠損は EDINET 公式開示で補完する \|/);
     assert.match(markdown, /2\.4% \| 4\.00 \(T1\.9\/F2\.1\) \|/);
     assert.match(markdown, /\| ユニバース \| 取引所 \| TSE \|/);
