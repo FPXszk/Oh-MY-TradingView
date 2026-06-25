@@ -941,3 +941,53 @@
 - このプロジェクトにどう活かしたか: SBI証券本体よりも、CSVインポートまたはAPI提供が明確な証券会社の併用が現実的という比較材料にした。
 - 採用したもの: kabuステーションAPI、moomoo OpenAPI、IBKR、サクソバンクなど公式API提供事例を比較表に反映した。
 - 採用しなかったもの: 楽天ウェブサービスAPIを楽天証券口座APIとして扱うこと。
+
+---
+
+## 94：TradingView Stock Heatmap
+
+- URL: https://www.tradingview.com/heatmap/stock/
+- 参考にした理由: Stock Heatmapの実画面で、S&P 500がsector単位にグループ化されることと表示ラベルを確認するため。
+- このプロジェクトにどう活かしたか: Phase1/Phase2とHeatmapの大セクター分類を比較する一次UIとして利用した。
+- 採用したもの: HeatmapのGroup by Sector表示とS&P 500 dataset。
+- 採用しなかったもの: canvas上の目視ラベルだけを機械比較の正本にすること。
+
+---
+
+## 95：TradingView Heatmap公式ガイド
+
+- URL: https://www.tradingview.com/support/solutions/43000766446-tradingview-heatmaps-from-global-trends-to-details/
+- 参考にした理由: Stock Heatmapが株式をsectorでグループ化する公式仕様を確認するため。
+- このプロジェクトにどう活かしたか: Heatmapのgrouping factorがsectorであることの公式根拠として調査レポートに使用した。
+- 採用したもの: Stocks are grouped by sectorという公式仕様。
+- 採用しなかったもの: Heatmapの構成銘柄やパフォーマンス値をPhase1と同一とみなすこと。
+
+---
+
+## 96：TradingView Sector & Industry分類
+
+- URL: https://www.tradingview.com/support/solutions/43000724300-sector-industry/
+- 参考にした理由: TradingViewのsector/industry名称がどの分類モデルに基づくか確認するため。
+- このプロジェクトにどう活かしたか: TradingView分類がFactSet Industries and Economic Sectorsモデルであり、主な売上事業を基準にすることを明記した。
+- 採用したもの: FactSet階層分類をTradingView scanner/Heatmap sectorの定義元とする判断。
+- 採用しなかったもの: TradingViewの20セクターをGICS 11セクターとして扱うこと。
+
+---
+
+## 97：TradingView米国株セクター一覧
+
+- URL: https://www.tradingview.com/markets/stocks-usa/sectorandindustry-sector/
+- 参考にした理由: TradingView公式UIが公開する米国株の大セクター一覧を取得するため。
+- このプロジェクトにどう活かしたか: scanner、Phase2 profile、Heatmap responseの20セクター集合との完全一致確認に使用した。
+- 採用したもの: 公式ページに表示される20セクター名称。
+- 採用しなかったもの: ページ上の時価総額や銘柄数をPhase1のユニバース集計値として転用すること。
+
+---
+
+## 98：TradingView Heatmap bundleとscanner response
+
+- URL: https://static.tradingview.com/static/bundles/market_heatmap.3048d74bc435ceb63f0b.js , https://scanner.tradingview.com/america/scan?label-product=heatmap-stock
+- 参考にした理由: Heatmapのsector groupingがUI専用分類か、scannerと同じフィールドかをnetwork/実装レベルで確認するため。
+- このプロジェクトにどう活かしたか: `groupKeys: ["sector"]`、`translatedKeys: ["sector.tr"]`、S&P 500 symbolset `SYML:SP;SPX`を確認し、scanner responseからHeatmapの20セクターを機械抽出した。
+- 採用したもの: Heatmap整合性の調査・回帰確認にscanner POSTを使う方法。
+- 採用しなかったもの: 非公開endpointやbundle hashを永続的に安定した公開APIとして扱うこと。

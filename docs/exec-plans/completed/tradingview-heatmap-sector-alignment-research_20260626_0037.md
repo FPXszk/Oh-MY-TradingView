@@ -38,14 +38,14 @@
 
 ## Steps
 
-- [ ] Phase1のsector取得・集計・選択経路をコードとテストから確定する。
-- [ ] scanner APIを実行し、米国株で返るsector/industry一覧を抽出する。
-- [ ] Phase2プロファイル一覧を抽出し、Phase1一覧との差分を計算する。
-- [ ] TradingView Stock Heatmapをブラウザで開き、表示セクターとnetwork/configを調査する。
-- [ ] Heatmap分類の由来についてTradingView公式資料を確認する。
-- [ ] scanner一覧とHeatmap一覧を比較し、一致度を判定する。
-- [ ] レポート・参照台帳・manifestを更新する。
-- [ ] 文書・layoutテストを実行し、計画をcompletedへ移動してcommit/pushする。
+- [x] Phase1のsector取得・集計・選択経路をコードとテストから確定する。
+- [x] scanner APIを実行し、米国株で返るsector/industry一覧を抽出する。
+- [x] Phase2プロファイル一覧を抽出し、Phase1一覧との差分を計算する。
+- [x] TradingView Stock Heatmapをブラウザで開き、表示セクターとnetwork/configを調査する。
+- [x] Heatmap分類の由来についてTradingView公式資料を確認する。
+- [x] scanner一覧とHeatmap一覧を比較し、一致度を判定する。
+- [x] レポート・参照台帳・manifestを更新する。
+- [x] 文書・layoutテストを実行し、計画をcompletedへ移動してcommit/pushする。
 
 ## Success Criteria
 
@@ -68,3 +68,15 @@ git diff --check
 - Heatmapは動的UIであり、表示ラベルが遅延ロードや認証状態で変わる可能性がある。
 - network endpointは非公開仕様で変更され得るため、再現可能な取得方法と安定性を分けて評価する。
 - scanner APIのsector一覧は対象市場・銘柄タイプ・取得rangeに依存するため、米国株全体を十分に覆うrangeで確認する。
+
+## Result
+
+- Phase1はTradingView scanner raw `sector`をそのまま集計していた。
+- Phase1実データは20セクター、Phase2 unique scopeも20セクターで差分なし。
+- S&P 500 Stock Heatmapのscanner responseも同じ20セクターだった。
+- Heatmap bundleは`groupKeys: ["sector"]`、`translatedKeys: ["sector.tr"]`を使用していた。
+- TradingView公式資料から、分類元はFactSet Industries and Economic Sectorsモデルと確認した。
+- 判定は完全一致。分類ロジックの変更は不要。
+- `docs/research/tradingview-heatmap-sector-alignment.md`へ詳細を記録した。
+- `tests/archive-latest-policy.test.js` 4件、`npm run test:unit` 1001件が成功した。
+- `tests/repo-layout.test.js`はrepoに存在しないため、実在するarchive policy testと全unit testsで検証した。
