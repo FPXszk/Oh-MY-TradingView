@@ -1838,6 +1838,7 @@ describe('runFundamentalScreener', () => {
           },
           QCOM: {
             source: 'sec-companyfacts-cik-0000804328',
+            pFcf: 12.5,
             epsGrowthStatus: 'turnaround_to_profit',
             epsGrowthDisplay: '黒字転換 (SEC -0.2 -> 0.4)',
             epsGrowthSourceDetail: {
@@ -1948,8 +1949,8 @@ describe('runFundamentalScreener', () => {
                   eps: 7,
                   roe: 22,
                   grossMargin: 56,
-                  fcfMargin: 26,
-                  fcfTtm: null,
+                  fcfMargin: -5,
+                  fcfTtm: -100_000_000,
                   revenueGrowthTtm: 14,
                   pFcfDirect: null,
                   netDebt: -5_000_000,

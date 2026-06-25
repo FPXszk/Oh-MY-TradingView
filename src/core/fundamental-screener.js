@@ -1306,7 +1306,13 @@ function applyUsMissingMetricSupplement(row, metrics = {}, source = 'supplementa
     merged.epsGrowthSourceDetail = metrics.epsGrowthSourceDetail ?? null;
     fields.push('epsGrowthStatus');
   }
-  if (merged.pFcf === null && metrics.pFcf !== null && metrics.pFcf !== undefined && metrics.pFcf > 0) {
+  if (
+    merged.pFcf === null
+    && (merged.fcfTtm === null || merged.fcfTtm === undefined || merged.fcfTtm > 0)
+    && metrics.pFcf !== null
+    && metrics.pFcf !== undefined
+    && metrics.pFcf > 0
+  ) {
     merged.pFcf = metrics.pFcf;
     fields.push('pFcf');
   }
