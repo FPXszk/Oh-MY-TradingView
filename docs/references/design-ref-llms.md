@@ -991,3 +991,93 @@
 - このプロジェクトにどう活かしたか: `groupKeys: ["sector"]`、`translatedKeys: ["sector.tr"]`、S&P 500 symbolset `SYML:SP;SPX`を確認し、scanner responseからHeatmapの20セクターを機械抽出した。
 - 採用したもの: Heatmap整合性の調査・回帰確認にscanner POSTを使う方法。
 - 採用しなかったもの: 非公開endpointやbundle hashを永続的に安定した公開APIとして扱うこと。
+
+---
+
+## 99：TradingView scanner industry snapshot
+
+- URL: https://scanner.tradingview.com/america/scan
+- 参考にした理由: america marketのNASDAQ/NYSE、時価総額10億ドル超のsector -> industry集合を取得するため。
+- このプロジェクトにどう活かしたか: `config/screener/tradingview-sector-industry-snapshot-us.json`へ20 sectors、126 industries、2,661 stocksの時点snapshotを保存した。
+- 採用したもの: raw `sector`と`industry`を公式分類レイヤーの正本候補にすること。
+- 採用しなかったもの: 取得時の銘柄数を固定マスターとして扱うこと。
+
+---
+
+## 100：FactSet RBICS
+
+- URL: https://insight.factset.com/resources/factset-revere-business-industry-classifications-datafeed , https://www.factset.com/marketplace/catalog/product/factset-rbics
+- 参考にした理由: TradingViewが利用するFactSet Industries and Economic Sectorsと、FactSetの詳細分類RBICSを区別するため。
+- このプロジェクトにどう活かしたか: RBICSは多層・製品サービスベースの有力な補助候補だが、TradingView scanner industryと同一とは確認できないと整理した。
+- 採用したもの: RBICSをPhase4 custom themeの将来の外部検証候補にする判断。
+- 採用しなかったもの: TradingView industryをRBICS由来と断定すること。
+
+---
+
+## 101：MSCI GICS
+
+- URL: https://www.msci.com/indexes/index-resources/gics
+- 参考にした理由: GICSの4階層構造とprincipal business基準をTradingView分類と比較するため。
+- このプロジェクトにどう活かしたか: GICSは企業比較用の補助属性として有用だが、TradingViewの20 sectorsとは体系が異なるため移行しないと判断した。
+- 採用したもの: 比較・監査用referenceとしての利用。
+- 採用しなかったもの: Phase1からPhase4の正本をGICSへ移行すること。
+
+---
+
+## 102：FTSE Russell ICB
+
+- URL: https://www.lseg.com/en/ftse-russell/industry-classification-benchmark-icb , https://www.lseg.com/content/dam/ftse-russell/en_us/documents/ground-rules/icb-ground-rules.pdf
+- 参考にした理由: ICBのrules-basedな4階層分類をTradingView分類と比較するため。
+- このプロジェクトにどう活かしたか: ICBは公式industry benchmarkだが、TradingView sector/industryと名称・階層が異なるため補助参照に留めた。
+- 採用したもの: 外部分類比較表への掲載。
+- 採用しなかったもの: repo taxonomyのICB移行。
+
+---
+
+## 103：NAICSとSEC SIC
+
+- URL: https://www.census.gov/naics , https://www.sec.gov/search-filings/standard-industrial-classification-sic-code-list
+- 参考にした理由: 政府統計分類とEDGAR分類がPhase3/4の投資テーマに適するか判断するため。
+- このプロジェクトにどう活かしたか: NAICSは生産工程・事業所統計、SICは会社typeとSEC審査担当の補助属性であり、テーマ正本には不適と整理した。
+- 採用したもの: SEC/company照合時の補助属性としての位置付け。
+- 採用しなかったもの: AI、memory、photonics等のtheme分類への転用。
+
+---
+
+## 104：Morningstar thematic indexes
+
+- URL: https://indexes.morningstar.com/api/docs/6930bbb552940c1af4c7052f , https://indexes.morningstar.com/api/docs/68b03893c34d5aa87630dc53
+- 参考にした理由: analyst thematic exposureとfund consensusがcustom themeの外部根拠になるか確認するため。
+- このプロジェクトにどう活かしたか: MorningstarをPhase4 custom themeの高品質な外部検証候補とした。
+- 採用したもの: thematic exposure/referenceとしての利用。
+- 採用しなかったもの: proprietaryなscoreや構成銘柄をrepo正本として無断複製すること。
+
+---
+
+## 105：MSCI thematic indexes
+
+- URL: https://www.msci.com/indexes/category/thematic-indexes , https://www.msci.com/indexes/documents/methodology/2_MSCI_Thematic_Relevance_Score_Methodology_20220519.pdf
+- 参考にした理由: business linkageとrelevance scoreによるテーマ分類を確認するため。
+- このプロジェクトにどう活かしたか: industryを越えるcustom themeのexternal evidence候補として評価した。
+- 採用したもの: theme relevanceという考え方。
+- 採用しなかったもの: MSCI thematic taxonomyをPhase3 official industryの代替にすること。
+
+---
+
+## 106：Nasdaq thematic indexes
+
+- URL: https://indexes.nasdaq.com/docs/NQROBO%20Thematic%20Revenue%20Overview%20%E2%80%93%20April%202024.pdf , https://indexes.nasdaq.com/Index/Overview/NDWTR
+- 参考にした理由: Nasdaqのテーマ指数が銘柄・売上・partner methodologyをどう使うか確認するため。
+- このプロジェクトにどう活かしたか: 個別テーマの補助参照として利用し、統一taxonomyとしては扱わないと整理した。
+- 採用したもの: 該当テーマごとのmethodology/constituent確認。
+- 採用しなかったもの: Nasdaq thematic family全体を単一のindustry分類とみなすこと。
+
+---
+
+## 107：S&P Kensho New Economies
+
+- URL: https://www.spglobal.com/spdji/en/index-family/equity/kensho-new-economies/ , https://www.spglobal.com/spdji/en/documents/methodologies/methodology-sp-kensho-indices.pdf
+- 参考にした理由: filings等のNLPを用いる技術テーマ分類がPhase4の根拠として使えるか確認するため。
+- このプロジェクトにどう活かしたか: defense、space、automation等のcustom themeを検証する有力な外部referenceとした。
+- 採用したもの: rules-based thematic evidenceとしての参照。
+- 採用しなかったもの: Kensho taxonomyをTradingView industryの代替正本にすること。

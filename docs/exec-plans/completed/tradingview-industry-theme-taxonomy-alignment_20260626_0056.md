@@ -42,15 +42,15 @@
 
 ## Steps
 
-- [ ] current taxonomy JSONとclassification call chainを整理する。
-- [ ] scoring priorityとclassification basisを全ruleについて抽出する。
-- [ ] TradingView scannerからsector/industry snapshotを取得・保存する。
-- [ ] Heatmapのsector drill-downとnetwork responseを調査する。
-- [ ] custom themeとTradingView industryの対応・confidence・推奨actionを作る。
-- [ ] 外部分類候補を一次資料中心に比較する。
-- [ ] 2つのresearch文書、snapshot JSON、reference ledger、manifestを更新する。
-- [ ] JSON/文書/layout/full testsを実行する。
-- [ ] 計画をcompletedへ移動し、commit/pushする。
+- [x] current taxonomy JSONとclassification call chainを整理する。
+- [x] scoring priorityとclassification basisを全ruleについて抽出する。
+- [x] TradingView scannerからsector/industry snapshotを取得・保存する。
+- [x] Heatmapのsector drill-downとnetwork responseを調査する。
+- [x] custom themeとTradingView industryの対応・confidence・推奨actionを作る。
+- [x] 外部分類候補を一次資料中心に比較する。
+- [x] 2つのresearch文書、snapshot JSON、reference ledger、manifestを更新する。
+- [x] JSON/文書/layout/full testsを実行する。
+- [x] 計画をcompletedへ移動し、commit/pushする。
 
 ## Success Criteria
 

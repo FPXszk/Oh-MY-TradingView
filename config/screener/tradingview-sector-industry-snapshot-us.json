@@ -1,0 +1,273 @@
+{
+  "version": "tradingview-us-sector-industry-snapshot-20260626",
+  "source": {
+    "provider": "TradingView scanner",
+    "endpoint": "https://scanner.tradingview.com/america/scan",
+    "retrieved_at": "2026-06-25T15:57:25.640Z",
+    "market": "america",
+    "filters": {
+      "types": [
+        "stock"
+      ],
+      "market_cap_basic_greater_than": 1000000000,
+      "exchanges": [
+        "NASDAQ",
+        "NYSE"
+      ]
+    },
+    "raw_total_count": 4030,
+    "scoped_stock_count": 2661
+  },
+  "summary": {
+    "sector_count": 20,
+    "industry_count": 126
+  },
+  "sectors": [
+    {
+      "sector": "Commercial Services",
+      "stock_count": 81,
+      "industries": [
+        { "industry": "Advertising/Marketing Services", "stock_count": 4 },
+        { "industry": "Commercial Printing/Forms", "stock_count": 4 },
+        { "industry": "Financial Publishing/Services", "stock_count": 8 },
+        { "industry": "Miscellaneous Commercial Services", "stock_count": 61 },
+        { "industry": "Personnel Services", "stock_count": 4 }
+      ]
+    },
+    {
+      "sector": "Communications",
+      "stock_count": 31,
+      "industries": [
+        { "industry": "Major Telecommunications", "stock_count": 9 },
+        { "industry": "Specialty Telecommunications", "stock_count": 5 },
+        { "industry": "Wireless Telecommunications", "stock_count": 17 }
+      ]
+    },
+    {
+      "sector": "Consumer Durables",
+      "stock_count": 56,
+      "industries": [
+        { "industry": "Automotive Aftermarket", "stock_count": 4 },
+        { "industry": "Electronics/Appliances", "stock_count": 6 },
+        { "industry": "Home Furnishings", "stock_count": 6 },
+        { "industry": "Homebuilding", "stock_count": 17 },
+        { "industry": "Motor Vehicles", "stock_count": 12 },
+        { "industry": "Recreational Products", "stock_count": 8 },
+        { "industry": "Tools & Hardware", "stock_count": 3 }
+      ]
+    },
+    {
+      "sector": "Consumer Non-Durables",
+      "stock_count": 88,
+      "industries": [
+        { "industry": "Apparel/Footwear", "stock_count": 21 },
+        { "industry": "Beverages: Alcoholic", "stock_count": 6 },
+        { "industry": "Beverages: Non-Alcoholic", "stock_count": 8 },
+        { "industry": "Consumer Sundries", "stock_count": 2 },
+        { "industry": "Food: Major Diversified", "stock_count": 5 },
+        { "industry": "Food: Meat/Fish/Dairy", "stock_count": 5 },
+        { "industry": "Food: Specialty/Candy", "stock_count": 25 },
+        { "industry": "Household/Personal Care", "stock_count": 13 },
+        { "industry": "Tobacco", "stock_count": 3 }
+      ]
+    },
+    {
+      "sector": "Consumer Services",
+      "stock_count": 110,
+      "industries": [
+        { "industry": "Broadcasting", "stock_count": 5 },
+        { "industry": "Cable/Satellite TV", "stock_count": 5 },
+        { "industry": "Casinos/Gaming", "stock_count": 10 },
+        { "industry": "Hotels/Resorts/Cruise lines", "stock_count": 16 },
+        { "industry": "Media Conglomerates", "stock_count": 1 },
+        { "industry": "Movies/Entertainment", "stock_count": 20 },
+        { "industry": "Other Consumer Services", "stock_count": 23 },
+        { "industry": "Publishing: Books/Magazines", "stock_count": 2 },
+        { "industry": "Publishing: Newspapers", "stock_count": 4 },
+        { "industry": "Restaurants", "stock_count": 24 }
+      ]
+    },
+    {
+      "sector": "Distribution Services",
+      "stock_count": 41,
+      "industries": [
+        { "industry": "Electronics Distributors", "stock_count": 5 },
+        { "industry": "Food Distributors", "stock_count": 5 },
+        { "industry": "Medical Distributors", "stock_count": 5 },
+        { "industry": "Wholesale Distributors", "stock_count": 26 }
+      ]
+    },
+    {
+      "sector": "Electronic Technology",
+      "stock_count": 192,
+      "industries": [
+        { "industry": "Aerospace & Defense", "stock_count": 51 },
+        { "industry": "Computer Communications", "stock_count": 1 },
+        { "industry": "Computer Peripherals", "stock_count": 9 },
+        { "industry": "Computer Processing Hardware", "stock_count": 13 },
+        { "industry": "Electronic Components", "stock_count": 11 },
+        { "industry": "Electronic Equipment/Instruments", "stock_count": 20 },
+        { "industry": "Electronic Production Equipment", "stock_count": 18 },
+        { "industry": "Semiconductors", "stock_count": 56 },
+        { "industry": "Telecommunications Equipment", "stock_count": 13 }
+      ]
+    },
+    {
+      "sector": "Energy Minerals",
+      "stock_count": 58,
+      "industries": [
+        { "industry": "Coal", "stock_count": 6 },
+        { "industry": "Integrated Oil", "stock_count": 27 },
+        { "industry": "Oil & Gas Production", "stock_count": 15 },
+        { "industry": "Oil Refining/Marketing", "stock_count": 10 }
+      ]
+    },
+    {
+      "sector": "Finance",
+      "stock_count": 748,
+      "industries": [
+        { "industry": "Finance/Rental/Leasing", "stock_count": 56 },
+        { "industry": "Financial Conglomerates", "stock_count": 14 },
+        { "industry": "Insurance Brokers/Services", "stock_count": 11 },
+        { "industry": "Investment Banks/Brokers", "stock_count": 36 },
+        { "industry": "Investment Managers", "stock_count": 59 },
+        { "industry": "Life/Health Insurance", "stock_count": 19 },
+        { "industry": "Major Banks", "stock_count": 115 },
+        { "industry": "Multi-Line Insurance", "stock_count": 38 },
+        { "industry": "Property/Casualty Insurance", "stock_count": 36 },
+        { "industry": "Real Estate Development", "stock_count": 16 },
+        { "industry": "Real Estate Investment Trusts", "stock_count": 202 },
+        { "industry": "Regional Banks", "stock_count": 127 },
+        { "industry": "Savings Banks", "stock_count": 12 },
+        { "industry": "Specialty Insurance", "stock_count": 7 }
+      ]
+    },
+    {
+      "sector": "Health Services",
+      "stock_count": 47,
+      "industries": [
+        { "industry": "Hospital/Nursing Management", "stock_count": 9 },
+        { "industry": "Managed Health Care", "stock_count": 8 },
+        { "industry": "Medical/Nursing Services", "stock_count": 28 },
+        { "industry": "Services to the Health Industry", "stock_count": 2 }
+      ]
+    },
+    {
+      "sector": "Health Technology",
+      "stock_count": 268,
+      "industries": [
+        { "industry": "Biotechnology", "stock_count": 86 },
+        { "industry": "Medical Specialties", "stock_count": 79 },
+        { "industry": "Pharmaceuticals: Major", "stock_count": 98 },
+        { "industry": "Pharmaceuticals: Other", "stock_count": 5 }
+      ]
+    },
+    {
+      "sector": "Industrial Services",
+      "stock_count": 93,
+      "industries": [
+        { "industry": "Contract Drilling", "stock_count": 11 },
+        { "industry": "Engineering & Construction", "stock_count": 32 },
+        { "industry": "Environmental Services", "stock_count": 7 },
+        { "industry": "Oil & Gas Pipelines", "stock_count": 24 },
+        { "industry": "Oilfield Services/Equipment", "stock_count": 19 }
+      ]
+    },
+    {
+      "sector": "Miscellaneous",
+      "stock_count": 21,
+      "industries": [
+        { "industry": "Investment Trusts/Mutual Funds", "stock_count": 20 },
+        { "industry": "Miscellaneous", "stock_count": 1 }
+      ]
+    },
+    {
+      "sector": "Non-Energy Minerals",
+      "stock_count": 78,
+      "industries": [
+        { "industry": "Aluminum", "stock_count": 4 },
+        { "industry": "Construction Materials", "stock_count": 12 },
+        { "industry": "Forest Products", "stock_count": 4 },
+        { "industry": "Other Metals/Minerals", "stock_count": 18 },
+        { "industry": "Precious Metals", "stock_count": 33 },
+        { "industry": "Steel", "stock_count": 7 }
+      ]
+    },
+    {
+      "sector": "Process Industries",
+      "stock_count": 82,
+      "industries": [
+        { "industry": "Agricultural Commodities/Milling", "stock_count": 9 },
+        { "industry": "Chemicals: Agricultural", "stock_count": 8 },
+        { "industry": "Chemicals: Major Diversified", "stock_count": 8 },
+        { "industry": "Chemicals: Specialty", "stock_count": 28 },
+        { "industry": "Containers/Packaging", "stock_count": 15 },
+        { "industry": "Industrial Specialties", "stock_count": 10 },
+        { "industry": "Pulp & Paper", "stock_count": 3 },
+        { "industry": "Textiles", "stock_count": 1 }
+      ]
+    },
+    {
+      "sector": "Producer Manufacturing",
+      "stock_count": 155,
+      "industries": [
+        { "industry": "Auto Parts: OEM", "stock_count": 19 },
+        { "industry": "Building Products", "stock_count": 13 },
+        { "industry": "Electrical Products", "stock_count": 32 },
+        { "industry": "Industrial Conglomerates", "stock_count": 2 },
+        { "industry": "Industrial Machinery", "stock_count": 59 },
+        { "industry": "Metal Fabrication", "stock_count": 5 },
+        { "industry": "Miscellaneous Manufacturing", "stock_count": 6 },
+        { "industry": "Office Equipment/Supplies", "stock_count": 2 },
+        { "industry": "Trucks/Construction/Farm Machinery", "stock_count": 17 }
+      ]
+    },
+    {
+      "sector": "Retail Trade",
+      "stock_count": 83,
+      "industries": [
+        { "industry": "Apparel/Footwear Retail", "stock_count": 14 },
+        { "industry": "Department Stores", "stock_count": 4 },
+        { "industry": "Discount Stores", "stock_count": 3 },
+        { "industry": "Drugstore Chains", "stock_count": 2 },
+        { "industry": "Electronics/Appliance Stores", "stock_count": 3 },
+        { "industry": "Food Retail", "stock_count": 7 },
+        { "industry": "Home Improvement Chains", "stock_count": 4 },
+        { "industry": "Internet Retail", "stock_count": 11 },
+        { "industry": "Specialty Stores", "stock_count": 35 }
+      ]
+    },
+    {
+      "sector": "Technology Services",
+      "stock_count": 269,
+      "industries": [
+        { "industry": "Data Processing Services", "stock_count": 22 },
+        { "industry": "Information Technology Services", "stock_count": 40 },
+        { "industry": "Internet Software/Services", "stock_count": 45 },
+        { "industry": "Packaged Software", "stock_count": 162 }
+      ]
+    },
+    {
+      "sector": "Transportation",
+      "stock_count": 81,
+      "industries": [
+        { "industry": "Air Freight/Couriers", "stock_count": 10 },
+        { "industry": "Airlines", "stock_count": 11 },
+        { "industry": "Marine Shipping", "stock_count": 34 },
+        { "industry": "Other Transportation", "stock_count": 6 },
+        { "industry": "Railroads", "stock_count": 6 },
+        { "industry": "Trucking", "stock_count": 14 }
+      ]
+    },
+    {
+      "sector": "Utilities",
+      "stock_count": 79,
+      "industries": [
+        { "industry": "Alternative Power Generation", "stock_count": 9 },
+        { "industry": "Electric Utilities", "stock_count": 48 },
+        { "industry": "Gas Distributors", "stock_count": 16 },
+        { "industry": "Water Utilities", "stock_count": 6 }
+      ]
+    }
+  ]
+}
