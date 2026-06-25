@@ -30,13 +30,13 @@ describe('LINE screener notification helpers', () => {
         '|:---:|:---|---:|',
         '| 1 | Electronic Technology | 233.1% |',
         '',
-        '## Phase4 個別銘柄ランキング (Electronic Technology)',
+        '## Final 個別銘柄ランキング',
         '',
-        '| 順位 | 中テーマ | 小テーマ | シンボル | 市場 |',
+        '| 順位 | セクター | Industry | シンボル | 市場 |',
         '|:---:|:---|:---|:---|:---:|',
-        '| 1 | Memory | NAND / Storage | **WDC** | NASDAQ |',
-        '| 2 | Memory | NAND / Storage | **STX** | NASDAQ |',
-        '| 3 | Memory | HBM / DRAM | **MU** | NASDAQ |',
+        '| 1 | Electronic Technology | Computer Peripherals | **WDC** | NASDAQ |',
+        '| 2 | Electronic Technology | Computer Peripherals | **STX** | NASDAQ |',
+        '| 3 | Electronic Technology | Semiconductors | **MU** | NASDAQ |',
       ].join('\n'),
     });
 

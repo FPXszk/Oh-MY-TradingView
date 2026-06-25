@@ -716,12 +716,50 @@ describe('buildMarkdown', () => {
       ],
     };
 
+    result.industryRanking = [
+      {
+        sector: 'Technology Services',
+        industry: 'Packaged Software',
+        count: 2,
+        averagePerfY: 635,
+        averagePerf6m: 52.5,
+        averagePerf3m: 37.5,
+        averageRankScore: 93.5,
+        averagePctOf52wHigh: 96.5,
+        averageRsi14: 69.5,
+        topSymbols: ['AAA', 'BBB'],
+      },
+      {
+        sector: 'Consumer Non-Durables',
+        industry: 'Food: Specialty/Candy',
+        count: 1,
+        averagePerfY: 55,
+        averagePerf6m: 36,
+        averagePerf3m: 25,
+        averageRankScore: 78,
+        averagePctOf52wHigh: 90,
+        averageRsi14: 64,
+        topSymbols: ['CCC'],
+      },
+    ];
+    result.finalStockRanking = [
+      { ...result.results[0], industry: 'Packaged Software' },
+      { ...result.results[1], industry: 'Packaged Software' },
+      { ...result.results[2], industry: 'Food: Specialty/Candy' },
+    ];
+    result.criteria.industry_ranking = {
+      source: 'TradingView scanner industry',
+      top_industries_displayed: 2,
+      final_industries_selected: 2,
+      missing_industry_count: 0,
+    };
+
     const markdown = buildMarkdown(result);
 
     assert.match(markdown, /# スクリーニング結果 2026\/05\/04（月）/);
     assert.match(markdown, /更新: 12:00 JST/);
     assert.doesNotMatch(markdown, /2026-05-04T03:00:00.000Z/);
-    assert.match(markdown, /セクター別取得候補 26銘柄 → ユニバース条件通過 26銘柄 → ランキング対象 14銘柄 → レポート掲載 6銘柄/);
+    assert.match(markdown, /セクター別取得候補 26銘柄 → ユニバース条件通過 26銘柄 → ランキング対象 14銘柄 → レポート掲載 3銘柄/);
     assert.doesNotMatch(markdown, /## Rule of 40 算出状況/);
     assert.doesNotMatch(markdown, /- Rule of 40 完全算出: 5\/6銘柄 \(83\.3%\)/);
     assert.doesNotMatch(markdown, /- 欠損内訳: 売上のみあり 0件 \/ FCFのみあり 1件 \/ 両方欠け 0件/);
@@ -734,22 +772,18 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| 順位 \| セクター \| 平均12M \| 平均6M \| 平均3M \| SPY差12M \| SPY差6M \| SPY差3M \| SMA50上 \| SMA200上 \| 52w高値90%内 \| RSI \| 相対出来高 \| 構成数 \| 順位合計 \|/);
     assert.match(markdown, /\| 1 \| Technology Services \| 44\.2% \| 18\.4% \| 11\.1% \| 13\.7pt \| 0\.0pt \| 0\.9pt \| 100\.0% \| 100\.0% \| 66\.7% \| 73\.7 \| 1\.04x \| 3 \| 5 \|/);
     assert.doesNotMatch(markdown, /## Phase2 テーマランキング/);
-    assert.match(markdown, /## Phase2 中テーマランキング \(Electronic Technology\)/);
-    assert.doesNotMatch(markdown, /\| 順位 \| テーマ \| 通過銘柄数 \| 平均3M \| 平均総合点 \| Heat \| 外部確認数 \| 外部確認 \| 主な細粒度タグ \|/);
-    assert.match(markdown, /\| 1 \| AI Compute \| 2 \| 31\.2% \| 94\.40 \| AI Accelerators \|/);
-    assert.match(markdown, /\| 2 \| Memory \| 2 \| 24\.8% \| 76\.20 \| HBM \/ DRAM, NAND \/ Storage \|/);
-    assert.match(markdown, /\| 3 \| Semiconductor Equipment \| 1 \| 23\.4% \| 74\.10 \| Test \/ Metrology \/ Inspection \|/);
-    assert.match(markdown, /## Phase3 小テーマランキング \(Electronic Technology\)/);
-    assert.match(markdown, /- Phase2 掲載中テーマ: AI Compute, Memory, Semiconductor Equipment/);
-    assert.match(markdown, /\| 1 \| AI Compute \| AI Accelerators \| 2 \| 31\.2% \| 94\.40 \|/);
-    assert.match(markdown, /\| 2 \| Memory \| HBM \/ DRAM \| 1 \| 26\.1% \| 80\.40 \|/);
-    assert.match(markdown, /\| 3 \| Semiconductor Equipment \| Test \/ Metrology \/ Inspection \| 1 \| 23\.4% \| 74\.10 \|/);
-    assert.match(markdown, /## Phase4 個別銘柄ランキング \(採用セクター全体\)/);
-    assert.match(markdown, /\| 順位 \| 中テーマ \| 小テーマ \| シンボル \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCFマージン \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \(T\/F\) \|/);
-    assert.match(markdown, /- 対象: 採用セクター の通過銘柄 6件/);
-    assert.match(markdown, /\| 1 \| Cloud Software \| Cloud Platforms \| \*\*AAA\*\* \| NASDAQ \| \$12\.3B \(L\) \|/);
-    assert.match(markdown, /\| 2 \| Cloud Software \| Data Infrastructure Software \| \*\*BBB\*\* \| NASDAQ \| \$9\.8B \(M\+\) \|/);
-    assert.match(markdown, /\| 3 \| Memory \| HBM \/ DRAM \| \*\*CCC\*\* \| NYSE \| \$4\.3B \(M\) \|/);
+    assert.doesNotMatch(markdown, /## Phase2 中テーマランキング/);
+    assert.doesNotMatch(markdown, /## Phase3 小テーマランキング/);
+    assert.match(markdown, /## Phase3 Industryランキング/);
+    assert.match(markdown, /- 対象: Phase2通過銘柄をTradingView industryで集計（上位20 industry）/);
+    assert.match(markdown, /\| 順位 \| セクター \| Industry \| 通過銘柄数 \| 平均12M \| 平均6M \| 平均3M \| 平均総合点 \| 平均52w \| 平均RSI \| 上位銘柄 \|/);
+    assert.match(markdown, /\| 1 \| Technology Services \| Packaged Software \| 2 \| 635\.0% \| 52\.5% \| 37\.5% \| 93\.50 \| 96\.5% \| 69\.5 \| AAA, BBB \|/);
+    assert.match(markdown, /## Final 個別銘柄ランキング/);
+    assert.match(markdown, /\| 順位 \| セクター \| Industry \| シンボル \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCFマージン \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \(T\/F\) \|/);
+    assert.match(markdown, /- 対象Industry: Packaged Software, Food: Specialty\/Candy/);
+    assert.match(markdown, /\| 1 \| Technology Services \| Packaged Software \| \*\*AAA\*\* \| NASDAQ \| \$12\.3B \(L\) \|/);
+    assert.match(markdown, /\| 2 \| Technology Services \| Packaged Software \| \*\*BBB\*\* \| NASDAQ \| \$9\.8B \(M\+\) \|/);
+    assert.match(markdown, /\| 3 \| Consumer Non-Durables \| Food: Specialty\/Candy \| \*\*CCC\*\* \| NYSE \| \$4\.3B \(M\) \|/);
     assert.doesNotMatch(markdown, /\*\*NVDA \(NVIDIA Corporation\)\*\*/);
     assert.doesNotMatch(markdown, /\*\*AAA \(Alpha Apps Inc\.\)\*\*/);
     assert.doesNotMatch(markdown, /## Phase2 セクター別ランキング/);
@@ -799,12 +833,12 @@ describe('buildMarkdown', () => {
       ...result,
       focusedHierarchy: null,
     });
-    assert.match(markdownWithoutHierarchy, /## Phase4 個別銘柄ランキング \(採用セクター全体\)/);
-    assert.match(markdownWithoutHierarchy, /\| 1 \| Cloud Software \| Cloud Platforms \| \*\*AAA\*\* \| NASDAQ \|/);
+    assert.match(markdownWithoutHierarchy, /## Final 個別銘柄ランキング/);
+    assert.match(markdownWithoutHierarchy, /\| 1 \| Technology Services \| Packaged Software \| \*\*AAA\*\* \| NASDAQ \|/);
   });
 
   it('highlights EPS turnaround labels in ranking tables', () => {
-    const markdown = buildMarkdown({
+    const result = {
       retrieved_at: '2026-05-04T03:00:00.000Z',
       totalScanned: 1,
       serverFiltered: 1,
@@ -825,6 +859,20 @@ describe('buildMarkdown', () => {
         benchmarkLabel: 'SPY',
       },
       phase1SectorRanking: [],
+      industryRanking: [
+        {
+          sector: 'Electronic Technology',
+          industry: 'Computer Peripherals',
+          count: 1,
+          averagePerfY: 80,
+          averagePerf6m: 40,
+          averagePerf3m: 25,
+          averageRankScore: 90,
+          averagePctOf52wHigh: 95,
+          averageRsi14: 65,
+          topSymbols: ['SNDK'],
+        },
+      ],
       focusedHierarchy: {
         focusSector: 'Electronic Technology',
         candidateCount: 1,
@@ -856,6 +904,7 @@ describe('buildMarkdown', () => {
           symbol: 'SNDK',
           exchange: 'NASDAQ',
           sector: 'Electronic Technology',
+          industry: 'Computer Peripherals',
           marketCapUsd: 5_000_000_000,
           perfY: 80,
           perf6m: 40,
@@ -876,9 +925,11 @@ describe('buildMarkdown', () => {
           rankBreakdown: rankBreakdown(1),
         },
       ],
-    });
+    };
+    result.finalStockRanking = result.results;
+    const markdown = buildMarkdown(result);
 
-    assert.match(markdown, /\| 1 \| Memory \| NAND \/ Storage \| \*\*SNDK\*\* \| NASDAQ \| \$5\.0B \(M\+\) \| 80\.0% \| 40\.0% \| 25\.0% \| 95\.0% \| 25\.0% \| 30\.0% \| 20\.0% \| 30\.0% \| 50\.0 \| 黒字転換 \(raw -144\.5%\) \| 20\.0 \| 3\.2% \|/);
+    assert.match(markdown, /\| 1 \| Electronic Technology \| Computer Peripherals \| \*\*SNDK\*\* \| NASDAQ \| \$5\.0B \(M\+\) \| 80\.0% \| 40\.0% \| 25\.0% \| 95\.0% \| 25\.0% \| 30\.0% \| 20\.0% \| 30\.0% \| 50\.0 \| 黒字転換 \(raw -144\.5%\) \| 20\.0 \| 3\.2% \|/);
   });
 
   it('supports a Japan-specific title and currency symbol', () => {

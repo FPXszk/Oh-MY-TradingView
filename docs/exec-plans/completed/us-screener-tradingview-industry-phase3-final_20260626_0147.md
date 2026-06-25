@@ -50,25 +50,37 @@ Phase2通過後の銘柄をTradingView scanner APIの`industry`で集計し、
 
 ## 実装ステップ
 
-- [ ] 1. RED: coreテストにPhase3 industry集計とFinal選抜の期待値を追加する
+- [x] 1. RED: coreテストにPhase3 industry集計とFinal選抜の期待値を追加する
   - 確認: 現行実装では新しい結果フィールドがなく失敗する。
-- [ ] 2. GREEN: 米国向けindustry集計とFinal選抜を最小実装する
+- [x] 2. GREEN: 米国向けindustry集計とFinal選抜を最小実装する
   - 確認: 平均12M / 6M / 3M / rankScore / 52w / RSI、件数、上位3 symbolsが正しい。
   - 確認: Phase3は20件まで、Finalは上位5 industry所属全件、rankScore降順になる。
-- [ ] 3. RED/GREEN: MarkdownレポートをPhase3 / Final構成へ変更する
+- [x] 3. RED/GREEN: MarkdownレポートをPhase3 / Final構成へ変更する
   - 確認: sector / industry列が前面に出て、中テーマ / 小テーマ列が米国メイン表に出ない。
   - 確認: 日本株の既存テーマ階層テストは維持される。
-- [ ] 4. LINE通知fixtureを新しいFinal表へ更新する
+- [x] 4. LINE通知fixtureを新しいFinal表へ更新する
   - 確認: Top3 symbol抽出が列位置変更後も成功する。
-- [ ] 5. 対象テストと全unit testを実行する
+- [x] 5. 対象テストと全unit testを実行する
   - `node --test tests/fundamental-screener.test.js tests/daily-screener-report.test.js tests/line-screener-notify.test.js`
   - `npm run test:unit`
-- [ ] 6. 実レポートを再生成して目視レビューする
+- [x] 6. 実レポートを再生成して目視レビューする
   - `node scripts/screener/run-fundamental-screening.mjs`
   - 確認: Phase1、Phase3上位20、Final上位5 industry所属銘柄が意図どおり表示される。
-- [ ] 7. REVIEW: diffとテスト結果を確認する
+- [x] 7. REVIEW: diffとテスト結果を確認する
   - ロジック破綻、過剰な抽象化、依頼外変更、スコア/フィルター変更がないことを確認する。
-- [ ] 8. 計画をcompletedへ移動し、Conventional Commitでmainへコミット・SSH pushする
+- [x] 8. 計画をcompletedへ移動し、Conventional Commitでmainへコミット・SSH pushする
+
+## 完了結果
+
+- 対象テスト: 32件成功
+- 全unit test: 1001件成功
+- 実レポート生成:
+  - Phase2ランキング対象: 59銘柄
+  - Phase3 TradingView industry: 15件（上限20）
+  - Final対象industry: 上位5件
+  - Final掲載銘柄: 12件
+- 米国レポートのcustom middle/small theme列をPhase3 / Finalメインフローから除外した。
+- 既存`rankScore`、指標計算、フィルター条件、日本株テーマ階層は変更していない。
 
 ## リスクと対策
 

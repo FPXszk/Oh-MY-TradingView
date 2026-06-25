@@ -435,11 +435,14 @@ function formatJstDateParts(isoString) {
 }
 
 function buildHeadlineSummary(result) {
+  const reportCount = result.scannerScope?.market === 'america' && Array.isArray(result.finalStockRanking)
+    ? result.finalStockRanking.length
+    : result.matched;
   return [
     `セクター別取得候補 ${result.totalScanned.toLocaleString()}銘柄`,
     `ユニバース条件通過 ${result.serverFiltered}銘柄`,
     `ランキング対象 ${result.clientFiltered}銘柄`,
-    `レポート掲載 ${result.matched}銘柄`,
+    `レポート掲載 ${reportCount}銘柄`,
   ].join(' → ');
 }
 
@@ -634,25 +637,43 @@ export function buildMarkdown(result, options = {}) {
       lines.push('');
     }
 
-    if (result.focusedHierarchy?.focusSector) {
-      const focusSector = result.focusedHierarchy.focusSector;
-      if (market !== 'japan') {
-        lines.push(`## Phase2 中テーマランキング (${focusSector})`);
-        lines.push('');
-        lines.push(`- 対象: ${focusSector} の通過銘柄 ${result.focusedHierarchy.candidateCount}件`);
-        lines.push('');
-        if (!result.focusedHierarchy.middleThemeRanking || result.focusedHierarchy.middleThemeRanking.length === 0) {
-          lines.push('- 中テーマランキングは算出できませんでした。');
-        } else {
-          lines.push('| 順位 | 中テーマ | 通過銘柄数 | 平均3M | 平均総合点 | 主な小テーマ |');
-          lines.push('|:---:|:---|---:|---:|---:|:---|');
-          result.focusedHierarchy.middleThemeRanking.forEach((entry, index) => {
-            lines.push(`| ${index + 1} | ${entry.middleTheme} | ${entry.count} | ${fmt(entry.averagePerf3m)}% | ${fmt(entry.averageRankScore, 2)} | ${entry.topSmallThemes?.join(', ') || 'N/A'} |`);
-          });
-        }
-        lines.push('');
+    if (market === 'america') {
+      lines.push('## Phase3 Industryランキング');
+      lines.push('');
+      lines.push('- 対象: Phase2通過銘柄をTradingView industryで集計（上位20 industry）');
+      if (result.criteria?.industry_ranking?.missing_industry_count > 0) {
+        lines.push(`- Industry欠損のため集計対象外: ${result.criteria.industry_ranking.missing_industry_count}銘柄`);
       }
+      lines.push('');
+      if (!result.industryRanking || result.industryRanking.length === 0) {
+        lines.push('- Industryランキングは算出できませんでした。');
+      } else {
+        lines.push('| 順位 | セクター | Industry | 通過銘柄数 | 平均12M | 平均6M | 平均3M | 平均総合点 | 平均52w | 平均RSI | 上位銘柄 |');
+        lines.push('|:---:|:---|:---|---:|---:|---:|---:|---:|---:|---:|:---|');
+        result.industryRanking.forEach((entry, index) => {
+          lines.push(`| ${index + 1} | ${entry.sector} | ${entry.industry} | ${entry.count} | ${fmt(entry.averagePerfY)}% | ${fmt(entry.averagePerf6m)}% | ${fmt(entry.averagePerf3m)}% | ${fmt(entry.averageRankScore, 2)} | ${fmt(entry.averagePctOf52wHigh)}% | ${fmt(entry.averageRsi14)} | ${entry.topSymbols?.join(', ') || 'N/A'} |`);
+        });
+      }
+      lines.push('');
 
+      lines.push('## Final 個別銘柄ランキング');
+      lines.push('');
+      lines.push(`- 対象Industry: ${result.industryRanking?.slice(0, 5).map((entry) => entry.industry).join(', ') || 'なし'}`);
+      lines.push('');
+      if (!result.finalStockRanking || result.finalStockRanking.length === 0) {
+        lines.push('- 個別銘柄ランキングは算出できませんでした。');
+      } else {
+        const scoreHeader = '総合点 (T/F)';
+        lines.push(`| 順位 | セクター | Industry | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCFマージン | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | ${scoreHeader} |`);
+        lines.push('|:---:|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|:---|---:|---:|---:|');
+        result.finalStockRanking.forEach((row, index) => {
+          const metricCells = buildRankingMetricCells(row, result.scannerScope?.market, populationSize, currencySymbol).join(' | ');
+          lines.push(`| ${index + 1} | ${row.sector ?? 'Unknown'} | ${row.industry ?? 'Unknown'} | **${formatSymbolWithCompanyName(row, market)}** | ${row.exchange ?? '-'} | ${metricCells} |`);
+        });
+      }
+      lines.push('');
+    } else if (result.focusedHierarchy?.focusSector) {
+      const focusSector = result.focusedHierarchy.focusSector;
       lines.push(`## Phase3 小テーマランキング (${focusSector})`);
       lines.push('');
       lines.push(`- Phase2 掲載中テーマ: ${result.focusedHierarchy.selectedMiddleThemes?.join(', ') || 'なし'}`);
@@ -668,19 +689,10 @@ export function buildMarkdown(result, options = {}) {
       }
       lines.push('');
 
-      const phase4Rows = market === 'america'
-        ? result.results
-        : result.focusedHierarchy.stockRanking;
-      const phase4Label = market === 'america'
-        ? '採用セクター全体'
-        : focusSector;
-      lines.push(`## Phase4 個別銘柄ランキング (${phase4Label})`);
+      const phase4Rows = result.focusedHierarchy.stockRanking;
+      lines.push(`## Phase4 個別銘柄ランキング (${focusSector})`);
       lines.push('');
-      if (market === 'america') {
-        lines.push(`- 対象: ${result.criteria?.phase1_selected_sectors?.join(', ') || '採用セクター'} の通過銘柄 ${result.results.length}件`);
-      } else {
-        lines.push(`- Phase3 掲載小テーマ: ${(result.focusedHierarchy.selectedSmallThemes || []).map((entry) => `${entry.middleTheme} / ${entry.smallTheme}`).join(', ') || 'なし'}`);
-      }
+      lines.push(`- Phase3 掲載小テーマ: ${(result.focusedHierarchy.selectedSmallThemes || []).map((entry) => `${entry.middleTheme} / ${entry.smallTheme}`).join(', ') || 'なし'}`);
       lines.push('');
       if (!phase4Rows || phase4Rows.length === 0) {
         lines.push('- 個別銘柄ランキングは算出できませんでした。');
@@ -693,21 +705,6 @@ export function buildMarkdown(result, options = {}) {
           lines.push(`| ${index + 1} | ${row.primaryTheme ?? 'Unclassified'} | ${row.subThemes?.[0] ?? '細粒度タグなし'} | **${formatSymbolWithCompanyName(row, market)}** | ${row.exchange ?? '-'} | ${metricCells} |`);
         });
       }
-      lines.push('');
-    }
-
-    if (market === 'america' && !result.focusedHierarchy?.focusSector) {
-      lines.push('## Phase4 個別銘柄ランキング (採用セクター全体)');
-      lines.push('');
-      lines.push(`- 対象: ${result.criteria?.phase1_selected_sectors?.join(', ') || '採用セクター'} の通過銘柄 ${result.results.length}件`);
-      lines.push('');
-      const scoreHeader = '総合点 (T/F)';
-      lines.push(`| 順位 | 中テーマ | 小テーマ | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCFマージン | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | ${scoreHeader} |`);
-      lines.push('|:---:|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|:---|---:|---:|---:|');
-      result.results.forEach((row, index) => {
-        const metricCells = buildRankingMetricCells(row, result.scannerScope?.market, populationSize, currencySymbol).join(' | ');
-        lines.push(`| ${index + 1} | ${row.primaryTheme ?? 'Unclassified'} | ${row.subThemes?.[0] ?? '細粒度タグなし'} | **${formatSymbolWithCompanyName(row, market)}** | ${row.exchange ?? '-'} | ${metricCells} |`);
-      });
       lines.push('');
     }
 

@@ -1048,6 +1048,26 @@ describe('runFundamentalScreener', () => {
     assert.equal(result.focusedHierarchy.selectedMiddleThemes.length, 5);
     assert.equal(result.focusedHierarchy.selectedSmallThemes.length, 6);
     assert.equal(result.focusedHierarchy.stockRanking.length, 6);
+    assert.equal(result.industryRanking.length, 3);
+    assert.ok(result.industryRanking.every((entry) => entry.sector === 'Electronic Technology'));
+    assert.ok(result.industryRanking.every((entry) => entry.industry));
+    assert.ok(result.industryRanking.every((entry) => entry.count > 0));
+    assert.ok(result.industryRanking.every((entry) => entry.topSymbols.length > 0));
+    for (let index = 1; index < result.industryRanking.length; index += 1) {
+      assert.ok(
+        result.industryRanking[index - 1].averageRankScore
+          >= result.industryRanking[index].averageRankScore,
+      );
+    }
+    assert.deepEqual(
+      [...new Set(result.finalStockRanking.map((row) => row.industry))].sort(),
+      ['Computer Peripherals', 'Electronic Production Equipment', 'Semiconductors'],
+    );
+    assert.equal(result.finalStockRanking.length, 6);
+    assertRankScoresDescending(result.finalStockRanking);
+    assert.equal(result.criteria.industry_ranking.top_industries_displayed, 3);
+    assert.equal(result.criteria.industry_ranking.final_industries_selected, 3);
+    assert.equal(result.criteria.industry_ranking.missing_industry_count, 0);
   });
 
   it('applies Japan-specific profiles and skips finance even when phase1 selects it', async () => {

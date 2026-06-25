@@ -26,6 +26,8 @@ const DEFAULT_MARKET = 'america';
 const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 200;
 const DEFAULT_TIMEOUT_MS = 15000;
+const INDUSTRY_RANKING_LIMIT = 20;
+const FINAL_INDUSTRY_LIMIT = 5;
 const BUILTIN_SYMBOL_ALLOWLISTS = new Map([
   [
     'jpx-prime',
@@ -925,6 +927,136 @@ function summarizeSectors(rows) {
     });
 }
 
+function addMetric(entry, field, value) {
+  if (value === null || value === undefined || !Number.isFinite(Number(value))) return;
+  entry.metricTotals[field] += Number(value);
+  entry.metricCounts[field] += 1;
+}
+
+function averageMetric(entry, field, digits = 1) {
+  const count = entry.metricCounts[field];
+  return count > 0
+    ? Number((entry.metricTotals[field] / count).toFixed(digits))
+    : null;
+}
+
+function summarizeIndustries(rows, {
+  rankingLimit = INDUSTRY_RANKING_LIMIT,
+  finalIndustryLimit = FINAL_INDUSTRY_LIMIT,
+} = {}) {
+  const grouped = new Map();
+  let missingIndustryCount = 0;
+
+  for (const row of rows) {
+    if (!row.sector || !row.industry) {
+      missingIndustryCount += 1;
+      continue;
+    }
+
+    const key = `${row.sector}\u0000${row.industry}`;
+    if (!grouped.has(key)) {
+      grouped.set(key, {
+        key,
+        sector: row.sector,
+        industry: row.industry,
+        count: 0,
+        metricTotals: {
+          perfY: 0,
+          perf6m: 0,
+          perf3m: 0,
+          rankScore: 0,
+          pctOf52wHigh: 0,
+          rsi14: 0,
+        },
+        metricCounts: {
+          perfY: 0,
+          perf6m: 0,
+          perf3m: 0,
+          rankScore: 0,
+          pctOf52wHigh: 0,
+          rsi14: 0,
+        },
+        rows: [],
+      });
+    }
+
+    const entry = grouped.get(key);
+    entry.count += 1;
+    entry.rows.push(row);
+    addMetric(entry, 'perfY', row.perfY);
+    addMetric(entry, 'perf6m', row.perf6m);
+    addMetric(entry, 'perf3m', row.perf3m);
+    addMetric(entry, 'rankScore', row.rankScore);
+    addMetric(entry, 'pctOf52wHigh', row.pctOf52wHigh);
+    addMetric(entry, 'rsi14', row.rsi14);
+  }
+
+  const rankedEntries = Array.from(grouped.values())
+    .map((entry) => ({
+      ...entry,
+      rawAverageRankScore: entry.metricCounts.rankScore > 0
+        ? entry.metricTotals.rankScore / entry.metricCounts.rankScore
+        : null,
+      rawAveragePerf3m: entry.metricCounts.perf3m > 0
+        ? entry.metricTotals.perf3m / entry.metricCounts.perf3m
+        : null,
+    }))
+    .sort((a, b) => {
+      if ((b.rawAverageRankScore ?? -Infinity) !== (a.rawAverageRankScore ?? -Infinity)) {
+        return (b.rawAverageRankScore ?? -Infinity) - (a.rawAverageRankScore ?? -Infinity);
+      }
+      if ((b.rawAveragePerf3m ?? -Infinity) !== (a.rawAveragePerf3m ?? -Infinity)) {
+        return (b.rawAveragePerf3m ?? -Infinity) - (a.rawAveragePerf3m ?? -Infinity);
+      }
+      if (b.count !== a.count) return b.count - a.count;
+      if (a.sector !== b.sector) return a.sector.localeCompare(b.sector);
+      return a.industry.localeCompare(b.industry);
+    });
+
+  const rankings = rankedEntries
+    .slice(0, rankingLimit)
+    .map((entry) => ({
+      sector: entry.sector,
+      industry: entry.industry,
+      count: entry.count,
+      averagePerfY: averageMetric(entry, 'perfY'),
+      averagePerf6m: averageMetric(entry, 'perf6m'),
+      averagePerf3m: averageMetric(entry, 'perf3m'),
+      averageRankScore: averageMetric(entry, 'rankScore', 2),
+      averagePctOf52wHigh: averageMetric(entry, 'pctOf52wHigh'),
+      averageRsi14: averageMetric(entry, 'rsi14'),
+      topSymbols: [...entry.rows]
+        .sort((a, b) => {
+          if ((b.rankScore ?? -Infinity) !== (a.rankScore ?? -Infinity)) {
+            return (b.rankScore ?? -Infinity) - (a.rankScore ?? -Infinity);
+          }
+          return (a.symbol ?? '').localeCompare(b.symbol ?? '');
+        })
+        .slice(0, 3)
+        .map((row) => row.symbol),
+    }));
+
+  const selectedIndustryKeys = new Set(
+    rankedEntries.slice(0, finalIndustryLimit).map((entry) => entry.key),
+  );
+  const finalStockRanking = rows
+    .filter((row) => selectedIndustryKeys.has(`${row.sector}\u0000${row.industry}`))
+    .sort((a, b) => {
+      if ((b.rankScore ?? -Infinity) !== (a.rankScore ?? -Infinity)) {
+        return (b.rankScore ?? -Infinity) - (a.rankScore ?? -Infinity);
+      }
+      return (a.symbol ?? '').localeCompare(b.symbol ?? '');
+    })
+    .map((row) => stripInternalFields(row));
+
+  return {
+    rankings,
+    finalStockRanking,
+    selectedIndustryCount: Math.min(finalIndustryLimit, rankedEntries.length),
+    missingIndustryCount,
+  };
+}
+
 function buildPrimarySmallTheme(row) {
   return row?.subThemes?.[0] ?? null;
 }
@@ -1584,6 +1716,14 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   const ranked = applyBlockRanks(themedRows, rankingBlocks).sort((a, b) => b.rankScore - a.rankScore);
   const matched = ranked.slice(0, effectiveLimit).map(stripInternalFields);
   const sectorRanking = summarizeSectors(ranked);
+  const industrySummary = market === DEFAULT_MARKET
+    ? summarizeIndustries(ranked)
+    : {
+        rankings: [],
+        finalStockRanking: [],
+        selectedIndustryCount: 0,
+        missingIndustryCount: 0,
+      };
   const hierarchyFocusSector = hierarchyFocusSectorOverride ?? selectedSectorLabels[0] ?? null;
   const focusedHierarchy = buildFocusedHierarchy(ranked, hierarchyFocusSector, {
     market,
@@ -1652,6 +1792,12 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     };
   }
   if (market === DEFAULT_MARKET) {
+    criteria.industry_ranking = {
+      source: 'TradingView scanner industry',
+      top_industries_displayed: industrySummary.rankings.length,
+      final_industries_selected: industrySummary.selectedIndustryCount,
+      missing_industry_count: industrySummary.missingIndustryCount,
+    };
     criteria.rule_of_40_policy = {
       scope: 'US Technology Services software-like industries only',
       formula: 'total_revenue_yoy_growth_ttm + free_cash_flow_margin_ttm',
@@ -1712,6 +1858,8 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     },
     sectorMomentum,
     sectorRanking,
+    industryRanking: industrySummary.rankings,
+    finalStockRanking: industrySummary.finalStockRanking,
     themeRanking,
     focusedHierarchy,
     ruleOf40Coverage,
