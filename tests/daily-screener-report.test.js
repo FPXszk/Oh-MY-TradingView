@@ -792,6 +792,13 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| 52w \| 現在株価が 52 週高値の何%位置か \| 100% に近いほど 52 週高値圏 \|/);
     assert.match(markdown, /\| EPS YoY \| EPS の前年比成長率 \| 利益成長の確認。赤字分母由来の黒字転換は強調表示し、TradingView raw 値は併記する \|/);
     assert.match(markdown, /\| 総合点 \(T\/F\) \| repo 独自の総合スコア \| 高いほど良い。T はテクニカル寄り、F はファンダ寄り \|/);
+
+    const markdownWithoutHierarchy = buildMarkdown({
+      ...result,
+      focusedHierarchy: null,
+    });
+    assert.match(markdownWithoutHierarchy, /## Phase4 個別銘柄ランキング \(採用セクター全体\)/);
+    assert.match(markdownWithoutHierarchy, /\| 1 \| Cloud Software \| Cloud Platforms \| \*\*AAA\*\* \| NASDAQ \|/);
   });
 
   it('highlights EPS turnaround labels in ranking tables', () => {

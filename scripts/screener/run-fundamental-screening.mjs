@@ -696,6 +696,21 @@ export function buildMarkdown(result, options = {}) {
       lines.push('');
     }
 
+    if (market === 'america' && !result.focusedHierarchy?.focusSector) {
+      lines.push('## Phase4 個別銘柄ランキング (採用セクター全体)');
+      lines.push('');
+      lines.push(`- 対象: ${result.criteria?.phase1_selected_sectors?.join(', ') || '採用セクター'} の通過銘柄 ${result.results.length}件`);
+      lines.push('');
+      const scoreHeader = '総合点 (T/F)';
+      lines.push(`| 順位 | 中テーマ | 小テーマ | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | ${scoreHeader} |`);
+      lines.push('|:---:|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|:---|---:|---:|---:|');
+      result.results.forEach((row, index) => {
+        const metricCells = buildRankingMetricCells(row, result.scannerScope?.market, populationSize, currencySymbol).join(' | ');
+        lines.push(`| ${index + 1} | ${row.primaryTheme ?? 'Unclassified'} | ${row.subThemes?.[0] ?? '細粒度タグなし'} | **${formatSymbolWithCompanyName(row, market)}** | ${row.exchange ?? '-'} | ${metricCells} |`);
+      });
+      lines.push('');
+    }
+
     if (showPhase2SectorBreakdownSection) {
       lines.push('## Phase2 セクター別ランキング');
       lines.push('');
