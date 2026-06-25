@@ -17,6 +17,7 @@
 import { readFileSync } from 'node:fs';
 import { getEdinetSupplementalFundamentalsBatch } from './edinet.js';
 import { getMoomooFundamentalsBatch } from './moomoo.js';
+import { getSecEpsTurnaroundSupplements } from './sec-edgar.js';
 import { runSectorMomentumScan } from './sector-momentum.js';
 import { getProfilesForMarket, getSectorScreeningPlan } from './sector-screening-profiles.js';
 import { classifyThemeForMarket, getSectorThemeHierarchyForMarket, summarizeThemes } from './theme-taxonomy.js';
@@ -1298,12 +1299,10 @@ function applyUsMissingMetricSupplement(row, metrics = {}, source = 'supplementa
     merged.epsGrowthTtm === null
     && metrics.epsGrowthStatus === 'turnaround_to_profit'
     && metrics.epsGrowthDisplay
-    && metrics.epsGrowthScoreValue !== null
-    && metrics.epsGrowthScoreValue !== undefined
   ) {
     merged.epsGrowthStatus = metrics.epsGrowthStatus;
     merged.epsGrowthDisplay = metrics.epsGrowthDisplay;
-    merged.epsGrowthScoreValue = metrics.epsGrowthScoreValue;
+    merged.epsGrowthScoreValue = metrics.epsGrowthScoreValue ?? EPS_TURNAROUND_SCORE;
     merged.epsGrowthSourceDetail = metrics.epsGrowthSourceDetail ?? null;
     fields.push('epsGrowthStatus');
   }
@@ -1354,14 +1353,10 @@ function buildMissingMetricSupplementMeta(rows) {
 
 async function applyUsMissingMetricSupplements(rows, {
   growthMap = {},
-  getMissingMetricSupplementals = null,
+  getMissingMetricSupplementals = getSecEpsTurnaroundSupplements,
 } = {}) {
   if (rows.length === 0) return rows;
-  const externalMap = getMissingMetricSupplementals
-    ? await getMissingMetricSupplementals(rows)
-    : {};
-
-  return rows.map((row) => {
+  const withBuiltInSupplements = rows.map((row) => {
     const symbol = row.symbol?.toUpperCase();
     const staticEntry = US_FUNDAMENTAL_SUPPLEMENTS.symbols?.[symbol] ?? null;
     const staticMetrics = computeStaticMissingMetricSupplement(staticEntry);
@@ -1375,8 +1370,16 @@ async function applyUsMissingMetricSupplements(rows, {
       staticMetrics,
       staticMetrics?.source ?? 'static-supplement',
     );
+    return withStaticProvider;
+  });
+  const externalMap = getMissingMetricSupplementals
+    ? await getMissingMetricSupplementals(withBuiltInSupplements)
+    : {};
+
+  return withBuiltInSupplements.map((row) => {
+    const symbol = row.symbol?.toUpperCase();
     return applyUsMissingMetricSupplement(
-      withStaticProvider,
+      row,
       externalMap?.[symbol],
       externalMap?.[symbol]?.source ?? 'supplemental',
     );

@@ -1836,6 +1836,19 @@ describe('runFundamentalScreener', () => {
             source: 'price-history-adapter',
             atrPct: 4.25,
           },
+          QCOM: {
+            source: 'sec-companyfacts-cik-0000804328',
+            epsGrowthStatus: 'turnaround_to_profit',
+            epsGrowthDisplay: '黒字転換 (SEC -0.2 -> 0.4)',
+            epsGrowthSourceDetail: {
+              source: 'sec-companyfacts',
+              fact: 'us-gaap:EarningsPerShareDiluted',
+              currentPeriod: 'CY2026Q1',
+              previousPeriod: 'CY2025Q1',
+              currentEps: 0.4,
+              previousEps: -0.2,
+            },
+          },
         }),
         fetch: createMockFetch({
           stockBodies: [],
@@ -1953,17 +1966,20 @@ describe('runFundamentalScreener', () => {
     assert.equal(result.results.find((row) => row.symbol === 'MU').epsGrowthTtm, 27);
     assert.equal(result.results.find((row) => row.symbol === 'MU').pFcf, 22.4);
     assert.equal(result.results.find((row) => row.symbol === 'MU').atrPct, 4.25);
+    assert.equal(result.results.find((row) => row.symbol === 'QCOM').epsGrowthStatus, 'turnaround_to_profit');
+    assert.equal(result.results.find((row) => row.symbol === 'QCOM').epsGrowthScoreValue, 120);
     assert.deepEqual(result.results.find((row) => row.symbol === 'MU').missingMetricSupplement, {
       sources: ['moomoo', 'price-history-adapter'],
       fields: ['epsGrowthTtm', 'pFcf', 'atrPct'],
     });
     assert.equal(result.results.find((row) => row.symbol === 'QCOM').epsGrowthTtm, null);
     assert.equal(result.results.find((row) => row.symbol === 'QCOM').pFcf, null);
-    assert.equal(result.sourceDetails.usMissingMetricSupplement.supplementedRows, 1);
+    assert.equal(result.sourceDetails.usMissingMetricSupplement.supplementedRows, 2);
     assert.deepEqual(result.sourceDetails.usMissingMetricSupplement.fields, {
       epsGrowthTtm: 1,
       pFcf: 1,
       atrPct: 1,
+      epsGrowthStatus: 1,
     });
   });
 

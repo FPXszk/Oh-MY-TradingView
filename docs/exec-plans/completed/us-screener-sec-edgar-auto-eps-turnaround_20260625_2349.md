@@ -44,19 +44,19 @@
 
 ## Implementation Steps
 
-- [ ] Step 1: SEC EDGARクライアントを追加する。
+- [x] Step 1: SEC EDGARクライアントを追加する。
   - 確認: User-Agent必須、CIK 10桁化、同一実行内キャッシュ、失敗時null。
-- [ ] Step 2: EPS factsの同期間比較ロジックを実装する。
+- [x] Step 2: EPS factsの同期間比較ロジックを実装する。
   - 確認: quarterly同士またはannual同士だけを比較し、前年EPS <= 0かつ現在EPS > 0だけ黒字転換にする。
-- [ ] Step 3: US missing metric supplementへ接続する。
+- [x] Step 3: US missing metric supplementへ接続する。
   - 確認: 既存ソースでEPS YoYが欠損した銘柄だけSECを照会し、静的補完との互換性を保つ。
-- [ ] Step 4: GitHub ActionsへSecretを接続する。
+- [x] Step 4: GitHub ActionsへSecretを接続する。
   - 確認: メールアドレスをworkflowファイルへ直書きしない。
-- [ ] Step 5: focused testsを追加して実行する。
+- [x] Step 5: focused testsを追加して実行する。
   - 確認: `node --test tests/sec-edgar.test.js tests/fundamental-screener.test.js`
-- [ ] Step 6: 全unit testsとレビューを実施する。
+- [x] Step 6: 全unit testsとレビューを実施する。
   - 確認: `npm run test:unit`
-- [ ] Step 7: 計画をcompletedへ移動し、実装をコミット・プッシュする。
+- [x] Step 7: 計画をcompletedへ移動し、実装をコミット・プッシュする。
 
 ## Risks
 
@@ -71,3 +71,18 @@
 node --test tests/sec-edgar.test.js tests/fundamental-screener.test.js
 npm run test:unit
 ```
+
+## Implementation Summary
+
+- `src/core/sec-edgar.js` を追加し、SEC ticker mapとCompany Factsを同一実行内でキャッシュするようにした。
+- 既存ソース適用後もEPS YoYが欠損する米国銘柄だけを逐次取得し、125ms間隔でSEC Fair Access上限を下回るようにした。
+- 希薄化後EPSについて、最新期間と前年の同じFP・期間種別・期間長だけを比較し、前年EPS <= 0かつ現在EPS > 0の場合だけ黒字転換を付与するようにした。
+- SEC取得失敗、CIK未解決、期間比較不能はN/Aのまま継続し、スクリーナー本体を失敗させない。
+- `.github/workflows/daily-screener.yml` に `SEC_USER_AGENT` Secretを接続し、GitHub repository secretへ指定値を登録した。
+
+## Validation Result
+
+- focused tests: 22 passed
+- `npm run test:unit`: 1001 passed
+- live SEC probe: NBISを `黒字転換 (SEC -2.28 -> 0.33)` と判定し、MRVL/COHRは黒字転換対象外
+- `git diff --check`: passed

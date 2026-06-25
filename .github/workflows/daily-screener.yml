@@ -19,6 +19,7 @@ jobs:
       SCREENER_EXTRA_PHASE1_SECTORS: Technology Services
       SCREENER_GROSS_MARGIN_MIN_PCT: '30'
       SCREENER_SCOPE_LABEL: NASDAQ + NYSE stocks only (OTC excluded)
+      SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
 
     steps:
       - uses: actions/checkout@v4
