@@ -17,17 +17,17 @@
 
 ## Implementation Steps
 
-- [ ] Step 1: 現行の EPS gate 適用箇所を確認する。
+- [x] Step 1: 現行の EPS gate 適用箇所を確認する。
   - Check: Phase1/Phase2 Industry広域取得には EPS gate がないこと、個別候補取得だけが対象であることを確認する。
-- [ ] Step 2: RED テストを更新/追加する。
+- [x] Step 2: RED テストを更新/追加する。
   - Check: EPS(TTM) がマイナスの米国銘柄が TradingView候補取得から除外されない期待にする。
-- [ ] Step 3: `EPS(TTM) > 0` hard gate を外す。
+- [x] Step 3: `EPS(TTM) > 0` hard gate を外す。
   - Check: TradingView request body から EPS filter が消え、診断/criteria 表示も矛盾しない。
-- [ ] Step 4: レポート文言を更新する。
+- [x] Step 4: レポート文言を更新する。
   - Check: 共通条件に EPS(TTM) > 0 が残らない。
-- [ ] Step 5: テストと実レポート生成を実行する。
+- [x] Step 5: テストと実レポート生成を実行する。
   - Check: `npm run test:unit` と `git diff --check` が通り、`daily-ranking.md` で INTC の扱いを確認する。
-- [ ] Step 6: 自己レビューし、計画を completed へ移動してコミット・プッシュする。
+- [x] Step 6: 自己レビューし、計画を completed へ移動してコミット・プッシュする。
   - Check: CRDO の全セクター方式はこの実装に混ぜず、設計検討として報告する。
 
 ## Out of Scope

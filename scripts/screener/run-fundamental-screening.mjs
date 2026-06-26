@@ -448,7 +448,7 @@ function buildHeadlineSummary(result) {
 
 function buildGuideRows(result) {
   const rows = [
-    `| 共通条件 | ベース条件 | 時価総額 > ${formatUsdThreshold(result.criteria.market_cap_min_usd)} / EPS(TTM) > ${result.criteria.eps_min} / Close > SMA200 / Close > SMA50 / Close ≥ 52週高値 × ${result.criteria.price_pct_of_52wk_high_min}% |`,
+    `| 共通条件 | ベース条件 | 時価総額 > ${formatUsdThreshold(result.criteria.market_cap_min_usd)} / Close > SMA200 / Close > SMA50 / Close ≥ 52週高値 × ${result.criteria.price_pct_of_52wk_high_min}% |`,
   ];
 
   if (result.criteria.rule_of_40_policy) {

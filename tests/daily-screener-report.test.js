@@ -259,7 +259,6 @@ describe('buildMarkdown', () => {
         matched: [{ name: 'NASDAQ', count: 4 }, { name: 'NYSE', count: 2 }],
       },
       criteria: {
-        eps_min: 0,
         price_pct_of_52wk_high_min: 75,
         profile_summaries: [
           {
@@ -816,7 +815,7 @@ describe('buildMarkdown', () => {
     assert.doesNotMatch(markdown, /\| 1 \| Technology Services \| 3 \| 32\.4% \| 91\.70 \|/);
     assert.doesNotMatch(markdown, /## 市場カバレッジ/);
     assert.match(markdown, /\| 区分 \| 項目 \| 条件・説明 \|/);
-    assert.match(markdown, /\| 共通条件 \| ベース条件 \| 時価総額 > \$1B \/ EPS\(TTM\) > 0 \/ Close > SMA200 \/ Close > SMA50 \/ Close ≥ 52週高値 × 75% \|/);
+    assert.match(markdown, /\| 共通条件 \| ベース条件 \| 時価総額 > \$1B \/ Close > SMA200 \/ Close > SMA50 \/ Close ≥ 52週高値 × 75% \|/);
     assert.doesNotMatch(markdown, /\| 補助ポリシー \| 超急騰 \|/);
     assert.match(markdown, /\| 補助ポリシー \| Rule of 40 \| US Technology Services software-like industries only \/ total_revenue_yoy_growth_ttm \+ free_cash_flow_margin_ttm \/ 40\+ を badge \/ 20 未満を warning \/ hard filter なし \|/);
     assert.match(markdown, /\| 補助ポリシー \| Theme taxonomy \| US Phase3 matched candidates only \/ repo custom theme taxonomy layered on top of TradingView sector\/industry \/ version us-theme-prototype-v2 \|/);
@@ -863,7 +862,6 @@ describe('buildMarkdown', () => {
       scannerScope: { market: 'america' },
       criteria: {
         market_cap_min_usd: 1_000_000_000,
-        eps_min: 0,
         price_pct_of_52wk_high_min: 75,
       },
       rankingBlocks,
@@ -989,7 +987,6 @@ describe('buildMarkdown', () => {
         matched: [{ name: 'TSE', count: 2 }],
       },
       criteria: {
-        eps_min: 0,
         price_pct_of_52wk_high_min: 75,
         profile_summaries: [
           {

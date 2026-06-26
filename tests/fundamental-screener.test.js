@@ -617,12 +617,13 @@ describe('runFundamentalScreener', () => {
     assert.deepEqual(phase2Order.slice(0, phase1Order.length), phase1Order);
   });
 
-  it('excludes US candidates below the default $30B market-cap gate', async () => {
+  it('excludes US candidates below the default $30B market-cap gate without requiring positive EPS', async () => {
+    const stockBodies = [];
     const result = await runFundamentalScreener({
       limit: 10,
       _deps: {
         fetch: createMockFetch({
-          stockBodies: [],
+          stockBodies,
           benchmarkPayload: {
             totalCount: 1,
             data: [
@@ -688,7 +689,8 @@ describe('runFundamentalScreener', () => {
                   perfY: 120,
                   relativeVolume: 1.2,
                   marketCap: 40_000_000_000,
-                  eps: 3,
+                  eps: -0.5,
+                  epsGrowthTtm: 85,
                   roe: 24,
                   grossMargin: 58,
                   fcfMargin: 21,
@@ -734,7 +736,12 @@ describe('runFundamentalScreener', () => {
 
     assert.equal(result.criteria.market_cap_min_usd, 30_000_000_000);
     assert.deepEqual(result.results.map((row) => row.symbol), ['BIG']);
+    assert.equal(result.results[0].eps, -0.5);
     assert.equal(result.clientFiltered, 1);
+    assert.equal(
+      stockBodies.some((body) => body.filter?.some((entry) => entry.left === 'earnings_per_share_diluted_ttm')),
+      false,
+    );
   });
 
   it('supplements missing US FCF fields from configured official data before ranking', async () => {

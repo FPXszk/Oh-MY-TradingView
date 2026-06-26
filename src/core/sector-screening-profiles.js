@@ -5,7 +5,6 @@ import {
 
 const COMMON_LIMITS = {
   marketCapMinUsd: 1_000_000_000,
-  epsMin: 0,
   pricePctOf52wHighMin: 75,
   priceAboveSma50: true,
   priceAboveSma200: true,
@@ -21,7 +20,6 @@ function profileSummary(profile) {
     scope_labels: profile.requestScopes.map((scope) => scope.sector),
     thresholds: {
       market_cap_min_usd: profile.thresholds.marketCapMinUsd,
-      eps_min: profile.thresholds.epsMin,
       rsi14_min: profile.thresholds.rsiMin,
       perf_3m_min_pct: profile.thresholds.perf3mMinPct,
       relative_volume_min: profile.thresholds.relativeVolumeMin,

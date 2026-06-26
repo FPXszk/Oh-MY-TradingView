@@ -178,7 +178,6 @@ function buildRequestBody(serverLimit, { market, profile, scope }) {
     filter: [
       { left: 'sector', operation: 'equal', right: scope.sector },
       { left: 'market_cap_basic', operation: 'egreater', right: thresholds.marketCapMinUsd },
-      { left: 'earnings_per_share_diluted_ttm', operation: 'egreater', right: thresholds.epsMin },
       { left: 'Perf.3M', operation: 'egreater', right: thresholds.perf3mMinPct },
       ...(scope.industry ? [{ left: 'industry', operation: 'equal', right: scope.industry }] : []),
     ],
@@ -1931,7 +1930,6 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
 
   const criteria = {
     market_cap_min_usd: effectiveProfileSummaries[0]?.thresholds?.market_cap_min_usd ?? 1_000_000_000,
-    eps_min: 0,
     price_above_sma200: true,
     price_above_sma50: true,
     price_pct_of_52wk_high_min: 75,
