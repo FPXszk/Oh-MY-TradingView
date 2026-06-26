@@ -308,7 +308,7 @@ describe('buildMarkdown', () => {
         us_missing_metric_supplement_policy: 'TradingView missing table metrics are supplemented from Moomoo/adapter data when available; unavailable or non-meaningful values stay N/A.',
         theme_taxonomy_policy: {
           version: 'us-theme-prototype-v2',
-          scope: 'US Phase2 matched candidates only',
+          scope: 'US Phase3 matched candidates only',
           approach: 'repo custom theme taxonomy layered on top of TradingView sector/industry',
         },
       },
@@ -724,9 +724,15 @@ describe('buildMarkdown', () => {
         averagePerfY: 635,
         averagePerf6m: 52.5,
         averagePerf3m: 37.5,
-        averageRankScore: 93.5,
-        averagePctOf52wHigh: 96.5,
+        relativeStrengthY: 604.5,
+        relativeStrength6m: 34.1,
+        relativeStrength3m: 27.3,
+        pctAboveSma50: 100,
+        pctAboveSma200: 100,
+        pctNear52WeekHigh: 100,
         averageRsi14: 69.5,
+        averageRelativeVolume: 1.25,
+        industryScore: 96.5,
         topSymbols: ['AAA', 'BBB'],
       },
       {
@@ -736,9 +742,15 @@ describe('buildMarkdown', () => {
         averagePerfY: 55,
         averagePerf6m: 36,
         averagePerf3m: 25,
-        averageRankScore: 78,
-        averagePctOf52wHigh: 90,
+        relativeStrengthY: 24.5,
+        relativeStrength6m: 17.6,
+        relativeStrength3m: 14.8,
+        pctAboveSma50: 100,
+        pctAboveSma200: 100,
+        pctNear52WeekHigh: 100,
         averageRsi14: 64,
+        averageRelativeVolume: 1.1,
+        industryScore: 78,
         topSymbols: ['CCC'],
       },
     ];
@@ -774,11 +786,12 @@ describe('buildMarkdown', () => {
     assert.doesNotMatch(markdown, /## Phase2 テーマランキング/);
     assert.doesNotMatch(markdown, /## Phase2 中テーマランキング/);
     assert.doesNotMatch(markdown, /## Phase3 小テーマランキング/);
-    assert.match(markdown, /## Phase3 Industryランキング/);
-    assert.match(markdown, /- 対象: Phase2通過銘柄をTradingView industryで集計（上位20 industry）/);
-    assert.match(markdown, /\| 順位 \| セクター \| Industry \| 通過銘柄数 \| 平均12M \| 平均6M \| 平均3M \| 平均総合点 \| 平均52w \| 平均RSI \| 上位銘柄 \|/);
-    assert.match(markdown, /\| 1 \| Technology Services \| Packaged Software \| 2 \| 635\.0% \| 52\.5% \| 37\.5% \| 93\.50 \| 96\.5% \| 69\.5 \| AAA, BBB \|/);
-    assert.match(markdown, /## Final 個別銘柄ランキング/);
+    assert.match(markdown, /## Phase2 Industryランキング/);
+    assert.match(markdown, /- 対象: Phase1上位セクター内の広いTradingView scanner取得銘柄をindustryで集計（上位20 industry）/);
+    assert.match(markdown, /\| 順位 \| セクター \| Industry \| 構成銘柄数 \| 平均12M \| 平均6M \| 平均3M \| SPY差12M \| SPY差6M \| SPY差3M \| SMA50上比率 \| SMA200上比率 \| 52w高値90%内比率 \| 平均RSI \| 平均相対出来高 \| Industry総合スコア \| 上位銘柄 \|/);
+    assert.match(markdown, /\| 1 \| Technology Services \| Packaged Software \| 2 \| 635\.0% \| 52\.5% \| 37\.5% \| 604\.5pt \| 34\.1pt \| 27\.3pt \| 100\.0% \| 100\.0% \| 100\.0% \| 69\.5 \| 1\.25x \| 96\.50 \| AAA, BBB \|/);
+    assert.match(markdown, /## Phase4 個別銘柄ランキング/);
+    assert.doesNotMatch(markdown, /## Final 個別銘柄ランキング/);
     assert.match(markdown, /\| 順位 \| セクター \| Industry \| シンボル \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCFマージン \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \(T\/F\) \|/);
     assert.match(markdown, /- 対象Industry: Packaged Software, Food: Specialty\/Candy/);
     assert.match(markdown, /\| 1 \| Technology Services \| Packaged Software \| \*\*AAA\*\* \| NASDAQ \| \$12\.3B \(L\) \|/);
@@ -805,7 +818,7 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| 共通条件 \| ベース条件 \| 時価総額 > \$1B \/ EPS\(TTM\) > 0 \/ Close > SMA200 \/ Close > SMA50 \/ Close ≥ 52週高値 × 75% \|/);
     assert.doesNotMatch(markdown, /\| 補助ポリシー \| 超急騰 \|/);
     assert.match(markdown, /\| 補助ポリシー \| Rule of 40 \| US Technology Services software-like industries only \/ total_revenue_yoy_growth_ttm \+ free_cash_flow_margin_ttm \/ 40\+ を badge \/ 20 未満を warning \/ hard filter なし \|/);
-    assert.match(markdown, /\| 補助ポリシー \| Theme taxonomy \| US Phase2 matched candidates only \/ repo custom theme taxonomy layered on top of TradingView sector\/industry \/ version us-theme-prototype-v2 \|/);
+    assert.match(markdown, /\| 補助ポリシー \| Theme taxonomy \| US Phase3 matched candidates only \/ repo custom theme taxonomy layered on top of TradingView sector\/industry \/ version us-theme-prototype-v2 \|/);
     assert.match(markdown, /\| ユニバース \| 取引所 \| NASDAQ, NYSE \|/);
     assert.match(markdown, /\| 補助ポリシー \| US 指標補完 \| TradingView missing table metrics are supplemented from Moomoo\/adapter data when available; unavailable or non-meaningful values stay N\/A\. \|/);
     assert.match(markdown, /\| 補助ポリシー \| Moomoo 補助 \| 売上成長率 YoY は growth scoring に使い、EPS YoY \/ P\/FCF は TradingView 欠損時の表内指標補完に使う \|/);
@@ -820,7 +833,7 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| Growth confirmation \| 10% \| Revenue YoY growth, EPS YoY growth, FCF YoY growth, Moomoo revenue growth \| 売上・EPS・FCF の成長確認 \|/);
     assert.match(markdown, /\| Risk \/ value guard \| 15% \| P\/FCF, EV\/EBITDA, ATR %, Beta 1Y, Debt \/ equity \| 過熱バリュエーションと変動リスクを抑制 \|/);
     assert.match(markdown, /\*\*指標説明:\*\*/);
-    assert.match(markdown, /この表は Phase2 の銘柄ランキング列を対象にしています。Phase1 の 12M \/ 6M \/ 3M はセクター構成銘柄の平均リターンです。/);
+    assert.match(markdown, /この表は個別銘柄ランキング列を対象にしています。Phase1 の 12M \/ 6M \/ 3M はセクター構成銘柄の平均リターンです。/);
     assert.match(markdown, /Phase1 の `52w高値90%内` は、セクター構成銘柄のうち 52 週高値の 90% 以内にいる銘柄比率です。/);
     assert.match(markdown, /\| 列名 \| 意味 \| 見方 \|/);
     assert.match(markdown, /\| 12M \| 過去12か月の株価騰落率 \(Perf\.Y\) \| 長期モメンタム。高いほど 1 年で強い \|/);
@@ -833,7 +846,7 @@ describe('buildMarkdown', () => {
       ...result,
       focusedHierarchy: null,
     });
-    assert.match(markdownWithoutHierarchy, /## Final 個別銘柄ランキング/);
+    assert.match(markdownWithoutHierarchy, /## Phase4 個別銘柄ランキング/);
     assert.match(markdownWithoutHierarchy, /\| 1 \| Technology Services \| Packaged Software \| \*\*AAA\*\* \| NASDAQ \|/);
   });
 

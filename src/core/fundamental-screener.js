@@ -28,6 +28,7 @@ const MAX_LIMIT = 200;
 const DEFAULT_TIMEOUT_MS = 15000;
 const INDUSTRY_RANKING_LIMIT = 20;
 const FINAL_INDUSTRY_LIMIT = 5;
+const INDUSTRY_UNIVERSE_SERVER_LIMIT = 400;
 const BUILTIN_SYMBOL_ALLOWLISTS = new Map([
   [
     'jpx-prime',
@@ -179,6 +180,20 @@ function buildRequestBody(serverLimit, { market, profile, scope }) {
       { left: 'earnings_per_share_diluted_ttm', operation: 'egreater', right: thresholds.epsMin },
       { left: 'Perf.3M', operation: 'egreater', right: thresholds.perf3mMinPct },
       ...(scope.industry ? [{ left: 'industry', operation: 'equal', right: scope.industry }] : []),
+    ],
+    options: { lang: 'en' },
+    markets: [market],
+    symbols: { query: { types: ['stock'] }, tickers: [] },
+    columns: COLUMNS,
+    sort: { sortBy: 'market_cap_basic', sortOrder: 'desc' },
+    range: [0, serverLimit],
+  };
+}
+
+function buildIndustryUniverseRequestBody(serverLimit, { market, sector }) {
+  return {
+    filter: [
+      { left: 'sector', operation: 'equal', right: sector },
     ],
     options: { lang: 'en' },
     markets: [market],
@@ -933,6 +948,12 @@ function addMetric(entry, field, value) {
   entry.metricCounts[field] += 1;
 }
 
+function addRatio(entry, field, condition, eligible) {
+  if (!eligible) return;
+  entry.ratioBases[field] += 1;
+  if (condition) entry.ratioCounts[field] += 1;
+}
+
 function averageMetric(entry, field, digits = 1) {
   const count = entry.metricCounts[field];
   return count > 0
@@ -940,7 +961,61 @@ function averageMetric(entry, field, digits = 1) {
     : null;
 }
 
+function percentageMetric(entry, field, digits = 1) {
+  const base = entry.ratioBases[field];
+  return base > 0
+    ? Number(((entry.ratioCounts[field] / base) * 100).toFixed(digits))
+    : null;
+}
+
+function compareIndustryRows(a, b) {
+  if ((b.perf3m ?? -Infinity) !== (a.perf3m ?? -Infinity)) {
+    return (b.perf3m ?? -Infinity) - (a.perf3m ?? -Infinity);
+  }
+  if ((b.perf6m ?? -Infinity) !== (a.perf6m ?? -Infinity)) {
+    return (b.perf6m ?? -Infinity) - (a.perf6m ?? -Infinity);
+  }
+  if ((b.perfY ?? -Infinity) !== (a.perfY ?? -Infinity)) {
+    return (b.perfY ?? -Infinity) - (a.perfY ?? -Infinity);
+  }
+  return (a.symbol ?? '').localeCompare(b.symbol ?? '');
+}
+
+function buildIndustryScore(entries) {
+  const fields = [
+    { key: 'averagePerfY', direction: 'desc' },
+    { key: 'averagePerf6m', direction: 'desc' },
+    { key: 'averagePerf3m', direction: 'desc' },
+    { key: 'relativeStrengthY', direction: 'desc' },
+    { key: 'relativeStrength6m', direction: 'desc' },
+    { key: 'relativeStrength3m', direction: 'desc' },
+    { key: 'pctAboveSma50', direction: 'desc' },
+    { key: 'pctAboveSma200', direction: 'desc' },
+    { key: 'pctNear52WeekHigh', direction: 'desc' },
+    { key: 'averageRelativeVolume', direction: 'desc' },
+  ].filter((field) => entries.some((entry) => entry[field.key] !== null && entry[field.key] !== undefined));
+
+  if (entries.length === 0 || fields.length === 0) return entries;
+
+  const rankMaps = new Map(fields.map((field) => [
+    field.key,
+    assignRanks(entries, field.key, field.direction),
+  ]));
+
+  return entries.map((entry, index) => {
+    const averageRankValue = averageRank(
+      fields.map((field) => rankMaps.get(field.key)[index]),
+      entries.length + 1,
+    );
+    return {
+      ...entry,
+      industryScore: rankSumToPositiveScore(averageRankValue, entries.length),
+    };
+  });
+}
+
 function summarizeIndustries(rows, {
+  benchmark = null,
   rankingLimit = INDUSTRY_RANKING_LIMIT,
   finalIndustryLimit = FINAL_INDUSTRY_LIMIT,
 } = {}) {
@@ -964,17 +1039,25 @@ function summarizeIndustries(rows, {
           perfY: 0,
           perf6m: 0,
           perf3m: 0,
-          rankScore: 0,
-          pctOf52wHigh: 0,
           rsi14: 0,
+          relativeVolume: 0,
         },
         metricCounts: {
           perfY: 0,
           perf6m: 0,
           perf3m: 0,
-          rankScore: 0,
-          pctOf52wHigh: 0,
           rsi14: 0,
+          relativeVolume: 0,
+        },
+        ratioCounts: {
+          aboveSma50: 0,
+          aboveSma200: 0,
+          near52WeekHigh: 0,
+        },
+        ratioBases: {
+          aboveSma50: 0,
+          aboveSma200: 0,
+          near52WeekHigh: 0,
         },
         rows: [],
       });
@@ -986,27 +1069,65 @@ function summarizeIndustries(rows, {
     addMetric(entry, 'perfY', row.perfY);
     addMetric(entry, 'perf6m', row.perf6m);
     addMetric(entry, 'perf3m', row.perf3m);
-    addMetric(entry, 'rankScore', row.rankScore);
-    addMetric(entry, 'pctOf52wHigh', row.pctOf52wHigh);
     addMetric(entry, 'rsi14', row.rsi14);
+    addMetric(entry, 'relativeVolume', row.relativeVolume);
+    addRatio(
+      entry,
+      'aboveSma50',
+      row.close > row.sma50,
+      row.close !== null && row.close !== undefined && row.sma50 !== null && row.sma50 !== undefined,
+    );
+    addRatio(
+      entry,
+      'aboveSma200',
+      row.close > row.sma200,
+      row.close !== null && row.close !== undefined && row.sma200 !== null && row.sma200 !== undefined,
+    );
+    addRatio(
+      entry,
+      'near52WeekHigh',
+      row.pctOf52wHigh >= 90,
+      row.pctOf52wHigh !== null && row.pctOf52wHigh !== undefined,
+    );
   }
 
-  const rankedEntries = Array.from(grouped.values())
-    .map((entry) => ({
-      ...entry,
-      rawAverageRankScore: entry.metricCounts.rankScore > 0
-        ? entry.metricTotals.rankScore / entry.metricCounts.rankScore
+  const scoredEntries = buildIndustryScore(Array.from(grouped.values()).map((entry) => {
+    const averagePerfY = averageMetric(entry, 'perfY');
+    const averagePerf6m = averageMetric(entry, 'perf6m');
+    const averagePerf3m = averageMetric(entry, 'perf3m');
+    return {
+      key: entry.key,
+      sector: entry.sector,
+      industry: entry.industry,
+      count: entry.count,
+      averagePerfY,
+      averagePerf6m,
+      averagePerf3m,
+      relativeStrengthY: averagePerfY !== null && benchmark?.perfY !== null && benchmark?.perfY !== undefined
+        ? Number((averagePerfY - benchmark.perfY).toFixed(1))
         : null,
-      rawAveragePerf3m: entry.metricCounts.perf3m > 0
-        ? entry.metricTotals.perf3m / entry.metricCounts.perf3m
+      relativeStrength6m: averagePerf6m !== null && benchmark?.perf6m !== null && benchmark?.perf6m !== undefined
+        ? Number((averagePerf6m - benchmark.perf6m).toFixed(1))
         : null,
-    }))
+      relativeStrength3m: averagePerf3m !== null && benchmark?.perf3m !== null && benchmark?.perf3m !== undefined
+        ? Number((averagePerf3m - benchmark.perf3m).toFixed(1))
+        : null,
+      pctAboveSma50: percentageMetric(entry, 'aboveSma50'),
+      pctAboveSma200: percentageMetric(entry, 'aboveSma200'),
+      pctNear52WeekHigh: percentageMetric(entry, 'near52WeekHigh'),
+      averageRsi14: averageMetric(entry, 'rsi14'),
+      averageRelativeVolume: averageMetric(entry, 'relativeVolume', 2),
+      rows: entry.rows,
+    };
+  }));
+
+  const rankedEntries = scoredEntries
     .sort((a, b) => {
-      if ((b.rawAverageRankScore ?? -Infinity) !== (a.rawAverageRankScore ?? -Infinity)) {
-        return (b.rawAverageRankScore ?? -Infinity) - (a.rawAverageRankScore ?? -Infinity);
+      if ((b.industryScore ?? -Infinity) !== (a.industryScore ?? -Infinity)) {
+        return (b.industryScore ?? -Infinity) - (a.industryScore ?? -Infinity);
       }
-      if ((b.rawAveragePerf3m ?? -Infinity) !== (a.rawAveragePerf3m ?? -Infinity)) {
-        return (b.rawAveragePerf3m ?? -Infinity) - (a.rawAveragePerf3m ?? -Infinity);
+      if ((b.averagePerf3m ?? -Infinity) !== (a.averagePerf3m ?? -Infinity)) {
+        return (b.averagePerf3m ?? -Infinity) - (a.averagePerf3m ?? -Infinity);
       }
       if (b.count !== a.count) return b.count - a.count;
       if (a.sector !== b.sector) return a.sector.localeCompare(b.sector);
@@ -1019,19 +1140,20 @@ function summarizeIndustries(rows, {
       sector: entry.sector,
       industry: entry.industry,
       count: entry.count,
-      averagePerfY: averageMetric(entry, 'perfY'),
-      averagePerf6m: averageMetric(entry, 'perf6m'),
-      averagePerf3m: averageMetric(entry, 'perf3m'),
-      averageRankScore: averageMetric(entry, 'rankScore', 2),
-      averagePctOf52wHigh: averageMetric(entry, 'pctOf52wHigh'),
-      averageRsi14: averageMetric(entry, 'rsi14'),
+      averagePerfY: entry.averagePerfY,
+      averagePerf6m: entry.averagePerf6m,
+      averagePerf3m: entry.averagePerf3m,
+      relativeStrengthY: entry.relativeStrengthY,
+      relativeStrength6m: entry.relativeStrength6m,
+      relativeStrength3m: entry.relativeStrength3m,
+      pctAboveSma50: entry.pctAboveSma50,
+      pctAboveSma200: entry.pctAboveSma200,
+      pctNear52WeekHigh: entry.pctNear52WeekHigh,
+      averageRsi14: entry.averageRsi14,
+      averageRelativeVolume: entry.averageRelativeVolume,
+      industryScore: entry.industryScore,
       topSymbols: [...entry.rows]
-        .sort((a, b) => {
-          if ((b.rankScore ?? -Infinity) !== (a.rankScore ?? -Infinity)) {
-            return (b.rankScore ?? -Infinity) - (a.rankScore ?? -Infinity);
-          }
-          return (a.symbol ?? '').localeCompare(b.symbol ?? '');
-        })
+        .sort(compareIndustryRows)
         .slice(0, 3)
         .map((row) => row.symbol),
     }));
@@ -1054,6 +1176,7 @@ function summarizeIndustries(rows, {
     finalStockRanking,
     selectedIndustryCount: Math.min(finalIndustryLimit, rankedEntries.length),
     missingIndustryCount,
+    selectedIndustryKeys,
   };
 }
 
@@ -1623,6 +1746,47 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
 
   // Fetch more candidates than needed so client filters have enough to work with
   const serverLimit = Math.min(effectiveLimit * 8, 400);
+  const industryUniverseSectorLabels = market === DEFAULT_MARKET ? selectedSectorLabels : [];
+  const industryUniverseResponses = await Promise.all(
+    industryUniverseSectorLabels.map(async (sector) => {
+      const response = await fetchFn(scannerUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildIndustryUniverseRequestBody(INDUSTRY_UNIVERSE_SERVER_LIMIT, { market, sector })),
+        signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
+      });
+
+      if (!response.ok) {
+        throw new Error(`TradingView scanner request failed: HTTP ${response.status}`);
+      }
+
+      const payload = await response.json();
+
+      if (!Array.isArray(payload?.data)) {
+        throw new Error('TradingView scanner returned unexpected response format');
+      }
+
+      return {
+        sector,
+        totalCount: payload.totalCount ?? payload.data.length,
+        rows: payload.data.map(normalizeRow),
+      };
+    }),
+  );
+  const industryUniverseRows = market === DEFAULT_MARKET
+    ? dedupeRows(industryUniverseResponses.flatMap((entry) => entry.rows))
+      .filter((row) => industryUniverseSectorLabels.includes(row.sector))
+      .filter((row) => passesScopeFilters(row, { exchangeAllowlist, symbolAllowlist }))
+    : [];
+  const industrySummary = market === DEFAULT_MARKET
+    ? summarizeIndustries(industryUniverseRows, { benchmark: sectorMomentum.benchmark })
+    : {
+        rankings: [],
+        finalStockRanking: [],
+        selectedIndustryCount: 0,
+        missingIndustryCount: 0,
+        selectedIndustryKeys: new Set(),
+      };
   const requestPlans = effectiveActiveProfiles.flatMap((profile) => profile.requestScopes.map((scope) => ({ profile, scope })));
   const phase2Responses = await Promise.all(
     requestPlans.map(async ({ profile, scope }) => {
@@ -1660,7 +1824,12 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       .map((row) => annotateRowForProfile(row, profile, sectorRankLookup, market))),
   );
   const phase1Filtered = scopeFiltered;
-  let clientFiltered = phase1Filtered.filter(passesProfileClientFilters);
+  let clientFiltered = phase1Filtered
+    .filter((row) => (
+      market !== DEFAULT_MARKET
+      || industrySummary.selectedIndustryKeys.has(`${row.sector}\u0000${row.industry}`)
+    ))
+    .filter(passesProfileClientFilters);
 
   let growthMap = {};
   if (enrichWithYahoo && clientFiltered.length > 0) {
@@ -1716,14 +1885,17 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   const ranked = applyBlockRanks(themedRows, rankingBlocks).sort((a, b) => b.rankScore - a.rankScore);
   const matched = ranked.slice(0, effectiveLimit).map(stripInternalFields);
   const sectorRanking = summarizeSectors(ranked);
-  const industrySummary = market === DEFAULT_MARKET
-    ? summarizeIndustries(ranked)
-    : {
-        rankings: [],
-        finalStockRanking: [],
-        selectedIndustryCount: 0,
-        missingIndustryCount: 0,
-      };
+  const finalStockRanking = market === DEFAULT_MARKET
+    ? ranked
+      .filter((row) => industrySummary.selectedIndustryKeys.has(`${row.sector}\u0000${row.industry}`))
+      .sort((a, b) => {
+        if ((b.rankScore ?? -Infinity) !== (a.rankScore ?? -Infinity)) {
+          return (b.rankScore ?? -Infinity) - (a.rankScore ?? -Infinity);
+        }
+        return (a.symbol ?? '').localeCompare(b.symbol ?? '');
+      })
+      .map((row) => stripInternalFields(row))
+    : industrySummary.finalStockRanking;
   const hierarchyFocusSector = hierarchyFocusSectorOverride ?? selectedSectorLabels[0] ?? null;
   const focusedHierarchy = buildFocusedHierarchy(ranked, hierarchyFocusSector, {
     market,
@@ -1787,13 +1959,16 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   if (ranked.length > 0) {
     criteria.theme_taxonomy_policy = {
       version: themedRows[0]?.themeTaxonomyVersion ?? `${market}-theme-prototype-v1`,
-      scope: `${market} Phase2 matched candidates only`,
+      scope: market === DEFAULT_MARKET
+        ? `${market} Phase3 matched candidates only`
+        : `${market} Phase2 matched candidates only`,
       approach: 'repo custom theme taxonomy layered on top of TradingView sector/industry',
     };
   }
   if (market === DEFAULT_MARKET) {
     criteria.industry_ranking = {
       source: 'TradingView scanner industry',
+      population: 'Phase1 selected sectors before Phase3 stock hard gates',
       top_industries_displayed: industrySummary.rankings.length,
       final_industries_selected: industrySummary.selectedIndustryCount,
       missing_industry_count: industrySummary.missingIndustryCount,
@@ -1845,10 +2020,12 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       serverLimit,
       totalCandidatesReported: phase2Responses.reduce((sum, entry) => sum + entry.totalCount, 0),
       profileRequestCount: requestPlans.length,
+      industryUniverseRequestCount: industryUniverseResponses.length,
+      industryUniverseCandidates: industryUniverseRows.length,
       scopeLabel,
       note: `${exchangeAllowlist || symbolAllowlistKey
         ? 'TradingView Scanner API was queried with sector-specific profile filters, then exchange and symbol-universe filters were applied locally.'
-        : `TradingView Scanner API was queried with sector-specific profile filters for the ${market} market scope.`} Phase1 selected ${selectedSectorLabels.join(', ') || 'no sectors'}, and Phase2 excluded ${excludedSelectedSectors.join(', ') || 'no sectors'}.`,
+        : `TradingView Scanner API was queried with sector-specific profile filters for the ${market} market scope.`} Phase1 selected ${selectedSectorLabels.join(', ') || 'no sectors'}, Industry ranking used broad sector-level scanner rows before stock hard gates, and Phase2 excluded ${excludedSelectedSectors.join(', ') || 'no sectors'}.`,
     },
     marketBreakdown: {
       serverFiltered: countBy(scopeFiltered, 'exchange'),
@@ -1859,7 +2036,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     sectorMomentum,
     sectorRanking,
     industryRanking: industrySummary.rankings,
-    finalStockRanking: industrySummary.finalStockRanking,
+    finalStockRanking,
     themeRanking,
     focusedHierarchy,
     ruleOf40Coverage,

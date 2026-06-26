@@ -94,6 +94,13 @@ function isPhase2StockRequest(body) {
   return body.columns?.includes('earnings_per_share_diluted_ttm');
 }
 
+function isIndustryUniverseRequest(body) {
+  return isPhase2StockRequest(body)
+    && !body.filter?.some((entry) => entry.left === 'market_cap_basic')
+    && !body.filter?.some((entry) => entry.left === 'earnings_per_share_diluted_ttm')
+    && !body.filter?.some((entry) => entry.left === 'Perf.3M');
+}
+
 function isBenchmarkRequest(body) {
   return body.symbols?.tickers?.some((ticker) => (
     ticker.includes('SPY')
@@ -586,8 +593,16 @@ describe('runFundamentalScreener', () => {
     assert.deepEqual(result.criteria.excluded_phase2_sectors, []);
     assert.equal(result.scannerScope.profileRequestCount, 4);
     assert.deepEqual(
-      stockBodies.map((body) => getFilterValue(body, 'sector')),
+      stockBodies
+        .filter((body) => !isIndustryUniverseRequest(body))
+        .map((body) => getFilterValue(body, 'sector')),
       ['Technology Services', 'Electronic Technology', 'Electronic Technology', 'Producer Manufacturing'],
+    );
+    assert.deepEqual(
+      stockBodies
+        .filter(isIndustryUniverseRequest)
+        .map((body) => getFilterValue(body, 'sector')),
+      ['Electronic Technology', 'Producer Manufacturing', 'Technology Services'],
     );
     const technologyServices = result.sectorRanking.find((entry) => entry.sector === 'Technology Services');
     assert.ok(technologyServices);
@@ -1054,10 +1069,7 @@ describe('runFundamentalScreener', () => {
     assert.ok(result.industryRanking.every((entry) => entry.count > 0));
     assert.ok(result.industryRanking.every((entry) => entry.topSymbols.length > 0));
     for (let index = 1; index < result.industryRanking.length; index += 1) {
-      assert.ok(
-        result.industryRanking[index - 1].averageRankScore
-          >= result.industryRanking[index].averageRankScore,
-      );
+      assert.ok(result.industryRanking[index - 1].industryScore >= result.industryRanking[index].industryScore);
     }
     assert.deepEqual(
       [...new Set(result.finalStockRanking.map((row) => row.industry))].sort(),

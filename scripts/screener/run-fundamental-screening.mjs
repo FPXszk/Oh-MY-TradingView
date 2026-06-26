@@ -638,9 +638,9 @@ export function buildMarkdown(result, options = {}) {
     }
 
     if (market === 'america') {
-      lines.push('## Phase3 Industryランキング');
+      lines.push('## Phase2 Industryランキング');
       lines.push('');
-      lines.push('- 対象: Phase2通過銘柄をTradingView industryで集計（上位20 industry）');
+      lines.push('- 対象: Phase1上位セクター内の広いTradingView scanner取得銘柄をindustryで集計（上位20 industry）');
       if (result.criteria?.industry_ranking?.missing_industry_count > 0) {
         lines.push(`- Industry欠損のため集計対象外: ${result.criteria.industry_ranking.missing_industry_count}銘柄`);
       }
@@ -648,15 +648,15 @@ export function buildMarkdown(result, options = {}) {
       if (!result.industryRanking || result.industryRanking.length === 0) {
         lines.push('- Industryランキングは算出できませんでした。');
       } else {
-        lines.push('| 順位 | セクター | Industry | 通過銘柄数 | 平均12M | 平均6M | 平均3M | 平均総合点 | 平均52w | 平均RSI | 上位銘柄 |');
-        lines.push('|:---:|:---|:---|---:|---:|---:|---:|---:|---:|---:|:---|');
+        lines.push(`| 順位 | セクター | Industry | 構成銘柄数 | 平均12M | 平均6M | 平均3M | ${benchmarkLabel}差12M | ${benchmarkLabel}差6M | ${benchmarkLabel}差3M | SMA50上比率 | SMA200上比率 | 52w高値90%内比率 | 平均RSI | 平均相対出来高 | Industry総合スコア | 上位銘柄 |`);
+        lines.push('|:---:|:---|:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|:---|');
         result.industryRanking.forEach((entry, index) => {
-          lines.push(`| ${index + 1} | ${entry.sector} | ${entry.industry} | ${entry.count} | ${fmt(entry.averagePerfY)}% | ${fmt(entry.averagePerf6m)}% | ${fmt(entry.averagePerf3m)}% | ${fmt(entry.averageRankScore, 2)} | ${fmt(entry.averagePctOf52wHigh)}% | ${fmt(entry.averageRsi14)} | ${entry.topSymbols?.join(', ') || 'N/A'} |`);
+          lines.push(`| ${index + 1} | ${entry.sector} | ${entry.industry} | ${entry.count} | ${fmt(entry.averagePerfY)}% | ${fmt(entry.averagePerf6m)}% | ${fmt(entry.averagePerf3m)}% | ${fmt(entry.relativeStrengthY)}pt | ${fmt(entry.relativeStrength6m)}pt | ${fmt(entry.relativeStrength3m)}pt | ${fmt(entry.pctAboveSma50)}% | ${fmt(entry.pctAboveSma200)}% | ${fmt(entry.pctNear52WeekHigh)}% | ${fmt(entry.averageRsi14)} | ${fmt(entry.averageRelativeVolume, 2)}x | ${fmt(entry.industryScore, 2)} | ${entry.topSymbols?.join(', ') || 'N/A'} |`);
         });
       }
       lines.push('');
 
-      lines.push('## Final 個別銘柄ランキング');
+      lines.push('## Phase4 個別銘柄ランキング');
       lines.push('');
       lines.push(`- 対象Industry: ${result.industryRanking?.slice(0, 5).map((entry) => entry.industry).join(', ') || 'なし'}`);
       lines.push('');
@@ -786,7 +786,7 @@ export function buildMarkdown(result, options = {}) {
   lines.push('');
   lines.push('**指標説明:**');
   lines.push('');
-  lines.push('- この表は Phase2 の銘柄ランキング列を対象にしています。Phase1 の 12M / 6M / 3M はセクター構成銘柄の平均リターンです。');
+  lines.push('- この表は個別銘柄ランキング列を対象にしています。Phase1 の 12M / 6M / 3M はセクター構成銘柄の平均リターンです。');
   lines.push('- Phase1 の `52w高値90%内` は、セクター構成銘柄のうち 52 週高値の 90% 以内にいる銘柄比率です。');
   lines.push('');
   lines.push('| 列名 | 意味 | 見方 |');

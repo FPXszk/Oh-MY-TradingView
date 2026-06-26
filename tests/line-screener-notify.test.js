@@ -30,7 +30,7 @@ describe('LINE screener notification helpers', () => {
         '|:---:|:---|---:|',
         '| 1 | Electronic Technology | 233.1% |',
         '',
-        '## Final 個別銘柄ランキング',
+        '## Phase4 個別銘柄ランキング',
         '',
         '| 順位 | セクター | Industry | シンボル | 市場 |',
         '|:---:|:---|:---|:---|:---:|',

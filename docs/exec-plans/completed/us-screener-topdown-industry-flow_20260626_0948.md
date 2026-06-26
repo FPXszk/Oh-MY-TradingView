@@ -25,17 +25,17 @@
 
 ## Implementation Steps
 
-- [ ] RED: coreテストに、個別スクリーニングでは1銘柄だけ通るIndustryより、広い母集団で強いIndustryがPhase2上位に来るケースを追加する。
+- [x] RED: coreテストに、個別スクリーニングでは1銘柄だけ通るIndustryより、広い母集団で強いIndustryがPhase2上位に来るケースを追加する。
   - 確認: 既存実装では `summarizeIndustries(ranked)` のため期待に合わず失敗する。
-- [ ] GREEN: Industry集計用の広い母集団を `scopeFiltered` から作り、`summarizeIndustries` を総合点依存ではなくIndustry総合スコアと指定指標で集計できるようにする。
+- [x] GREEN: Industry集計用の広い母集団を Phase1上位セクターのsector-level scanner rows から作り、`summarizeIndustries` を総合点依存ではなくIndustry総合スコアと指定指標で集計できるようにする。
   - 確認: Phase2 Industry Ranking にセクター、Industry、構成銘柄数、平均12M/6M/3M、SPY差、SMA50/200上比率、52w高値90%内比率、平均RSI、平均相対出来高、Industry総合スコア、上位銘柄が入る。
-- [ ] GREEN: Phase2上位Industryに属する行だけへ既存の個別銘柄 hard gate / supplement / scoring を適用し、Phase4個別ランキングを既存総合点順で作る。
+- [x] GREEN: Phase2上位Industryに属する行だけへ既存の個別銘柄 hard gate / supplement / scoring を適用し、Phase4個別ランキングを既存総合点順で作る。
   - 確認: Final用の銘柄選抜はPhase2上位Industry内に限定され、T/Fスコア表示は維持される。
-- [ ] RED/GREEN: Markdown出力を `Phase2 Industryランキング` と `Phase4 個別銘柄ランキング` へ更新する。
+- [x] RED/GREEN: Markdown出力を `Phase2 Industryランキング` と `Phase4 個別銘柄ランキング` へ更新する。
   - 確認: 旧 `Final 個別銘柄ランキング` 見出しは米国レポートに出ない。
-- [ ] REVIEW: 変更差分を確認し、ロジック破綻、過剰な抽象化、不要な副作用がないか見る。
+- [x] REVIEW: 変更差分を確認し、ロジック破綻、過剰な抽象化、不要な副作用がないか見る。
   - 確認: 日本株フローと無関係なレポート構成は変更されていない。
-- [ ] VERIFY: focused tests と必要なレポート生成を実行する。
+- [x] VERIFY: focused tests と必要なレポート生成を実行する。
   - 確認: `node --test tests/fundamental-screener.test.js tests/daily-screener-report.test.js tests/line-screener-notify.test.js` が通る。
   - 確認: 米国 daily screener 実行で `docs/reports/screener/daily-ranking.md` が新しい階層になる。
 
