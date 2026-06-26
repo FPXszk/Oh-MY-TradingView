@@ -27,7 +27,8 @@ const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 200;
 const DEFAULT_TIMEOUT_MS = 15000;
 const INDUSTRY_RANKING_LIMIT = 20;
-const FINAL_INDUSTRY_LIMIT = 5;
+const FINAL_INDUSTRY_LIMIT = INDUSTRY_RANKING_LIMIT;
+const FINAL_STOCK_LIMIT = 40;
 const INDUSTRY_UNIVERSE_SERVER_LIMIT = 400;
 const BUILTIN_SYMBOL_ALLOWLISTS = new Map([
   [
@@ -1894,6 +1895,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
         }
         return (a.symbol ?? '').localeCompare(b.symbol ?? '');
       })
+      .slice(0, FINAL_STOCK_LIMIT)
       .map((row) => stripInternalFields(row))
     : industrySummary.finalStockRanking;
   const hierarchyFocusSector = hierarchyFocusSectorOverride ?? selectedSectorLabels[0] ?? null;

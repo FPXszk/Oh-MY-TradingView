@@ -658,7 +658,8 @@ export function buildMarkdown(result, options = {}) {
 
       lines.push('## Phase4 個別銘柄ランキング');
       lines.push('');
-      lines.push(`- 対象Industry: ${result.industryRanking?.slice(0, 5).map((entry) => entry.industry).join(', ') || 'なし'}`);
+      lines.push(`- 対象Industry（Phase3上位20）: ${result.industryRanking?.slice(0, 20).map((entry) => entry.industry).join(', ') || 'なし'}`);
+      lines.push('- 表示上限: 全業種横断の総合点上位40銘柄');
       lines.push('');
       if (!result.finalStockRanking || result.finalStockRanking.length === 0) {
         lines.push('- 個別銘柄ランキングは算出できませんでした。');

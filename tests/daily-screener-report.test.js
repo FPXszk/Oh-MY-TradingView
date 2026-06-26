@@ -793,7 +793,8 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /## Phase4 個別銘柄ランキング/);
     assert.doesNotMatch(markdown, /## Final 個別銘柄ランキング/);
     assert.match(markdown, /\| 順位 \| セクター \| Industry \| シンボル \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCFマージン \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \(T\/F\) \|/);
-    assert.match(markdown, /- 対象Industry: Packaged Software, Food: Specialty\/Candy/);
+    assert.match(markdown, /- 対象Industry（Phase3上位20）: Packaged Software, Food: Specialty\/Candy/);
+    assert.match(markdown, /- 表示上限: 全業種横断の総合点上位40銘柄/);
     assert.match(markdown, /\| 1 \| Technology Services \| Packaged Software \| \*\*AAA\*\* \| NASDAQ \| \$12\.3B \(L\) \|/);
     assert.match(markdown, /\| 2 \| Technology Services \| Packaged Software \| \*\*BBB\*\* \| NASDAQ \| \$9\.8B \(M\+\) \|/);
     assert.match(markdown, /\| 3 \| Consumer Non-Durables \| Food: Specialty\/Candy \| \*\*CCC\*\* \| NYSE \| \$4\.3B \(M\) \|/);

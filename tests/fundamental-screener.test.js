@@ -1082,6 +1082,105 @@ describe('runFundamentalScreener', () => {
     assert.equal(result.criteria.industry_ranking.missing_industry_count, 0);
   });
 
+  it('builds Phase4 from the top 20 industries and limits the cross-industry stock ranking to 40 rows', async () => {
+    const industryRows = [];
+    for (let industryIndex = 1; industryIndex <= 21; industryIndex += 1) {
+      for (let stockIndex = 1; stockIndex <= 3; stockIndex += 1) {
+        const symbol = `I${String(industryIndex).padStart(2, '0')}${stockIndex}`;
+        industryRows.push(buildPhase2Row(`NASDAQ:${symbol}`, {
+          name: symbol,
+          sector: 'Electronic Technology',
+          industry: `Custom Industry ${String(industryIndex).padStart(2, '0')}`,
+          close: 100,
+          rsi: 70 - industryIndex * 0.5,
+          sma200: 80,
+          sma50: 90,
+          high52w: 105,
+          perf3m: 100 - industryIndex * 2 - stockIndex * 0.1,
+          perf6m: 160 - industryIndex * 2 - stockIndex * 0.1,
+          perfY: 240 - industryIndex * 2 - stockIndex * 0.1,
+          relativeVolume: 1.5 - industryIndex * 0.01,
+          marketCap: 10_000_000_000 + industryIndex * 100_000_000 + stockIndex,
+          eps: 2,
+          roe: 25,
+          roic: 20,
+          grossMargin: 45,
+          grossProfitTtm: 450_000_000,
+          totalAssets: 1_000_000_000,
+          operatingMargin: 20,
+          fcfMargin: 18,
+          fcfTtm: 200_000_000,
+          revenueGrowthTtm: 20,
+          pFcfDirect: 30,
+          netDebt: 0,
+          volume: 900_000,
+        }));
+      }
+    }
+
+    const result = await runFundamentalScreener({
+      limit: 80,
+      _deps: {
+        marketCapMinUsd: 1_000_000_000,
+        market: 'america',
+        exchangeAllowlist: ['NASDAQ', 'NYSE'],
+        selectedSectorCount: 1,
+        fetch: createMockFetch({
+          stockBodies: [],
+          benchmarkPayload: {
+            totalCount: 1,
+            data: [
+              buildPhase1StockRow('BATS:SPY', {
+                name: 'SPY',
+                sector: 'Benchmark',
+                close: 100,
+                sma200: 95,
+                sma50: 98,
+                high52w: 104,
+                perf1m: 5,
+                perf3m: 10,
+                perf6m: 20,
+                perfY: 40,
+                rsi: 60,
+                relativeVolume: 1,
+                marketCap: 400_000_000_000,
+              }),
+            ],
+          },
+          phase1Payload: {
+            totalCount: 1,
+            data: [
+              buildPhase1StockRow('NASDAQ:I011', {
+                name: 'I011',
+                sector: 'Electronic Technology',
+                perf1m: 20,
+                perf3m: 80,
+                perf6m: 120,
+                perfY: 180,
+                rsi: 70,
+                relativeVolume: 1.4,
+                marketCap: 10_000_000_000,
+              }),
+            ],
+          },
+          phase2PayloadsBySector: {
+            'Electronic Technology': {
+              totalCount: industryRows.length,
+              data: industryRows,
+            },
+          },
+        }),
+      },
+    });
+
+    assert.equal(result.industryRanking.length, 20);
+    assert.equal(result.criteria.industry_ranking.final_industries_selected, 20);
+    assert.equal(result.finalStockRanking.length, 40);
+    assertRankScoresDescending(result.finalStockRanking);
+    assert.ok(result.finalStockRanking.every((row) => row.industry !== 'Custom Industry 21'));
+    assert.equal(new Set(result.finalStockRanking.map((row) => row.industry)).size > 5, true);
+  });
+
   it('applies Japan-specific profiles and skips finance even when phase1 selects it', async () => {
     const stockBodies = [];
     const result = await runFundamentalScreener({

@@ -24,15 +24,15 @@
 
 ## Implementation Steps
 
-- [ ] RED: Phase4の対象Industry数と表示上限40の期待値をテストへ追加する。
+- [x] RED: Phase4の対象Industry数と表示上限40の期待値をテストへ追加する。
   - 確認: 現行の上位5Industry前提では失敗する。
-- [ ] GREEN: Phase4対象IndustryをPhase3表示上位20業種に合わせ、個別銘柄ランキングを横断スコア順の上位40銘柄へ制限する。
+- [x] GREEN: Phase4対象IndustryをPhase3表示上位20業種に合わせ、個別銘柄ランキングを横断スコア順の上位40銘柄へ制限する。
   - 確認: `final_industries_selected` は最大20、Phase4銘柄数は最大40になる。
-- [ ] GREEN: MarkdownのPhase4説明文を新仕様へ更新する。
+- [x] GREEN: MarkdownのPhase4説明文を新仕様へ更新する。
   - 確認: `対象Industry` が上位20業種を前提にし、表示上限40が明記される。
-- [ ] REVIEW: 差分を確認し、既存の補完・スコアリング・日本株フローへ副作用がないか見る。
+- [x] REVIEW: 差分を確認し、既存の補完・スコアリング・日本株フローへ副作用がないか見る。
   - 確認: `rankScore` 計算順序とT/F表示は変えない。
-- [ ] VERIFY: focused tests、米国レポート生成、unit tests を実行する。
+- [x] VERIFY: focused tests、米国レポート生成、unit tests を実行する。
   - 確認: `node --test tests/fundamental-screener.test.js tests/daily-screener-report.test.js tests/line-screener-notify.test.js` が通る。
   - 確認: `npm run test:unit` が通る。
 
