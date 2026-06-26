@@ -17,17 +17,17 @@ TradingView の `earnings_per_share_diluted_yoy_growth_ttm` が `null` の米国
 
 ## Implementation Steps
 
-- [ ] Step 1: 既存 SEC EPS 比較ロジックと missing metric merge を確認し、補完データ形を最小に決める。
+- [x] Step 1: 既存 SEC EPS 比較ロジックと missing metric merge を確認し、補完データ形を最小に決める。
   - Check: 黒字転換の既存 `epsGrowthStatus`, `epsGrowthScoreValue` を壊さない。
-- [ ] Step 2: RED テストを追加する。
+- [x] Step 2: RED テストを追加する。
   - Check: positive-to-positive EPS 比較で SEC numeric YoY が返り、統合結果に `SEC補完` 表示が出る。
-- [ ] Step 3: `sec-edgar` の補完出力を通常 YoY に拡張する。
+- [x] Step 3: `sec-edgar` の補完出力を通常 YoY に拡張する。
   - Check: `previousEps === 0` や比較不能ケースでは無理に補完しない。
-- [ ] Step 4: screener 側の merge を拡張する。
+- [x] Step 4: screener 側の merge を拡張する。
   - Check: TradingView 値がある場合は上書きせず、欠損時だけ SEC 補完を採用する。
-- [ ] Step 5: テストとレポート生成を実行する。
+- [x] Step 5: テストとレポート生成を実行する。
   - Check: `npm run test:unit` と `git diff --check` が通る。可能なら daily report で MRVL/VRTX の `N/A%` が補完表示へ変わることを確認する。
-- [ ] Step 6: 自己レビューし、計画を completed へ移動してコミット・プッシュする。
+- [x] Step 6: 自己レビューし、計画を completed へ移動してコミット・プッシュする。
   - Check: 変更範囲が上記ファイルに収まり、関係ない差分がない。
 
 ## Out of Scope

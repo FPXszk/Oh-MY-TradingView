@@ -4,6 +4,7 @@ import { zipSync } from 'fflate';
 
 import { evaluateSymbolsAgainstFundamentalScreener, runFundamentalScreener } from '../src/core/fundamental-screener.js';
 import { getEdinetSupplementalFundamentalsBatch } from '../src/core/edinet.js';
+import { resetSecEdgarCachesForTests } from '../src/core/sec-edgar.js';
 
 function buildPhase2Row(symbol, values) {
   return {
@@ -1967,6 +1968,20 @@ describe('runFundamentalScreener', () => {
             source: 'price-history-adapter',
             atrPct: 4.25,
           },
+          MRVL: {
+            source: 'sec-companyfacts-cik-0001835632',
+            earningsGrowthPct: -80,
+            epsGrowthStatus: 'sec_eps_yoy',
+            epsGrowthDisplay: 'SEC補完 -80.0% (0.2 -> 0.04)',
+            epsGrowthSourceDetail: {
+              source: 'sec-companyfacts',
+              fact: 'us-gaap:EarningsPerShareDiluted',
+              currentPeriod: 'CY2026Q1',
+              previousPeriod: 'CY2025Q1',
+              currentEps: 0.04,
+              previousEps: 0.2,
+            },
+          },
           QCOM: {
             source: 'sec-companyfacts-cik-0000804328',
             pFcf: 12.5,
@@ -2040,7 +2055,7 @@ describe('runFundamentalScreener', () => {
               ],
             },
             'Electronic Technology': {
-              totalCount: 2,
+              totalCount: 3,
               data: [
                 buildPhase2Row('NASDAQ:MU', {
                   name: 'Micron',
@@ -2087,6 +2102,29 @@ describe('runFundamentalScreener', () => {
                   netDebt: -5_000_000,
                   volume: 800_000,
                 }),
+                buildPhase2Row('NASDAQ:MRVL', {
+                  name: 'Marvell',
+                  sector: 'Electronic Technology',
+                  industry: 'Semiconductors',
+                  close: 80,
+                  rsi: 62,
+                  sma200: 65,
+                  sma50: 72,
+                  high52w: 85,
+                  perf3m: 17,
+                  relativeVolume: 1.05,
+                  marketCap: 2_100_000_000,
+                  eps: 2.9,
+                  epsGrowthTtm: null,
+                  roe: 20,
+                  grossMargin: 55,
+                  fcfMargin: 12,
+                  fcfTtm: 150_000_000,
+                  revenueGrowthTtm: 18,
+                  pFcfDirect: 18,
+                  netDebt: 0,
+                  volume: 750_000,
+                }),
               ],
             },
           },
@@ -2098,21 +2136,154 @@ describe('runFundamentalScreener', () => {
     assert.equal(result.results.find((row) => row.symbol === 'MU').epsGrowthTtm, 27);
     assert.equal(result.results.find((row) => row.symbol === 'MU').pFcf, 22.4);
     assert.equal(result.results.find((row) => row.symbol === 'MU').atrPct, 4.25);
+    assert.equal(result.results.find((row) => row.symbol === 'MRVL').epsGrowthTtm, -80);
+    assert.equal(result.results.find((row) => row.symbol === 'MRVL').epsGrowthStatus, 'sec_eps_yoy');
+    assert.equal(result.results.find((row) => row.symbol === 'MRVL').epsGrowthDisplay, 'SEC補完 -80.0% (0.2 -> 0.04)');
+    assert.equal(result.results.find((row) => row.symbol === 'MRVL').epsGrowthScoreValue, -80);
+    assert.deepEqual(result.results.find((row) => row.symbol === 'MRVL').epsGrowthSourceDetail, {
+      source: 'sec-companyfacts',
+      fact: 'us-gaap:EarningsPerShareDiluted',
+      currentPeriod: 'CY2026Q1',
+      previousPeriod: 'CY2025Q1',
+      currentEps: 0.04,
+      previousEps: 0.2,
+    });
     assert.equal(result.results.find((row) => row.symbol === 'QCOM').epsGrowthStatus, 'turnaround_to_profit');
     assert.equal(result.results.find((row) => row.symbol === 'QCOM').epsGrowthScoreValue, 120);
     assert.deepEqual(result.results.find((row) => row.symbol === 'MU').missingMetricSupplement, {
       sources: ['moomoo', 'price-history-adapter'],
       fields: ['epsGrowthTtm', 'pFcf', 'atrPct'],
     });
+    assert.deepEqual(result.results.find((row) => row.symbol === 'MRVL').missingMetricSupplement, {
+      sources: ['sec-companyfacts-cik-0001835632'],
+      fields: ['epsGrowthTtm'],
+    });
     assert.equal(result.results.find((row) => row.symbol === 'QCOM').epsGrowthTtm, null);
     assert.equal(result.results.find((row) => row.symbol === 'QCOM').pFcf, null);
-    assert.equal(result.sourceDetails.usMissingMetricSupplement.supplementedRows, 2);
+    assert.equal(result.sourceDetails.usMissingMetricSupplement.supplementedRows, 3);
     assert.deepEqual(result.sourceDetails.usMissingMetricSupplement.fields, {
-      epsGrowthTtm: 1,
+      epsGrowthTtm: 2,
       pFcf: 1,
       atrPct: 1,
       epsGrowthStatus: 1,
     });
+  });
+
+  it('uses the default SEC EPS YoY supplementer when no test adapter overrides it', async () => {
+    resetSecEdgarCachesForTests();
+    const originalFetch = globalThis.fetch;
+    const originalUserAgent = process.env.SEC_USER_AGENT;
+    process.env.SEC_USER_AGENT = 'Oh-MY-TradingView test@example.com';
+    globalThis.fetch = async (url) => {
+      if (String(url).endsWith('/company_tickers.json')) {
+        return {
+          ok: true,
+          async json() {
+            return { 0: { ticker: 'MRVL', cik_str: 1835632 } };
+          },
+        };
+      }
+      return {
+        ok: true,
+        async json() {
+          return {
+            facts: {
+              'us-gaap': {
+                EarningsPerShareDiluted: {
+                  units: {
+                    'USD/shares': [
+                      { start: '2025-02-02', end: '2025-05-03', val: 0.2, fp: 'Q1', filed: '2025-05-29', frame: 'CY2025Q1' },
+                      { start: '2026-02-01', end: '2026-05-02', val: 0.04, fp: 'Q1', filed: '2026-05-28', frame: 'CY2026Q1' },
+                    ],
+                  },
+                },
+              },
+            },
+          };
+        },
+      };
+    };
+
+    try {
+      const result = await runFundamentalScreener({
+        limit: 10,
+        _deps: {
+          marketCapMinUsd: 1_000_000_000,
+          fetch: createMockFetch({
+            stockBodies: [],
+            phase1Payload: {
+              totalCount: 1,
+              data: [
+                buildPhase1StockRow('NASDAQ:NVDA', {
+                  name: 'Nvidia',
+                  sector: 'Electronic Technology',
+                  perf1m: 20,
+                  perf3m: 18,
+                  perf6m: 35,
+                  perfY: 70,
+                  rsi: 69,
+                  relativeVolume: 1.0,
+                  marketCap: 2_500_000_000,
+                }),
+              ],
+            },
+            phase2PayloadsBySector: {
+              'Electronic Technology': {
+                totalCount: 1,
+                data: [
+                  buildPhase2Row('NASDAQ:MRVL', {
+                    name: 'Marvell',
+                    sector: 'Electronic Technology',
+                    industry: 'Semiconductors',
+                    close: 80,
+                    rsi: 62,
+                    sma200: 65,
+                    sma50: 72,
+                    high52w: 85,
+                    perf3m: 17,
+                    perf6m: 40,
+                    perfY: 80,
+                    relativeVolume: 1.05,
+                    marketCap: 2_100_000_000,
+                    eps: 2.9,
+                    epsGrowthTtm: null,
+                    roe: 20,
+                    roic: 20,
+                    grossMargin: 55,
+                    grossProfitTtm: 600_000_000,
+                    totalAssets: 2_000_000_000,
+                    operatingMargin: 25,
+                    fcfMargin: 12,
+                    fcfTtm: 150_000_000,
+                    fcfGrowthTtm: 20,
+                    revenueGrowthTtm: 18,
+                    pFcfDirect: 18,
+                    netDebt: 0,
+                    volume: 750_000,
+                  }),
+                ],
+              },
+            },
+          }),
+        },
+      });
+
+      const mrvl = result.results.find((row) => row.symbol === 'MRVL');
+      assert.equal(mrvl.epsGrowthTtm, -80);
+      assert.equal(mrvl.epsGrowthDisplay, 'SEC補完 -80.0% (0.2 -> 0.04)');
+      assert.deepEqual(mrvl.missingMetricSupplement, {
+        sources: ['sec-companyfacts-cik-0001835632'],
+        fields: ['epsGrowthTtm'],
+      });
+    } finally {
+      if (originalUserAgent === undefined) {
+        delete process.env.SEC_USER_AGENT;
+      } else {
+        process.env.SEC_USER_AGENT = originalUserAgent;
+      }
+      globalThis.fetch = originalFetch;
+      resetSecEdgarCachesForTests();
+    }
   });
 
   it('treats negative TradingView EPS YoY with positive EPS as a turnaround for scoring', async () => {

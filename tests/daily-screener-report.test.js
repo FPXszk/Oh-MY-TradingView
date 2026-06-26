@@ -305,7 +305,7 @@ describe('buildMarkdown', () => {
           hard_filter: false,
         },
         us_fundamental_supplement_policy: 'TradingView FCF gaps are supplemented from configured official/adapter data when available; supplemented rows keep source metadata.',
-        us_missing_metric_supplement_policy: 'TradingView missing table metrics are supplemented from Moomoo/adapter data when available; unavailable or non-meaningful values stay N/A.',
+        us_missing_metric_supplement_policy: 'TradingView missing table metrics are supplemented from Moomoo/adapter/SEC companyfacts data when available; unavailable or non-meaningful values stay N/A.',
         theme_taxonomy_policy: {
           version: 'us-theme-prototype-v2',
           scope: 'US Phase3 matched candidates only',
@@ -821,7 +821,7 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| 補助ポリシー \| Rule of 40 \| US Technology Services software-like industries only \/ total_revenue_yoy_growth_ttm \+ free_cash_flow_margin_ttm \/ 40\+ を badge \/ 20 未満を warning \/ hard filter なし \|/);
     assert.match(markdown, /\| 補助ポリシー \| Theme taxonomy \| US Phase3 matched candidates only \/ repo custom theme taxonomy layered on top of TradingView sector\/industry \/ version us-theme-prototype-v2 \|/);
     assert.match(markdown, /\| ユニバース \| 取引所 \| NASDAQ, NYSE \|/);
-    assert.match(markdown, /\| 補助ポリシー \| US 指標補完 \| TradingView missing table metrics are supplemented from Moomoo\/adapter data when available; unavailable or non-meaningful values stay N\/A\. \|/);
+    assert.match(markdown, /\| 補助ポリシー \| US 指標補完 \| TradingView missing table metrics are supplemented from Moomoo\/adapter\/SEC companyfacts data when available; unavailable or non-meaningful values stay N\/A\. \|/);
     assert.match(markdown, /\| 補助ポリシー \| Moomoo 補助 \| 売上成長率 YoY は growth scoring に使い、EPS YoY \/ P\/FCF は TradingView 欠損時の表内指標補完に使う \|/);
     assert.match(markdown, /\| セクタープロファイル \| Technology Services \| scope: Technology Services \/ hard gate: Perf\.3M > 10% \/ scoring: RSI 60\+、相対出来高 1\.00x\+、ROE 20%\+、粗利率 40%\+、FCFマージン 15%\+、P\/FCF 50 は risk penalty \|/);
     assert.match(markdown, /\| セクタープロファイル \| Electronic Technology \/ Semiconductors \| scope: Electronic Technology \/ hard gate: Perf\.3M > 10% \/ scoring: RSI 60\+、相対出来高 0\.90x\+、ROE 15%\+、粗利率 30%\+、FCFマージン 5%\+、P\/FCF 50 \(fabless\), 120 \(IDM\/foundry\) は risk penalty \|/);

@@ -1,13 +1,13 @@
 # スクリーニング結果 2026/06/26（金）
 
-更新: 10:17 JST
+更新: 10:45 JST
 
 セクター別取得候補 114銘柄 → ユニバース条件通過 69銘柄 → ランキング対象 52銘柄 → レポート掲載 40銘柄
 
 ## データソース状況
 
 - US FCF補完: 0銘柄
-- US 指標補完: 4銘柄 / epsGrowthStatus 4
+- US 指標補完: 7銘柄 / epsGrowthStatus 4, epsGrowthTtm 7
 
 ## Phase1 セクターランキング
 
@@ -72,46 +72,46 @@
 
 | 順位 | セクター | Industry | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCFマージン | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 (T/F) |
 |:---:|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|:---|---:|---:|---:|
-| 1 | Electronic Technology | Semiconductors | **MU** | NASDAQ | $1.37T (XL) | 858.5% | 317.3% | 237.2% | 96.7% | 58.4% | 53.8% | 29.0% | 167.0% | 196.0 | 697.4% | 53.1 | 7.9% | 74.56 (T39.4/F35.1) |
-| 2 | Electronic Technology | Computer Peripherals | **SNDK** | NASDAQ | $345.8B (XL) | 4832.4% | 799.5% | 289.3% | 99.2% | 35.7% | 43.3% | 33.8% | 82.8% | 116.6 | 黒字転換 (SEC -11.16 -> 29.42) | 82.2 | 7.9% | 72.73 (T41.5/F31.3) |
-| 3 | Electronic Technology | Computer Peripherals | **STX** | NASDAQ | $229.9B (XL) | 644.8% | 255.1% | 170.9% | 89.5% | 51.7% | 51.4% | 21.9% | 28.9% | 50.8 | 52.2% | 97.3 | 6.9% | 66.63 (T38.7/F27.9) |
-| 4 | Electronic Technology | Electronic Production Equipment | **TER** | NASDAQ | $73.9B (L+) | 420.6% | 136.9% | 60.9% | 99.9% | 28.2% | 50.0% | 14.6% | 30.3% | 44.9 | 52.9% | 134.5 | 6.3% | 64.60 (T39.2/F25.4) |
-| 5 | Electronic Technology | Computer Peripherals | **WDC** | NASDAQ | $232.8B (XL) | 980.1% | 270.5% | 145.7% | 84.4% | 63.1% | 35.5% | 24.7% | -18.4% | 6.2 | 218.5% | 90.0 | 7.8% | 64.60 (T37.5/F27.1) |
-| 6 | Electronic Technology | Semiconductors | **ALAB** | NASDAQ | $68.2B (L+) | 348.7% | 131.2% | 258.6% | 90.3% | 20.8% | 45.9% | 34.2% | 104.2% | 138.4 | 532.4% | 210.3 | 8.5% | 61.90 (T31.5/F30.4) |
-| 7 | Electronic Technology | Computer Processing Hardware | **DELL** | NYSE | $265.4B (XL) | 238.9% | 218.3% | 133.8% | 87.2% | 38.1% | 22.3% | 7.0% | 38.9% | 45.9 | 100.6% | 28.4 | 7.3% | 61.69 (T35.9/F25.8) |
-| 8 | Producer Manufacturing | Industrial Machinery | **LRCX** | NASDAQ | $502.5B (XL) | 317.5% | 125.2% | 91.6% | 98.1% | 48.7% | 52.1% | 27.7% | 26.5% | 54.2 | 47.6% | 84.1 | 6.0% | 61.46 (T31.0/F30.5) |
-| 9 | Electronic Technology | Computer Peripherals | **ANET** | NYSE | $208.3B (XL) | 73.0% | 26.3% | 36.4% | 92.0% | 31.5% | 28.5% | 54.4% | 30.6% | 84.9 | 23.5% | 39.9 | 5.1% | 61.10 (T26.3/F34.8) |
-| 10 | Electronic Technology | Semiconductors | **KLAC** | NASDAQ | $338.1B (XL) | 189.2% | 101.7% | 80.1% | 95.9% | 42.5% | 46.5% | 30.7% | 13.4% | 44.1 | 28.6% | 85.0 | 6.0% | 60.77 (T31.8/F29.0) |
-| 11 | Electronic Technology | Semiconductors | **AMD** | NASDAQ | $868.4B (XL) | 277.9% | 147.2% | 163.9% | 94.6% | 7.6% | 22.1% | 22.9% | 35.0% | 57.9 | 123.3% | 102.5 | 6.3% | 60.15 (T35.3/F24.9) |
-| 12 | Electronic Technology | Electronic Components | **GLW** | NYSE | $196.2B (L+) | 342.1% | 153.5% | 68.4% | 98.9% | 9.3% | 18.6% | 9.2% | 20.1% | 29.2 | 298.7% | 132.4 | 7.0% | 58.73 (T39.6/F19.2) |
-| 13 | Producer Manufacturing | Industrial Machinery | **AMAT** | NASDAQ | $530.4B (XL) | 268.8% | 155.1% | 97.8% | 99.8% | 31.2% | 35.3% | 18.4% | 3.4% | 21.8 | 29.5% | 99.9 | 5.6% | 57.69 (T34.0/F23.6) |
-| 14 | Electronic Technology | Electronic Equipment/Instruments | **KEYS** | NYSE | $61.5B (L+) | 118.2% | 75.0% | 29.6% | 96.0% | 13.0% | 33.1% | 22.3% | 19.2% | 41.5 | 42.6% | 45.9 | 3.9% | 57.62 (T28.7/F28.9) |
-| 15 | Electronic Technology | Telecommunications Equipment | **CSCO** | NASDAQ | $468.9B (XL) | 75.3% | 52.3% | 45.1% | 91.3% | 17.5% | 30.7% | 19.4% | 9.2% | 28.6 | 25.7% | 40.2 | 3.3% | 57.35 (T30.1/F27.3) |
-| 16 | Electronic Technology | Electronic Production Equipment | **VRT** | NYSE | $125.1B (L+) | 164.7% | 94.6% | 30.2% | 85.7% | 23.6% | 28.3% | 21.0% | 29.0% | 50.0 | 131.0% | 56.0 | 6.4% | 56.46 (T27.3/F29.2) |
-| 17 | Electronic Technology | Computer Peripherals | **NTAP** | NASDAQ | $30.3B (L) | 45.3% | 40.2% | 48.7% | 80.2% | 32.8% | 45.5% | 27.0% | 5.3% | 32.3 | 11.9% | 16.5 | 4.8% | 56.29 (T22.3/F34.0) |
-| 18 | Electronic Technology | Electronic Components | **APH** | NYSE | $203.2B (XL) | 71.8% | 19.7% | 34.8% | 97.9% | 18.7% | 23.3% | 17.9% | 54.4% | 72.3 | 68.6% | 46.0 | 3.9% | 55.40 (T28.0/F27.4) |
-| 19 | Electronic Technology | Semiconductors | **TXN** | NASDAQ | $283.8B (XL) | 51.3% | 75.5% | 62.6% | 93.3% | 18.1% | 30.7% | 20.2% | 14.9% | 35.1 | 10.8% | 76.6 | 4.5% | 54.29 (T26.9/F27.4) |
-| 20 | Electronic Technology | Semiconductors | **ADI** | NASDAQ | $203.6B (XL) | 77.4% | 50.5% | 34.4% | 93.7% | 8.0% | 15.6% | 35.8% | 29.8% | 65.6 | 83.2% | 44.9 | 4.5% | 53.75 (T24.0/F29.7) |
-| 21 | Electronic Technology | Electronic Equipment/Instruments | **Q** | NYSE | $35.1B (L) | 137.6% | 100.9% | 50.6% | 94.5% | 5.8% | 14.8% | 18.1% | 10.8% | 28.9 | -13.8% | 39.2 | 5.5% | 52.35 (T30.6/F21.7) |
-| 22 | Electronic Technology | Electronic Production Equipment | **FLEX** | NASDAQ | $59.1B (L+) | 233.4% | 152.9% | 150.6% | 96.7% | 10.1% | 11.6% | 3.8% | 8.1% | 11.9 | 10.4% | 57.3 | 5.8% | 51.40 (T36.6/F14.8) |
-| 23 | Electronic Technology | Semiconductors | **MRVL** | NASDAQ | $246.0B (XL) | 268.3% | 222.9% | 184.7% | 85.3% | 12.5% | 16.4% | 19.1% | 34.1% | 53.2 | N/A% | 150.9 | 9.7% | 51.04 (T31.5/F19.5) |
-| 24 | Electronic Technology | Semiconductors | **GFS** | NASDAQ | $47.3B (L) | 120.1% | 139.9% | 96.7% | 93.0% | 6.0% | 10.6% | 15.7% | 0.8% | 16.5 | 黒字転換 (SEC -0.48 -> 1.59) | 45.0 | 6.1% | 49.65 (T28.4/F21.2) |
-| 25 | Producer Manufacturing | Trucks/Construction/Farm Machinery | **CAT** | NYSE | $486.9B (XL) | 183.4% | 81.2% | 52.2% | 100.0% | 20.2% | 23.6% | 11.2% | 11.8% | 23.0 | -2.0% | 62.3 | 3.5% | 49.62 (T29.0/F20.6) |
-| 26 | Health Technology | Pharmaceuticals: Major | **ABBV** | NYSE | $429.6B (XL) | 31.2% | 5.8% | 15.0% | 99.3% | 5.8% | 32.5% | 31.8% | 9.5% | 41.3 | -13.5% | 21.6 | 2.6% | 47.98 (T12.9/F35.0) |
-| 27 | Electronic Technology | Semiconductors | **NXPI** | NASDAQ | $75.4B (L+) | 37.3% | 32.4% | 52.4% | 87.8% | 12.8% | 25.0% | 22.1% | 2.4% | 24.5 | 13.8% | 27.2 | 5.3% | 47.52 (T20.4/F27.2) |
-| 28 | Electronic Technology | Semiconductors | **QCOM** | NASDAQ | $216.0B (XL) | 31.3% | 17.1% | 57.7% | 78.8% | 23.9% | 42.7% | 28.1% | 5.2% | 33.3 | -6.4% | 17.6 | 8.4% | 47.33 (T17.8/F29.5) |
-| 29 | Electronic Technology | Semiconductors | **ON** | NASDAQ | $46.5B (L) | 119.2% | 115.1% | 93.4% | 88.0% | 5.2% | 18.5% | 19.5% | -9.0% | 10.4 | -2.7% | 39.6 | 7.3% | 46.79 (T25.5/F21.3) |
-| 30 | Producer Manufacturing | Auto Parts: OEM | **CMI** | NYSE | $100.4B (L+) | 124.5% | 40.6% | 38.0% | 98.6% | 15.0% | 24.7% | 7.9% | 0.1% | 7.9 | -4.2% | 37.8 | 3.6% | 46.75 (T23.4/F23.4) |
-| 31 | Electronic Technology | Semiconductors | **TSEM** | NASDAQ | $30.2B (L) | 521.6% | 120.1% | 59.4% | 84.3% | 8.3% | 10.8% | 19.7% | 10.5% | 30.2 | 19.2% | 96.7 | 8.5% | 46.19 (T25.6/F20.6) |
-| 32 | Health Technology | Pharmaceuticals: Major | **MRK** | NYSE | $309.8B (XL) | 57.5% | 17.8% | 5.2% | 99.6% | 10.2% | 37.4% | 21.5% | 2.7% | 24.3 | -48.3% | 22.0 | 2.6% | 45.98 (T14.7/F31.3) |
-| 33 | Health Technology | Pharmaceuticals: Major | **RPRX** | NASDAQ | $31.5B (L) | 52.5% | 38.8% | 16.4% | 96.8% | 5.7% | N/A% | 111.6% | 7.8% | 119.4 | -22.1% | 11.2 | 2.5% | 45.77 (T13.7/F32.1) |
-| 34 | Producer Manufacturing | Industrial Machinery | **TT** | NYSE | $111.3B (L+) | 16.7% | 27.9% | 24.0% | 99.5% | 24.5% | 34.1% | 14.9% | 6.4% | 21.3 | 7.6% | 34.8 | 2.9% | 45.58 (T17.7/F27.9) |
-| 35 | Health Technology | Pharmaceuticals: Major | **LLY** | NYSE | $1.06T (XL) | 44.8% | 4.7% | 25.9% | 95.3% | 41.8% | 51.3% | 16.4% | 47.4% | 63.8 | 130.1% | 85.5 | 3.0% | 44.87 (T12.8/F32.1) |
-| 36 | Producer Manufacturing | Electrical Products | **AME** | NYSE | $55.2B (L+) | 34.6% | 15.9% | 14.2% | 98.5% | 12.8% | 18.9% | 22.4% | 9.5% | 31.9 | 8.4% | 32.5 | 2.3% | 44.15 (T14.5/F29.6) |
-| 37 | Producer Manufacturing | Electrical Products | **GEV** | NYSE | $291.7B (XL) | 110.4% | 62.6% | 25.1% | 91.8% | 74.0% | 10.5% | 19.1% | 10.2% | 29.3 | 389.8% | 39.2 | 4.7% | 43.50 (T19.5/F24.0) |
-| 38 | Producer Manufacturing | Electrical Products | **ROK** | NYSE | $53.3B (L+) | 47.1% | 20.3% | 36.4% | 98.5% | 17.1% | 36.8% | 15.2% | 10.4% | 25.7 | 21.2% | 40.3 | 2.9% | 43.35 (T18.5/F24.8) |
-| 39 | Health Technology | Pharmaceuticals: Major | **VRTX** | NASDAQ | $121.9B (L+) | 6.6% | 3.8% | 6.5% | 94.5% | 22.0% | 40.3% | 30.1% | 11.8% | 41.8 | N/A% | 33.2 | 2.5% | 42.46 (T6.7/F35.8) |
-| 40 | Electronic Technology | Electronic Equipment/Instruments | **EMR** | NYSE | $81.4B (L+) | 11.0% | 6.8% | 16.6% | 88.0% | 8.7% | 20.9% | 17.0% | 4.0% | 21.0 | 3.4% | 26.3 | 3.1% | 42.35 (T17.6/F24.7) |
+| 1 | Electronic Technology | Semiconductors | **MU** | NASDAQ | $1.37T (XL) | 858.5% | 317.3% | 237.2% | 96.7% | 58.4% | 53.8% | 29.0% | 167.0% | 196.0 | 697.4% | 53.1 | 7.9% | 74.50 (T39.4/F35.1) |
+| 2 | Electronic Technology | Computer Peripherals | **SNDK** | NASDAQ | $345.8B (XL) | 4832.4% | 799.5% | 289.3% | 99.2% | 35.7% | 43.3% | 33.8% | 82.8% | 116.6 | 黒字転換 (SEC -11.16 -> 29.42) | 82.2 | 7.9% | 72.67 (T41.5/F31.2) |
+| 3 | Electronic Technology | Computer Peripherals | **STX** | NASDAQ | $229.9B (XL) | 644.8% | 255.1% | 170.9% | 89.5% | 51.7% | 51.4% | 21.9% | 28.9% | 50.8 | 52.2% | 97.3 | 6.9% | 66.54 (T38.7/F27.8) |
+| 4 | Electronic Technology | Computer Peripherals | **WDC** | NASDAQ | $232.8B (XL) | 980.1% | 270.5% | 145.7% | 84.4% | 63.1% | 35.5% | 24.7% | -18.4% | 6.2 | 218.5% | 90.0 | 7.8% | 64.56 (T37.5/F27.1) |
+| 5 | Electronic Technology | Electronic Production Equipment | **TER** | NASDAQ | $73.9B (L+) | 420.6% | 136.9% | 60.9% | 99.9% | 28.2% | 50.0% | 14.6% | 30.3% | 44.9 | 52.9% | 134.5 | 6.3% | 64.50 (T39.2/F25.3) |
+| 6 | Electronic Technology | Semiconductors | **ALAB** | NASDAQ | $68.2B (L+) | 348.7% | 131.2% | 258.6% | 90.3% | 20.8% | 45.9% | 34.2% | 104.2% | 138.4 | 532.4% | 210.3 | 8.5% | 61.85 (T31.5/F30.4) |
+| 7 | Electronic Technology | Computer Processing Hardware | **DELL** | NYSE | $265.4B (XL) | 238.9% | 218.3% | 133.8% | 87.2% | 38.1% | 22.3% | 7.0% | 38.9% | 45.9 | 100.6% | 28.4 | 7.3% | 61.65 (T35.9/F25.7) |
+| 8 | Producer Manufacturing | Industrial Machinery | **LRCX** | NASDAQ | $502.5B (XL) | 317.5% | 125.2% | 91.6% | 98.1% | 48.7% | 52.1% | 27.7% | 26.5% | 54.2 | 47.6% | 84.1 | 6.0% | 61.37 (T31.0/F30.4) |
+| 9 | Electronic Technology | Computer Peripherals | **ANET** | NYSE | $208.3B (XL) | 73.0% | 26.3% | 36.4% | 92.0% | 31.5% | 28.5% | 54.4% | 30.6% | 84.9 | 23.5% | 39.9 | 5.1% | 61.00 (T26.3/F34.7) |
+| 10 | Electronic Technology | Semiconductors | **KLAC** | NASDAQ | $338.1B (XL) | 189.2% | 101.7% | 80.1% | 95.9% | 42.5% | 46.5% | 30.7% | 13.4% | 44.1 | 28.6% | 85.0 | 6.0% | 60.67 (T31.8/F28.9) |
+| 11 | Electronic Technology | Semiconductors | **AMD** | NASDAQ | $868.4B (XL) | 277.9% | 147.2% | 163.9% | 94.6% | 7.6% | 22.1% | 22.9% | 35.0% | 57.9 | 123.3% | 102.5 | 6.3% | 60.10 (T35.3/F24.8) |
+| 12 | Electronic Technology | Electronic Components | **GLW** | NYSE | $196.2B (L+) | 342.1% | 153.5% | 68.4% | 98.9% | 9.3% | 18.6% | 9.2% | 20.1% | 29.2 | 298.7% | 132.4 | 7.0% | 58.69 (T39.6/F19.1) |
+| 13 | Producer Manufacturing | Industrial Machinery | **AMAT** | NASDAQ | $530.4B (XL) | 268.8% | 155.1% | 97.8% | 99.8% | 31.2% | 35.3% | 18.4% | 3.4% | 21.8 | 29.5% | 99.9 | 5.6% | 57.60 (T34.0/F23.6) |
+| 14 | Electronic Technology | Electronic Equipment/Instruments | **KEYS** | NYSE | $61.5B (L+) | 118.2% | 75.0% | 29.6% | 96.0% | 13.0% | 33.1% | 22.3% | 19.2% | 41.5 | 42.6% | 45.9 | 3.9% | 57.52 (T28.7/F28.8) |
+| 15 | Electronic Technology | Telecommunications Equipment | **CSCO** | NASDAQ | $468.9B (XL) | 75.3% | 52.3% | 45.1% | 91.3% | 17.5% | 30.7% | 19.4% | 9.2% | 28.6 | 25.7% | 40.2 | 3.3% | 57.25 (T30.1/F27.2) |
+| 16 | Electronic Technology | Electronic Production Equipment | **VRT** | NYSE | $125.1B (L+) | 164.7% | 94.6% | 30.2% | 85.7% | 23.6% | 28.3% | 21.0% | 29.0% | 50.0 | 131.0% | 56.0 | 6.4% | 56.42 (T27.3/F29.1) |
+| 17 | Electronic Technology | Computer Peripherals | **NTAP** | NASDAQ | $30.3B (L) | 45.3% | 40.2% | 48.7% | 80.2% | 32.8% | 45.5% | 27.0% | 5.3% | 32.3 | 11.9% | 16.5 | 4.8% | 56.19 (T22.3/F33.9) |
+| 18 | Electronic Technology | Electronic Components | **APH** | NYSE | $203.2B (XL) | 71.8% | 19.7% | 34.8% | 97.9% | 18.7% | 23.3% | 17.9% | 54.4% | 72.3 | 68.6% | 46.0 | 3.9% | 55.35 (T28.0/F27.3) |
+| 19 | Electronic Technology | Semiconductors | **TXN** | NASDAQ | $283.8B (XL) | 51.3% | 75.5% | 62.6% | 93.3% | 18.1% | 30.7% | 20.2% | 14.9% | 35.1 | 10.8% | 76.6 | 4.5% | 54.19 (T26.9/F27.3) |
+| 20 | Electronic Technology | Semiconductors | **ADI** | NASDAQ | $203.6B (XL) | 77.4% | 50.5% | 34.4% | 93.7% | 8.0% | 15.6% | 35.8% | 29.8% | 65.6 | 83.2% | 44.9 | 4.5% | 53.71 (T24.0/F29.7) |
+| 21 | Electronic Technology | Electronic Equipment/Instruments | **Q** | NYSE | $35.1B (L) | 137.6% | 100.9% | 50.6% | 94.5% | 5.8% | 14.8% | 18.1% | 10.8% | 28.9 | -13.8% | 39.2 | 5.5% | 52.25 (T30.6/F21.6) |
+| 22 | Electronic Technology | Electronic Production Equipment | **FLEX** | NASDAQ | $59.1B (L+) | 233.4% | 152.9% | 150.6% | 96.7% | 10.1% | 11.6% | 3.8% | 8.1% | 11.9 | 10.4% | 57.3 | 5.8% | 51.31 (T36.6/F14.7) |
+| 23 | Electronic Technology | Semiconductors | **MRVL** | NASDAQ | $246.0B (XL) | 268.3% | 222.9% | 184.7% | 85.3% | 12.5% | 16.4% | 19.1% | 34.1% | 53.2 | SEC補完 -80.0% (0.2 -> 0.04) | 150.9 | 9.7% | 49.81 (T31.5/F18.3) |
+| 24 | Electronic Technology | Semiconductors | **GFS** | NASDAQ | $47.3B (L) | 120.1% | 139.9% | 96.7% | 93.0% | 6.0% | 10.6% | 15.7% | 0.8% | 16.5 | 黒字転換 (SEC -0.48 -> 1.59) | 45.0 | 6.1% | 49.60 (T28.4/F21.2) |
+| 25 | Producer Manufacturing | Trucks/Construction/Farm Machinery | **CAT** | NYSE | $486.9B (XL) | 183.4% | 81.2% | 52.2% | 100.0% | 20.2% | 23.6% | 11.2% | 11.8% | 23.0 | -2.0% | 62.3 | 3.5% | 49.52 (T29.0/F20.5) |
+| 26 | Health Technology | Pharmaceuticals: Major | **ABBV** | NYSE | $429.6B (XL) | 31.2% | 5.8% | 15.0% | 99.3% | 5.8% | 32.5% | 31.8% | 9.5% | 41.3 | -13.5% | 21.6 | 2.6% | 47.88 (T12.9/F34.9) |
+| 27 | Electronic Technology | Semiconductors | **NXPI** | NASDAQ | $75.4B (L+) | 37.3% | 32.4% | 52.4% | 87.8% | 12.8% | 25.0% | 22.1% | 2.4% | 24.5 | 13.8% | 27.2 | 5.3% | 47.42 (T20.4/F27.1) |
+| 28 | Electronic Technology | Semiconductors | **QCOM** | NASDAQ | $216.0B (XL) | 31.3% | 17.1% | 57.7% | 78.8% | 23.9% | 42.7% | 28.1% | 5.2% | 33.3 | -6.4% | 17.6 | 8.4% | 47.23 (T17.8/F29.4) |
+| 29 | Electronic Technology | Semiconductors | **ON** | NASDAQ | $46.5B (L) | 119.2% | 115.1% | 93.4% | 88.0% | 5.2% | 18.5% | 19.5% | -9.0% | 10.4 | -2.7% | 39.6 | 7.3% | 46.69 (T25.5/F21.2) |
+| 30 | Producer Manufacturing | Auto Parts: OEM | **CMI** | NYSE | $100.4B (L+) | 124.5% | 40.6% | 38.0% | 98.6% | 15.0% | 24.7% | 7.9% | 0.1% | 7.9 | -4.2% | 37.8 | 3.6% | 46.65 (T23.4/F23.3) |
+| 31 | Electronic Technology | Semiconductors | **TSEM** | NASDAQ | $30.2B (L) | 521.6% | 120.1% | 59.4% | 84.3% | 8.3% | 10.8% | 19.7% | 10.5% | 30.2 | 19.2% | 96.7 | 8.5% | 46.10 (T25.6/F20.5) |
+| 32 | Health Technology | Pharmaceuticals: Major | **MRK** | NYSE | $309.8B (XL) | 57.5% | 17.8% | 5.2% | 99.6% | 10.2% | 37.4% | 21.5% | 2.7% | 24.3 | -48.3% | 22.0 | 2.6% | 45.88 (T14.7/F31.2) |
+| 33 | Health Technology | Pharmaceuticals: Major | **RPRX** | NASDAQ | $31.5B (L) | 52.5% | 38.8% | 16.4% | 96.8% | 5.7% | N/A% | 111.6% | 7.8% | 119.4 | -22.1% | 11.2 | 2.5% | 45.67 (T13.7/F32.0) |
+| 34 | Producer Manufacturing | Industrial Machinery | **TT** | NYSE | $111.3B (L+) | 16.7% | 27.9% | 24.0% | 99.5% | 24.5% | 34.1% | 14.9% | 6.4% | 21.3 | 7.6% | 34.8 | 2.9% | 45.48 (T17.7/F27.8) |
+| 35 | Health Technology | Pharmaceuticals: Major | **LLY** | NYSE | $1.06T (XL) | 44.8% | 4.7% | 25.9% | 95.3% | 41.8% | 51.3% | 16.4% | 47.4% | 63.8 | 130.1% | 85.5 | 3.0% | 44.83 (T12.8/F32.1) |
+| 36 | Producer Manufacturing | Electrical Products | **AME** | NYSE | $55.2B (L+) | 34.6% | 15.9% | 14.2% | 98.5% | 12.8% | 18.9% | 22.4% | 9.5% | 31.9 | 8.4% | 32.5 | 2.3% | 44.06 (T14.5/F29.5) |
+| 37 | Electronic Technology | Semiconductors | **COHR** | NYSE | $79.7B (L+) | 395.6% | 110.9% | 67.0% | 92.6% | 3.6% | 14.5% | -8.2% | 18.0% | 9.8 | SEC補完 873.3% (0.3 -> 2.92) | N/A | 8.9% | 43.52 (T30.2/F13.3) |
+| 38 | Producer Manufacturing | Electrical Products | **GEV** | NYSE | $291.7B (XL) | 110.4% | 62.6% | 25.1% | 91.8% | 74.0% | 10.5% | 19.1% | 10.2% | 29.3 | 389.8% | 39.2 | 4.7% | 43.46 (T19.5/F24.0) |
+| 39 | Producer Manufacturing | Electrical Products | **ROK** | NYSE | $53.3B (L+) | 47.1% | 20.3% | 36.4% | 98.5% | 17.1% | 36.8% | 15.2% | 10.4% | 25.7 | 21.2% | 40.3 | 2.9% | 43.25 (T18.5/F24.7) |
+| 40 | Health Technology | Pharmaceuticals: Major | **VRTX** | NASDAQ | $121.9B (L+) | 6.6% | 3.8% | 6.5% | 94.5% | 22.0% | 40.3% | 30.1% | 11.8% | 41.8 | SEC補完 61.4% (2.49 -> 4.02) | 33.2 | 2.5% | 42.92 (T6.7/F36.2) |
 
 ---
 
@@ -159,7 +159,7 @@
 | 共通条件 | ベース条件 | 時価総額 > $30B / EPS(TTM) > 0 / Close > SMA200 / Close > SMA50 / Close ≥ 52週高値 × 75% |
 | 補助ポリシー | Rule of 40 | US Technology Services software-like industries only / total_revenue_yoy_growth_ttm + free_cash_flow_margin_ttm / 40+ を badge / 20 未満を warning / hard filter なし |
 | 補助ポリシー | US FCF補完 | TradingView FCF gaps are supplemented from configured official/adapter data when available; supplemented rows keep source metadata. |
-| 補助ポリシー | US 指標補完 | TradingView missing table metrics are supplemented from Moomoo/adapter data when available; unavailable or non-meaningful values stay N/A. |
+| 補助ポリシー | US 指標補完 | TradingView missing table metrics are supplemented from Moomoo/adapter/SEC companyfacts data when available; unavailable or non-meaningful values stay N/A. |
 | 補助ポリシー | Theme taxonomy | america Phase3 matched candidates only / repo custom theme taxonomy layered on top of TradingView sector/industry / version us-theme-prototype-v2 |
 | 補助ポリシー | Moomoo 補助 | 売上成長率 YoY は growth scoring に使い、EPS YoY / P/FCF は TradingView 欠損時の表内指標補完に使う |
 | セクタープロファイル | Electronic Technology | scope: Electronic Technology / hard gate: Perf.3M > 10% / scoring: RSI 60+、相対出来高 1.00x+、ROE 20%+、粗利率 40%+、FCFマージン 15%+、P/FCF 50 は risk penalty |

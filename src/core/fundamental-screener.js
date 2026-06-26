@@ -1549,7 +1549,14 @@ function applyUsMissingMetricSupplement(row, metrics = {}, source = 'supplementa
 
   if (merged.epsGrowthTtm === null && metrics.earningsGrowthPct !== null && metrics.earningsGrowthPct !== undefined) {
     merged.epsGrowthTtm = metrics.earningsGrowthPct;
+    if (metrics.epsGrowthStatus) merged.epsGrowthStatus = metrics.epsGrowthStatus;
+    if (metrics.epsGrowthDisplay) merged.epsGrowthDisplay = metrics.epsGrowthDisplay;
+    if (metrics.epsGrowthScoreValue !== null && metrics.epsGrowthScoreValue !== undefined) {
+      merged.epsGrowthScoreValue = metrics.epsGrowthScoreValue;
+    }
+    if (metrics.epsGrowthSourceDetail) merged.epsGrowthSourceDetail = metrics.epsGrowthSourceDetail;
     fields.push('epsGrowthTtm');
+    if (metrics.epsGrowthStatus === 'turnaround_to_profit') fields.push('epsGrowthStatus');
   }
   if (
     merged.epsGrowthTtm === null
@@ -1594,7 +1601,16 @@ function applyUsMissingMetricSupplement(row, metrics = {}, source = 'supplementa
     ...merged,
     missingMetricSupplement: mergeMissingMetricSupplement(row, source, fields),
   };
-  return fields.includes('epsGrowthStatus') ? supplemented : applyEpsGrowthMeta(supplemented);
+  if (fields.includes('epsGrowthStatus')) return supplemented;
+  const withEpsMeta = applyEpsGrowthMeta(supplemented);
+  if (!fields.includes('epsGrowthTtm') || !metrics.epsGrowthDisplay) return withEpsMeta;
+  return {
+    ...withEpsMeta,
+    epsGrowthStatus: metrics.epsGrowthStatus ?? withEpsMeta.epsGrowthStatus,
+    epsGrowthDisplay: metrics.epsGrowthDisplay,
+    epsGrowthScoreValue: metrics.epsGrowthScoreValue ?? withEpsMeta.epsGrowthScoreValue,
+    epsGrowthSourceDetail: metrics.epsGrowthSourceDetail ?? withEpsMeta.epsGrowthSourceDetail,
+  };
 }
 
 function buildMissingMetricSupplementMeta(rows) {
@@ -1861,7 +1877,9 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   if (market === DEFAULT_MARKET && clientFiltered.length > 0) {
     clientFiltered = await applyUsMissingMetricSupplements(clientFiltered, {
       growthMap,
-      getMissingMetricSupplementals: _deps?.getUsMissingMetricSupplementals ?? null,
+      getMissingMetricSupplementals: Object.hasOwn(_deps ?? {}, 'getUsMissingMetricSupplementals')
+        ? _deps.getUsMissingMetricSupplementals
+        : undefined,
     });
     usMissingMetricSupplementMeta = buildMissingMetricSupplementMeta(clientFiltered);
   }
@@ -1984,7 +2002,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       hard_filter: false,
     };
     criteria.us_fundamental_supplement_policy = 'TradingView FCF gaps are supplemented from configured official/adapter data when available; supplemented rows keep source metadata.';
-    criteria.us_missing_metric_supplement_policy = 'TradingView missing table metrics are supplemented from Moomoo/adapter data when available; unavailable or non-meaningful values stay N/A.';
+    criteria.us_missing_metric_supplement_policy = 'TradingView missing table metrics are supplemented from Moomoo/adapter/SEC companyfacts data when available; unavailable or non-meaningful values stay N/A.';
   }
   if (exchangeAllowlist) {
     criteria.allowed_exchanges = exchangeAllowlist;
@@ -2188,7 +2206,9 @@ export async function evaluateSymbolsAgainstFundamentalScreener({
   if (market === DEFAULT_MARKET && eligibleForGrowthCheck.length > 0) {
     const supplemented = await applyUsMissingMetricSupplements(eligibleForGrowthCheck, {
       growthMap,
-      getMissingMetricSupplementals: _deps?.getUsMissingMetricSupplementals ?? null,
+      getMissingMetricSupplementals: Object.hasOwn(_deps ?? {}, 'getUsMissingMetricSupplementals')
+        ? _deps.getUsMissingMetricSupplementals
+        : undefined,
     });
     supplemented.forEach((entry) => {
       byRequestedSymbol.set(entry.requestedSymbol, entry);

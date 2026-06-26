@@ -71,7 +71,7 @@ test('SEC EDGAR supplements a same-quarter EPS turnaround', async () => {
   assert.equal(requests[0].options.headers['User-Agent'], 'Oh-MY-TradingView test@example.com');
 });
 
-test('SEC EDGAR does not label positive-to-positive EPS as a turnaround', async () => {
+test('SEC EDGAR supplements positive-to-positive EPS YoY without a turnaround label', async () => {
   resetSecEdgarCachesForTests();
   const fetchImpl = async (url) => {
     if (url.endsWith('/company_tickers.json')) {
@@ -98,7 +98,44 @@ test('SEC EDGAR does not label positive-to-positive EPS as a turnaround', async 
     { fetchImpl, userAgent: 'Oh-MY-TradingView test@example.com', requestDelayMs: 0 },
   );
 
-  assert.deepEqual(result, {});
+  assert.equal(result.TEST.earningsGrowthPct, 100);
+  assert.equal(result.TEST.epsGrowthStatus, 'sec_eps_yoy');
+  assert.equal(result.TEST.epsGrowthDisplay, 'SEC補完 100.0% (0.2 -> 0.4)');
+  assert.equal(result.TEST.epsGrowthScoreValue, 100);
+  assert.equal(result.TEST.epsGrowthSourceDetail.previousEps, 0.2);
+  assert.equal(result.TEST.epsGrowthSourceDetail.currentEps, 0.4);
+});
+
+test('SEC EDGAR supplements positive EPS decline as numeric EPS YoY', async () => {
+  resetSecEdgarCachesForTests();
+  const fetchImpl = async (url) => {
+    if (url.endsWith('/company_tickers.json')) {
+      return jsonResponse({ 0: { ticker: 'MRVL', cik_str: 1835632 } });
+    }
+    return jsonResponse({
+      facts: {
+        'us-gaap': {
+          EarningsPerShareDiluted: {
+            units: {
+              'USD/shares': [
+                { start: '2025-02-02', end: '2025-05-03', val: 0.2, fp: 'Q1', filed: '2025-05-29' },
+                { start: '2026-02-01', end: '2026-05-02', val: 0.04, fp: 'Q1', filed: '2026-05-28' },
+              ],
+            },
+          },
+        },
+      },
+    });
+  };
+
+  const result = await getSecEpsTurnaroundSupplements(
+    [{ symbol: 'MRVL', exchange: 'NASDAQ', epsGrowthTtm: null }],
+    { fetchImpl, userAgent: 'Oh-MY-TradingView test@example.com', requestDelayMs: 0 },
+  );
+
+  assert.equal(result.MRVL.earningsGrowthPct, -80);
+  assert.equal(result.MRVL.epsGrowthStatus, 'sec_eps_yoy');
+  assert.equal(result.MRVL.epsGrowthDisplay, 'SEC補完 -80.0% (0.2 -> 0.04)');
 });
 
 test('SEC EDGAR does not fall back to an older turnaround when the latest period is not comparable', async () => {

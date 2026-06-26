@@ -73,6 +73,11 @@ function extractComparableEps(companyFacts) {
   return null;
 }
 
+function computeEpsYoyPct(currentEps, previousEps) {
+  if (!Number.isFinite(currentEps) || !Number.isFinite(previousEps) || previousEps === 0) return null;
+  return Number((((currentEps - previousEps) / Math.abs(previousEps)) * 100).toFixed(1));
+}
+
 async function fetchJson(url, { fetchImpl, userAgent }) {
   const response = await fetchImpl(url, {
     headers: {
@@ -137,18 +142,25 @@ export async function getSecEpsTurnaroundSupplements(
         if (!comparison) continue;
         const previousEps = comparison.previous.val;
         const currentEps = comparison.current.val;
-        if (previousEps > 0 || currentEps <= 0) continue;
+        const epsGrowthPct = computeEpsYoyPct(currentEps, previousEps);
+        if (epsGrowthPct === null) continue;
+        const isTurnaround = previousEps <= 0 && currentEps > 0;
+        const epsGrowthSourceDetail = {
+          source: 'sec-companyfacts',
+          fact: comparison.fact,
+          currentPeriod: comparison.current.frame ?? `${comparison.current.fy} ${comparison.current.fp}`,
+          previousPeriod: comparison.previous.frame ?? `${comparison.previous.fy} ${comparison.previous.fp}`,
+          currentEps,
+          previousEps,
+        };
         supplements[symbol] = {
-          epsGrowthStatus: 'turnaround_to_profit',
-          epsGrowthDisplay: `黒字転換 (SEC ${previousEps} -> ${currentEps})`,
-          epsGrowthSourceDetail: {
-            source: 'sec-companyfacts',
-            fact: comparison.fact,
-            currentPeriod: comparison.current.frame ?? `${comparison.current.fy} ${comparison.current.fp}`,
-            previousPeriod: comparison.previous.frame ?? `${comparison.previous.fy} ${comparison.previous.fp}`,
-            currentEps,
-            previousEps,
-          },
+          earningsGrowthPct: epsGrowthPct,
+          epsGrowthStatus: isTurnaround ? 'turnaround_to_profit' : 'sec_eps_yoy',
+          epsGrowthDisplay: isTurnaround
+            ? `黒字転換 (SEC ${previousEps} -> ${currentEps})`
+            : `SEC補完 ${epsGrowthPct.toFixed(1)}% (${previousEps} -> ${currentEps})`,
+          epsGrowthScoreValue: isTurnaround ? 120 : epsGrowthPct,
+          epsGrowthSourceDetail,
           source: `sec-companyfacts-cik-${cik}`,
         };
       } catch {
