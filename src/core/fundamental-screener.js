@@ -30,6 +30,9 @@ const INDUSTRY_RANKING_LIMIT = 20;
 const FINAL_INDUSTRY_LIMIT = INDUSTRY_RANKING_LIMIT;
 const FINAL_STOCK_LIMIT = 40;
 const INDUSTRY_UNIVERSE_SERVER_LIMIT = 400;
+const PHASE5_SECTOR_LIMIT = 20;
+const PHASE5_TOP_STOCKS_PER_SECTOR = 5;
+const PHASE5_SECTOR_UNIVERSE_SERVER_LIMIT = 400;
 const BUILTIN_SYMBOL_ALLOWLISTS = new Map([
   [
     'jpx-prime',
@@ -1402,6 +1405,161 @@ function buildSectorRankLookup(sectorMomentum) {
   return lookup;
 }
 
+async function fetchProfileRows({ scannerUrl, fetchFn, market, requestPlans, serverLimit }) {
+  return Promise.all(
+    requestPlans.map(async ({ profile, scope }) => {
+      const response = await fetchFn(scannerUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildRequestBody(serverLimit, { market, profile, scope })),
+        signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
+      });
+
+      if (!response.ok) {
+        throw new Error(`TradingView scanner request failed: HTTP ${response.status}`);
+      }
+
+      const payload = await response.json();
+
+      if (!Array.isArray(payload?.data)) {
+        throw new Error('TradingView scanner returned unexpected response format');
+      }
+
+      return {
+        profile,
+        scope,
+        totalCount: payload.totalCount ?? payload.data.length,
+        rows: payload.data.map(normalizeRow),
+      };
+    }),
+  );
+}
+
+async function buildPhase5SectorTopStocks({
+  market,
+  scannerUrl,
+  fetchFn,
+  sectorMomentum,
+  sectorRankLookup,
+  exchangeAllowlist,
+  symbolAllowlist,
+  marketCapMinUsd,
+  enrichWithYahoo,
+  getFundamentals,
+  _deps,
+}) {
+  const emptyMeta = {
+    enabled: market === DEFAULT_MARKET,
+    sectorLimit: PHASE5_SECTOR_LIMIT,
+    topStocksPerSector: PHASE5_TOP_STOCKS_PER_SECTOR,
+    sourceSectors: 0,
+    fetchedRows: 0,
+    scopeFilteredRows: 0,
+    clientFilteredRows: 0,
+    rankedRows: 0,
+    displayedRows: 0,
+  };
+  if (market !== DEFAULT_MARKET) return { rows: [], meta: emptyMeta };
+
+  const phase5SectorLabels = (sectorMomentum.rankings ?? [])
+    .slice(0, PHASE5_SECTOR_LIMIT)
+    .map((entry) => entry.sector)
+    .filter(Boolean);
+  const { activeProfiles } = getSectorScreeningPlan({
+    market,
+    selectedSectors: phase5SectorLabels,
+  });
+  const effectiveProfiles = applyMarketCapThresholdOverride(activeProfiles, marketCapMinUsd);
+  const requestPlans = effectiveProfiles.flatMap((profile) => profile.requestScopes.map((scope) => ({ profile, scope })));
+
+  if (requestPlans.length === 0) {
+    return {
+      rows: [],
+      meta: {
+        ...emptyMeta,
+        sourceSectors: phase5SectorLabels.length,
+      },
+    };
+  }
+
+  const responses = await fetchProfileRows({
+    scannerUrl,
+    fetchFn,
+    market,
+    requestPlans,
+    serverLimit: PHASE5_SECTOR_UNIVERSE_SERVER_LIMIT,
+  });
+  const fetchedRows = dedupeRows(responses.flatMap((entry) => entry.rows));
+  const scopeFiltered = dedupeRows(
+    responses.flatMap(({ profile, rows }) => rows
+      .filter((row) => phase5SectorLabels.includes(row.sector))
+      .filter((row) => passesScopeFilters(row, { exchangeAllowlist, symbolAllowlist }))
+      .filter((row) => passesProfileScope(row, profile))
+      .map((row) => annotateRowForProfile(row, profile, sectorRankLookup, market))),
+  );
+  let clientFiltered = scopeFiltered.filter(passesProfileClientFilters);
+
+  let growthMap = {};
+  if (enrichWithYahoo && clientFiltered.length > 0) {
+    const symbols = clientFiltered.map((row) => row.symbol);
+    growthMap = getFundamentals
+      ? await batchFetchSupplementalGrowthMetrics(symbols, getFundamentals)
+      : await batchFetchMoomooGrowthMetrics(symbols, { market, _deps });
+    clientFiltered = clientFiltered.map((row) => applySupplementalGrowthMetrics(row, growthMap[row.symbol]));
+  }
+
+  if (clientFiltered.length > 0) {
+    clientFiltered = await applyUsFundamentalSupplements(clientFiltered, {
+      getSupplementalFundamentals: _deps?.getUsSupplementalFundamentals ?? null,
+    });
+    clientFiltered = await applyUsMissingMetricSupplements(clientFiltered, {
+      growthMap,
+      getMissingMetricSupplementals: Object.hasOwn(_deps ?? {}, 'getUsMissingMetricSupplementals')
+        ? _deps.getUsMissingMetricSupplementals
+        : undefined,
+    });
+  }
+
+  const ranked = applyBlockRanks(
+    applyLocalizedCompanyNames(applyThemeTaxonomy(clientFiltered, market), market),
+    getRankingBlocks(market),
+  );
+  const displayedRows = [];
+  phase5SectorLabels.forEach((sector, sectorIndex) => {
+    ranked
+      .filter((row) => row.sector === sector)
+      .sort((a, b) => {
+        if ((b.rankScore ?? -Infinity) !== (a.rankScore ?? -Infinity)) {
+          return (b.rankScore ?? -Infinity) - (a.rankScore ?? -Infinity);
+        }
+        return (a.symbol ?? '').localeCompare(b.symbol ?? '');
+      })
+      .slice(0, PHASE5_TOP_STOCKS_PER_SECTOR)
+      .forEach((row, rowIndex) => {
+        displayedRows.push(stripInternalFields({
+          ...row,
+          phase5SectorRank: sectorIndex + 1,
+          phase5SectorStockRank: rowIndex + 1,
+        }));
+      });
+  });
+
+  return {
+    rows: displayedRows,
+    meta: {
+      enabled: true,
+      sectorLimit: PHASE5_SECTOR_LIMIT,
+      topStocksPerSector: PHASE5_TOP_STOCKS_PER_SECTOR,
+      sourceSectors: phase5SectorLabels.length,
+      fetchedRows: fetchedRows.length,
+      scopeFilteredRows: scopeFiltered.length,
+      clientFilteredRows: clientFiltered.length,
+      rankedRows: ranked.length,
+      displayedRows: displayedRows.length,
+    },
+  };
+}
+
 function applyThemeTaxonomy(rows, market) {
   return rows.map((row) => {
     const classification = classifyThemeForMarket(row, market);
@@ -1804,33 +1962,13 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
         selectedIndustryKeys: new Set(),
       };
   const requestPlans = effectiveActiveProfiles.flatMap((profile) => profile.requestScopes.map((scope) => ({ profile, scope })));
-  const phase2Responses = await Promise.all(
-    requestPlans.map(async ({ profile, scope }) => {
-      const response = await fetchFn(scannerUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(buildRequestBody(serverLimit, { market, profile, scope })),
-        signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
-      });
-
-      if (!response.ok) {
-        throw new Error(`TradingView scanner request failed: HTTP ${response.status}`);
-      }
-
-      const payload = await response.json();
-
-      if (!Array.isArray(payload?.data)) {
-        throw new Error('TradingView scanner returned unexpected response format');
-      }
-
-      return {
-        profile,
-        scope,
-        totalCount: payload.totalCount ?? payload.data.length,
-        rows: payload.data.map(normalizeRow),
-      };
-    }),
-  );
+  const phase2Responses = await fetchProfileRows({
+    scannerUrl,
+    fetchFn,
+    market,
+    requestPlans,
+    serverLimit,
+  });
 
   const totalScanned = dedupeRows(phase2Responses.flatMap((entry) => entry.rows)).length;
   const scopeFiltered = dedupeRows(
@@ -1915,6 +2053,19 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       .slice(0, FINAL_STOCK_LIMIT)
       .map((row) => stripInternalFields(row))
     : industrySummary.finalStockRanking;
+  const phase5 = await buildPhase5SectorTopStocks({
+    market,
+    scannerUrl,
+    fetchFn,
+    sectorMomentum,
+    sectorRankLookup,
+    exchangeAllowlist,
+    symbolAllowlist,
+    marketCapMinUsd,
+    enrichWithYahoo,
+    getFundamentals,
+    _deps,
+  });
   const hierarchyFocusSector = hierarchyFocusSectorOverride ?? selectedSectorLabels[0] ?? null;
   const focusedHierarchy = buildFocusedHierarchy(ranked, hierarchyFocusSector, {
     market,
@@ -2001,6 +2152,14 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     };
     criteria.us_fundamental_supplement_policy = 'TradingView FCF gaps are supplemented from configured official/adapter data when available; supplemented rows keep source metadata.';
     criteria.us_missing_metric_supplement_policy = 'TradingView missing table metrics are supplemented from Moomoo/adapter/SEC companyfacts data when available; unavailable or non-meaningful values stay N/A.';
+    criteria.phase5 = {
+      name: 'Phase5 Sector別 個別銘柄ランキング',
+      source: 'sectorMomentum.rankings top 20 sectors',
+      sector_limit: phase5.meta.sectorLimit,
+      top_stocks_per_sector: phase5.meta.topStocksPerSector,
+      source_sectors: phase5.meta.sourceSectors,
+      displayed_rows: phase5.meta.displayedRows,
+    };
   }
   if (exchangeAllowlist) {
     criteria.allowed_exchanges = exchangeAllowlist;
@@ -2055,6 +2214,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     sectorRanking,
     industryRanking: industrySummary.rankings,
     finalStockRanking,
+    phase5SectorTopStocks: phase5.rows,
     themeRanking,
     focusedHierarchy,
     ruleOf40Coverage,
@@ -2062,6 +2222,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       usFundamentalSupplement: usFundamentalSupplementMeta,
       usMissingMetricSupplement: usMissingMetricSupplementMeta,
       edinet: edinetSupplementMeta,
+      phase5: phase5.meta,
     },
     results: matched,
     retrieved_at: new Date().toISOString(),

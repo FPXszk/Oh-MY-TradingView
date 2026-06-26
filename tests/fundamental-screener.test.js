@@ -596,9 +596,30 @@ describe('runFundamentalScreener', () => {
     assert.deepEqual(
       stockBodies
         .filter((body) => !isIndustryUniverseRequest(body))
+        .filter((body) => body.range?.[1] !== 400)
         .map((body) => getFilterValue(body, 'sector')),
       ['Technology Services', 'Electronic Technology', 'Electronic Technology', 'Producer Manufacturing'],
     );
+    assert.equal(result.criteria.phase5.sector_limit, 20);
+    assert.equal(result.criteria.phase5.top_stocks_per_sector, 5);
+    assert.equal(result.sourceDetails.phase5.sourceSectors > 3, true);
+    assert.equal(result.phase5SectorTopStocks.length <= 100, true);
+    const phase5Counts = result.phase5SectorTopStocks.reduce((counts, row) => {
+      counts[row.sector] = (counts[row.sector] ?? 0) + 1;
+      return counts;
+    }, {});
+    assert.ok(Object.values(phase5Counts).every((count) => count <= 5));
+    for (let index = 1; index < result.phase5SectorTopStocks.length; index += 1) {
+      const previous = result.phase5SectorTopStocks[index - 1];
+      const current = result.phase5SectorTopStocks[index];
+      assert.ok(
+        previous.phase5SectorRank < current.phase5SectorRank
+        || (
+          previous.phase5SectorRank === current.phase5SectorRank
+          && previous.phase5SectorStockRank <= current.phase5SectorStockRank
+        ),
+      );
+    }
     assert.deepEqual(
       stockBodies
         .filter(isIndustryUniverseRequest)

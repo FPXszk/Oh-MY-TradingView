@@ -673,6 +673,25 @@ export function buildMarkdown(result, options = {}) {
         });
       }
       lines.push('');
+
+      lines.push('## Phase5 Sector別 個別銘柄ランキング');
+      lines.push('');
+      lines.push('- 対象: Phase1 Sector Ranking 上位20セクター');
+      lines.push('- 表示上限: 各セクターの総合点上位5銘柄（最大100銘柄）');
+      lines.push('');
+      if (!result.phase5SectorTopStocks || result.phase5SectorTopStocks.length === 0) {
+        lines.push('- Phase5ランキングは算出できませんでした。');
+      } else {
+        const scoreHeader = '総合点 (T/F)';
+        const phase5PopulationSize = result.sourceDetails?.phase5?.rankedRows ?? result.phase5SectorTopStocks.length;
+        lines.push(`| Sector Rank | Sector内Rank | Sector | Industry | Symbol | Market | Market Cap | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF Margin | Revenue YoY | Rule40 | EPS YoY | P/FCF | ATR% | ${scoreHeader} |`);
+        lines.push('|:---:|:---:|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|:---|---:|---:|---:|');
+        result.phase5SectorTopStocks.forEach((row) => {
+          const metricCells = buildRankingMetricCells(row, result.scannerScope?.market, phase5PopulationSize, currencySymbol).join(' | ');
+          lines.push(`| ${row.phase5SectorRank ?? '-'} | ${row.phase5SectorStockRank ?? '-'} | ${row.sector ?? 'Unknown'} | ${row.industry ?? 'Unknown'} | **${formatSymbolWithCompanyName(row, market)}** | ${row.exchange ?? '-'} | ${metricCells} |`);
+        });
+      }
+      lines.push('');
     } else if (result.focusedHierarchy?.focusSector) {
       const focusSector = result.focusedHierarchy.focusSector;
       lines.push(`## Phase3 小テーマランキング (${focusSector})`);
@@ -822,6 +841,17 @@ async function main() {
   }
 
   console.log(`[screener] totalScanned=${result.totalScanned} serverFiltered=${result.serverFiltered} phase1Filtered=${result.phase1Filtered} clientFiltered=${result.clientFiltered} matched=${result.matched}`);
+  if (result.sourceDetails?.phase5) {
+    const phase5 = result.sourceDetails.phase5;
+    console.log(`[phase5] sectorLimit=${phase5.sectorLimit}`);
+    console.log(`[phase5] topStocksPerSector=${phase5.topStocksPerSector}`);
+    console.log(`[phase5] sourceSectors=${phase5.sourceSectors}`);
+    console.log(`[phase5] fetchedRows=${phase5.fetchedRows}`);
+    console.log(`[phase5] scopeFilteredRows=${phase5.scopeFilteredRows}`);
+    console.log(`[phase5] clientFilteredRows=${phase5.clientFilteredRows}`);
+    console.log(`[phase5] rankedRows=${phase5.rankedRows}`);
+    console.log(`[phase5] displayedRows=${phase5.displayedRows}`);
+  }
   if (result.sourceDetails?.edinet) {
     const edinet = result.sourceDetails.edinet;
     console.log(

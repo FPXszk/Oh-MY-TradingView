@@ -16,17 +16,17 @@
 
 ## Implementation Steps
 
-- [ ] Step 1: 既存の本流 Phase1〜Phase4 のデータフローを確認し、Phase5を別配列で追加する位置を決める。
+- [x] Step 1: 既存の本流 Phase1〜Phase4 のデータフローを確認し、Phase5を別配列で追加する位置を決める。
   - Check: `selectedSectorLabels` と `finalStockRanking` を変更しない。
-- [ ] Step 2: RED テストを追加/更新する。
+- [x] Step 2: RED テストを追加/更新する。
   - Check: Phase5が `sectorMomentum.rankings.slice(0, 20)` 起点で、各セクターTop5を返す期待にする。
-- [ ] Step 3: `src/core/fundamental-screener.js` にPhase5処理を追加する。
+- [x] Step 3: `src/core/fundamental-screener.js` にPhase5処理を追加する。
   - Check: `passesScopeFilters` / `passesProfileScope` / `passesProfileClientFilters` / `applyBlockRanks` / `stripInternalFields` を再利用する。
-- [ ] Step 4: Markdownレポートとログを追加する。
+- [x] Step 4: Markdownレポートとログを追加する。
   - Check: Phase4直後にPhase5表を出し、`[phase5] sectorLimit=20` などのログが出る。
-- [ ] Step 5: テストとレポート再生成を実行する。
+- [x] Step 5: テストとレポート再生成を実行する。
   - Check: `npm run test:unit`、`git diff --check`、`node scripts/screener/run-fundamental-screening.mjs` が成功し、`CRDO` がPhase5に出るか確認する。
-- [ ] Step 6: 自己レビューし、計画を completed へ移動してコミット・プッシュする。
+- [x] Step 6: 自己レビューし、計画を completed へ移動してコミット・プッシュする。
   - Check: Phase4 Top40とPhase5が混ざっていない。
 
 ## Out of Scope
