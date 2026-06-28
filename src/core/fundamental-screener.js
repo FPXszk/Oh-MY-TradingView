@@ -1560,6 +1560,35 @@ async function buildPhase5SectorTopStocks({
   };
 }
 
+export function buildHiddenPhase4Candidates(finalStockRanking, phase5SectorTopStocks) {
+  if (!Array.isArray(phase5SectorTopStocks) || phase5SectorTopStocks.length === 0) return [];
+
+  const phase4Rows = Array.isArray(finalStockRanking) ? finalStockRanking : [];
+  const phase4Symbols = new Set(phase4Rows.map((row) => String(row.symbol ?? '').toUpperCase()));
+  const phase4FloorScore = phase4Rows.length > 0
+    ? phase4Rows.reduce((min, row) => Math.min(min, row.rankScore ?? Number.POSITIVE_INFINITY), Number.POSITIVE_INFINITY)
+    : null;
+  const scoreThreshold = Math.max(50, Number.isFinite(phase4FloorScore) ? phase4FloorScore : 50);
+
+  return phase5SectorTopStocks
+    .filter((row) => {
+      const symbol = String(row.symbol ?? '').toUpperCase();
+      return symbol
+        && !phase4Symbols.has(symbol)
+        && (row.phase5SectorStockRank ?? Number.POSITIVE_INFINITY) <= 3
+        && (row.rankScore ?? -Infinity) >= scoreThreshold
+        && (row.phase5SectorRank ?? 0) >= 10
+        && ((row.perf3m ?? -Infinity) >= 30 || (row.perf6m ?? -Infinity) >= 40);
+    })
+    .sort((a, b) => {
+      if ((b.rankScore ?? -Infinity) !== (a.rankScore ?? -Infinity)) {
+        return (b.rankScore ?? -Infinity) - (a.rankScore ?? -Infinity);
+      }
+      return (a.symbol ?? '').localeCompare(b.symbol ?? '');
+    })
+    .slice(0, 5);
+}
+
 function applyThemeTaxonomy(rows, market) {
   return rows.map((row) => {
     const classification = classifyThemeForMarket(row, market);
@@ -2066,6 +2095,9 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     getFundamentals,
     _deps,
   });
+  const hiddenPhase4Candidates = market === DEFAULT_MARKET
+    ? buildHiddenPhase4Candidates(finalStockRanking, phase5.rows)
+    : [];
   const hierarchyFocusSector = hierarchyFocusSectorOverride ?? selectedSectorLabels[0] ?? null;
   const focusedHierarchy = buildFocusedHierarchy(ranked, hierarchyFocusSector, {
     market,
@@ -2214,6 +2246,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     sectorRanking,
     industryRanking: industrySummary.rankings,
     finalStockRanking,
+    hiddenPhase4Candidates,
     phase5SectorTopStocks: phase5.rows,
     themeRanking,
     focusedHierarchy,

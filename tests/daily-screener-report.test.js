@@ -777,7 +777,31 @@ describe('buildMarkdown', () => {
         phase5SectorRank: 2,
         phase5SectorStockRank: 1,
       },
+      {
+        symbol: 'HHH',
+        exchange: 'NASDAQ',
+        sector: 'Technology Services',
+        industry: 'Information Technology Services',
+        marketCapUsd: 7_200_000_000,
+        perfY: 82,
+        perf6m: 44,
+        perf3m: 33,
+        pctOf52wHigh: 96,
+        roic: 29,
+        grossProfitToAssets: 39,
+        fcfMargin: 23,
+        revenueGrowthTtm: 34,
+        ruleOf40: 57,
+        epsGrowthTtm: 27,
+        pFcf: 32,
+        atrPct: 3.1,
+        rankScore: 88,
+        rankBreakdown: rankBreakdown(2),
+        phase5SectorRank: 10,
+        phase5SectorStockRank: 1,
+      },
     ];
+    result.hiddenPhase4Candidates = [result.phase5SectorTopStocks[3]];
     result.criteria.industry_ranking = {
       source: 'TradingView scanner industry',
       top_industries_displayed: 2,
@@ -817,6 +841,8 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| 1 \| Technology Services \| Packaged Software \| \*\*AAA\*\* \| NASDAQ \| \$12\.3B \(L\) \|/);
     assert.match(markdown, /\| 2 \| Technology Services \| Packaged Software \| \*\*BBB\*\* \| NASDAQ \| \$9\.8B \(M\+\) \|/);
     assert.match(markdown, /\| 3 \| Consumer Non-Durables \| Food: Specialty\/Candy \| \*\*CCC\*\* \| NYSE \| \$4\.3B \(M\) \|/);
+    assert.match(markdown, /※ 以下の「-」行はPhase5から抽出したHidden Phase4 Candidateです。Phase4 Top40には未掲載ですが、Phase5内でSector上位かつPhase4掲載水準以上の総合点を持つ銘柄です。/);
+    assert.match(markdown, /\| - \| Technology Services \| Information Technology Services \| \*\*HHH\*\* \| NASDAQ \| \$7\.2B \(M\+\) \| 82\.0% \| 44\.0% \| 33\.0% \| 96\.0% \| 29\.0% \| 39\.0% \| 23\.0% \| 34\.0% \| 57\.0 \| 27\.0% \| 32\.0 \| 3\.1% \| 88\.00 \(T41\.4\/F46\.6\) \|/);
     assert.match(markdown, /## Phase5 Sector別 個別銘柄ランキング/);
     assert.match(markdown, /- 対象: Phase1 Sector Ranking 上位20セクター/);
     assert.match(markdown, /- 表示上限: 各セクターの総合点上位5銘柄（最大100銘柄）/);
@@ -824,6 +850,8 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| 1 \| 1 \| Technology Services \| Packaged Software \| \*\*BBB\*\* \| NASDAQ \| \$9\.8B \(M\+\) \|/);
     assert.match(markdown, /\| 1 \| 2 \| Technology Services \| Packaged Software \| \*\*AAA\*\* \| NASDAQ \| \$12\.3B \(L\) \|/);
     assert.match(markdown, /\| 2 \| 1 \| Consumer Non-Durables \| Food: Specialty\/Candy \| \*\*CCC\*\* \| NYSE \| \$4\.3B \(M\) \|/);
+    assert.match(markdown, /\| 10 \| 1 \| Technology Services \| Information Technology Services \| \*\*HHH\*\* \| NASDAQ \| \$7\.2B \(M\+\) \|/);
+    assert.doesNotMatch(markdown, /## Phase6/);
     assert.doesNotMatch(markdown, /\*\*NVDA \(NVIDIA Corporation\)\*\*/);
     assert.doesNotMatch(markdown, /\*\*AAA \(Alpha Apps Inc\.\)\*\*/);
     assert.doesNotMatch(markdown, /## Phase2 セクター別ランキング/);
@@ -969,6 +997,7 @@ describe('buildMarkdown', () => {
     const markdown = buildMarkdown(result);
 
     assert.match(markdown, /\| 1 \| Electronic Technology \| Computer Peripherals \| \*\*SNDK\*\* \| NASDAQ \| \$5\.0B \(M\+\) \| 80\.0% \| 40\.0% \| 25\.0% \| 95\.0% \| 25\.0% \| 30\.0% \| 20\.0% \| 30\.0% \| 50\.0 \| 黒字転換 \(raw -144\.5%\) \| 20\.0 \| 3\.2% \|/);
+    assert.doesNotMatch(markdown, /Hidden Phase4 Candidate/);
   });
 
   it('supports a Japan-specific title and currency symbol', () => {

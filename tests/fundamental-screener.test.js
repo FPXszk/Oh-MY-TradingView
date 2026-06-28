@@ -2,7 +2,11 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { zipSync } from 'fflate';
 
-import { evaluateSymbolsAgainstFundamentalScreener, runFundamentalScreener } from '../src/core/fundamental-screener.js';
+import {
+  buildHiddenPhase4Candidates,
+  evaluateSymbolsAgainstFundamentalScreener,
+  runFundamentalScreener,
+} from '../src/core/fundamental-screener.js';
 import { getEdinetSupplementalFundamentalsBatch } from '../src/core/edinet.js';
 import { resetSecEdgarCachesForTests } from '../src/core/sec-edgar.js';
 
@@ -146,6 +150,48 @@ function assertRankScoresDescending(rows) {
     assert.ok(rows[i - 1].rankScore >= rows[i].rankScore);
   }
 }
+
+describe('buildHiddenPhase4Candidates', () => {
+  it('extracts Phase5 rows near the Phase4 floor without changing Phase4 membership', () => {
+    const phase4Rows = [
+      { symbol: 'TOP1', rankScore: 95 },
+      { symbol: 'FLOOR', rankScore: 72 },
+    ];
+    const phase5Rows = [
+      { symbol: 'TOP1', phase5SectorRank: 10, phase5SectorStockRank: 1, rankScore: 99, perf3m: 60, perf6m: 70 },
+      { symbol: 'WINB', phase5SectorRank: 10, phase5SectorStockRank: 2, rankScore: 88, perf3m: 31, perf6m: 35 },
+      { symbol: 'WINA', phase5SectorRank: 11, phase5SectorStockRank: 1, rankScore: 88, perf3m: 10, perf6m: 45 },
+      { symbol: 'LOWRANK', phase5SectorRank: 12, phase5SectorStockRank: 4, rankScore: 90, perf3m: 80, perf6m: 90 },
+      { symbol: 'LOWSCORE', phase5SectorRank: 13, phase5SectorStockRank: 1, rankScore: 71.99, perf3m: 80, perf6m: 90 },
+      { symbol: 'LOWSECTOR', phase5SectorRank: 9, phase5SectorStockRank: 1, rankScore: 93, perf3m: 80, perf6m: 90 },
+      { symbol: 'LOWMOMO', phase5SectorRank: 14, phase5SectorStockRank: 1, rankScore: 92, perf3m: 29.9, perf6m: 39.9 },
+    ];
+
+    assert.deepEqual(
+      buildHiddenPhase4Candidates(phase4Rows, phase5Rows).map((row) => row.symbol),
+      ['WINA', 'WINB'],
+    );
+    assert.deepEqual(phase4Rows.map((row) => row.symbol), ['TOP1', 'FLOOR']);
+  });
+
+  it('falls back to a 50 point floor, limits to five rows, and sorts ties by symbol', () => {
+    const phase5Rows = [
+      { symbol: 'CCC', phase5SectorRank: 10, phase5SectorStockRank: 1, rankScore: 60, perf3m: 30, perf6m: 10 },
+      { symbol: 'AAA', phase5SectorRank: 11, phase5SectorStockRank: 1, rankScore: 70, perf3m: 30, perf6m: 10 },
+      { symbol: 'BBB', phase5SectorRank: 12, phase5SectorStockRank: 1, rankScore: 70, perf3m: 30, perf6m: 10 },
+      { symbol: 'DDD', phase5SectorRank: 13, phase5SectorStockRank: 1, rankScore: 59, perf3m: 30, perf6m: 10 },
+      { symbol: 'EEE', phase5SectorRank: 14, phase5SectorStockRank: 1, rankScore: 58, perf3m: 30, perf6m: 10 },
+      { symbol: 'FFF', phase5SectorRank: 15, phase5SectorStockRank: 1, rankScore: 57, perf3m: 30, perf6m: 10 },
+      { symbol: 'GGG', phase5SectorRank: 16, phase5SectorStockRank: 1, rankScore: 56, perf3m: 30, perf6m: 10 },
+      { symbol: 'TOOLOW', phase5SectorRank: 17, phase5SectorStockRank: 1, rankScore: 49.99, perf3m: 30, perf6m: 10 },
+    ];
+
+    assert.deepEqual(
+      buildHiddenPhase4Candidates([], phase5Rows).map((row) => row.symbol),
+      ['AAA', 'BBB', 'CCC', 'DDD', 'EEE'],
+    );
+  });
+});
 
 describe('runFundamentalScreener', () => {
   it('sends EDINET Subscription-Key as a query parameter for list and download requests', async () => {

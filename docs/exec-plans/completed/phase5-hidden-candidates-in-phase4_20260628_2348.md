@@ -41,15 +41,15 @@
 
 ## 実装ステップ
 
-- [ ] 既存の Phase4 / Phase5 生成箇所とテストフィクスチャを確認する。
-- [ ] `hiddenPhase4Candidates` 抽出関数を追加し、`screenFundamentals` の戻り値に含める。
-- [ ] Phase4 Markdown 表に候補行を末尾追加する処理を実装する。
-- [ ] 単体テストを追加・更新する。
-- [ ] `npm run test:unit` を実行して回帰を確認する。
-- [ ] `git diff --check` を実行して空白エラーを確認する。
-- [ ] `node scripts/screener/run-fundamental-screening.mjs` を実行して `docs/reports/screener/daily-ranking.md` を再生成する。
-- [ ] 生成レポートで Phase4 末尾の `-` 行、Phase5見出し維持、Phase6不在、Phase4重複なしを確認する。
-- [ ] 計画を `docs/exec-plans/completed/` へ移動し、実装変更を Conventional Commit でコミット・プッシュする。
+- [x] 既存の Phase4 / Phase5 生成箇所とテストフィクスチャを確認する。
+- [x] `hiddenPhase4Candidates` 抽出関数を追加し、`screenFundamentals` の戻り値に含める。
+- [x] Phase4 Markdown 表に候補行を末尾追加する処理を実装する。
+- [x] 単体テストを追加・更新する。
+- [x] `npm run test:unit` を実行して回帰を確認する。
+- [x] `git diff --check` を実行して空白エラーを確認する。
+- [x] `node scripts/screener/run-fundamental-screening.mjs` を実行して `docs/reports/screener/daily-ranking.md` を再生成する。
+- [x] 生成レポートで Phase4 末尾の `-` 行、Phase5見出し維持、Phase6不在、Phase4重複なしを確認する。
+- [x] 計画を `docs/exec-plans/completed/` へ移動し、実装変更を Conventional Commit でコミット・プッシュする。
 
 ## 検証コマンド
 
