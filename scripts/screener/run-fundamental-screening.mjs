@@ -248,6 +248,11 @@ function buildPhase4RankingRow(row, rank, market, populationSize, currencySymbol
   return `| ${rank} | ${row.sector ?? 'Unknown'} | ${row.industry ?? 'Unknown'} | **${formatSymbolWithCompanyName(row, market)}** | ${row.exchange ?? '-'} | ${metricCells} |`;
 }
 
+function appendPhase4RankingTableHeader(lines) {
+  lines.push('| 順位 | セクター | Industry | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCFマージン | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 (T/F) |');
+  lines.push('|:---:|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|:---|---:|---:|---:|');
+}
+
 function formatThemeLine(row) {
   const primary = row.primaryTheme ?? 'Unclassified';
   const subthemes = row.subThemes?.length ? row.subThemes.join(', ') : '細粒度タグなし';
@@ -669,9 +674,7 @@ export function buildMarkdown(result, options = {}) {
       if (!result.finalStockRanking || result.finalStockRanking.length === 0) {
         lines.push('- 個別銘柄ランキングは算出できませんでした。');
       } else {
-        const scoreHeader = '総合点 (T/F)';
-        lines.push(`| 順位 | セクター | Industry | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCFマージン | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | ${scoreHeader} |`);
-        lines.push('|:---:|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|:---|---:|---:|---:|');
+        appendPhase4RankingTableHeader(lines);
         result.finalStockRanking.forEach((row, index) => {
           lines.push(buildPhase4RankingRow(row, index + 1, market, populationSize, currencySymbol));
         });
@@ -679,6 +682,7 @@ export function buildMarkdown(result, options = {}) {
           lines.push('');
           lines.push('※ 以下の「-」行はPhase5から抽出したHidden Phase4 Candidateです。Phase4 Top40には未掲載ですが、Phase5内でSector上位かつPhase4掲載水準以上の総合点を持つ銘柄です。');
           lines.push('');
+          appendPhase4RankingTableHeader(lines);
           result.hiddenPhase4Candidates.forEach((row) => {
             lines.push(buildPhase4RankingRow(row, '-', market, populationSize, currencySymbol));
           });

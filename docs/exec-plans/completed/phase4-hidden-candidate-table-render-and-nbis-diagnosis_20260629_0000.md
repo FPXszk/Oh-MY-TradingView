@@ -35,15 +35,15 @@ Phase4 個別銘柄ランキング末尾に追加した Hidden Phase4 Candidate 
 
 ## 実装ステップ
 
-- [ ] 現在のPhase4 Hidden候補表示とNBISのレポート不在を確認する。
-- [ ] Hidden候補用にPhase4と同じMarkdown表ヘッダーを出す実装へ修正する。
-- [ ] daily screener reportテストを追加・更新する。
-- [ ] NBISが今回の実行結果でPhase4/Phase5/候補にいない理由を診断する。
-- [ ] `npm run test:unit` を実行して回帰を確認する。
-- [ ] `git diff --check` を実行して空白エラーを確認する。
-- [ ] `node scripts/screener/run-fundamental-screening.mjs` を実行して `docs/reports/screener/daily-ranking.md` を再生成する。
-- [ ] 生成レポートでHidden候補が表として表示されること、Phase5維持、Phase6不在を確認する。
-- [ ] 計画を `docs/exec-plans/completed/` へ移動し、実装変更を Conventional Commit でコミット・プッシュする。
+- [x] 現在のPhase4 Hidden候補表示とNBISのレポート不在を確認する。
+- [x] Hidden候補用にPhase4と同じMarkdown表ヘッダーを出す実装へ修正する。
+- [x] daily screener reportテストを追加・更新する。
+- [x] NBISが今回の実行結果でPhase4/Phase5/候補にいない理由を診断する。
+- [x] `npm run test:unit` を実行して回帰を確認する。
+- [x] `git diff --check` を実行して空白エラーを確認する。
+- [x] `node scripts/screener/run-fundamental-screening.mjs` を実行して `docs/reports/screener/daily-ranking.md` を再生成する。
+- [x] 生成レポートでHidden候補が表として表示されること、Phase5維持、Phase6不在を確認する。
+- [x] 計画を `docs/exec-plans/completed/` へ移動し、実装変更を Conventional Commit でコミット・プッシュする。
 
 ## 検証コマンド
 

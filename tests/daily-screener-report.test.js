@@ -842,6 +842,7 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| 2 \| Technology Services \| Packaged Software \| \*\*BBB\*\* \| NASDAQ \| \$9\.8B \(M\+\) \|/);
     assert.match(markdown, /\| 3 \| Consumer Non-Durables \| Food: Specialty\/Candy \| \*\*CCC\*\* \| NYSE \| \$4\.3B \(M\) \|/);
     assert.match(markdown, /※ 以下の「-」行はPhase5から抽出したHidden Phase4 Candidateです。Phase4 Top40には未掲載ですが、Phase5内でSector上位かつPhase4掲載水準以上の総合点を持つ銘柄です。/);
+    assert.match(markdown, /Hidden Phase4 Candidateです。[\s\S]*?\| 順位 \| セクター \| Industry \| シンボル \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCFマージン \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \(T\/F\) \|[\s\S]*?\|:---:\|:---\|:---\|:---\|:---:\|:---\|---:\|---:\|---:\|---:\|---:\|---:\|---:\|---:\|:---\|:---\|---:\|---:\|---:\|[\s\S]*?\| - \|/);
     assert.match(markdown, /\| - \| Technology Services \| Information Technology Services \| \*\*HHH\*\* \| NASDAQ \| \$7\.2B \(M\+\) \| 82\.0% \| 44\.0% \| 33\.0% \| 96\.0% \| 29\.0% \| 39\.0% \| 23\.0% \| 34\.0% \| 57\.0 \| 27\.0% \| 32\.0 \| 3\.1% \| 88\.00 \(T41\.4\/F46\.6\) \|/);
     assert.match(markdown, /## Phase5 Sector別 個別銘柄ランキング/);
     assert.match(markdown, /- 対象: Phase1 Sector Ranking 上位20セクター/);
