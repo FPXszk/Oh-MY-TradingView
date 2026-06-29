@@ -37,14 +37,14 @@
 
 ## 実装ステップ
 
-- [ ] `buildPhase5SectorTopStocks()` の Phase5 表示 Top5 と unified 候補 Top3 を別配列に分ける。
-- [ ] Phase5 meta / unified scoring meta / score basis を Top3 前提へ更新する。
-- [ ] Markdown 生成の Phase4 説明と guide row を Top3 明記へ更新する。
-- [ ] core test に Phase5 Top3 制限、Phase4 由来の残存、meta 件数検証を追加・更新する。
-- [ ] report test の説明文期待を更新する。
-- [ ] `npm run test:unit` と `git diff --check` を実行する。
-- [ ] `node scripts/screener/run-fundamental-screening.mjs` で `docs/reports/screener/daily-ranking.md` を再生成する。
-- [ ] 再生成レポートで Phase4説明、Phase5表 Top5維持、Phase1/Phase2非破壊、Phase6なしを確認する。
+- [x] `buildPhase5SectorTopStocks()` の Phase5 表示 Top5 と unified 候補 Top3 を別配列に分ける。
+- [x] Phase5 meta / unified scoring meta / score basis を Top3 前提へ更新する。
+- [x] Markdown 生成の Phase4 説明と guide row を Top3 明記へ更新する。
+- [x] core test に Phase5 Top3 制限、Phase4 由来の残存、meta 件数検証を追加・更新する。
+- [x] report test の説明文期待を更新する。
+- [x] `npm run test:unit` と `git diff --check` を実行する。
+- [x] `node scripts/screener/run-fundamental-screening.mjs` で `docs/reports/screener/daily-ranking.md` を再生成する。
+- [x] 再生成レポートで Phase4説明、Phase5表 Top5維持、Phase1/Phase2非破壊、Phase6なしを確認する。
 
 ## 影響範囲
 

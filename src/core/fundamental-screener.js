@@ -32,6 +32,7 @@ const FINAL_STOCK_LIMIT = 40;
 const INDUSTRY_UNIVERSE_SERVER_LIMIT = 400;
 const PHASE5_SECTOR_LIMIT = 20;
 const PHASE5_TOP_STOCKS_PER_SECTOR = 5;
+const PHASE5_UNIFIED_CANDIDATE_TOP_STOCKS_PER_SECTOR = 3;
 const PHASE5_SECTOR_UNIVERSE_SERVER_LIMIT = 400;
 const BUILTIN_SYMBOL_ALLOWLISTS = new Map([
   [
@@ -1462,12 +1463,14 @@ async function buildPhase5SectorTopStocks({
     enabled: market === DEFAULT_MARKET,
     sectorLimit: PHASE5_SECTOR_LIMIT,
     topStocksPerSector: PHASE5_TOP_STOCKS_PER_SECTOR,
+    unifiedCandidateTopStocksPerSector: PHASE5_UNIFIED_CANDIDATE_TOP_STOCKS_PER_SECTOR,
     sourceSectors: 0,
     fetchedRows: 0,
     scopeFilteredRows: 0,
     clientFilteredRows: 0,
     rankedRows: 0,
     displayedRows: 0,
+    unifiedCandidateRows: 0,
   };
   if (market !== DEFAULT_MARKET) return { rows: [], candidateRows: [], sectorLabels: [], meta: emptyMeta };
 
@@ -1536,20 +1539,32 @@ async function buildPhase5SectorTopStocks({
     applyLocalizedCompanyNames(applyThemeTaxonomy(clientFiltered, market), market),
     getRankingBlocks(market),
   );
-  const candidateRows = ranked.map((row) => stripInternalFields(row));
+  const candidateRows = [];
   const displayedRows = [];
   phase5SectorLabels.forEach((sector, sectorIndex) => {
-    ranked
+    const sectorRows = ranked
       .filter((row) => row.sector === sector)
       .sort((a, b) => {
         if ((b.rankScore ?? -Infinity) !== (a.rankScore ?? -Infinity)) {
           return (b.rankScore ?? -Infinity) - (a.rankScore ?? -Infinity);
         }
         return (a.symbol ?? '').localeCompare(b.symbol ?? '');
-      })
+      });
+
+    sectorRows
       .slice(0, PHASE5_TOP_STOCKS_PER_SECTOR)
       .forEach((row, rowIndex) => {
         displayedRows.push(stripInternalFields({
+          ...row,
+          phase5SectorRank: sectorIndex + 1,
+          phase5SectorStockRank: rowIndex + 1,
+        }));
+      });
+
+    sectorRows
+      .slice(0, PHASE5_UNIFIED_CANDIDATE_TOP_STOCKS_PER_SECTOR)
+      .forEach((row, rowIndex) => {
+        candidateRows.push(stripInternalFields({
           ...row,
           phase5SectorRank: sectorIndex + 1,
           phase5SectorStockRank: rowIndex + 1,
@@ -1565,12 +1580,14 @@ async function buildPhase5SectorTopStocks({
       enabled: true,
       sectorLimit: PHASE5_SECTOR_LIMIT,
       topStocksPerSector: PHASE5_TOP_STOCKS_PER_SECTOR,
+      unifiedCandidateTopStocksPerSector: PHASE5_UNIFIED_CANDIDATE_TOP_STOCKS_PER_SECTOR,
       sourceSectors: phase5SectorLabels.length,
       fetchedRows: fetchedRows.length,
       scopeFilteredRows: scopeFiltered.length,
       clientFilteredRows: clientFiltered.length,
       rankedRows: ranked.length,
       displayedRows: displayedRows.length,
+      unifiedCandidateRows: candidateRows.length,
     },
   };
 }
@@ -1637,8 +1654,27 @@ export function buildUnifiedPhase4Ranking(unifiedRankedRows, limit = FINAL_STOCK
 export function buildUnifiedPhase5SectorTopStocks(
   unifiedRankedRows,
   phase5SectorLabels = [],
+  phase5DisplayRows = [],
 ) {
   if (!Array.isArray(unifiedRankedRows) || !Array.isArray(phase5SectorLabels)) return [];
+  if (Array.isArray(phase5DisplayRows) && phase5DisplayRows.length > 0) {
+    const unifiedByKey = new Map(unifiedRankedRows.map((row) => [buildRowLookupKey(row), row]));
+    return phase5DisplayRows.map((row) => {
+      const unifiedRow = unifiedByKey.get(buildRowLookupKey(row));
+      return stripInternalFields(unifiedRow
+        ? {
+          ...row,
+          sourceBuckets: unifiedRow.sourceBuckets,
+          phase4Eligible: unifiedRow.phase4Eligible,
+          phase5Eligible: unifiedRow.phase5Eligible,
+          unifiedRank: unifiedRow.unifiedRank,
+          unifiedRankScore: unifiedRow.unifiedRankScore,
+          unifiedRankBreakdown: unifiedRow.unifiedRankBreakdown,
+        }
+        : row);
+    });
+  }
+
   const displayedRows = [];
   phase5SectorLabels.slice(0, PHASE5_SECTOR_LIMIT).forEach((sector, sectorIndex) => {
     unifiedRankedRows
@@ -2211,13 +2247,14 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     ? buildUnifiedPhase4Ranking(unifiedRankedRows, FINAL_STOCK_LIMIT)
     : [];
   const unifiedPhase5SectorTopStocks = market === DEFAULT_MARKET
-    ? buildUnifiedPhase5SectorTopStocks(unifiedRankedRows, phase5.sectorLabels ?? [])
+    ? buildUnifiedPhase5SectorTopStocks(unifiedRankedRows, phase5.sectorLabels ?? [], phase5.rows)
     : [];
   const unifiedScoringMeta = {
     enabled: market === DEFAULT_MARKET,
     candidateCount: unifiedCandidateRows.length,
     phase4CandidateCount: phase4CandidateRows.length,
     phase5CandidateCount: (phase5.candidateRows ?? []).length,
+    phase5UnifiedCandidateTopStocksPerSector: PHASE5_UNIFIED_CANDIDATE_TOP_STOCKS_PER_SECTOR,
     dedupedCount: unifiedCandidateRows.length,
     phase4OnlyCount: unifiedCandidateRows.filter((row) => row.phase4Eligible && !row.phase5Eligible).length,
     phase5OnlyCount: unifiedCandidateRows.filter((row) => row.phase5Eligible && !row.phase4Eligible).length,
@@ -2229,7 +2266,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       fields: block.fields,
     })),
     scoreBasis: market === DEFAULT_MARKET
-      ? 'phase4_candidates_plus_phase5_sector_candidates'
+      ? 'phase4_candidates_plus_phase5_sector_top3_candidates'
       : 'disabled_for_market',
   };
   const hiddenPhase4Candidates = market === DEFAULT_MARKET
@@ -2333,8 +2370,9 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       score_basis: unifiedScoringMeta.scoreBasis,
       phase4_candidate_count: unifiedScoringMeta.phase4CandidateCount,
       phase5_candidate_count: unifiedScoringMeta.phase5CandidateCount,
+      phase5_unified_candidate_top_stocks_per_sector: unifiedScoringMeta.phase5UnifiedCandidateTopStocksPerSector,
       deduped_count: unifiedScoringMeta.dedupedCount,
-      note: 'Phase4 and Phase5 stock rows use one shared unifiedRankScore population; Phase1/Phase2 aggregate scores remain separate.',
+      note: 'Phase4 stock rows and Phase5 sector Top3 candidates use one shared unifiedRankScore population; Phase1/Phase2 aggregate scores remain separate.',
     };
   }
   if (exchangeAllowlist) {

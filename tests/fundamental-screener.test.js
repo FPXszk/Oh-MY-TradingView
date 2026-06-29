@@ -292,6 +292,23 @@ describe('unified Phase4/Phase5 scoring helpers', () => {
     assert.deepEqual(phase5Rows.map((row) => row.symbol), ['HIGH', 'LOW']);
     assert.deepEqual(phase5Rows.map((row) => row.phase5SectorStockRank), [1, 2]);
   });
+
+  it('keeps Phase4 rows in unified candidates even when the same symbol is not a Phase5 Top3 candidate', () => {
+    const rows = buildUnifiedCandidateRows({
+      phase4Rows: [buildUnifiedTestRow('FOURTH')],
+      phase5Rows: [
+        buildUnifiedTestRow('FIRST', { phase5SectorStockRank: 1 }),
+        buildUnifiedTestRow('SECOND', { phase5SectorStockRank: 2 }),
+        buildUnifiedTestRow('THIRD', { phase5SectorStockRank: 3 }),
+      ],
+    });
+    const fourth = rows.find((row) => row.symbol === 'FOURTH');
+
+    assert.ok(fourth);
+    assert.equal(fourth.phase4Eligible, true);
+    assert.equal(fourth.phase5Eligible, false);
+    assert.deepEqual(fourth.sourceBuckets, ['phase4']);
+  });
 });
 
 describe('buildHiddenPhase4Candidates', () => {
@@ -1397,6 +1414,161 @@ describe('runFundamentalScreener', () => {
     assertRankScoresDescending(result.finalStockRanking);
     assert.ok(result.finalStockRanking.every((row) => row.industry !== 'Custom Industry 21'));
     assert.equal(new Set(result.finalStockRanking.map((row) => row.industry)).size > 5, true);
+  });
+
+  it('limits Phase5 unified candidates to each sector top 3 while keeping Phase5 display top 5', async () => {
+    const phase4Rows = [
+      buildPhase2Row('NASDAQ:A1', {
+        name: 'A1',
+        sector: 'Electronic Technology',
+        industry: 'Semiconductors',
+        close: 100,
+        rsi: 70,
+        sma200: 80,
+        sma50: 90,
+        high52w: 105,
+        perf3m: 80,
+        perf6m: 120,
+        perfY: 180,
+        relativeVolume: 1.5,
+        marketCap: 20_000_000_000,
+        eps: 2,
+        roe: 25,
+        roic: 20,
+        grossMargin: 45,
+        grossProfitTtm: 450_000_000,
+        totalAssets: 1_000_000_000,
+        operatingMargin: 20,
+        fcfMargin: 18,
+        fcfTtm: 200_000_000,
+        revenueGrowthTtm: 20,
+        pFcfDirect: 30,
+        netDebt: 0,
+        volume: 900_000,
+      }),
+    ];
+    const phase5Rows = Array.from({ length: 5 }, (_, index) => {
+      const rank = index + 1;
+      return buildPhase2Row(`NASDAQ:B${rank}`, {
+        name: `B${rank}`,
+        sector: 'Technology Services',
+        industry: 'Packaged Software',
+        close: 100,
+        rsi: 75 - index,
+        sma200: 80,
+        sma50: 90,
+        high52w: 105,
+        perf3m: 70 - index * 5,
+        perf6m: 110 - index * 5,
+        perfY: 170 - index * 5,
+        relativeVolume: 1.5,
+        marketCap: 20_000_000_000 - index,
+        eps: 2,
+        roe: 30,
+        roic: 25,
+        grossMargin: 50,
+        grossProfitTtm: 500_000_000,
+        totalAssets: 1_000_000_000,
+        operatingMargin: 22,
+        fcfMargin: 20,
+        fcfTtm: 220_000_000,
+        revenueGrowthTtm: 25,
+        pFcfDirect: 25,
+        netDebt: 0,
+        volume: 950_000,
+      });
+    });
+
+    const result = await runFundamentalScreener({
+      limit: 20,
+      _deps: {
+        marketCapMinUsd: 1_000_000_000,
+        market: 'america',
+        exchangeAllowlist: ['NASDAQ', 'NYSE'],
+        selectedSectorCount: 1,
+        fetch: createMockFetch({
+          stockBodies: [],
+          benchmarkPayload: {
+            totalCount: 1,
+            data: [
+              buildPhase1StockRow('BATS:SPY', {
+                name: 'SPY',
+                sector: 'Benchmark',
+                close: 100,
+                sma200: 95,
+                sma50: 98,
+                high52w: 104,
+                perf1m: 5,
+                perf3m: 10,
+                perf6m: 20,
+                perfY: 40,
+                rsi: 60,
+                relativeVolume: 1,
+                marketCap: 400_000_000_000,
+              }),
+            ],
+          },
+          phase1Payload: {
+            totalCount: 6,
+            data: [
+              buildPhase1StockRow('NASDAQ:A1', {
+                name: 'A1',
+                sector: 'Electronic Technology',
+                perf1m: 20,
+                perf3m: 80,
+                perf6m: 120,
+                perfY: 180,
+                rsi: 70,
+                relativeVolume: 1.4,
+                marketCap: 20_000_000_000,
+              }),
+              ...Array.from({ length: 5 }, (_, index) => buildPhase1StockRow(`NASDAQ:B${index + 1}`, {
+                name: `B${index + 1}`,
+                sector: 'Technology Services',
+                perf1m: 10,
+                perf3m: 40 - index,
+                perf6m: 80 - index,
+                perfY: 120 - index,
+                rsi: 65,
+                relativeVolume: 1.2,
+                marketCap: 10_000_000_000,
+              })),
+            ],
+          },
+          phase2PayloadsBySector: {
+            'Electronic Technology': {
+              totalCount: phase4Rows.length,
+              data: phase4Rows,
+            },
+            'Technology Services': {
+              totalCount: phase5Rows.length,
+              data: phase5Rows,
+            },
+          },
+        }),
+      },
+    });
+
+    assert.deepEqual(
+      result.unifiedPhase5SectorTopStocks
+        .filter((row) => row.sector === 'Technology Services')
+        .map((row) => row.symbol),
+      ['B1', 'B2', 'B3', 'B4', 'B5'],
+    );
+    assert.deepEqual(
+      result.unifiedCandidateRows
+        .filter((row) => row.phase5Eligible && row.sector === 'Technology Services')
+        .map((row) => row.symbol),
+      ['B1', 'B2', 'B3'],
+    );
+    assert.equal(result.unifiedCandidateRows.some((row) => row.symbol === 'B4' && row.phase5Eligible), false);
+    assert.equal(result.unifiedCandidateRows.some((row) => row.symbol === 'B5' && row.phase5Eligible), false);
+    assert.equal(result.sourceDetails.phase5.unifiedCandidateTopStocksPerSector, 3);
+    assert.equal(result.sourceDetails.phase5.unifiedCandidateRows, 4);
+    assert.equal(result.unifiedScoringMeta.phase5CandidateCount, 4);
+    assert.equal(result.unifiedScoringMeta.phase5UnifiedCandidateTopStocksPerSector, 3);
+    assert.equal(result.unifiedScoringMeta.dedupedCount, 4);
+    assert.equal(result.criteria.unified_scoring.score_basis, 'phase4_candidates_plus_phase5_sector_top3_candidates');
   });
 
   it('applies Japan-specific profiles and skips finance even when phase1 selects it', async () => {

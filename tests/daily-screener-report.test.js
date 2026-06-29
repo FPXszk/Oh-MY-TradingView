@@ -311,9 +311,10 @@ describe('buildMarkdown', () => {
           approach: 'repo custom theme taxonomy layered on top of TradingView sector/industry',
         },
         unified_scoring: {
-          score_basis: 'phase4_candidates_plus_phase5_sector_candidates',
+          score_basis: 'phase4_candidates_plus_phase5_sector_top3_candidates',
           phase4_candidate_count: 3,
           phase5_candidate_count: 4,
+          phase5_unified_candidate_top_stocks_per_sector: 3,
           deduped_count: 4,
         },
       },
@@ -828,7 +829,8 @@ describe('buildMarkdown', () => {
       phase4OnlyCount: 1,
       phase5OnlyCount: 1,
       bothCount: 2,
-      scoreBasis: 'phase4_candidates_plus_phase5_sector_candidates',
+      phase5UnifiedCandidateTopStocksPerSector: 3,
+      scoreBasis: 'phase4_candidates_plus_phase5_sector_top3_candidates',
     };
     result.criteria.industry_ranking = {
       source: 'TradingView scanner industry',
@@ -866,7 +868,7 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| 順位 \| 出所 \| セクター \| Industry \| シンボル \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCFマージン \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \(T\/F\) \|/);
     assert.match(markdown, /- 対象Industry（Phase3上位20）: Packaged Software, Food: Specialty\/Candy/);
     assert.match(markdown, /- 表示上限: 全業種横断の総合点上位40銘柄/);
-    assert.match(markdown, /- スコア: Phase4候補 \+ Phase5 Sector別候補を共通母集団で再採点した unifiedRankScore/);
+    assert.match(markdown, /- スコア: Phase4候補 \+ Phase5 Sector別Top3候補を共通母集団で再採点した unifiedRankScore/);
     assert.match(markdown, /- 出所: Phase4 \/ Phase5 \/ Both は、候補がどの経路で検出されたかを示す/);
     assert.match(markdown, /\| 1 \| Phase4 \| Technology Services \| Packaged Software \| \*\*AAA\*\* \| NASDAQ \| \$12\.3B \(L\) \|/);
     assert.match(markdown, /\| 2 \| Both \| Technology Services \| Packaged Software \| \*\*BBB\*\* \| NASDAQ \| \$9\.8B \(M\+\) \|/);
@@ -877,7 +879,7 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /## Phase5 Sector別 個別銘柄ランキング/);
     assert.match(markdown, /- 対象: Phase1 Sector Ranking 上位20セクター/);
     assert.match(markdown, /- 表示上限: 各セクターの総合点上位5銘柄（最大100銘柄）/);
-    assert.match(markdown, /- 総合点: Phase4表と同じ unifiedRankScore/);
+    assert.match(markdown, /- 総合点: 各セクターTop3候補はPhase4表と同じ unifiedRankScore、4位・5位はPhase5表示用スコア（Phase4候補でもある場合は unifiedRankScore）/);
     assert.match(markdown, /\| Sector Rank \| Sector内Rank \| Sector \| Industry \| Symbol \| Market \| Market Cap \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCF Margin \| Revenue YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \(T\/F\) \|/);
     assert.match(markdown, /\| 1 \| 1 \| Technology Services \| Packaged Software \| \*\*BBB\*\* \| NASDAQ \| \$9\.8B \(M\+\) \|/);
     assert.match(markdown, /\| 1 \| 2 \| Technology Services \| Packaged Software \| \*\*AAA\*\* \| NASDAQ \| \$12\.3B \(L\) \|/);
@@ -893,7 +895,7 @@ describe('buildMarkdown', () => {
     assert.doesNotMatch(markdown, /- テーマ: Cloud Software \/ Cloud Platforms/);
     assert.doesNotMatch(markdown, /低いほど良い/);
     assert.match(markdown, /Rule40/);
-    assert.match(markdown, /\| 採点ポリシー \| unifiedRankScore \| 米国株のPhase4候補とPhase5候補は共通母集団で1回だけ採点。Phase4表とPhase5表の総合点は同一スコア軸、Phase1\/Phase2の集計スコアとは別物。 \|/);
+    assert.match(markdown, /\| 採点ポリシー \| unifiedRankScore \| 米国株のPhase4候補とPhase5 Sector別Top3候補は共通母集団で1回だけ採点。Phase5表の4位・5位は表示用スコアだが、Phase4候補でもある場合は unifiedRankScore を持つ。Phase1\/Phase2の集計スコアとは別物。 \|/);
     assert.match(markdown, /35\.0% \| 60\.0 \| 30\.0% \| 28\.0 \| 3\.2% \| 96\.00 \(T45\.1\/F50\.9\) \|/);
     assert.doesNotMatch(markdown, /（Rule 40\+）/);
     assert.doesNotMatch(markdown, /（20未満注意）/);

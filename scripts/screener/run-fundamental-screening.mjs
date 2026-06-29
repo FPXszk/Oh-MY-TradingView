@@ -496,7 +496,7 @@ function buildGuideRows(result) {
     rows.push(`| 補助ポリシー | Theme taxonomy | ${result.criteria.theme_taxonomy_policy.scope} / ${result.criteria.theme_taxonomy_policy.approach} / version ${result.criteria.theme_taxonomy_policy.version} |`);
   }
   if (result.criteria.unified_scoring) {
-    rows.push('| 採点ポリシー | unifiedRankScore | 米国株のPhase4候補とPhase5候補は共通母集団で1回だけ採点。Phase4表とPhase5表の総合点は同一スコア軸、Phase1/Phase2の集計スコアとは別物。 |');
+    rows.push('| 採点ポリシー | unifiedRankScore | 米国株のPhase4候補とPhase5 Sector別Top3候補は共通母集団で1回だけ採点。Phase5表の4位・5位は表示用スコアだが、Phase4候補でもある場合は unifiedRankScore を持つ。Phase1/Phase2の集計スコアとは別物。 |');
   }
   if (result.criteria.allowed_exchanges) {
     rows.push(`| ユニバース | 取引所 | ${result.criteria.allowed_exchanges.join(', ')} |`);
@@ -700,7 +700,7 @@ export function buildMarkdown(result, options = {}) {
       lines.push(`- 対象Industry（Phase3上位20）: ${result.industryRanking?.slice(0, 20).map((entry) => entry.industry).join(', ') || 'なし'}`);
       lines.push('- 表示上限: 全業種横断の総合点上位40銘柄');
       if (result.unifiedScoringMeta?.enabled) {
-        lines.push('- スコア: Phase4候補 + Phase5 Sector別候補を共通母集団で再採点した unifiedRankScore');
+        lines.push('- スコア: Phase4候補 + Phase5 Sector別Top3候補を共通母集団で再採点した unifiedRankScore');
         lines.push('- 出所: Phase4 / Phase5 / Both は、候補がどの経路で検出されたかを示す');
       }
       lines.push('');
@@ -719,7 +719,7 @@ export function buildMarkdown(result, options = {}) {
       lines.push('- 対象: Phase1 Sector Ranking 上位20セクター');
       lines.push('- 表示上限: 各セクターの総合点上位5銘柄（最大100銘柄）');
       if (result.unifiedScoringMeta?.enabled) {
-        lines.push('- 総合点: Phase4表と同じ unifiedRankScore');
+        lines.push('- 総合点: 各セクターTop3候補はPhase4表と同じ unifiedRankScore、4位・5位はPhase5表示用スコア（Phase4候補でもある場合は unifiedRankScore）');
       }
       lines.push('');
       const phase5Rows = result.unifiedPhase5SectorTopStocks?.length
