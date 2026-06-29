@@ -789,6 +789,10 @@ function dedupeRows(rows) {
   return [...deduped.values()];
 }
 
+function buildRowLookupKey(row) {
+  return `${row.exchange ?? ''}:${row.symbol ?? ''}`.toUpperCase();
+}
+
 function stripInternalFields(row) {
   const {
     screeningThresholds,
@@ -799,6 +803,12 @@ function stripInternalFields(row) {
     ...publicRow
   } = row;
   return publicRow;
+}
+
+function mergeSourceBuckets(existingBuckets, bucket) {
+  return ['phase4', 'phase5'].filter((entry) => (
+    existingBuckets?.includes(entry) || entry === bucket
+  ));
 }
 
 function averageRank(values, fallback) {
@@ -1459,7 +1469,7 @@ async function buildPhase5SectorTopStocks({
     rankedRows: 0,
     displayedRows: 0,
   };
-  if (market !== DEFAULT_MARKET) return { rows: [], meta: emptyMeta };
+  if (market !== DEFAULT_MARKET) return { rows: [], candidateRows: [], sectorLabels: [], meta: emptyMeta };
 
   const phase5SectorLabels = (sectorMomentum.rankings ?? [])
     .slice(0, PHASE5_SECTOR_LIMIT)
@@ -1475,6 +1485,8 @@ async function buildPhase5SectorTopStocks({
   if (requestPlans.length === 0) {
     return {
       rows: [],
+      candidateRows: [],
+      sectorLabels: phase5SectorLabels,
       meta: {
         ...emptyMeta,
         sourceSectors: phase5SectorLabels.length,
@@ -1524,6 +1536,7 @@ async function buildPhase5SectorTopStocks({
     applyLocalizedCompanyNames(applyThemeTaxonomy(clientFiltered, market), market),
     getRankingBlocks(market),
   );
+  const candidateRows = ranked.map((row) => stripInternalFields(row));
   const displayedRows = [];
   phase5SectorLabels.forEach((sector, sectorIndex) => {
     ranked
@@ -1546,6 +1559,8 @@ async function buildPhase5SectorTopStocks({
 
   return {
     rows: displayedRows,
+    candidateRows,
+    sectorLabels: phase5SectorLabels,
     meta: {
       enabled: true,
       sectorLimit: PHASE5_SECTOR_LIMIT,
@@ -1558,6 +1573,92 @@ async function buildPhase5SectorTopStocks({
       displayedRows: displayedRows.length,
     },
   };
+}
+
+export function buildUnifiedCandidateRows({ phase4Rows = [], phase5Rows = [] } = {}) {
+  const merged = new Map();
+  const addRows = (rows, bucket) => {
+    if (!Array.isArray(rows)) return;
+    for (const row of rows) {
+      const key = buildRowLookupKey(row);
+      if (!key || key === ':') continue;
+      const existing = merged.get(key);
+      if (!existing) {
+        merged.set(key, {
+          ...row,
+          sourceBuckets: mergeSourceBuckets([], bucket),
+          phase4Eligible: bucket === 'phase4',
+          phase5Eligible: bucket === 'phase5',
+        });
+        continue;
+      }
+
+      merged.set(key, {
+        ...row,
+        ...existing,
+        phase5SectorRank: existing.phase5SectorRank ?? row.phase5SectorRank,
+        phase5SectorStockRank: existing.phase5SectorStockRank ?? row.phase5SectorStockRank,
+        sourceBuckets: mergeSourceBuckets(existing.sourceBuckets, bucket),
+        phase4Eligible: existing.phase4Eligible || bucket === 'phase4',
+        phase5Eligible: existing.phase5Eligible || bucket === 'phase5',
+      });
+    }
+  };
+
+  addRows(phase4Rows, 'phase4');
+  addRows(phase5Rows, 'phase5');
+  return [...merged.values()];
+}
+
+export function applyUnifiedRanks(rows, market = DEFAULT_MARKET) {
+  return applyBlockRanks(rows, getRankingBlocks(market))
+    .sort((a, b) => {
+      if ((b.rankScore ?? -Infinity) !== (a.rankScore ?? -Infinity)) {
+        return (b.rankScore ?? -Infinity) - (a.rankScore ?? -Infinity);
+      }
+      return (a.symbol ?? '').localeCompare(b.symbol ?? '');
+    })
+    .map((row, index) => ({
+      ...row,
+      unifiedRank: index + 1,
+      unifiedRankScore: row.rankScore,
+      unifiedRankBreakdown: row.rankBreakdown,
+    }));
+}
+
+export function buildUnifiedPhase4Ranking(unifiedRankedRows, limit = FINAL_STOCK_LIMIT) {
+  if (!Array.isArray(unifiedRankedRows)) return [];
+  return unifiedRankedRows
+    .filter((row) => row.phase4Eligible || row.phase5Eligible)
+    .slice(0, limit)
+    .map((row) => stripInternalFields(row));
+}
+
+export function buildUnifiedPhase5SectorTopStocks(
+  unifiedRankedRows,
+  phase5SectorLabels = [],
+) {
+  if (!Array.isArray(unifiedRankedRows) || !Array.isArray(phase5SectorLabels)) return [];
+  const displayedRows = [];
+  phase5SectorLabels.slice(0, PHASE5_SECTOR_LIMIT).forEach((sector, sectorIndex) => {
+    unifiedRankedRows
+      .filter((row) => row.phase5Eligible === true && row.sector === sector)
+      .sort((a, b) => {
+        if ((b.unifiedRankScore ?? -Infinity) !== (a.unifiedRankScore ?? -Infinity)) {
+          return (b.unifiedRankScore ?? -Infinity) - (a.unifiedRankScore ?? -Infinity);
+        }
+        return (a.symbol ?? '').localeCompare(b.symbol ?? '');
+      })
+      .slice(0, PHASE5_TOP_STOCKS_PER_SECTOR)
+      .forEach((row, rowIndex) => {
+        displayedRows.push(stripInternalFields({
+          ...row,
+          phase5SectorRank: sectorIndex + 1,
+          phase5SectorStockRank: rowIndex + 1,
+        }));
+      });
+  });
+  return displayedRows;
 }
 
 export function buildHiddenPhase4Candidates(finalStockRanking, phase5SectorTopStocks) {
@@ -2070,7 +2171,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   const ranked = applyBlockRanks(themedRows, rankingBlocks).sort((a, b) => b.rankScore - a.rankScore);
   const matched = ranked.slice(0, effectiveLimit).map(stripInternalFields);
   const sectorRanking = summarizeSectors(ranked);
-  const finalStockRanking = market === DEFAULT_MARKET
+  const phase4CandidateRows = market === DEFAULT_MARKET
     ? ranked
       .filter((row) => industrySummary.selectedIndustryKeys.has(`${row.sector}\u0000${row.industry}`))
       .sort((a, b) => {
@@ -2079,8 +2180,10 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
         }
         return (a.symbol ?? '').localeCompare(b.symbol ?? '');
       })
-      .slice(0, FINAL_STOCK_LIMIT)
       .map((row) => stripInternalFields(row))
+    : [];
+  const finalStockRanking = market === DEFAULT_MARKET
+    ? phase4CandidateRows.slice(0, FINAL_STOCK_LIMIT)
     : industrySummary.finalStockRanking;
   const phase5 = await buildPhase5SectorTopStocks({
     market,
@@ -2095,6 +2198,40 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     getFundamentals,
     _deps,
   });
+  const unifiedCandidateRows = market === DEFAULT_MARKET
+    ? buildUnifiedCandidateRows({
+      phase4Rows: phase4CandidateRows,
+      phase5Rows: phase5.candidateRows ?? phase5.rows,
+    })
+    : [];
+  const unifiedRankedRows = market === DEFAULT_MARKET
+    ? applyUnifiedRanks(unifiedCandidateRows, market).map((row) => stripInternalFields(row))
+    : [];
+  const unifiedPhase4Ranking = market === DEFAULT_MARKET
+    ? buildUnifiedPhase4Ranking(unifiedRankedRows, FINAL_STOCK_LIMIT)
+    : [];
+  const unifiedPhase5SectorTopStocks = market === DEFAULT_MARKET
+    ? buildUnifiedPhase5SectorTopStocks(unifiedRankedRows, phase5.sectorLabels ?? [])
+    : [];
+  const unifiedScoringMeta = {
+    enabled: market === DEFAULT_MARKET,
+    candidateCount: unifiedCandidateRows.length,
+    phase4CandidateCount: phase4CandidateRows.length,
+    phase5CandidateCount: (phase5.candidateRows ?? []).length,
+    dedupedCount: unifiedCandidateRows.length,
+    phase4OnlyCount: unifiedCandidateRows.filter((row) => row.phase4Eligible && !row.phase5Eligible).length,
+    phase5OnlyCount: unifiedCandidateRows.filter((row) => row.phase5Eligible && !row.phase4Eligible).length,
+    bothCount: unifiedCandidateRows.filter((row) => row.phase4Eligible && row.phase5Eligible).length,
+    rankingBlocks: rankingBlocks.map((block) => ({
+      key: block.key,
+      label: block.label,
+      weight: block.weight,
+      fields: block.fields,
+    })),
+    scoreBasis: market === DEFAULT_MARKET
+      ? 'phase4_candidates_plus_phase5_sector_candidates'
+      : 'disabled_for_market',
+  };
   const hiddenPhase4Candidates = market === DEFAULT_MARKET
     ? buildHiddenPhase4Candidates(finalStockRanking, phase5.rows)
     : [];
@@ -2192,6 +2329,13 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       source_sectors: phase5.meta.sourceSectors,
       displayed_rows: phase5.meta.displayedRows,
     };
+    criteria.unified_scoring = {
+      score_basis: unifiedScoringMeta.scoreBasis,
+      phase4_candidate_count: unifiedScoringMeta.phase4CandidateCount,
+      phase5_candidate_count: unifiedScoringMeta.phase5CandidateCount,
+      deduped_count: unifiedScoringMeta.dedupedCount,
+      note: 'Phase4 and Phase5 stock rows use one shared unifiedRankScore population; Phase1/Phase2 aggregate scores remain separate.',
+    };
   }
   if (exchangeAllowlist) {
     criteria.allowed_exchanges = exchangeAllowlist;
@@ -2248,6 +2392,11 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     finalStockRanking,
     hiddenPhase4Candidates,
     phase5SectorTopStocks: phase5.rows,
+    unifiedCandidateRows,
+    unifiedRankedRows,
+    unifiedPhase4Ranking,
+    unifiedPhase5SectorTopStocks,
+    unifiedScoringMeta,
     themeRanking,
     focusedHierarchy,
     ruleOf40Coverage,
@@ -2256,6 +2405,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       usMissingMetricSupplement: usMissingMetricSupplementMeta,
       edinet: edinetSupplementMeta,
       phase5: phase5.meta,
+      unifiedScoring: unifiedScoringMeta,
     },
     results: matched,
     retrieved_at: new Date().toISOString(),

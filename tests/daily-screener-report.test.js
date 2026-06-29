@@ -310,6 +310,12 @@ describe('buildMarkdown', () => {
           scope: 'US Phase3 matched candidates only',
           approach: 'repo custom theme taxonomy layered on top of TradingView sector/industry',
         },
+        unified_scoring: {
+          score_basis: 'phase4_candidates_plus_phase5_sector_candidates',
+          phase4_candidate_count: 3,
+          phase5_candidate_count: 4,
+          deduped_count: 4,
+        },
       },
       sectorMomentum: {
         approach: 'stock-aggregation',
@@ -802,6 +808,28 @@ describe('buildMarkdown', () => {
       },
     ];
     result.hiddenPhase4Candidates = [result.phase5SectorTopStocks[3]];
+    result.unifiedPhase4Ranking = [
+      { ...result.finalStockRanking[0], unifiedRank: 1, unifiedRankScore: 96, unifiedRankBreakdown: rankBreakdown(1), sourceBuckets: ['phase4'] },
+      { ...result.finalStockRanking[1], unifiedRank: 2, unifiedRankScore: 91, unifiedRankBreakdown: rankBreakdown(2), sourceBuckets: ['phase4', 'phase5'] },
+      { ...result.finalStockRanking[2], unifiedRank: 3, unifiedRankScore: 28, unifiedRankBreakdown: rankBreakdown(6), sourceBuckets: ['phase4', 'phase5'] },
+      { ...result.phase5SectorTopStocks[3], unifiedRank: 4, unifiedRankScore: 88, unifiedRankBreakdown: rankBreakdown(2), sourceBuckets: ['phase5'] },
+    ];
+    result.unifiedPhase5SectorTopStocks = result.phase5SectorTopStocks.map((row) => {
+      const unifiedRow = result.unifiedPhase4Ranking.find((entry) => entry.symbol === row.symbol);
+      return unifiedRow ? { ...row, ...unifiedRow, phase5SectorRank: row.phase5SectorRank, phase5SectorStockRank: row.phase5SectorStockRank } : row;
+    });
+    result.unifiedRankedRows = result.unifiedPhase4Ranking;
+    result.unifiedScoringMeta = {
+      enabled: true,
+      candidateCount: 4,
+      phase4CandidateCount: 3,
+      phase5CandidateCount: 4,
+      dedupedCount: 4,
+      phase4OnlyCount: 1,
+      phase5OnlyCount: 1,
+      bothCount: 2,
+      scoreBasis: 'phase4_candidates_plus_phase5_sector_candidates',
+    };
     result.criteria.industry_ranking = {
       source: 'TradingView scanner industry',
       top_industries_displayed: 2,
@@ -814,7 +842,7 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /# スクリーニング結果 2026\/05\/04（月）/);
     assert.match(markdown, /更新: 12:00 JST/);
     assert.doesNotMatch(markdown, /2026-05-04T03:00:00.000Z/);
-    assert.match(markdown, /セクター別取得候補 26銘柄 → ユニバース条件通過 26銘柄 → ランキング対象 14銘柄 → レポート掲載 3銘柄/);
+    assert.match(markdown, /セクター別取得候補 26銘柄 → ユニバース条件通過 26銘柄 → ランキング対象 14銘柄 → レポート掲載 4銘柄/);
     assert.doesNotMatch(markdown, /## Rule of 40 算出状況/);
     assert.doesNotMatch(markdown, /- Rule of 40 完全算出: 5\/6銘柄 \(83\.3%\)/);
     assert.doesNotMatch(markdown, /- 欠損内訳: 売上のみあり 0件 \/ FCFのみあり 1件 \/ 両方欠け 0件/);
@@ -835,18 +863,21 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| 1 \| Technology Services \| Packaged Software \| 2 \| 635\.0% \| 52\.5% \| 37\.5% \| 604\.5pt \| 34\.1pt \| 27\.3pt \| 100\.0% \| 100\.0% \| 100\.0% \| 69\.5 \| 1\.25x \| 96\.50 \| AAA, BBB \|/);
     assert.match(markdown, /## Phase4 個別銘柄ランキング/);
     assert.doesNotMatch(markdown, /## Final 個別銘柄ランキング/);
-    assert.match(markdown, /\| 順位 \| セクター \| Industry \| シンボル \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCFマージン \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \(T\/F\) \|/);
+    assert.match(markdown, /\| 順位 \| 出所 \| セクター \| Industry \| シンボル \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCFマージン \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \(T\/F\) \|/);
     assert.match(markdown, /- 対象Industry（Phase3上位20）: Packaged Software, Food: Specialty\/Candy/);
     assert.match(markdown, /- 表示上限: 全業種横断の総合点上位40銘柄/);
-    assert.match(markdown, /\| 1 \| Technology Services \| Packaged Software \| \*\*AAA\*\* \| NASDAQ \| \$12\.3B \(L\) \|/);
-    assert.match(markdown, /\| 2 \| Technology Services \| Packaged Software \| \*\*BBB\*\* \| NASDAQ \| \$9\.8B \(M\+\) \|/);
-    assert.match(markdown, /\| 3 \| Consumer Non-Durables \| Food: Specialty\/Candy \| \*\*CCC\*\* \| NYSE \| \$4\.3B \(M\) \|/);
-    assert.match(markdown, /※ 以下の「-」行はPhase5から抽出したHidden Phase4 Candidateです。Phase4 Top40には未掲載ですが、Phase5内でSector上位かつPhase4掲載水準以上の総合点を持つ銘柄です。/);
-    assert.match(markdown, /Hidden Phase4 Candidateです。[\s\S]*?\| 順位 \| セクター \| Industry \| シンボル \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCFマージン \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \(T\/F\) \|[\s\S]*?\|:---:\|:---\|:---\|:---\|:---:\|:---\|---:\|---:\|---:\|---:\|---:\|---:\|---:\|---:\|:---\|:---\|---:\|---:\|---:\|[\s\S]*?\| - \|/);
-    assert.match(markdown, /\| - \| Technology Services \| Information Technology Services \| \*\*HHH\*\* \| NASDAQ \| \$7\.2B \(M\+\) \| 82\.0% \| 44\.0% \| 33\.0% \| 96\.0% \| 29\.0% \| 39\.0% \| 23\.0% \| 34\.0% \| 57\.0 \| 27\.0% \| 32\.0 \| 3\.1% \| 88\.00 \(T41\.4\/F46\.6\) \|/);
+    assert.match(markdown, /- スコア: Phase4候補 \+ Phase5 Sector別候補を共通母集団で再採点した unifiedRankScore/);
+    assert.match(markdown, /- 出所: Phase4 \/ Phase5 \/ Both は、候補がどの経路で検出されたかを示す/);
+    assert.match(markdown, /\| 1 \| Phase4 \| Technology Services \| Packaged Software \| \*\*AAA\*\* \| NASDAQ \| \$12\.3B \(L\) \|/);
+    assert.match(markdown, /\| 2 \| Both \| Technology Services \| Packaged Software \| \*\*BBB\*\* \| NASDAQ \| \$9\.8B \(M\+\) \|/);
+    assert.match(markdown, /\| 3 \| Both \| Consumer Non-Durables \| Food: Specialty\/Candy \| \*\*CCC\*\* \| NYSE \| \$4\.3B \(M\) \|/);
+    assert.doesNotMatch(markdown, /Hidden Phase4 Candidate/);
+    assert.doesNotMatch(markdown, /\| - \|/);
+    assert.match(markdown, /\| 4 \| Phase5 \| Technology Services \| Information Technology Services \| \*\*HHH\*\* \| NASDAQ \| \$7\.2B \(M\+\) \| 82\.0% \| 44\.0% \| 33\.0% \| 96\.0% \| 29\.0% \| 39\.0% \| 23\.0% \| 34\.0% \| 57\.0 \| 27\.0% \| 32\.0 \| 3\.1% \| 88\.00 \(T41\.4\/F46\.6\) \|/);
     assert.match(markdown, /## Phase5 Sector別 個別銘柄ランキング/);
     assert.match(markdown, /- 対象: Phase1 Sector Ranking 上位20セクター/);
     assert.match(markdown, /- 表示上限: 各セクターの総合点上位5銘柄（最大100銘柄）/);
+    assert.match(markdown, /- 総合点: Phase4表と同じ unifiedRankScore/);
     assert.match(markdown, /\| Sector Rank \| Sector内Rank \| Sector \| Industry \| Symbol \| Market \| Market Cap \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCF Margin \| Revenue YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \(T\/F\) \|/);
     assert.match(markdown, /\| 1 \| 1 \| Technology Services \| Packaged Software \| \*\*BBB\*\* \| NASDAQ \| \$9\.8B \(M\+\) \|/);
     assert.match(markdown, /\| 1 \| 2 \| Technology Services \| Packaged Software \| \*\*AAA\*\* \| NASDAQ \| \$12\.3B \(L\) \|/);
@@ -862,6 +893,7 @@ describe('buildMarkdown', () => {
     assert.doesNotMatch(markdown, /- テーマ: Cloud Software \/ Cloud Platforms/);
     assert.doesNotMatch(markdown, /低いほど良い/);
     assert.match(markdown, /Rule40/);
+    assert.match(markdown, /\| 採点ポリシー \| unifiedRankScore \| 米国株のPhase4候補とPhase5候補は共通母集団で1回だけ採点。Phase4表とPhase5表の総合点は同一スコア軸、Phase1\/Phase2の集計スコアとは別物。 \|/);
     assert.match(markdown, /35\.0% \| 60\.0 \| 30\.0% \| 28\.0 \| 3\.2% \| 96\.00 \(T45\.1\/F50\.9\) \|/);
     assert.doesNotMatch(markdown, /（Rule 40\+）/);
     assert.doesNotMatch(markdown, /（20未満注意）/);
@@ -903,7 +935,7 @@ describe('buildMarkdown', () => {
       focusedHierarchy: null,
     });
     assert.match(markdownWithoutHierarchy, /## Phase4 個別銘柄ランキング/);
-    assert.match(markdownWithoutHierarchy, /\| 1 \| Technology Services \| Packaged Software \| \*\*AAA\*\* \| NASDAQ \|/);
+    assert.match(markdownWithoutHierarchy, /\| 1 \| Phase4 \| Technology Services \| Packaged Software \| \*\*AAA\*\* \| NASDAQ \|/);
   });
 
   it('highlights EPS turnaround labels in ranking tables', () => {
@@ -997,7 +1029,7 @@ describe('buildMarkdown', () => {
     result.finalStockRanking = result.results;
     const markdown = buildMarkdown(result);
 
-    assert.match(markdown, /\| 1 \| Electronic Technology \| Computer Peripherals \| \*\*SNDK\*\* \| NASDAQ \| \$5\.0B \(M\+\) \| 80\.0% \| 40\.0% \| 25\.0% \| 95\.0% \| 25\.0% \| 30\.0% \| 20\.0% \| 30\.0% \| 50\.0 \| 黒字転換 \(raw -144\.5%\) \| 20\.0 \| 3\.2% \|/);
+    assert.match(markdown, /\| 1 \| - \| Electronic Technology \| Computer Peripherals \| \*\*SNDK\*\* \| NASDAQ \| \$5\.0B \(M\+\) \| 80\.0% \| 40\.0% \| 25\.0% \| 95\.0% \| 25\.0% \| 30\.0% \| 20\.0% \| 30\.0% \| 50\.0 \| 黒字転換 \(raw -144\.5%\) \| 20\.0 \| 3\.2% \|/);
     assert.doesNotMatch(markdown, /Hidden Phase4 Candidate/);
   });
 

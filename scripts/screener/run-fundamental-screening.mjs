@@ -80,13 +80,21 @@ function formatSectorMomentumApproach(sectorMomentum) {
 }
 
 function getBlock(row, key) {
-  return row.rankBreakdown?.[key] ?? null;
+  return getDisplayRankBreakdown(row)?.[key] ?? null;
+}
+
+function getDisplayRankScore(row) {
+  return row.unifiedRankScore ?? row.rankScore;
+}
+
+function getDisplayRankBreakdown(row) {
+  return row.unifiedRankBreakdown ?? row.rankBreakdown;
 }
 
 function buildExplanation(row, index, rows) {
   const previous = index > 0 ? rows[index - 1] : null;
   const next = index < rows.length - 1 ? rows[index + 1] : null;
-  const blocks = Object.entries(row.rankBreakdown ?? {}).sort((a, b) => a[1].rank - b[1].rank);
+  const blocks = Object.entries(getDisplayRankBreakdown(row) ?? {}).sort((a, b) => a[1].rank - b[1].rank);
   const strongest = blocks[0] ?? null;
   const weakest = blocks[blocks.length - 1] ?? null;
   const parts = [];
@@ -95,9 +103,9 @@ function buildExplanation(row, index, rows) {
     parts.push(`${strongest[1].label} が候補群内 ${strongest[1].rank} 位相当`);
   }
   if (next) {
-    parts.push(`${next.symbol}より総合点が${fmt(row.rankScore - next.rankScore, 2)}点高い`);
+    parts.push(`${next.symbol}より総合点が${fmt(getDisplayRankScore(row) - getDisplayRankScore(next), 2)}点高い`);
   } else if (previous) {
-    parts.push(`${previous.symbol}との差は総合点で${fmt(previous.rankScore - row.rankScore, 2)}点`);
+    parts.push(`${previous.symbol}との差は総合点で${fmt(getDisplayRankScore(previous) - getDisplayRankScore(row), 2)}点`);
   }
   if (weakest && weakest[1].rank > 3) {
     parts.push(`弱点は ${weakest[1].label} の ${weakest[1].rank} 位相当`);
@@ -156,7 +164,9 @@ function rankToPositiveScore(rank, populationSize) {
 }
 
 function buildScoreContributionBreakdown(row, populationSize) {
-  if (!row.rankBreakdown || !Number.isFinite(row.rankScore)) {
+  const rankBreakdown = getDisplayRankBreakdown(row);
+  const rankScore = getDisplayRankScore(row);
+  if (!rankBreakdown || !Number.isFinite(rankScore)) {
     return null;
   }
 
@@ -166,7 +176,7 @@ function buildScoreContributionBreakdown(row, populationSize) {
   ];
   const summaries = groups
     .map((group) => {
-      const blocks = group.blockKeys.map((key) => row.rankBreakdown?.[key]).filter(Boolean);
+      const blocks = group.blockKeys.map((key) => rankBreakdown?.[key]).filter(Boolean);
       const weight = blocks.reduce((sum, block) => sum + (Number.isFinite(block.weight) ? block.weight : 0), 0);
       if (blocks.length === 0 || weight <= 0) {
         return null;
@@ -199,7 +209,7 @@ function buildScoreContributionBreakdown(row, populationSize) {
     return null;
   }
 
-  const scale = row.rankScore / blendedScore;
+  const scale = rankScore / blendedScore;
   const values = Object.fromEntries(
     summaries.map((summary) => [
       summary.key,
@@ -215,7 +225,7 @@ function buildScoreContributionBreakdown(row, populationSize) {
 }
 
 function buildTotalScoreCell(row, market, populationSize) {
-  const total = fmt(row.rankScore, 2);
+  const total = fmt(getDisplayRankScore(row), 2);
   const breakdown = buildScoreContributionBreakdown(row, populationSize);
   if (!breakdown) {
     return total;
@@ -245,12 +255,21 @@ function buildRankingMetricCells(row, market, populationSize, currencySymbol) {
 
 function buildPhase4RankingRow(row, rank, market, populationSize, currencySymbol) {
   const metricCells = buildRankingMetricCells(row, market, populationSize, currencySymbol).join(' | ');
-  return `| ${rank} | ${row.sector ?? 'Unknown'} | ${row.industry ?? 'Unknown'} | **${formatSymbolWithCompanyName(row, market)}** | ${row.exchange ?? '-'} | ${metricCells} |`;
+  return `| ${rank} | ${formatSourceBuckets(row.sourceBuckets)} | ${row.sector ?? 'Unknown'} | ${row.industry ?? 'Unknown'} | **${formatSymbolWithCompanyName(row, market)}** | ${row.exchange ?? '-'} | ${metricCells} |`;
 }
 
 function appendPhase4RankingTableHeader(lines) {
-  lines.push('| 順位 | セクター | Industry | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCFマージン | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 (T/F) |');
-  lines.push('|:---:|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|:---|---:|---:|---:|');
+  lines.push('| 順位 | 出所 | セクター | Industry | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCFマージン | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 (T/F) |');
+  lines.push('|:---:|:---:|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|:---|---:|---:|---:|');
+}
+
+function formatSourceBuckets(sourceBuckets) {
+  if (!Array.isArray(sourceBuckets) || sourceBuckets.length === 0) return '-';
+  const values = new Set(sourceBuckets);
+  if (values.has('phase4') && values.has('phase5')) return 'Both';
+  if (values.has('phase4')) return 'Phase4';
+  if (values.has('phase5')) return 'Phase5';
+  return '-';
 }
 
 function formatThemeLine(row) {
@@ -445,8 +464,11 @@ function formatJstDateParts(isoString) {
 }
 
 function buildHeadlineSummary(result) {
-  const reportCount = result.scannerScope?.market === 'america' && Array.isArray(result.finalStockRanking)
-    ? result.finalStockRanking.length
+  const phase4Rows = result.unifiedPhase4Ranking?.length
+    ? result.unifiedPhase4Ranking
+    : result.finalStockRanking;
+  const reportCount = result.scannerScope?.market === 'america' && Array.isArray(phase4Rows)
+    ? phase4Rows.length
     : result.matched;
   return [
     `セクター別取得候補 ${result.totalScanned.toLocaleString()}銘柄`,
@@ -472,6 +494,9 @@ function buildGuideRows(result) {
   }
   if (result.criteria.theme_taxonomy_policy) {
     rows.push(`| 補助ポリシー | Theme taxonomy | ${result.criteria.theme_taxonomy_policy.scope} / ${result.criteria.theme_taxonomy_policy.approach} / version ${result.criteria.theme_taxonomy_policy.version} |`);
+  }
+  if (result.criteria.unified_scoring) {
+    rows.push('| 採点ポリシー | unifiedRankScore | 米国株のPhase4候補とPhase5候補は共通母集団で1回だけ採点。Phase4表とPhase5表の総合点は同一スコア軸、Phase1/Phase2の集計スコアとは別物。 |');
   }
   if (result.criteria.allowed_exchanges) {
     rows.push(`| ユニバース | 取引所 | ${result.criteria.allowed_exchanges.join(', ')} |`);
@@ -668,25 +693,24 @@ export function buildMarkdown(result, options = {}) {
 
       lines.push('## Phase4 個別銘柄ランキング');
       lines.push('');
+      const phase4Rows = result.unifiedPhase4Ranking?.length
+        ? result.unifiedPhase4Ranking
+        : result.finalStockRanking;
+      const stockPopulationSize = result.unifiedRankedRows?.length || populationSize;
       lines.push(`- 対象Industry（Phase3上位20）: ${result.industryRanking?.slice(0, 20).map((entry) => entry.industry).join(', ') || 'なし'}`);
       lines.push('- 表示上限: 全業種横断の総合点上位40銘柄');
+      if (result.unifiedScoringMeta?.enabled) {
+        lines.push('- スコア: Phase4候補 + Phase5 Sector別候補を共通母集団で再採点した unifiedRankScore');
+        lines.push('- 出所: Phase4 / Phase5 / Both は、候補がどの経路で検出されたかを示す');
+      }
       lines.push('');
-      if (!result.finalStockRanking || result.finalStockRanking.length === 0) {
+      if (!phase4Rows || phase4Rows.length === 0) {
         lines.push('- 個別銘柄ランキングは算出できませんでした。');
       } else {
         appendPhase4RankingTableHeader(lines);
-        result.finalStockRanking.forEach((row, index) => {
-          lines.push(buildPhase4RankingRow(row, index + 1, market, populationSize, currencySymbol));
+        phase4Rows.forEach((row, index) => {
+          lines.push(buildPhase4RankingRow(row, row.unifiedRank ?? index + 1, market, stockPopulationSize, currencySymbol));
         });
-        if (result.hiddenPhase4Candidates?.length > 0) {
-          lines.push('');
-          lines.push('※ 以下の「-」行はPhase5から抽出したHidden Phase4 Candidateです。Phase4 Top40には未掲載ですが、Phase5内でSector上位かつPhase4掲載水準以上の総合点を持つ銘柄です。');
-          lines.push('');
-          appendPhase4RankingTableHeader(lines);
-          result.hiddenPhase4Candidates.forEach((row) => {
-            lines.push(buildPhase4RankingRow(row, '-', market, populationSize, currencySymbol));
-          });
-        }
       }
       lines.push('');
 
@@ -694,15 +718,23 @@ export function buildMarkdown(result, options = {}) {
       lines.push('');
       lines.push('- 対象: Phase1 Sector Ranking 上位20セクター');
       lines.push('- 表示上限: 各セクターの総合点上位5銘柄（最大100銘柄）');
+      if (result.unifiedScoringMeta?.enabled) {
+        lines.push('- 総合点: Phase4表と同じ unifiedRankScore');
+      }
       lines.push('');
-      if (!result.phase5SectorTopStocks || result.phase5SectorTopStocks.length === 0) {
+      const phase5Rows = result.unifiedPhase5SectorTopStocks?.length
+        ? result.unifiedPhase5SectorTopStocks
+        : result.phase5SectorTopStocks;
+      if (!phase5Rows || phase5Rows.length === 0) {
         lines.push('- Phase5ランキングは算出できませんでした。');
       } else {
         const scoreHeader = '総合点 (T/F)';
-        const phase5PopulationSize = result.sourceDetails?.phase5?.rankedRows ?? result.phase5SectorTopStocks.length;
+        const phase5PopulationSize = result.unifiedRankedRows?.length
+          || result.sourceDetails?.phase5?.rankedRows
+          || phase5Rows.length;
         lines.push(`| Sector Rank | Sector内Rank | Sector | Industry | Symbol | Market | Market Cap | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF Margin | Revenue YoY | Rule40 | EPS YoY | P/FCF | ATR% | ${scoreHeader} |`);
         lines.push('|:---:|:---:|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|:---|---:|---:|---:|');
-        result.phase5SectorTopStocks.forEach((row) => {
+        phase5Rows.forEach((row) => {
           const metricCells = buildRankingMetricCells(row, result.scannerScope?.market, phase5PopulationSize, currencySymbol).join(' | ');
           lines.push(`| ${row.phase5SectorRank ?? '-'} | ${row.phase5SectorStockRank ?? '-'} | ${row.sector ?? 'Unknown'} | ${row.industry ?? 'Unknown'} | **${formatSymbolWithCompanyName(row, market)}** | ${row.exchange ?? '-'} | ${metricCells} |`);
         });

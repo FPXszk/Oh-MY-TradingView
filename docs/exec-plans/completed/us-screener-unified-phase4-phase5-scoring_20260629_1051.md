@@ -42,16 +42,16 @@
 
 ## 実装ステップ
 
-- [ ] `src/core/fundamental-screener.js` の Phase4 / Phase5 候補取得位置を最小変更で分離し、既存の取得・補完・フィルタ条件を変えずに candidate rows を返す。
-- [ ] `buildUnifiedCandidateRows()` を追加し、`exchange + symbol` を基本キーに重複除外しつつ `sourceBuckets` / `phase4Eligible` / `phase5Eligible` を付与する。
-- [ ] `applyUnifiedRanks()` を追加し、統合候補へ `unifiedRank` / `unifiedRankScore` / `unifiedRankBreakdown` を付与する。
-- [ ] `buildUnifiedPhase4Ranking()` と `buildUnifiedPhase5SectorTopStocks()` を追加し、Phase4 表と Phase5 表の入力を unified ranked rows から作る。
-- [ ] `runFundamentalScreener()` の戻り値と `criteria` / `sourceDetails` に unified scoring のメタ情報を追加する。
-- [ ] レポート生成スクリプトで Phase4 / Phase5 表を unified 系優先に切り替え、`出所` 列と score 表示ヘルパーを追加し、hidden candidate 末尾表示を外す。
-- [ ] unit test を追加・更新して、candidate dedupe、score consistency、Phase5 由来行の Phase4 混入、Phase5 sector top sort、Japan 非影響を検証する。
-- [ ] daily report test を追加・更新して、Markdown の列・説明・非表示条件を検証する。
-- [ ] `npm run test:unit`、`git diff --check`、`node scripts/screener/run-fundamental-screening.mjs` を実行する。
-- [ ] `docs/reports/screener/daily-ranking.md` を確認し、Phase4/Phase5 の同一銘柄の総合点一致、Phase5 表の維持、Phase1/Phase2 の非破壊、Phase6 見出し非表示を確認する。
+- [x] `src/core/fundamental-screener.js` の Phase4 / Phase5 候補取得位置を最小変更で分離し、既存の取得・補完・フィルタ条件を変えずに candidate rows を返す。
+- [x] `buildUnifiedCandidateRows()` を追加し、`exchange + symbol` を基本キーに重複除外しつつ `sourceBuckets` / `phase4Eligible` / `phase5Eligible` を付与する。
+- [x] `applyUnifiedRanks()` を追加し、統合候補へ `unifiedRank` / `unifiedRankScore` / `unifiedRankBreakdown` を付与する。
+- [x] `buildUnifiedPhase4Ranking()` と `buildUnifiedPhase5SectorTopStocks()` を追加し、Phase4 表と Phase5 表の入力を unified ranked rows から作る。
+- [x] `runFundamentalScreener()` の戻り値と `criteria` / `sourceDetails` に unified scoring のメタ情報を追加する。
+- [x] レポート生成スクリプトで Phase4 / Phase5 表を unified 系優先に切り替え、`出所` 列と score 表示ヘルパーを追加し、hidden candidate 末尾表示を外す。
+- [x] unit test を追加・更新して、candidate dedupe、score consistency、Phase5 由来行の Phase4 混入、Phase5 sector top sort、Japan 非影響を検証する。
+- [x] daily report test を追加・更新して、Markdown の列・説明・非表示条件を検証する。
+- [x] `npm run test:unit`、`git diff --check`、`node scripts/screener/run-fundamental-screening.mjs` を実行する。
+- [x] `docs/reports/screener/daily-ranking.md` を確認し、Phase4/Phase5 の同一銘柄の総合点一致、Phase5 表の維持、Phase1/Phase2 の非破壊、Phase6 見出し非表示を確認する。
 
 ## 影響範囲
 

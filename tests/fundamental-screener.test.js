@@ -3,6 +3,10 @@ import assert from 'node:assert/strict';
 import { zipSync } from 'fflate';
 
 import {
+  applyUnifiedRanks,
+  buildUnifiedCandidateRows,
+  buildUnifiedPhase4Ranking,
+  buildUnifiedPhase5SectorTopStocks,
   buildHiddenPhase4Candidates,
   evaluateSymbolsAgainstFundamentalScreener,
   runFundamentalScreener,
@@ -150,6 +154,145 @@ function assertRankScoresDescending(rows) {
     assert.ok(rows[i - 1].rankScore >= rows[i].rankScore);
   }
 }
+
+function buildUnifiedTestRow(symbol, overrides = {}) {
+  return {
+    symbol,
+    exchange: 'NASDAQ',
+    sector: 'Technology Services',
+    industry: 'Packaged Software',
+    marketCapUsd: 10_000_000_000,
+    perfY: 80,
+    perf6m: 50,
+    perf3m: 30,
+    pctOf52wHigh: 95,
+    roic: 25,
+    grossProfitToAssets: 40,
+    fcfMargin: 20,
+    revenueGrowthTtm: 30,
+    epsGrowthScoreValue: 20,
+    fcfGrowthTtm: 15,
+    moomooRevenueGrowthTtm: 25,
+    pFcf: 30,
+    evEbitda: 25,
+    atrPct: 3,
+    beta1y: 1,
+    debtToEquity: 20,
+    ruleOf40Score: 50,
+    phase1SectorRankScore: 90,
+    ...overrides,
+  };
+}
+
+function strongUnifiedOverrides() {
+  return {
+    perfY: 300,
+    perf6m: 180,
+    perf3m: 90,
+    pctOf52wHigh: 100,
+    roic: 60,
+    grossProfitToAssets: 70,
+    fcfMargin: 45,
+    revenueGrowthTtm: 80,
+    epsGrowthScoreValue: 70,
+    fcfGrowthTtm: 60,
+    moomooRevenueGrowthTtm: 75,
+    pFcf: 8,
+    evEbitda: 9,
+    atrPct: 1,
+    beta1y: 0.6,
+    debtToEquity: 0,
+    ruleOf40Score: 100,
+    phase1SectorRankScore: 100,
+  };
+}
+
+function weakUnifiedOverrides() {
+  return {
+    perfY: 20,
+    perf6m: 10,
+    perf3m: 5,
+    pctOf52wHigh: 80,
+    roic: 5,
+    grossProfitToAssets: 10,
+    fcfMargin: 2,
+    revenueGrowthTtm: 3,
+    epsGrowthScoreValue: 2,
+    fcfGrowthTtm: 1,
+    moomooRevenueGrowthTtm: 3,
+    pFcf: 80,
+    evEbitda: 70,
+    atrPct: 8,
+    beta1y: 2,
+    debtToEquity: 200,
+    ruleOf40Score: 5,
+    phase1SectorRankScore: 10,
+  };
+}
+
+describe('unified Phase4/Phase5 scoring helpers', () => {
+  it('dedupes candidates and merges source buckets', () => {
+    const rows = buildUnifiedCandidateRows({
+      phase4Rows: [
+        buildUnifiedTestRow('AAA'),
+        buildUnifiedTestRow('BBB', { perf3m: 20 }),
+      ],
+      phase5Rows: [
+        buildUnifiedTestRow('BBB', { phase5SectorRank: 1, phase5SectorStockRank: 1, perf3m: 50 }),
+        buildUnifiedTestRow('CCC'),
+      ],
+    });
+
+    assert.deepEqual(rows.map((row) => row.symbol), ['AAA', 'BBB', 'CCC']);
+    const bbb = rows.find((row) => row.symbol === 'BBB');
+    assert.deepEqual(bbb.sourceBuckets, ['phase4', 'phase5']);
+    assert.equal(bbb.phase4Eligible, true);
+    assert.equal(bbb.phase5Eligible, true);
+    assert.equal(bbb.phase5SectorRank, 1);
+  });
+
+  it('uses one unified score for Phase4 and Phase5 views', () => {
+    const unifiedRankedRows = applyUnifiedRanks(buildUnifiedCandidateRows({
+      phase4Rows: [buildUnifiedTestRow('AAA'), buildUnifiedTestRow('BBB')],
+      phase5Rows: [buildUnifiedTestRow('BBB', { phase5SectorRank: 1 }), buildUnifiedTestRow('CCC', { perf3m: 80 })],
+    }), 'america');
+    const phase4Rows = buildUnifiedPhase4Ranking(unifiedRankedRows, 40);
+    const phase5Rows = buildUnifiedPhase5SectorTopStocks(unifiedRankedRows, ['Technology Services']);
+    const phase4Bbb = phase4Rows.find((row) => row.symbol === 'BBB');
+    const phase5Bbb = phase5Rows.find((row) => row.symbol === 'BBB');
+
+    assert.ok(phase4Bbb);
+    assert.ok(phase5Bbb);
+    assert.equal(phase4Bbb.unifiedRankScore, phase5Bbb.unifiedRankScore);
+    assert.equal(phase4Bbb.unifiedRank, phase5Bbb.unifiedRank);
+  });
+
+  it('includes Phase5-only candidates in the Phase4 unified ranking with ranks', () => {
+    const unifiedRankedRows = applyUnifiedRanks(buildUnifiedCandidateRows({
+      phase4Rows: [buildUnifiedTestRow('AAA', weakUnifiedOverrides())],
+      phase5Rows: [buildUnifiedTestRow('WIN', strongUnifiedOverrides())],
+    }), 'america');
+    const phase4Rows = buildUnifiedPhase4Ranking(unifiedRankedRows, 40);
+    const winner = phase4Rows.find((row) => row.symbol === 'WIN');
+
+    assert.ok(winner);
+    assert.equal(winner.unifiedRank, 1);
+    assert.deepEqual(winner.sourceBuckets, ['phase5']);
+  });
+
+  it('sorts Phase5 sector top stocks by unifiedRankScore', () => {
+    const unifiedRankedRows = applyUnifiedRanks(buildUnifiedCandidateRows({
+      phase5Rows: [
+        buildUnifiedTestRow('LOW', weakUnifiedOverrides()),
+        buildUnifiedTestRow('HIGH', strongUnifiedOverrides()),
+      ],
+    }), 'america');
+    const phase5Rows = buildUnifiedPhase5SectorTopStocks(unifiedRankedRows, ['Technology Services']);
+
+    assert.deepEqual(phase5Rows.map((row) => row.symbol), ['HIGH', 'LOW']);
+    assert.deepEqual(phase5Rows.map((row) => row.phase5SectorStockRank), [1, 2]);
+  });
+});
 
 describe('buildHiddenPhase4Candidates', () => {
   it('extracts Phase5 rows near the Phase4 floor without changing Phase4 membership', () => {
