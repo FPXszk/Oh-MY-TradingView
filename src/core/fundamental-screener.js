@@ -34,6 +34,9 @@ const PHASE5_SECTOR_LIMIT = 20;
 const PHASE5_TOP_STOCKS_PER_SECTOR = 5;
 const PHASE5_UNIFIED_CANDIDATE_TOP_STOCKS_PER_SECTOR = 3;
 const PHASE5_SECTOR_UNIVERSE_SERVER_LIMIT = 400;
+const INDUSTRY_HIERARCHY_MARKETS = new Set([DEFAULT_MARKET, 'japan']);
+const SECTOR_TOP_STOCKS_MARKETS = new Set([DEFAULT_MARKET, 'japan']);
+const UNIFIED_SCORING_MARKETS = new Set([DEFAULT_MARKET, 'japan']);
 const BUILTIN_SYMBOL_ALLOWLISTS = new Map([
   [
     'jpx-prime',
@@ -46,6 +49,18 @@ const JP_COMPANY_NAMES_JA = JSON.parse(
 const US_FUNDAMENTAL_SUPPLEMENTS = JSON.parse(
   readFileSync(new URL('../../config/screener/us-fundamental-supplements.json', import.meta.url), 'utf8'),
 );
+
+export function supportsIndustryHierarchy(market) {
+  return INDUSTRY_HIERARCHY_MARKETS.has(market);
+}
+
+export function supportsSectorTopStocks(market) {
+  return SECTOR_TOP_STOCKS_MARKETS.has(market);
+}
+
+export function supportsUnifiedScoring(market) {
+  return UNIFIED_SCORING_MARKETS.has(market);
+}
 
 const COLUMNS = [
   'name',
@@ -1460,7 +1475,7 @@ async function buildPhase5SectorTopStocks({
   _deps,
 }) {
   const emptyMeta = {
-    enabled: market === DEFAULT_MARKET,
+    enabled: supportsSectorTopStocks(market),
     sectorLimit: PHASE5_SECTOR_LIMIT,
     topStocksPerSector: PHASE5_TOP_STOCKS_PER_SECTOR,
     unifiedCandidateTopStocksPerSector: PHASE5_UNIFIED_CANDIDATE_TOP_STOCKS_PER_SECTOR,
@@ -1472,7 +1487,7 @@ async function buildPhase5SectorTopStocks({
     displayedRows: 0,
     unifiedCandidateRows: 0,
   };
-  if (market !== DEFAULT_MARKET) return { rows: [], candidateRows: [], sectorLabels: [], meta: emptyMeta };
+  if (!supportsSectorTopStocks(market)) return { rows: [], candidateRows: [], sectorLabels: [], meta: emptyMeta };
 
   const phase5SectorLabels = (sectorMomentum.rankings ?? [])
     .slice(0, PHASE5_SECTOR_LIMIT)
@@ -1523,7 +1538,7 @@ async function buildPhase5SectorTopStocks({
     clientFiltered = clientFiltered.map((row) => applySupplementalGrowthMetrics(row, growthMap[row.symbol]));
   }
 
-  if (clientFiltered.length > 0) {
+  if (market === DEFAULT_MARKET && clientFiltered.length > 0) {
     clientFiltered = await applyUsFundamentalSupplements(clientFiltered, {
       getSupplementalFundamentals: _deps?.getUsSupplementalFundamentals ?? null,
     });
@@ -1533,6 +1548,17 @@ async function buildPhase5SectorTopStocks({
         ? _deps.getUsMissingMetricSupplementals
         : undefined,
     });
+  }
+  if (market === 'japan' && clientFiltered.length > 0) {
+    const supplementTargets = clientFiltered.filter(shouldUseEdinetSupplement);
+    const supplementPayload = _deps?.getJapanSupplementalFundamentals
+      ? await _deps.getJapanSupplementalFundamentals(supplementTargets)
+      : await getEdinetSupplementalFundamentalsBatch(supplementTargets, {
+        apiKey: _deps?.edinetApiKey ?? process.env.EDINET_API_KEY ?? '',
+        fetch: fetchFn,
+      });
+    const supplementalMap = supplementPayload?.rows ?? {};
+    clientFiltered = clientFiltered.map((row) => applyEdinetSupplementalMetrics(row, supplementalMap[row.symbol]));
   }
 
   const ranked = applyBlockRanks(
@@ -2086,7 +2112,9 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
 
   // Fetch more candidates than needed so client filters have enough to work with
   const serverLimit = Math.min(effectiveLimit * 8, 400);
-  const industryUniverseSectorLabels = market === DEFAULT_MARKET ? selectedSectorLabels : [];
+  const industryUniverseSectorLabels = supportsIndustryHierarchy(market)
+    ? selectedSectorLabels.filter((sector) => !excludedSelectedSectors.includes(sector))
+    : [];
   const industryUniverseResponses = await Promise.all(
     industryUniverseSectorLabels.map(async (sector) => {
       const response = await fetchFn(scannerUrl, {
@@ -2113,12 +2141,12 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       };
     }),
   );
-  const industryUniverseRows = market === DEFAULT_MARKET
+  const industryUniverseRows = supportsIndustryHierarchy(market)
     ? dedupeRows(industryUniverseResponses.flatMap((entry) => entry.rows))
       .filter((row) => industryUniverseSectorLabels.includes(row.sector))
       .filter((row) => passesScopeFilters(row, { exchangeAllowlist, symbolAllowlist }))
     : [];
-  const industrySummary = market === DEFAULT_MARKET
+  const industrySummary = supportsIndustryHierarchy(market)
     ? summarizeIndustries(industryUniverseRows, { benchmark: sectorMomentum.benchmark })
     : {
         rankings: [],
@@ -2144,9 +2172,11 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       .map((row) => annotateRowForProfile(row, profile, sectorRankLookup, market))),
   );
   const phase1Filtered = scopeFiltered;
+  const shouldFilterBySelectedIndustries = supportsIndustryHierarchy(market)
+    && industrySummary.selectedIndustryKeys?.size > 0;
   let clientFiltered = phase1Filtered
     .filter((row) => (
-      market !== DEFAULT_MARKET
+      !shouldFilterBySelectedIndustries
       || industrySummary.selectedIndustryKeys.has(`${row.sector}\u0000${row.industry}`)
     ))
     .filter(passesProfileClientFilters);
@@ -2207,9 +2237,12 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   const ranked = applyBlockRanks(themedRows, rankingBlocks).sort((a, b) => b.rankScore - a.rankScore);
   const matched = ranked.slice(0, effectiveLimit).map(stripInternalFields);
   const sectorRanking = summarizeSectors(ranked);
-  const phase4CandidateRows = market === DEFAULT_MARKET
+  const phase4CandidateRows = supportsIndustryHierarchy(market)
     ? ranked
-      .filter((row) => industrySummary.selectedIndustryKeys.has(`${row.sector}\u0000${row.industry}`))
+      .filter((row) => (
+        !shouldFilterBySelectedIndustries
+        || industrySummary.selectedIndustryKeys.has(`${row.sector}\u0000${row.industry}`)
+      ))
       .sort((a, b) => {
         if ((b.rankScore ?? -Infinity) !== (a.rankScore ?? -Infinity)) {
           return (b.rankScore ?? -Infinity) - (a.rankScore ?? -Infinity);
@@ -2218,7 +2251,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       })
       .map((row) => stripInternalFields(row))
     : [];
-  const finalStockRanking = market === DEFAULT_MARKET
+  const finalStockRanking = supportsIndustryHierarchy(market)
     ? phase4CandidateRows.slice(0, FINAL_STOCK_LIMIT)
     : industrySummary.finalStockRanking;
   const phase5 = await buildPhase5SectorTopStocks({
@@ -2234,23 +2267,23 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     getFundamentals,
     _deps,
   });
-  const unifiedCandidateRows = market === DEFAULT_MARKET
+  const unifiedCandidateRows = supportsUnifiedScoring(market)
     ? buildUnifiedCandidateRows({
       phase4Rows: phase4CandidateRows,
       phase5Rows: phase5.candidateRows ?? phase5.rows,
     })
     : [];
-  const unifiedRankedRows = market === DEFAULT_MARKET
+  const unifiedRankedRows = supportsUnifiedScoring(market)
     ? applyUnifiedRanks(unifiedCandidateRows, market).map((row) => stripInternalFields(row))
     : [];
-  const unifiedPhase4Ranking = market === DEFAULT_MARKET
+  const unifiedPhase4Ranking = supportsUnifiedScoring(market)
     ? buildUnifiedPhase4Ranking(unifiedRankedRows, FINAL_STOCK_LIMIT)
     : [];
-  const unifiedPhase5SectorTopStocks = market === DEFAULT_MARKET
+  const unifiedPhase5SectorTopStocks = supportsUnifiedScoring(market)
     ? buildUnifiedPhase5SectorTopStocks(unifiedRankedRows, phase5.sectorLabels ?? [], phase5.rows)
     : [];
   const unifiedScoringMeta = {
-    enabled: market === DEFAULT_MARKET,
+    enabled: supportsUnifiedScoring(market),
     candidateCount: unifiedCandidateRows.length,
     phase4CandidateCount: phase4CandidateRows.length,
     phase5CandidateCount: (phase5.candidateRows ?? []).length,
@@ -2265,11 +2298,11 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       weight: block.weight,
       fields: block.fields,
     })),
-    scoreBasis: market === DEFAULT_MARKET
+    scoreBasis: supportsUnifiedScoring(market)
       ? 'phase4_candidates_plus_phase5_sector_top3_candidates'
       : 'disabled_for_market',
   };
-  const hiddenPhase4Candidates = market === DEFAULT_MARKET
+  const hiddenPhase4Candidates = supportsIndustryHierarchy(market)
     ? buildHiddenPhase4Candidates(finalStockRanking, phase5.rows)
     : [];
   const hierarchyFocusSector = hierarchyFocusSectorOverride ?? selectedSectorLabels[0] ?? null;
@@ -2334,13 +2367,13 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   if (ranked.length > 0) {
     criteria.theme_taxonomy_policy = {
       version: themedRows[0]?.themeTaxonomyVersion ?? `${market}-theme-prototype-v1`,
-      scope: market === DEFAULT_MARKET
-        ? `${market} Phase3 matched candidates only`
+      scope: supportsIndustryHierarchy(market)
+        ? `${market} Phase4 matched candidates only`
         : `${market} Phase2 matched candidates only`,
       approach: 'repo custom theme taxonomy layered on top of TradingView sector/industry',
     };
   }
-  if (market === DEFAULT_MARKET) {
+  if (supportsIndustryHierarchy(market)) {
     criteria.industry_ranking = {
       source: 'TradingView scanner industry',
       population: 'Phase1 selected sectors before Phase3 stock hard gates',
@@ -2348,6 +2381,8 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       final_industries_selected: industrySummary.selectedIndustryCount,
       missing_industry_count: industrySummary.missingIndustryCount,
     };
+  }
+  if (market === DEFAULT_MARKET) {
     criteria.rule_of_40_policy = {
       scope: 'US Technology Services software-like industries only',
       formula: 'total_revenue_yoy_growth_ttm + free_cash_flow_margin_ttm',
@@ -2358,6 +2393,8 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     };
     criteria.us_fundamental_supplement_policy = 'TradingView FCF gaps are supplemented from configured official/adapter data when available; supplemented rows keep source metadata.';
     criteria.us_missing_metric_supplement_policy = 'TradingView missing table metrics are supplemented from Moomoo/adapter/SEC companyfacts data when available; unavailable or non-meaningful values stay N/A.';
+  }
+  if (supportsSectorTopStocks(market)) {
     criteria.phase5 = {
       name: 'Phase5 Sector別 個別銘柄ランキング',
       source: 'sectorMomentum.rankings top 20 sectors',
@@ -2366,6 +2403,8 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       source_sectors: phase5.meta.sourceSectors,
       displayed_rows: phase5.meta.displayedRows,
     };
+  }
+  if (supportsUnifiedScoring(market)) {
     criteria.unified_scoring = {
       score_basis: unifiedScoringMeta.scoreBasis,
       phase4_candidate_count: unifiedScoringMeta.phase4CandidateCount,

@@ -12,10 +12,11 @@ jobs:
       SCREENER_WORKFLOW_LABEL: daily-screener-japan
       SCREENER_REPORT_PATH: docs/reports/screener/daily-ranking-jp.md
       SCREENER_METADATA_PATH: docs/reports/screener/daily-ranking-jp-run.json
-      SCREENER_RESULT_LIMIT: '60'
+      SCREENER_RESULT_LIMIT: '90'
       SCREENER_MARKET: japan
       SCREENER_EXCHANGES: TSE
       SCREENER_SYMBOL_ALLOWLIST_KEY: jpx-prime
+      SCREENER_SELECTED_SECTOR_COUNT: '5'
       SCREENER_GROSS_MARGIN_MIN_PCT: '30'
       SCREENER_SCOPE_LABEL: JPX Prime domestic stocks snapshot (2026-03-31)
       SCREENER_CURRENCY_SYMBOL: ¥

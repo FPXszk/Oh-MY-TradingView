@@ -51,26 +51,26 @@
 
 ## 実装ステップ
 
-- [ ] Step 1: 現行コードの分岐とテストを確認する
+- [x] Step 1: 現行コードの分岐とテストを確認する
   - 確認: `market === DEFAULT_MARKET` / `market === 'america'` の対象箇所を、Japanへ開放すべきものとUS専用のまま残すものに分類する。
-- [ ] Step 2: market capability helper を追加する
+- [x] Step 2: market capability helper を追加する
   - 確認: Industry階層、Sector別Top銘柄、unified scoring の有効市場が `america` / `japan` で明示される。
-- [ ] Step 3: Japan で Industry universe と Phase4候補を生成する
+- [x] Step 3: Japan で Industry universe と Phase4候補を生成する
   - 確認: `result.industryRanking` / `phase4CandidateRows` / `finalStockRanking` が Japan でも生成される。
-- [ ] Step 4: Japan で Phase5 Sector別Top銘柄と unified scoring を有効化する
+- [x] Step 4: Japan で Phase5 Sector別Top銘柄と unified scoring を有効化する
   - 確認: Phase5表示Top5とunified scoring候補Top3の契約が分離されたまま維持される。
-- [ ] Step 5: レポート生成を存在ベースの Industry 形式へ変更する
+- [x] Step 5: レポート生成を存在ベースの Industry 形式へ変更する
   - 確認: Japan で `Phase2 Industryランキング`、`Phase4 個別銘柄ランキング`、`Phase5 Sector別 個別銘柄ランキング` が出る。
-- [ ] Step 6: 日本株のテーマタグ補助列と Rule of 40 表示縮小を実装する
+- [x] Step 6: 日本株のテーマタグ補助列と Rule of 40 表示縮小を実装する
   - 確認: テーマ分類はランキング主軸ではなく補助列として表示され、Rule of 40 算出状況セクションは日本株でデフォルト非表示になる。
-- [ ] Step 7: T/Fスコア分解の population size を確認・修正する
+- [x] Step 7: T/Fスコア分解の population size を確認・修正する
   - 確認: unified scoring後のPhase4は `unifiedRankedRows.length` を基準にし、極端な負値が出ない。
-- [ ] Step 8: テストを追加・更新する
+- [x] Step 8: テストを追加・更新する
   - 確認: 日本株Industry表示、旧テーマ主導非表示、Japan unified scoring、EDINET補完維持、T/F負値防止をテストで押さえる。
-- [ ] Step 9: ローカル検証を実行する
+- [x] Step 9: ローカル検証を実行する
   - 確認: `npm run test:unit` が通る。
   - 確認: 日本株レポート生成コマンドを実行し、`docs/reports/screener/daily-ranking-jp.md` が新形式になる。
-- [ ] Step 10: レビュー、計画移動、コミット、プッシュ
+- [x] Step 10: レビュー、計画移動、コミット、プッシュ
   - 確認: 変更差分が計画範囲内であることを確認し、計画を `docs/exec-plans/completed/` に移動して Conventional Commits で main にコミット・プッシュする。
 
 ## 検証コマンド

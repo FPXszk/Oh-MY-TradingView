@@ -1,121 +1,185 @@
-# スクリーニング結果 2026/06/20（土）
+# スクリーニング結果 2026/07/02（木）
 
-更新: 20:13 JST
+更新: 01:44 JST
 
-セクター別取得候補 378銘柄 → ユニバース条件通過 263銘柄 → ランキング対象 246銘柄 → レポート掲載 60銘柄
+セクター別取得候補 414銘柄 → ユニバース条件通過 258銘柄 → ランキング対象 219銘柄 → レポート掲載 40銘柄
 
 ## データソース状況
 
-- EDINET: active / 対象 183銘柄 / 書類一致 106件 / 指標補完 106銘柄
-- EDINET lookback: 180日 / as-of 2026-06-20
-
-## Rule of 40 算出状況
-
-- Rule of 40 (参考表示) 完全算出: 50/60銘柄 (83.3%)
-- 欠損内訳: 売上のみあり 10件 / FCFのみあり 0件 / 両方欠け 0件
-
-| シンボル | セクター | 売上YoY | FCF margin | 状態 |
-|:---|:---|---:|---:|:---|
-| 5333 | Producer Manufacturing | 8.2% | N/A% | FCF欠け |
-| 4980 | Electronic Technology | 3.1% | N/A% | FCF欠け |
-| 6407 | Producer Manufacturing | 1.4% | N/A% | FCF欠け |
-| 6617 | Producer Manufacturing | 5.1% | N/A% | FCF欠け |
-| 5802 | Producer Manufacturing | 9.2% | N/A% | FCF欠け |
-| 5801 | Producer Manufacturing | 8.8% | N/A% | FCF欠け |
-| 6674 | Producer Manufacturing | 4.9% | N/A% | FCF欠け |
-| 6941 | Electronic Technology | 16.3% | N/A% | FCF欠け |
-| 6507 | Producer Manufacturing | 7.6% | N/A% | FCF欠け |
-| 7715 | Electronic Technology | -2.7% | N/A% | FCF欠け |
+- EDINET: disabled (no API key)
 
 ## Phase1 セクターランキング
 
-- Phase1 ソース候補数: 1553 / reported 3888
+- Phase1 ソース候補数: 1550 / reported 3894
 - 相対強度の基準: TSE:1306（TOPIX）
 - 12M / 6M / 3M はセクター構成銘柄の平均リターンです。
 
 | 順位 | セクター | 平均12M | 平均6M | 平均3M | TOPIX差12M | TOPIX差6M | TOPIX差3M | SMA50上 | SMA200上 | 52w高値90%内 | RSI | 相対出来高 | 構成数 | 順位合計 |
 |:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| 1 | Electronic Technology | 166.4% | 77.3% | 42.4% | 122.2pt | 55.8pt | 29.8pt | 72.4% | 84.5% | 43.9% | 56.5 | 1.37x | 98 | 12 |
-| 2 | Producer Manufacturing | 70.5% | 34.4% | 15.2% | 26.3pt | 12.9pt | 2.6pt | 68.0% | 70.1% | 42.4% | 56.4 | 1.20x | 231 | 22 |
-| 3 | Process Industries | 62.0% | 29.4% | 9.8% | 17.8pt | 7.9pt | -2.8pt | 72.9% | 73.7% | 47.4% | 56.1 | 1.25x | 133 | 25 |
-| 4 | Finance | 52.1% | 19.0% | 5.3% | 7.9pt | -2.5pt | -7.3pt | 50.6% | 66.1% | 47.6% | 50.7 | 1.44x | 168 | 39 |
-| 5 | Non-Energy Minerals | 66.6% | 19.3% | 0.4% | 22.4pt | -2.2pt | -12.2pt | 45.2% | 54.8% | 16.7% | 51.7 | 1.13x | 42 | 56 |
-| 6 | Distribution Services | 28.5% | 8.2% | 3.5% | -15.7pt | -13.3pt | -9.1pt | 47.7% | 58.1% | 37.2% | 50.7 | 1.24x | 86 | 57 |
-| 7 | Consumer Durables | 30.9% | 6.1% | 0.9% | -13.3pt | -15.4pt | -11.7pt | 46.0% | 42.9% | 27.0% | 51.3 | 1.29x | 63 | 72 |
-| 8 | Industrial Services | 43.0% | 6.9% | -4.5% | -1.2pt | -14.6pt | -17.1pt | 43.7% | 50.7% | 21.1% | 52.1 | 1.12x | 71 | 85 |
-| 9 | Communications | 19.9% | 1.1% | 7.9% | -24.3pt | -20.4pt | -4.7pt | 30.0% | 40.0% | 20.0% | 45.8 | 1.16x | 10 | 91 |
-| 10 | Health Technology | 16.4% | 2.5% | -0.4% | -27.8pt | -19.0pt | -13.0pt | 29.3% | 41.4% | 13.8% | 46.4 | 1.33x | 58 | 103 |
-| 11 | Consumer Non-Durables | 8.0% | 1.6% | -1.6% | -36.2pt | -19.9pt | -14.2pt | 37.4% | 40.0% | 27.5% | 50.6 | 1.30x | 91 | 104 |
-| 12 | Retail Trade | 7.5% | -1.1% | -1.1% | -36.7pt | -22.6pt | -13.7pt | 43.8% | 34.7% | 22.9% | 50.4 | 1.28x | 96 | 111 |
-| 13 | Transportation | 15.1% | 3.0% | -4.1% | -29.1pt | -18.5pt | -16.7pt | 25.5% | 39.2% | 25.5% | 45.4 | 1.54x | 51 | 112 |
-| 14 | Energy Minerals | 39.6% | 6.5% | -19.2% | -4.6pt | -15.0pt | -31.8pt | 14.3% | 57.1% | 0.0% | 42.1 | 1.92x | 7 | 114 |
-| 15 | Utilities | 25.9% | 7.2% | -9.8% | -18.3pt | -14.3pt | -22.4pt | 14.8% | 22.2% | 11.1% | 44.7 | 1.37x | 27 | 119 |
-| 16 | Consumer Services | -0.5% | -6.6% | -6.5% | -44.7pt | -28.1pt | -19.1pt | 30.0% | 25.0% | 13.8% | 46.7 | 1.18x | 80 | 138 |
-| 17 | Commercial Services | -1.6% | -8.5% | -3.9% | -45.8pt | -30.0pt | -16.5pt | 25.0% | 21.7% | 12.0% | 47.2 | 1.15x | 92 | 143 |
-| 18 | Technology Services | -12.4% | -13.1% | -3.8% | -56.6pt | -34.6pt | -16.4pt | 27.3% | 15.4% | 8.4% | 43.8 | 1.36x | 143 | 147 |
-| 19 | Health Services | -14.8% | -18.2% | -16.5% | -59.0pt | -39.7pt | -29.1pt | 16.7% | 16.7% | 16.7% | 39.7 | 0.81x | 6 | 160 |
+| 1 | Electronic Technology | 138.7% | 67.2% | 42.8% | 98.0pt | 48.7pt | 34.4pt | 64.3% | 81.4% | 32.7% | 52.7 | 0.90x | 98 | 15 |
+| 2 | Producer Manufacturing | 64.7% | 28.5% | 15.4% | 24.0pt | 10.0pt | 7.0pt | 61.0% | 64.9% | 35.1% | 52.3 | 0.88x | 231 | 23 |
+| 3 | Process Industries | 56.9% | 24.1% | 9.8% | 16.2pt | 5.6pt | 1.4pt | 66.9% | 69.9% | 42.1% | 52.5 | 0.90x | 133 | 23 |
+| 4 | Finance | 55.7% | 17.8% | 3.1% | 15.0pt | -0.7pt | -5.3pt | 65.5% | 64.2% | 51.8% | 54.0 | 1.09x | 168 | 33 |
+| 5 | Distribution Services | 26.2% | 4.8% | 1.9% | -14.5pt | -13.7pt | -6.5pt | 50.0% | 51.2% | 29.1% | 50.0 | 0.88x | 86 | 59 |
+| 6 | Consumer Durables | 27.8% | 4.4% | -0.1% | -12.9pt | -14.1pt | -8.5pt | 49.2% | 39.7% | 20.6% | 49.6 | 1.00x | 63 | 72 |
+| 7 | Consumer Non-Durables | 7.7% | 2.4% | -2.5% | -33.0pt | -16.1pt | -10.9pt | 52.7% | 44.4% | 35.2% | 52.2 | 0.91x | 91 | 82 |
+| 8 | Non-Energy Minerals | 55.3% | 8.3% | -2.9% | 14.6pt | -10.2pt | -11.3pt | 26.2% | 42.9% | 9.5% | 45.1 | 0.94x | 42 | 83 |
+| 9 | Industrial Services | 37.6% | 1.8% | -5.1% | -3.1pt | -16.7pt | -13.5pt | 38.0% | 46.5% | 15.5% | 49.6 | 0.88x | 71 | 95 |
+| 10 | Health Technology | 15.3% | 2.0% | -3.5% | -25.4pt | -16.5pt | -11.9pt | 39.7% | 41.4% | 17.2% | 49.7 | 0.83x | 58 | 101 |
+| 11 | Communications | 8.5% | -4.6% | 3.9% | -32.2pt | -23.1pt | -4.5pt | 20.0% | 40.0% | 20.0% | 43.7 | 0.92x | 10 | 102 |
+| 12 | Retail Trade | 6.6% | -2.3% | -1.9% | -34.1pt | -20.8pt | -10.3pt | 46.3% | 31.9% | 23.2% | 49.8 | 1.14x | 95 | 104 |
+| 13 | Transportation | 14.0% | 1.4% | -5.2% | -26.7pt | -17.1pt | -13.6pt | 35.3% | 47.1% | 25.5% | 48.2 | 0.97x | 51 | 105 |
+| 14 | Utilities | 25.3% | 3.5% | -11.0% | -15.4pt | -15.0pt | -19.4pt | 25.9% | 25.9% | 7.4% | 46.5 | 1.03x | 27 | 117 |
+| 15 | Commercial Services | -0.8% | -8.8% | -2.6% | -41.5pt | -27.3pt | -11.0pt | 43.5% | 25.0% | 14.1% | 50.9 | 0.85x | 92 | 128 |
+| 16 | Consumer Services | -1.2% | -6.8% | -6.2% | -41.9pt | -25.3pt | -14.6pt | 46.8% | 25.3% | 17.7% | 51.1 | 0.91x | 79 | 132 |
+| 17 | Energy Minerals | 37.4% | -1.4% | -24.2% | -3.3pt | -19.9pt | -32.6pt | 14.3% | 14.3% | 0.0% | 37.1 | 0.95x | 7 | 134 |
+| 18 | Technology Services | -11.7% | -14.0% | -2.1% | -52.4pt | -32.5pt | -10.5pt | 38.0% | 18.3% | 9.2% | 49.5 | 0.82x | 142 | 135 |
+| 19 | Health Services | -14.0% | -17.3% | -14.3% | -54.7pt | -35.8pt | -22.7pt | 16.7% | 16.7% | 0.0% | 48.7 | 1.07x | 6 | 167 |
 
-## Phase2 テーマランキング
+## Phase2 Industryランキング
 
-- 対象セクター: Electronic Technology（Phase1 1位 / TradingView sector）
-- 集計対象: Electronic Technology の通過銘柄 52件を、みんかぶ対応テーマへ分類
+- 対象: Phase1上位セクター内の広いTradingView scanner取得銘柄をindustryで集計（上位20 industry）
 
-| 順位 | テーマ | 通過銘柄数 | 平均3M | 平均総合点 | 主な小テーマ | 外部確認 |
-|:---:|:---|---:|---:|---:|:---|:---|
-| 1 | Electronic Components | 33 | 71.0% | 55.50 | Passives / RF Modules | Minkabu |
-| 2 | AI / Data Center | 9 | 81.2% | 53.30 | Data Center Memory | Minkabu |
-| 3 | Semiconductor Equipment | 10 | 74.6% | 52.10 | Semiconductor Production Equipment | Minkabu |
+| 順位 | セクター | Industry | 構成銘柄数 | 平均12M | 平均6M | 平均3M | TOPIX差12M | TOPIX差6M | TOPIX差3M | SMA50上比率 | SMA200上比率 | 52w高値90%内比率 | 平均RSI | 平均相対出来高 | Industry総合スコア | 上位銘柄 |
+|:---:|:---|:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|:---|
+| 1 | Electronic Technology | Semiconductors | 11 | 123.1% | 91.2% | 57.0% | 82.4pt | 72.7pt | 48.6pt | 81.8% | 100.0% | 54.5% | 56.7 | 1.06x | 95.33 | 6723, 6479, 6323 |
+| 2 | Electronic Technology | Electronic Components | 21 | 175.5% | 95.9% | 69.4% | 134.8pt | 77.4pt | 61.0pt | 61.9% | 85.7% | 38.1% | 51.7 | 1.06x | 89.67 | 6976, 6997, 4062 |
+| 3 | Process Industries | Chemicals: Specialty | 42 | 87.3% | 41.1% | 21.9% | 46.6pt | 22.6pt | 13.5pt | 73.8% | 83.3% | 42.9% | 53.1 | 0.92x | 78.33 | 4047, 4004, 4461 |
+| 4 | Electronic Technology | Electronic Production Equipment | 16 | 147.1% | 90.6% | 51.8% | 106.4pt | 72.1pt | 43.4pt | 68.8% | 93.8% | 25.0% | 53.5 | 0.71x | 77.33 | 6981, 6779, 7717 |
+| 5 | Electronic Technology | Electronic Equipment/Instruments | 25 | 73.8% | 38.9% | 28.5% | 33.1pt | 20.4pt | 20.1pt | 84.0% | 88.0% | 44.0% | 56.3 | 0.87x | 77.00 | 4980, 6866, 4187 |
+| 6 | Producer Manufacturing | Electrical Products | 29 | 115.5% | 56.3% | 21.7% | 74.8pt | 37.8pt | 13.3pt | 69.0% | 86.2% | 31.0% | 52.9 | 0.89x | 77.00 | 5333, 5301, 6506 |
+| 7 | Producer Manufacturing | Industrial Machinery | 97 | 74.5% | 39.7% | 23.6% | 33.8pt | 21.2pt | 15.2pt | 70.1% | 72.2% | 44.3% | 55.1 | 0.98x | 76.67 | 3436, 6101, 6266 |
+| 8 | Electronic Technology | Computer Peripherals | 11 | 338.7% | 76.8% | 36.2% | 298.0pt | 58.3pt | 27.8pt | 54.5% | 63.6% | 18.2% | 48.2 | 0.87x | 74.33 | 285A, 9880, 6724 |
+| 9 | Process Industries | Industrial Specialties | 24 | 42.1% | 20.0% | 12.6% | 1.4pt | 1.5pt | 4.2pt | 91.7% | 79.2% | 50.0% | 55.8 | 1.01x | 69.33 | 5384, 7966, 5310 |
+| 10 | Electronic Technology | Computer Communications | 6 | 74.7% | 57.5% | 38.5% | 34.0pt | 39.0pt | 30.1pt | 16.7% | 83.3% | 16.7% | 47.7 | 0.68x | 63.67 | 4392, 4212, 6718 |
+| 11 | Producer Manufacturing | Metal Fabrication | 14 | 64.9% | 26.7% | 17.4% | 24.2pt | 8.2pt | 9.0pt | 71.4% | 78.6% | 35.7% | 51.6 | 0.78x | 63.67 | 6480, 5463, 6464 |
+| 12 | Distribution Services | Electronics Distributors | 17 | 45.0% | 15.0% | 15.1% | 4.3pt | -3.5pt | 6.7pt | 76.5% | 82.4% | 47.1% | 52.2 | 0.83x | 63.33 | 3156, 7537, 2737 |
+| 13 | Producer Manufacturing | Miscellaneous Manufacturing | 9 | 47.0% | 23.3% | 8.8% | 6.3pt | 4.8pt | 0.4pt | 66.7% | 66.7% | 44.4% | 53.8 | 0.76x | 57.67 | 6490, 6013, 6370 |
+| 14 | Producer Manufacturing | Building Products | 8 | 31.2% | 14.4% | 10.6% | -9.5pt | -4.1pt | 2.2pt | 87.5% | 50.0% | 37.5% | 56.4 | 0.89x | 54.33 | 5332, 5393, 7981 |
+| 15 | Process Industries | Textiles | 15 | 70.8% | 30.6% | -0.9% | 30.1pt | 12.1pt | -9.3pt | 53.3% | 66.7% | 33.3% | 50.9 | 0.79x | 53.67 | 7818, 3104, 3106 |
+| 16 | Producer Manufacturing | Auto Parts: OEM | 41 | 51.2% | 10.6% | 9.4% | 10.5pt | -7.9pt | 1.0pt | 48.8% | 58.5% | 29.3% | 48.4 | 0.84x | 49.00 | 7245, 7236, 5991 |
+| 17 | Process Industries | Chemicals: Major Diversified | 17 | 60.7% | 20.1% | 5.8% | 20.0pt | 1.6pt | -2.6pt | 47.1% | 52.9% | 23.5% | 48.3 | 0.79x | 49.00 | 4092, 4186, 4975 |
+| 18 | Process Industries | Pulp & Paper | 9 | 34.2% | 11.6% | 3.0% | -6.5pt | -6.9pt | -5.4pt | 44.4% | 66.7% | 44.4% | 50.0 | 0.83x | 47.33 | 3864, 3708, 3941 |
+| 19 | Process Industries | Agricultural Commodities/Milling | 13 | 22.9% | 5.4% | -1.6% | -17.8pt | -13.1pt | -10.0pt | 61.5% | 61.5% | 53.8% | 53.5 | 0.97x | 47.00 | 2108, 1375, 2607 |
+| 20 | Distribution Services | Wholesale Distributors | 51 | 28.0% | 5.4% | 1.2% | -12.7pt | -13.1pt | -7.2pt | 45.1% | 54.9% | 29.4% | 50.0 | 0.88x | 38.67 | 6971, 1979, 3132 |
 
-## Phase3 小テーマランキング (Electronic Technology)
+## Phase4 個別銘柄ランキング
 
-- Phase2 掲載中テーマ: Electronic Components, AI / Data Center, Semiconductor Equipment
+- 対象Industry（Phase3上位20）: Semiconductors, Electronic Components, Chemicals: Specialty, Electronic Production Equipment, Electronic Equipment/Instruments, Electrical Products, Industrial Machinery, Computer Peripherals, Industrial Specialties, Computer Communications, Metal Fabrication, Electronics Distributors, Miscellaneous Manufacturing, Building Products, Textiles, Auto Parts: OEM, Chemicals: Major Diversified, Pulp & Paper, Agricultural Commodities/Milling, Wholesale Distributors
+- 表示上限: 全業種横断の総合点上位40銘柄
+- スコア: Phase4候補 + Phase5 Sector別Top3候補を共通母集団で再採点した unifiedRankScore
+- 出所: Phase4 / Phase5 / Both は、候補がどの経路で検出されたかを示す
 
-| 順位 | 中テーマ | 小テーマ | 通過銘柄数 | 平均3M | 平均総合点 |
-|:---:|:---|:---|---:|---:|---:|
-| 1 | Electronic Components | Passives / RF Modules | 15 | 105.3% | 53.50 |
-| 2 | AI / Data Center | Data Center Memory | 9 | 81.2% | 53.30 |
-| 3 | Semiconductor Equipment | Semiconductor Production Equipment | 10 | 74.6% | 52.10 |
+| 順位 | 出所 | セクター | Industry | テーマ | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCFマージン | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 (T/F) |
+|:---:|:---:|:---|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|:---|---:|---:|---:|
+| 1 | Both | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **6101 (ツガミ)** | TSE | ¥375.8B (M) | 341.2% | 181.9% | 130.4% | 94.8% | 23.4% | 31.1% | 20.5% | 20.2% | 40.8 | 56.0% | 14.4 | 6.4% | 84.91 (T45.9/F39.0) |
+| 2 | Both | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **7735 (ＳＣＲＥＥＮホールディングス)** | TSE | ¥3.32T (L) | 236.2% | 161.0% | 103.7% | 98.6% | 20.2% | 32.3% | 11.1% | -3.1% | 8.0 | -5.1% | 55.3 | 5.7% | 80.76 (T47.5/F33.3) |
+| 3 | Both | Producer Manufacturing | Industrial Machinery | Semiconductor Equipment / Semiconductor Production Equipment | **8035 (東京エレクトロン)** | TSE | ¥35.07T (XL) | 187.8% | 133.3% | 98.5% | 97.0% | 28.9% | 38.7% | 13.5% | 0.5% | 14.0 | 6.1% | 109.2 | 5.4% | 79.69 (T45.4/F34.3) |
+| 4 | Both | Process Industries | Chemicals: Specialty | Chemicals / Materials / Advanced Materials | **4021 (日産化学)** | TSE | ¥1.14T (L) | 94.1% | 58.0% | 36.7% | 98.7% | 19.5% | 36.9% | 16.2% | 11.2% | 27.4 | 17.6% | 25.2 | 2.9% | 76.08 (T37.7/F38.3) |
+| 5 | Phase4 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **9962 (ミスミグループ本社)** | TSE | ¥1.07T (L) | 108.4% | 59.8% | 43.5% | 98.6% | 10.9% | 44.3% | 8.6% | 9.8% | 18.4 | 13.2% | 28.3 | 3.6% | 75.89 (T40.1/F35.8) |
+| 6 | Both | Electronic Technology | Semiconductors | AI / Data Center / Data Center Memory | **6871 (日本マイクロニクス)** | TSE | ¥639.2B (M+) | 223.8% | 145.3% | 70.5% | 95.7% | 22.0% | 31.8% | N/A% | 32.8% | 売上32.8% / FCF欠け | 59.7% | N/A | 7.5% | 75.16 (T43.8/F31.4) |
+| 7 | Phase4 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **6134 (ＦＵＪＩ)** | TSE | ¥810.0B (M+) | 232.6% | 144.0% | 76.6% | 99.9% | 7.0% | 23.8% | N/A% | 41.8% | 売上41.8% / FCF欠け | 49.4% | N/A | 5.1% | 74.43 (T46.8/F27.6) |
+| 8 | Both | Electronic Technology | Computer Peripherals | AI / Data Center / Data Center Memory | **285A (キオクシアホールディングス)** | TSE | ¥49.08T (XL) | 3430.8% | 747.4% | 296.5% | 78.2% | 28.6% | 27.4% | 14.4% | 37.0% | 51.3 | 99.3% | 145.0 | 9.8% | 74.38 (T40.8/F33.6) |
+| 9 | Both | Process Industries | Chemicals: Specialty | Chemicals / Materials / Advanced Materials | **4368 (扶桑化学工業)** | TSE | ¥478.2B (M) | 256.5% | 117.2% | 57.3% | 92.2% | 11.4% | 19.3% | 22.7% | 10.7% | 33.4 | 23.1% | 27.9 | 5.9% | 74.31 (T40.0/F34.3) |
+| 10 | Phase4 | Producer Manufacturing | Auto Parts: OEM | Unclassified / 細粒度タグなし | **5334 (日本特殊陶業)** | TSE | ¥2.13T (L) | 125.0% | 56.5% | 41.2% | 97.0% | 12.5% | 23.0% | 9.9% | 12.0% | 21.9 | 22.3% | 29.2 | 3.3% | 74.04 (T38.7/F35.3) |
+| 11 | Phase4 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **6525 (ＫＯＫＵＳＡＩ　ＥＬＥＣＴＲＩＣ)** | TSE | ¥2.58T (L) | 230.0% | 108.0% | 105.1% | 93.5% | 12.0% | 26.9% | 14.9% | -1.6% | 13.3 | -15.7% | 76.5 | 7.0% | 73.81 (T43.0/F30.8) |
+| 12 | Phase4 | Electronic Technology | Electronic Equipment/Instruments | Electronic Components / 細粒度タグなし | **6754 (アンリツ)** | TSE | ¥585.1B (M+) | 148.4% | 107.1% | 56.3% | 96.6% | 8.8% | 34.7% | 11.7% | 4.0% | 15.7 | 29.6% | 43.6 | 5.5% | 73.76 (T41.9/F31.9) |
+| 13 | Phase4 | Electronic Technology | Electronic Production Equipment | Electronic Components / Passives / RF Modules | **6981 (村田製作所)** | TSE | ¥21.02T (XL) | 454.8% | 270.5% | 221.0% | 92.2% | 8.7% | 24.2% | 10.6% | 5.0% | 15.6 | 2.0% | 112.1 | 8.3% | 73.69 (T44.1/F29.6) |
+| 14 | Phase4 | Producer Manufacturing | Auto Parts: OEM | Unclassified / 細粒度タグなし | **7236 (ティラド)** | TSE | ¥84.9B (S) | 233.0% | 78.1% | 77.7% | 93.1% | 13.1% | 23.2% | 3.2% | 1.9% | 5.1 | 122.0% | 16.4 | 4.2% | 73.59 (T41.2/F32.3) |
+| 15 | Both | Electronic Technology | Electronic Equipment/Instruments | Semiconductor Equipment / Semiconductor Production Equipment | **6857 (アドバンテスト)** | TSE | ¥22.56T (XL) | 206.7% | 63.4% | 43.1% | 89.0% | 56.4% | 62.0% | 26.8% | 44.7% | 71.5 | 135.4% | 77.3 | 6.2% | 73.41 (T35.4/F38.0) |
+| 16 | Both | Process Industries | Industrial Specialties | Chemicals / Materials / 細粒度タグなし | **7966 (リンテック)** | TSE | ¥483.2B (M) | 141.2% | 61.2% | 51.6% | 97.9% | 6.7% | 23.8% | 5.9% | 1.1% | 7.0 | 25.2% | 24.8 | 3.6% | 73.23 (T39.9/F33.3) |
+| 17 | Phase4 | Electronic Technology | Electronic Equipment/Instruments | Electronic Components / 細粒度タグなし | **6920 (レーザーテック)** | TSE | ¥4.48T (L) | 167.2% | 72.7% | 43.7% | 86.7% | 44.1% | 48.5% | 27.4% | 12.0% | 39.4 | 26.7% | 65.9 | 6.9% | 72.29 (T34.3/F38.0) |
+| 18 | Phase4 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **3445 (ＲＳ　Ｔｅｃｈｎｏｌｏｇｉｅｓ)** | TSE | ¥193.6B (M-) | 157.4% | 112.4% | 113.0% | 98.3% | 11.9% | 11.9% | N/A% | 27.3% | 売上27.3% / FCF欠け | 1.1% | N/A | 5.8% | 70.84 (T44.8/F26.0) |
+| 19 | Phase4 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **7729 (東京精密)** | TSE | ¥826.6B (M+) | 120.7% | 88.5% | 44.6% | 98.2% | 12.7% | 27.2% | N/A% | 10.8% | 売上10.8% / FCF欠け | -3.5% | N/A | 5.3% | 70.46 (T41.4/F29.1) |
+| 20 | Phase4 | Electronic Technology | Electronic Equipment/Instruments | Electronic Components / 細粒度タグなし | **4187 (大阪有機化学工業)** | TSE | ¥132.0B (M-) | 138.8% | 54.4% | 63.4% | 99.5% | 14.7% | 18.3% | N/A% | 7.8% | 売上7.8% / FCF欠け | 64.9% | N/A | 4.3% | 69.90 (T40.2/F29.7) |
+| 21 | Phase4 | Producer Manufacturing | Building Products | Unclassified / 細粒度タグなし | **5393 (ニチアス)** | TSE | ¥748.6B (M+) | 114.0% | 72.6% | 32.5% | 95.1% | 13.9% | 22.8% | 6.3% | -1.8% | 4.5 | 1.1% | 46.9 | 3.6% | 69.66 (T36.9/F32.8) |
+| 22 | Phase4 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **6136 (オーエスジー)** | TSE | ¥336.3B (M) | 123.8% | 65.3% | 43.3% | 99.2% | 7.7% | 25.4% | N/A% | 5.7% | 売上5.7% / FCF欠け | 40.5% | N/A | 3.3% | 69.45 (T39.9/F29.5) |
+| 23 | Phase4 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **6856 (堀場製作所)** | TSE | ¥1.15T (L) | 158.8% | 79.6% | 53.3% | 95.3% | 10.1% | 29.2% | N/A% | 8.4% | 売上8.4% / FCF欠け | 8.4% | N/A | 3.9% | 69.25 (T40.8/F28.4) |
+| 24 | Phase4 | Electronic Technology | Semiconductors | AI / Data Center / Data Center Memory | **6723 (ルネサスエレクトロニクス)** | TSE | ¥8.54T (L+) | 188.6% | 138.6% | 113.5% | 97.0% | -0.3% | 16.4% | 24.4% | 6.7% | 31.1 | 赤字転落 (raw -108.0%) | 27.8 | 6.1% | 69.07 (T43.9/F25.2) |
+| 25 | Phase4 | Process Industries | Chemicals: Specialty | Chemicals / Materials / Advanced Materials | **4971 (メック)** | TSE | ¥201.0B (M-) | 296.4% | 104.4% | 57.0% | 87.4% | 21.0% | 37.4% | N/A% | 23.8% | 売上23.8% / FCF欠け | 212.4% | N/A | 6.7% | 68.82 (T36.0/F32.8) |
+| 26 | Phase4 | Producer Manufacturing | Electrical Products | Electric Wire / Grid / Electric Wire / Harness | **5333 (ＮＧＫ)** | TSE | ¥2.05T (L) | 327.5% | 130.3% | 81.1% | 97.0% | 6.2% | 15.6% | N/A% | 8.2% | 売上8.2% / FCF欠け | 10.9% | N/A | 4.2% | 68.72 (T45.5/F23.2) |
+| 27 | Phase4 | Producer Manufacturing | Auto Parts: OEM | Unclassified / 細粒度タグなし | **7245 (大同メタル工業)** | TSE | ¥78.2B (S) | 169.6% | 80.3% | 97.9% | 96.7% | 4.1% | 17.1% | 2.9% | 4.2% | 7.1 | 62.5% | 20.3 | 5.3% | 68.64 (T42.2/F26.4) |
+| 28 | Phase4 | Electronic Technology | Semiconductors | AI / Data Center / Data Center Memory | **6323 (ローツェ)** | TSE | ¥852.1B (M+) | 149.8% | 123.8% | 83.3% | 97.7% | 14.0% | 25.1% | N/A% | 3.5% | 売上3.5% / FCF欠け | -18.5% | N/A | 6.1% | 68.55 (T42.9/F25.6) |
+| 29 | Phase4 | Electronic Technology | Electronic Components | Electronic Components / Passives / RF Modules | **4062 (イビデン)** | TSE | ¥6.68T (L+) | 728.8% | 296.0% | 218.3% | 93.8% | 8.7% | 13.3% | 0.1% | 12.7% | 12.7 | 88.3% | 26304.9 | 8.4% | 68.40 (T44.1/F24.3) |
+| 30 | Phase4 | Process Industries | Chemicals: Specialty | Chemicals / Materials / Advanced Materials | **6055 (ジャパンマテリアル)** | TSE | ¥263.7B (M) | 83.7% | 72.3% | 58.0% | 96.9% | 18.1% | 26.1% | N/A% | 10.1% | 売上10.1% / FCF欠け | 34.5% | N/A | 5.7% | 68.36 (T36.9/F31.5) |
+| 31 | Phase4 | Producer Manufacturing | Miscellaneous Manufacturing | Unclassified / 細粒度タグなし | **6490 (ＰＩＬＬＡＲ)** | TSE | ¥254.6B (M) | 191.5% | 132.3% | 46.3% | 97.4% | 10.2% | 23.1% | N/A% | 2.6% | 売上2.6% / FCF欠け | 9.1% | N/A | 5.3% | 68.24 (T42.4/F25.8) |
+| 32 | Phase4 | Electronic Technology | Electronic Equipment/Instruments | Electronic Components / 細粒度タグなし | **6866 (日置電機)** | TSE | ¥166.2B (M-) | 121.2% | 102.3% | 67.2% | 90.9% | 14.3% | 44.1% | N/A% | 5.3% | 売上5.3% / FCF欠け | -3.1% | N/A | 4.7% | 67.82 (T36.7/F31.1) |
+| 33 | Phase4 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **6264 (マルマエ)** | TSE | ¥79.4B (S) | 278.3% | 166.4% | 85.3% | 91.1% | 14.7% | 17.8% | N/A% | 144.7% | 売上144.7% / FCF欠け | 200.5% | N/A | 8.1% | 66.91 (T40.7/F26.2) |
+| 34 | Phase4 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **6146 (ディスコ)** | TSE | ¥8.81T (L+) | 101.6% | 77.2% | 29.2% | 92.2% | 25.1% | 40.8% | N/A% | 11.1% | 売上11.1% / FCF欠け | 9.4% | N/A | 6.1% | 66.27 (T34.1/F32.1) |
+| 35 | Phase4 | Process Industries | Chemicals: Major Diversified | Chemicals / Materials / Advanced Materials | **4975 (ＪＣＵ)** | TSE | ¥187.5B (M-) | 133.7% | 55.5% | 37.8% | 95.9% | 17.7% | 31.7% | N/A% | 4.6% | 売上4.6% / FCF欠け | 22.8% | N/A | 4.0% | 66.19 (T34.3/F31.8) |
+| 36 | Phase4 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **6113 (アマダ)** | TSE | ¥903.2B (M+) | 94.7% | 65.9% | 32.9% | 94.8% | 5.6% | 23.0% | 12.0% | 10.3% | 22.3 | -2.0% | 18.1 | 4.1% | 66.16 (T35.1/F31.0) |
+| 37 | Phase4 | Electronic Technology | Electronic Production Equipment | Semiconductor Equipment / Semiconductor Production Equipment | **6387 (サムコ)** | TSE | ¥111.3B (M-) | 358.0% | 201.1% | 58.5% | 83.0% | 15.3% | 25.6% | N/A% | 21.1% | 売上21.1% / FCF欠け | 43.4% | N/A | 8.4% | 65.96 (T36.7/F29.3) |
+| 38 | Phase4 | Electronic Technology | Electronic Components | Electronic Components / Passives / RF Modules | **7762 (シチズン時計)** | TSE | ¥590.0B (M+) | 184.8% | 90.2% | 40.2% | 94.6% | 9.5% | 31.9% | N/A% | 9.4% | 売上9.4% / FCF欠け | 30.2% | N/A | 3.6% | 65.05 (T37.3/F27.8) |
+| 39 | Phase4 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **6278 (ユニオンツール)** | TSE | ¥389.1B (M) | 326.5% | 172.1% | 59.4% | 84.2% | 9.5% | 19.4% | N/A% | 29.2% | 売上29.2% / FCF欠け | 29.5% | N/A | 7.2% | 64.92 (T37.7/F27.2) |
+| 40 | Phase4 | Electronic Technology | Electronic Components | Electronic Components / Passives / RF Modules | **6806 (ヒロセ電機)** | TSE | ¥914.1B (M+) | 71.1% | 72.4% | 41.4% | 92.0% | 8.7% | 20.6% | 12.2% | 11.5% | 23.8 | 1.6% | 37.7 | 4.2% | 64.87 (T31.8/F33.1) |
 
-## Phase4 個別銘柄ランキング (Electronic Technology)
+## Phase5 Sector別 個別銘柄ランキング
 
-- Phase3 掲載小テーマ: Electronic Components / Passives / RF Modules, AI / Data Center / Data Center Memory, Semiconductor Equipment / Semiconductor Production Equipment
+- 対象: Phase1 Sector Ranking 上位20セクター
+- 表示上限: 各セクターの総合点上位5銘柄（最大100銘柄）
+- 総合点: 各セクターTop3候補はPhase4表と同じ unifiedRankScore、4位・5位はPhase5表示用スコア（Phase4候補でもある場合は unifiedRankScore）
 
-| 順位 | 中テーマ | 小テーマ | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 (T/F) |
-|:---:|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|---:|---:|---:|---:|
-| 1 | AI / Data Center | Data Center Memory | **285A (キオクシアホールディングス)** | TSE | ¥59.43T (XL) | 5207.9% | 1055.2% | 374.2% | 100.0% | 28.6% | 27.4% | 14.4% | 37.0% | 51.3 | 99.8% | 177.9 | 5.8% | 76.53 (T496.2/F-419.7) |
-| 2 | Semiconductor Equipment | Semiconductor Production Equipment | **6857 (アドバンテスト)** | TSE | ¥22.14T (XL) | 227.3% | 66.2% | 32.0% | 98.0% | 56.4% | 62.0% | 26.8% | 44.7% | 71.5 | 135.4% | 76.8 | 4.9% | 70.74 (T51.1/F19.7) |
-| 3 | AI / Data Center | Data Center Memory | **6323 (ローツェ)** | TSE | ¥856.3B (M+) | 163.1% | 140.8% | 74.5% | 96.3% | 14.0% | 25.1% | 38.3% | 3.5% | 41.8 | -18.5% | 32.0 | 5.6% | 68.96 (T9.1/F59.8) |
-| 4 | Electronic Components | Passives / RF Modules | **6981 (村田製作所)** | TSE | ¥21.67T (XL) | 452.9% | 269.5% | 216.7% | 91.4% | 8.7% | 24.2% | 10.6% | 5.0% | 15.6 | 2.0% | 111.2 | 8.4% | 65.11 (T4.1/F61.0) |
-| 5 | Electronic Components | Passives / RF Modules | **6806 (ヒロセ電機)** | TSE | ¥939.3B (M+) | 73.7% | 73.6% | 39.8% | 99.0% | 8.7% | 20.6% | 12.2% | 11.5% | 23.8 | 1.6% | 38.3 | 3.6% | 63.57 (T31.7/F31.8) |
-| 6 | Electronic Components | Passives / RF Modules | **7762 (シチズン時計)** | TSE | ¥581.8B (M+) | 174.9% | 87.3% | 39.7% | 99.5% | 9.5% | 31.9% | 0.3% | 9.4% | 9.7 | 30.2% | 24239.9 | 3.4% | 62.70 (T12.2/F50.5) |
-| 7 | Electronic Components | Passives / RF Modules | **6941 (山一電機)** | TSE | ¥194.2B (M-) | 309.2% | 91.2% | 18.9% | 93.5% | 19.9% | 33.8% | N/A% | 16.3% | 売上16.3% / FCF欠け | 90.2% | N/A | 6.5% | 61.42 (T37.4/F24.0) |
-| 8 | Semiconductor Equipment | Semiconductor Production Equipment | **6387 (サムコ)** | TSE | ¥117.1B (M-) | 426.4% | 278.7% | 93.9% | 86.1% | 15.3% | 25.6% | -12.7% | 21.1% | 8.3 | 43.4% | N/A | 8.8% | 61.19 (T21.0/F40.2) |
-| 9 | AI / Data Center | Data Center Memory | **6871 (日本マイクロニクス)** | TSE | ¥592.7B (M+) | 222.5% | 148.9% | 43.4% | 86.3% | 22.0% | 31.8% | -5.3% | 32.8% | 27.5 | 59.7% | N/A | 7.7% | 59.60 (T28.2/F31.4) |
-| 10 | Electronic Components | Passives / RF Modules | **6762 (ＴＤＫ)** | TSE | ¥7.42T (L+) | 150.5% | 75.6% | 86.9% | 90.6% | 8.2% | 17.7% | 8.3% | 13.6% | 21.9 | 17.0% | 35.5 | 6.0% | 59.22 (T20.8/F38.4) |
-| 11 | Electronic Components | Passives / RF Modules | **4062 (イビデン)** | TSE | ¥6.89T (L+) | 687.3% | 328.8% | 199.1% | 90.9% | 8.7% | 13.3% | 0.1% | 12.7% | 12.7 | 88.3% | 25055.2 | 8.0% | 59.11 (T2.7/F56.4) |
-| 12 | Electronic Components | Passives / RF Modules | **6787 (メイコー)** | TSE | ¥1.03T (L) | 492.0% | 269.4% | 55.4% | 88.1% | 11.7% | 15.0% | N/A% | 16.3% | 売上16.3% / FCF欠け | 32.5% | N/A | 8.6% | 58.33 (T13.7/F44.6) |
-| 13 | Semiconductor Equipment | Semiconductor Production Equipment | **7717 (ブイ・テクノロジー)** | TSE | ¥81.5B (S) | 169.8% | 195.8% | 77.8% | 92.7% | 4.8% | 20.2% | N/A% | 14.7% | 売上14.7% / FCF欠け | 183.3% | N/A | 6.7% | 56.64 (T12.9/F43.7) |
-| 14 | Semiconductor Equipment | Semiconductor Production Equipment | **4064 (日本カーバイド工業)** | TSE | ¥35.8B (S) | 118.3% | 55.1% | 33.3% | 96.8% | 6.4% | 26.3% | N/A% | 2.4% | 売上2.4% / FCF欠け | 17.8% | N/A | 3.8% | 56.41 (T28.8/F27.6) |
-| 15 | Semiconductor Equipment | Semiconductor Production Equipment | **6999 (ＫＯＡ)** | TSE | ¥99.5B (S) | 254.3% | 116.6% | 75.8% | 94.4% | 3.2% | 14.4% | 2.5% | 12.7% | 15.3 | 1420.2% | 69.5 | 6.1% | 56.01 (T8.8/F47.3) |
-| 16 | Semiconductor Equipment | Semiconductor Production Equipment | **6779 (日本電波工業)** | TSE | ¥102.5B (M-) | 529.7% | 390.5% | 233.8% | 93.0% | 3.5% | 19.3% | -2.7% | 2.9% | 0.2 | 15.4% | 2.8 | 11.2% | 55.21 (T3.7/F51.5) |
-| 17 | AI / Data Center | Data Center Memory | **7826 (フルヤ金属)** | TSE | ¥228.1B (M-) | 251.5% | 187.7% | 27.1% | 82.6% | 15.8% | 18.9% | -37.1% | 66.1% | 29.0 | 58.1% | N/A | 6.9% | 54.24 (T25.6/F28.6) |
-| 18 | Electronic Components | Passives / RF Modules | **6997 (日本ケミコン)** | TSE | ¥158.5B (M-) | 400.0% | 326.3% | 270.3% | 95.5% | 2.4% | 14.7% | N/A% | 11.5% | 売上11.5% / FCF欠け | N/A% | N/A | 9.3% | 53.24 (T-0.7/F54.0) |
-| 19 | Electronic Components | Passives / RF Modules | **6996 (ニチコン)** | TSE | ¥314.2B (M) | 301.0% | 191.0% | 146.9% | 93.3% | 4.8% | 15.3% | 0.6% | -3.4% | -2.8 | 17.8% | 292.6 | 7.6% | 53.09 (T3.4/F49.7) |
-| 20 | Electronic Components | Passives / RF Modules | **6976 (太陽誘電)** | TSE | ¥2.43T (L) | 722.4% | 472.8% | 361.0% | 87.4% | 3.1% | 13.2% | N/A% | 4.1% | 売上4.1% / FCF欠け | 959.8% | N/A | 10.5% | 52.67 (T4.7/F47.9) |
-| 21 | AI / Data Center | Data Center Memory | **6479 (ミネベアミツミ)** | TSE | ¥1.87T (L) | 124.7% | 49.3% | 69.9% | 91.0% | 9.1% | 16.1% | 0.9% | 9.3% | 10.2 | 67.1% | 120.0 | 4.9% | 51.18 (T18.5/F32.7) |
-| 22 | Electronic Components | Passives / RF Modules | **6965 (浜松ホトニクス)** | TSE | ¥864.5B (M+) | 70.0% | 69.1% | 45.8% | 90.2% | 4.0% | 21.2% | 8.5% | 5.4% | 13.8 | -24.1% | 95.7 | 5.9% | 49.27 (T22.0/F27.2) |
-| 23 | AI / Data Center | Data Center Memory | **8154 (加賀電子)** | TSE | ¥222.4B (M-) | 64.6% | 16.4% | 14.4% | 88.0% | 16.6% | 21.1% | 4.3% | 20.3% | 24.6 | 94.1% | 41.7 | 3.5% | 48.46 (T40.2/F8.3) |
-| 24 | Electronic Components | Passives / RF Modules | **7725 (インターアクション)** | TSE | ¥21.1B (S) | 66.1% | 41.7% | 33.7% | 83.7% | 5.0% | 19.7% | 55.6% | -38.0% | 17.6 | -59.2% | 9.4 | 5.0% | 47.20 (T32.5/F14.7) |
-| 25 | Semiconductor Equipment | Semiconductor Production Equipment | **6817 (スミダコーポレーション)** | TSE | ¥47.4B (S) | 45.2% | 25.4% | 26.4% | 88.7% | 4.5% | 13.0% | 6.8% | 5.0% | 11.9 | 357.5% | 4.6 | 4.1% | 44.94 (T31.1/F13.8) |
-| 26 | AI / Data Center | Data Center Memory | **429A (テクセンドフォトマスク)** | TSE | ¥427.7B (M) | 43.5% | 46.2% | 39.3% | 81.4% | 16.7% | 18.8% | 2.2% | N/A% | FCF2.2% / 売上欠け | N/A% | 146.4 | 6.6% | 42.34 (T23.6/F18.7) |
-| 27 | Semiconductor Equipment | Semiconductor Production Equipment | **6966 (三井ハイテック)** | TSE | ¥219.3B (M-) | 79.9% | 64.8% | 98.3% | 88.4% | 3.7% | 13.7% | -3.4% | 2.9% | -0.5 | -19.5% | N/A | 6.8% | 41.89 (T13.5/F28.4) |
-| 28 | Electronic Components | Passives / RF Modules | **6958 (日本シイエムケイ)** | TSE | ¥50.4B (S) | 128.7% | 52.0% | 27.2% | 92.0% | 3.7% | 9.9% | N/A% | 4.9% | 売上4.9% / FCF欠け | 6.2% | N/A | 6.3% | 41.64 (T16.9/F24.7) |
-| 29 | AI / Data Center | Data Center Memory | **6616 (トレックス・セミコンダクター)** | TSE | ¥25.9B (S) | 92.8% | 69.2% | 40.1% | 79.2% | 4.4% | 17.8% | N/A% | 4.7% | 売上4.7% / FCF欠け | N/A% | N/A | 6.6% | 41.43 (T19.1/F22.3) |
-| 30 | Electronic Components | Passives / RF Modules | **6875 (メガチップス)** | TSE | ¥176.5B (M-) | 122.5% | 38.3% | 23.4% | 80.9% | N/A% | 2.2% | 9.4% | -14.5% | -5.2 | 100.2% | 51.4 | 5.9% | 40.62 (T20.7/F19.9) |
-| 31 | Semiconductor Equipment | Semiconductor Production Equipment | **6844 (新電元工業)** | TSE | ¥40.7B (S) | 86.0% | 23.1% | 20.3% | 94.5% | 5.6% | 12.2% | N/A% | 7.6% | 売上7.6% / FCF欠け | N/A% | N/A | 4.8% | 40.22 (T19.4/F20.8) |
-| 32 | Semiconductor Equipment | Semiconductor Production Equipment | **6962 (大真空)** | TSE | ¥31.5B (S) | 74.8% | 80.2% | 54.6% | 81.0% | 0.8% | 9.3% | N/A% | 2.4% | 売上2.4% / FCF欠け | -25.3% | N/A | 9.8% | 37.97 (T14.6/F23.4) |
-| 33 | AI / Data Center | Data Center Memory | **6526 (ソシオネクスト)** | TSE | ¥473.3B (M) | 1.0% | 23.0% | 48.0% | 75.3% | N/A% | 53.6% | -3.6% | 6.5% | 3.0 | -54.5% | N/A | 7.7% | 37.22 (T20.9/F16.3) |
-| 34 | Electronic Components | Passives / RF Modules | **6763 (帝国通信工業)** | TSE | ¥29.3B (S) | 37.3% | 17.5% | 14.7% | 93.9% | 4.5% | 14.4% | -11.0% | 2.8% | -8.2 | -35.8% | N/A | 4.0% | 35.98 (T20.1/F15.8) |
+| Sector Rank | Sector内Rank | Sector | Industry | Theme | Symbol | Market | Market Cap | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF Margin | Revenue YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 (T/F) |
+|:---:|:---:|:---|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|:---|---:|---:|---:|
+| 1 | 1 | Electronic Technology | Electronic Equipment/Instruments | Semiconductor Equipment / Semiconductor Production Equipment | **6857 (アドバンテスト)** | TSE | ¥22.56T (XL) | 206.7% | 63.4% | 43.1% | 89.0% | 56.4% | 62.0% | 26.8% | 44.7% | 71.5 | 135.4% | 77.3 | 6.2% | 73.41 (T35.4/F38.0) |
+| 1 | 2 | Electronic Technology | Semiconductors | AI / Data Center / Data Center Memory | **6871 (日本マイクロニクス)** | TSE | ¥639.2B (M+) | 223.8% | 145.3% | 70.5% | 95.7% | 22.0% | 31.8% | N/A% | 32.8% | 売上32.8% / FCF欠け | 59.7% | N/A | 7.5% | 75.16 (T43.8/F31.4) |
+| 1 | 3 | Electronic Technology | Computer Peripherals | AI / Data Center / Data Center Memory | **285A (キオクシアホールディングス)** | TSE | ¥49.08T (XL) | 3430.8% | 747.4% | 296.5% | 78.2% | 28.6% | 27.4% | 14.4% | 37.0% | 51.3 | 99.3% | 145.0 | 9.8% | 74.38 (T40.8/F33.6) |
+| 1 | 4 | Electronic Technology | Electronic Equipment/Instruments | Electronic Components / 細粒度タグなし | **6754 (アンリツ)** | TSE | ¥585.1B (M+) | 148.4% | 107.1% | 56.3% | 96.6% | 8.8% | 34.7% | 11.7% | 4.0% | 15.7 | 29.6% | 43.6 | 5.5% | 73.76 (T41.9/F31.9) |
+| 1 | 5 | Electronic Technology | Electronic Equipment/Instruments | Electronic Components / 細粒度タグなし | **6920 (レーザーテック)** | TSE | ¥4.48T (L) | 167.2% | 72.7% | 43.7% | 86.7% | 44.1% | 48.5% | 27.4% | 12.0% | 39.4 | 26.7% | 65.9 | 6.9% | 72.29 (T34.3/F38.0) |
+| 2 | 1 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **6101 (ツガミ)** | TSE | ¥375.8B (M) | 341.2% | 181.9% | 130.4% | 94.8% | 23.4% | 31.1% | 20.5% | 20.2% | 40.8 | 56.0% | 14.4 | 6.4% | 84.91 (T45.9/F39.0) |
+| 2 | 2 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **7735 (ＳＣＲＥＥＮホールディングス)** | TSE | ¥3.32T (L) | 236.2% | 161.0% | 103.7% | 98.6% | 20.2% | 32.3% | 11.1% | -3.1% | 8.0 | -5.1% | 55.3 | 5.7% | 80.76 (T47.5/F33.3) |
+| 2 | 3 | Producer Manufacturing | Industrial Machinery | Semiconductor Equipment / Semiconductor Production Equipment | **8035 (東京エレクトロン)** | TSE | ¥35.07T (XL) | 187.8% | 133.3% | 98.5% | 97.0% | 28.9% | 38.7% | 13.5% | 0.5% | 14.0 | 6.1% | 109.2 | 5.4% | 79.69 (T45.4/F34.3) |
+| 2 | 4 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **9962 (ミスミグループ本社)** | TSE | ¥1.07T (L) | 108.4% | 59.8% | 43.5% | 98.6% | 10.9% | 44.3% | 8.6% | 9.8% | 18.4 | 13.2% | 28.3 | 3.6% | 75.89 (T40.1/F35.8) |
+| 2 | 5 | Producer Manufacturing | Auto Parts: OEM | Unclassified / 細粒度タグなし | **5334 (日本特殊陶業)** | TSE | ¥2.13T (L) | 125.0% | 56.5% | 41.2% | 97.0% | 12.5% | 23.0% | 9.9% | 12.0% | 21.9 | 22.3% | 29.2 | 3.3% | 74.04 (T38.7/F35.3) |
+| 3 | 1 | Process Industries | Chemicals: Specialty | Chemicals / Materials / Advanced Materials | **4021 (日産化学)** | TSE | ¥1.14T (L) | 94.1% | 58.0% | 36.7% | 98.7% | 19.5% | 36.9% | 16.2% | 11.2% | 27.4 | 17.6% | 25.2 | 2.9% | 76.08 (T37.7/F38.3) |
+| 3 | 2 | Process Industries | Chemicals: Specialty | Chemicals / Materials / Advanced Materials | **4368 (扶桑化学工業)** | TSE | ¥478.2B (M) | 256.5% | 117.2% | 57.3% | 92.2% | 11.4% | 19.3% | 22.7% | 10.7% | 33.4 | 23.1% | 27.9 | 5.9% | 74.31 (T40.0/F34.3) |
+| 3 | 3 | Process Industries | Industrial Specialties | Chemicals / Materials / 細粒度タグなし | **7966 (リンテック)** | TSE | ¥483.2B (M) | 141.2% | 61.2% | 51.6% | 97.9% | 6.7% | 23.8% | 5.9% | 1.1% | 7.0 | 25.2% | 24.8 | 3.6% | 73.23 (T39.9/F33.3) |
+| 3 | 4 | Process Industries | Chemicals: Specialty | Chemicals / Materials / Advanced Materials | **6055 (ジャパンマテリアル)** | TSE | ¥263.7B (M) | 83.7% | 72.3% | 58.0% | 96.9% | 18.1% | 26.1% | N/A% | 10.1% | 売上10.1% / FCF欠け | 34.5% | N/A | 5.7% | 68.36 (T36.9/F31.5) |
+| 3 | 5 | Process Industries | Chemicals: Specialty | Chemicals / Materials / Advanced Materials | **4971 (メック)** | TSE | ¥201.0B (M-) | 296.4% | 104.4% | 57.0% | 87.4% | 21.0% | 37.4% | N/A% | 23.8% | 売上23.8% / FCF欠け | 212.4% | N/A | 6.7% | 68.82 (T36.0/F32.8) |
+| 5 | 1 | Distribution Services | Wholesale Distributors | Unclassified / 細粒度タグなし | **6971 (京セラ)** | TSE | ¥4.69T (L) | 121.3% | 75.1% | 51.2% | 97.7% | 4.0% | 13.1% | 3.2% | 2.8% | 6.0 | 500.4% | 76.3 | 3.6% | 61.84 (T35.9/F26.0) |
+| 5 | 2 | Distribution Services | Medical Distributors | Unclassified / 細粒度タグなし | **8283 (ＰＡＬＴＡＣ)** | TSE | ¥407.0B (M) | 64.1% | 36.3% | 33.4% | 99.8% | 7.5% | 17.2% | 1.8% | 4.2% | 6.0 | -2.0% | 17.7 | 0.3% | 53.51 (T22.2/F31.3) |
+| 5 | 3 | Distribution Services | Wholesale Distributors | Unclassified / 細粒度タグなし | **1979 (大氣社)** | TSE | ¥310.1B (M) | 94.6% | 49.8% | 41.2% | 97.4% | 10.1% | 19.2% | N/A% | 3.6% | 売上3.6% / FCF欠け | 44.8% | N/A | 2.9% | 60.92 (T32.0/F28.9) |
+| 5 | 4 | Distribution Services | Electronics Distributors | Unclassified / 細粒度タグなし | **7609 (ダイトロン)** | TSE | ¥77.9B (S) | 102.7% | 53.2% | 34.9% | 92.5% | 16.6% | 29.7% | N/A% | 50.8% | 売上50.8% / FCF欠け | 26.6% | N/A | 4.1% | 59.12 (T27.8/F31.3) |
+| 5 | 5 | Distribution Services | Electronics Distributors | Unclassified / 細粒度タグなし | **2737 (トーメンデバイス)** | TSE | ¥118.3B (M-) | 198.5% | 35.6% | 43.8% | 95.6% | 18.3% | 7.0% | N/A% | 50.3% | 売上50.3% / FCF欠け | 79.2% | N/A | 5.2% | 53.23 (T29.8/F23.4) |
+| 6 | 1 | Consumer Durables | Electronics/Appliances | Unclassified / 細粒度タグなし | **6752 (パナソニック　ホールディングス)** | TSE | ¥10.51T (XL) | 206.8% | 132.7% | 70.4% | 100.0% | 3.0% | 24.8% | 0.0% | -4.8% | -4.8 | -48.2% | 8349.9 | 4.7% | 55.79 (T33.1/F22.7) |
+| 6 | 2 | Consumer Durables | Other Consumer Specialties | Unclassified / 細粒度タグなし | **8050 (セイコーグループ)** | TSE | ¥666.1B (M+) | 268.8% | 120.5% | 39.5% | 96.3% | 10.8% | 40.4% | N/A% | 10.2% | 売上10.2% / FCF欠け | 64.9% | N/A | 4.8% | 55.67 (T28.9/F26.8) |
+| 6 | 3 | Consumer Durables | Electronics/Appliances | Unclassified / 細粒度タグなし | **6800 (ヨコオ)** | TSE | ¥142.4B (M-) | 361.3% | 170.7% | 90.7% | 94.3% | 6.4% | 19.9% | N/A% | 8.7% | 売上8.7% / FCF欠け | 74.5% | N/A | 5.9% | 54.08 (T31.3/F22.7) |
+| 6 | 4 | Consumer Durables | Electronics/Appliances | Unclassified / 細粒度タグなし | **6952 (カシオ計算機)** | TSE | ¥430.9B (M) | 72.7% | 49.0% | 29.3% | 95.1% | 6.9% | 34.8% | N/A% | 5.5% | 売上5.5% / FCF欠け | 128.6% | N/A | 3.1% | 53.13 (T22.9/F30.3) |
+| 6 | 5 | Consumer Durables | Automotive Aftermarket | Unclassified / 細粒度タグなし | **5101 (横浜ゴム)** | TSE | ¥1.14T (L) | 86.2% | 22.5% | 18.0% | 90.4% | 8.5% | 23.1% | 0.2% | 13.1% | 13.3 | 77.9% | 536.1 | 3.7% | 49.01 (T13.5/F35.5) |
+| 7 | 1 | Consumer Non-Durables | Food: Specialty/Candy | Unclassified / 細粒度タグなし | **2802 (味の素)** | TSE | ¥5.50T (L+) | 56.5% | 83.8% | 32.5% | 97.8% | 11.2% | 33.0% | 9.0% | 3.5% | 12.5 | 99.6% | 41.7 | 4.6% | 55.72 (T23.2/F32.5) |
+| 7 | 2 | Consumer Non-Durables | Food: Specialty/Candy | Unclassified / 細粒度タグなし | **2222 (寿スピリッツ)** | TSE | ¥387.4B (M) | 20.5% | 33.8% | 29.7% | 97.4% | 28.5% | 80.5% | N/A% | 8.9% | 売上8.9% / FCF欠け | 4.3% | N/A | 3.1% | 51.33 (T16.5/F34.9) |
+| 7 | 3 | Consumer Non-Durables | Household/Personal Care | Unclassified / 細粒度タグなし | **7956 (ピジョン)** | TSE | ¥247.7B (M-) | 17.0% | 27.4% | 24.8% | 98.3% | 10.2% | 51.2% | N/A% | 5.7% | 売上5.7% / FCF欠け | -2.9% | N/A | 2.2% | 47.18 (T15.1/F32.0) |
+| 7 | 4 | Consumer Non-Durables | Beverages: Non-Alcoholic | Unclassified / 細粒度タグなし | **2579 (コカ・コーラ　ボトラーズジャパンホールディングス)** | TSE | ¥697.4B (M+) | 79.3% | 29.4% | 17.9% | 94.2% | -9.0% | 59.2% | 4.2% | 0.5% | 4.8 | 赤字転落 (raw -1416.5%) | 18.0 | 3.3% | 44.81 (T15.1/F29.8) |
+| 7 | 5 | Consumer Non-Durables | Food: Specialty/Candy | Unclassified / 細粒度タグなし | **2810 (ハウス食品グループ本社)** | TSE | ¥341.2B (M) | 33.0% | 29.1% | 20.8% | 98.6% | 2.4% | 27.0% | N/A% | 0.5% | 売上0.5% / FCF欠け | -40.6% | N/A | 1.8% | 43.80 (T15.6/F28.2) |
+| 8 | 1 | Non-Energy Minerals | Steel | Chemicals / Materials / 細粒度タグなし | **5471 (大同特殊鋼)** | TSE | ¥567.6B (M+) | 178.8% | 72.6% | 45.3% | 91.8% | 5.9% | 11.8% | N/A% | 0.6% | 売上0.6% / FCF欠け | 20.4% | N/A | 4.8% | 44.60 (T24.7/F19.9) |
+| 8 | 2 | Non-Energy Minerals | Construction Materials | Chemicals / Materials / Advanced Materials | **5232 (住友大阪セメント)** | TSE | ¥194.3B (M-) | 62.6% | 57.5% | 55.9% | 93.5% | 4.6% | 15.7% | N/A% | 1.9% | 売上1.9% / FCF欠け | 28.4% | N/A | 4.3% | 44.19 (T22.0/F22.2) |
+| 8 | 3 | Non-Energy Minerals | Aluminum | Chemicals / Materials / 細粒度タグなし | **7637 (白銅)** | TSE | ¥38.3B (S) | 48.9% | 43.1% | 35.7% | 84.7% | 8.7% | 22.2% | N/A% | 2.6% | 売上2.6% / FCF欠け | -4.1% | N/A | 4.3% | 40.13 (T14.5/F25.6) |
+| 8 | 4 | Non-Energy Minerals | Construction Materials | Chemicals / Materials / Advanced Materials | **1518 (三井松島ホールディングス)** | TSE | ¥58.2B (S) | 50.4% | 8.1% | 9.1% | 94.8% | 9.3% | 18.3% | N/A% | 8.1% | 売上8.1% / FCF欠け | -6.5% | N/A | 2.3% | 41.36 (T10.0/F31.3) |
+| 8 | 5 | Non-Energy Minerals | Steel | Chemicals / Materials / 細粒度タグなし | **5632 (三菱製鋼)** | TSE | ¥32.5B (S) | 35.4% | 15.7% | 16.5% | 88.1% | 4.2% | 14.7% | N/A% | -3.2% | 売上-3.2% / FCF欠け | 29.3% | N/A | 3.5% | 31.51 (T7.6/F23.9) |
+| 10 | 1 | Health Technology | Medical Specialties | Unclassified / 細粒度タグなし | **4203 (住友ベークライト)** | TSE | ¥612.2B (M+) | 82.1% | 46.2% | 47.6% | 94.5% | 8.5% | 20.7% | 6.1% | 5.0% | 11.1 | 52.9% | 33.9 | 4.0% | 53.96 (T21.3/F32.7) |
+| 10 | 2 | Health Technology | Pharmaceuticals: Major | Unclassified / 細粒度タグなし | **4536 (参天製薬)** | TSE | ¥686.5B (M+) | 30.2% | 30.2% | 15.1% | 97.4% | 11.6% | 38.0% | 12.6% | -2.8% | 9.8 | 9.8% | 19.0 | 3.0% | 51.64 (T14.2/F37.5) |
+| 10 | 3 | Health Technology | Medical Specialties | Unclassified / 細粒度タグなし | **6951 (日本電子)** | TSE | ¥380.0B (M) | 78.1% | 55.1% | 26.3% | 99.1% | 15.0% | 33.6% | N/A% | -8.8% | 売上-8.8% / FCF欠け | 18.3% | N/A | 3.6% | 51.29 (T22.0/F29.3) |
+| 10 | 4 | Health Technology | Medical Specialties | Unclassified / 細粒度タグなし | **5889 (Ｊａｐａｎ　Ｅｙｅｗｅａｒ　Ｈｏｌｄｉｎｇｓ)** | TSE | ¥56.3B (S) | -5.1% | 13.9% | 15.1% | 97.1% | 12.9% | 38.3% | 24.3% | 13.6% | 37.9 | 0.7% | 12.2 | 3.4% | 51.38 (T5.9/F45.5) |
+| 10 | 5 | Health Technology | Medical Specialties | Unclassified / 細粒度タグなし | **6823 (リオン)** | TSE | ¥47.8B (S) | 48.4% | 46.4% | 37.0% | 92.7% | 10.1% | 33.5% | N/A% | 2.2% | 売上2.2% / FCF欠け | 16.9% | N/A | 3.8% | 51.16 (T16.5/F34.7) |
+| 11 | 1 | Communications | Major Telecommunications | AI / Data Center / AI Infrastructure | **3774 (インターネットイニシアティブ)** | TSE | ¥576.3B (M+) | 12.9% | 12.5% | 26.9% | 96.8% | 13.7% | 21.9% | 8.7% | 9.0% | 17.7 | 21.3% | 18.7 | 2.8% | 49.07 (T12.4/F36.7) |
+| 12 | 1 | Retail Trade | Apparel/Footwear Retail | Unclassified / 細粒度タグなし | **9983 (ファーストリテイリング)** | TSE | ¥26.03T (XL) | 68.1% | 46.1% | 28.4% | 96.1% | 16.3% | 41.0% | 18.6% | 11.2% | 29.9 | 16.9% | 37.2 | 2.7% | 56.85 (T20.2/F36.7) |
+| 12 | 2 | Retail Trade | Department Stores | Unclassified / 細粒度タグなし | **3099 (三越伊勢丹ホールディングス)** | TSE | ¥1.45T (L) | 83.6% | 74.1% | 34.1% | 95.3% | 11.5% | 27.6% | N/A% | -1.8% | 売上-1.8% / FCF欠け | 50.5% | N/A | 3.2% | 52.18 (T23.0/F29.2) |
+| 12 | 3 | Retail Trade | Internet Retail | Unclassified / 細粒度タグなし | **4732 (ユー・エス・エス)** | TSE | ¥877.9B (M+) | 17.4% | 8.8% | 11.0% | 96.9% | 20.0% | 26.0% | 30.4% | 9.5% | 39.8 | 12.8% | 25.3 | 2.0% | 51.85 (T10.6/F41.2) |
+| 12 | 4 | Retail Trade | Electronics/Appliance Stores | Unclassified / 細粒度タグなし | **8173 (Ｊｏｓｈｉｎ)** | TSE | ¥105.2B (M-) | 72.4% | 51.7% | 42.7% | 94.3% | 2.5% | 46.0% | 2.0% | 8.3% | 10.3 | -3.2% | 12.2 | 3.1% | 53.50 (T22.8/F30.7) |
+| 12 | 5 | Retail Trade | Specialty Stores | Unclassified / 細粒度タグなし | **3093 (トレジャー・ファクトリー)** | TSE | ¥53.9B (S) | 25.9% | 34.5% | 29.4% | 97.4% | 23.8% | 112.2% | N/A% | 15.1% | 売上15.1% / FCF欠け | 17.0% | N/A | 3.5% | 52.00 (T16.7/F35.3) |
+| 13 | 1 | Transportation | Air Freight/Couriers | Unclassified / 細粒度タグなし | **9147 (ＮＩＰＰＯＮ　ＥＸＰＲＥＳＳホールディングス)** | TSE | ¥1.22T (L) | 74.7% | 49.6% | 37.0% | 94.7% | 0.4% | 10.5% | 5.2% | -0.9% | 4.3 | -81.2% | 9.2 | 2.5% | 46.31 (T20.8/F25.5) |
+| 13 | 2 | Transportation | Trucking | Unclassified / 細粒度タグなし | **9304 (澁澤倉庫)** | TSE | ¥96.5B (S) | 58.0% | 24.7% | 18.5% | 97.2% | 7.2% | 7.1% | 5.0% | 1.4% | 6.4 | 32.7% | 22.8 | 2.4% | 44.62 (T16.6/F28.0) |
+| 13 | 3 | Transportation | Air Freight/Couriers | Unclassified / 細粒度タグなし | **9301 (三菱倉庫)** | TSE | ¥548.5B (M+) | 31.5% | 29.7% | 11.2% | 99.3% | 12.1% | 5.0% | -4.6% | -3.7% | -8.3 | 81.1% | N/A | 2.1% | 41.68 (T15.2/F26.5) |
+| 16 | 1 | Consumer Services | Other Consumer Services | Unclassified / 細粒度タグなし | **2371 (カカクコム)** | TSE | ¥665.9B (M+) | 27.9% | 44.1% | 58.0% | 95.0% | 28.5% | 29.4% | 26.1% | 20.0% | 46.1 | -6.2% | 27.3 | 1.6% | 60.20 (T19.2/F41.0) |
+| 16 | 2 | Consumer Services | Other Consumer Services | Unclassified / 細粒度タグなし | **7085 (カーブスホールディングス)** | TSE | ¥84.5B (S) | 32.4% | 13.1% | 19.6% | 97.3% | 17.7% | 41.0% | N/A% | 7.4% | 売上7.4% / FCF欠け | 14.3% | N/A | 2.0% | 47.84 (T13.4/F34.5) |
+| 16 | 3 | Consumer Services | Other Consumer Services | Unclassified / 細粒度タグなし | **212A (フィットイージー)** | TSE | ¥46.3B (S) | 28.7% | -0.1% | 23.8% | 75.8% | 36.6% | 40.1% | N/A% | 56.3% | 売上56.3% / FCF欠け | 51.4% | N/A | 3.6% | 40.83 (T5.3/F35.5) |
+| 16 | 4 | Consumer Services | Other Consumer Services | Unclassified / 細粒度タグなし | **4718 (早稲田アカデミー)** | TSE | ¥43.8B (S) | -6.6% | 2.2% | 15.5% | 78.7% | 15.4% | 46.4% | N/A% | 7.4% | 売上7.4% / FCF欠け | 4.6% | N/A | 3.3% | 39.40 (T0.3/F39.1) |
+| 16 | 5 | Consumer Services | Broadcasting | Unclassified / 細粒度タグなし | **9401 (ＴＢＳホールディングス)** | TSE | ¥978.9B (M+) | 27.0% | 10.5% | 12.7% | 99.1% | 4.9% | 8.7% | N/A% | 4.5% | 売上4.5% / FCF欠け | 21.2% | N/A | 2.8% | 37.94 (T13.3/F24.6) |
+| 18 | 1 | Technology Services | Internet Software/Services | AI / Data Center / AI Infrastructure | **6098 (リクルートホールディングス)** | TSE | ¥15.38T (XL) | 35.9% | 27.6% | 62.7% | 96.6% | 28.3% | 76.7% | 17.8% | 3.9% | 21.8 | 30.1% | 24.5 | 3.7% | 58.56 (T19.0/F39.6) |
+| 18 | 2 | Technology Services | Internet Software/Services | AI / Data Center / AI Infrastructure | **2410 (キャリアデザインセンター)** | TSE | ¥14.8B (S) | 50.6% | 16.2% | 15.0% | 98.0% | 26.8% | 129.5% | N/A% | 4.8% | 売上4.8% / FCF欠け | 23.0% | N/A | 1.8% | 50.20 (T14.6/F35.6) |
+| 18 | 3 | Technology Services | Packaged Software | Unclassified / 細粒度タグなし | **3663 (セルシス)** | TSE | ¥64.9B (S) | 25.6% | 11.6% | 36.6% | 95.4% | 37.6% | 75.0% | N/A% | 14.9% | 売上14.9% / FCF欠け | 22.3% | N/A | 3.8% | 49.44 (T13.3/F36.2) |
+| 18 | 4 | Technology Services | Information Technology Services | Unclassified / 細粒度タグなし | **9702 (アイ・エス・ビー)** | TSE | ¥26.2B (S) | 68.5% | 30.5% | 14.8% | 95.2% | 10.2% | 40.3% | N/A% | 6.5% | 売上6.5% / FCF欠け | -28.3% | N/A | 2.7% | 47.63 (T12.4/F35.2) |
+| 18 | 5 | Technology Services | Information Technology Services | Unclassified / 細粒度タグなし | **9247 (ＴＲＥホールディングス)** | TSE | ¥107.3B (M-) | 52.0% | 28.4% | 29.5% | 94.3% | 12.5% | 21.2% | N/A% | 0.4% | 売上0.4% / FCF欠け | 25.8% | N/A | 4.3% | 45.51 (T14.5/F31.0) |
 
 ---
 
@@ -131,7 +195,7 @@
 
 **指標説明:**
 
-- この表は Phase2 の銘柄ランキング列を対象にしています。Phase1 の 12M / 6M / 3M はセクター構成銘柄の平均リターンです。
+- この表は個別銘柄ランキング列を対象にしています。Phase1 の 12M / 6M / 3M はセクター構成銘柄の平均リターンです。
 - Phase1 の `52w高値90%内` は、セクター構成銘柄のうち 52 週高値の 90% 以内にいる銘柄比率です。
 
 | 列名 | 意味 | 見方 |
@@ -147,10 +211,10 @@
 | 52w | 現在株価が 52 週高値の何%位置か | 100% に近いほど 52 週高値圏 |
 | ROIC | 投下資本利益率 | 事業に使った資本でどれだけ利益を生むか |
 | GP/A | Gross Profit / Assets = 粗利益 ÷ 総資産 | 資産に対する稼ぐ力を見る quality 指標 |
-| FCF | FCF margin = フリーキャッシュフロー ÷ 売上 | 売上がどれだけ現金として残るか |
+| FCFマージン | フリーキャッシュフロー ÷ 売上 | 売上がどれだけ現金として残るか |
 | 売上YoY | 売上高の前年比成長率 | 事業成長の確認 |
 | Rule40 | 売上YoY + FCF margin | 日本株では参考表示のみ。EDINET 補完で埋まる場合がある |
-| EPS YoY | EPS の前年比成長率 | 利益成長の確認。N/A は TradingView 側の欠損 |
+| EPS YoY | EPS の前年比成長率 | 利益成長の確認。赤字分母由来の黒字転換は強調表示し、TradingView raw 値は併記する |
 | P/FCF | 株価 ÷ FCF の倍率 | 低いほど割高感が小さい傾向 |
 | ATR% | ATR ÷ 株価 × 100 | 値動きの荒さ。高いほどボラティリティが高い |
 | 総合点 (T/F) | repo 独自の総合スコア | 高いほど良い。T はテクニカル寄り、F はファンダ寄り |
@@ -159,11 +223,13 @@
 
 | 区分 | 項目 | 条件・説明 |
 |:---|:---|:---|
-| 共通条件 | ベース条件 | 時価総額 > $1B / EPS(TTM) > 0 / Close > SMA200 / Close > SMA50 / Close ≥ 52週高値 × 75% |
-| 補助ポリシー | Theme taxonomy | japan Phase2 matched candidates only / repo custom theme taxonomy layered on top of TradingView sector/industry / version jp-theme-prototype-v1 |
+| 共通条件 | ベース条件 | 時価総額 > $1B / Close > SMA200 / Close > SMA50 / Close ≥ 52週高値 × 75% |
+| 補助ポリシー | Theme taxonomy | japan Phase4 matched candidates only / repo custom theme taxonomy layered on top of TradingView sector/industry / version jp-theme-prototype-v1 |
+| 採点ポリシー | unifiedRankScore | Phase4候補とPhase5 Sector別Top3候補は共通母集団で1回だけ採点。Phase5表の4位・5位は表示用スコアだが、Phase4候補でもある場合は unifiedRankScore を持つ。Phase1/Phase2の集計スコアとは別物。 |
 | ユニバース | 取引所 | TSE |
 | ユニバース | 銘柄ユニバース | jpx-prime |
-| 補助ポリシー | Moomoo 補助 | 売上成長率 YoY は growth scoring の補助に使う。EPS YoY は TradingView 値のみを使い、欠損時は N/A のままにする |
+| 補助ポリシー | Moomoo 補助 | 売上成長率 YoY は growth scoring に使い、EPS YoY / P/FCF は TradingView 欠損時の表内指標補完に使う |
 | 補助ポリシー | 日本株ファンダ補完 | TradingView を主軸にしつつ、FCF / PFCF / cash-conversion の欠損は EDINET 公式開示で補完する |
+| ユニバース | Phase2 除外セクター | Finance |
 | セクタープロファイル | Japan Manufacturing | scope: Producer Manufacturing, Electronic Technology / hard gate: Perf.3M > 8% / scoring: RSI 55+、相対出来高 0.80x+、ROE 12%+、粗利率 25%+、FCFマージン 5%+、P/FCF 140 は risk penalty |
 | セクタープロファイル | Japan Materials & Trading | scope: Process Industries, Distribution Services, Non-Energy Minerals / hard gate: Perf.3M > 5% / scoring: RSI 55+、相対出来高 0.80x+、ROE 10%+、粗利率 15%+、FCFマージン 4%+、P/FCF 40 は risk penalty |

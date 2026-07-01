@@ -1781,6 +1781,20 @@ describe('runFundamentalScreener', () => {
     assert.deepEqual(result.themeRanking.map((entry) => entry.theme), [
       'Semiconductor Equipment',
     ]);
+    assert.equal(result.industryRanking.length, 2);
+    assert.deepEqual(result.industryRanking.map((entry) => entry.industry), [
+      'Electronic Production Equipment',
+      'Chemicals: Specialty',
+    ]);
+    assert.equal(result.criteria.industry_ranking.source, 'TradingView scanner industry');
+    assert.equal(result.finalStockRanking.length, 2);
+    assert.deepEqual(result.finalStockRanking.map((row) => row.symbol), ['8035', '4063']);
+    assert.ok(result.phase5SectorTopStocks.length > 0);
+    assert.ok(result.unifiedCandidateRows.length > 0);
+    assert.equal(result.unifiedScoringMeta.enabled, true);
+    assert.equal(result.unifiedScoringMeta.scoreBasis, 'phase4_candidates_plus_phase5_sector_top3_candidates');
+    assert.equal(result.criteria.unified_scoring.score_basis, 'phase4_candidates_plus_phase5_sector_top3_candidates');
+    assert.equal(result.sourceDetails.phase5.enabled, true);
     assert.equal(result.focusedHierarchy.focusSector, 'Electronic Technology');
     assert.equal(result.criteria.hierarchy_selection.top_middle_themes_rule, 'all-ranked');
     assert.equal(result.criteria.hierarchy_selection.top_small_themes_rule, 'all-ranked');
@@ -1952,6 +1966,8 @@ describe('runFundamentalScreener', () => {
     assert.equal(supplemented.cashConversion, 1.3);
     assert.equal(supplemented.ruleOf40, 30);
     assert.equal(supplemented.edinetSupplement.docId, 'S100TEST');
+    assert.equal(result.finalStockRanking.find((row) => row.symbol === '4063')?.fcfMargin, 14);
+    assert.equal(result.unifiedPhase4Ranking.find((row) => row.symbol === '4063')?.pFcf, 22);
     assert.equal(result.sourceDetails.edinet.enabled, true);
     assert.equal(result.sourceDetails.edinet.supplementedRows, 1);
     assert.match(result.source, /edinet/);

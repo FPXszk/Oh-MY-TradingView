@@ -160,7 +160,8 @@ function rankToPositiveScore(rank, populationSize) {
   if (!Number.isFinite(rank) || !Number.isFinite(populationSize) || populationSize <= 0) {
     return null;
   }
-  return ((populationSize + 1 - rank) / populationSize) * 100;
+  const boundedRank = Math.min(Math.max(rank, 1), populationSize);
+  return ((populationSize + 1 - boundedRank) / populationSize) * 100;
 }
 
 function buildScoreContributionBreakdown(row, populationSize) {
@@ -253,14 +254,17 @@ function buildRankingMetricCells(row, market, populationSize, currencySymbol) {
   ];
 }
 
-function buildPhase4RankingRow(row, rank, market, populationSize, currencySymbol) {
+function buildPhase4RankingRow(row, rank, market, populationSize, currencySymbol, includeThemeColumn = false) {
   const metricCells = buildRankingMetricCells(row, market, populationSize, currencySymbol).join(' | ');
-  return `| ${rank} | ${formatSourceBuckets(row.sourceBuckets)} | ${row.sector ?? 'Unknown'} | ${row.industry ?? 'Unknown'} | **${formatSymbolWithCompanyName(row, market)}** | ${row.exchange ?? '-'} | ${metricCells} |`;
+  const themeCell = includeThemeColumn ? ` | ${formatThemeLine(row)}` : '';
+  return `| ${rank} | ${formatSourceBuckets(row.sourceBuckets)} | ${row.sector ?? 'Unknown'} | ${row.industry ?? 'Unknown'}${themeCell} | **${formatSymbolWithCompanyName(row, market)}** | ${row.exchange ?? '-'} | ${metricCells} |`;
 }
 
-function appendPhase4RankingTableHeader(lines) {
-  lines.push('| 順位 | 出所 | セクター | Industry | シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCFマージン | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 (T/F) |');
-  lines.push('|:---:|:---:|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|:---|---:|---:|---:|');
+function appendPhase4RankingTableHeader(lines, includeThemeColumn = false) {
+  const themeHeader = includeThemeColumn ? ' テーマ |' : '';
+  const themeAlign = includeThemeColumn ? ':---|' : '';
+  lines.push(`| 順位 | 出所 | セクター | Industry |${themeHeader} シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCFマージン | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 (T/F) |`);
+  lines.push(`|:---:|:---:|:---|:---|${themeAlign}:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|:---|---:|---:|---:|`);
 }
 
 function formatSourceBuckets(sourceBuckets) {
@@ -467,7 +471,7 @@ function buildHeadlineSummary(result) {
   const phase4Rows = result.unifiedPhase4Ranking?.length
     ? result.unifiedPhase4Ranking
     : result.finalStockRanking;
-  const reportCount = result.scannerScope?.market === 'america' && Array.isArray(phase4Rows)
+  const reportCount = Array.isArray(phase4Rows) && phase4Rows.length > 0
     ? phase4Rows.length
     : result.matched;
   return [
@@ -496,7 +500,7 @@ function buildGuideRows(result) {
     rows.push(`| 補助ポリシー | Theme taxonomy | ${result.criteria.theme_taxonomy_policy.scope} / ${result.criteria.theme_taxonomy_policy.approach} / version ${result.criteria.theme_taxonomy_policy.version} |`);
   }
   if (result.criteria.unified_scoring) {
-    rows.push('| 採点ポリシー | unifiedRankScore | 米国株のPhase4候補とPhase5 Sector別Top3候補は共通母集団で1回だけ採点。Phase5表の4位・5位は表示用スコアだが、Phase4候補でもある場合は unifiedRankScore を持つ。Phase1/Phase2の集計スコアとは別物。 |');
+    rows.push('| 採点ポリシー | unifiedRankScore | Phase4候補とPhase5 Sector別Top3候補は共通母集団で1回だけ採点。Phase5表の4位・5位は表示用スコアだが、Phase4候補でもある場合は unifiedRankScore を持つ。Phase1/Phase2の集計スコアとは別物。 |');
   }
   if (result.criteria.allowed_exchanges) {
     rows.push(`| ユニバース | 取引所 | ${result.criteria.allowed_exchanges.join(', ')} |`);
@@ -586,9 +590,15 @@ export function buildMarkdown(result, options = {}) {
   const populationSize = result.results.length;
   const benchmarkLabel = getBenchmarkDisplay(result);
   const resultRowsByKey = new Map((result.results ?? []).map((row) => [buildRowLookupKey(row), row]));
-  const showRuleOf40CoverageSection = options.showRuleOf40CoverageSection ?? market !== 'america';
+  const showRuleOf40CoverageSection = options.showRuleOf40CoverageSection ?? false;
   const showPhase2SectorBreakdownSection = options.showPhase2SectorBreakdownSection ?? false;
   const showTopSelectionReasonsSection = options.showTopSelectionReasonsSection ?? false;
+  const hasIndustryFlow = (result.industryRanking?.length ?? 0) > 0
+    || (result.unifiedPhase4Ranking?.length ?? 0) > 0
+    || (result.finalStockRanking?.length ?? 0) > 0
+    || (result.unifiedPhase5SectorTopStocks?.length ?? 0) > 0
+    || (result.phase5SectorTopStocks?.length ?? 0) > 0;
+  const includeThemeColumn = market === 'japan';
 
   const lines = [
     `# ${title}`,
@@ -656,7 +666,7 @@ export function buildMarkdown(result, options = {}) {
     lines.push('> 本日は条件を満たす銘柄がありませんでした。');
     lines.push('');
   } else {
-    if (result.themeRanking?.length && market === 'japan') {
+    if (result.themeRanking?.length && market === 'japan' && !hasIndustryFlow) {
       lines.push('## Phase2 テーマランキング');
       lines.push('');
       if (market === 'japan' && result.focusedHierarchy?.focusSector) {
@@ -672,7 +682,7 @@ export function buildMarkdown(result, options = {}) {
       lines.push('');
     }
 
-    if (market === 'america') {
+    if (hasIndustryFlow) {
       lines.push('## Phase2 Industryランキング');
       lines.push('');
       lines.push('- 対象: Phase1上位セクター内の広いTradingView scanner取得銘柄をindustryで集計（上位20 industry）');
@@ -707,9 +717,9 @@ export function buildMarkdown(result, options = {}) {
       if (!phase4Rows || phase4Rows.length === 0) {
         lines.push('- 個別銘柄ランキングは算出できませんでした。');
       } else {
-        appendPhase4RankingTableHeader(lines);
+        appendPhase4RankingTableHeader(lines, includeThemeColumn);
         phase4Rows.forEach((row, index) => {
-          lines.push(buildPhase4RankingRow(row, row.unifiedRank ?? index + 1, market, stockPopulationSize, currencySymbol));
+          lines.push(buildPhase4RankingRow(row, row.unifiedRank ?? index + 1, market, stockPopulationSize, currencySymbol, includeThemeColumn));
         });
       }
       lines.push('');
@@ -732,11 +742,14 @@ export function buildMarkdown(result, options = {}) {
         const phase5PopulationSize = result.unifiedRankedRows?.length
           || result.sourceDetails?.phase5?.rankedRows
           || phase5Rows.length;
-        lines.push(`| Sector Rank | Sector内Rank | Sector | Industry | Symbol | Market | Market Cap | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF Margin | Revenue YoY | Rule40 | EPS YoY | P/FCF | ATR% | ${scoreHeader} |`);
-        lines.push('|:---:|:---:|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|:---|---:|---:|---:|');
+        const themeHeader = includeThemeColumn ? 'Theme | ' : '';
+        const themeAlign = includeThemeColumn ? ':---|' : '';
+        lines.push(`| Sector Rank | Sector内Rank | Sector | Industry | ${themeHeader}Symbol | Market | Market Cap | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF Margin | Revenue YoY | Rule40 | EPS YoY | P/FCF | ATR% | ${scoreHeader} |`);
+        lines.push(`|:---:|:---:|:---|:---|${themeAlign}:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|:---|---:|---:|---:|`);
         phase5Rows.forEach((row) => {
           const metricCells = buildRankingMetricCells(row, result.scannerScope?.market, phase5PopulationSize, currencySymbol).join(' | ');
-          lines.push(`| ${row.phase5SectorRank ?? '-'} | ${row.phase5SectorStockRank ?? '-'} | ${row.sector ?? 'Unknown'} | ${row.industry ?? 'Unknown'} | **${formatSymbolWithCompanyName(row, market)}** | ${row.exchange ?? '-'} | ${metricCells} |`);
+          const themeCell = includeThemeColumn ? ` | ${formatThemeLine(row)}` : '';
+          lines.push(`| ${row.phase5SectorRank ?? '-'} | ${row.phase5SectorStockRank ?? '-'} | ${row.sector ?? 'Unknown'} | ${row.industry ?? 'Unknown'}${themeCell} | **${formatSymbolWithCompanyName(row, market)}** | ${row.exchange ?? '-'} | ${metricCells} |`);
         });
       }
       lines.push('');

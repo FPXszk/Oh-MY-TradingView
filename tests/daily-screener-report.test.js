@@ -65,8 +65,10 @@ describe('Daily Fundamental Screener workflow', () => {
       'Japan workflow must filter to TSE listings');
     assert.match(workflow, /SCREENER_SYMBOL_ALLOWLIST_KEY:\s+jpx-prime/,
       'Japan workflow must restrict the universe to JPX Prime symbols');
-    assert.match(workflow, /SCREENER_RESULT_LIMIT:\s+'60'/,
-      'Japan workflow must widen the published report limit enough to surface ATH candidates like 5802 and 4980');
+    assert.match(workflow, /SCREENER_RESULT_LIMIT:\s+'90'/,
+      'Japan workflow must keep enough report capacity for Industry and Sector Top stock views');
+    assert.match(workflow, /SCREENER_SELECTED_SECTOR_COUNT:\s+'5'/,
+      'Japan workflow must select five Phase1 sectors for the Industry hierarchy');
     assert.match(workflow, /SCREENER_REPORT_PATH:\s+docs\/reports\/screener\/daily-ranking-jp\.md/,
       'Japan workflow must write a dedicated markdown report');
     assert.match(workflow, /SCREENER_METADATA_PATH:\s+docs\/reports\/screener\/daily-ranking-jp-run\.json/,
@@ -895,7 +897,7 @@ describe('buildMarkdown', () => {
     assert.doesNotMatch(markdown, /- テーマ: Cloud Software \/ Cloud Platforms/);
     assert.doesNotMatch(markdown, /低いほど良い/);
     assert.match(markdown, /Rule40/);
-    assert.match(markdown, /\| 採点ポリシー \| unifiedRankScore \| 米国株のPhase4候補とPhase5 Sector別Top3候補は共通母集団で1回だけ採点。Phase5表の4位・5位は表示用スコアだが、Phase4候補でもある場合は unifiedRankScore を持つ。Phase1\/Phase2の集計スコアとは別物。 \|/);
+    assert.match(markdown, /\| 採点ポリシー \| unifiedRankScore \| Phase4候補とPhase5 Sector別Top3候補は共通母集団で1回だけ採点。Phase5表の4位・5位は表示用スコアだが、Phase4候補でもある場合は unifiedRankScore を持つ。Phase1\/Phase2の集計スコアとは別物。 \|/);
     assert.match(markdown, /35\.0% \| 60\.0 \| 30\.0% \| 28\.0 \| 3\.2% \| 96\.00 \(T45\.1\/F50\.9\) \|/);
     assert.doesNotMatch(markdown, /（Rule 40\+）/);
     assert.doesNotMatch(markdown, /（20未満注意）/);
@@ -1097,6 +1099,19 @@ describe('buildMarkdown', () => {
         allowed_exchanges: ['TSE'],
         symbol_allowlist_key: 'jpx-prime',
         japan_fundamentals_policy: 'TradingView を主軸にしつつ、FCF / PFCF / cash-conversion の欠損は EDINET 公式開示で補完する',
+        industry_ranking: {
+          source: 'TradingView scanner industry',
+          top_industries_displayed: 1,
+          final_industries_selected: 1,
+          missing_industry_count: 0,
+        },
+        unified_scoring: {
+          score_basis: 'phase4_candidates_plus_phase5_sector_top3_candidates',
+          phase4_candidate_count: 1,
+          phase5_candidate_count: 1,
+          phase5_unified_candidate_top_stocks_per_sector: 3,
+          deduped_count: 2,
+        },
       },
       sectorMomentum: {
         approach: 'stock-aggregation',
@@ -1190,6 +1205,185 @@ describe('buildMarkdown', () => {
           },
         ],
       },
+      industryRanking: [
+        {
+          sector: 'Consumer Durables',
+          industry: 'Motor Vehicles',
+          count: 1,
+          averagePerfY: 30,
+          averagePerf6m: 20,
+          averagePerf3m: 12,
+          relativeStrengthY: 4.9,
+          relativeStrength6m: 5.2,
+          relativeStrength3m: 3.6,
+          pctAboveSma50: 100,
+          pctAboveSma200: 100,
+          pctNear52WeekHigh: 100,
+          averageRsi14: 63,
+          averageRelativeVolume: 1.1,
+          industryScore: 72.5,
+          topSymbols: ['7203'],
+        },
+      ],
+      finalStockRanking: [
+        {
+          symbol: '7203',
+          companyName: 'Toyota Motor Corporation',
+          companyNameJa: 'トヨタ自動車',
+          exchange: 'TSE',
+          sector: 'Consumer Durables',
+          industry: 'Motor Vehicles',
+          primaryTheme: 'Electronic Components',
+          subThemes: ['Passives / RF Modules'],
+          marketCapUsd: 4_500_000_000_000,
+          perfY: 30,
+          perf6m: 20,
+          perf3m: 12,
+          pctOf52wHigh: 86,
+          roic: 17,
+          grossProfitToAssets: 16,
+          fcfMargin: 11,
+          revenueGrowthTtm: 22,
+          ruleOf40: 33,
+          epsGrowthTtm: 18,
+          pFcf: 18,
+          atrPct: 2.4,
+          rankScore: 4,
+          rankBreakdown: rankBreakdown(1),
+        },
+      ],
+      phase5SectorTopStocks: [
+        {
+          symbol: '6501',
+          companyName: 'Hitachi, Ltd.',
+          companyNameJa: '日立製作所',
+          exchange: 'TSE',
+          sector: 'Producer Manufacturing',
+          industry: 'Industrial Machinery',
+          primaryTheme: 'Industrial Automation',
+          subThemes: ['Factory Automation'],
+          marketCapUsd: 18_000_000_000_000,
+          perfY: 42,
+          perf6m: 25,
+          perf3m: 14,
+          pctOf52wHigh: 92,
+          roic: 18,
+          grossProfitToAssets: 17,
+          fcfMargin: 12,
+          revenueGrowthTtm: 16,
+          ruleOf40: 28,
+          epsGrowthTtm: 20,
+          pFcf: 22,
+          atrPct: 2.1,
+          rankScore: 5,
+          rankBreakdown: rankBreakdown(1),
+          phase5SectorRank: 2,
+          phase5SectorStockRank: 1,
+        },
+      ],
+      unifiedPhase4Ranking: [
+        {
+          symbol: '7203',
+          companyName: 'Toyota Motor Corporation',
+          companyNameJa: 'トヨタ自動車',
+          exchange: 'TSE',
+          sector: 'Consumer Durables',
+          industry: 'Motor Vehicles',
+          primaryTheme: 'Electronic Components',
+          subThemes: ['Passives / RF Modules'],
+          marketCapUsd: 4_500_000_000_000,
+          perfY: 30,
+          perf6m: 20,
+          perf3m: 12,
+          pctOf52wHigh: 86,
+          roic: 17,
+          grossProfitToAssets: 16,
+          fcfMargin: 11,
+          revenueGrowthTtm: 22,
+          ruleOf40: 33,
+          epsGrowthTtm: 18,
+          pFcf: 18,
+          atrPct: 2.4,
+          unifiedRank: 1,
+          unifiedRankScore: 4,
+          unifiedRankBreakdown: rankBreakdown(1),
+          sourceBuckets: ['phase4'],
+        },
+        {
+          symbol: '6501',
+          companyName: 'Hitachi, Ltd.',
+          companyNameJa: '日立製作所',
+          exchange: 'TSE',
+          sector: 'Producer Manufacturing',
+          industry: 'Industrial Machinery',
+          primaryTheme: 'Industrial Automation',
+          subThemes: ['Factory Automation'],
+          marketCapUsd: 18_000_000_000_000,
+          perfY: 42,
+          perf6m: 25,
+          perf3m: 14,
+          pctOf52wHigh: 92,
+          roic: 18,
+          grossProfitToAssets: 17,
+          fcfMargin: 12,
+          revenueGrowthTtm: 16,
+          ruleOf40: 28,
+          epsGrowthTtm: 20,
+          pFcf: 22,
+          atrPct: 2.1,
+          unifiedRank: 2,
+          unifiedRankScore: 5,
+          unifiedRankBreakdown: rankBreakdown(1),
+          sourceBuckets: ['phase5'],
+        },
+      ],
+      unifiedPhase5SectorTopStocks: [
+        {
+          symbol: '6501',
+          companyName: 'Hitachi, Ltd.',
+          companyNameJa: '日立製作所',
+          exchange: 'TSE',
+          sector: 'Producer Manufacturing',
+          industry: 'Industrial Machinery',
+          primaryTheme: 'Industrial Automation',
+          subThemes: ['Factory Automation'],
+          marketCapUsd: 18_000_000_000_000,
+          perfY: 42,
+          perf6m: 25,
+          perf3m: 14,
+          pctOf52wHigh: 92,
+          roic: 18,
+          grossProfitToAssets: 17,
+          fcfMargin: 12,
+          revenueGrowthTtm: 16,
+          ruleOf40: 28,
+          epsGrowthTtm: 20,
+          pFcf: 22,
+          atrPct: 2.1,
+          unifiedRank: 2,
+          unifiedRankScore: 5,
+          unifiedRankBreakdown: rankBreakdown(1),
+          sourceBuckets: ['phase5'],
+          phase5SectorRank: 2,
+          phase5SectorStockRank: 1,
+        },
+      ],
+      unifiedRankedRows: [
+        { symbol: '7203', unifiedRank: 1, unifiedRankScore: 4, unifiedRankBreakdown: rankBreakdown(1) },
+        { symbol: '6501', unifiedRank: 2, unifiedRankScore: 5, unifiedRankBreakdown: rankBreakdown(1) },
+      ],
+      unifiedScoringMeta: {
+        enabled: true,
+        candidateCount: 2,
+        phase4CandidateCount: 1,
+        phase5CandidateCount: 1,
+        dedupedCount: 2,
+        phase4OnlyCount: 1,
+        phase5OnlyCount: 1,
+        bothCount: 0,
+        phase5UnifiedCandidateTopStocksPerSector: 3,
+        scoreBasis: 'phase4_candidates_plus_phase5_sector_top3_candidates',
+      },
       sectorRanking: [],
       results: [
         {
@@ -1227,28 +1421,35 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /更新: 12:00 JST/);
     assert.match(markdown, /## データソース状況/);
     assert.match(markdown, /- EDINET: disabled \(no API key\)/);
-    assert.match(markdown, /## Rule of 40 算出状況/);
-    assert.match(markdown, /- Rule of 40 \(参考表示\) 完全算出: 1\/1銘柄 \(100\.0%\)/);
+    assert.doesNotMatch(markdown, /## Rule of 40 算出状況/);
+    assert.doesNotMatch(markdown, /- Rule of 40 \(参考表示\) 完全算出: 1\/1銘柄 \(100\.0%\)/);
     assert.match(markdown, /## Phase1 セクターランキング/);
     assert.match(markdown, /相対強度の基準: TSE:1306（TOPIX）/);
-    assert.match(markdown, /## Phase2 テーマランキング/);
-    assert.match(markdown, /対象セクター: Electronic Technology（Phase1 1位 \/ TradingView sector）/);
-    assert.match(markdown, /集計対象: Electronic Technology の通過銘柄 1件を、みんかぶ対応テーマへ分類/);
-    assert.match(markdown, /\| 1 \| Electronic Components \| 1 \| 12\.0% \| 4\.00 \| Passives \/ RF Modules \| Minkabu \|/);
+    assert.doesNotMatch(markdown, /## Phase2 テーマランキング/);
+    assert.doesNotMatch(markdown, /対象セクター: Electronic Technology（Phase1 1位 \/ TradingView sector）/);
+    assert.doesNotMatch(markdown, /集計対象: Electronic Technology の通過銘柄 1件を、みんかぶ対応テーマへ分類/);
     assert.match(markdown, /\| 順位 \| セクター \| 平均12M \| 平均6M \| 平均3M \| TOPIX差12M \| TOPIX差6M \| TOPIX差3M \| SMA50上 \| SMA200上 \| 52w高値90%内 \| RSI \| 相対出来高 \| 構成数 \| 順位合計 \|/);
     assert.match(markdown, /\| 1 \| Finance \| 32\.5% \| 20\.1% \| 11\.8% \| 7\.4pt \| 5\.3pt \| 3\.4pt \| 75\.0% \| 87\.5% \| 62\.5% \| 62\.5 \| 1\.21x \| 8 \| 4 \|/);
     assert.doesNotMatch(markdown, /アプローチ:/);
+    assert.match(markdown, /## Phase2 Industryランキング/);
+    assert.match(markdown, /\| 順位 \| セクター \| Industry \| 構成銘柄数 \| 平均12M \| 平均6M \| 平均3M \| TOPIX差12M \| TOPIX差6M \| TOPIX差3M \| SMA50上比率 \| SMA200上比率 \| 52w高値90%内比率 \| 平均RSI \| 平均相対出来高 \| Industry総合スコア \| 上位銘柄 \|/);
+    assert.match(markdown, /\| 1 \| Consumer Durables \| Motor Vehicles \| 1 \| 30\.0% \| 20\.0% \| 12\.0% \| 4\.9pt \| 5\.2pt \| 3\.6pt \| 100\.0% \| 100\.0% \| 100\.0% \| 63\.0 \| 1\.10x \| 72\.50 \| 7203 \|/);
     assert.doesNotMatch(markdown, /## Phase2 中テーマランキング \(Electronic Technology\)/);
-    assert.match(markdown, /\| 1 \| Electronic Components \| Passives \/ RF Modules \| \*\*7203 \(トヨタ自動車\)\*\* \| TSE \| ¥4\.50T \(L\) \|/);
-    assert.match(markdown, /- Phase2 掲載中テーマ: Electronic Components/);
-    assert.match(markdown, /- Phase3 掲載小テーマ: Electronic Components \/ Passives \/ RF Modules/);
+    assert.doesNotMatch(markdown, /## Phase3 小テーマランキング/);
+    assert.match(markdown, /## Phase4 個別銘柄ランキング/);
+    assert.match(markdown, /\| 順位 \| 出所 \| セクター \| Industry \| テーマ \| シンボル \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCFマージン \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \(T\/F\) \|/);
+    assert.match(markdown, /\| 1 \| Phase4 \| Consumer Durables \| Motor Vehicles \| Electronic Components \/ Passives \/ RF Modules \| \*\*7203 \(トヨタ自動車\)\*\* \| TSE \| ¥4\.50T \(L\) \|/);
+    assert.match(markdown, /\| 2 \| Phase5 \| Producer Manufacturing \| Industrial Machinery \| Industrial Automation \/ Factory Automation \| \*\*6501 \(日立製作所\)\*\* \| TSE \| ¥18\.00T \(XL\) \|/);
+    assert.match(markdown, /## Phase5 Sector別 個別銘柄ランキング/);
+    assert.match(markdown, /\| Sector Rank \| Sector内Rank \| Sector \| Industry \| Theme \| Symbol \| Market \| Market Cap \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCF Margin \| Revenue YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \(T\/F\) \|/);
+    assert.match(markdown, /\| 2 \| 1 \| Producer Manufacturing \| Industrial Machinery \| Industrial Automation \/ Factory Automation \| \*\*6501 \(日立製作所\)\*\* \| TSE \| ¥18\.00T \(XL\) \|/);
     assert.doesNotMatch(markdown, /## Phase2 セクター別ランキング/);
     assert.doesNotMatch(markdown, /## 上位3件の選定理由/);
-    assert.match(markdown, /\| 順位 \| 中テーマ \| 小テーマ \| シンボル \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCFマージン \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \(T\/F\) \|/);
     assert.match(markdown, /\| 補助ポリシー \| 日本株ファンダ補完 \| TradingView を主軸にしつつ、FCF \/ PFCF \/ cash-conversion の欠損は EDINET 公式開示で補完する \|/);
     assert.match(markdown, /2\.4% \| 4\.00 \(T1\.9\/F2\.1\) \|/);
     assert.match(markdown, /\| ユニバース \| 取引所 \| TSE \|/);
     assert.match(markdown, /\| ユニバース \| 銘柄ユニバース \| jpx-prime \|/);
+    assert.match(markdown, /\| 採点ポリシー \| unifiedRankScore \| Phase4候補とPhase5 Sector別Top3候補は共通母集団で1回だけ採点。Phase5表の4位・5位は表示用スコアだが、Phase4候補でもある場合は unifiedRankScore を持つ。Phase1\/Phase2の集計スコアとは別物。 \|/);
     assert.match(markdown, /\| 総合点 \(T\/F\) \| repo 独自の総合スコア \| 高いほど良い。T はテクニカル寄り、F はファンダ寄り \|/);
   });
 
