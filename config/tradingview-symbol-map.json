@@ -1,0 +1,9 @@
+{
+  "us": {
+    "DRAM": "CBOE:DRAM",
+    "SOXL": "AMEX:SOXL"
+  },
+  "jp": {
+    "3350": "TSE:3350"
+  }
+}
