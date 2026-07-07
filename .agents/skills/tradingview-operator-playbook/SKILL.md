@@ -1,150 +1,160 @@
 ---
 name: tradingview-operator-playbook
-description: TradingView 操作の decision tree。market_* / reach_* / workspace_* / observe / alert / pine / backtest の使い分けと anti-pattern を明示する。
+description: TradingView / market / reach / X / screener / Moomoo operation decision tree aligned with the current CLI and MCP tool surface.
 tags:
   - tradingview
   - operator
   - decision-tree
 ---
 
-# tradingview-operator-playbook — TradingView 操作ガイド
+# tradingview-operator-playbook
 
-このスキルは Oh-MY-TradingView の tool / command を **どの順番で、どう使い分けるか** を定義する。
-intelligence を runtime に増やすのではなく、skill markdown に judgment を寄せる。
+Use this when deciding which Oh-MY-TradingView CLI command or MCP tool to use. The source of truth is `src/server.js`, `src/tools/`, and `src/cli/commands/`.
 
-## When to Use
+## First Choice
 
-- TradingView でチャート確認・market 分析・情報収集を行うとき
-- どの `tv` コマンド / MCP tool を使うべきか迷ったとき
-- 複数の情報源（chart / market data / X / web）を組み合わせて判断を下すとき
+- Use non-CDP market / reach / X / Moomoo tools when chart state is not needed.
+- Use CDP tools only when the task requires TradingView Desktop state, Pine editor, chart capture, workspace, alerts, or Strategy Tester.
+- Use `tv status` / `tv_health_check` before CDP-dependent actions.
+- Use `tv launch` / `tv_launch` only when TradingView Desktop is not already reachable.
+- Use `tv launch-browser` / `tv_launch_browser` as a bounded browser fallback, not as a replacement for Desktop workflow.
 
 ## Decision Tree
 
+```text
+What do you need?
+|
+|- Current price / market data
+|  |- Single symbol -> tv market quote / market_quote
+|  |- Multiple symbols -> tv market snapshot / market_snapshot
+|  |- Financials -> tv market fundamentals or financials / market_fundamentals or market_financials
+|  |- News -> tv market news / market_news
+|
+|- Ranking or screening
+|  |- TA summary -> tv market ta-summary / market_ta_summary
+|  |- TA rank -> tv market ta-rank / market_ta_rank
+|  |- Confluence rank -> tv market confluence-rank / market_confluence_rank
+|  |- Simple price/volume screener -> tv market screener / market_screener
+|  |- Minervini screener -> tv screener minervini / market_minervini_screener
+|  |- Fundamental screener -> tv screener fundamental / market_fundamental_screener
+|
+|- External observation
+|  |- Channel readiness -> tv reach status / reach_status
+|  |- Web page -> tv reach web / reach_read_web
+|  |- RSS -> tv reach rss / reach_read_rss
+|  |- Reddit search -> tv reach reddit-search / reach_search_reddit
+|  |- Reddit post -> tv reach reddit-post / reach_read_reddit_post
+|  |- YouTube metadata/subtitles -> tv reach youtube / reach_read_youtube
+|
+|- X/Twitter read-only observation
+|  |- Auth status -> tv x status / x_status
+|  |- Current account -> tv x whoami / x_whoami
+|  |- Search posts -> tv x search / x_search_posts
+|  |- User profile -> tv x user / x_user_profile
+|  |- User posts -> tv x user-posts / x_user_posts
+|  |- Post detail -> tv x tweet / x_tweet_detail
+|
+|- Moomoo OpenAPI read-only
+|  |- OpenD connectivity -> moomoo_health_check
+|  |- Accounts -> moomoo_accounts
+|  |- Positions -> moomoo_positions
+|  |- Balance -> moomoo_balance
+|  |- Orders / deals history -> moomoo_orders / moomoo_deals
+|  |- Portfolio diagnostics -> moomoo_portfolio
+|  |- Snapshot -> moomoo_snapshot
+|  |- K-line history -> moomoo_kline_history
+|  |- Stock filter fields -> moomoo_stock_filter_fields
+|  |- Stock filter -> moomoo_stock_filter
+|  |- Plate/theme list -> moomoo_plate_list
+|  |- Plate constituents -> moomoo_plate_stocks
+|  |- Breadth -> moomoo_plate_breadth
+|  |- OHLC comparison -> moomoo_ohlc_compare
+|  |- Screening validation -> moomoo_screening_validate
+|  |- Fundamental probe -> moomoo_fundamental_probe
+|
+|- TradingView Desktop state
+|  |- Launch Desktop -> tv launch / tv_launch
+|  |- Launch browser fallback -> tv launch-browser / tv_launch_browser
+|  |- CDP health -> tv status / tv_health_check
+|  |- Discover APIs -> tv discover / tv_discover
+|  |- Price from active chart -> tv price get / tv_get_price
+|  |- Bounded price polling -> tv stream / tv_stream_price
+|  |- Screenshot -> tv capture / tv_capture_screenshot
+|  |- Observe snapshot -> tv observe snapshot / tv_observe_snapshot
+|  |- Watchlist -> tv workspace watchlist-* / tv_watchlist_*
+|  |- Panes -> tv workspace pane-* / tv_pane_*
+|  |- Tabs -> tv workspace tab-* / tv_tab_*
+|  |- Layouts -> tv workspace layout-list or layout-apply / tv_layout_list or tv_layout_apply
+|  |- Alerts -> tv alert create-price or delete / tv_alert_create_price or tv_alert_delete
+|
+|- Pine / backtest
+   |- Get source -> tv pine get / pine_get_source
+   |- Set source -> tv pine set / pine_set_source
+   |- Compile -> tv pine compile / pine_smart_compile
+   |- Errors -> tv pine errors / pine_get_errors
+   |- Offline analysis -> tv pine analyze / pine_analyze
+   |- Preset backtest -> tv backtest preset / tv_backtest_preset
+   |- Fixed NVDA SMA test -> tv backtest sma-crossover / tv_backtest_nvda_ma_5_20
 ```
-何をしたい？
-│
-├─ 銘柄の価格・TA を確認したい
-│   ├─ 1 銘柄の詳細 → tv market quote / market_quote
-│   ├─ 複数銘柄を一覧 → tv market snapshot / market_snapshot
-│   ├─ TA サマリー → tv market ta-summary / market_ta_summary
-│   └─ 総合分析 → tv market analysis / market_symbol_analysis
-│
-├─ 銘柄をランキング・比較したい
-│   ├─ TA 指標でランク → tv market ta-rank / market_ta_rank
-│   ├─ Confluence スコアで総合ランク → tv market confluence-rank / market_confluence_rank
-│   ├─ スクリーナー（フィルタリング） → tv market screener / market_screener
-│   ├─ Minervini 基準スクリーナー → market_minervini_screener
-│   └─ ファンダメンタル・スクリーナー → market_fundamental_screener
-│
-├─ ファンダメンタルズを確認したい
-│   ├─ 単一銘柄 → tv market fundamentals / market_fundamentals
-│   └─ 複数銘柄 → tv market financials / market_financials
-│
-├─ ニュースを確認したい
-│   └─ tv market news / market_news
-│
-├─ 外部情報を収集したい
-│   ├─ Web ページ → tv reach web / reach_read_web
-│   ├─ RSS フィード → tv reach rss / reach_read_rss
-│   ├─ Reddit 検索 → tv reach reddit-search / reach_search_reddit
-│   ├─ Reddit 個別投稿 → tv reach reddit-post / reach_read_reddit_post
-│   └─ YouTube → tv reach youtube / reach_read_youtube
-│
-├─ X/Twitter の情報を確認したい
-│   ├─ ポスト検索 → tv x search / x_search_posts
-│   ├─ ユーザープロフィール → tv x user / x_user_profile
-│   ├─ ユーザーの投稿 → tv x user-posts / x_user_posts
-│   └─ 個別ツイート → tv x tweet / x_tweet_detail
-│
-├─ TradingView Desktop を操作したい
-│   ├─ CDP 接続チェック → tv status / tv_health_check
-│   ├─ チャートの状態確認 → tv observe snapshot / tv_observe_snapshot
-│   ├─ スクリーンショット → tv capture / tv_capture_screenshot
-│   ├─ ウォッチリスト一覧 → tv workspace watchlist-list / tv_watchlist_list
-│   ├─ ウォッチリスト追加 → tv workspace watchlist-add / tv_watchlist_add
-│   ├─ ウォッチリスト削除 → tv workspace watchlist-remove / tv_watchlist_remove
-│   ├─ ペイン操作 → tv workspace pane-list / tv_pane_list / pane-focus / tv_pane_focus
-│   ├─ タブ操作 → tv workspace tab-list / tv_tab_list / tab-switch / tv_tab_switch
-│   └─ レイアウト操作 → tv workspace layout-apply / tv_layout_apply
-│
-├─ アラートを管理したい
-│   ├─ 一覧 → tv_alert_list
-│   ├─ 価格アラート作成 → tv alert create-price / tv_alert_create_price
-│   └─ アラート削除 → tv alert delete / tv_alert_delete
-│
-└─ Pine Script を開発したい
-    ├─ ソース取得 → tv pine get / pine_get_source
-    ├─ ソース設定 → tv pine set / pine_set_source
-    ├─ スマートコンパイル → tv pine compile / pine_smart_compile
-    ├─ コンパイルエラー確認 → tv pine errors / pine_get_errors
-    ├─ オフライン静的解析 → tv pine analyze / pine_analyze
-    └─ バックテスト実行
-        ├─ プリセット駆動 → tv backtest preset / tv_backtest_preset
-        └─ 固定テスト（NVDA SMA） → tv backtest sma-crossover / tv_backtest_nvda_ma_5_20
-```
 
-## Tool 名の対応表
+## Current Provider Policy
 
-### Market Intelligence（CDP 不要）
+`market_*` tools use Moomoo for quote, TA, and fundamentals where implemented. Yahoo endpoints are legacy opt-in fallbacks or benchmark / drift checks. Do not present Yahoo as the current primary provider unless the code path explicitly requests it.
 
-| CLI コマンド | MCP Tool 名 |
+Moomoo account tools are read-only. They do not place, modify, cancel, or unlock trades.
+
+## Mapping Tables
+
+### Launch / Health / Capture
+
+| CLI | MCP tool |
+|---|---|
+| `tv launch` | `tv_launch` |
+| `tv launch-browser` | `tv_launch_browser` |
+| `tv status` | `tv_health_check` |
+| `tv discover` | `tv_discover` |
+| `tv capture` | `tv_capture_screenshot` |
+| `tv observe snapshot` | `tv_observe_snapshot` |
+| `tv stream` | `tv_stream_price` |
+
+### Market / Screener
+
+| CLI | MCP tool |
 |---|---|
 | `tv market quote` | `market_quote` |
-| `tv market snapshot` | `market_snapshot` |
 | `tv market fundamentals` | `market_fundamentals` |
 | `tv market financials` | `market_financials` |
+| `tv market snapshot` | `market_snapshot` |
 | `tv market news` | `market_news` |
 | `tv market screener` | `market_screener` |
 | `tv market ta-summary` | `market_ta_summary` |
 | `tv market ta-rank` | `market_ta_rank` |
 | `tv market analysis` | `market_symbol_analysis` |
 | `tv market confluence-rank` | `market_confluence_rank` |
-| ―（MCP 直接） | `market_minervini_screener` |
-| ―（MCP 直接） | `market_fundamental_screener` |
+| `tv screener minervini` | `market_minervini_screener` |
+| `tv screener fundamental` | `market_fundamental_screener` |
 
-### Reach / External（CDP 不要）
+### Reach / X
 
-| CLI コマンド | MCP Tool 名 |
+| CLI | MCP tool |
 |---|---|
+| `tv reach status` | `reach_status` |
 | `tv reach web` | `reach_read_web` |
 | `tv reach rss` | `reach_read_rss` |
 | `tv reach reddit-search` | `reach_search_reddit` |
 | `tv reach reddit-post` | `reach_read_reddit_post` |
 | `tv reach youtube` | `reach_read_youtube` |
-
-### X / Twitter（CDP 不要）
-
-| CLI コマンド | MCP Tool 名 |
-|---|---|
+| `tv x status` | `x_status` |
+| `tv x whoami` | `x_whoami` |
 | `tv x search` | `x_search_posts` |
 | `tv x user` | `x_user_profile` |
 | `tv x user-posts` | `x_user_posts` |
 | `tv x tweet` | `x_tweet_detail` |
 
-### Pine Script（CDP 必要）
+### Workspace / Alerts
 
-| CLI コマンド | MCP Tool 名 |
+| CLI | MCP tool |
 |---|---|
-| `tv pine get` | `pine_get_source` |
-| `tv pine set` | `pine_set_source` |
-| `tv pine compile` | `pine_smart_compile` |
-| `tv pine errors` | `pine_get_errors` |
-| `tv pine analyze` | `pine_analyze` |
-
-### Backtest（CDP 必要）
-
-| CLI コマンド | MCP Tool 名 |
-|---|---|
-| `tv backtest preset` | `tv_backtest_preset` |
-| `tv backtest sma-crossover` | `tv_backtest_nvda_ma_5_20` |
-
-### Workspace / Desktop（CDP 必要）
-
-| CLI コマンド | MCP Tool 名 |
-|---|---|
-| `tv status` | `tv_health_check` |
-| `tv observe snapshot` | `tv_observe_snapshot` |
-| `tv capture` | `tv_capture_screenshot` |
 | `tv workspace watchlist-list` | `tv_watchlist_list` |
 | `tv workspace watchlist-add` | `tv_watchlist_add` |
 | `tv workspace watchlist-remove` | `tv_watchlist_remove` |
@@ -152,17 +162,42 @@ intelligence を runtime に増やすのではなく、skill markdown に judgme
 | `tv workspace pane-focus` | `tv_pane_focus` |
 | `tv workspace tab-list` | `tv_tab_list` |
 | `tv workspace tab-switch` | `tv_tab_switch` |
+| `tv workspace layout-list` | `tv_layout_list` |
 | `tv workspace layout-apply` | `tv_layout_apply` |
 | `tv alert create-price` | `tv_alert_create_price` |
 | `tv alert delete` | `tv_alert_delete` |
-| ―（MCP 直接） | `tv_alert_list` |
+| MCP only | `tv_alert_list` |
+
+### Moomoo MCP Tools
+
+There is no current `tv moomoo` CLI command. Use MCP tools or the workflow / scripts that call the Moomoo core.
+
+| Need | MCP tool |
+|---|---|
+| OpenD health | `moomoo_health_check` |
+| Account metadata | `moomoo_accounts` |
+| Positions | `moomoo_positions` |
+| Balance | `moomoo_balance` |
+| Orders | `moomoo_orders` |
+| Deals | `moomoo_deals` |
+| Portfolio diagnostics | `moomoo_portfolio` |
+| Snapshot | `moomoo_snapshot` |
+| K-line history | `moomoo_kline_history` |
+| Filter field inventory | `moomoo_stock_filter_fields` |
+| Stock filter | `moomoo_stock_filter` |
+| Plate/theme list | `moomoo_plate_list` |
+| Plate stocks | `moomoo_plate_stocks` |
+| Plate breadth | `moomoo_plate_breadth` |
+| OHLC comparison | `moomoo_ohlc_compare` |
+| Screening validation | `moomoo_screening_validate` |
+| Fundamental probe | `moomoo_fundamental_probe` |
 
 ## Anti-Patterns
 
-| Anti-Pattern | 正しいアプローチ |
+| Anti-Pattern | Better approach |
 |---|---|
-| CDP が必要な tool を先に呼ぶ | まず non-CDP の market / reach / x で情報を集め、CDP 操作は最後に行う |
-| 1 銘柄ずつ quote を繰り返す | `market snapshot` で最大 20 銘柄を一括取得する |
-| analysis を全銘柄に実行する | まず `ta-rank` / `confluence-rank` で候補を絞り、上位のみ `analysis` を実行する |
-| reach / x の結果を投資判断の根拠にする | reach / x は observation coverage であり、directional signal ではない |
-| observe snapshot を何度も繰り返す | snapshot は 1 回の状態確認用。変更を追跡するなら campaign / backtest を使う |
+| Starting with CDP when market data is enough | Use non-CDP market / reach / X / Moomoo first |
+| Repeating one-symbol quote calls | Use snapshot or rank tools for batches |
+| Treating X / Reddit as a trading signal by itself | Treat social data as observation coverage only |
+| Inventing CLI commands from MCP names | Check `src/cli/commands/` before documenting CLI |
+| Running E2E for docs-only changes | Use contract / unit tests and state why E2E was skipped |

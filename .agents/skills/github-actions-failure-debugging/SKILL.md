@@ -1,161 +1,157 @@
 ---
 name: github-actions-failure-debugging
-description: Systematic workflow for diagnosing and fixing GitHub Actions failures. Prefer high-signal summaries when available, then structured logs, then raw logs, local reproduction, and verification.
+description: Systematic workflow for diagnosing and fixing this repository's GitHub Actions failures. Prefer workflow summaries and artifacts first, then structured logs, local reproduction, and verification.
 ---
 
-# github-actions-failure-debugging — CI Failure Diagnosis Workflow
+# github-actions-failure-debugging
 
-A structured playbook for diagnosing GitHub Actions workflow failures efficiently. The key principle is: **use the highest-signal tools first**, then fall back to lower-level inspection only as needed.
+Use this runbook when a GitHub Actions run fails in Oh-MY-TradingView. The source of truth is the current workflow file, `package.json`, and the scripts called by the failing step.
 
-## When to Use
+## Current Workflows
 
-- A GitHub Actions workflow run has failed
-- CI checks on a pull request are red
-- A scheduled workflow has stopped working
-- You need to understand why a previously green workflow is now failing
+The repository currently has these workflow files:
 
-## Diagnosis Priority Order
+- `.github/workflows/night-batch-self-hosted.yml`
+- `.github/workflows/night-batch-smoke.yml`
+- `.github/workflows/daily-screener.yml`
+- `.github/workflows/daily-screener-japan.yml`
+- `.github/workflows/sbi-portfolio-capture.yml`
+- `.github/workflows/portfolio-health-check.yml`
+- `.github/workflows/moomoo-portfolio-diagnostics.yml`
 
-Always follow this order — each level provides progressively more detail:
+Do not assume a workflow exists unless it is present under `.github/workflows/`.
 
-```text
-Level 1: High-signal summaries (GitHub MCP if available)
-Level 2: Structured log inspection
-Level 3: Raw log analysis
-Level 4: Local reproduction
-Level 5: Fix and verification
-```
+## Diagnosis Order
 
-## Level 1: High-Signal Summaries (Start Here)
+1. Identify the workflow, run id, run attempt, branch, commit SHA, trigger, and failed job.
+2. Read the workflow summary and uploaded artifacts before raw logs when they exist.
+3. Inspect the failed job step and the 100-300 lines around the first real error.
+4. Compare the failing step with the command in the current workflow file.
+5. Reproduce locally only after the summary, artifacts, and logs do not explain the failure.
+6. Make the smallest fix, run the matching local tests, then monitor the next workflow run.
 
-If GitHub MCP summary tools are available, use them to get a structured overview before touching raw logs:
+Use whatever GitHub access is available in the host: GitHub connector tools, `gh run view`, `gh run watch`, `gh run download`, the GitHub UI, or the downloaded log archive. Avoid writing the runbook around one specific MCP tool name.
 
-```text
-1. summarize_run_log_failures(owner, repo, run_id)
-   → Get an AI-summarized view of all failures in the run
+## Test Commands
 
-2. summarize_job_log_failures(owner, repo, run_id, job_id)
-   → Drill into a specific failed job
+Use `package.json` as the source of truth:
 
-3. list_workflow_jobs(run_id) with filter: "latest"
-   → See which jobs failed vs passed
+| Purpose | Command |
+|---|---|
+| Normal core / CLI / docs unit coverage | `npm run test:unit` |
+| Workflow / contract checks | `npm run test:contract` |
+| Night Batch / Windows runner logic | `npm run test:night-batch` |
+| TradingView Desktop + CDP behavior | `npm run test:e2e` |
+| Full local suite including E2E | `npm run test:all` |
 
-4. get_workflow_run(run_id)
-   → Check trigger event, branch, commit SHA, timing
-```
+For workflow YAML or docs-only changes, run the smallest relevant Node test first, then `npm run test:unit` when the change is repo-facing.
 
-If GitHub MCP tools are not available, use the highest-signal alternative your host provides first:
+## Windows Runner And Night Batch
 
-```text
-- GitHub UI run summary
-- gh run view / gh run watch / gh run download
-- provider-specific workflow summary tools
-```
+For `night-batch-self-hosted.yml` and `night-batch-smoke.yml`, check these in order:
 
-**This level alone resolves most failures.** Common patterns:
-- Dependency install timeout → retry or pin versions
-- Test assertion failure → summary shows the failing test and assertion
-- Secret/permission error → summary shows the access denial
-- Syntax error in workflow YAML → summary shows the parse error
+- Runner labels and state: the job requires `self-hosted` and `windows`.
+- Shell boundary: some steps use `cmd`, some use `powershell -NoProfile -ExecutionPolicy Bypass -command ". '{0}'"`, and some use `pwsh`. Reproduce with the same shell when possible.
+- TradingView readiness:
+  - "Ensure TradingView is running"
+  - "Readiness diagnostics (non-blocking)"
+  - "Wait for TradingView connection (required gate)"
+  - CDP host / port from the Night Batch config, usually `127.0.0.1:9222`.
+- Production wrapper:
+  - `scripts\windows\run-night-batch-self-hosted.cmd`
+  - `python/night_batch.py`
+  - `scripts/backtest/wait-for-tradingview-readiness.mjs`
+- Workflow summary:
+  - `scripts/windows/github-actions/append-night-batch-workflow-summary.ps1`
+  - `GITHUB_STEP_SUMMARY`
+- Output discovery:
+  - `scripts/windows/github-actions/find-night-batch-outputs.ps1`
+  - `artifacts/night-batch/`
+  - `results/night-batch/` as a fallback search root in the script.
+- Uploaded artifact:
+  - `night-batch-${{ github.run_id }}-${{ github.run_attempt }}`
+  - includes the located round directory and campaign artifact directories.
 
-## Level 2: Structured Log Inspection
+Important Night Batch files to inspect from the target run:
 
-If the summary is insufficient, inspect logs with structure:
+- `*-summary.json`
+- `*-summary.md`
+- `*-rich-report.md`
+- `*-combined-ranking.json`
+- `*-live-checkout-protection.json`
+- campaign manifest JSON / Markdown paths referenced by the summary
+- campaign artifact directories listed by `find-night-batch-outputs.ps1`
 
-```text
-1. get_job_logs(owner, repo, job_id, return_content: true, tail_lines: 200)
-   → Get the tail of a specific job's logs
+Common Night Batch failure classes:
 
-2. list_workflow_run_artifacts(run_id)
-   → Check if the run produced artifacts (test reports, coverage, etc.)
+| Symptom | First checks |
+|---|---|
+| Job queued forever | self-hosted Windows runner online and labels match |
+| CDP connection timeout | TradingView process, debug port, config host / port, readiness diagnostic output |
+| Smoke passes but production fails | `NIGHT_BATCH_CONFIG`, `NIGHT_BATCH_RUN_ID`, wrapper exit code, summary JSON failed step |
+| Artifact missing | output discovery step, summary file name, round directory path, campaign artifact paths |
+| Live checkout protection failure | `*-live-checkout-protection.json`, baseline path, blocked files |
+| PowerShell parse/path issue | exact shell used by the step, Windows path quoting, CRLF/path separator handling |
 
-3. get_workflow_run_logs_url(run_id)
-   → Get the full log archive URL if needed
-```
+## Screener Workflows
 
-**Focus on:**
-- Exit codes and error messages
-- The step that failed (step name + line range)
-- Timing anomalies (steps that took much longer than usual)
-- Environment differences (runner OS, tool versions)
+For `daily-screener.yml` and `daily-screener-japan.yml`:
 
-## Level 3: Raw Log Analysis
+- Install step: `npm ci --silent`.
+- Main command: `node scripts/screener/run-fundamental-screening.mjs`.
+- Validate report step checks generated report output with `pwsh`.
+- Metadata is written with `github.run_id` and `github.run_attempt`.
+- Artifact names:
+  - `screener-report-${{ github.run_id }}`
+  - `screener-report-japan-${{ github.run_id }}`
+- Publish step uses `scripts/windows/github-actions/sync-daily-screener-report-to-main.ps1`.
+- LINE notification can be skipped or fail for missing secrets; separate notification issues from screener failures.
 
-Only if structured tools do not reveal the cause:
+If publish fails with a checkout / origin mismatch, treat it as a `main` publish race until the logs prove otherwise.
 
-```text
-1. Download full logs via the logs URL
-2. Search for error patterns:
-   - "error", "Error", "ERROR"
-   - "fatal", "FATAL"
-   - "exit code", "Process completed with exit code"
-   - "permission denied", "403", "401"
-   - "timeout", "timed out"
-3. Compare with a recent successful run's logs (same job)
-```
+## Portfolio And Moomoo Workflows
 
-## Level 4: Local Reproduction
+For `sbi-portfolio-capture.yml`:
 
-When the failure cannot be understood from logs alone:
+- CDP probe is explicit.
+- Capture path is `node scripts/sbi/capture-portfolio-data.mjs`.
+- Report path is `node scripts/sbi/build-portfolio-report.mjs`.
+- Artifact name is `sbi-portfolio-capture-${{ github.run_id }}`.
+- Publish uses `scripts/windows/github-actions/sync-portfolio-reports-to-main.ps1`.
 
-```text
-1. Check out the exact commit: git checkout <sha>
-2. Reproduce the failing step locally:
-   - Run the same commands from the workflow YAML
-   - Match environment variables where possible
-   - Note: some failures are environment-specific (runner OS, network, secrets)
-3. If the failure involves secrets or permissions:
-   - Verify secret names match between workflow YAML and repo settings
-   - Check if tokens have expired
-   - Check if required permissions are set in the workflow YAML
-```
+For `portfolio-health-check.yml`:
 
-**For this repository specifically:**
-- For `ci.yml` failures, mirror `.github/workflows/ci.yml` as closely as possible:
-  - Unit tests: `python3 -m unittest discover -s tests`
-  - Shell validation: syntax-check every `*.sh` under `scripts/`
-  - Python validation: compile every `*.py` under `python/` and `scripts/lib/`, excluding hidden paths and `.venv`
-  - YAML validation: parse every `config/*.yaml` and `.github/workflows/*.yml`
-- For operational workflows such as `post_buz.yml`, `auto_follow.yml`, `auto_like.yml`, `morning_post.yml`, `evening_post.yml`, and `twitter_diagnostic.yml`, reproduce the commands and prerequisites from the failing workflow itself rather than from `ci.yml`
-- Operational workflow failures often depend on secrets, schedule windows, restored artifacts, caches, and external service state; check those before assuming the code path alone is broken
+- Moomoo read-only diagnostics run first.
+- SBI CDP capture is optional and controlled by workflow inputs.
+- Unified portfolio report is built after Moomoo / SBI outputs.
+- Artifact name is `portfolio-health-check-${{ github.run_id }}`.
 
-## Level 5: Fix and Verification
+For `moomoo-portfolio-diagnostics.yml`:
 
-Once the root cause is identified:
+- Python runtime is checked with `python --version`.
+- `moomoo-api` is installed into the runtime for the workflow.
+- Main command is `node scripts/moomoo/run-portfolio-diagnostics.mjs`.
+- Artifact name is `moomoo-portfolio-diagnostics-${{ github.run_id }}`.
+- Failures often come from OpenD reachability, Python runtime, or unavailable account data rather than Node test failures.
 
-```text
-1. Make the minimal fix
-2. Validate locally:
-   - Run the failing command/test locally
-   - Run the full local test suite
-   - Syntax-check any modified workflow YAML
-3. Push and monitor:
-   - Push the fix
-   - Watch the workflow run via: list_workflow_runs(workflow_id, branch: "<branch>")
-   - Confirm the previously failing job now passes
-4. If the fix doesn't work:
-   - Go back to Level 1 with the new run_id
-   - Compare the new failure with the old one
-```
+## Local Reproduction
 
-## Common Failure Patterns
+When local reproduction is needed:
 
-| Pattern | Typical Cause | Quick Fix |
-|---|---|---|
-| `exit code 1` in test step | Test assertion failure | Read test output, fix code or test |
-| `exit code 127` | Command not found | Add install step or fix PATH |
-| `Resource not accessible by integration` | Missing permissions | Add `permissions:` block to workflow |
-| `Bad credentials` / `401` | Expired or wrong token | Rotate secret, check token scope |
-| `No space left on device` | Runner disk full | Clean workspace, reduce artifacts |
-| `Rate limit exceeded` / `429` | API throttling | Add retry logic or reduce frequency |
-| `Timeout` / cancelled after 6h | Hung process or infinite loop | Add `timeout-minutes:` to job/step |
-| YAML parse error | Workflow syntax issue | Validate YAML locally |
+1. Stay in the Windows-native checkout: `C:\00_mycode\Oh-MY-TradingView`.
+2. Confirm the current branch and commit match the failing run if exact reproduction matters.
+3. Run the same command as the failing workflow step, using the same shell family when practical.
+4. Set only the environment variables required by that step.
+5. Run the smallest matching test script, then `npm run test:unit` for repo-facing changes.
 
-## Workflow-Specific Notes for This Repository
+Do not start TradingView Desktop for documentation, unit, or contract-only changes. Start it only for CDP-dependent reproduction or E2E verification.
 
-This repository uses several scheduled workflows (see README for full list). Key debugging notes:
+## Fix And Verify
 
-- **`post_buz.yml`**: Check workflow-specific secrets such as `TWITTER_AUTH_TOKEN` and `TWITTER_CT0` before debugging post failures. Failure in the post step often means expired Twitter cookies or a renamed/missing workflow secret.
-- **`auto_follow.yml` / `auto_like.yml`**: Rate-limit sensitive. Failures may be transient — check if retrying resolves it.
-- **`ci.yml`**: Usually points to validation or code issues once dependency installation succeeds, but failures before validation steps can still come from runner, network, or package-index problems.
-- **State/cache**: Many runtime outputs land under `tmp/`, but persisted state is not limited to `tmp/`. Check workflow-specific paths such as `config/follow_state.json` and any restored artifacts like `stock-cache` when investigating state-dependent failures.
+After identifying the cause:
+
+- Make the smallest code, config, workflow, or docs change that addresses the failure.
+- Run the targeted local command or test first.
+- Run the broader suite required by the changed area.
+- If the workflow publishes to `main`, check whether `origin/main` moved during the run before treating publish failure as a logic regression.
+- Push only after local verification and review.

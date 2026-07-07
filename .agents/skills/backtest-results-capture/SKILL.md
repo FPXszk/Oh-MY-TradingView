@@ -1,6 +1,6 @@
 ---
 name: backtest-results-capture
-description: Night Batch Self Hosted の GHA 実行結果を docs/research/ にまとめるワークフロー。GHA run 特定→artifact DL→TEMPLATE.md 準拠で集計→manifest 更新→push。
+description: Night Batch Self Hosted の GitHub Actions 実行結果を現行 artifact / summary 構造から読み、docs/research/ にまとめる runbook。
 tags:
   - backtest
   - research
@@ -8,159 +8,101 @@ tags:
   - night-batch
 ---
 
-# backtest-results-capture — Night Batch 結果まとめ Runbook
+# backtest-results-capture
 
-このスキルは、`Night Batch Self Hosted` GitHub Actions ワークフローの実行結果を `docs/research/` にまとめるための手順書である。
+`Night Batch Self Hosted` の実行結果を `docs/research/` にまとめる。対象 run の実ファイルを正本にし、古い run 固有の構造や固定ファイル名を前提にしない。
 
-## When to Use
+## Source Of Truth
 
-ユーザーが以下のような依頼をしたとき：
-- 「Night Batch Self Hosted #XX の結果をまとめて」
-- 「最新のバックテスト結果を前回の結果をまとめて」
-- 「run XX の結果を research に追加して」
+- `.github/workflows/night-batch-self-hosted.yml`
+- `scripts/windows/github-actions/find-night-batch-outputs.ps1`
+- `scripts/windows/github-actions/append-night-batch-workflow-summary.ps1`
+- `artifacts/night-batch/`
+- `docs/research/TEMPLATE.md`
+- `docs/research/manifest.json`
 
----
+## Run Selection
 
-## Runbook
+1. ユーザー指定の run number / run id があればそれを対象にする。
+2. 「最新」の場合は `Night Batch Self Hosted` の completed run を確認する。
+3. run id と run attempt を記録する。
+4. workflow file が現在も `.github/workflows/night-batch-self-hosted.yml` であることを確認する。
 
-### Step 1: 対象 GHA run の特定
+GitHub connector、`gh run view`、GitHub UI のどれを使ってもよい。特定の MCP tool 名に依存しない。
 
-**ユーザーが run 番号を明示している場合**（例：`#88`）:
-```
-github-mcp-server-actions_list
-  method: list_workflow_runs
-  owner: FPXszk
-  repo: Oh-MY-TradingView
-  resource_id: night-batch-self-hosted.yml
-```
-返ってきた runs から `run_number == 88` の `id`（= run_id）を取得する。
+## Artifact Name
 
-**ユーザーが「最新」と言っている場合**:
-上記で `status: completed` の最新 run を使う。
+現行 workflow の upload-artifact 名は次の形式:
 
-### Step 2: アーティファクト ID の取得
-
-```
-github-mcp-server-actions_list
-  method: list_workflow_run_artifacts
-  owner: FPXszk
-  repo: Oh-MY-TradingView
-  resource_id: {run_id}
+```text
+night-batch-{github.run_id}-{github.run_attempt}
 ```
 
-アーティファクト名 `night-batch-results`（または類似名）の `id` を取得する。
+run attempt を含める。run number だけで artifact 名を推測しない。
 
-### Step 3: アーティファクトのダウンロード
+## Output Discovery
 
-```bash
-gh api repos/FPXszk/Oh-MY-TradingView/actions/artifacts/{artifact_id}/zip \
-  --header "Accept: application/vnd.github+json" \
-  > /tmp/artifact-{run_number}.zip
-unzip -o /tmp/artifact-{run_number}.zip -d /tmp/artifact-{run_number}/
+artifact を展開したら、展開直後のrootに特定ファイルがあるとは仮定しない。現行 workflow は `find-night-batch-outputs.ps1` で見つけた round directory と campaign artifact directories を upload する。
+
+探索順:
+
+1. workflow summary を読む。
+2. `*-summary.json` を探す。
+3. `*-summary.md` があれば読む。
+4. 同じ round directory から以下を探す。
+   - `*-rich-report.md`
+   - `*-combined-ranking.json`
+   - `*-live-checkout-protection.json`
+5. summary JSON の `campaign_manifest_json_path` / `campaign_manifest_md_path` を解決する。
+6. summary JSON の `campaign_artifacts` と `captured_lines` から campaign artifact directories を確認する。
+
+`find-night-batch-outputs.ps1` は `artifacts\night-batch` と `results\night-batch` を検索rootにする。ローカルで再現する場合もこの考え方に合わせる。
+
+## Files To Read
+
+対象 run の実体から判断する:
+
+- workflow summary
+- summary JSON / Markdown
+- rich report
+- ranking artifact: `*-combined-ranking.json`
+- protection report: `*-live-checkout-protection.json`
+- campaign manifest JSON / Markdown
+- campaign artifact directories
+
+ランキングや個別結果のファイル名・配置は campaign により変わりうる。固定名で決め打ちせず、manifest と summary から辿る。
+
+## Research Document
+
+1. `docs/research/TEMPLATE.md` を先に読む。
+2. テンプレートの見出し、列、比較観点に合わせて対象 run の値を集計する。
+3. placeholder や例示値は対象 run の実データに置き換える。
+4. ファイル名は `night-batch-self-hosted-run{N}_{YYYYMMDD}.md` を基本にする。
+5. 出力先は `docs/research/`。
+
+## Manifest
+
+新しい research doc は `docs/research/manifest.json` の `keep` に追加する。manifest に入れないと archive 処理で退避対象になりうる。
+
+## Verification
+
+最低限:
+
+```powershell
+node --test tests/archive-latest-policy.test.js
 ```
 
-**注意**: ダウンロードは 30〜90 秒かかる場合がある（数十 MB）。
+docs 導線も変更した場合:
 
-### Step 4: データ読み取り
-
-展開後に以下の 2 ファイルを読む：
-
-**`strategy-ranking.json`** — PF 降順の公式ランキング
-```json
-{
-  "campaign_id": "emr-next-50pack-us40",
-  "rows": [
-    {
-      "rank": 1,
-      "presetId": "emr-next-vol20x20",
-      "avg_net_profit": ...,
-      "avg_profit_factor": ...,
-      "avg_max_drawdown": ...,
-      "avg_percent_profitable": ...
-    }
-  ]
-}
+```powershell
+node --test tests/documentation-navigation.test.js tests/archive-latest-policy.test.js
 ```
-
-**`recovered-results.json`** — 全 symbol × strategy の個別結果
-```json
-[
-  {
-    "presetId": "emr-next-vol20x20",
-    "symbol": "NVDA",
-    "result": {
-      "metrics": {
-        "net_profit": ...,
-        "profit_factor": ...,
-        "max_drawdown": ...,
-        "closed_trades": ...,
-        "percent_profitable": ...
-      }
-    }
-  }
-]
-```
-**注意**: `result.metrics` がキー（`result.stats` ではない）。
-
-### Step 5: TEMPLATE.md に必要な集計値を揃える
-
-`docs/research/TEMPLATE.md` を開き、今回のテンプレートで要求されている表・比較列・記入指示を先に確認する。
-
-- baseline / control 戦略がある場合は、その `presetId` を特定する。
-- `strategy-ranking.json` から template の集計表に必要な `avg_net_profit / avg_profit_factor / avg_max_drawdown / avg_percent_profitable / run_count / success_count` を取得する。
-- `recovered-results.json` から baseline / control 戦略の symbol 別 `result.metrics` を抜き、template の Baseline 結果セクションを埋められる状態にする。
-
-### Step 6: TEMPLATE.md 準拠でスコアと比較欄を埋める
-
-`docs/research/TEMPLATE.md` を source of truth として、その時点の見出し・表・コメント指示に従って必要なスコアと比較欄を埋める。
-
-- 例: `profit_follow_rate`, `PF vs baseline`, `dd_to_profit`, `DD ratio vs baseline`, `win_rate vs baseline`
-- 固定の評価式をこのスキルに複写せず、テンプレート側の列定義・判断基準・比較前提を優先する。
-- テンプレート内に実例値が入っている場合は、そのまま残さず対象 run の実データへ置き換える。
-
-### Step 7: 出力ファイルの作成
-
-ファイル名規則: `night-batch-self-hosted-run{N}_{YYYYMMDD}.md`
-出力先: `docs/research/`
-
-`docs/research/TEMPLATE.md` の構造に従って記述する。
-
-- `docs/research/TEMPLATE.md` の見出し順・表の列順・コメント指示に合わせて出力ファイルを作る。
-- TEMPLATE にある placeholder / 実例値 / 補助コメントは、対象 run の実データと解釈に置き換える。
-- Step 5 と Step 6 で集めた baseline 集計、銘柄別 metrics、比較スコアを各セクションへ反映する。
-
-### Step 8: manifest.json の更新
-
-`docs/research/manifest.json` の `keep` 配列に新ファイル名を追加する。
-
-```json
-{
-  "keep": [
-    "artifacts-backtest-scoreboards.md",
-    "...(既存エントリ)...",
-    "night-batch-self-hosted-run{N}_{YYYYMMDD}.md"
-  ]
-}
-```
-
-**重要**: manifest に追加しないと `archive-stale-latest.mjs` が次回 Night Batch 実行時にアーカイブする。
-
-### Step 9: コミット & プッシュ
-
-```bash
-git add docs/research/night-batch-self-hosted-run{N}_{YYYYMMDD}.md docs/research/manifest.json
-git commit -m "docs: add run{N} backtest results summary ({campaign_id})
-
-Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
-git push origin main
-```
-
----
 
 ## Anti-Patterns
 
-| Anti-Pattern | 正しいアプローチ |
+| Anti-Pattern | Correct approach |
 |---|---|
-| `result.stats` キーでメトリクスを読む | `result.metrics` が正しいキー |
-| manifest.json を更新せずにファイルを追加する | Step 8 で必ず同時に更新する |
-| win_rate が低いことを自動で除外候補にする | このキャンペーン戦略群は構造的に win_rate < 35% が正常。除外根拠にしない |
+| artifact 名を run number だけで決め打ちする | run id と run attempt から現行形式を確認する |
+| 展開rootにランキングや結果JSONがあると仮定する | summary / manifest / round directory から探索する |
+| 古い campaign 構造を流用する | 対象 run の実ファイルを読む |
+| manifest を更新しない | research doc 追加と同時に `docs/research/manifest.json` を更新する |
