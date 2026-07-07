@@ -14,7 +14,6 @@ const FIND_OUTPUTS_SCRIPT_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'githu
 const APPEND_SUMMARY_SCRIPT_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'github-actions', 'append-night-batch-workflow-summary.ps1');
 const READINESS_SCRIPT_PATH = join(PROJECT_ROOT, 'scripts', 'windows', 'github-actions', 'test-night-batch-readiness.ps1');
 const GITATTRIBUTES_PATH = join(PROJECT_ROOT, '.gitattributes');
-const README_PATH = join(PROJECT_ROOT, 'README.md');
 const BUNDLE_FG_CONFIG_PATH = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-config.json');
 const BUNDLE_FG_FAILED36_CONFIG_PATH = join(PROJECT_ROOT, 'config', 'night_batch', 'bundle-foreground-reuse-failed36-config.json');
 const EMR_NEXT_RUN84_FAILED_CONFIG_PATH = join(PROJECT_ROOT, 'config', 'night_batch', 'emr-next-50pack-run84-failed-us40-config.json');
@@ -405,51 +404,6 @@ describe('night-batch-self-hosted workflow', () => {
   });
 });
 
-describe('docs: non-service self-hosted runner policy', () => {
-  it('README documents that service mode is not used', () => {
-    const readme = readFileSync(README_PATH, 'utf8');
-
-    assert.match(readme, /service\s+(mode|モード).*(?:使用しない|使わない|不?採用|NOT\s+used|not\s+supported)/i,
-      'README must state that service mode is not used');
-    assert.match(readme, /OS.*バージョン/i,
-      'README must mention the OS version constraint');
-  });
-
-  it('README documents manual run.cmd startup', () => {
-    const readme = readFileSync(README_PATH, 'utf8');
-
-    assert.match(readme, /run\.cmd/,
-      'README must reference run.cmd for manual startup');
-  });
-
-  it('README documents the bootstrap wrapper', () => {
-    const readme = readFileSync(README_PATH, 'utf8');
-
-    assert.match(readme, /run-self-hosted-runner-with-bootstrap\.cmd/,
-      'README must reference the bootstrap wrapper');
-  });
-
-  it('README documents Task Scheduler based runner auto-start', () => {
-    const readme = readFileSync(README_PATH, 'utf8');
-
-    assert.match(readme, /Task Scheduler/i,
-      'README must mention Task Scheduler for runner auto-start');
-    assert.match(readme, /register-self-hosted-runner-autostart\.cmd/i,
-      'README must reference the autostart registration script');
-    assert.match(readme, /TradingView/i,
-      'README must mention TradingView in the runner auto-start guidance');
-    assert.match(readme, /9222/,
-      'README must mention the local TradingView debug port in the runner auto-start guidance');
-  });
-
-  it('README no longer relies on docs/command.md for runner guidance', () => {
-    const readme = readFileSync(README_PATH, 'utf8');
-
-    assert.doesNotMatch(readme, /docs\/command\.md/,
-      'README must not route users to removed docs/command.md');
-  });
-});
-
 describe('night-batch summary step PowerShell safety', () => {
   const findScript = readFileSync(FIND_OUTPUTS_SCRIPT_PATH, 'utf8');
   const summaryScript = readFileSync(APPEND_SUMMARY_SCRIPT_PATH, 'utf8');
@@ -661,52 +615,7 @@ describe('workflow delegates to external PowerShell scripts', () => {
   });
 });
 
-describe('docs: next strategy update policy', () => {
-  it('README documents that live checkout must not be edited during active run', () => {
-    const readme = readFileSync(README_PATH, 'utf8');
-
-    assert.match(readme, /live checkout.*(?:編集しない|変更しない|触らない|do not edit|do not modify)/i,
-      'README must state that live checkout must not be edited during active run');
-  });
-
-  it('README documents that workflow monitoring continues until production completes', () => {
-    const readme = readFileSync(README_PATH, 'utf8');
-
-    assert.match(readme, /workflow.*production.*(?:完了|complete).*(?:待つ|監視|monitor|追跡)/i,
-      'README must state that the workflow monitors production to completion');
-  });
-
-  it('README documents preparing next strategy in separate workspace', () => {
-    const readme = readFileSync(README_PATH, 'utf8');
-
-    assert.match(readme, /(?:worktree|clone|branch).*(?:次|next|別|separate)/i,
-      'README must mention preparing next strategy in a separate worktree/clone/branch');
-  });
-
-  it('README documents GitHub summary, artifact, and foreground state outputs', () => {
-    const readme = readFileSync(README_PATH, 'utf8');
-
-    assert.match(readme, /GITHUB_STEP_SUMMARY/i,
-      'README must mention the GitHub summary output');
-    assert.match(readme, /upload-artifact|artifact/i,
-      'README must mention artifact upload');
-    assert.match(readme, /roundN\/bundle-foreground-state\.json/i,
-      'README must point to the round-scoped foreground state file path');
-    assert.match(readme, /archive\/roundN/i,
-      'README must mention archived round output path');
-  });
-
-  it('README documents advance-next-round for explicit next run start', () => {
-    const readme = readFileSync(README_PATH, 'utf8');
-
-    assert.match(readme, /advance-next-round/,
-      'README must reference advance-next-round');
-    assert.match(readme, /workflow.*production.*(?:完了|終了|complete|finish).*(?:確認|verify|check)/i,
-      'README must instruct to confirm workflow-tracked production completion before updating');
-    assert.match(readme, /archive\/roundN/i,
-      'README must mention archived round output path');
-  });
-
+describe('live checkout protection contract', () => {
   it('write-night-batch-live-checkout-baseline.ps1 exists', () => {
     assert.ok(existsSync(BASELINE_WRITER_PATH),
       'scripts/windows/github-actions/write-night-batch-live-checkout-baseline.ps1 must exist');

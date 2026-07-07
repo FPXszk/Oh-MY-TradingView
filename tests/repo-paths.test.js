@@ -1,42 +1,32 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 import {
-  BACKTEST_CAMPAIGN_SEARCH_DIRS,
-  BACKTEST_UNIVERSE_SEARCH_DIRS,
   resolveNamedJsonPath,
 } from '../src/core/repo-paths.js';
 
 describe('resolveNamedJsonPath', () => {
-  it('resolves campaign ids with or without .json suffix', async () => {
-    const withoutSuffix = await resolveNamedJsonPath(
-      BACKTEST_CAMPAIGN_SEARCH_DIRS,
-      'strongest-overlay-us-50x9',
-      'Campaign',
-    );
-    const withSuffix = await resolveNamedJsonPath(
-      BACKTEST_CAMPAIGN_SEARCH_DIRS,
-      'strongest-overlay-us-50x9.json',
-      'Campaign',
-    );
+  it('resolves ids with or without .json suffix from fixture search dirs', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'repo-paths-'));
+    try {
+      const baseDir = join(root, 'configs');
+      const currentDir = join(baseDir, 'current');
+      const archiveDir = join(baseDir, 'archive');
+      await mkdir(currentDir, { recursive: true });
+      await mkdir(archiveDir, { recursive: true });
+      await writeFile(join(archiveDir, 'sample.json'), '{}\n', 'utf8');
 
-    assert.equal(withSuffix, withoutSuffix);
-    assert.match(withSuffix, /strongest-overlay-us-50x9\.json$/);
-  });
+      const searchDirs = [currentDir, baseDir, archiveDir];
+      const withoutSuffix = await resolveNamedJsonPath(searchDirs, 'sample', 'Fixture');
+      const withSuffix = await resolveNamedJsonPath(searchDirs, 'sample.json', 'Fixture');
 
-  it('resolves universe ids with or without .json suffix', async () => {
-    const withoutSuffix = await resolveNamedJsonPath(
-      BACKTEST_UNIVERSE_SEARCH_DIRS,
-      'long-run-us-50',
-      'Universe',
-    );
-    const withSuffix = await resolveNamedJsonPath(
-      BACKTEST_UNIVERSE_SEARCH_DIRS,
-      'long-run-us-50.json',
-      'Universe',
-    );
-
-    assert.equal(withSuffix, withoutSuffix);
-    assert.match(withSuffix, /long-run-us-50\.json$/);
+      assert.equal(withSuffix, withoutSuffix);
+      assert.equal(withSuffix, join(archiveDir, 'sample.json'));
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
   });
 });

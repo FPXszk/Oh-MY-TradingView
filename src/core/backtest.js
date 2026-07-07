@@ -1480,32 +1480,41 @@ export async function runNvdaMaBacktest() {
 const PRESETS_PATH = join(__dirname, '..', '..', 'config', 'backtest', 'strategy-presets.json');
 const RETIRED_PRESETS_PATH = join(__dirname, '..', '..', 'docs', 'research', 'archive', 'retired', 'retired-strategy-presets.json');
 
-export async function loadPreset(presetId, { dateOverride } = {}) {
+export async function loadPreset(
+  presetId,
+  {
+    dateOverride,
+    presetsPath = PRESETS_PATH,
+    retiredPresetsPath = RETIRED_PRESETS_PATH,
+    catalogPath,
+    includePublicCatalog = true,
+  } = {},
+) {
   let preset;
   let data;
   try {
-    const catalog = await loadCatalog(undefined, { includePublic: true });
+    const catalog = await loadCatalog(catalogPath, { includePublic: includePublicCatalog });
     const entry = catalog.strategies.find((s) => s.id === presetId);
     if (entry) {
       const { lifecycle, ...presetFields } = entry;
       preset = presetFields;
     }
-    const liveRaw = await readFile(PRESETS_PATH, 'utf8');
+    const liveRaw = await readFile(presetsPath, 'utf8');
     data = JSON.parse(liveRaw);
     if (!preset) {
       preset = data.strategies.find((s) => s.id === presetId);
     }
     if (!preset) {
-      const retiredRaw = await readFile(RETIRED_PRESETS_PATH, 'utf8');
+      const retiredRaw = await readFile(retiredPresetsPath, 'utf8');
       const retired = JSON.parse(retiredRaw);
       preset = retired.strategies.find((s) => s.id === presetId);
     }
   } catch {
-    const raw = await readFile(PRESETS_PATH, 'utf8');
+    const raw = await readFile(presetsPath, 'utf8');
     data = JSON.parse(raw);
     preset = data.strategies.find((s) => s.id === presetId);
     if (!preset) {
-      const retiredRaw = await readFile(RETIRED_PRESETS_PATH, 'utf8');
+      const retiredRaw = await readFile(retiredPresetsPath, 'utf8');
       const retired = JSON.parse(retiredRaw);
       preset = retired.strategies.find((s) => s.id === presetId);
     }
@@ -1534,7 +1543,7 @@ export async function loadPreset(presetId, { dateOverride } = {}) {
     if (typeof preset.source === 'string' && preset.source.trim()) {
       source = preset.source;
     } else if (typeof preset.source_path === 'string' && preset.source_path.trim()) {
-      source = await readFile(join(dirname(PRESETS_PATH), preset.source_path), 'utf8');
+      source = await readFile(join(dirname(presetsPath), preset.source_path), 'utf8');
     } else {
       throw new Error(`Preset "${presetId}" raw_source is missing source and source_path`);
     }

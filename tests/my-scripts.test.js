@@ -4,19 +4,28 @@ import { describe, it } from 'node:test';
 import { resolveStrategiesForMyScripts, saveStrategiesToMyScripts } from '../src/core/my-scripts.js';
 
 describe('resolveStrategiesForMyScripts', () => {
-  it('resolves a mixed list of repo presets and public raw-source strategies in order', async () => {
+  it('resolves presets in order through the injected loader', async () => {
     const strategies = await resolveStrategiesForMyScripts([
-      'donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late',
-      'tv-public-kdj-l2',
-      'tv-public-agni-momentum',
-    ]);
+      'fixture-alpha',
+      'fixture-beta',
+    ], {
+      loadPreset: async (id) => ({
+        preset: {
+          id,
+          name: id === 'fixture-alpha' ? 'Fixture Alpha' : 'Fixture Beta',
+          builder: id === 'fixture-alpha' ? 'donchian_breakout' : 'raw_source',
+        },
+        source: id === 'fixture-alpha'
+          ? 'strategy("Fixture Alpha")'
+          : 'strategy("Fixture Beta")',
+      }),
+    });
 
     assert.deepEqual(
       strategies.map((strategy) => strategy.id),
       [
-        'donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late',
-        'tv-public-kdj-l2',
-        'tv-public-agni-momentum',
+        'fixture-alpha',
+        'fixture-beta',
       ],
     );
     assert.equal(strategies[0].builder, 'donchian_breakout');

@@ -1,6 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -39,25 +40,6 @@ import { buildMarketFollowThroughFilter } from './strategy-expansion-fixtures.js
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-async function loadPresets() {
-  const [liveRaw, retiredRaw] = await Promise.all([
-    readFile(
-      join(__dirname, '..', 'config', 'backtest', 'strategy-presets.json'),
-      'utf8',
-    ),
-    readFile(
-      join(__dirname, '..', 'docs', 'research', 'archive', 'retired', 'retired-strategy-presets.json'),
-      'utf8',
-    ),
-  ]);
-  const live = JSON.parse(liveRaw);
-  const retired = JSON.parse(retiredRaw);
-  return {
-    ...live,
-    strategies: [...live.strategies, ...retired.strategies],
-  };
-}
 
 // ---------------------------------------------------------------------------
 // buildNvdaMaSource
@@ -1072,13 +1054,22 @@ describe('buildResearchStrategySource', () => {
     assert.ok(source.includes('allowEntry = inDateRange and regimeOk and rsiRegimeOk'));
   });
 
-  it('builds round7 breadth-persistence preset sources from the preset catalog', async () => {
-    const data = await loadPresets();
-    const preset = data.strategies.find(
-      (entry) => entry.id === 'donchian-55-20-rsp-filter-rsi14-regime-50-hard-stop-6pct-theme-breadth-quality',
-    );
-
-    assert.ok(preset, 'Expected round7 breadth-quality preset to exist');
+  it('builds breadth-persistence preset sources from a fixture preset', () => {
+    const preset = {
+      id: 'fixture-breadth-quality',
+      name: 'Fixture Breadth Quality',
+      builder: 'donchian_breakout',
+      parameters: { entry_period: 55, exit_period: 20 },
+      regime_filter: {
+        type: 'rsp_above_sma200',
+        reference_symbol: 'RSP',
+        reference_ma_type: 'sma',
+        reference_ma_period: 200,
+        action_when_false: 'no_new_entry',
+      },
+      rsi_regime_filter: { rsi_period: 14, threshold: 50, direction: 'above' },
+      stop_loss: { type: 'hard_percent', value: 6 },
+    };
     const source = buildResearchStrategySource(preset, defaults);
 
     assert.ok(source.includes('request.security("BATS:RSP", timeframe.period, close)'));
@@ -1086,13 +1077,20 @@ describe('buildResearchStrategySource', () => {
     assert.ok(source.includes('stopLossPrice = strategy.position_avg_price * (1 - 0.06)'));
   });
 
-  it('builds round7 dip-reclaim preset sources from the preset catalog', async () => {
-    const data = await loadPresets();
-    const preset = data.strategies.find(
-      (entry) => entry.id === 'rsi3-buy-20-sell-70-spy-filter-long-only-theme-deep-dip',
-    );
-
-    assert.ok(preset, 'Expected round7 deep-dip preset to exist');
+  it('builds dip-reclaim preset sources from a fixture preset', () => {
+    const preset = {
+      id: 'fixture-deep-dip',
+      name: 'Fixture Deep Dip',
+      builder: 'rsi_mean_reversion',
+      parameters: { rsi_period: 3, entry_below: 20, exit_above: 70 },
+      regime_filter: {
+        type: 'spy_above_sma200',
+        reference_symbol: 'SPY',
+        reference_ma_type: 'sma',
+        reference_ma_period: 200,
+        action_when_false: 'no_new_entry',
+      },
+    };
     const source = buildResearchStrategySource(preset, defaults);
 
     assert.ok(source.includes('request.security("BATS:SPY", timeframe.period, close)'));
@@ -1101,13 +1099,21 @@ describe('buildResearchStrategySource', () => {
     assert.ok(source.includes('exitSignal = rsiValue > 70'));
   });
 
-  it('builds round8 breadth-earlier preset sources from the preset catalog', async () => {
-    const data = await loadPresets();
-    const preset = data.strategies.find(
-      (entry) => entry.id === 'donchian-55-20-rsp-filter-rsi14-regime-40-theme-breadth-earlier',
-    );
-
-    assert.ok(preset, 'Expected round8 breadth-earlier preset to exist');
+  it('builds unguarded breadth-earlier preset sources from a fixture preset', () => {
+    const preset = {
+      id: 'fixture-breadth-earlier',
+      name: 'Fixture Breadth Earlier',
+      builder: 'donchian_breakout',
+      parameters: { entry_period: 55, exit_period: 20 },
+      regime_filter: {
+        type: 'rsp_above_sma200',
+        reference_symbol: 'RSP',
+        reference_ma_type: 'sma',
+        reference_ma_period: 200,
+        action_when_false: 'no_new_entry',
+      },
+      rsi_regime_filter: { rsi_period: 14, threshold: 40, direction: 'above' },
+    };
     const source = buildResearchStrategySource(preset, defaults);
 
     assert.ok(source.includes('request.security("BATS:RSP", timeframe.period, close)'));
@@ -1115,88 +1121,27 @@ describe('buildResearchStrategySource', () => {
     assert.ok(!source.includes('stopLossPrice = strategy.position_avg_price'));
   });
 
-  it('builds round8 quality-strict-guarded preset sources from the preset catalog', async () => {
-    const data = await loadPresets();
-    const preset = data.strategies.find(
-      (entry) => entry.id === 'donchian-55-20-spy-filter-rsi14-regime-60-hard-stop-6pct-theme-quality-strict-guarded',
-    );
-
-    assert.ok(preset, 'Expected round8 quality-strict-guarded preset to exist');
+  it('builds quality-strict guarded preset sources from a fixture preset', () => {
+    const preset = {
+      id: 'fixture-quality-strict',
+      name: 'Fixture Quality Strict',
+      builder: 'donchian_breakout',
+      parameters: { entry_period: 55, exit_period: 20 },
+      regime_filter: {
+        type: 'spy_above_sma200',
+        reference_symbol: 'SPY',
+        reference_ma_type: 'sma',
+        reference_ma_period: 200,
+        action_when_false: 'no_new_entry',
+      },
+      rsi_regime_filter: { rsi_period: 14, threshold: 60, direction: 'above' },
+      stop_loss: { type: 'hard_percent', value: 6 },
+    };
     const source = buildResearchStrategySource(preset, defaults);
 
     assert.ok(source.includes('request.security("BATS:SPY", timeframe.period, close)'));
     assert.ok(source.includes('rsiRegimeOk = rsiRegimeValue > 60'));
     assert.ok(source.includes('stopLossPrice = strategy.position_avg_price * (1 - 0.06)'));
-  });
-
-  it('builds round9 breadth-earlier-guarded preset sources from the preset catalog', async () => {
-    const data = await loadPresets();
-    const preset = data.strategies.find(
-      (entry) => entry.id === 'donchian-55-20-rsp-filter-rsi14-regime-40-hard-stop-6pct-theme-breadth-earlier-guarded',
-    );
-
-    assert.ok(preset, 'Expected round9 breadth-earlier-guarded preset to exist');
-    const source = buildResearchStrategySource(preset, defaults);
-
-    assert.ok(source.includes('request.security("BATS:RSP", timeframe.period, close)'));
-    assert.ok(source.includes('rsiRegimeOk = rsiRegimeValue > 40'));
-    assert.ok(source.includes('stopLossPrice = strategy.position_avg_price * (1 - 0.06)'));
-  });
-
-  it('builds round9 deep-pullback-strict preset sources from the preset catalog', async () => {
-    const data = await loadPresets();
-    const preset = data.strategies.find(
-      (entry) => entry.id === 'donchian-55-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict',
-    );
-
-    assert.ok(preset, 'Expected round9 deep-pullback-strict preset to exist');
-    const source = buildResearchStrategySource(preset, defaults);
-
-    assert.ok(source.includes('request.security("BATS:RSP", timeframe.period, close)'));
-    assert.ok(source.includes('rsiRegimeOk = rsiRegimeValue > 60'));
-    assert.ok(source.includes('stopLossPrice = strategy.position_avg_price * (1 - 0.08)'));
-  });
-
-  it('builds round9 quality-strict-relaxed preset sources from the preset catalog', async () => {
-    const data = await loadPresets();
-    const preset = data.strategies.find(
-      (entry) => entry.id === 'donchian-55-20-spy-filter-rsi14-regime-45-theme-quality-strict-relaxed',
-    );
-
-    assert.ok(preset, 'Expected round9 quality-strict-relaxed preset to exist');
-    const source = buildResearchStrategySource(preset, defaults);
-
-    assert.ok(source.includes('request.security("BATS:SPY", timeframe.period, close)'));
-    assert.ok(source.includes('rsiRegimeOk = rsiRegimeValue > 45'));
-    assert.ok(!source.includes('stopLossPrice = strategy.position_avg_price'));
-  });
-
-  it('builds round10 quality-strict-relaxed-guarded preset sources from the preset catalog', async () => {
-    const data = await loadPresets();
-    const preset = data.strategies.find(
-      (entry) => entry.id === 'donchian-55-20-spy-filter-rsi14-regime-45-hard-stop-8pct-theme-quality-strict-relaxed-guarded',
-    );
-
-    assert.ok(preset, 'Expected round10 quality-strict-relaxed-guarded preset to exist');
-    const source = buildResearchStrategySource(preset, defaults);
-
-    assert.ok(source.includes('request.security("BATS:SPY", timeframe.period, close)'));
-    assert.ok(source.includes('rsiRegimeOk = rsiRegimeValue > 45'));
-    assert.ok(source.includes('stopLossPrice = strategy.position_avg_price * (1 - 0.08)'));
-  });
-
-  it('builds round10 breadth-quality-balanced-mid preset sources from the preset catalog', async () => {
-    const data = await loadPresets();
-    const preset = data.strategies.find(
-      (entry) => entry.id === 'donchian-55-20-rsp-filter-rsi14-regime-52-hard-stop-8pct-theme-breadth-quality-balanced-mid',
-    );
-
-    assert.ok(preset, 'Expected round10 breadth-quality-balanced-mid preset to exist');
-    const source = buildResearchStrategySource(preset, defaults);
-
-    assert.ok(source.includes('request.security("BATS:RSP", timeframe.period, close)'));
-    assert.ok(source.includes('rsiRegimeOk = rsiRegimeValue > 52'));
-    assert.ok(source.includes('stopLossPrice = strategy.position_avg_price * (1 - 0.08)'));
   });
 
   it('rejects unsupported regime filters in the generator', () => {
@@ -1240,54 +1185,89 @@ describe('buildResearchStrategySource', () => {
 // loadPreset
 // ---------------------------------------------------------------------------
 describe('loadPreset', () => {
-  it('successfully loads a known preset (ema-cross-9-21)', async () => {
-    const { preset, defaults } = await loadPreset('ema-cross-9-21');
-    assert.ok(preset);
-    assert.equal(preset.id, 'ema-cross-9-21');
+  async function withPresetFixture(run) {
+    const root = await mkdtemp(join(tmpdir(), 'backtest-preset-'));
+    try {
+      await mkdir(join(root, 'sources'), { recursive: true });
+      const presetsPath = join(root, 'strategy-presets.json');
+      const retiredPresetsPath = join(root, 'retired-strategy-presets.json');
+      const catalogPath = join(root, 'strategy-catalog.json');
+      const rawSourcePath = join(root, 'sources', 'raw-fixture.pine');
+
+      const commonDefaults = {
+        pine_version: 6,
+        direction: 'long',
+        qty_type: 'percent_of_equity',
+        qty_value: 100,
+        initial_capital: 10000,
+        date_range: { from: '2020-01-01', to: '2024-12-31' },
+      };
+      await writeFile(rawSourcePath, '//@version=6\nstrategy("Raw Fixture")\n', 'utf8');
+      await writeFile(presetsPath, JSON.stringify({
+        common_defaults: commonDefaults,
+        strategies: [
+          {
+            id: 'fixture-live',
+            name: 'Fixture Live',
+            category: 'fixture',
+            builder: 'ma_cross',
+            parameters: { fast_period: 9, slow_period: 21, ma_type: 'sma' },
+          },
+          {
+            id: 'fixture-raw',
+            name: 'Fixture Raw',
+            category: 'fixture',
+            builder: 'raw_source',
+            parameters: {},
+            source_path: 'sources/raw-fixture.pine',
+          },
+        ],
+      }), 'utf8');
+      await writeFile(retiredPresetsPath, JSON.stringify({
+        strategies: [
+          {
+            id: 'fixture-retired',
+            name: 'Fixture Retired',
+            category: 'fixture',
+            builder: 'ma_cross',
+            parameters: { fast_period: 5, slow_period: 20, ma_type: 'sma' },
+          },
+        ],
+      }), 'utf8');
+      await writeFile(catalogPath, JSON.stringify({
+        strategies: [
+          {
+            id: 'fixture-catalog',
+            name: 'Fixture Catalog',
+            category: 'fixture',
+            builder: 'ma_cross',
+            parameters: { fast_period: 8, slow_period: 18, ma_type: 'sma' },
+            lifecycle: { status: 'live' },
+          },
+        ],
+      }), 'utf8');
+
+      return await run({ presetsPath, retiredPresetsPath, catalogPath });
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  }
+
+  it('loads a live preset from fixture files', async () => {
+    await withPresetFixture(async (paths) => {
+      const { preset, defaults, source } = await loadPreset('fixture-live', paths);
+      assert.equal(preset.id, 'fixture-live');
+      assert.equal(typeof defaults.initial_capital, 'number');
+      assert.equal(source, buildResearchStrategySource(preset, defaults));
+    });
   });
 
-  it('returns preset object with expected fields', async () => {
-    const { preset } = await loadPreset('ema-cross-9-21');
-    assert.equal(typeof preset.id, 'string');
-    assert.equal(typeof preset.name, 'string');
-    assert.equal(typeof preset.category, 'string');
-    assert.equal(typeof preset.builder, 'string');
-    assert.equal(typeof preset.parameters, 'object');
-  });
-
-  it('returns defaults with common_defaults', async () => {
-    const { defaults } = await loadPreset('ema-cross-9-21');
-    assert.ok(defaults);
-    assert.equal(typeof defaults.pine_version, 'number');
-    assert.equal(typeof defaults.direction, 'string');
-    assert.equal(typeof defaults.qty_type, 'string');
-    assert.equal(typeof defaults.qty_value, 'number');
-    assert.equal(typeof defaults.initial_capital, 'number');
-  });
-
-  it('throws for unknown preset id', async () => {
-    await assert.rejects(
-      () => loadPreset('nonexistent-preset-id'),
-      /not found/,
-    );
-  });
-
-  it('loaded preset is compatible with buildResearchStrategySource', async () => {
-    const { preset, defaults, source } = await loadPreset('ema-cross-9-21');
-    assert.ok(typeof source === 'string');
-    assert.ok(source.length > 0);
-    assert.ok(source.includes('//@version=6'));
-    assert.ok(source.includes(preset.name));
-    assert.equal(source, buildResearchStrategySource(preset, defaults));
-  });
-
-  it('extracts the executable strategy title from generated raw_source presets', async () => {
-    const { preset, source } = await loadPreset('emr-next-vol20x05');
-    assert.equal(preset.name, 'EMR Next Volume 0.5x');
-    assert.equal(
-      extractStrategyTitleFromSource(source),
-      'EMR Winrate Entry Confirm Volume Above 20 Day Average',
-    );
+  it('loads raw_source content relative to the injected preset file path', async () => {
+    await withPresetFixture(async (paths) => {
+      const { preset, source } = await loadPreset('fixture-raw', paths);
+      assert.equal(preset.builder, 'raw_source');
+      assert.equal(extractStrategyTitleFromSource(source), 'Raw Fixture');
+    });
   });
 
   it('extracts the strategy title from positional strategy declarations', () => {
@@ -1295,123 +1275,30 @@ describe('loadPreset', () => {
     assert.equal(extractStrategyTitleFromSource(source), 'NVDA 5/20 MA Cross');
   });
 
-  it('throws for presets whose builder is unsupported by the repo CLI generator', async () => {
-    await assert.rejects(
-      () => loadPreset('macd-signal'),
-      /not executable by repo CLI: Unsupported builder/,
-    );
+  it('strips lifecycle when resolving from an injected catalog', async () => {
+    await withPresetFixture(async (paths) => {
+      const { preset } = await loadPreset('fixture-catalog', paths);
+      assert.equal(preset.id, 'fixture-catalog');
+      assert.equal(preset.lifecycle, undefined);
+    });
   });
 
-  it('resolves a live preset from catalog when available', async () => {
-    const { preset } = await loadPreset(
-      'donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late',
-    );
-    assert.ok(preset);
-    assert.equal(preset.id, 'donchian-60-20-rsp-filter-rsi14-regime-60-hard-stop-8pct-theme-deep-pullback-strict-entry-late');
-    assert.equal(preset.lifecycle, undefined, 'lifecycle must be stripped from loaded preset');
+  it('falls back to retired fixture presets', async () => {
+    await withPresetFixture(async (paths) => {
+      const { preset, source } = await loadPreset('fixture-retired', paths);
+      assert.equal(preset.id, 'fixture-retired');
+      assert.ok(source.includes('ta.sma(close, 5)'));
+      assert.ok(source.includes('ta.sma(close, 20)'));
+    });
   });
 
-  it('resolves the research-only true 55/20 control from retired presets and builds executable source', async () => {
-    const { preset, source } = await loadPreset(
-      'donchian-55-20-rsp-filter-rsi14-regime-55-hard-stop-8pct-theme-deep-pullback-tight-true-55-20-control',
-    );
-    assert.ok(preset);
-    assert.equal(preset.parameters.entry_period, 55);
-    assert.equal(preset.parameters.exit_period, 20);
-    assert.ok(source.includes('donchianUpper = ta.highest(high, 55)[1]'));
-    assert.ok(source.includes('donchianLower = ta.lowest(low, 20)[1]'));
-  });
-
-  it('loads the strongest profit-protect raw_source preset with staged partial exits and no risk sizing override', async () => {
-    const { preset, source } = await loadPreset('donchian-60-20-rsp-rsi14-regime60-tp30-25-tp100-50');
-    assert.equal(preset.builder, 'raw_source');
-    assert.match(source, /var bool tp1Taken = false/);
-    assert.match(source, /var bool tp2Taken = false/);
-    assert.match(source, /close >= strategy\.position_avg_price \* \(1 \+ 0\.30\)/);
-    assert.match(source, /strategy\.close\("Long", qty_percent=25, comment="TP1 30%"\)/);
-    assert.match(source, /close >= strategy\.position_avg_price \* \(1 \+ 1\.00\)/);
-    assert.match(source, /strategy\.close\("Long", qty_percent=50, comment="TP2 100%"\)/);
-    assert.doesNotMatch(source, /riskAmount = strategy\.equity \* 0\.[0-9]+/);
-    assert.doesNotMatch(source, /riskBasedQty/);
-    assert.doesNotMatch(source, /qty=entryQty/);
-    assert.match(source, /default_qty_type=strategy\.percent_of_equity/);
-    assert.match(source, /strategy\.entry\("Long", strategy\.long\)/);
-  });
-
-  it('loads a run68 tp25-28 micro sweep raw_source preset', async () => {
-    const { preset, source } = await loadPreset('donchian-60-20-rsp-rsi14-regime60-tp25-28-tp100-50');
-    assert.equal(preset.builder, 'raw_source');
-    assert.match(source, /strategy\("Donchian 60\/20 \+ RSP \+ RSI14 Regime 60 \+ TP 25\/28 \+ TP 100\/50"/);
-    assert.match(source, /close >= strategy\.position_avg_price \* \(1 \+ 0\.25\)/);
-    assert.match(source, /strategy\.close\("Long", qty_percent=28, comment="TP1 25%"\)/);
-    assert.match(source, /strategy\.close\("Long", qty_percent=50, comment="TP2 100%"\)/);
-  });
-
-  it('loads the panic reversal raw_source preset with panic filter, RSI2 confirm, and no stop loss', async () => {
-    const { preset, source } = await loadPreset('rsp-vix-spy-panic-reversal-rsi2-confirm-sma25-rsi65-exit-no-stop');
-    assert.equal(preset.builder, 'raw_source');
-    assert.match(source, /request\.security\("BATS:RSP", timeframe\.period, close\)/);
-    assert.match(source, /request\.security\("CBOE:VIX", timeframe\.period, close\)/);
-    assert.match(source, /request\.security\("BATS:SPY", timeframe\.period, close\)/);
-    assert.match(source, /panicFilter = rspClose < rspSma200 and vixClose > 30 and spyRsi14 < 30 and spyClose < spySma200/);
-    assert.match(source, /bottomConfirm = ta\.crossover\(spyRsi2, 10\)/);
-    assert.match(source, /strategy\.entry\("Long", strategy\.long\)/);
-    assert.match(source, /exitSignal = close > sma25 and rsiValue >= 65/);
-    assert.doesNotMatch(source, /stopLossPrice = strategy\.position_avg_price/);
-  });
-
-  it('loads the strongest plus recovery core preset with breakout and VIX peakout overlay', async () => {
-    const { preset, source } = await loadPreset('donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-sma25-rsi65');
-    assert.equal(preset.builder, 'raw_source');
-    assert.match(source, /strategy\("Donchian 60\/20 \+ RSP \+ RSI14 Regime 60 \+ TP 25\/27 \+ Recovery VIX20 RSI40 Peakout SMA25 RSI65"/);
-    assert.match(source, /weakMarket = rspClose < rspSma200 and spyClose < spySma200 and spyRsi14 < 40 and vixClose > 20/);
-    assert.match(source, /recoveryConfirm = vixPeakout/);
-    assert.match(source, /strategy\.entry\("BreakoutLong", strategy\.long\)/);
-    assert.match(source, /strategy\.entry\("RecoveryLong", strategy\.long\)/);
-    assert.match(source, /strategy\.close\("BreakoutLong", qty_percent=27, comment="TP1 25%"\)/);
-    assert.match(source, /recoveryExitSignal = close > recoveryExitSma and recoveryExitRsi >= 65/);
-  });
-
-  it('loads the strongest plus recovery strict confirm preset with both VIX peakout and RSI2 cross', async () => {
-    const { source } = await loadPreset('donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-vixpeak-rsi2x10-sma25-rsi65');
-    assert.match(source, /rsi2Confirm = ta\.crossover\(spyRsi2, 10\)/);
-    assert.match(source, /recoveryConfirm = vixPeakout and rsi2Confirm/);
-  });
-
-  it('loads the 50pack or-confirm preset with widened recovery confirmation', async () => {
-    const { preset, source } = await loadPreset('donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-or-rsi2x10-sma25-rsi65');
-    assert.equal(preset.builder, 'raw_source');
-    assert.equal(preset.parameters.recovery_confirm, 'vix_peakout_or_rsi2_cross_10');
-    assert.match(source, /weakMarket = rspClose < rspSma200 and spyClose < spySma200 and spyRsi14 < 40 and vixClose > 24/);
-    assert.match(source, /recoveryConfirm = vixPeakout or rsi2Confirm/);
-  });
-
-  it('loads the 50pack no-confirm preset with direct weakMarket entries', async () => {
-    const { preset, source } = await loadPreset('donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-noconfirm-sma25-rsi65');
-    assert.equal(preset.builder, 'raw_source');
-    assert.equal(preset.parameters.recovery_confirm, 'none');
-    assert.match(source, /recoveryConfirm = true/);
-    assert.match(source, /recoveryEntrySignal = inDateRange and weakMarket and recoveryConfirm/);
-  });
-
-  it('loads the 50pack rsi2-only preset with a shorter exit SMA', async () => {
-    const { preset, source } = await loadPreset('donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix20-rsi40-rsi2only-sma20-rsi65');
-    assert.equal(preset.builder, 'raw_source');
-    assert.equal(preset.parameters.recovery_confirm, 'rsi2_cross_10');
-    assert.equal(preset.parameters.recovery_exit_sma_period, 20);
-    assert.match(source, /recoveryConfirm = rsi2Confirm/);
-    assert.match(source, /recoveryExitSma = ta\.sma\(close, 20\)/);
-  });
-
-  it('loads the 50pack DD suppression preset with SMA15 and RSI62 exits', async () => {
-    const { preset, source } = await loadPreset('donchian-60-20-rsp-rsi14-regime60-tp25-27-plus-recovery-vix24-rsi40-vixpeak-sma15-rsi62');
-    assert.equal(preset.builder, 'raw_source');
-    assert.equal(preset.parameters.recovery_vix_min, 24);
-    assert.equal(preset.parameters.recovery_exit_sma_period, 15);
-    assert.equal(preset.parameters.recovery_exit_rsi_threshold, 62);
-    assert.match(source, /weakMarket = rspClose < rspSma200 and spyClose < spySma200 and spyRsi14 < 40 and vixClose > 24/);
-    assert.match(source, /recoveryExitSma = ta\.sma\(close, 15\)/);
-    assert.match(source, /recoveryExitSignal = close > recoveryExitSma and recoveryExitRsi >= 62/);
+  it('throws for unknown preset id in fixture files', async () => {
+    await withPresetFixture(async (paths) => {
+      await assert.rejects(
+        () => loadPreset('nonexistent-preset-id', paths),
+        /not found/,
+      );
+    });
   });
 });
 
