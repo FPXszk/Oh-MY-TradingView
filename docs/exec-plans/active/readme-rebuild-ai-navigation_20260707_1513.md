@@ -1,598 +1,370 @@
-# README 再構築・AIナビゲーション整備計画
+# README 再構築・AI ナビゲーション整備計画
 
 - 作成日時: 2026-07-07 15:13 JST
+- 更新日時: 2026-07-07 15:35 JST
 - 対象リポジトリ: `FPXszk/Oh-MY-TradingView`
 - 対象ブランチ: `main`
-- 状態: PLAN / 実装承認待ち
-- 主対象: `README.md` とドキュメント導線
+- 状態: PLAN
+- 主対象: `README.md`、`docs/README.md`、`docs/DOCUMENTATION_SYSTEM.md`
 
-## 1. 背景
+## 1. ゴール
 
-現在の `README.md` は、初期の TradingView Desktop 向け MCP / CLI ブリッジを中心とした説明に、後から追加された以下の情報が継ぎ足されている。
+古い README を、現行コードに合う「リポジトリの一次入口」に作り直す。
 
-- TradingView Desktop への CDP 接続
-- MCP サーバー
-- `tv` CLI
-- Pine Script 編集・コンパイル・バックテスト
-- 米国株・日本株スクリーナー
-- SEC EDGAR / EDINET 連携
-- Moomoo OpenAPI 連携
-- SBI / Moomoo ポートフォリオ処理
-- Python + Node.js による Night Batch
-- Windows self-hosted GitHub Actions
-- 戦略・調査資料・実行成果物の管理
+特に、他の AI エージェントや開発者が最初に見たときに、次を迷わず判断できる状態にする。
 
-その結果、プロジェクト概要、CLI リファレンス、個別 runbook、過去の運用事情、トラブルシューティング、アーキテクチャ説明が単一の README に混在している。
+- このプロジェクトが何をするものか
+- 現在の主実行環境が何か
+- タスク別にどの範囲を読むべきか
+- 実行入口、ドメインロジック、設定、テストがどこにあるか
+- 何が正本で、何が生成物・過去資料か
 
-この状態では、人間だけでなく新しく作業する AI エージェントも、次の判断に時間がかかる。
+README は詳細な runbook ではなく、対象領域へ進むためのルーターにする。CLI / MCP tool の全件列挙や古い運用履歴は README の主導線から外し、必要なものだけ `docs/` へ案内する。
 
-1. このリポジトリの現在の主目的は何か
-2. 現行の実行環境は Windows native と WSL のどちらか
-3. 依頼されたタスクでどのディレクトリを確認すべきか
-4. どのファイルが実行入口で、どこにドメインロジックがあるか
-5. どのテストを実行すべきか
-6. 生成物・過去資料・現行設定のどれを正本として扱うべきか
+## 2. 既存計画レビュー
 
-README をゼロベースで再設計し、リポジトリ全体を説明し切る巨大マニュアルではなく、必要な調査範囲へ最短で案内する一次入口へ変更する。
+既存の `docs/exec-plans/active/readme-rebuild-ai-navigation_20260707_1513.md` は方向性として妥当だった。
 
-## 2. 現状確認で判明した問題
+維持する方針:
 
-### 2.1 README が肥大化している
+- README をゼロベースで再構成する
+- README 冒頭にプロジェクト概要、現行環境、読み順を置く
+- タスク別ナビゲーションを README の中心にする
+- current / legacy を明確に分ける
+- `docs/README.md` を作成し、docs 配下の索引を分離する
+- `docs/DOCUMENTATION_SYSTEM.md` を新しい役割分担へ合わせる
+- 導線破損を検出するテストを追加する
 
-現行 README は約 900 行あり、以下が同一階層で並んでいる。
+修正する点:
 
-- プロジェクト概要
-- MCP tool 一覧
-- CLI コマンド一覧
-- セットアップ
-- WSL 接続手順
-- 個別テーマの watchlist 登録例
-- Python Night Batch
-- Windows runner 運用
-- dual-worker の過去構成
-- experiment gating
-- テスト
-- 制約
-- アーキテクチャ
+- 検証範囲はドキュメント変更に合わせ、必須は `node --test tests/documentation-navigation.test.js` と `npm run test:unit` に絞る。CDP 実機 E2E は README 変更の必須条件にしない。
+- タスク別ナビゲーションは実在ファイルに合わせて確定する。
+- README は 250〜350 行の目安にこだわりすぎず、最初の 150 行で判断できることを優先する。
+- `package.json` の `test:unit` は既存列挙方式に合わせて、追加する導線テストだけを足す。
+- 実装コード、workflow 挙動、CLI 挙動は変更しない。
 
-README が索引ではなく、運用マニュアル・履歴・コマンド集を兼ねている。
+## 3. 現行コードから確認した前提
 
-### 2.2 README 冒頭の導線に不整合がある
+主実行環境:
 
-README は `docs/README.md` を docs 全体の入口として案内しているが、現在そのファイルは存在しない。
-
-新READMEでは、リンク先の存在を検証可能にし、存在しないドキュメントへ誘導しない。
-
-### 2.3 README と現行コードの説明が一致していない
-
-代表例として、README では `market_*` の取得元を Yahoo Finance 中心として説明している一方、現行 `src/server.js` では Moomoo を主経路、Yahoo を legacy opt-in fallback として説明している。
-
-コードと README のどちらが正しいかを毎回判断させる構成を廃止する。
-
-### 2.4 現行アーキテクチャを表現できていない
-
-現在のリポジトリには、初期の `src/core/`、`src/tools/`、`src/cli/` 以外にも次の主要領域がある。
-
-- `config/backtest/`
-- `config/night_batch/`
-- `scripts/backtest/`
-- `scripts/screener/`
-- `scripts/moomoo/`
-- `scripts/sbi/`
-- `scripts/portfolio/`
-- `scripts/windows/`
-- `python/night_batch.py`
-- `.github/workflows/`
-- `docs/exec-plans/`
-- `docs/reports/`
-- `artifacts/`
-
-現行 README 末尾のツリーでは、これらの関係が十分に分からない。
-
-### 2.5 Windows native と WSL legacy の境界が曖昧
-
-現行の主環境は次の構成である。
-
-- リポジトリ: `C:\00_mycode\Oh-MY-TradingView`
-- CDP: `127.0.0.1:9222`
-- Codex / MCP: Windows native
-- self-hosted runner: Windows
-
-一方で、以下の WSL 前提ファイルも残っている。
-
-- `justfile`
-- `devinit.sh`
-- tmux セッション構成
-- `~/code/Oh-MY-TradingView` 前提のパス
-
-これらは削除せず、README 上で current と legacy / optional を明確に分ける。
-
-### 2.6 ドキュメント保守ルールにも古い記載がある
-
-`docs/DOCUMENTATION_SYSTEM.md` には、現在の `package.json` と一致しないテスト記述や、古い README 構成を前提にした説明が含まれる。
-
-README のみを変更すると再び導線が分裂するため、関連ドキュメントも同時に更新する。
-
-## 3. 目的
-
-新READMEの目的は、プロジェクトのすべてを一文書で説明することではない。
-
-次の問いに、README 上部だけで答えられる状態を作る。
-
-1. このリポジトリは何をするものか
-2. 現在の主実行環境は何か
-3. AI / 開発者は最初に何を読むべきか
-4. タスクごとに、どこからどこまで確認すべきか
-5. 実行入口とドメインロジックはどこか
-6. どのテストで変更を検証すべきか
-7. どのファイルが正本で、どれが生成物・過去資料か
-
-## 4. 設計原則
-
-### 4.1 README はルーターにする
-
-README は詳細マニュアルではなく、対象領域へ案内するルーターとする。
-
-詳細な個別 runbook、障害対応、過去経緯は `docs/` 配下へ分離する。
-
-### 4.2 段階的開示を使う
-
-最初に概要とタスク別ナビゲーションを示し、必要な人だけが詳細へ進む構造にする。
-
-読む順番は次を基本とする。
-
-1. `AGENTS.md`
-2. `README.md` のプロジェクト概要
-3. `README.md` のタスク別ナビゲーション
-4. `docs/exec-plans/active/`
-5. 対象ドメインの入口ファイル
-6. 対応するテスト
-7. 必要な場合だけ過去資料・生成物
-
-### 4.3 コードを正本にする
-
-README に手作業で全 CLI / MCP tool を列挙しない。
-
-- CLI 一覧: `npm run tv -- --help`
-- CLI 登録入口: `src/cli/index.js`
-- MCP 登録入口: `src/server.js`
-- Node scripts: `package.json`
-- Workflow: `.github/workflows/`
-
-README には代表例と入口だけを書く。
-
-### 4.4 current と legacy を明示する
-
-- Current: Windows native / `127.0.0.1:9222`
-- Legacy / optional: WSL、tmux、portproxy、旧 dual-worker 構成
-
-両者を同じ推奨度で並べない。
-
-### 4.5 生成物を調査入口にしない
-
-原則として、次の優先順位で調査する。
-
-1. `src/`
-2. `scripts/`
-3. `config/`
-4. `.github/workflows/`
-5. `tests/`
-6. `docs/`
-7. `artifacts/`
-
-`artifacts/` は実行結果の確認に使うが、実装調査の最初の入口にはしない。
-
-## 5. 新READMEの構成
-
-### 5.1 タイトルと一文概要
-
-README 冒頭に、現在のプロジェクト全体を表す一文を置く。
-
-想定内容:
-
-> TradingView Desktop の CDP 操作を中核に、MCP / CLI、Pine 開発、バックテスト、株式スクリーニング、ポートフォリオ診断、Windows Night Batch を統合するローカル投資分析基盤。
-
-### 5.2 現在の主実行環境
-
-README 上部に current 環境を明記する。
-
-- OS: Windows native
-- Node.js: 20 以上
 - Repository root: `C:\00_mycode\Oh-MY-TradingView`
-- TradingView CDP: `127.0.0.1:9222`
-- Night Batch: Windows self-hosted runner
-- WSL: legacy / troubleshooting / optional
+- Node.js: `>=20`
+- TradingView CDP: Windows native `127.0.0.1:9222`
+- GitHub Actions: Windows self-hosted runner を含む
+- WSL / tmux / portproxy は legacy または optional
 
-### 5.3 AI / 開発者が最初に読む順番
+主要入口:
 
-次の順番を明示する。
+- MCP server: `src/server.js`
+- CDP 接続: `src/connection.js`
+- MCP tools: `src/tools/`
+- CLI: `src/cli/index.js`、`src/cli/commands/`
+- ドメインロジック: `src/core/`
+- Node scripts: `package.json`、`scripts/`
+- Workflows: `.github/workflows/`
+- Backtest / Night Batch 設定: `config/backtest/`、`config/night_batch/`
+- Screener 設定: `config/screener/`
+- Python Night Batch runner: `python/night_batch.py`
+- 検証: `tests/`
+- 実装計画: `docs/exec-plans/`
+- 生成物: `artifacts/`
 
-```text
-1. AGENTS.md
-2. README.md の「タスク別ナビゲーション」
-3. docs/exec-plans/active/
-4. 対象ドメインの入口ファイル
-5. 対応する tests/
-6. 必要な場合だけ docs の詳細資料と artifacts
-```
+現行 workflow:
 
-`AGENTS.md` の規則を README に複製しない。
+- `.github/workflows/daily-screener.yml`
+- `.github/workflows/daily-screener-japan.yml`
+- `.github/workflows/moomoo-portfolio-diagnostics.yml`
+- `.github/workflows/night-batch-self-hosted.yml`
+- `.github/workflows/night-batch-smoke.yml`
+- `.github/workflows/portfolio-health-check.yml`
+- `.github/workflows/sbi-portfolio-capture.yml`
 
-### 5.4 タスク別ナビゲーション
+現行 script 領域:
 
-README の中心に次の表を置く。
+- `scripts/backtest/`
+- `scripts/docs/`
+- `scripts/line/`
+- `scripts/moomoo/`
+- `scripts/portfolio/`
+- `scripts/sbi/`
+- `scripts/screener/`
+- `scripts/tmux/`
+- `scripts/windows/`
 
-| タスク | 最初に見る場所 | 次に見る場所 | 主なテスト |
-|---|---|---|---|
-| MCP tool 追加・修正 | `src/server.js` | `src/tools/` → `src/core/` | 対応する `tests/*.test.js` |
-| CLI 追加・修正 | `src/cli/index.js` | `src/cli/commands/` → `src/core/` | CLI 対象の unit test |
-| CDP 接続不具合 | `src/connection.js` | `src/core/health.js`、`src/core/tradingview-readiness.js` | `connection.test.js`、E2E |
-| Pine 編集・compile | `src/tools/pine.js` | `src/core/pine.js` | Pine 系 test |
-| バックテスト戦略 | `config/backtest/strategy-presets.json` | `src/core/backtest.js`、`src/core/research-backtest.js` | `backtest.test.js` |
-| Campaign | `config/backtest/campaigns/` | `src/core/campaign.js`、`scripts/backtest/` | campaign 系 test |
-| Night Batch | `config/night_batch/` | `.github/workflows/night-batch-self-hosted.yml` → `scripts/windows/` → `python/night_batch.py` | night-batch 系 test |
-| 米国スクリーナー | `.github/workflows/daily-screener.yml` | `scripts/screener/` → `src/core/fundamental-screener.js` | screener / SEC 系 test |
-| 日本株スクリーナー | `.github/workflows/daily-screener-japan.yml` | `scripts/screener/` → `src/core/edinet.js` | screener / EDINET 系 test |
-| Moomoo OpenAPI | `src/tools/moomoo.js` | `src/core/moomoo.js`、`scripts/moomoo/` | `moomoo.test.js` |
-| SBI 取得・変換 | `scripts/sbi/` | `.github/workflows/sbi-portfolio-capture.yml` | SBI / portfolio 系 test |
-| 統合ポートフォリオ | `scripts/portfolio/` | 関連 workflow / report | portfolio 系 test |
-| Windows runner | `.github/workflows/night-batch-self-hosted.yml` | `scripts/windows/` | Windows / night-batch 系 test |
-| ドキュメント更新 | `docs/README.md` | `docs/DOCUMENTATION_SYSTEM.md`、`scripts/docs/` | documentation navigation test |
+## 4. 変更対象
 
-実装時に、実在するファイル名とテスト名を再確認して確定する。
-
-### 5.5 実行経路
-
-README には、詳細実装ではなく次の 4 経路を図示する。
-
-```text
-MCP
-src/server.js
-  → src/tools/*
-  → src/core/*
-  → src/connection.js / external providers
-
-CLI
-src/cli/index.js
-  → src/cli/commands/*
-  → src/core/*
-
-Workflow
-.github/workflows/*
-  → scripts/*
-  → src/core/*
-  → docs/reports/ または artifacts/
-
-Night Batch
-.github/workflows/night-batch-self-hosted.yml
-  → scripts/windows/*
-  → python/night_batch.py
-  → scripts/backtest/*
-  → artifacts/night-batch/
-```
-
-### 5.6 リポジトリ構造
-
-README には深さ 2〜3 の構造だけを載せる。
-
-```text
-.
-├─ AGENTS.md                 # AI 作業規則
-├─ README.md                 # プロジェクト入口・タスクルーター
-├─ package.json              # Node 実行入口・テストコマンド
-├─ src/
-│  ├─ server.js              # MCP サーバー入口
-│  ├─ connection.js          # CDP 接続
-│  ├─ core/                  # ドメインロジック
-│  ├─ tools/                 # MCP tool 登録
-│  └─ cli/                   # tv CLI
-├─ config/
-│  ├─ backtest/              # preset・campaign・universe
-│  └─ night_batch/           # Night Batch 実行設定
-├─ scripts/
-│  ├─ backtest/
-│  ├─ screener/
-│  ├─ moomoo/
-│  ├─ sbi/
-│  ├─ portfolio/
-│  ├─ line/
-│  ├─ docs/
-│  └─ windows/
-├─ python/
-│  └─ night_batch.py
-├─ .github/workflows/        # 定期・手動 workflow
-├─ tests/                    # unit / E2E / workflow 検証
-├─ docs/                     # 計画・設計・調査・レポート
-└─ artifacts/                # 生成物。通常は実装調査の起点にしない
-```
-
-### 5.7 最小セットアップ
-
-README には現行環境の最小手順だけを書く。
-
-```powershell
-npm ci
-npm run tv -- --help
-npm test
-```
-
-CDP が必要なタスクでは、TradingView Desktop を debug port `9222` 付きで起動し、health check を先に実施する。
-
-詳細なセットアップや OS 別トラブルシューティングは docs 側へ分離する。
-
-### 5.8 テストの選び方
-
-README に次を記載する。
-
-- Core / CLI 変更: `npm run test:unit`
-- Night Batch 変更: `npm run test:night-batch`
-- CDP 実機確認: `npm run test:e2e`
-- 全体: `npm run test:all`
-
-タスク別ナビゲーション表と合わせて、対象テストを選べるようにする。
-
-### 5.9 正本と生成物
-
-README に次の区分を置く。
-
-| 区分 | 主な場所 | 扱い |
-|---|---|---|
-| 実装の正本 | `src/`、`scripts/` | 動作ロジック |
-| 実行設定の正本 | `config/`、`.github/workflows/` | 実行条件・自動化 |
-| 検証 | `tests/` | 変更時に対応テストを確認 |
-| 実装計画 | `docs/exec-plans/` | active / completed を区別 |
-| 人間向け説明 | `docs/strategy/`、`docs/references/` | 必要な場合だけ参照 |
-| 運用レポート | `docs/reports/` | 実行結果・障害記録 |
-| 生成物 | `artifacts/` | 実装の正本ではない |
-
-### 5.10 詳細ドキュメントへの導線
-
-README 末尾から次へ誘導する。
-
-- `docs/README.md`: docs 全体の索引
-- `docs/DOCUMENTATION_SYSTEM.md`: 配置・鮮度管理ルール
-- `docs/exec-plans/active/`: 進行中の実装計画
-- `docs/strategy/`: 戦略説明
-- `docs/reports/`: 運用結果・障害記録
-- `docs/references/`: 再利用する参照資料
-
-## 6. 変更対象
-
-### 6.1 修正するファイル
+### 4.1 修正するファイル
 
 #### `README.md`
 
-全文をゼロベースで再構築する。
+全文を現行コードに合わせて再構成する。
 
-主な変更:
+含める内容:
 
-- プロジェクト概要を現行機能に合わせる
-- AI / 開発者向けの読み順を追加する
-- タスク別ナビゲーションを追加する
-- current / legacy を分離する
-- フォルダツリーを現行構造へ更新する
-- MCP / CLI / Workflow / Night Batch の実行経路を整理する
-- CLI 全件列挙を削減する
-- 個別 runbook・過去事情を docs 側へ移す
-- 正本と生成物を区別する
+- 一文概要
+- 現在の主実行環境
+- AI / 開発者が最初に読む順番
+- タスク別ナビゲーション
+- 主要実行経路
+- リポジトリ構造
+- 最小セットアップ
+- テストの選び方
+- 正本と生成物の区別
+- docs 配下への詳細導線
+
+削る内容:
+
+- MCP tool / CLI の全件手書き列挙
+- 古い WSL 主導線
+- 個別 watchlist 作成 runbook
+- 過去の dual-worker 詳細
+- 長い Night Batch 運用履歴
+- 古い market provider 説明
 
 #### `docs/DOCUMENTATION_SYSTEM.md`
 
-主な変更:
+新 README と `docs/README.md` の役割分担に合わせて更新する。
 
-- 新 README と `docs/README.md` の役割分担を反映する
-- 存在しないファイル・古いパス・古いテスト記述を修正する
-- README に置く情報と docs に置く情報を明文化する
-- current / archive / generated の区分を整理する
+修正する内容:
+
+- 読み始める順番
+- どの情報を README に置くか
+- どの情報を docs に置くか
+- current / archive / generated の区分
+- 鮮度維持とリンク破損検知の説明
 
 #### `package.json`
 
-主な変更:
+`test:unit` に `tests/documentation-navigation.test.js` を追加する。
 
-- 新規ドキュメント導線テストを `test:unit` に追加する
+既存 script 名、依存関係、CLI 挙動は変更しない。
 
-既存コマンドや依存関係には不要な変更を加えない。
-
-### 6.2 新規作成するファイル
+### 4.2 新規作成するファイル
 
 #### `docs/README.md`
 
-役割:
+docs 配下の一次索引として作成する。
 
-- docs 配下の一次索引
-- 分野別の入口
-- current / archive / generated の区分
-- README から分離した詳細 runbook への案内
+含める内容:
 
-想定カテゴリ:
-
-- Exec plans
-- Architecture / operations
-- Strategy
-- Research
-- Reports
-- References
-- Sessions
+- docs の役割
+- exec plans
+- strategy
+- research
+- reports
+- references
+- sessions
+- current / archive / generated の扱い
+- README から分離した詳細情報の探し方
 
 #### `tests/documentation-navigation.test.js`
 
-検証内容:
+README と docs 索引の導線が壊れていないことを検証する。
 
-- README から参照する主要ファイル・ディレクトリが存在する
-- `docs/README.md` から参照する主要パスが存在する
-- README に current 環境が明記されている
-- WSL を current default と誤認させる表現がない
-- MCP / CLI / Night Batch の主要 entry point が README に記載されている
-- README の重要なリンク切れを検出する
+検証する内容:
 
-テストは過度に文章表現へ依存させず、主要導線の破損検知に限定する。
+- README が主要セクションを含む
+- README が現行主環境を明記している
+- README が主要 entry point を含む
+- README と docs/README のローカル Markdown リンク先が存在する
+- `docs/README.md` が存在し、主要 docs ディレクトリを案内している
+- WSL が current default と誤読される表現を避けている
 
-### 6.3 削除するファイル
+文章の完全一致ではなく、主要導線の破損検知に限定する。
 
-なし。
+### 4.3 移動するファイル
 
-旧 README の内容は Git 履歴に残るため、全文バックアップファイルは新規作成しない。
-
-## 7. 実装手順
-
-- [ ] `main` 最新状態で `AGENTS.md` と active exec-plans を再確認する
-- [ ] README に記載する主要 entry point を実ファイルから再確認する
-- [ ] `.github/workflows/` の現行 workflow を確認する
-- [ ] `config/` の current / archive 構造を確認する
-- [ ] `scripts/` の主要ドメインを確認する
-- [ ] `tests/` の現行テスト名を確認する
-- [ ] README に残す内容と docs へ分離する内容を分類する
-- [ ] `tests/documentation-navigation.test.js` を先に追加し RED を確認する
-- [ ] `docs/README.md` を作成する
-- [ ] `README.md` をゼロベースで書き直す
-- [ ] `docs/DOCUMENTATION_SYSTEM.md` を新導線へ合わせる
-- [ ] `package.json` にテストを追加する
-- [ ] documentation navigation test を GREEN にする
-- [ ] `npm run test:unit` を実行する
-- [ ] 必要に応じて `npm run test:all` を実行する
-- [ ] README 内の全ローカルリンクとパスを再確認する
-- [ ] current / legacy の表現をレビューする
-- [ ] README がタスクルーターとして簡潔かレビューする
-
-## 8. テスト戦略
-
-### 8.1 RED
-
-`tests/documentation-navigation.test.js` を先に作成し、次が未整備のため失敗する状態を確認する。
-
-- `docs/README.md` が存在しない
-- README に必要な主要導線が不足している
-- 古いリンク・記述が残っている
-
-### 8.2 GREEN
-
-README、`docs/README.md`、`docs/DOCUMENTATION_SYSTEM.md` を更新し、導線テストを通す。
-
-### 8.3 REFACTOR
-
-- README の重複を削る
-- 表とツリーで表現できる箇所を文章から置き換える
-- 詳細すぎる runbook を docs へ移す
-- テストが文言の細部に依存しすぎていないか確認する
-
-### 8.4 実行コマンド
-
-```powershell
-npm run test:unit
-npm run test:night-batch
-npm run test:e2e
-npm run test:all
-```
-
-最低限の完了条件は `npm run test:unit` 成功とする。
-
-CDP 実機環境が利用可能な場合だけ E2E を実行し、利用不可の場合は skip / 未実施理由を明記する。
-
-## 9. 成功条件
-
-- [ ] README の上位 100 行以内でプロジェクト概要が分かる
-- [ ] README の上位 100 行以内で現行主環境が分かる
-- [ ] README の上位 150 行以内でタスク別の調査開始地点が分かる
-- [ ] MCP / CLI / Workflow / Night Batch の入口が明確である
-- [ ] current と legacy が混同されない
-- [ ] README から存在しないパスへリンクしない
-- [ ] 実装の正本と生成物が区別されている
-- [ ] CLI / MCP tool の全件手書き列挙に依存しない
-- [ ] 個別運用例や過去事情が README の主導線を妨げない
-- [ ] README をおおむね 250〜350 行以内に抑える
-- [ ] `docs/README.md` が docs 全体の索引として機能する
-- [ ] documentation navigation test が成功する
-- [ ] `npm run test:unit` が成功する
-
-## 10. 影響範囲
-
-主な影響はドキュメントとドキュメント検証テストに限定する。
-
-実装コードの実行結果、CLI の挙動、MCP tool の挙動、workflow の挙動は変更しない。
-
-ただし、README の事実確認中にコードとドキュメントの不整合が見つかった場合は、今回の範囲ではコードを変更せず、README を現行コードへ合わせる。コード側の問題は別タスクとして報告する。
-
-## 11. リスク
-
-### 11.1 README に情報を残しすぎる
-
-詳細説明を残しすぎると、再び巨大READMEになる。
-
-対策:
-
-- README は入口と判断基準に限定する
-- コマンド一覧は `--help` へ委譲する
-- runbook は docs へ分離する
-
-### 11.2 README から情報を削りすぎる
-
-詳細を分離した結果、初回セットアップや基本実行方法が分からなくなる可能性がある。
-
-対策:
-
-- 最小セットアップ
-- health check
-- テストコマンド
-- タスク別ナビゲーション
-
-は README に残す。
-
-### 11.3 ドキュメントテストが壊れやすくなる
-
-文章の完全一致をテストすると、軽微な表現変更でも失敗する。
-
-対策:
-
-- 主要パスの存在
-- 主要セクション
-- current 環境
-- 主要 entry point
-
-だけを検証する。
-
-### 11.4 active な別計画と競合する
-
-README や docs を変更する別の active plan が存在する場合、競合する可能性がある。
-
-対策:
-
-- 実装開始前に `docs/exec-plans/active/` を再確認する
-- 重複計画がある場合は統合または順序調整を行う
-
-## 12. 対象外
-
-今回の計画では次を実施しない。
-
-- 実装コードのリファクタリング
-- CLI コマンドの追加・削除
-- MCP tool の追加・削除
-- スクリーナーロジックの変更
-- バックテストロジックの変更
-- Night Batch の実行方式変更
-- Windows runner の構成変更
-- WSL 用スクリプトの削除
-- `artifacts/` の全面整理・削除
-- 過去の research / session / report 文書の全面再分類
-- `AGENTS.md` の変更
-- `.github/copilot-instructions.md` の変更
-
-## 13. 完了時のファイル移動
-
-実装・レビュー・検証が完了し、コミット段階へ進む際は、この計画書を次へ移動する。
+実装・検証・レビュー完了後、この計画を次へ移動する。
 
 ```text
 docs/exec-plans/completed/readme-rebuild-ai-navigation_20260707_1513.md
 ```
 
-## 14. 承認後の次ステップ
+### 4.4 削除するファイル
 
-ユーザー承認後、以下の順で進める。
+なし。
 
-1. active plan と実ファイルの再確認
-2. documentation navigation test の追加
-3. `docs/README.md` の作成
-4. `README.md` の再構築
-5. `docs/DOCUMENTATION_SYSTEM.md` の更新
-6. テストとレビュー
-7. ユーザーへのレビュー依頼
-8. 承認後に completed へ移動し、コミット・プッシュ
+旧 README の全文バックアップは作らない。必要なら Git 履歴で確認する。
+
+## 5. README の新構成
+
+想定する章立て:
+
+1. `# Oh-MY-TradingView`
+2. `## 現在の主実行環境`
+3. `## 最初に読む順番`
+4. `## タスク別ナビゲーション`
+5. `## 主要実行経路`
+6. `## リポジトリ構造`
+7. `## 最小セットアップ`
+8. `## テストの選び方`
+9. `## 正本と生成物`
+10. `## 詳細ドキュメント`
+
+README 冒頭の一文概要:
+
+```text
+TradingView Desktop の CDP 操作を中核に、MCP / CLI、Pine 開発、バックテスト、米国・日本株スクリーニング、Moomoo / SBI / ポートフォリオ診断、Windows Night Batch を統合するローカル投資分析基盤。
+```
+
+タスク別ナビゲーションの対象:
+
+| タスク | 最初に見る場所 | 次に見る場所 | 主な検証 |
+|---|---|---|---|
+| MCP tool 追加・修正 | `src/server.js` | `src/tools/`、`src/core/` | 対応する `tests/*.test.js` |
+| CLI 追加・修正 | `src/cli/index.js` | `src/cli/commands/`、`src/core/` | CLI 対象の unit test |
+| CDP 接続 | `src/connection.js` | `src/core/health.js`、`src/core/tradingview-readiness.js` | `tests/connection.test.js` |
+| Pine | `src/tools/pine.js` | `src/core/pine.js`、`src/cli/commands/pine.js` | Pine 系 tests |
+| Backtest | `config/backtest/` | `src/core/backtest.js`、`scripts/backtest/` | backtest / campaign 系 tests |
+| Night Batch | `config/night_batch/` | `.github/workflows/night-batch-self-hosted.yml`、`python/night_batch.py`、`scripts/windows/` | `npm run test:night-batch` |
+| 米国スクリーナー | `.github/workflows/daily-screener.yml` | `scripts/screener/`、`src/core/fundamental-screener.js`、`src/core/sec-edgar.js` | screener / SEC 系 tests |
+| 日本株スクリーナー | `.github/workflows/daily-screener-japan.yml` | `scripts/screener/`、`src/core/edinet.js` | screener / EDINET 系 tests |
+| Moomoo | `src/tools/moomoo.js` | `src/core/moomoo.js`、`scripts/moomoo/` | `tests/moomoo.test.js` |
+| SBI / portfolio | `scripts/sbi/`、`scripts/portfolio/` | `.github/workflows/sbi-portfolio-capture.yml`、portfolio workflows | SBI / portfolio 系 tests |
+| Windows runner | `scripts/windows/` | `.github/workflows/night-batch-self-hosted.yml` | Windows / night-batch 系 tests |
+| ドキュメント | `README.md` | `docs/README.md`、`docs/DOCUMENTATION_SYSTEM.md` | `tests/documentation-navigation.test.js` |
+
+## 6. 実装手順
+
+- [ ] `main` が `origin/main` に追従していることを確認する
+- [ ] active exec-plan と AGENTS.md を再確認する
+- [ ] README に載せる主要 entry point と workflow を実ファイルで確認する
+- [ ] `tests/documentation-navigation.test.js` を追加し、現 README で RED を確認する
+- [ ] `docs/README.md` を作成する
+- [ ] `README.md` をゼロベースで書き直す
+- [ ] `docs/DOCUMENTATION_SYSTEM.md` を新導線へ合わせる
+- [ ] `package.json` の `test:unit` に導線テストを追加する
+- [ ] `node --test tests/documentation-navigation.test.js` を GREEN にする
+- [ ] `npm run test:unit` を実行する
+- [ ] `git diff --check` を実行する
+- [ ] README の current / legacy 表現をレビューする
+- [ ] README から存在しないローカルリンクへ誘導していないことを確認する
+- [ ] 計画を `docs/exec-plans/completed/` へ移動する
+- [ ] README 関連変更を Conventional Commits で commit / push する
+- [ ] `git fetch origin` と `git status --short --branch` で remote / local clean を確認する
+
+## 7. テスト戦略
+
+### RED
+
+`tests/documentation-navigation.test.js` を先に作成し、現行 README / 未作成の `docs/README.md` では失敗することを確認する。
+
+想定 RED:
+
+- `docs/README.md` が存在しない
+- README に新しいタスク別ナビゲーションや主要 entry point が不足している
+- README から存在しない docs 入口へ誘導している
+
+### GREEN
+
+README、`docs/README.md`、`docs/DOCUMENTATION_SYSTEM.md` を更新して導線テストを通す。
+
+### REFACTOR
+
+- README の詳細 runbook を削る
+- コマンド全件列挙を `npm run tv -- --help` へ委譲する
+- 表とツリーで見れば十分な箇所は長文説明を避ける
+- テストが表現の細部に依存しすぎないようにする
+
+### 必須検証コマンド
+
+```powershell
+node --test tests/documentation-navigation.test.js
+npm run test:unit
+git diff --check
+```
+
+### 任意検証コマンド
+
+```powershell
+npm run test:night-batch
+npm run test:e2e
+npm run test:all
+```
+
+今回の変更はドキュメントと導線テストに限定するため、E2E は必須にしない。CDP 実機を使える場合だけ実行し、未実行なら理由を報告する。
+
+## 8. 成功条件
+
+- [ ] README 冒頭でプロジェクト概要が分かる
+- [ ] README 冒頭で Windows native が current default と分かる
+- [ ] README 上部で AI / 開発者の読み順が分かる
+- [ ] README のタスク別ナビゲーションから調査範囲を決められる
+- [ ] MCP / CLI / Workflow / Night Batch の入口が明確である
+- [ ] current と legacy / optional が混同されない
+- [ ] README から存在しないローカルリンクへ誘導しない
+- [ ] 実装の正本、設定の正本、生成物、過去資料の違いが分かる
+- [ ] `docs/README.md` が docs 配下の索引として機能する
+- [ ] `tests/documentation-navigation.test.js` が成功する
+- [ ] `npm run test:unit` が成功する
+- [ ] `git diff --check` が成功する
+- [ ] 最終的に local / remote が同期し、working tree が clean になる
+
+## 9. 影響範囲
+
+影響はドキュメントとドキュメント導線テストに限定する。
+
+変更しないもの:
+
+- 実装コードの挙動
+- CLI コマンド仕様
+- MCP tool 仕様
+- screener ロジック
+- backtest ロジック
+- Night Batch 実行方式
+- Windows runner 構成
+- WSL 用 script
+- `AGENTS.md`
+- `.github/copilot-instructions.md`
+
+## 10. リスクと対策
+
+### README が再び巨大化する
+
+対策:
+
+- README は入口と判断基準に限定する
+- 詳細 runbook は docs へ誘導する
+- CLI / MCP tool の全件列挙は避ける
+
+### 情報を削りすぎて初動が分からなくなる
+
+対策:
+
+- 最小セットアップ、health check、テストの選び方は README に残す
+- タスク別ナビゲーションを README の中心に置く
+
+### 導線テストが壊れやすくなる
+
+対策:
+
+- 文言完全一致を避ける
+- 主要セクション、主要パス、主要 entry point、リンク存在だけを見る
+
+### active plan と競合する
+
+対策:
+
+- 実装開始前と commit 前に `docs/exec-plans/active/` を確認する
+- README / docs を触る別計画があれば作業を止めて報告する
+
+### remote が先行する
+
+対策:
+
+- 作業開始時、計画 commit 前、実装 commit 前に `git fetch origin` と status を確認する
+- 先行している場合は clean tree の状態で fast-forward する
+
+## 11. コミット方針
+
+AGENTS.md のワークフローに従い、次の 2 段階で commit / push する。
+
+1. 計画のみ
+   - 対象: `docs/exec-plans/active/readme-rebuild-ai-navigation_20260707_1513.md`
+   - commit message: `docs: readme-rebuild-ai-navigation_20260707_1513`
+
+2. 実装完了後
+   - 対象: README、docs 索引、導線テスト、`package.json`、completed へ移動した計画
+   - commit message: `docs: rebuild readme navigation`
+
+push は SSH remote `git@github.com:FPXszk/Oh-MY-TradingView.git` を使う。
