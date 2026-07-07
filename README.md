@@ -1,904 +1,202 @@
 # Oh-MY-TradingView
 
-TradingView Desktop を **Codex CLI 主経路** で扱う MCP / CLI ブリッジです。  
-現在は **Windows native** を主軸に、**CDP 接続 / market observation / night batch backtest / research docs 導線** までをまとめて扱います。WSL 経路は legacy/troubleshooting 用として残します。
+TradingView Desktop の CDP 操作を中核に、MCP / CLI、Pine 開発、バックテスト、米国・日本株スクリーニング、Moomoo / SBI / ポートフォリオ診断、Windows Night Batch を統合するローカル投資分析基盤です。
 
-- **この README が repo の一次入口**
-- docs 全体の入口: `docs/README.md`
-- docs の保守ルール: `docs/DOCUMENTATION_SYSTEM.md`
-- 人間向けの補助説明: `docs/explain-forhuman.md`
-- artifact 起点の current ランキング表: `docs/research/artifacts-backtest-scoreboards.md`
-- 最新の main backtest 要約: `docs/research/archive/main-backtest-current-summary.md`
-- テーマ投資で「モメンタムのある銘柄」をどう定義するか: `docs/strategy/theme-momentum-definition.md`
-- 戦略と銘柄の人間向けリファレンス: `docs/strategy/current-strategy-reference.md`
-- 直近の判断ログ: `docs/sessions/`
-- incident / postmortem archive: `docs/reports/README.md`
-- Pine snapshot の説明: `docs/references/pine/`
-- 外部・比較調査の参照資料台帳: `docs/references/design-ref-llms.md`
-- **外部資料を参照したら `docs/references/design-ref-llms.md` に必ず記録してください**
+この README は詳細 runbook ではなく、リポジトリを調査・変更するときの一次入口です。細かい運用手順や過去経緯は [docs/README.md](docs/README.md) から辿ります。
 
-## 迷ったらこの順番
+## 現在の主実行環境
 
-1. `docs/research/artifacts-backtest-scoreboards.md` — artifact に保存された campaign ごとの最新ランキング表を見る
-2. `docs/research/archive/main-backtest-current-summary.md` — 今の main backtest の結論を見る
-3. `docs/strategy/theme-momentum-definition.md` — テーマ投資の判断基準を確認する
-4. `docs/strategy/current-strategy-reference.md` — 戦略・銘柄リファレンスへ進む
-5. `docs/sessions/` — 直近の判断経緯が必要なときだけ見る
+| 項目 | Current default |
+|---|---|
+| OS / shell | Windows native / PowerShell |
+| Repository root | `C:\00_mycode\Oh-MY-TradingView` |
+| Node.js | `>=20` |
+| TradingView CDP | `127.0.0.1:9222` |
+| GitHub Actions | Windows self-hosted runner を含む |
+| WSL | legacy / optional。通常の調査・実装では current default として扱わない |
 
-## 重要な前提
+CDP が必要な作業では、TradingView Desktop を debug port `9222` 付きで起動してから `npm run tv -- status` を先に確認します。CDP 不要の market / reach / docs / unit test 系作業では TradingView Desktop は不要です。
 
-- **CDP 操作はローカル限定**: `tv_*` / `pine_*` / `backtest` 系はローカルの TradingView Desktop に対して動作します
-- **`market_*` は外部取得あり**: `market_quote` / `market_fundamentals` / `market_snapshot` / `market_news` / `market_screener` / `market_ta_summary` / `market_ta_rank` / `market_symbol_analysis` / `market_confluence_rank` は Yahoo Finance の public endpoint を使います
-- **`market_minervini_screener` は TradingView Scanner API 利用**: TradingView の内部スキャナー API（`scanner.tradingview.com/america/scan`）を使用します。認証不要ですが非公式 API のため変更リスクあり
-- **`x_*` は read-only**: `x_status` / `x_whoami` / `x_search_posts` / `x_user_profile` / `x_user_posts` / `x_tweet_detail` はローカルの `twitter-cli` と認証済みブラウザ cookies または `TWITTER_AUTH_TOKEN` / `TWITTER_CT0` を使います
-- **`reach_*` は Twitter 以外の目**: `reach_status` / `reach_read_web` / `reach_read_rss` / `reach_search_reddit` / `reach_read_reddit_post` / `reach_read_youtube` は read-only の external observation layer です
-- **要ユーザー起動**: 現行前提は **Windows で `9222` 起動 / Windows native CLI から `127.0.0.1:9222` 接続** です
+## 最初に読む順番
 
-## できること
+1. [AGENTS.md](AGENTS.md) - このリポジトリでの AI 作業規則
+2. この README の「タスク別ナビゲーション」
+3. [docs/exec-plans/active/](docs/exec-plans/active/) - 進行中の計画
+4. 対象ドメインの入口ファイル
+5. 対応する [tests/](tests/)
+6. 必要な場合だけ [docs/README.md](docs/README.md) から詳細資料・過去資料・生成物へ進む
 
-### MCP tools
+実装の正本はコードと設定です。`artifacts/` や古い reports は実行結果・履歴の確認に使いますが、実装調査の最初の入口にはしません。
 
-- `tv_health_check`
-- `tv_discover`
-- `tv_get_price`
-  - 現在チャート価格
-  - `symbol` 指定時は symbol 切替後に価格取得
-- `tv_backtest_nvda_ma_5_20`
-  - NVDA 固定 5/20 SMA クロス戦略バックテスト
-  - Strategy Tester の主要指標を読み取り
-  - Strategy Tester が読めない場合は chart bars から local fallback metrics を返す
-- `tv_backtest_preset`
-  - preset-driven 戦略バックテスト（presetId / symbol / dateFrom / dateTo）
-- `tv_launch`
-  - TradingView Desktop を CDP debug port 付きで起動
-- `tv_launch_browser`
-  - Chromium 系ブラウザで TradingView chart URL を CDP debug port 付きで起動（bounded fallback）
-  - TradingView Desktop が利用不可時の観測・復旧支援用途。Desktop の完全な代替ではありません
-  - `executablePath` で明示指定、または既知候補から自動検出
-  - `dryRun` で起動コマンドのプレビューのみ可能
-- `tv_capture_screenshot`
-  - CDP 経由でスクリーンショット取得（png / jpeg）
-  - 保存時は `artifacts/screenshots/` 配下の相対パスのみ許可
-- `tv_stream_price`
-  - 制限付きポーリング（maxTicks 回数上限付き、無限常駐ではない）
-- `market_quote` — 個別銘柄の quote（CDP 不要）
-- `market_fundamentals` — ファンダメンタルズ（PE, 時価総額 等）
-- `market_snapshot` — 複数銘柄 quote 一括取得
-- `market_news` — 金融ニュース検索
-- `market_screener` — 価格 / 出来高でフィルタリング
-- `market_ta_summary` — 複数銘柄の TA 要約（price change, RSI14, SMA20/50 乖離）
-- `market_ta_rank` — TA 指標で銘柄ランキング（priceChange / rsi14 / sma20Deviation / sma50Deviation）
-- `market_symbol_analysis` — 単一銘柄の deterministic analyst-style analysis（trend / fundamentals / news / risk / overall + confluence）
-- `market_confluence_rank` — 複数銘柄を deterministic confluence score で順位付け
-- `market_minervini_screener` — TradingView Scanner API 経由でミネルビニ7条件（RSI60+/SMA200上/SMA50上/52週高値75%+/出来高1.2倍+/時価総額10億ドル+/米国株のみ）を一括スクリーニング
-- `x_status` — Twitter/X の認証状態確認（read-only）
-- `x_whoami` — 認証済みの Twitter/X アカウント確認
-- `x_search_posts` — Twitter/X 投稿検索
-- `x_user_profile` — Twitter/X ユーザープロフィール取得
-- `x_user_posts` — Twitter/X ユーザー投稿取得
-- `x_tweet_detail` — Twitter/X 単一投稿詳細取得
-- `reach_status` — Web / RSS / Reddit / YouTube の可用状態確認
-- `reach_read_web` — Jina Reader 経由で公開 Web ページ本文を読む
-- `reach_read_rss` — RSS / Atom feed を読む
-- `reach_search_reddit` — 公開 Reddit 投稿を検索する
-- `reach_read_reddit_post` — 公開 Reddit 投稿本文と上位コメントを読む
-- `reach_read_youtube` — YouTube metadata を読み、`yt-dlp` があると字幕断片も読む
+## タスク別ナビゲーション
 
-> `market_*` は CDP 不要ですが、ネットワーク経由で Yahoo Finance の public endpoint を参照します。
+| タスク | 最初に見る場所 | 次に見る場所 | 主な検証 |
+|---|---|---|---|
+| MCP tool 追加・修正 | [src/server.js](src/server.js) | [src/tools/](src/tools/) -> [src/core/](src/core/) | 対応する `tests/*.test.js` |
+| CLI 追加・修正 | [src/cli/index.js](src/cli/index.js) | [src/cli/commands/](src/cli/commands/) -> [src/core/](src/core/) | CLI 対象の unit test |
+| CDP 接続 | [src/connection.js](src/connection.js) | [src/core/health.js](src/core/health.js)、[src/core/tradingview-readiness.js](src/core/tradingview-readiness.js) | [tests/connection.test.js](tests/connection.test.js) |
+| Pine 編集・compile | [src/tools/pine.js](src/tools/pine.js) | [src/core/pine.js](src/core/pine.js)、[src/cli/commands/pine.js](src/cli/commands/pine.js) | Pine 系 tests |
+| Backtest / campaign | [config/backtest/](config/backtest/) | [src/core/backtest.js](src/core/backtest.js)、[src/core/campaign.js](src/core/campaign.js)、[scripts/backtest/](scripts/backtest/) | backtest / campaign 系 tests |
+| Night Batch | [config/night_batch/](config/night_batch/) | [.github/workflows/night-batch-self-hosted.yml](.github/workflows/night-batch-self-hosted.yml)、[python/night_batch.py](python/night_batch.py)、[scripts/windows/](scripts/windows/) | `npm run test:night-batch` |
+| 米国スクリーナー | [.github/workflows/daily-screener.yml](.github/workflows/daily-screener.yml) | [scripts/screener/](scripts/screener/)、[src/core/fundamental-screener.js](src/core/fundamental-screener.js)、[src/core/sec-edgar.js](src/core/sec-edgar.js) | screener / SEC 系 tests |
+| 日本株スクリーナー | [.github/workflows/daily-screener-japan.yml](.github/workflows/daily-screener-japan.yml) | [scripts/screener/](scripts/screener/)、[src/core/edinet.js](src/core/edinet.js) | screener / EDINET 系 tests |
+| Moomoo OpenAPI | [src/tools/moomoo.js](src/tools/moomoo.js) | [src/core/moomoo.js](src/core/moomoo.js)、[scripts/moomoo/](scripts/moomoo/) | [tests/moomoo.test.js](tests/moomoo.test.js) |
+| SBI / portfolio | [scripts/sbi/](scripts/sbi/)、[scripts/portfolio/](scripts/portfolio/) | [.github/workflows/sbi-portfolio-capture.yml](.github/workflows/sbi-portfolio-capture.yml)、portfolio 系 workflows | SBI / portfolio 系 tests |
+| Windows runner | [scripts/windows/](scripts/windows/) | [.github/workflows/night-batch-self-hosted.yml](.github/workflows/night-batch-self-hosted.yml) | Windows / night-batch 系 tests |
+| ドキュメント | [README.md](README.md) | [docs/README.md](docs/README.md)、[docs/DOCUMENTATION_SYSTEM.md](docs/DOCUMENTATION_SYSTEM.md) | [tests/documentation-navigation.test.js](tests/documentation-navigation.test.js) |
 
-> `x_*` も CDP 不要ですが、ローカルで `twitter-cli` が使えることと、X への認証が済んでいることが前提です。今回の実装は **read-only 限定** で、投稿・返信・いいね・フォローは含みません。
-
-> `reach_*` も CDP 不要で **read-only 限定** です。Phase 1 は Web / RSS / Reddit / YouTube の観測に絞っており、投稿・コメント送信・subscribe などの write 操作は含みません。
-
-#### Workspace 操作 (CDP 必要)
-
-- `tv_watchlist_list` — アクティブ watchlist の銘柄一覧
-- `tv_watchlist_add` — watchlist に銘柄追加
-- `tv_watchlist_remove` — watchlist から銘柄削除（見つからなければエラー）
-- `tv_pane_list` — チャートペイン一覧
-- `tv_pane_focus` — ペインを index で選択（範囲外ならエラー）
-- `tv_tab_list` — 現在 layout 内の chart slot 一覧
-- `tv_tab_switch` — 現在 layout 内の active chart slot を index で切替（範囲外ならエラー）
-- `tv_layout_list` — レイアウト一覧
-- `tv_layout_apply` — レイアウト適用（見つからなければエラー）
-
-#### Alert 管理 (CDP 必要 / ローカル限定)
-
-- `tv_alert_list` — 現在チャートの alert 一覧
-- `tv_alert_create_price` — 価格 alert 作成（ローカル通知のみ、webhook なし）
-- `tv_alert_delete` — alert を id で削除（見つからなければエラー）
-
-> Alert 操作はローカル TradingView Desktop 上の価格アラートのみ対象です。webhook 配信先の設定は未対応です。
-
-#### Observability (CDP 必要)
-
-- `tv_observe_snapshot` — one-shot 観測スナップショット
-  - CDP 接続情報、ページ/チャート状態、ランタイムエラー、スクリーンショットを `artifacts/observability/<snapshot-id>/` に保存
-  - 部分失敗時は `warnings` に記録し、成功可能な部分は返却
-- `pine_get_source`
-- `pine_set_source`
-- `pine_compile`
-- `pine_get_errors`
-- `pine_smart_compile`
-- `pine_analyze`
-
-### CLI
-
-- `tv status`
-- `tv discover`
-- `tv price get`
-- `tv price get --symbol NVDA`
-- `tv pine get`
-- `tv pine set --file <path>`
-- `tv pine compile`
-- `tv pine errors`
-- `tv pine analyze --file <path>`
-- `tv backtest nvda-ma`
-- `tv backtest preset <preset-id> --symbol NVDA`
-- `tv launch [--port 9222] [--path /path/to/tv] [--dry-run]`
-- `tv launch-browser [--port 9333] [--path /path/to/chrome] [--url https://www.tradingview.com/chart/] [--dry-run]`
-- `tv capture [--output chart.png] [--format png|jpeg] [--quality 80]`
-- `tv stream [--symbol NVDA] [--interval 5000] [--ticks 12]`
-- `tv market quote --symbol AAPL`
-- `tv market fundamentals --symbol AAPL`
-- `tv market snapshot AAPL MSFT GOOGL`
-- `tv market news --query "earnings"`
-- `tv market screener AAPL MSFT --min-price 100`
-- `tv market ta-summary AAPL MSFT GOOGL`
-- `tv market ta-rank AAPL MSFT --sort-by rsi14 --order asc`
-- `tv market analysis --symbol AAPL`
-- `tv market confluence-rank AAPL MSFT NVDA --limit 3`
-- `tv screener minervini` — ミネルビニ7条件スクリーニング（上位50件）
-- `tv screener minervini --limit 20` — 上限20件
-- `tv screener minervini --compact` — シンボルと価格のみの compact 表示
-- `tv x status`
-- `tv x whoami`
-- `tv x search --query "NVDA" --max 3`
-- `tv x user --username jack`
-- `tv x user-posts --username jack --max 5`
-- `tv x tweet --id 1234567890`
-- `tv reach status`
-- `tv reach web --url https://example.com`
-- `tv reach rss --url https://news.ycombinator.com/rss --max 3`
-- `tv reach reddit-search --query "NVDA earnings" --max 3`
-- `tv reach reddit-post --id <post-id>`
-- `tv reach youtube --url https://www.youtube.com/watch?v=jNQXAC9IVRw`
-- `tv workspace watchlist-list`
-- `tv workspace watchlist-add --symbol AAPL`
-- `tv workspace watchlist-remove --symbol AAPL`
-- `tv workspace pane-list`
-- `tv workspace pane-focus --index 0`
-- `tv workspace tab-list`
-- `tv workspace tab-switch --index 1`
-- `tv workspace layout-list`
-- `tv workspace layout-apply --layout "My Layout"`
-- `tv alert list`
-- `tv alert create-price --price 150 --condition crossing_up`
-- `tv alert delete --id <alert-id>`
-- `tv observe snapshot`
-
-### Market confluence の見え方
-
-- `tv market analysis --symbol AAPL` の `analysis.overall_summary` には、既存の `stance` / `confidence` / `signals` / `warnings` に加えて `confluence_score` / `confluence_label` / `confluence_breakdown` / `coverage_summary` が入ります。
-- `confluence_score` は trend / fundamentals / risk の固定重みで作る coarse な 0-100 スコアです。`news` は初期実装では direction ではなく coverage のみを補強します。
-- fundamentals などの core input が欠けた場合でも schema は壊さず、`coverage_summary` と warning で degraded 状態を明示します。
-- `analysis.provider_status` には `quote` / `fundamentals` / `ta` / `news` / `community` の `status` / `missing_reason` / `available` が入り、silent null を避けます。
-- `analysis.community_snapshot` には `x` / `reddit` の件数、最新時刻、source presence、provider別 warning が入り、初期実装では **directional sentiment は返しません**。
-- `tv market confluence-rank ...` でも `ranked_symbols[]` に `provider_status` と `community_snapshot` が伝播し、`--limit` で落ちた成功銘柄は `omitted[]` に残ります。
-
-### ミネルビニスクリーナーの使い方
-
-TradingView の内部スキャナー API（`scanner.tradingview.com/america/scan`）を使い、ミネルビニ流モメンタム7条件を一括スクリーニングします。CDP 不要です。
-
-#### 適用される条件
-
-| # | 条件 | 実装方式 |
-|---|---|---|
-| 1 | 対象市場：米国株のみ | API `markets: ["america"]` |
-| 2 | RSI(14) ≥ 60 | サーバー側フィルタ |
-| 3 | 時価総額 ≥ 10億ドル | サーバー側フィルタ |
-| 4 | 直近出来高 ≥ 平均出来高の1.2倍 | サーバー側フィルタ |
-| 5 | 現在値 > 200日移動平均線 | クライアント側後処理 |
-| 6 | 現在値 > 50日移動平均線 | クライアント側後処理 |
-| 7 | 現在値 ≥ 52週高値の75% | クライアント側後処理 |
-
-#### CLI
-
-```bash
-tv screener minervini                # 上位50件（デフォルト）
-tv screener minervini --limit 20     # 上限20件
-tv screener minervini --compact      # シンボルと価格のみを表示
-```
-
-#### MCP tool
-
-```
-market_minervini_screener          # 引数なし（limit/compact はオプション）
-```
-
-#### 注意事項
-
-- TradingView の非公式 API を使用しているため、フィールド名やエンドポイントが変更される可能性があります
-- SMA が null の銘柄（OTC 等）はそのフィルタをスキップして通過します（過包含）
-- レート制限回避のためデフォルト上限は 50 件です
-
-## アーキテクチャ
+## 主要実行経路
 
 ```text
-Codex CLI / tv CLI (WSL or Windows)
-        ↓
-   MCP Server (stdio)
-        ↓
- Chrome DevTools Protocol
-        ↓
- TradingView Desktop (Electron)
+MCP
+src/server.js
+  -> src/tools/*
+  -> src/core/*
+  -> src/connection.js / external providers
+
+CLI
+src/cli/index.js
+  -> src/cli/commands/*
+  -> src/core/*
+
+Workflow
+.github/workflows/*
+  -> scripts/*
+  -> src/core/*
+  -> docs/reports/ or artifacts/
+
+Night Batch
+.github/workflows/night-batch-self-hosted.yml
+  -> scripts/windows/*
+  -> python/night_batch.py
+  -> scripts/backtest/*
+  -> artifacts/night-batch/
 ```
 
-## セットアップ
+MCP tool の実際の登録と説明は [src/server.js](src/server.js) を正本にします。CLI の実コマンドは `npm run tv -- --help` と [src/cli/commands/](src/cli/commands/) を確認します。
 
-### 1. 依存インストール
+## リポジトリ構造
 
-```bash
-npm install
+```text
+.
+├─ AGENTS.md                 # AI 作業規則
+├─ README.md                 # プロジェクト入口・タスクルーター
+├─ package.json              # Node 実行入口・テストコマンド
+├─ src/
+│  ├─ server.js              # MCP server entry point
+│  ├─ connection.js          # CDP 接続
+│  ├─ core/                  # ドメインロジック
+│  ├─ tools/                 # MCP tool 登録
+│  └─ cli/                   # tv CLI
+├─ config/
+│  ├─ backtest/              # preset / campaign / universe
+│  ├─ night_batch/           # Night Batch 設定
+│  └─ screener/              # US / Japan screener 設定
+├─ scripts/
+│  ├─ backtest/
+│  ├─ docs/
+│  ├─ line/
+│  ├─ moomoo/
+│  ├─ portfolio/
+│  ├─ sbi/
+│  ├─ screener/
+│  ├─ tmux/                  # legacy / optional
+│  └─ windows/
+├─ python/
+│  └─ night_batch.py
+├─ .github/workflows/        # 定期・手動 workflow
+├─ tests/                    # unit / E2E / workflow 検証
+├─ docs/                     # 計画・設計・調査・レポート
+└─ artifacts/                # 生成物。実装の正本ではない
 ```
 
-### 1.5 Twitter/X read-only を使う場合
-
-`twitter-cli` が必要です。認証はブラウザ cookies 抽出が推奨です。
-
-```bash
-uv tool install twitter-cli
-twitter whoami
-```
-
-環境変数を使う場合は `config/.env` に以下を置けます。`devinit.sh` はこのファイルから `TWITTER_AUTH_TOKEN` / `TWITTER_CT0` / `TWITTER_BIN` だけを安全に読み込みます。
-
-```bash
-TWITTER_AUTH_TOKEN=...
-TWITTER_CT0=...
-```
-
-### 1.6 Reach layer を使う場合
-
-Web / RSS / Reddit は追加設定なしで使えます。YouTube は metadata fallback だけなら追加設定なし、字幕断片まで読みたい場合は `yt-dlp` を入れて `YTDLP_BIN` か `python/.venv/bin/yt-dlp` を使える状態にします。
-
-```bash
-uv tool install yt-dlp
-```
-
-### 1.7 Codex dev session
-
-```bash
-just dev
-just session-logs
-```
-
-`just dev` の pane 0 は Codex CLI を直接起動します。調査用の wrapper や evidence capture は通常経路から外し、開発セッションは tmux 上でそのまま使う前提に戻しています。
-
-旧 Copilot CLI の確認が必要な場合だけ、直接起動用の recipe を使えます。
-
-```bash
-just dev-copilot-legacy
-```
-
-### 2. TradingView Desktop を CDP 付きで起動
-
-Windows（current default: `9222`）:
-
-```cmd
-"%LOCALAPPDATA%\TradingView\TradingView.exe" --remote-debugging-port=9222
-```
-
-必要なら次も試してください。
-
-```cmd
-"%LOCALAPPDATA%\TradingView\TradingView.exe" --remote-debugging-port=9222 --remote-debugging-address=0.0.0.0
-```
-
-現在この環境で検証済みの startup-first 手順:
-
-1. Windows local `9222` を先に確認する
-2. 応答しなければ `C:\TradingView\TradingView.exe - ショートカット.lnk` で起動する
-3. Windows native CLI / workflow は `127.0.0.1:9222` に接続する
-
-Windows local の確認:
+## 最小セットアップ
 
 ```powershell
-powershell.exe -NoProfile -Command "Invoke-WebRequest -UseBasicParsing http://127.0.0.1:9222/json/list | Select-Object -ExpandProperty Content"
+npm ci
+npm run tv -- --help
+npm test
 ```
 
-未起動なら current verified shortcut で起動:
+TradingView Desktop の CDP 接続を使う場合:
 
 ```powershell
-powershell.exe -NoProfile -Command "Start-Process -FilePath 'C:\TradingView\TradingView.exe - ショートカット.lnk'"
-```
-
-> 現行運用は **Windows 側の `9222` 個体を起動し、Windows native CLI / workflow から `127.0.0.1:9222` に接続** します。WSL から操作する場合だけ、Windows host IP + portproxy などの legacy 経路を使います。
-
-### 3. WSL legacy: Windows 側 CDP へ接続
-
-通常運用では不要です。WSL から `localhost:<port>` に届かない場合があります。
-このケースではまず Windows 側の CDP port が **127.0.0.1 のみに bind** されていないか確認してください。
-
-WSL 側の候補 IP:
-
-```bash
-grep nameserver /etc/resolv.conf
-ip route
-```
-
-接続先を指定:
-
-```bash
-export TV_CDP_HOST=<windows-host-ip>
-export TV_CDP_PORT=9223
-curl http://$TV_CDP_HOST:$TV_CDP_PORT/json/list
-```
-
-> `curl` が通らない場合は、Windows Firewall 許可か `portproxy` が必要です。
-
-直近の実機確認例:
-
-```bash
-export TV_CDP_HOST=172.31.144.1
-export TV_CDP_PORT=9223
-curl http://172.31.144.1:9223/json/list
-```
-
-### 4. Codex CLI の MCP 設定
-
-この repository では [.codex/config.toml](.codex/config.toml) に `oh-my-tradingview` MCP server を定義しています。Codex CLI 側で同じ設定をグローバルに追加したい場合は次を使います。
-
-Windows native:
-
-```powershell
-codex mcp add oh-my-tradingview `
-  --env TV_CDP_HOST=127.0.0.1 `
-  --env TV_CDP_PORT=9222 `
-  -- node C:\path\to\Oh-MY-TradingView\src\server.js
-```
-
-WSL legacy:
-
-```bash
-codex mcp add oh-my-tradingview \
-  --env TV_CDP_HOST=172.31.144.1 \
-  --env TV_CDP_PORT=9223 \
-  -- node /home/fpxszk/code/Oh-MY-TradingView/src/server.js
-```
-
-旧 Copilot CLI を使う場合の参考設定:
-
-```json
-{
-  "mcpServers": {
-    "oh-my-tradingview": {
-      "type": "stdio",
-      "command": "node",
-      "args": ["/path/to/Oh-MY-TradingView/src/server.js"],
-        "env": {
-          "TV_CDP_HOST": "127.0.0.1",
-          "TV_CDP_PORT": "9222"
-        }
-      }
-    }
-}
-```
-
-## 環境変数
-
-| 変数 | デフォルト | 説明 |
-|---|---|---|
-| `TV_CDP_HOST` | `localhost` | CDP host。Windows native では `127.0.0.1` / `localhost` を使う |
-| `TV_CDP_PORT` | `9222` | CDP port。Windows native の既定は `9222` |
-| `TV_WINDOWS_USER` | unset | WSL で browser fallback の Windows user 候補を明示したいときに指定 |
-| `TWITTER_AUTH_TOKEN` | unset | Twitter/X read-only 用の auth_token |
-| `TWITTER_CT0` | unset | Twitter/X read-only 用の ct0 |
-| `TWITTER_BIN` | unset | `twitter-cli` バイナリを明示したい場合に指定 |
-| `YTDLP_BIN` | unset | `reach_read_youtube` で `yt-dlp` の場所を明示したい場合に指定 |
-
-## 使い方
-
-### CLI
-
-接続確認:
-
-```bash
-node src/cli/index.js status
-```
-
-WSL からの既定例:
-
-```bash
-TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9223 node src/cli/index.js status
-```
-
-現在チャートの価格:
-
-```bash
-node src/cli/index.js price get
-```
-
-NVDA に切り替えて価格取得:
-
-```bash
-node src/cli/index.js price get --symbol NVDA
-```
-
-Pine 解析:
-
-```bash
-node src/cli/index.js pine analyze --file ./example.pine
-```
-
-NVDA 5/20 MA クロス バックテスト:
-
-```bash
-node src/cli/index.js backtest nvda-ma
-```
-
-WSL からの既定例:
-
-```bash
-TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9223 node src/cli/index.js backtest nvda-ma
-```
-
-### 電力関連ウォッチリスト登録の再現例
-
-以下は、今回実運用した **「X から候補抽出 → 時価総額順に 1 つの watchlist へ投入」** の最短 runbook です。  
-repo root で実行し、CLI は `npm run tv -- ...` で揃える前提にしています。
-
-1. X 用の認証情報が `config/.env` にある場合は先に読み込む
-2. WSL から Windows 側 TradingView CDP へ接続できることを確認する
-3. TradingView Desktop 側で新規 watchlist を 1 つ作成して active にする
-4. X 投稿を読み、今回の power テーマ銘柄群を確定する
-5. 時価総額順の ticker 列を `watchlist-add` で上から順に投入する
-
-#### 1. 前提確認
-
-X 認証情報を `config/.env` に置いている場合:
-
-```bash
-set -a
-. ./config/.env
-set +a
-```
-
-WSL からの接続確認:
-
-```bash
-export TV_CDP_HOST=172.31.144.1
-export TV_CDP_PORT=9223
-
 npm run tv -- status
-npm run tv -- x whoami
 ```
 
-#### 2. 初回だけ TradingView UI で watchlist を作る
-
-現行 CLI は **active な watchlist に対する list/add/remove** までです。  
-そのため、**最初の新規リスト作成と active 化だけは TradingView Desktop の UI で行います**。
-
-1. 右サイドバーの **ウォッチリスト**
-2. watchlist メニュー
-3. **新規リスト作成…**
-4. 例: `Power US Infra`
-5. その watchlist を active のままにする
-
-空の active list であることを確認:
-
-```bash
-npm run tv -- workspace watchlist-list
-```
-
-#### 3. 候補ソースを読む
-
-今回の元ネタ確認:
-
-```bash
-npm run tv -- x tweet --id "https://x.com/aleabitoreddit/status/2047030798554132901?s=46"
-npm run tv -- x user-posts --username aleabitoreddit --max 100
-```
-
-今回の session では、直近 3 ヶ月の電力関連投稿から次の **米国株** を採用しました。
-
-```text
-TXN ETN VRT AEIS VICR SPXC POWL VMI CLF AZZ NVTS VSH ATKR AMSC PLPC
-```
-
-> `tv market fundamentals` は環境によって 401 になることがあるため、今回の並び順確定では Yahoo Finance quote page と Stock Analysis の market cap も補完利用しました。参照先は `docs/references/design-ref-llms.md` を見てください。
-
-#### 4. 時価総額順で watchlist へ投入する
-
-今回確定した順序は次の通りです。
-
-```text
-TXN
-ETN
-VRT
-AEIS
-VICR
-SPXC
-POWL
-VMI
-CLF
-AZZ
-NVTS
-VSH
-ATKR
-AMSC
-PLPC
-```
-
-そのまま再投入する場合:
-
-```bash
-for symbol in TXN ETN VRT AEIS VICR SPXC POWL VMI CLF AZZ NVTS VSH ATKR AMSC PLPC; do
-  npm run tv -- workspace watchlist-add --symbol "$symbol"
-done
-```
-
-確認:
-
-```bash
-npm run tv -- workspace watchlist-list
-```
-
-期待する最終結果:
-
-```json
-{
-  "success": true,
-  "symbols": [
-    "NASDAQ:TXN",
-    "NYSE:ETN",
-    "NYSE:VRT",
-    "NASDAQ:AEIS",
-    "NASDAQ:VICR",
-    "NYSE:SPXC",
-    "NASDAQ:POWL",
-    "NYSE:VMI",
-    "NYSE:CLF",
-    "NYSE:AZZ",
-    "NASDAQ:NVTS",
-    "NYSE:VSH",
-    "NYSE:ATKR",
-    "NASDAQ:AMSC",
-    "NASDAQ:PLPC"
-  ],
-  "count": 15
-}
-```
-
-#### 5. 補足
-
-- `watchlist-list` / `watchlist-add` / `watchlist-remove` は **active watchlist に対してだけ** 動きます
-- 別リストへ入れたい場合は、先に TradingView Desktop 側でその watchlist を active にしてから CLI を実行してください
-- 既存リストを汚したくない場合は、毎回 `watchlist-list` で現在の active list を確認してから追加してください
-
-### Python night batch
-
-夜間自動化は **Python が Windows local `9222` 接続を preflight し、TradingView 操作本体は既存 Node script を subprocess 実行する** 構成を想定しています。CDP/backtest 本体を Python に再実装しません。
+代表的な入口:
 
 ```powershell
-# US/JP 12x10 bundle を smoke -> full foreground で監視実行
-python python/night_batch.py smoke-prod --config config/night_batch/bundle-foreground-reuse-config.json
-
-# ローカル都合で detached 実行したい場合はこちら
-python python/night_batch.py smoke-prod --config config/night_batch/bundle-detached-reuse-config.json
-
-# JSON config を読んで startup check -> smoke -> detached production
-python python/night_batch.py smoke-prod --config config/night_batch/nightly.default.json
-
-# strategy だけ一時的に差し替えたい場合は CLI override も可能
-python python/night_batch.py smoke-prod `
-  --config config/night_batch/nightly.default.json `
-  --smoke-cli "backtest nvda-ma"
-
-# runner / wrapper 用の事前確認
-python python/night_batch.py smoke-prod --config config/night_batch/nightly.default.json --dry-run
-
-# fine-tune bundle を夜間実行
-python python/night_batch.py bundle --host 127.0.0.1 --port 9222
-
-# bundle 後に rich report まで一続きで実行
-python python/night_batch.py nightly --host 127.0.0.1 --port 9222
-
-# 朝の report だけ再生成
-python python/night_batch.py report `
-  --us artifacts/campaigns/next-long-run-us-finetune-100x10/full/recovered-results.json `
-  --jp artifacts/campaigns/next-long-run-jp-finetune-100x10/full/recovered-results.json `
-  --out artifacts/night-batch/morning-report.md
+npm run tv -- status
+npm run tv -- price get
+npm run tv -- pine analyze --file .\example.pine
+npm run tv -- backtest preset ema-cross-9-21 --symbol NVDA
+npm run portfolio:convert -- --help
 ```
 
-`config/night_batch/bundle-foreground-reuse-config.json` は、`next-long-run-us-12x10` / `next-long-run-jp-12x10` campaign を参照して **smoke から full を foreground で完走監視する** workflow / wrapper 向け config です（旧既定は `finetune-100x10`）。  
-`config/night_batch/bundle-detached-reuse-config.json` は、ローカル都合で detached 実行を明示したいときの代替 config として残します。
+環境変数の基本:
 
-`config/night_batch/nightly.default.json` は single-backtest ベースのサンプルです。日中に戦略案を差し替えたいときは、この JSON の `strategies.smoke.cli` / `strategies.production.cli` を更新するか、CLI override を使います。
+| 変数 | 既定 / 用途 |
+|---|---|
+| `TV_CDP_HOST` | CDP host。Windows native では `127.0.0.1` を使う |
+| `TV_CDP_PORT` | CDP port。current default は `9222` |
+| `TWITTER_AUTH_TOKEN` / `TWITTER_CT0` | X read-only 機能を使う場合だけ必要 |
+| `YTDLP_BIN` | YouTube 字幕断片の取得に `yt-dlp` を明示したい場合だけ必要 |
 
-`smoke-prod` は **Windows local `9222` の startup check** を先に行い、TradingView chart target が見つからなければ current verified shortcut `C:\TradingView\TradingView.exe - ショートカット.lnk` を使って launch します。その後に `127.0.0.1:9222` の preflight を通し、smoke backtest を実行します。config の `detach_after_smoke: false` なら production を foreground で最後まで監視し、`bundle-foreground-state.json` の `updated_at` を heartbeat として更新します。`detach_after_smoke: true` のときだけ detached child を使います。
+## Windows runner / Night Batch 運用メモ
 
-Python スクリプトは `artifacts/night-batch/` に run summary / log / state を残します。`bundle` / `campaign` / `recover` / `report` / `nightly` / `smoke-prod` をサポートし、CDP が必要なコマンドでは `9222` preflight が通らない限り停止します。summary JSON / Markdown には `termination_reason`、`failed_step`、`last_checkpoint` が含まれます。
+Windows self-hosted runner は service mode を使用しない。現在の Windows OS バージョン / 実行環境では service mode 前提の安定運用を採用せず、必要なときに runner の `run.cmd` を起動する。
 
-### Self-hosted GitHub Actions / Windows manual entrypoint
-
-> **runner の service mode（サービスモード）は使用しない。** 現在使用している Windows OS バージョン / 実行環境では service mode 前提の運用を安定してサポートできないため、runner は手動で `run.cmd` を起動する前提で運用する。
-
-#### Runner 起動（bootstrap 付き）
-
-runner を起動する際は、`run.cmd` を直接叩く代わりに repo 管理の bootstrap wrapper を使う。bootstrap は `git safe.directory` 設定など、`actions/checkout` が失敗しないための prerequisite fix を先に実行し、成功時のみ `run.cmd` へ進む。
+手動起動は bootstrap wrapper を使う。
 
 ```cmd
 scripts\windows\run-self-hosted-runner-with-bootstrap.cmd C:\actions-runner
 ```
 
-初回セットアップ（one-time hookup）: 従来 `C:\actions-runner\run.cmd` を直接実行していた運用を、上記 wrapper 呼び出しに一度だけ置き換える。以後の prerequisite fix 更新は repo 側 script の更新で追従できる。
-
-#### Runner 自動起動（Task Scheduler）
-
-再起動後も runner を自動で online に戻したい場合は、**service mode ではなく Task Scheduler** を使う。標準 trigger は **runner 用 Windows ユーザーの logon 時**で、登録 script が **Task Scheduler 用 launcher** と **runner 配下の self-contained startup script copy** を生成する。
+自動起動が必要な場合は Task Scheduler を使い、登録は次の script で行う。launcher は TradingView の local debug port `9222` も確認する。
 
 ```cmd
 scripts\windows\register-self-hosted-runner-autostart.cmd C:\actions-runner
 ```
 
-- 登録先は `run.cmd` 直呼びではなく、生成される `C:\actions-runner\_diag\runner-autostart-launch.cmd`
-- launcher は runner wrapper の前に `%APPDATA%\moomoo_OpenD\moomoo_OpenD.exe` を best-effort で起動する
-- launcher は続けて Windows local `127.0.0.1:9222/json/list` を確認し、TradingView chart target が見えなければ起動を試みる
-- TradingView 起動はまず `%LOCALAPPDATA%\TradingView\TradingView.exe --remote-debugging-port=9222` を優先し、見つからない場合だけ `C:\TradingView` 配下の `TradingView*.lnk` を fallback として使う
-- launcher の中から `C:\actions-runner\_diag\run-self-hosted-runner-with-bootstrap.cmd` を呼ぶ
-- bootstrap も `C:\actions-runner\_diag\bootstrap-self-hosted-runner.cmd` に複製して live checkout 非依存にする
-- trigger は **Task Scheduler / ONLOGON / 30 秒 delay**
-- 実行ログは `C:\actions-runner\_diag\runner-autostart.log`
-- 解除は `schtasks /Delete /TN "OhMyTradingViewRunnerAutostart" /F`
-- 確認は `schtasks /Query /TN "OhMyTradingViewRunnerAutostart" /V /FO LIST`
+Night Batch workflow は production が完了するまで monitor / 監視する。結果確認では `GITHUB_STEP_SUMMARY`、upload-artifact された artifact、`artifacts/night-batch/roundN/bundle-foreground-state.json`、完了後の `artifacts/night-batch/archive/roundN/` を見る。
 
-もし `register-self-hosted-runner-autostart.cmd` 実行時に `楳笏...` のような文字化けしたコマンドエラーが出る場合は、**古い UTF-8 / 非 ASCII コメント入り script が live checkout に残っている**可能性が高い。最新 `main` に更新したうえで再実行する。
+active な workflow / runner が live checkout を使っている間は live checkout を編集しない。次 strategy は worktree / clone / branch などの別 workspace で準備し、workflow の production 完了を確認してから反映する。次 run を明示的に開始する場合は `advance-next-round` を使う。
 
-> **注意:** この方式は Windows の **自動ログオン** または対象ユーザーのログインを前提とする。  
-> reboot だけで完全無人復旧するかどうかは OS 側の auto-logon 設定に依存し、repo だけでは保証しない。
+## テストの選び方
 
-#### Night batch manual launch
+| 変更内容 | 主なコマンド |
+|---|---|
+| 通常の core / CLI / docs 変更 | `npm run test:unit` |
+| Night Batch / Windows runner 変更 | `npm run test:night-batch` |
+| CDP 実機挙動の確認 | `npm run test:e2e` |
+| まとめて確認 | `npm run test:all` |
+| README / docs 導線だけ確認 | `node --test tests/documentation-navigation.test.js` |
 
-Windows Command Prompt からは次で同じ config を使えます。
+E2E は TradingView Desktop + CDP が必要です。CDP が不要な変更では、E2E 未実行の理由を明記すれば十分です。
 
-```cmd
-scripts\windows\run-night-batch-self-hosted.cmd config\night_batch\bundle-foreground-reuse-config.json
-```
+## 正本と生成物
 
-#### ローカル smoke / backtest 検証手順
+| 区分 | 主な場所 | 扱い |
+|---|---|---|
+| 実装の正本 | [src/](src/)、[scripts/](scripts/) | 動作ロジック |
+| 実行設定の正本 | [config/](config/)、[.github/workflows/](.github/workflows/) | 自動化・実行条件 |
+| 検証 | [tests/](tests/) | 変更時に対応テストを確認 |
+| 実装計画 | [docs/exec-plans/](docs/exec-plans/) | active / completed を区別 |
+| 人間向け説明 | [docs/strategy/](docs/strategy/)、[docs/references/](docs/references/) | 必要な場合だけ参照 |
+| 運用レポート | [docs/reports/](docs/reports/) | 実行結果・障害記録 |
+| 生成物 | [artifacts/](artifacts/) | 実装の正本ではない |
 
-workflow に送る前に、落ちた preset だけを手元で再確認したいときは、まず単発 preset backtest を使います。
+## 詳細ドキュメント
 
-```bash
-node src/cli/index.js backtest preset emr-ae-v13-tp20-q20-notrail --symbol SPY
-node src/cli/index.js backtest preset emr-ae-v13-tp35-q40-notrail --symbol SPY
-```
+- [docs/README.md](docs/README.md) - docs 配下の索引
+- [docs/DOCUMENTATION_SYSTEM.md](docs/DOCUMENTATION_SYSTEM.md) - ドキュメント配置・鮮度維持ルール
+- [docs/exec-plans/active/](docs/exec-plans/active/) - 進行中の実装計画
+- [docs/exec-plans/completed/](docs/exec-plans/completed/) - 完了済みの実装計画
+- [docs/strategy/](docs/strategy/) - 戦略・投資判断に関する人間向け説明
+- [docs/research/](docs/research/) - 調査メモ、manifest 管理対象の research docs
+- [docs/reports/](docs/reports/) - incident / postmortem / 運用レポート
+- [docs/references/](docs/references/) - 外部資料台帳、Pine snapshot などの再利用資料
+- [docs/sessions/](docs/sessions/) - 直近の判断ログ。通常は最後に見る
 
-- `apply_failed: false`
-- `tester_available: true`
-- `compile_detail.study_added: true`
-
-この 3 つが揃えば、その preset は少なくともローカルの実 backtest 経路では通っています。
-
-campaign 単位の smoke をローカルで見たい場合は、WSL から `python/night_batch.py` を使います。
-
-```bash
-python3 python/night_batch.py campaign emr-ae-tpqty-100pack-focus8 --phase smoke --host 172.31.144.1 --port 9223
-```
-
-局所確認では「まず preset 単発」「必要なら smoke phase 全体」の順に切り分けるのが安全です。100戦略 campaign を毎回フルで流すより速く、compile / apply 系の取りこぼしも見つけやすくなります。
-
-#### Full workflow dispatch
-
-smoke 相当の確認が済んだら、本番の 8銘柄 × 100戦略は GitHub Actions `Night Batch Self Hosted` で起動します。
-
-```bash
-gh workflow run "Night Batch Self Hosted" --ref main --field config_path=config/night_batch/emr-ae-tpqty-100pack-focus8-config.json
-gh run list --workflow "Night Batch Self Hosted" --limit 5
-```
-
-必要なら run 作成直後に詳細を確認します。
-
-```bash
-gh run view <run-id>
-```
-
-今回の TP/QTY 100pack は `config/night_batch/emr-ae-tpqty-100pack-focus8-config.json` を使います。workflow 側では foreground production を走らせるため、run は長時間になります。
-
-`.github/workflows/night-batch-self-hosted.yml` は **self-hosted Windows runner** 前提です。runner が online であれば動作し、service 常駐は前提としません。既定の cron は **毎日 00:00 JST**（`0 15 * * *` UTC）で、既定 config は `config/night_batch/bundle-foreground-reuse-config.json` です。workflow は smoke と production を **完了まで監視**し、GitHub Actions 上の success/failure が production の完了結果と一致するようにします。workflow では `actions/checkout` を **`clean: false`** にしつつ、終了時に **`GITHUB_STEP_SUMMARY`** へ要約を追記し、`actions/upload-artifact` で最新 round の成果物を回収し、完了後に `artifacts/night-batch/archive/roundN/` へ退避します。round artifact には `gha_<run_id>_<attempt>-campaign-artifacts.json/.md` も入り、campaign の `final-results` / `recovered-results` / `strategy-ranking` への repo 相対パスを WSL 側から辿れます。**00:00 JST の起動窓を外れた stale scheduled run は skip** します。
-
-workflow / manual wrapper の foreground 実行経路では `--round-mode` を使うため、state file は `artifacts/night-batch/roundN/bundle-foreground-state.json` に配置され、完了後に `artifacts/night-batch/archive/roundN/` へ退避されます。state の `updated_at` が heartbeat、summary JSON の `termination_reason` / `failed_step` / `last_checkpoint` が GitHub 側の切り分け根拠になります。campaign ごとの主要出力を見たいときは、同じ round directory にある `gha_<run_id>_<attempt>-campaign-artifacts.md` を先に開くと、Windows 側の絶対パスを追わずに済みます。hard reboot / power loss では最後の summary / artifact upload が完了しない可能性は残ります。
-
-workflow の summary / artifact 周りの PowerShell ロジックは `scripts/windows/github-actions/` 配下の外部スクリプトに分離しています。過去に inline PowerShell の構文エラーで workflow summary だけが壊れたため、現在は incident の教訓を README 本文へ吸収し、個別レポートは `docs/reports/README.md` 配下の archive として扱います。
-
-foreground monitoring へ切り替えた理由は、旧 detached 方式では **workflow success と production 完了が一致せず、runner cleanup / reboot 後に stale state が残り得た**ためです。現在は workflow の完了を production 完了結果に合わせ、Task Scheduler autostart も `C:\actions-runner\_diag\` 配下の launcher / wrapper copy / bootstrap copy を使うことで live checkout 非依存にしています。
-
-Windows runner script は `cmd.exe` の文字コード解釈差を避けるため **ASCII-only の `.cmd`** に統一し、checkout 時も `.gitattributes` の `*.cmd text eol=crlf` で CRLF を強制しています。`楳笏...` のような文字化けや `schtasks` の quoting 崩れが出た場合は、まず最新 `main` を pull してから autostart 登録をやり直します。
-
-#### 次 strategy 更新ポリシー（live checkout 保護）
-
-> **foreground workflow の完了は production 完了まで追跡した結果を表す。** ただし active な workflow job / runner が live checkout を使っている間は、引き続き live checkout を編集しない。
-
-次 strategy を考えたい / 更新したいと言われたら、まず **self-hosted runner / workflow job が現在 live checkout を使っていないか** を確認する。foreground 監視では workflow が production 完了まで待つため、workflow 終了後は **`GITHUB_STEP_SUMMARY` / artifact / `artifacts/night-batch/roundN/bundle-foreground-state.json`** を見れば完了理由を追えます。
-
-active な self-hosted runner / detached night-batch がある間は、**live checkout を編集しない**。特に以下のファイルは mid-run 変更の影響が大きい：
-
-- `config/backtest/strategy-presets.json`
-- `config/night_batch/bundle-foreground-reuse-config.json`
-- `config/backtest/` 配下の strategy / backtest 入力
-
-次ラウンド向けの strategy / config を準備する場合は、**別の worktree / clone / branch で次の変更を準備し**、現在の live checkout とは分離する。
-
-1. self-hosted runner / workflow job が live checkout を使用中でないことを確認する
-2. 最新 run の **`GITHUB_STEP_SUMMARY` / artifact / `artifacts/night-batch/roundN/bundle-foreground-state.json`** を確認し、workflow が production 完了まで監視した結果を確認する
-3. live checkout に差分を反映する
-4. `advance-next-round` を明示して次 run を開始する
-
-上の 1-4 が現行の正本手順です。補足の判断経緯や incident 履歴が必要な場合だけ `docs/reports/README.md` と `docs/research/archive/` を参照してください。
-
-preset-driven バックテスト:
-
-```bash
-node src/cli/index.js backtest preset ema-cross-9-21 --symbol NVDA
-```
-
-> `config/backtest/strategy-presets.json` にある preset 全部が repo CLI でそのまま実行できるわけではありません。  
-> 現在の CLI は `buildResearchStrategySource()` で組み立て可能な preset のみを実行します。
-
-### Dual-worker parallel backtest
-
-2026-04-06 時点の known-good dual-worker 構成では、以下を確認済みです。
-
-- worker1: Windows `9222` -> WSL `9223`
-- worker2: Windows `9224` -> WSL `9225`
-- worker1 / worker2 individual preset backtest success
-- warmed parallel distinct preset backtest 3 ラウンド連続 success
-
-現在の主要な安定条件は次の 2 点です。
-
-- `restore_policy: "skip"` を前提に、backtest-applied strategy をチャート上に残す
-- Strategy Tester の `指標` タブを明示活性化できる構成で動かす
-
-known-good 条件と制約は
-`docs/research/archive/dual-worker-parallel-backtest-runbook_20260406_0735.md`
-を参照してください。
-
-> docs 上で known-good として確認できているのは **dual-worker / 2 worker 並列** までです。  
-> `shard parallel` はこの 2 worker 前提の運用方針であり、4並列は未検証です。
-
-> **pane/tab support との関係**: `tv_tab_*` / `tv_pane_*` は現在 layout 内の chart slot 操作であり、
-> 現在の backtest フローは active-chart-only です。pane/tab は切替短縮・比較レイアウトの補助導線
-> として有用ですが、true parallel backtest は上記 dual-worker ベースです。
-
-### Phase 1 experiment gating campaign
-
-`config/backtest/campaigns/external-phase1-priority-top.json` は、既存の campaign/backtest 出力を壊さずに
-**候補の gate 判定と順位付けだけ**を追加する Phase 1 用の campaign です。
-
-- 対象: cross-market 100 universe × 優先 5 preset
-- 追加 artifact: `artifacts/campaigns/<campaign-id>/<phase>/gated-summary.json`
-- 追加 artifact: `artifacts/campaigns/<campaign-id>/<phase>/ranked-candidates.json`
-- 追加 artifact: `artifacts/campaigns/<campaign-id>/<phase>/market-intel-snapshots.json`
-- 判定: `promote` / `hold` / `reject`
-- `gated-summary.json` / `ranked-candidates.json` の各 candidate には additive に `confluence_snapshot` / `provider_status` / `community_snapshot` が付きます。
-
-運用の正本はこの `README.md`、戦略説明の入口は `docs/strategy/current-strategy-reference.md`、テーマ投資の判断基準は `docs/strategy/theme-momentum-definition.md` です。
-
-### MCP workflow
-
-1. `tv_health_check`
-2. `tv_get_price`
-3. `tv_get_price` with `symbol: "NVDA"` if you need a specific symbol
-4. `pine_set_source`
-5. `pine_smart_compile`
-6. `pine_get_errors`
-
-### Backtest workflow
-
-1. `tv_backtest_nvda_ma_5_20` — NVDA に切替 → 5/20 MA クロス戦略を compile → Strategy Tester 読み取り
- - 成功時: `success: true`, `tester_available: true`, `metrics: { ... }`
- - Tester 読み取り不可時: `success: true`, `tester_available: false`, `tester_reason: "..."`
- - Fallback 使用時: `fallback_source: "chart_bars_local"`, `fallback_metrics: { ... }`
- - compile エラー時: `success: false`, `compile_errors: [...]`
-
-## テスト
-
-```bash
-npm test
-npm run test:night-batch
-npm run test:e2e
-npm run test:all
-```
-
-E2E は CDP が見つからない場合に skip されます。  
-WSL 環境では `TV_CDP_HOST` と必要なら `TV_CDP_PORT` を設定してから実行してください。
-
-## 制約
-
-- TradingView の内部 DOM / API 依存なので、Desktop 更新で壊れる可能性があります
-- 価格取得は `bars()` → `last_value()` → DOM の順に試します
-- WSL2 では Windows 側が `127.0.0.1:<port>` にしか bind していないと接続できません
-- バックテストの Strategy Tester 読み取りは DOM 依存のため、TradingView UI 更新で壊れる可能性があります
-- Strategy Tester にストラテジーが載らない場合は、現在チャートの bars から local fallback を計算します
-- バックテストは現在 NVDA 固定 / 5&20 SMA クロス固定です
-- dual-worker 並列バックテストは warmed state で安定化済みですが、fresh cold start 直後の再現性は未検証です
-
-```bash
-# Fast default test suite (no TradingView needed)
-npm test
-
-# Night batch regression suite
-npm run test:night-batch
-
-# E2E tests (requires TradingView Desktop with CDP)
-# In WSL, set TV_CDP_HOST and TV_CDP_PORT first
-TV_CDP_HOST=172.31.144.1 TV_CDP_PORT=9223 npm run test:e2e
-
-# All tests (fast suite + night batch + E2E)
-npm run test:all
-```
-
-## Architecture
-
-```
-src/
-  server.js          # MCP server entry point (stdio transport)
-  connection.js      # CDP connection, target discovery, host resolution
-  core/
-    health.js        # Health check, API discovery, reusable page-state collection
-    pine.js          # Pine Editor operations, static analysis
-    price.js         # Current price retrieval (chart API + DOM fallback)
-    backtest.js      # NVDA 5/20 MA cross backtest orchestration
-    observability.js # One-shot observability snapshot orchestration
-    browser-launch.js # Chromium browser fallback launch (bounded, CDP debug port)
-    workspace.js     # Watchlist, pane, tab, layout CDP operations
-    alerts.js        # Local price alert list/create/delete via CDP
-    market-intel.js  # Yahoo Finance: quotes, fundamentals, screener, TA/confluence ranking
-    market-intel-analysis.js # Deterministic symbol analysis built from market-intel inputs
-    market-confluence.js # Pure confluence scoring and coverage helpers
-    market-provider-status.js # Provider status / missing_reason / coverage summary helpers
-    market-community-snapshot.js # X/Reddit community snapshot aggregation
-  tools/
-    _format.js       # MCP response formatting
-    health.js        # MCP tool registration: tv_health_check, tv_discover
-    pine.js          # MCP tool registration: pine_* tools
-    price.js         # MCP tool registration: tv_get_price
-    backtest.js      # MCP tool registration: tv_backtest_nvda_ma_5_20
-    workspace.js     # MCP tool registration: tv_watchlist_*, tv_pane_*, tv_tab_*, tv_layout_*
-    alerts.js        # MCP tool registration: tv_alert_*
-    observe.js       # MCP tool registration: tv_observe_snapshot
-    browser-launch.js # MCP tool registration: tv_launch_browser
-  cli/
-    index.js         # CLI entry point
-    router.js        # Command router (node:util parseArgs)
-    commands/
-      health.js      # CLI: status, discover
-      pine.js        # CLI: pine get/set/compile/errors/analyze
-      price.js       # CLI: price get
-      backtest.js    # CLI: backtest nvda-ma
-      market-intel.js # CLI: market quote/fundamentals/snapshot/news/screener/ta-summary/ta-rank/analysis/confluence-rank
-      workspace.js   # CLI: workspace watchlist-*/pane-*/tab-*/layout-*
-      alerts.js      # CLI: alert list/create-price/delete
-      observe.js     # CLI: observe snapshot
-      browser-launch.js # CLI: launch-browser
-tests/
-  connection.test.js      # Unit: safeString, requireFinite, pickTarget, resolveCdpEndpoint
-  pine.analyze.test.js    # Unit: offline Pine static analysis
-  price.test.js           # Unit: formatPriceResult, validatePriceData
-  backtest.test.js        # Unit: buildNvdaMaSource, normalizeMetrics, buildResult
-  observability.test.js   # Unit: snapshot schema, bundle paths, partial-failure handling
-  browser-launch.test.js  # Unit: browser fallback path resolution, dry-run, argument validation
-  market-intel-analysis.test.js # Unit: deterministic symbol analysis
-  market-confluence.test.js # Unit: pure confluence scoring
-  market-provider-status.test.js # Unit: provider status classification and coverage summary
-  market-community-snapshot.test.js # Unit: X/Reddit community snapshot aggregation
-  e2e.pine-loop.test.js   # E2E: full pine loop (skips if no CDP)
-  e2e.price.test.js       # E2E: price retrieval (skips if no CDP)
-  e2e.backtest.test.js    # E2E: NVDA MA backtest (skips if no CDP)
-  e2e.workspace.test.js   # E2E: workspace operations (skips if no CDP)
-  e2e.alerts.test.js      # E2E: alert operations (skips if no CDP)
-  e2e.observability.test.js # E2E: observability snapshot (skips if no CDP)
-  workspace.test.js       # Unit: workspace CDP operations with mocks
-  alerts.test.js          # Unit: alert CDP operations with mocks
-```
+外部資料を調査して再利用する場合は、[docs/references/design-ref-llms.md](docs/references/design-ref-llms.md) に記録します。

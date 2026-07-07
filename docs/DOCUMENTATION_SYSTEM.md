@@ -2,95 +2,86 @@
 
 ## 目的
 
-- このドキュメントは、このリポジトリの知識ベースを**どの順番で読むべきか**、**どこに何を書くべきか**、**どうやって鮮度を保つか**を定義する入口です。
-- 大きな単一マニュアルではなく、索引から必要な深さへ進む**段階的開示**を前提にします。
+このドキュメントは、リポジトリ内の文書をどこに置き、どの順番で読み、どう鮮度を保つかを定義します。
+
+README はリポジトリ全体の入口です。`docs/README.md` は docs 配下の索引です。詳細 runbook、調査、過去経緯、運用レポートは README に詰め込まず、docs 側へ分けます。
 
 ## 読み始める順番
 
-1. [README.md](../README.md) — プロジェクト全体の概要、MCP tools / CLI 一覧、セットアップ手順
-2. [docs/research/artifacts-backtest-scoreboards.md](research/artifacts-backtest-scoreboards.md) — artifact に保存された campaign ごとの最新ランキング表
-3. [docs/research/archive/main-backtest-current-summary.md](research/archive/main-backtest-current-summary.md) — 今の main backtest の結論と方針
-4. [docs/strategy/current-strategy-reference.md](strategy/current-strategy-reference.md) — 戦略カタログの人間向け入口（lifecycle / score / parameters）
-5. [docs/strategy/theme-momentum-definition.md](strategy/theme-momentum-definition.md) — テーマ投資で「モメンタムのある銘柄」をどう定義するか
-6. [docs/exec-plans/active/](exec-plans/active/) — 現在進行中の実装計画
-7. [docs/explain-forhuman.md](explain-forhuman.md) — night batch の流れを人間向けに補足する文書
+1. [../AGENTS.md](../AGENTS.md) - AI 作業規則
+2. [../README.md](../README.md) - プロジェクト概要、主環境、タスク別ナビゲーション
+3. [README.md](README.md) - docs 配下の索引
+4. [exec-plans/active/](exec-plans/active/) - 進行中の実装計画
+5. 対象領域の code / config / tests
+6. 必要な場合だけ research / reports / references / sessions
 
-## セッション記憶が不足したときの参照順
+## 置き場所
 
-- セッション内の記憶が十分な間は `docs/sessions/` を参照しません。
-- 記憶が不足したときだけ、会話ログ全文ではなく要約済みの知識構造を優先して参照します。
-- 必ず「上位要約 → 下位詳細」の順で辿り、`docs/sessions/` は最終手段に限定します。
+| 種別 | 場所 | 役割 |
+|---|---|---|
+| プロジェクト入口 | [../README.md](../README.md) | 概要、current default、タスク別ナビゲーション |
+| docs 索引 | [README.md](README.md) | docs 配下の読み方 |
+| 実装計画 | [exec-plans/](exec-plans/) | active / completed を分けて管理 |
+| 戦略説明 | [strategy/](strategy/) | 戦略、テーマ、投資判断の人間向け説明 |
+| 調査資料 | [research/](research/) | manifest 管理対象の current research と archive |
+| 運用レポート | [reports/](reports/) | incident、postmortem、運用結果 |
+| 参照資料 | [references/](references/) | 外部資料台帳、Pine snapshot など |
+| セッションログ | [sessions/](sessions/) | 直近判断ログ。通常は最後に参照 |
+| 生成物 | [../artifacts/](../artifacts/) | 実行結果。実装の正本ではない |
 
-1. [docs/exec-plans/active/](exec-plans/active/) — 現在進行中の実装計画
-2. [docs/research/artifacts-backtest-scoreboards.md](research/artifacts-backtest-scoreboards.md) — 最新スコアボード
-3. [docs/research/archive/main-backtest-current-summary.md](research/archive/main-backtest-current-summary.md) — main backtest の結論
-4. [docs/strategy/current-strategy-reference.md](strategy/current-strategy-reference.md) — 戦略・銘柄リファレンス
-5. [docs/sessions/](sessions/) — 直近の判断経緯（最終手段）
+## README に置くもの
 
-## 正式な記録先
+- 一文概要
+- 現在の主実行環境
+- 最初に読む順番
+- タスク別ナビゲーション
+- 主要実行経路
+- リポジトリ構造
+- 最小セットアップ
+- テストの選び方
+- 正本と生成物の区別
+- docs への入口
 
-- ルート:
-  - [README.md](../README.md) — プロジェクト全体の概要・セットアップ・運用手順の正本
-- `docs/`:
-  - [explain-forhuman.md](explain-forhuman.md) — night batch フローの人間向け補足
-  - `exec-plans/` — 実装計画
-    - [exec-plans/active/](exec-plans/active/) — 進行中の実装計画
-    - [exec-plans/completed/](exec-plans/completed/) — 完了済みの実装計画
-  - `references/` — 再利用する参照物
-    - [references/pine/](references/pine/) — Pine source snapshot
-    - [references/design-ref-llms.md](references/design-ref-llms.md) — 外部調査台帳
-  - `reports/` — incident / postmortem
-    - [reports/archive/](reports/archive/) — 過去のレポート
-  - `research/` — current research docs（manifest.json で keep-set を管理）
-    - [research/archive/](research/archive/) — 過去の handoff / research doc
-    - [research/archive/retired/](research/archive/retired/) — retired preset の説明と退避先
-  - `sessions/` — 直近の判断ログ
-    - [sessions/archive/](sessions/archive/) — 過去の判断ログ
-  - `strategy/` — 戦略・銘柄の人間向け説明
-    - [strategy/current-strategy-reference.md](strategy/current-strategy-reference.md) — 戦略カタログ入口
-    - [strategy/current-symbol-reference.md](strategy/current-symbol-reference.md) — 銘柄リファレンス
-    - [strategy/theme-momentum-definition.md](strategy/theme-momentum-definition.md) — テーマ投資の判断基準
-- `artifacts/` — run ごとの生成物（night batch / campaign / runtime verification）
-  - [artifacts/campaigns/](../artifacts/campaigns/) — campaign ごとの backtest 結果
+## docs に置くもの
 
-## 鮮度維持の仕組み
+- 詳細 runbook
+- 調査結果
+- 戦略説明
+- incident / postmortem
+- 外部資料の記録
+- セッションログ
+- 完了済みの実装計画
 
-- `scripts/docs/archive-stale-latest.mjs`
-  - `docs/research/manifest.json` の `keep` に列挙されていない doc を `docs/research/archive/` へ退避する
-- `tests/repo-layout.test.js`
-  - `docs/research/manifest.json` が実在するファイルのみを列挙しているか
-  - live strategy-presets / campaigns / universes の整合性
-  - session ログ・exec-plans の配置ルール
-- `npm test` で上記テストが自動実行される
+## current / archive / generated
 
-## 運用ルール
+| 区分 | 判断基準 |
+|---|---|
+| current | README、現行 code、現行 config、現行 tests、`docs/research/manifest.json` の keep 対象 |
+| archive | `archive/` 配下の過去資料。現行仕様として扱う前に code / config / tests で検証する |
+| generated | `artifacts/` 配下の実行生成物。結果確認用であり、実装の正本ではない |
 
-- path を変えたら `README.md`、この文書、関連テストを**同時に**直す
-- `docs/research/` の鮮度は `manifest.json` の `keep` で管理し、outdated になったものは `docs/research/archive/` へ移す
-- `docs/sessions/` の古いものは `docs/sessions/archive/` へ移す
-- 外部資料を参照したら `docs/references/design-ref-llms.md` に必ず記録する
-- 戦略を追加・変更したら `config/backtest/strategy-presets.json` と `docs/strategy/current-strategy-reference.md` を同時に更新する
-- retired 戦略は `docs/research/archive/retired/retired-strategy-presets.json` へ退避する
-- 実装計画は `docs/exec-plans/active/` に置き、完了後に `docs/exec-plans/completed/` へ移動する
+## 鮮度維持
 
-## アーカイブルール（退避）
+- path を変えたら README、docs 索引、この文書、導線テストを同時に直す。
+- README から存在しないローカルリンクへ誘導しない。
+- docs の主要リンクは [tests/documentation-navigation.test.js](../tests/documentation-navigation.test.js) で検出する。
+- `docs/research/` の鮮度は [research/manifest.json](research/manifest.json) の keep で管理する。
+- keep 外の research docs や古い session logs は [scripts/docs/archive-stale-latest.mjs](../scripts/docs/archive-stale-latest.mjs) で archive へ退避する。
+- 外部資料を参照したら [references/design-ref-llms.md](references/design-ref-llms.md) に記録する。
 
-各ディレクトリの退避方式と退避先：
+## アーカイブルール
 
 | 対象パス | 退避先 | 方式 |
 |---|---|---|
-| `docs/research/` | `docs/research/archive/` | **自動**（`scripts/docs/archive-stale-latest.mjs` が `manifest.json` の keep-set 外を退避） |
-| `docs/sessions/` | `docs/sessions/archive/` | **自動**（同スクリプトが最新1件のみ残して退避） |
-| `docs/reports/` | `docs/reports/archive/` | **手動**（Night Batch run 後に手動で退避） |
-| `config/backtest/campaigns/` | `config/backtest/campaigns/archive/` | **手動**（active campaign に変更がある場合に手動で退避） |
-| `config/backtest/universes/` | `config/backtest/universes/archive/` | **手動**（universe に変更がある場合に手動で退避） |
-| `artifacts/campaigns/` | `artifacts/campaigns/archive/` | **自動**（night batch workflow の `archive-rounds` コマンドで退避） |
+| `docs/research/` | `docs/research/archive/` | `scripts/docs/archive-stale-latest.mjs` |
+| `docs/sessions/` | `docs/sessions/archive/` | `scripts/docs/archive-stale-latest.mjs` |
+| `docs/reports/` | `docs/reports/archive/` | 手動 |
+| `config/backtest/campaigns/` | `config/backtest/campaigns/archive/` | 手動 |
+| `config/backtest/universes/` | `config/backtest/universes/archive/` | 手動 |
+| `artifacts/campaigns/` | `artifacts/campaigns/archive/` | workflow / night batch |
 
-### 自動退避のトリガー
+ローカルで archive 処理を確認する場合:
 
-`scripts/docs/archive-stale-latest.mjs` は GitHub Actions workflow（`.github/workflows/night-batch-self-hosted.yml`）からバッチ後に自動実行される。  
-ローカルで手動実行する場合は：
-
-```bash
+```powershell
 node scripts/docs/archive-stale-latest.mjs
 ```
