@@ -23,6 +23,19 @@ function toRepoRelative(path) {
     .replaceAll('\\', '/');
 }
 
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function extractMarkdownSection(text, heading) {
+  const startPattern = new RegExp(`^## ${escapeRegExp(heading)}\\r?\\n`, 'm');
+  const startMatch = text.match(startPattern);
+  assert.ok(startMatch, `missing markdown section: ${heading}`);
+  const bodyStart = startMatch.index + startMatch[0].length;
+  const nextHeading = text.slice(bodyStart).search(/^## /m);
+  return nextHeading === -1 ? text.slice(bodyStart) : text.slice(bodyStart, bodyStart + nextHeading);
+}
+
 const prohibitedStrings = [
   'post_buz.yml',
   'auto_follow.yml',
@@ -140,20 +153,89 @@ describe('agent skills contract', () => {
       'read-only',
       'Dr.K reports',
       'optional supporting material',
+      'HOLD_OR_EXIT + GO',
+      'Do not use',
+      'PORTFOLIO_RISK + GO',
+      'US / JP / MIXED',
+      'GitHub connector',
+      'gh run list --workflow daily-screener.yml',
+      'gh run list --workflow daily-screener-japan.yml',
     ]) {
       assert.ok(text.includes(required), `trade-decision-gate missing contract text: ${required}`);
     }
 
-    for (const prohibited of [
-      '注文発注',
-      '注文変更',
-      '注文取消',
-      '自動売買',
-      '取引ロック解除',
-    ]) {
-      assert.match(text, new RegExp(`${prohibited}\\r?\\n?`), `trade-decision-gate should explicitly prohibit ${prohibited}`);
+    const readOnlySection = extractMarkdownSection(text, 'Read-Only Constraint');
+    for (const prohibitedOperation of ['注文発注', '注文変更', '注文取消', '取引ロック解除']) {
+      assert.match(
+        readOnlySection,
+        new RegExp(`${prohibitedOperation}\\s+is prohibited`),
+        `trade-decision-gate should prohibit ${prohibitedOperation} in read-only section`,
+      );
     }
+    assert.doesNotMatch(readOnlySection, /\bmay\s+(place|modify|cancel|unlock|submit)\b/i);
+    assert.doesNotMatch(readOnlySection, /\ballow(?:s|ed)?\s+(order|trade|unlock)/i);
+    assert.doesNotMatch(readOnlySection, /\bplace\s+orders?\b/i);
 
     assert.doesNotMatch(text, /Dr\.K reports[\s\S]{0,120}Always read/i);
+
+    const prioritySection = extractMarkdownSection(text, 'Judgment Priority');
+    assert.ok(
+      prioritySection.indexOf('confirmed `STOP` condition') < prioritySection.indexOf('required information for `GO` is missing'),
+      'confirmed STOP conditions must be prioritized before missing-info STAY',
+    );
+
+    const modeSection = extractMarkdownSection(text, 'Mode Workflows');
+    for (const mode of ['NEW_ENTRY', 'ADD_POSITION', 'HOLD_OR_EXIT', 'PORTFOLIO_RISK']) {
+      assert.match(modeSection, new RegExp(`### ${mode}`), `missing workflow for ${mode}`);
+    }
+    assert.match(modeSection, /Do not make these new-entry requirements unconditional for `HOLD_OR_EXIT`/);
+    assert.match(modeSection, /Do not make these single-symbol checks unconditional for `PORTFOLIO_RISK`/);
+    assert.match(modeSection, /One symbol's valid pivot/);
+
+    const labelSection = extractMarkdownSection(text, 'Label Meanings');
+    assert.match(labelSection, /`HOLD_OR_EXIT \+ GO`: Do not use\./);
+    assert.match(labelSection, /`PORTFOLIO_RISK \+ GO`: There is room to take new risk\. This does not approve buying a specific symbol\./);
+    assert.match(labelSection, /対象市場` to `US`, `JP`, or `MIXED`/);
+
+    const outputSection = extractMarkdownSection(text, 'Output Format');
+    assert.ok(
+      outputSection.indexOf('# 判定: GO / STAY / STOP') < outputSection.indexOf('確認時刻:'),
+      '# 判定 must appear before 確認時刻 in output format',
+    );
+    for (const holdField of [
+      '平均取得価格:',
+      '現在価格:',
+      '含み損益率:',
+      '現在の無効化ライン:',
+      '保有継続条件:',
+      '縮小条件:',
+      '売却・損切り条件:',
+      '利益管理:',
+    ]) {
+      assert.ok(outputSection.includes(holdField), `missing HOLD_OR_EXIT output field: ${holdField}`);
+    }
+    for (const portfolioField of [
+      '総資産:',
+      '現金残高:',
+      '現金比率:',
+      '建玉総額:',
+      '建玉倍率:',
+      '全ストップ発動時の想定損失:',
+      '最大銘柄比率:',
+      '最大セクター比率:',
+      'テーマ重複:',
+      '相関リスク:',
+      'イベント集中:',
+      '縮小優先候補:',
+      '新規リスク余地:',
+    ]) {
+      assert.ok(outputSection.includes(portfolioField), `missing PORTFOLIO_RISK output field: ${portfolioField}`);
+    }
+
+    const runSection = extractMarkdownSection(text, 'Latest Successful Screener Run');
+    assert.match(runSection, /Available GitHub connector \/ GitHub API tool/);
+    assert.match(runSection, /gh run list --workflow daily-screener\.yml/);
+    assert.match(runSection, /gh run list --workflow daily-screener-japan\.yml/);
+    assert.match(runSection, /Repository run metadata and report body/);
   });
 });
