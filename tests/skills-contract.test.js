@@ -111,4 +111,49 @@ describe('agent skills contract', () => {
     const backtestSkill = readText(join(SKILLS_DIR, 'backtest-results-capture', 'SKILL.md'));
     assert.match(backtestSkill, /night-batch-\{github\.run_id\}-\{github\.run_attempt\}/);
   });
+
+  it('documents the trade decision gate contract', () => {
+    const tradeSkillPath = join(SKILLS_DIR, 'trade-decision-gate', 'SKILL.md');
+    assert.ok(existsSync(tradeSkillPath), 'trade-decision-gate skill should exist');
+
+    const text = readText(tradeSkillPath);
+    const frontMatter = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+    assert.ok(frontMatter, 'trade-decision-gate skill is missing front matter');
+    assert.match(frontMatter[1], /^name:\s*trade-decision-gate$/m);
+    assert.match(frontMatter[1], /^description:\s*.+buy.+hold.+sell.+portfolio.+$/m);
+
+    for (const required of [
+      'docs/strategy/Trade-rule.md',
+      '.agents/skills/tradingview-operator-playbook/SKILL.md',
+      'GO / STAY / STOP',
+      'NEW_ENTRY',
+      'ADD_POSITION',
+      'HOLD_OR_EXIT',
+      'PORTFOLIO_RISK',
+      '.github/workflows/daily-screener.yml',
+      'docs/reports/screener/daily-ranking.md',
+      'docs/reports/screener/daily-ranking-run.json',
+      '.github/workflows/daily-screener-japan.yml',
+      'docs/reports/screener/daily-ranking-jp.md',
+      'docs/reports/screener/daily-ranking-jp-run.json',
+      'Return `STAY`',
+      'read-only',
+      'Dr.K reports',
+      'optional supporting material',
+    ]) {
+      assert.ok(text.includes(required), `trade-decision-gate missing contract text: ${required}`);
+    }
+
+    for (const prohibited of [
+      '注文発注',
+      '注文変更',
+      '注文取消',
+      '自動売買',
+      '取引ロック解除',
+    ]) {
+      assert.match(text, new RegExp(`${prohibited}\\r?\\n?`), `trade-decision-gate should explicitly prohibit ${prohibited}`);
+    }
+
+    assert.doesNotMatch(text, /Dr\.K reports[\s\S]{0,120}Always read/i);
+  });
 });

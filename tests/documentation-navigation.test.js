@@ -8,7 +8,7 @@ const docsToCheck = [
   'README.md',
   'docs/DOCUMENTATION_SYSTEM.md',
 ];
-const ignoredDirectories = new Set(['.git', 'node_modules', 'artifacts']);
+const ignoredDirectories = new Set(['.git', '.venv', 'node_modules', 'artifacts']);
 
 function readRepoFile(repoPath) {
   return readFileSync(join(PROJECT_ROOT, repoPath), 'utf8');

@@ -231,15 +231,15 @@
 
 ## 実装手順
 
-- [ ] `.agents/skills/trade-decision-gate/SKILL.md` を作成し、front matter、起動条件、判断モード、処理順序、読み取り専用制約、固定出力を記載する。
-- [ ] `tests/skills-contract.test.js` に `trade-decision-gate` の契約テストを追加する。
-- [ ] `README.md` のタスク別ナビゲーションへ売買判断・保有判断・ポートフォリオ判断の導線を追加する。
-- [ ] `node --test tests/skills-contract.test.js` を実行する。
-- [ ] `node --test tests/documentation-navigation.test.js` を実行する。
-- [ ] `npm run test:unit` を実行する。
-- [ ] 差分をセルフレビューし、計画外ファイルへ変更が広がっていないことを確認する。
-- [ ] 実装完了時にこの計画を `docs/exec-plans/active/` から `docs/exec-plans/completed/` へ移動する。
-- [ ] 完了差分を Conventional Commits で commit / push する。
+- [x] `.agents/skills/trade-decision-gate/SKILL.md` を作成し、front matter、起動条件、判断モード、処理順序、読み取り専用制約、固定出力を記載する。
+- [x] `tests/skills-contract.test.js` に `trade-decision-gate` の契約テストを追加する。
+- [x] `README.md` のタスク別ナビゲーションへ売買判断・保有判断・ポートフォリオ判断の導線を追加する。
+- [x] `node --test tests/skills-contract.test.js` を実行する。
+- [x] `node --test tests/documentation-navigation.test.js` を実行する。
+- [x] `npm run test:unit` を実行する。
+- [x] 差分をセルフレビューし、計画外ファイルへ変更が広がっていないことを確認する。
+- [x] 実装完了時にこの計画を `docs/exec-plans/active/` から `docs/exec-plans/completed/` へ移動する。
+- [x] 完了差分を Conventional Commits で commit / push する。
 
 ## テスト戦略
 
@@ -325,3 +325,21 @@ Move-Item -LiteralPath docs/exec-plans/active/trade-decision-gate-skill_20260709
 - 今回の commit 対象は計画書 1 ファイルのみで、`SKILL.md`、README、テストの実装は含めない。
 - 変更予定ファイル、変更しないファイル、影響範囲、検証コマンド、リスク、不確実事項、スコープ外を明記した。
 - 既存コード、workflow、report、tests を正本として扱い、追加の実装範囲は不確実事項に留めた。
+
+## 実装完了レビュー
+
+- `.agents/skills/trade-decision-gate/SKILL.md` を追加し、`Trade-rule.md` を正本、`tradingview-operator-playbook` を情報取得 route の参照先として明記した。
+- `README.md` のタスク別ナビゲーションへ売買判断・保有判断・ポートフォリオ判断の入口を追加した。
+- `tests/skills-contract.test.js` に trade decision gate の契約テストを追加した。
+- `tests/documentation-navigation.test.js` は、既存ローカル環境 `python/.venv` 内の外部 README を拾って失敗したため、仮想環境ディレクトリ `.venv` を README 探索から除外した。
+- `docs/strategy/Trade-rule.md`、Dr.K レポート、operator skill、既存 MCP / CLI / screener / Moomoo / TradingView CDP 実装は変更していない。
+
+検証結果:
+
+```powershell
+node --test tests/skills-contract.test.js
+node --test tests/documentation-navigation.test.js
+npm run test:unit
+```
+
+すべて成功。`npm run test:unit` は 864 tests / 864 pass。
