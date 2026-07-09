@@ -1,0 +1,80 @@
+# 判定: STAY
+
+確認時刻: 2026-07-09 19:53 JST
+判断モード: NEW_ENTRY
+対象市場: US
+対象銘柄: NVDA
+入力形式: テキスト
+データ完全性: PARTIAL
+
+## 1. 結論
+- 判定: STAY。今すぐ新規購入はしない。
+- 今やること: 監視継続。最新成功スクリーナーの鮮度が確定し、NVDA が上位候補へ戻り、かつ日足で有効 pivot を出来高つきで突破するまで待つ。
+- 判定が変わる条件: 最新米国 screener が正常に更新され、NVDA が上位候補または明確な leader として確認できること。価格が 20 日高値候補 213.99 付近を上抜け、出来高が 20 日平均を明確に上回り、損切り幅 8% 以内かつ初期 risk/reward 2 以上が確認できること。
+- 理由: 会社業績と AI demand は強いが、Oh-MY-TradingView の最新成功 screener 鮮度が不十分で、現在の repo report では NVDA が掲載候補として確認できない。日足も 50 日線下で、明確な breakout entry ではない。
+
+## 2. 最新ニュース・イベント
+- 会社固有: NVIDIA 公式 IR の 2026-05-20 Q1 FY2027 発表では、売上 816.15 億ドル、Data Center 売上 752 億ドル、Q2 FY2027 売上見通し 910 億ドル ±2% を確認。会社発表は取得成功。
+- SEC: 2026-04-26 期 10-Q を SEC で確認。一次情報の取得成功。
+- 直近ニュース: 2026-07-08 前後、DeepSeek の独自 inference chip 開発報道は NVDA 依存低下懸念として逆風。一方、BofA / Goldman などは valuation と AI platform 優位を理由に強気見解。ニュース取得は成功だが、強弱混在。
+- セクター: 半導体株は 2026-07-08 に反発したが、SMH は 20 日線を下回っており、セクター全体は強弱混在。
+- マクロ・地政学: 2026-07-08 は米国・イラン情勢や原油高への警戒が報じられ、市場は不安定。RISK_OFF 断定ではないが、NEUTRAL 寄り。
+- 次回決算・重要イベント: Wall Street Horizon では次回決算が 2026-08-26 after market と表示。NVIDIA IR の events page では 2026-06-24 annual meeting は確認できたが、次回決算日そのものは IR events からは未確認。
+
+## 3. スクリーナー
+- 最新run: GitHub Actions の `daily-screener.yml` 最新成功 run は 2026-06-25T15:15:01Z 作成、run id 28180455577、headSha e6cb2191c90cc3403795d4bfbc22a19f0a0b0f37。
+- repo metadata: `docs/reports/screener/daily-ranking-run.json` は generated_at 2026-06-25T15:15:32Z。
+- report body: `docs/reports/screener/daily-ranking.md` は `2026/07/02`、更新 `01:12 JST`。metadata と report body の日付が一致しない。
+- 業種順位: repo report では Electronic Technology が Phase1 1位、Semiconductors が Phase2 6位。
+- 銘柄順位: NVDA は現在の daily-ranking report の掲載銘柄として確認できず、記載は凡例内の例示のみ。
+- スコア: NVDA の現行 score は未確認。
+- 採用理由: 未確認。
+- 除外・注意理由: 最新 report 掲載なし、最新成功 run の鮮度が判断時点から古い、metadata と report body が不一致。
+
+## 4. 市場・セクター・リーダー判定
+- 市場レジーム: NEUTRAL。SPY は 2026-07-08 終値 745.40、20 日線 741.60 と 50 日線 739.64 を上回る。一方、QQQ は終値 711.44、20 日線 720.20 と 50 日線 712.62 をわずかに下回る。
+- セクター強度: 半導体 ETF の SMH は 2026-07-08 終値 593.00、50 日線 585.78 は上回るが、20 日線 618.80 を約 4.17% 下回る。短期ではまだ弱さが残る。
+- リーダー株判定: NVDA は大型 AI leader だが、直近の Oh-MY-TradingView screener では上位候補として確認できない。主要半導体リーダーは AVGO が 20 日線上、AMD / TSM は 20 日線付近または下、MU は 20 日線を大きく下回り、リーダー群の足並みは揃っていない。
+
+## 5. チャート
+- chart_state: BASE_FORMING / PULLBACK_RECOVERY 寄り。新規 `BREAKOUT_TRIGGERED` ではない。
+- setup_type: 未確認。7/8 は反発したが、明確な新規 setup 完成は未確認。
+- active_pivot_price: 暫定 213.99（直近 20 日の前日までの高値候補）。正式な TradingView 目視 pivot は未確認。
+- current_price: 204.12（2026-07-08 Nasdaq 日足終値、Yahoo chart endpoint）。
+- 直近日足 OHLCV: 2026-07-08 open 195.18 / high 205.16 / low 195.06 / close 204.12 / volume 146,904,500。
+- 出来高: 20 日平均 149,920,480 に対して約 2.0% 少ない。breakout を確認する強い出来高増とは言えない。
+- extension_pct: 暫定 pivot 213.99 に対して -4.61%。飛びつきの 5%超過ではないが、まだ pivot 突破前。
+- entry_zone: 未確認。214 近辺の上抜け、または 20 日線 201.69 付近での明確な押し目再上昇待ち。
+- stop_price: 候補 189.80（直近 20 日安値）または 195.06（7/8 安値下）。正式な構造的 stop は未確認。
+- stop_width: 204.12 から 189.80 までは約 7.0%。214 から 189.80 までは約 11.3% で Trade Rule の 8%上限を超える。214 から 195.06 でも約 8.8%。
+- risk_reward: 未確認。上値目標と stop の組み合わせで 2 以上を確認できない。
+
+## 6. 資金管理
+- 自己資金: 未確認。
+- 現在の建玉総額: 未確認。
+- 1トレード許容損失: 未確認。Trade Rule 上は自己資金の 2%以内だが、自己資金が提示されていないため数量計算不可。
+- 推奨数量・金額: 未確認。今回は新規購入を勧めないため、発注数量は提示しない。
+- 追加後の建玉倍率: 新規購入判断のため該当なし。portfolio 情報が未提示のため未確認。
+- 追加後の全体想定損失: 未確認。
+
+## 7. ハード停止チェック
+- [x] 最新価格を確認済み。
+- [x] 会社発表と SEC 一次情報を確認済み。
+- [x] 最新ニュースを確認済み。
+- [ ] 最新スクリーナー上位候補: 未確認。NVDA は現行 report 掲載なし。
+- [x] 市場が明確な RISK_OFF ではない。ただし NEUTRAL。
+- [ ] セクターとリーダーが健全: 半導体は短期で強弱混在。
+- [ ] ピボットから5%以内: 価格は pivot 候補より下だが、pivot 突破は未確認。
+- [ ] 損切り位置が明確: 暫定候補のみ。
+- [ ] 損切り幅8%以内: entry 位置次第。pivot 突破 entry では 8%超の可能性。
+- [ ] リスクリワード2以上: 未確認。
+- [x] 決算・イベントリスクを確認: 次回決算候補 2026-08-26 after market。
+- [ ] ポジション上限内: 口座情報なし。
+
+## 8. 最終アクション
+- エントリー条件: 今は入らない。最新 screener 正常更新、NVDA の上位候補確認、214 前後の pivot 上抜けまたは低 risk の新 setup 完成を待つ。
+- 注文候補: なし。注文発注、注文変更、注文取消、アラート作成、取引ロック解除は行わない。
+- 損切り: 実際に entry するなら、構造的 stop を 8%以内に収められる位置だけ検討。現時点の暫定候補は 195.06 下または 189.80 下だが、正式判断は未確認。
+- 利益管理: 未保有のため該当なし。
+- 再確認する時点: 次の米国 screener 成功 run 後、NVDA が screener 上位へ入った時、または 213.99 近辺を出来高増で上抜けた時。決算前は 2026-08-26 までの event risk を再確認する。
+- 使用した情報源: `docs/strategy/Trade-rule.md`、NVIDIA IR Q1 FY2027 press release、SEC 10-Q、Wall Street Horizon earnings calendar、GitHub Actions `daily-screener.yml` run 28180455577、repo `daily-ranking.md` / `daily-ranking-run.json`、Yahoo chart endpoint、MarketWatch / Barron's / Investors.com / Investopedia の最新ニュース検索結果。

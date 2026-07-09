@@ -1,0 +1,10 @@
+独立 Codex CLI プロセス:
+
+codex --help
+codex exec --help
+
+結果:
+PowerShell から `C:\Program Files\WindowsApps\OpenAI.Codex_26.623.19656.0_x64__2p2nqsd0c76g0\app\resources\codex.exe` を起動しようとしたが、`アクセスが拒否されました` で失敗した。
+
+同一セッション smoke:
+stderr なし。

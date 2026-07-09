@@ -133,7 +133,10 @@ describe('agent skills contract', () => {
     const frontMatter = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
     assert.ok(frontMatter, 'trade-decision-gate skill is missing front matter');
     assert.match(frontMatter[1], /^name:\s*trade-decision-gate$/m);
-    assert.match(frontMatter[1], /^description:\s*.+buy.+hold.+sell.+portfolio.+$/m);
+    assert.match(frontMatter[1], /^description:\s*.+購入.+保有.+売却.+ポートフォリオ.+$/m);
+    for (const descriptionTerm of ['追加購入', '利確', '損切り']) {
+      assert.ok(frontMatter[1].includes(descriptionTerm), `description should include ${descriptionTerm}`);
+    }
 
     for (const required of [
       'docs/strategy/Trade-rule.md',
@@ -149,12 +152,12 @@ describe('agent skills contract', () => {
       '.github/workflows/daily-screener-japan.yml',
       'docs/reports/screener/daily-ranking-jp.md',
       'docs/reports/screener/daily-ranking-jp-run.json',
-      'Return `STAY`',
-      'read-only',
+      '`STAY`',
+      '読み取り専用',
       'Dr.K reports',
-      'optional supporting material',
+      '補助資料',
       'HOLD_OR_EXIT + GO',
-      'Do not use',
+      '使用しない',
       'PORTFOLIO_RISK + GO',
       'US / JP / MIXED',
       'GitHub connector',
@@ -164,40 +167,80 @@ describe('agent skills contract', () => {
       assert.ok(text.includes(required), `trade-decision-gate missing contract text: ${required}`);
     }
 
-    const readOnlySection = extractMarkdownSection(text, 'Read-Only Constraint');
-    for (const prohibitedOperation of ['注文発注', '注文変更', '注文取消', '取引ロック解除']) {
+    for (const heading of [
+      '起動対象外',
+      '正本',
+      '判断モード',
+      '判定優先順位',
+      'モード別ワークフロー',
+      '情報源の優先順位',
+      '最新成功スクリーナーrun',
+      'TradingViewの利用方針',
+      '画像入力',
+      '情報不足時の扱い',
+      'ラベルの意味',
+      '読み取り専用制約',
+      '出力形式',
+    ]) {
+      extractMarkdownSection(text, heading);
+    }
+
+    const readOnlySection = extractMarkdownSection(text, '読み取り専用制約');
+    for (const prohibitedOperation of [
+      '注文発注',
+      '注文変更',
+      '注文取消',
+      '自動売買',
+      '自動損切り',
+      'ポジションの自動縮小',
+      '取引ロック解除',
+      'Moomooでの取引操作',
+      '証券口座への書き込み操作',
+    ]) {
       assert.match(
         readOnlySection,
-        new RegExp(`${prohibitedOperation}\\s+is prohibited`),
+        new RegExp(`${prohibitedOperation}は禁止`),
         `trade-decision-gate should prohibit ${prohibitedOperation} in read-only section`,
       );
     }
     assert.doesNotMatch(readOnlySection, /\bmay\s+(place|modify|cancel|unlock|submit)\b/i);
     assert.doesNotMatch(readOnlySection, /\ballow(?:s|ed)?\s+(order|trade|unlock)/i);
     assert.doesNotMatch(readOnlySection, /\bplace\s+orders?\b/i);
+    for (const allowedExpression of [
+      '注文発注を許可する',
+      '注文を実行できる',
+      '注文を送信できる',
+      '取引ロックを解除できる',
+    ]) {
+      assert.equal(
+        readOnlySection.includes(allowedExpression),
+        false,
+        `read-only section should not allow: ${allowedExpression}`,
+      );
+    }
 
     assert.doesNotMatch(text, /Dr\.K reports[\s\S]{0,120}Always read/i);
 
-    const prioritySection = extractMarkdownSection(text, 'Judgment Priority');
+    const prioritySection = extractMarkdownSection(text, '判定優先順位');
     assert.ok(
-      prioritySection.indexOf('confirmed `STOP` condition') < prioritySection.indexOf('required information for `GO` is missing'),
+      prioritySection.indexOf('確認済みの `STOP` 条件') < prioritySection.indexOf('`GO` に必要な情報が不足'),
       'confirmed STOP conditions must be prioritized before missing-info STAY',
     );
 
-    const modeSection = extractMarkdownSection(text, 'Mode Workflows');
+    const modeSection = extractMarkdownSection(text, 'モード別ワークフロー');
     for (const mode of ['NEW_ENTRY', 'ADD_POSITION', 'HOLD_OR_EXIT', 'PORTFOLIO_RISK']) {
       assert.match(modeSection, new RegExp(`### ${mode}`), `missing workflow for ${mode}`);
     }
-    assert.match(modeSection, /Do not make these new-entry requirements unconditional for `HOLD_OR_EXIT`/);
-    assert.match(modeSection, /Do not make these single-symbol checks unconditional for `PORTFOLIO_RISK`/);
-    assert.match(modeSection, /One symbol's valid pivot/);
+    assert.match(modeSection, /`HOLD_OR_EXIT` では、次の新規購入用条件を無条件必須にしません/);
+    assert.match(modeSection, /`PORTFOLIO_RISK` では、次の単一銘柄 checks を無条件必須にしません/);
+    assert.match(modeSection, /単一銘柄の有効 pivot/);
 
-    const labelSection = extractMarkdownSection(text, 'Label Meanings');
-    assert.match(labelSection, /`HOLD_OR_EXIT \+ GO`: Do not use\./);
-    assert.match(labelSection, /`PORTFOLIO_RISK \+ GO`: There is room to take new risk\. This does not approve buying a specific symbol\./);
-    assert.match(labelSection, /対象市場` to `US`, `JP`, or `MIXED`/);
+    const labelSection = extractMarkdownSection(text, 'ラベルの意味');
+    assert.match(labelSection, /`HOLD_OR_EXIT \+ GO`: 使用しない。/);
+    assert.match(labelSection, /`PORTFOLIO_RISK \+ GO`: 新しい risk を取る余地がある。特定銘柄の購入許可ではない。/);
+    assert.match(labelSection, /`対象市場` を `US`、`JP`、または `MIXED`/);
 
-    const outputSection = extractMarkdownSection(text, 'Output Format');
+    const outputSection = extractMarkdownSection(text, '出力形式');
     assert.ok(
       outputSection.indexOf('# 判定: GO / STAY / STOP') < outputSection.indexOf('確認時刻:'),
       '# 判定 must appear before 確認時刻 in output format',
@@ -232,8 +275,8 @@ describe('agent skills contract', () => {
       assert.ok(outputSection.includes(portfolioField), `missing PORTFOLIO_RISK output field: ${portfolioField}`);
     }
 
-    const runSection = extractMarkdownSection(text, 'Latest Successful Screener Run');
-    assert.match(runSection, /Available GitHub connector \/ GitHub API tool/);
+    const runSection = extractMarkdownSection(text, '最新成功スクリーナーrun');
+    assert.match(runSection, /GitHub connector \/ GitHub API tool/);
     assert.match(runSection, /gh run list --workflow daily-screener\.yml/);
     assert.match(runSection, /gh run list --workflow daily-screener-japan\.yml/);
     assert.match(runSection, /Repository run metadata and report body/);

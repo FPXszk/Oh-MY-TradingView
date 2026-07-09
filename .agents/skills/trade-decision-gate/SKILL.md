@@ -1,13 +1,13 @@
 ---
 name: trade-decision-gate
-description: Use when the user asks in natural Japanese whether to buy, add, hold, sell, take profit, cut loss, cross earnings, reduce positions, or judge portfolio risk from tickers, charts, holdings screenshots, portfolio screenshots, or position text.
+description: "購入、追加購入、保有継続、売却、利確、損切り、決算跨ぎ、ポジション縮小、ポートフォリオリスクについて、ティッカー、チャート画像、保有画像、ポートフォリオ画像、ポジション情報から具体的な判断を求められたときに使用する。"
 ---
 
 # trade-decision-gate
 
-This skill is the top-level gate for trade decisions. It does not create a new trading strategy, chart recognizer, MCP tool, CLI command, order router, or automated trading flow.
+このスキルは、売買判断とポートフォリオリスク判断のための上位 gate です。新しい売買戦略、チャート認識エンジン、MCP tool、CLI command、注文 routing、自動売買 flow は作りません。
 
-Use it when the user asks for a concrete trading or portfolio-risk judgment, including:
+ユーザーが次のような具体的な判断を求めたときに使用します。
 
 - 「この銘柄は今買うべき？」
 - 「今から入っていい？」
@@ -26,203 +26,203 @@ Use it when the user asks for a concrete trading or portfolio-risk judgment, inc
 - 「同一テーマへ偏りすぎている？」
 - 「どのポジションを減らすべき？」
 
-Supported inputs include ticker-only text, company names, natural-language questions, chart images, holdings screenshots, portfolio screenshots, multiple-symbol lists, and position text with average cost, quantity, current price, or P/L.
+入力は、ティッカーだけ、会社名、自然文の質問、チャート画像、保有画像、ポートフォリオ画像、複数銘柄一覧、平均取得価格・数量・現在値・損益を含むポジション情報を対象にします。
 
-## Do Not Trigger For
+## 起動対象外
 
-Do not use this skill for these requests by themselves:
+次の依頼だけの場合は、このスキルを使いません。
 
-- Company overview only
-- Terminology explanations such as PER, EPS, or ATR
-- Researching only why a stock rose
-- Pine Script creation
-- Screener implementation changes
-- Backtest analysis
-- General Dr.K strategy explanation
+- 会社概要だけの説明
+- PER、EPS、ATR などの用語説明
+- 株価上昇理由だけの調査
+- Pine Script 作成
+- screener 実装変更
+- backtest 分析
+- Dr.K 戦略の一般的な説明
 
-If the user adds a trade-decision question such as 「それで今買っていい？」, use this skill.
+ただし、ユーザーが「それで今買っていい？」のような売買判断を加えた場合は、このスキルを使います。
 
-## Source Of Truth
+## 正本
 
-Always read `docs/strategy/Trade-rule.md` before making the judgment. It is the source of truth for trade rules, hard stops, position sizing, and the fixed output format.
+判断を出す前に、必ず `docs/strategy/Trade-rule.md` を読みます。このファイルが売買ルール、ハード停止条件、資金管理、固定出力形式の正本です。
 
-Use `.agents/skills/tradingview-operator-playbook/SKILL.md` when choosing how to gather current price, market data, news, Moomoo data, TradingView chart state, reach data, X/Reddit observation, or screener information. Do not duplicate that skill's command tables here.
+最新価格、市場データ、ニュース、Moomoo data、TradingView chart state、reach data、X/Reddit observation、screener 情報の取得方法を選ぶときは `.agents/skills/tradingview-operator-playbook/SKILL.md` を使います。このスキル内に operator skill の command table を重複コピーしません。
 
-Dr.K reports such as `docs/strategy/dr-k-chart-strategy-quantification-report_20260707.md` are optional supporting material only. Do not treat them as the trade-rule source of truth, and do not read them every time. Use them only when chart-state details are ambiguous, such as pivot selection, N/U patterns, absorption, failed breakouts, pullbacks, or leader-stock price-action comparisons.
+`docs/strategy/dr-k-chart-strategy-quantification-report_20260707.md` などの Dr.K reports は補助資料です。Trade Rule の正本として扱わず、毎回必須ではありません。pivot 選定、N/U pattern、absorption、failed breakout、pullback、leader-stock price-action comparison など、chart state の解釈が曖昧なときだけ参照します。
 
-## Decision Modes
+## 判断モード
 
-Classify every request into one of these modes:
+すべての依頼を次のいずれかに分類します。
 
-- `NEW_ENTRY`: New purchase or first entry judgment.
-- `ADD_POSITION`: Add, pyramid, average-up, or averaging-down consultation. Averaging down is still a trigger even though `docs/strategy/Trade-rule.md` prohibits nanpin.
-- `HOLD_OR_EXIT`: Hold, reduce, sell, cut loss, take profit, trail, or cross-earnings judgment for an existing position.
-- `PORTFOLIO_RISK`: Whole-portfolio, cash ratio, gross exposure, theme concentration, correlated-position, max-loss, or position-reduction judgment.
+- `NEW_ENTRY`: 新規購入、初回 entry の判断。
+- `ADD_POSITION`: 追加購入、買い増し、pyramid、average-up、averaging-down の相談。ナンピンは `docs/strategy/Trade-rule.md` で禁止されていますが、相談自体は起動対象です。
+- `HOLD_OR_EXIT`: 既存 position の保有継続、縮小、売却、損切り、利確、trail、決算跨ぎ判断。
+- `PORTFOLIO_RISK`: portfolio 全体、現金比率、gross exposure、theme concentration、correlated-position、max-loss、position-reduction の判断。
 
-If the mode is unclear, infer from the user's wording and inputs. If it cannot be determined, stop and re-judge only after missing information is provided. Return `STAY` with the missing information and what is needed for re-judgment.
+判断モードが曖昧な場合は、ユーザー文面と入力内容から推定します。判定できない場合は、推測で進めず `STAY` とし、不足情報と再判定に必要な情報を返します。
 
-## Judgment Priority
+## 判定優先順位
 
-Apply decisions in this order. This prevents missing data from hiding a confirmed exit condition.
+判定は次の順番で行います。これにより、情報不足が確認済みの撤退条件を隠さないようにします。
 
-1. If a confirmed `STOP` condition exists, return `STOP`.
-2. If no `STOP` condition is confirmed but required information for `GO` is missing, return `STAY`.
-3. Return `GO` only when all required items for that mode are confirmed and the `GO` conditions are satisfied.
+1. 確認済みの `STOP` 条件がある場合は `STOP`。
+2. 確認済みの `STOP` 条件はないが、`GO` に必要な情報が不足している場合は `STAY`。
+3. その判断モードに必要な項目がすべて確認でき、`GO` 条件を満たす場合だけ `GO`。
 
-Examples:
+例:
 
-- Confirmed `SETUP_BROKEN` with unknown next earnings date -> `STOP`.
-- Confirmed stop-line break with unknown latest screener rank -> `STOP`.
-- Chart remains intact but latest news is unconfirmed -> `STAY`.
-- New entry with no valid pivot -> `STAY`.
-- Clear `RISK_OFF` market for a new entry -> `STOP`.
-- Averaging-down / nanpin consultation -> `STOP`.
+- `SETUP_BROKEN` が確認済みで、次回決算日が未確認 -> `STOP`。
+- 損切りライン割れが確認済みで、最新 screener rank が未確認 -> `STOP`。
+- chart は維持しているが最新ニュースが未確認 -> `STAY`。
+- 新規購入で有効 pivot がない -> `STAY`。
+- 新規購入で市場が明確な `RISK_OFF` -> `STOP`。
+- averaging-down / ナンピン相談 -> `STOP`。
 
-Do not infer a `STOP` condition that has not been observed. Mark it `未確認` when evidence is missing.
+観測していない `STOP` 条件を推測しません。証拠がない項目は `未確認` と表示します。
 
-## Mode Workflows
+## モード別ワークフロー
 
 ### NEW_ENTRY
 
-For a new entry, confirm:
+新規購入では次を確認します。
 
-- Symbol and market.
-- Latest price.
-- Company releases and regulator filings.
-- Latest news.
-- Next earnings date and important events.
-- Market regime.
-- Sector strength.
-- Latest screener.
-- Industry rank, stock rank, and score.
-- Leader-stock judgment.
-- Chart state.
-- Setup.
-- Valid pivot.
-- Extension from pivot.
-- Entry candidate.
-- Stop price.
-- Stop width.
-- Risk/reward.
-- Position sizing.
-- Portfolio overlap.
+- 銘柄と市場。
+- 最新価格。
+- 会社発表と regulator filings。
+- 最新ニュース。
+- 次回決算日と重要イベント。
+- 市場レジーム。
+- セクター強度。
+- 最新 screener。
+- Industry rank、stock rank、score。
+- leader-stock judgment。
+- chart state。
+- setup。
+- 有効 pivot。
+- pivot からの乖離率。
+- entry candidate。
+- stop price。
+- stop width。
+- risk/reward。
+- position sizing。
+- portfolio overlap。
 
 ### ADD_POSITION
 
-For an add, confirm all `NEW_ENTRY` items plus:
+追加購入では、`NEW_ENTRY` の全項目に加えて次を確認します。
 
-- Current average cost.
-- Current quantity.
-- Unrealized P/L.
-- Distinction between core position and add-on lot.
-- Average cost after add.
-- Position value after add.
-- Expected one-trade loss after add.
-- Total portfolio expected loss after add.
-- Same-theme or same-price-action overlap.
-- The add is not averaging down while the position is at a loss.
+- 現在の平均取得価格。
+- 現在数量。
+- 含み損益。
+- core position と add-on lot の区別。
+- 追加後の平均取得価格。
+- 追加後の position value。
+- 追加後の 1 trade expected loss。
+- 追加後の total portfolio expected loss。
+- same-theme または same-price-action overlap。
+- 含み損状態での averaging down ではないこと。
 
-A nanpin / averaging-down request is in scope, but under `docs/strategy/Trade-rule.md` it is `STOP` by default.
+ナンピン / averaging-down の相談は起動対象ですが、`docs/strategy/Trade-rule.md` に従い原則 `STOP` です。
 
 ### HOLD_OR_EXIT
 
-For hold, reduce, sell, cut-loss, take-profit, or cross-earnings judgment, confirm:
+保有継続、縮小、売却、損切り、利確、決算跨ぎでは次を確認します。
 
-- Latest price.
-- Average cost.
-- Quantity.
-- Unrealized P/L percentage.
-- Current stop or invalidation line.
-- Company-specific news.
-- Earnings and important events.
-- Market regime.
-- Sector and major leader state.
-- `FAILED_BREAKOUT`.
-- `SETUP_BROKEN`.
-- Important support, recent low, and major moving averages.
-- Profit management using the 10-day line, 25-day line, or a new pivot.
-- Profit cushion enough to cross earnings.
-- Portfolio importance and overlap.
+- 最新価格。
+- 平均取得価格。
+- 数量。
+- 含み損益率。
+- 現在の stop または invalidation line。
+- 会社固有ニュース。
+- 決算と重要イベント。
+- 市場レジーム。
+- セクターと主要 leader の状態。
+- `FAILED_BREAKOUT`。
+- `SETUP_BROKEN`。
+- 重要支持線、直近安値、主要 moving averages。
+- 10 日線、25 日線、新しい pivot による利益管理。
+- 決算を跨げる利益 cushion。
+- portfolio 内の重要度と overlap。
 
-Do not make these new-entry requirements unconditional for `HOLD_OR_EXIT`:
+`HOLD_OR_EXIT` では、次の新規購入用条件を無条件必須にしません。
 
-- Initial risk/reward of 2 or higher.
-- New entry zone.
-- Within 5% of the latest pivot.
-- Latest screener top rank.
+- 初期 risk/reward が 2 以上。
+- 新規 entry zone。
+- 最新 pivot から 5% 以内。
+- 最新 screener top rank。
 
-If the user also asks whether to add, apply `ADD_POSITION` requirements to that add decision.
+ユーザーが追加購入も同時に聞いた場合だけ、その追加判断へ `ADD_POSITION` 条件を適用します。
 
 ### PORTFOLIO_RISK
 
-For portfolio-level judgment, focus on:
+portfolio level の判断では次を重視します。
 
-- Total assets.
-- Cash balance.
-- Cash ratio.
-- Gross position value.
-- Gross exposure multiple.
-- Each position's market value.
-- Each position's stop location.
-- Each position's expected loss.
-- Total expected loss if all stops trigger.
-- Largest single-position concentration.
-- Largest sector concentration.
-- Industry and theme overlap.
-- Correlated-position overlap.
-- US / JP / currency bias.
-- Earnings and important-event clustering.
-- Reduction priority candidates.
-- Room to take new risk.
+- 総資産。
+- 現金残高。
+- 現金比率。
+- gross position value。
+- gross exposure multiple。
+- 各 position の market value。
+- 各 position の stop location。
+- 各 position の expected loss。
+- すべての stop が発動した場合の total expected loss。
+- largest single-position concentration。
+- largest sector concentration。
+- Industry と theme overlap。
+- correlated-position overlap。
+- US / JP / currency bias。
+- earnings と重要イベントの集中。
+- reduction priority candidates。
+- 新しい risk を取る余地。
 
-Do not make these single-symbol checks unconditional for `PORTFOLIO_RISK`:
+`PORTFOLIO_RISK` では、次の単一銘柄 checks を無条件必須にしません。
 
-- One target symbol.
-- One symbol's valid pivot.
-- One symbol's entry zone.
-- One symbol's initial risk/reward.
-- Complete next earnings date for every holding.
-- Screener rank for every holding.
+- 単一対象銘柄。
+- 単一銘柄の有効 pivot。
+- 単一銘柄の entry zone。
+- 単一銘柄の初期 risk/reward。
+- 全保有銘柄の次回決算日の完全確認。
+- 全保有銘柄の screener rank。
 
-Only check individual charts or events for the positions that matter when selecting reduction candidates.
+縮小候補を選ぶ段階で重要な position だけ、個別 chart や event を追加確認します。
 
-## Data Priority
+## 情報源の優先順位
 
-Use sources in this priority:
+情報源は次の優先順位で使います。
 
-1. Primary sources such as company releases, SEC, EDINET, exchanges, and regulators.
-2. Recent reliable market news.
-3. Latest Oh-MY-TradingView screener reports.
-4. Moomoo quote, fundamentals, snapshot, and OHLCV.
-5. TradingView chart view.
-6. Moomoo, SBI, and unified portfolio reports for holdings.
-7. SNS, X, Reddit, and similar community sources as supplemental context only.
+1. 会社発表、SEC、EDINET、取引所、regulator などの一次情報。
+2. 信頼できる最新 market news。
+3. 最新の Oh-MY-TradingView screener reports。
+4. Moomoo quote、fundamentals、snapshot、OHLCV。
+5. TradingView chart view。
+6. 保有情報には Moomoo、SBI、unified portfolio reports。
+7. SNS、X、Reddit など community sources は補足だけ。
 
-Never issue `GO` based only on SNS, X, Reddit, or community sentiment.
+SNS、X、Reddit、community sentiment だけを理由に `GO` を出しません。
 
-## Latest Successful Screener Run
+## 最新成功スクリーナーrun
 
-For US stocks, use:
+米国株では次を使います。
 
 - `.github/workflows/daily-screener.yml`
 - `docs/reports/screener/daily-ranking.md`
 - `docs/reports/screener/daily-ranking-run.json`
 
-For Japan stocks, use:
+日本株では次を使います。
 
 - `.github/workflows/daily-screener-japan.yml`
 - `docs/reports/screener/daily-ranking-jp.md`
 - `docs/reports/screener/daily-ranking-jp-run.json`
 
-Do not decide freshness from run metadata alone. Check in this order:
+run metadata だけで鮮度を判断しません。次の順番で確認します。
 
-1. Available GitHub connector / GitHub API tool.
-2. `gh` CLI.
-3. Repository run metadata and report body.
+1. 利用可能な GitHub connector / GitHub API tool。
+2. `gh` CLI。
+3. Repository run metadata and report body。
 
-When a GitHub connector is available, use it to identify the latest successful run for the target workflow.
+GitHub connector が使える場合は、対象 workflow の最新成功 run を特定します。
 
-When `gh` CLI is available, use:
+`gh` CLI が使える場合は次を使います。
 
 ```powershell
 gh run list --workflow daily-screener.yml --branch main --status success --limit 1 --json databaseId,headSha,createdAt,updatedAt,status,conclusion,url
@@ -230,83 +230,83 @@ gh run list --workflow daily-screener-japan.yml --branch main --status success -
 gh run view <run-id>
 ```
 
-When neither GitHub connector nor `gh` CLI is available, compare repository metadata with the report body date and update time. If metadata and report body are stale or inconsistent and current success cannot be established, do not claim freshness and return `STAY` for decisions that require a fresh screener.
+GitHub connector も `gh` CLI も使えない場合は、repository metadata と report body の日付・更新時刻を照合します。metadata と report body が古い、または不一致で current success を確定できない場合は、鮮度を主張せず、新規判断など fresh screener が必要な判断では `STAY` とします。
 
-Use `.agents/skills/github-actions-failure-debugging/SKILL.md` only when a concrete GitHub Actions failure or run investigation is needed. It is not required for every trade decision.
+具体的な GitHub Actions failure や run investigation が必要な場合だけ `.agents/skills/github-actions-failure-debugging/SKILL.md` を参照します。すべての売買判断で必須ではありません。
 
-## TradingView Usage
+## TradingViewの利用方針
 
-Prefer non-CDP market, reach, screener, and Moomoo routes when OHLCV and market data are enough.
+OHLCV と market data だけで足りる場合は、非 CDP の market、reach、screener、Moomoo route を優先します。
 
-Use CDP or TradingView chart state only when needed for:
+CDP または TradingView chart state は次が必要な場合だけ使います。
 
-- Comparison with an attached chart image.
-- Visual pivot confirmation.
-- Candle and volume position checks.
-- Multiple-timeframe checks.
-- Visual setup classification.
-- Current TradingView chart state.
+- 添付 chart image との比較。
+- visual pivot confirmation。
+- candle と volume position の確認。
+- multiple-timeframe checks。
+- visual setup classification。
+- current TradingView chart state。
 
-Do not launch TradingView Desktop unconditionally.
+TradingView Desktop を無条件に起動しません。
 
-## Image Inputs
+## 画像入力
 
-For chart images, extract only what is visible: symbol, timeframe, price area, volume, pivot candidates, setup candidates, and support/resistance. Do not pretend full automatic chart recognition exists.
+chart image では、見えている symbol、timeframe、price area、volume、pivot candidates、setup candidates、support/resistance だけを抽出します。完全自動 chart recognition が存在するように扱いません。
 
-For holdings screenshots, extract visible symbol, quantity, average cost, current price, P/L, currency, and account type.
+holdings screenshot では、見えている symbol、quantity、average cost、current price、P/L、currency、account type を抽出します。
 
-For portfolio screenshots, extract visible balance, cash, positions, unrealized P/L, diversification, theme overlap, and concentration.
+portfolio screenshot では、見えている balance、cash、positions、unrealized P/L、diversification、theme overlap、concentration を抽出します。
 
-If an image does not provide all required data, return a provisional `STAY`, list confirmed facts, list missing facts, and state what is needed for re-judgment. If the image confirms a `STOP` condition, use `STOP` even when some nonessential data remains missing.
+画像だけで必要情報が揃わない場合は、暫定 `STAY`、確認済み facts、不足 facts、再判定に必要な情報を返します。画像が `STOP` 条件を確認できる場合は、一部の非必須情報が未確認でも `STOP` を使います。
 
-## Missing Information
+## 情報不足時の扱い
 
-Do not fill unknowns optimistically. Use `未確認` for unknown values.
+不明な情報を楽観的に補完しません。不明値は `未確認` と書きます。
 
-For `NEW_ENTRY` and `ADD_POSITION`, return `STAY` by default when required `GO` information cannot be confirmed and no `STOP` condition is confirmed.
+`NEW_ENTRY` と `ADD_POSITION` では、確認済みの `STOP` 条件がなく、`GO` に必要な情報を確認できない場合、原則 `STAY` とします。
 
-For `HOLD_OR_EXIT`, do not require new-entry-only data unconditionally. If a confirmed stop-line break, `FAILED_BREAKOUT`, `SETUP_BROKEN`, thesis-breaking news, or unacceptable event risk exists, return `STOP` even if some nonessential information remains missing.
+`HOLD_OR_EXIT` では、新規購入専用の data を無条件には要求しません。損切りライン割れ、`FAILED_BREAKOUT`、`SETUP_BROKEN`、投資仮説を壊す news、許容できない event risk が確認済みなら、一部の非必須情報が未確認でも `STOP` とします。
 
-For `PORTFOLIO_RISK`, do not require one target symbol, one pivot, or every holding's full screener rank. If confirmed exposure, concentration, correlation, or expected-loss breach exists, return `STOP`; otherwise use `STAY` when risk capacity cannot be confirmed.
+`PORTFOLIO_RISK` では、単一対象銘柄、単一 pivot、全保有銘柄の完全な screener rank を要求しません。exposure、concentration、correlation、expected-loss breach が確認済みなら `STOP`、risk capacity を確認できない場合は `STAY` とします。
 
-## Label Meanings
+## ラベルの意味
 
-- `NEW_ENTRY + GO`: A new entry is allowed only if all Trade Rule conditions are satisfied.
-- `NEW_ENTRY + STAY`: Wait; do not enter yet.
-- `NEW_ENTRY + STOP`: Do not enter; a hard stop or no-trade condition is confirmed.
-- `ADD_POSITION + GO`: Adding is allowed only if all add-position conditions are satisfied and it is not nanpin.
-- `ADD_POSITION + STAY`: Hold current size; adding is not justified yet.
-- `ADD_POSITION + STOP`: Do not add. If it is nanpin or adds excessive risk, prioritize no-add / reduction.
-- `HOLD_OR_EXIT + GO`: Do not use.
-- `HOLD_OR_EXIT + STAY`: Continue holding the current position. This does not permit adding.
-- `HOLD_OR_EXIT + STOP`: Prioritize reducing, selling, cutting loss, exiting, partial profit-taking, raising stops, or tightening trailing management.
-- `PORTFOLIO_RISK + GO`: There is room to take new risk. This does not approve buying a specific symbol.
-- `PORTFOLIO_RISK + STAY`: Maintain current exposure. Do not rush a new addition.
-- `PORTFOLIO_RISK + STOP`: Reduce exposure, concentration, correlation, or expected loss.
+- `NEW_ENTRY + GO`: Trade Rule の全条件を満たす場合だけ、新規 entry を許可する。
+- `NEW_ENTRY + STAY`: 待つ。まだ entry しない。
+- `NEW_ENTRY + STOP`: entry しない。hard stop または no-trade 条件が確認済み。
+- `ADD_POSITION + GO`: 追加条件をすべて満たし、ナンピンではない場合だけ追加を許可する。
+- `ADD_POSITION + STAY`: 現在 size を維持する。追加する根拠はまだ不足。
+- `ADD_POSITION + STOP`: 追加しない。ナンピンまたは risk 過大なら no-add / reduction を優先する。
+- `HOLD_OR_EXIT + GO`: 使用しない。
+- `HOLD_OR_EXIT + STAY`: 現在の position を保有継続する。追加購入を許可する意味ではない。
+- `HOLD_OR_EXIT + STOP`: 縮小、売却、損切り、撤退、部分利確、stop 引き上げ、trailing 強化を優先する。
+- `PORTFOLIO_RISK + GO`: 新しい risk を取る余地がある。特定銘柄の購入許可ではない。
+- `PORTFOLIO_RISK + STAY`: 現在の exposure を維持する。新規追加を急がない。
+- `PORTFOLIO_RISK + STOP`: exposure、concentration、correlation、expected loss を減らす。
 
-For `PORTFOLIO_RISK`, set `対象市場` to `US`, `JP`, or `MIXED`. Use `MIXED` when US and Japan holdings are both present.
+`PORTFOLIO_RISK` では、`対象市場` を `US`、`JP`、または `MIXED` にします。米国株と日本株の保有が両方ある場合は `MIXED` を使います。
 
-## Read-Only Constraint
+## 読み取り専用制約
 
-This skill is read-only. The following operations are prohibited:
+このスキルは読み取り専用です。次の操作を禁止します。
 
-- 注文発注 is prohibited.
-- 注文変更 is prohibited.
-- 注文取消 is prohibited.
-- 自動売買 is prohibited.
-- 自動損切り is prohibited.
-- ポジションの自動縮小 is prohibited.
-- 取引ロック解除 is prohibited.
-- Moomooでの取引操作 is prohibited.
-- 証券口座への書き込み操作 is prohibited.
+- 注文発注は禁止。
+- 注文変更は禁止。
+- 注文取消は禁止。
+- 自動売買は禁止。
+- 自動損切りは禁止。
+- ポジションの自動縮小は禁止。
+- 取引ロック解除は禁止。
+- Moomooでの取引操作は禁止。
+- 証券口座への書き込み操作は禁止。
 
-Do not describe the agent as able to place, modify, cancel, unlock, or submit orders. Do not create alerts unless the user explicitly asks for an alert.
+agent が注文を発注、変更、取消、送信、取引ロック解除できるように説明しません。alert 作成も、ユーザーが明示的に alert を依頼しない限り行いません。
 
-Allowed output is limited to decision support: trade judgment, entry candidate, size candidate, stop candidate, profit-taking or trailing candidate, re-check condition, and portfolio reduction candidate.
+出力できるのは意思決定支援に限ります。売買判定、entry candidate、size candidate、stop candidate、profit-taking または trailing candidate、re-check condition、portfolio reduction candidate までです。
 
-## Output Format
+## 出力形式
 
-Put the judgment first, before metadata:
+metadata より先に判定を置きます。
 
 ```markdown
 # 判定: GO / STAY / STOP
@@ -319,9 +319,9 @@ Put the judgment first, before metadata:
 データ完全性: COMPLETE / PARTIAL / INSUFFICIENT
 ```
 
-### NEW_ENTRY / ADD_POSITION Output
+### NEW_ENTRY / ADD_POSITION の出力
 
-Use the Trade Rule section structure:
+Trade Rule の section structure を使います。
 
 ```text
 1. 結論
@@ -334,9 +334,9 @@ Use the Trade Rule section structure:
 8. 最終アクション
 ```
 
-### HOLD_OR_EXIT Output
+### HOLD_OR_EXIT の出力
 
-Use:
+次を使います。
 
 ```text
 1. 結論
@@ -349,7 +349,7 @@ Use:
 8. 最終アクション
 ```
 
-Include at least:
+最低限、次を含めます。
 
 ```text
 平均取得価格:
@@ -363,9 +363,9 @@ Include at least:
 利益管理:
 ```
 
-### PORTFOLIO_RISK Output
+### PORTFOLIO_RISK の出力
 
-Use:
+次を使います。
 
 ```text
 1. 結論
@@ -378,7 +378,7 @@ Use:
 8. 最終アクション
 ```
 
-Include at least:
+最低限、次を含めます。
 
 ```text
 総資産:

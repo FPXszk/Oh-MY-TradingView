@@ -1,0 +1,4 @@
+## main...origin/main
+ M .agents/skills/trade-decision-gate/SKILL.md
+ M tests/skills-contract.test.js
+?? artifacts/trade-decision-gate-smoke/

@@ -1,0 +1,1346 @@
+{
+  "NVDA": {
+    "meta": {
+      "currency": "USD",
+      "symbol": "NVDA",
+      "exchangeName": "NMS",
+      "fullExchangeName": "NasdaqGS",
+      "instrumentType": "EQUITY",
+      "firstTradeDate": 917015400,
+      "regularMarketTime": 1783540800,
+      "hasPrePostMarketData": true,
+      "gmtoffset": -14400,
+      "timezone": "EDT",
+      "exchangeTimezoneName": "America/New_York",
+      "regularMarketPrice": 204.12,
+      "fiftyTwoWeekHigh": 236.54,
+      "fiftyTwoWeekLow": 161.16,
+      "regularMarketDayHigh": 205.15,
+      "regularMarketDayLow": 195.105,
+      "regularMarketVolume": 145806099,
+      "longName": "NVIDIA Corporation",
+      "shortName": "NVIDIA Corporation",
+      "chartPreviousClose": 174.4,
+      "priceHint": 2,
+      "currentTradingPeriod": {
+        "pre": {
+          "timezone": "EDT",
+          "start": 1783584000,
+          "end": 1783603800,
+          "gmtoffset": -14400
+        },
+        "regular": {
+          "timezone": "EDT",
+          "start": 1783603800,
+          "end": 1783627200,
+          "gmtoffset": -14400
+        },
+        "post": {
+          "timezone": "EDT",
+          "start": 1783627200,
+          "end": 1783641600,
+          "gmtoffset": -14400
+        }
+      },
+      "dataGranularity": "1d",
+      "range": "",
+      "validRanges": [
+        "1d",
+        "5d",
+        "1mo",
+        "3mo",
+        "6mo",
+        "1y",
+        "2y",
+        "5y",
+        "10y",
+        "ytd",
+        "max"
+      ]
+    },
+    "latest": {
+      "date": "2026-07-08",
+      "open": 195.17999267578125,
+      "high": 205.16000366210938,
+      "low": 195.05999755859375,
+      "close": 204.1199951171875,
+      "volume": 146904500
+    },
+    "previous": {
+      "date": "2026-07-07",
+      "open": 192.3699951171875,
+      "high": 198.41000366210938,
+      "low": 191.13999938964844,
+      "close": 196.92999267578125,
+      "volume": 124154600
+    },
+    "changePct": 3.6510448935239754,
+    "sma20": 201.69499893188475,
+    "sma50": 209.51980041503907,
+    "distanceFromSma20Pct": 1.2023085342446698,
+    "distanceFromSma50Pct": -2.577229114935707,
+    "twentyDayHighBeforeLatest": 213.99000549316406,
+    "extensionFrom20DayHighPct": -4.612369794201375,
+    "twentyDayLow": 189.8000030517578,
+    "avgVolume20": 149920480,
+    "latestVolumeVs20DayAvg": -2.0117198130635656,
+    "last10": [
+      {
+        "date": "2026-06-24",
+        "open": 200.1199951171875,
+        "high": 201.6699981689453,
+        "low": 196.5800018310547,
+        "close": 199,
+        "volume": 151810700
+      },
+      {
+        "date": "2026-06-25",
+        "open": 200.0800018310547,
+        "high": 200.8000030517578,
+        "low": 192.1300048828125,
+        "close": 195.74000549316406,
+        "volume": 149550000
+      },
+      {
+        "date": "2026-06-26",
+        "open": 193.1199951171875,
+        "high": 195.5500030517578,
+        "low": 191.22000122070312,
+        "close": 192.52999877929688,
+        "volume": 179304100
+      },
+      {
+        "date": "2026-06-29",
+        "open": 193.85000610351562,
+        "high": 196.17999267578125,
+        "low": 189.8000030517578,
+        "close": 194.97000122070312,
+        "volume": 148835700
+      },
+      {
+        "date": "2026-06-30",
+        "open": 197.24000549316406,
+        "high": 200.6300048828125,
+        "low": 195.11000061035156,
+        "close": 200.08999633789062,
+        "volume": 166476700
+      },
+      {
+        "date": "2026-07-01",
+        "open": 196.1999969482422,
+        "high": 199.85000610351562,
+        "low": 193.4499969482422,
+        "close": 197.5800018310547,
+        "volume": 146147600
+      },
+      {
+        "date": "2026-07-02",
+        "open": 197.13999938964844,
+        "high": 200.05999755859375,
+        "low": 192.35000610351562,
+        "close": 194.8300018310547,
+        "volume": 142068700
+      },
+      {
+        "date": "2026-07-06",
+        "open": 194.4199981689453,
+        "high": 197.5500030517578,
+        "low": 193.99000549316406,
+        "close": 195.5500030517578,
+        "volume": 108999000
+      },
+      {
+        "date": "2026-07-07",
+        "open": 192.3699951171875,
+        "high": 198.41000366210938,
+        "low": 191.13999938964844,
+        "close": 196.92999267578125,
+        "volume": 124154600
+      },
+      {
+        "date": "2026-07-08",
+        "open": 195.17999267578125,
+        "high": 205.16000366210938,
+        "low": 195.05999755859375,
+        "close": 204.1199951171875,
+        "volume": 146904500
+      }
+    ]
+  },
+  "SPY": {
+    "meta": {
+      "currency": "USD",
+      "symbol": "SPY",
+      "exchangeName": "PCX",
+      "fullExchangeName": "NYSEArca",
+      "instrumentType": "ETF",
+      "firstTradeDate": 728317800,
+      "regularMarketTime": 1783540800,
+      "hasPrePostMarketData": true,
+      "gmtoffset": -14400,
+      "timezone": "EDT",
+      "exchangeTimezoneName": "America/New_York",
+      "regularMarketPrice": 745.4,
+      "fiftyTwoWeekHigh": 760.4,
+      "fiftyTwoWeekLow": 618.05,
+      "regularMarketDayHigh": 746.14,
+      "regularMarketDayLow": 739.51,
+      "regularMarketVolume": 42671305,
+      "longName": "State Street SPDR S&P 500 ETF Trust",
+      "shortName": "State Street SPDR S&P 500 ETF T",
+      "chartPreviousClose": 650.34,
+      "priceHint": 2,
+      "currentTradingPeriod": {
+        "pre": {
+          "timezone": "EDT",
+          "start": 1783584000,
+          "end": 1783603800,
+          "gmtoffset": -14400
+        },
+        "regular": {
+          "timezone": "EDT",
+          "start": 1783603800,
+          "end": 1783627200,
+          "gmtoffset": -14400
+        },
+        "post": {
+          "timezone": "EDT",
+          "start": 1783627200,
+          "end": 1783641600,
+          "gmtoffset": -14400
+        }
+      },
+      "dataGranularity": "1d",
+      "range": "",
+      "validRanges": [
+        "1d",
+        "5d",
+        "1mo",
+        "3mo",
+        "6mo",
+        "1y",
+        "2y",
+        "5y",
+        "10y",
+        "ytd",
+        "max"
+      ]
+    },
+    "latest": {
+      "date": "2026-07-08",
+      "open": 743.1599731445312,
+      "high": 746.1500244140625,
+      "low": 739.510009765625,
+      "close": 745.4000244140625,
+      "volume": 43682500
+    },
+    "previous": {
+      "date": "2026-07-07",
+      "open": 750.219970703125,
+      "high": 750.9600219726562,
+      "low": 745.2100219726562,
+      "close": 747.7100219726562,
+      "volume": 43721500
+    },
+    "changePct": -0.3089429713004738,
+    "sma20": 741.6025085449219,
+    "sma50": 739.6414025878906,
+    "distanceFromSma20Pct": 0.5120689082607915,
+    "distanceFromSma50Pct": 0.7785694264846906,
+    "twentyDayHighBeforeLatest": 756.6799926757812,
+    "extensionFrom20DayHighPct": -1.4907184504549122,
+    "twentyDayLow": 716.5800170898438,
+    "avgVolume20": 61884760,
+    "latestVolumeVs20DayAvg": -29.413154385667813,
+    "last10": [
+      {
+        "date": "2026-06-24",
+        "open": 735.1699829101562,
+        "high": 739.9500122070312,
+        "low": 730.8400268554688,
+        "close": 733.239990234375,
+        "volume": 57439500
+      },
+      {
+        "date": "2026-06-25",
+        "open": 738.9099731445312,
+        "high": 739.3699951171875,
+        "low": 729.5999755859375,
+        "close": 734.2999877929688,
+        "volume": 53934400
+      },
+      {
+        "date": "2026-06-26",
+        "open": 728.9500122070312,
+        "high": 736.530029296875,
+        "low": 716.5800170898438,
+        "close": 728.989990234375,
+        "volume": 71034000
+      },
+      {
+        "date": "2026-06-29",
+        "open": 736.530029296875,
+        "high": 741.5599975585938,
+        "low": 732.0900268554688,
+        "close": 741,
+        "volume": 58035200
+      },
+      {
+        "date": "2026-06-30",
+        "open": 741.2899780273438,
+        "high": 748.02001953125,
+        "low": 740.8900146484375,
+        "close": 746.77001953125,
+        "volume": 55626000
+      },
+      {
+        "date": "2026-07-01",
+        "open": 745,
+        "high": 749.4400024414062,
+        "low": 742.3800048828125,
+        "close": 745.760009765625,
+        "volume": 47100900
+      },
+      {
+        "date": "2026-07-02",
+        "open": 747.4000244140625,
+        "high": 751.3099975585938,
+        "low": 740.030029296875,
+        "close": 744.780029296875,
+        "volume": 57447800
+      },
+      {
+        "date": "2026-07-06",
+        "open": 748.739990234375,
+        "high": 752.4099731445312,
+        "low": 747.4099731445312,
+        "close": 751.280029296875,
+        "volume": 50673300
+      },
+      {
+        "date": "2026-07-07",
+        "open": 750.219970703125,
+        "high": 750.9600219726562,
+        "low": 745.2100219726562,
+        "close": 747.7100219726562,
+        "volume": 43721500
+      },
+      {
+        "date": "2026-07-08",
+        "open": 743.1599731445312,
+        "high": 746.1500244140625,
+        "low": 739.510009765625,
+        "close": 745.4000244140625,
+        "volume": 43682500
+      }
+    ]
+  },
+  "QQQ": {
+    "meta": {
+      "currency": "USD",
+      "symbol": "QQQ",
+      "exchangeName": "NGM",
+      "fullExchangeName": "NasdaqGM",
+      "instrumentType": "ETF",
+      "firstTradeDate": 921076200,
+      "regularMarketTime": 1783540800,
+      "hasPrePostMarketData": true,
+      "gmtoffset": -14400,
+      "timezone": "EDT",
+      "exchangeTimezoneName": "America/New_York",
+      "regularMarketPrice": 711.44,
+      "fiftyTwoWeekHigh": 748.65,
+      "fiftyTwoWeekLow": 551.56,
+      "regularMarketDayHigh": 712.26,
+      "regularMarketDayLow": 700.91,
+      "regularMarketVolume": 32607725,
+      "longName": "Invesco QQQ Trust",
+      "shortName": "Invesco QQQ Trust, Series 1",
+      "chartPreviousClose": 577.18,
+      "priceHint": 2,
+      "currentTradingPeriod": {
+        "pre": {
+          "timezone": "EDT",
+          "start": 1783584000,
+          "end": 1783603800,
+          "gmtoffset": -14400
+        },
+        "regular": {
+          "timezone": "EDT",
+          "start": 1783603800,
+          "end": 1783627200,
+          "gmtoffset": -14400
+        },
+        "post": {
+          "timezone": "EDT",
+          "start": 1783627200,
+          "end": 1783641600,
+          "gmtoffset": -14400
+        }
+      },
+      "dataGranularity": "1d",
+      "range": "",
+      "validRanges": [
+        "1d",
+        "5d",
+        "1mo",
+        "3mo",
+        "6mo",
+        "1y",
+        "2y",
+        "5y",
+        "10y",
+        "ytd",
+        "max"
+      ]
+    },
+    "latest": {
+      "date": "2026-07-08",
+      "open": 704.9500122070312,
+      "high": 712.260009765625,
+      "low": 700.9099731445312,
+      "close": 711.4400024414062,
+      "volume": 35413800
+    },
+    "previous": {
+      "date": "2026-07-07",
+      "open": 714.1699829101562,
+      "high": 716.3499755859375,
+      "low": 704.9000244140625,
+      "close": 709.4299926757812,
+      "volume": 42483100
+    },
+    "changePct": 0.2833274299615918,
+    "sma20": 720.2015045166015,
+    "sma50": 712.6152014160157,
+    "distanceFromSma20Pct": -1.2165348198037962,
+    "distanceFromSma50Pct": -0.16491354271901973,
+    "twentyDayHighBeforeLatest": 745.4500122070312,
+    "extensionFrom20DayHighPct": -4.562346127667581,
+    "twentyDayLow": 686.3699951171875,
+    "avgVolume20": 50358070,
+    "latestVolumeVs20DayAvg": -29.676018163523743,
+    "last10": [
+      {
+        "date": "2026-06-24",
+        "open": 715.3699951171875,
+        "high": 719.9299926757812,
+        "low": 704.4500122070312,
+        "close": 710.6199951171875,
+        "volume": 52480400
+      },
+      {
+        "date": "2026-06-25",
+        "open": 725.9000244140625,
+        "high": 726.8300170898438,
+        "low": 705.2999877929688,
+        "close": 716.3800048828125,
+        "volume": 49668000
+      },
+      {
+        "date": "2026-06-26",
+        "open": 707.1300048828125,
+        "high": 715.5599975585938,
+        "low": 702.8099975585938,
+        "close": 706.52001953125,
+        "volume": 47081800
+      },
+      {
+        "date": "2026-06-29",
+        "open": 713.989990234375,
+        "high": 724.5800170898438,
+        "low": 705.1699829101562,
+        "close": 724.0800170898438,
+        "volume": 44939100
+      },
+      {
+        "date": "2026-06-30",
+        "open": 724.1799926757812,
+        "high": 737.6199951171875,
+        "low": 723.9099731445312,
+        "close": 736.4000244140625,
+        "volume": 42121800
+      },
+      {
+        "date": "2026-07-01",
+        "open": 729.1900024414062,
+        "high": 731.9199829101562,
+        "low": 724.5999755859375,
+        "close": 725.1699829101562,
+        "volume": 40803800
+      },
+      {
+        "date": "2026-07-02",
+        "open": 725.5800170898438,
+        "high": 730.8300170898438,
+        "low": 707.5599975585938,
+        "close": 712.5999755859375,
+        "volume": 50959800
+      },
+      {
+        "date": "2026-07-06",
+        "open": 719.9299926757812,
+        "high": 726.0800170898438,
+        "low": 718.4500122070312,
+        "close": 722.8200073242188,
+        "volume": 30220400
+      },
+      {
+        "date": "2026-07-07",
+        "open": 714.1699829101562,
+        "high": 716.3499755859375,
+        "low": 704.9000244140625,
+        "close": 709.4299926757812,
+        "volume": 42483100
+      },
+      {
+        "date": "2026-07-08",
+        "open": 704.9500122070312,
+        "high": 712.260009765625,
+        "low": 700.9099731445312,
+        "close": 711.4400024414062,
+        "volume": 35413800
+      }
+    ]
+  },
+  "SMH": {
+    "meta": {
+      "currency": "USD",
+      "symbol": "SMH",
+      "exchangeName": "NGM",
+      "fullExchangeName": "NasdaqGM",
+      "instrumentType": "ETF",
+      "firstTradeDate": 960211800,
+      "regularMarketTime": 1783540801,
+      "hasPrePostMarketData": true,
+      "gmtoffset": -14400,
+      "timezone": "EDT",
+      "exchangeTimezoneName": "America/New_York",
+      "regularMarketPrice": 593,
+      "fiftyTwoWeekHigh": 671.83,
+      "fiftyTwoWeekLow": 279.19,
+      "regularMarketDayHigh": 594.824,
+      "regularMarketDayLow": 575.04,
+      "regularMarketVolume": 9357377,
+      "longName": "VanEck Semiconductor ETF",
+      "shortName": "VanEck Semiconductor ETF",
+      "chartPreviousClose": 383.4,
+      "priceHint": 2,
+      "currentTradingPeriod": {
+        "pre": {
+          "timezone": "EDT",
+          "start": 1783584000,
+          "end": 1783603800,
+          "gmtoffset": -14400
+        },
+        "regular": {
+          "timezone": "EDT",
+          "start": 1783603800,
+          "end": 1783627200,
+          "gmtoffset": -14400
+        },
+        "post": {
+          "timezone": "EDT",
+          "start": 1783627200,
+          "end": 1783641600,
+          "gmtoffset": -14400
+        }
+      },
+      "dataGranularity": "1d",
+      "range": "",
+      "validRanges": [
+        "1d",
+        "5d",
+        "1mo",
+        "3mo",
+        "6mo",
+        "1y",
+        "2y",
+        "5y",
+        "10y",
+        "ytd",
+        "max"
+      ]
+    },
+    "latest": {
+      "date": "2026-07-08",
+      "open": 575.3300170898438,
+      "high": 595,
+      "low": 575.0399780273438,
+      "close": 593,
+      "volume": 9496200
+    },
+    "previous": {
+      "date": "2026-07-07",
+      "open": 580.02001953125,
+      "high": 585.969970703125,
+      "low": 566.8300170898438,
+      "close": 581.4500122070312,
+      "volume": 14619200
+    },
+    "changePct": 1.986411136036963,
+    "sma20": 618.8009948730469,
+    "sma50": 585.7773999023437,
+    "distanceFromSma20Pct": -4.1695141227657855,
+    "distanceFromSma50Pct": 1.2329939835269081,
+    "twentyDayHighBeforeLatest": 671.8300170898438,
+    "extensionFrom20DayHighPct": -11.73362533447234,
+    "twentyDayLow": 554.6599731445312,
+    "avgVolume20": 12593015,
+    "latestVolumeVs20DayAvg": -24.59152951060568,
+    "last10": [
+      {
+        "date": "2026-06-24",
+        "open": 622.280029296875,
+        "high": 625.22998046875,
+        "low": 606.22998046875,
+        "close": 618.9199829101562,
+        "volume": 11902000
+      },
+      {
+        "date": "2026-06-25",
+        "open": 649.3699951171875,
+        "high": 650.030029296875,
+        "low": 613.9299926757812,
+        "close": 636.8800048828125,
+        "volume": 14877600
+      },
+      {
+        "date": "2026-06-26",
+        "open": 616.7899780273438,
+        "high": 621.7100219726562,
+        "low": 609,
+        "close": 611.6099853515625,
+        "volume": 12728300
+      },
+      {
+        "date": "2026-06-29",
+        "open": 615.030029296875,
+        "high": 633.260009765625,
+        "low": 596.1699829101562,
+        "close": 631.97998046875,
+        "volume": 10473900
+      },
+      {
+        "date": "2026-06-30",
+        "open": 636.0700073242188,
+        "high": 659.739990234375,
+        "low": 634.5999755859375,
+        "close": 655.8900146484375,
+        "volume": 9406900
+      },
+      {
+        "date": "2026-07-01",
+        "open": 634.3499755859375,
+        "high": 639.8900146484375,
+        "low": 618.6199951171875,
+        "close": 620.4600219726562,
+        "volume": 13424700
+      },
+      {
+        "date": "2026-07-02",
+        "open": 622.5800170898438,
+        "high": 627.7000122070312,
+        "low": 582.5999755859375,
+        "close": 592.2899780273438,
+        "volume": 21288600
+      },
+      {
+        "date": "2026-07-06",
+        "open": 607.0499877929688,
+        "high": 618.2100219726562,
+        "low": 604.0499877929688,
+        "close": 604.2999877929688,
+        "volume": 9820700
+      },
+      {
+        "date": "2026-07-07",
+        "open": 580.02001953125,
+        "high": 585.969970703125,
+        "low": 566.8300170898438,
+        "close": 581.4500122070312,
+        "volume": 14619200
+      },
+      {
+        "date": "2026-07-08",
+        "open": 575.3300170898438,
+        "high": 595,
+        "low": 575.0399780273438,
+        "close": 593,
+        "volume": 9496200
+      }
+    ]
+  },
+  "AMD": {
+    "meta": {
+      "currency": "USD",
+      "symbol": "AMD",
+      "exchangeName": "NMS",
+      "fullExchangeName": "NasdaqGS",
+      "instrumentType": "EQUITY",
+      "firstTradeDate": 322151400,
+      "regularMarketTime": 1783540801,
+      "hasPrePostMarketData": true,
+      "gmtoffset": -14400,
+      "timezone": "EDT",
+      "exchangeTimezoneName": "America/New_York",
+      "regularMarketPrice": 517.405,
+      "fiftyTwoWeekHigh": 584.73,
+      "fiftyTwoWeekLow": 137.59,
+      "regularMarketDayHigh": 522.98,
+      "regularMarketDayLow": 498.15,
+      "regularMarketVolume": 22824431,
+      "longName": "Advanced Micro Devices, Inc.",
+      "shortName": "Advanced Micro Devices, Inc.",
+      "chartPreviousClose": 203.43,
+      "priceHint": 2,
+      "currentTradingPeriod": {
+        "pre": {
+          "timezone": "EDT",
+          "end": 1783603800,
+          "start": 1783584000,
+          "gmtoffset": -14400
+        },
+        "regular": {
+          "timezone": "EDT",
+          "end": 1783627200,
+          "start": 1783603800,
+          "gmtoffset": -14400
+        },
+        "post": {
+          "timezone": "EDT",
+          "end": 1783641600,
+          "start": 1783627200,
+          "gmtoffset": -14400
+        }
+      },
+      "dataGranularity": "1d",
+      "range": "",
+      "validRanges": [
+        "1d",
+        "5d",
+        "1mo",
+        "3mo",
+        "6mo",
+        "1y",
+        "2y",
+        "5y",
+        "10y",
+        "ytd",
+        "max"
+      ]
+    },
+    "latest": {
+      "date": "2026-07-08",
+      "open": 504.80999755859375,
+      "high": 522.97998046875,
+      "low": 498.1499938964844,
+      "close": 517.4099731445312,
+      "volume": 23719700
+    },
+    "previous": {
+      "date": "2026-07-07",
+      "open": 515.9099731445312,
+      "high": 524.969970703125,
+      "low": 503.1099853515625,
+      "close": 516.1099853515625,
+      "volume": 29166800
+    },
+    "changePct": 0.2518819301826194,
+    "sma20": 522.1184967041015,
+    "sma50": 472.96019958496095,
+    "distanceFromSma20Pct": -0.9018112917456576,
+    "distanceFromSma50Pct": 9.398205937534813,
+    "twentyDayHighBeforeLatest": 584.72998046875,
+    "extensionFrom20DayHighPct": -11.513007639911251,
+    "twentyDayLow": 437.2300109863281,
+    "avgVolume20": 31202130,
+    "latestVolumeVs20DayAvg": -23.980510304905465,
+    "last10": [
+      {
+        "date": "2026-06-24",
+        "open": 520.8200073242188,
+        "high": 524.9600219726562,
+        "low": 503.5,
+        "close": 519.739990234375,
+        "volume": 26548300
+      },
+      {
+        "date": "2026-06-25",
+        "open": 543.9299926757812,
+        "high": 550.8800048828125,
+        "low": 507,
+        "close": 532.5700073242188,
+        "volume": 27031300
+      },
+      {
+        "date": "2026-06-26",
+        "open": 519.7999877929688,
+        "high": 525.1099853515625,
+        "low": 502.6099853515625,
+        "close": 521.5800170898438,
+        "volume": 52705100
+      },
+      {
+        "date": "2026-06-29",
+        "open": 522.8400268554688,
+        "high": 542.1900024414062,
+        "low": 495.3500061035156,
+        "close": 539.489990234375,
+        "volume": 26671000
+      },
+      {
+        "date": "2026-06-30",
+        "open": 545.5700073242188,
+        "high": 584.72998046875,
+        "low": 545.5700073242188,
+        "close": 580.9099731445312,
+        "volume": 34488500
+      },
+      {
+        "date": "2026-07-01",
+        "open": 557.530029296875,
+        "high": 564.0900268554688,
+        "low": 538.739990234375,
+        "close": 540.8800048828125,
+        "volume": 28326800
+      },
+      {
+        "date": "2026-07-02",
+        "open": 538.1599731445312,
+        "high": 547.6500244140625,
+        "low": 506,
+        "close": 517.8200073242188,
+        "volume": 28142500
+      },
+      {
+        "date": "2026-07-06",
+        "open": 535.3499755859375,
+        "high": 572.5,
+        "low": 527,
+        "close": 552.0499877929688,
+        "volume": 30684200
+      },
+      {
+        "date": "2026-07-07",
+        "open": 515.9099731445312,
+        "high": 524.969970703125,
+        "low": 503.1099853515625,
+        "close": 516.1099853515625,
+        "volume": 29166800
+      },
+      {
+        "date": "2026-07-08",
+        "open": 504.80999755859375,
+        "high": 522.97998046875,
+        "low": 498.1499938964844,
+        "close": 517.4099731445312,
+        "volume": 23719700
+      }
+    ]
+  },
+  "AVGO": {
+    "meta": {
+      "currency": "USD",
+      "symbol": "AVGO",
+      "exchangeName": "NMS",
+      "fullExchangeName": "NasdaqGS",
+      "instrumentType": "EQUITY",
+      "firstTradeDate": 1249565400,
+      "regularMarketTime": 1783540801,
+      "hasPrePostMarketData": true,
+      "gmtoffset": -14400,
+      "timezone": "EDT",
+      "exchangeTimezoneName": "America/New_York",
+      "regularMarketPrice": 388.69,
+      "fiftyTwoWeekHigh": 495,
+      "fiftyTwoWeekLow": 269.58,
+      "regularMarketDayHigh": 395.09,
+      "regularMarketDayLow": 376.89,
+      "regularMarketVolume": 28744548,
+      "longName": "Broadcom Inc.",
+      "shortName": "Broadcom Inc.",
+      "chartPreviousClose": 309.51,
+      "priceHint": 2,
+      "currentTradingPeriod": {
+        "pre": {
+          "timezone": "EDT",
+          "end": 1783603800,
+          "start": 1783584000,
+          "gmtoffset": -14400
+        },
+        "regular": {
+          "timezone": "EDT",
+          "end": 1783627200,
+          "start": 1783603800,
+          "gmtoffset": -14400
+        },
+        "post": {
+          "timezone": "EDT",
+          "end": 1783641600,
+          "start": 1783627200,
+          "gmtoffset": -14400
+        }
+      },
+      "dataGranularity": "1d",
+      "range": "",
+      "validRanges": [
+        "1d",
+        "5d",
+        "1mo",
+        "3mo",
+        "6mo",
+        "1y",
+        "2y",
+        "5y",
+        "10y",
+        "ytd",
+        "max"
+      ]
+    },
+    "latest": {
+      "date": "2026-07-08",
+      "open": 377.5199890136719,
+      "high": 395.0899963378906,
+      "low": 376.8900146484375,
+      "close": 388.69000244140625,
+      "volume": 31586800
+    },
+    "previous": {
+      "date": "2026-07-07",
+      "open": 366.55999755859375,
+      "high": 372.9599914550781,
+      "low": 362.010009765625,
+      "close": 370.7799987792969,
+      "volume": 24116700
+    },
+    "changePct": 4.830358628047282,
+    "sma20": 380.92200164794923,
+    "sma50": 406.7894012451172,
+    "distanceFromSma20Pct": 2.0392628306716345,
+    "distanceFromSma50Pct": -4.449329001274754,
+    "twentyDayHighBeforeLatest": 414.6400146484375,
+    "extensionFrom20DayHighPct": -6.258443780211033,
+    "twentyDayLow": 356.42999267578125,
+    "avgVolume20": 30911410,
+    "latestVolumeVs20DayAvg": 2.1849213607531976,
+    "last10": [
+      {
+        "date": "2026-06-24",
+        "open": 386.6199951171875,
+        "high": 388.739990234375,
+        "low": 376.9599914550781,
+        "close": 382.07000732421875,
+        "volume": 29938700
+      },
+      {
+        "date": "2026-06-25",
+        "open": 386.5799865722656,
+        "high": 388.79998779296875,
+        "low": 372.70001220703125,
+        "close": 378.9100036621094,
+        "volume": 23353700
+      },
+      {
+        "date": "2026-06-26",
+        "open": 370.45001220703125,
+        "high": 373.69000244140625,
+        "low": 363.8299865722656,
+        "close": 365.0199890136719,
+        "volume": 34839300
+      },
+      {
+        "date": "2026-06-29",
+        "open": 373.6199951171875,
+        "high": 376.2099914550781,
+        "low": 360.4599914550781,
+        "close": 372.45001220703125,
+        "volume": 24285200
+      },
+      {
+        "date": "2026-06-30",
+        "open": 374.7900085449219,
+        "high": 379.6199951171875,
+        "low": 370.6400146484375,
+        "close": 377.75,
+        "volume": 28517400
+      },
+      {
+        "date": "2026-07-01",
+        "open": 371.8699951171875,
+        "high": 373.75,
+        "low": 368.0299987792969,
+        "close": 369.3399963378906,
+        "volume": 23712600
+      },
+      {
+        "date": "2026-07-02",
+        "open": 365.7300109863281,
+        "high": 374,
+        "low": 356.42999267578125,
+        "close": 360.45001220703125,
+        "volume": 26749500
+      },
+      {
+        "date": "2026-07-06",
+        "open": 373.6099853515625,
+        "high": 383.1600036621094,
+        "low": 371.17999267578125,
+        "close": 373.8999938964844,
+        "volume": 24544000
+      },
+      {
+        "date": "2026-07-07",
+        "open": 366.55999755859375,
+        "high": 372.9599914550781,
+        "low": 362.010009765625,
+        "close": 370.7799987792969,
+        "volume": 24116700
+      },
+      {
+        "date": "2026-07-08",
+        "open": 377.5199890136719,
+        "high": 395.0899963378906,
+        "low": 376.8900146484375,
+        "close": 388.69000244140625,
+        "volume": 31586800
+      }
+    ]
+  },
+  "MU": {
+    "meta": {
+      "currency": "USD",
+      "symbol": "MU",
+      "exchangeName": "NMS",
+      "fullExchangeName": "NasdaqGS",
+      "instrumentType": "EQUITY",
+      "firstTradeDate": 454944600,
+      "regularMarketTime": 1783540801,
+      "hasPrePostMarketData": true,
+      "gmtoffset": -14400,
+      "timezone": "EDT",
+      "exchangeTimezoneName": "America/New_York",
+      "regularMarketPrice": 948.8,
+      "fiftyTwoWeekHigh": 1255,
+      "fiftyTwoWeekLow": 103.38,
+      "regularMarketDayHigh": 959,
+      "regularMarketDayLow": 900.42,
+      "regularMarketVolume": 40550345,
+      "longName": "Micron Technology, Inc.",
+      "shortName": "Micron Technology, Inc.",
+      "chartPreviousClose": 337.84,
+      "priceHint": 2,
+      "currentTradingPeriod": {
+        "pre": {
+          "timezone": "EDT",
+          "end": 1783603800,
+          "start": 1783584000,
+          "gmtoffset": -14400
+        },
+        "regular": {
+          "timezone": "EDT",
+          "end": 1783627200,
+          "start": 1783603800,
+          "gmtoffset": -14400
+        },
+        "post": {
+          "timezone": "EDT",
+          "end": 1783641600,
+          "start": 1783627200,
+          "gmtoffset": -14400
+        }
+      },
+      "dataGranularity": "1d",
+      "range": "",
+      "validRanges": [
+        "1d",
+        "5d",
+        "1mo",
+        "3mo",
+        "6mo",
+        "1y",
+        "2y",
+        "5y",
+        "10y",
+        "ytd",
+        "max"
+      ]
+    },
+    "latest": {
+      "date": "2026-07-08",
+      "open": 902.6400146484375,
+      "high": 959,
+      "low": 900.4099731445312,
+      "close": 948.7999877929688,
+      "volume": 42626500
+    },
+    "previous": {
+      "date": "2026-07-07",
+      "open": 923.010009765625,
+      "high": 942.02001953125,
+      "low": 891.6599731445312,
+      "close": 938.3800048828125,
+      "volume": 52367500
+    },
+    "changePct": 1.1104225213598329,
+    "sma20": 1046.4035034179688,
+    "sma50": 880.2056011962891,
+    "distanceFromSma20Pct": -9.327521869545373,
+    "distanceFromSma50Pct": 7.792995920890859,
+    "twentyDayHighBeforeLatest": 1255,
+    "extensionFrom20DayHighPct": -24.398407347173805,
+    "twentyDayLow": 854.3499755859375,
+    "avgVolume20": 56456095,
+    "latestVolumeVs20DayAvg": -24.4961947864088,
+    "last10": [
+      {
+        "date": "2026-06-24",
+        "open": 1082.219970703125,
+        "high": 1083.3199462890625,
+        "low": 991.0999755859375,
+        "close": 1048.510009765625,
+        "volume": 68935700
+      },
+      {
+        "date": "2026-06-25",
+        "open": 1233,
+        "high": 1255,
+        "low": 1136.31005859375,
+        "close": 1213.56005859375,
+        "volume": 82143900
+      },
+      {
+        "date": "2026-06-26",
+        "open": 1139.0799560546875,
+        "high": 1198.7099609375,
+        "low": 1121.3599853515625,
+        "close": 1132.3299560546875,
+        "volume": 86405300
+      },
+      {
+        "date": "2026-06-29",
+        "open": 1128.699951171875,
+        "high": 1148.7900390625,
+        "low": 1023.6500244140625,
+        "close": 1145.280029296875,
+        "volume": 60694100
+      },
+      {
+        "date": "2026-06-30",
+        "open": 1144.72998046875,
+        "high": 1168.6800537109375,
+        "low": 1124.6600341796875,
+        "close": 1154.2900390625,
+        "volume": 42152600
+      },
+      {
+        "date": "2026-07-01",
+        "open": 1082.010009765625,
+        "high": 1097,
+        "low": 1032.199951171875,
+        "close": 1032.280029296875,
+        "volume": 51328100
+      },
+      {
+        "date": "2026-07-02",
+        "open": 1041.5,
+        "high": 1064.6400146484375,
+        "low": 950.280029296875,
+        "close": 975.5599975585938,
+        "volume": 61316900
+      },
+      {
+        "date": "2026-07-06",
+        "open": 1007,
+        "high": 1019,
+        "low": 980.8499755859375,
+        "close": 984.75,
+        "volume": 37115800
+      },
+      {
+        "date": "2026-07-07",
+        "open": 923.010009765625,
+        "high": 942.02001953125,
+        "low": 891.6599731445312,
+        "close": 938.3800048828125,
+        "volume": 52367500
+      },
+      {
+        "date": "2026-07-08",
+        "open": 902.6400146484375,
+        "high": 959,
+        "low": 900.4099731445312,
+        "close": 948.7999877929688,
+        "volume": 42626500
+      }
+    ]
+  },
+  "TSM": {
+    "meta": {
+      "currency": "USD",
+      "symbol": "TSM",
+      "exchangeName": "NYQ",
+      "fullExchangeName": "NYSE",
+      "instrumentType": "EQUITY",
+      "firstTradeDate": 876403800,
+      "regularMarketTime": 1783540802,
+      "hasPrePostMarketData": true,
+      "gmtoffset": -14400,
+      "timezone": "EDT",
+      "exchangeTimezoneName": "America/New_York",
+      "regularMarketPrice": 436.98,
+      "fiftyTwoWeekHigh": 479,
+      "fiftyTwoWeekLow": 223.7,
+      "regularMarketDayHigh": 440.49,
+      "regularMarketDayLow": 428.75,
+      "regularMarketVolume": 10277039,
+      "longName": "Taiwan Semiconductor Manufacturing Company Limited",
+      "shortName": "Taiwan Semiconductor Manufactur",
+      "chartPreviousClose": 337.95,
+      "priceHint": 2,
+      "currentTradingPeriod": {
+        "pre": {
+          "timezone": "EDT",
+          "end": 1783603800,
+          "start": 1783584000,
+          "gmtoffset": -14400
+        },
+        "regular": {
+          "timezone": "EDT",
+          "end": 1783627200,
+          "start": 1783603800,
+          "gmtoffset": -14400
+        },
+        "post": {
+          "timezone": "EDT",
+          "end": 1783641600,
+          "start": 1783627200,
+          "gmtoffset": -14400
+        }
+      },
+      "dataGranularity": "1d",
+      "range": "",
+      "validRanges": [
+        "1d",
+        "5d",
+        "1mo",
+        "3mo",
+        "6mo",
+        "1y",
+        "2y",
+        "5y",
+        "10y",
+        "ytd",
+        "max"
+      ]
+    },
+    "latest": {
+      "date": "2026-07-08",
+      "open": 429,
+      "high": 440.489990234375,
+      "low": 428.75,
+      "close": 436.9800109863281,
+      "volume": 11377800
+    },
+    "previous": {
+      "date": "2026-07-07",
+      "open": 438.0199890136719,
+      "high": 439.79998779296875,
+      "low": 428.1099853515625,
+      "close": 432.57000732421875,
+      "volume": 14898400
+    },
+    "changePct": 1.0194890046558407,
+    "sma20": 439.39000244140624,
+    "sma50": 422.47660095214843,
+    "distanceFromSma20Pct": -0.54848572832503,
+    "distanceFromSma50Pct": 3.432949896276602,
+    "twentyDayHighBeforeLatest": 479,
+    "extensionFrom20DayHighPct": -8.772440295129828,
+    "twentyDayLow": 405.510009765625,
+    "avgVolume20": 15006175,
+    "latestVolumeVs20DayAvg": -24.17921289069333,
+    "last10": [
+      {
+        "date": "2026-06-24",
+        "open": 433.9800109863281,
+        "high": 443.8599853515625,
+        "low": 432.5799865722656,
+        "close": 440.8299865722656,
+        "volume": 9991200
+      },
+      {
+        "date": "2026-06-25",
+        "open": 452.8999938964844,
+        "high": 452.8999938964844,
+        "low": 432.44000244140625,
+        "close": 434.989990234375,
+        "volume": 14769500
+      },
+      {
+        "date": "2026-06-26",
+        "open": 425,
+        "high": 436.1300048828125,
+        "low": 419.19000244140625,
+        "close": 432.3500061035156,
+        "volume": 17974100
+      },
+      {
+        "date": "2026-06-29",
+        "open": 437,
+        "high": 456.1000061035156,
+        "low": 431.0899963378906,
+        "close": 455.1000061035156,
+        "volume": 14881400
+      },
+      {
+        "date": "2026-06-30",
+        "open": 455.6099853515625,
+        "high": 479,
+        "low": 453,
+        "close": 477.57000732421875,
+        "volume": 15074300
+      },
+      {
+        "date": "2026-07-01",
+        "open": 467.6700134277344,
+        "high": 468.510009765625,
+        "low": 443.4700012207031,
+        "close": 444.2300109863281,
+        "volume": 18534800
+      },
+      {
+        "date": "2026-07-02",
+        "open": 450.5400085449219,
+        "high": 461.4700012207031,
+        "low": 429.5,
+        "close": 434.1600036621094,
+        "volume": 18375000
+      },
+      {
+        "date": "2026-07-06",
+        "open": 447.7799987792969,
+        "high": 460.0299987792969,
+        "low": 445.6000061035156,
+        "close": 451.7900085449219,
+        "volume": 12788500
+      },
+      {
+        "date": "2026-07-07",
+        "open": 438.0199890136719,
+        "high": 439.79998779296875,
+        "low": 428.1099853515625,
+        "close": 432.57000732421875,
+        "volume": 14898400
+      },
+      {
+        "date": "2026-07-08",
+        "open": 429,
+        "high": 440.489990234375,
+        "low": 428.75,
+        "close": 436.9800109863281,
+        "volume": 11377800
+      }
+    ]
+  }
+}
