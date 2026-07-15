@@ -103,6 +103,25 @@ What do you need?
 
 Moomoo account tools are read-only. They do not place, modify, cancel, or unlock trades.
 
+## Watchlist Target-List Workflow
+
+Use this workflow when the user asks to add symbols to a named TradingView watchlist such as `ATH`.
+
+1. Verify CDP first with `tv status` / `tv_health_check`. If it fails, launch TradingView Desktop with `tv launch` / `tv_launch`.
+2. If launch auto-detection fails, resolve the real executable path before giving up. On this Windows checkout, a known working path is `C:\TradingView\TradingView.exe`; a desktop shortcut may also reveal the target path.
+3. Read the active watchlist with `tv workspace watchlist-list` / `tv_watchlist_list` before adding anything. Treat this as the active-list identity check by content. If the symbols are clearly from another list, stop and switch lists first.
+4. Switch to the target watchlist in the TradingView UI before adding. The current tool surface does not expose a watchlist-name argument; `tv_watchlist_add` only adds to the active watchlist. Use `tv observe snapshot` / `tv capture` or a small CDP DOM inspection to locate the list selector and click the target entry. For example, in the `ATH` run, the right-side watchlist header was `!Index`, and the `ATH` button was visible with `aria-label="ATH"`.
+5. Re-read the active watchlist after switching. Confirm the target list by header/screenshot or by known existing symbols. Do not add symbols while the wrong list is active.
+6. Add symbols one at a time with `tv workspace watchlist-add --symbol TICKER` / `tv_watchlist_add`, or by driving the add-symbol dialog if the tool cannot select the search result.
+7. Verify after mutation with `tv workspace watchlist-list` / `tv_watchlist_list`. Report the exchange-qualified matches, for example `NASDAQ:RPRX` or `NYSE:LLY`, not only the raw tickers.
+
+Failure notes from the `ATH` registration run:
+
+- `tv_launch` may fail if TradingView is installed outside the default `%LOCALAPPDATA%\TradingView\TradingView.exe` path. Check shortcuts before assuming the app is unavailable.
+- Ports such as `9223` or `9225` can be open for non-TradingView processes. Confirm `/json/list` exposes a TradingView chart target before using the port.
+- The watchlist add tool is safe only after the target list is active. In the observed run, the initial active list was `!Index`; adding immediately would have polluted the wrong list.
+- Directly setting the search input `value` can leave TradingView's React search results stale. Prefer real keyboard input or the existing watchlist tool, then verify the symbol appears in the list.
+
 ## Mapping Tables
 
 ### Launch / Health / Capture
