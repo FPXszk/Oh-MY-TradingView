@@ -1,0 +1,10 @@
+{
+  "snapshot_id": "snapshot-20260715T162836Z",
+  "generated_at": "2026-07-15T16:28:36.452Z",
+  "artifacts": {
+    "page_state_path": "artifacts\\observability\\snapshot-20260715T162836Z\\page-state.json",
+    "runtime_errors_path": "artifacts\\observability\\snapshot-20260715T162836Z\\runtime-errors.json",
+    "screenshot_path": "artifacts\\observability\\snapshot-20260715T162836Z\\page.png",
+    "manifest_path": "artifacts\\observability\\snapshot-20260715T162836Z\\manifest.json"
+  }
+}
