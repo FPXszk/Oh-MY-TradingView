@@ -19,7 +19,7 @@ import { getEdinetSupplementalFundamentalsBatch } from './edinet.js';
 import { getMoomooFundamentalsBatch } from './moomoo.js';
 import { getSecEpsTurnaroundSupplements } from './sec-edgar.js';
 import { runSectorMomentumScan } from './sector-momentum.js';
-import { getProfilesForMarket, getSectorScreeningPlan } from './sector-screening-profiles.js';
+import { getFirstMatchingProfileForRow, getProfilesForMarket, getSectorScreeningPlan } from './sector-screening-profiles.js';
 import { classifyThemeForMarket, getSectorThemeHierarchyForMarket, summarizeThemes } from './theme-taxonomy.js';
 
 const DEFAULT_MARKET = 'america';
@@ -504,10 +504,7 @@ function passesProfileScope(row, profile) {
 }
 
 function findMatchingProfile(row, profiles) {
-  return profiles.find((profile) => (
-    profile.requestScopes.some((scope) => scope.sector === row.sector)
-    && passesProfileScope(row, profile)
-  )) ?? null;
+  return getFirstMatchingProfileForRow(row, profiles);
 }
 
 function passesProfileClientFilters(row) {
@@ -913,6 +910,31 @@ function countBy(rows, field) {
   return Array.from(counts.entries())
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+}
+
+function summarizeProfileUnmatchedRows(rows) {
+  const grouped = new Map();
+  rows.forEach((row) => {
+    const sector = row.sector ?? 'Unknown';
+    const industry = row.industry ?? 'Unknown';
+    const key = `${sector}\u0000${industry}`;
+    const entry = grouped.get(key) ?? {
+      sector,
+      industry,
+      count: 0,
+      symbols: [],
+    };
+    entry.count += 1;
+    if (entry.symbols.length < 8) entry.symbols.push(row.symbol);
+    grouped.set(key, entry);
+  });
+
+  return [...grouped.values()]
+    .sort((a, b) => (
+      b.count - a.count
+      || a.sector.localeCompare(b.sector)
+      || a.industry.localeCompare(b.industry)
+    ));
 }
 
 function summarizeSectors(rows) {
@@ -2165,6 +2187,20 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   });
 
   const totalScanned = dedupeRows(phase2Responses.flatMap((entry) => entry.rows)).length;
+  const profileScopeCandidates = dedupeRows(
+    phase2Responses.flatMap((entry) => entry.rows)
+      .filter((row) => passesScopeFilters(row, { exchangeAllowlist, symbolAllowlist }))
+      .filter((row) => selectedSectorLabels.includes(row.sector))
+      .filter((row) => !excludedSelectedSectors.includes(row.sector)),
+  );
+  const profileUnmatchedRows = profileScopeCandidates
+    .filter((row) => !findMatchingProfile(row, effectiveActiveProfiles));
+  const profileUnmatchedIndustries = summarizeProfileUnmatchedRows(profileUnmatchedRows);
+  const profileUnmatchedMeta = {
+    rows: profileUnmatchedRows.length,
+    sectors: uniqueStrings(profileUnmatchedRows.map((row) => row.sector ?? 'Unknown')).sort(),
+    industries: profileUnmatchedIndustries,
+  };
   const scopeFiltered = dedupeRows(
     phase2Responses.flatMap(({ profile, rows }) => rows
       .filter((row) => passesScopeFilters(row, { exchangeAllowlist, symbolAllowlist }))
@@ -2450,6 +2486,9 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       serverLimit,
       totalCandidatesReported: phase2Responses.reduce((sum, entry) => sum + entry.totalCount, 0),
       profileRequestCount: requestPlans.length,
+      profileUnmatchedRows: profileUnmatchedMeta.rows,
+      profileUnmatchedSectors: profileUnmatchedMeta.sectors,
+      profileUnmatchedIndustries: profileUnmatchedMeta.industries,
       industryUniverseRequestCount: industryUniverseResponses.length,
       industryUniverseCandidates: industryUniverseRows.length,
       scopeLabel,
@@ -2482,6 +2521,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       usMissingMetricSupplement: usMissingMetricSupplementMeta,
       edinet: edinetSupplementMeta,
       phase5: phase5.meta,
+      profileUnmatched: profileUnmatchedMeta,
       unifiedScoring: unifiedScoringMeta,
     },
     results: matched,

@@ -13,6 +13,10 @@ import {
 } from '../src/core/fundamental-screener.js';
 import { getEdinetSupplementalFundamentalsBatch } from '../src/core/edinet.js';
 import { resetSecEdgarCachesForTests } from '../src/core/sec-edgar.js';
+import {
+  getMatchingProfilesForRow,
+  getSectorScreeningPlan,
+} from '../src/core/sector-screening-profiles.js';
 
 function buildPhase2Row(symbol, values) {
   return {
@@ -101,6 +105,19 @@ function isFundRequest(body) {
 
 function isPhase2StockRequest(body) {
   return body.columns?.includes('earnings_per_share_diluted_ttm');
+}
+
+function getJapanProfileLabelsForRow(row, selectedSectors = [
+  'Electronic Technology',
+  'Producer Manufacturing',
+  'Process Industries',
+  'Consumer Durables',
+]) {
+  const { activeProfiles } = getSectorScreeningPlan({
+    market: 'japan',
+    selectedSectors,
+  });
+  return getMatchingProfilesForRow(row, activeProfiles).map((profile) => profile.label);
 }
 
 function isIndustryUniverseRequest(body) {
@@ -350,6 +367,96 @@ describe('buildHiddenPhase4Candidates', () => {
       buildHiddenPhase4Candidates([], phase5Rows).map((row) => row.symbol),
       ['AAA', 'BBB', 'CCC', 'DDD', 'EEE'],
     );
+  });
+});
+
+describe('Japan sector screening profile assignment', () => {
+  it('assigns unknown Electronic Technology industries to Japan Electronics Other', () => {
+    assert.deepEqual(
+      getJapanProfileLabelsForRow({ sector: 'Electronic Technology', industry: 'Aerospace & Defense' }),
+      ['Japan Electronics Other'],
+    );
+    assert.deepEqual(
+      getJapanProfileLabelsForRow({ sector: 'Electronic Technology', industry: 'Unknown Electronic Niche' }),
+      ['Japan Electronics Other'],
+    );
+  });
+
+  it('assigns unknown Producer Manufacturing industries to Japan Manufacturing Other', () => {
+    assert.deepEqual(
+      getJapanProfileLabelsForRow({ sector: 'Producer Manufacturing', industry: 'Trucks/Construction/Farm Machinery' }),
+      ['Japan Manufacturing Other'],
+    );
+    assert.deepEqual(
+      getJapanProfileLabelsForRow({ sector: 'Producer Manufacturing', industry: 'Building Products' }),
+      ['Japan Manufacturing Other'],
+    );
+    assert.deepEqual(
+      getJapanProfileLabelsForRow({ sector: 'Producer Manufacturing', industry: 'Unknown Manufacturing Niche' }),
+      ['Japan Manufacturing Other'],
+    );
+  });
+
+  it('assigns unknown Process Industries industries to Japan Process Industries Other', () => {
+    assert.deepEqual(
+      getJapanProfileLabelsForRow({ sector: 'Process Industries', industry: 'Unknown Process Niche' }),
+      ['Japan Process Industries Other'],
+    );
+  });
+
+  it('keeps auto industries out of consumer cyclicals and manufacturing fallback', () => {
+    assert.deepEqual(
+      getJapanProfileLabelsForRow({ sector: 'Producer Manufacturing', industry: 'Auto Parts: OEM' }),
+      ['Japan Auto & Components'],
+    );
+    assert.deepEqual(
+      getJapanProfileLabelsForRow({ sector: 'Consumer Durables', industry: 'Motor Vehicles' }),
+      ['Japan Auto & Components'],
+    );
+  });
+
+  it('keeps specialist matches ahead of fallback profiles', () => {
+    assert.deepEqual(
+      getJapanProfileLabelsForRow({ sector: 'Electronic Technology', industry: 'Semiconductors' }),
+      ['Japan Semiconductor & Electronics'],
+    );
+    assert.deepEqual(
+      getJapanProfileLabelsForRow({ sector: 'Producer Manufacturing', industry: 'Industrial Machinery' }),
+      ['Japan Machinery & FA'],
+    );
+    assert.deepEqual(
+      getJapanProfileLabelsForRow({ sector: 'Process Industries', industry: 'Chemicals: Specialty' }),
+      ['Japan Materials & Chemicals'],
+    );
+  });
+
+  it('assigns every non-excluded selected Japan test row to one profile', () => {
+    const rows = [
+      { sector: 'Electronic Technology', industry: 'Office Equipment' },
+      { sector: 'Producer Manufacturing', industry: 'Trucks/Construction/Farm Machinery' },
+      { sector: 'Producer Manufacturing', industry: 'Building Products' },
+      { sector: 'Process Industries', industry: 'Unknown Process Niche' },
+      { sector: 'Consumer Durables', industry: 'Electronics/Appliances' },
+      { sector: 'Consumer Services', industry: 'Restaurants' },
+      { sector: 'Retail Trade', industry: 'Internet Retail' },
+      { sector: 'Transportation', industry: 'Trucking' },
+      { sector: 'Technology Services', industry: 'Packaged Software' },
+      { sector: 'Communications', industry: 'Major Telecommunications' },
+      { sector: 'Health Technology', industry: 'Pharmaceuticals: Major' },
+      { sector: 'Health Services', industry: 'Medical/Nursing Services' },
+      { sector: 'Consumer Non-Durables', industry: 'Food: Specialty/Candy' },
+      { sector: 'Distribution Services', industry: 'Wholesale Distributors' },
+      { sector: 'Non-Energy Minerals', industry: 'Steel' },
+    ];
+
+    const selectedSectors = [...new Set(rows.map((row) => row.sector))];
+    rows.forEach((row) => {
+      assert.equal(
+        getJapanProfileLabelsForRow(row, selectedSectors).length,
+        1,
+        `${row.sector} / ${row.industry} should match one profile`,
+      );
+    });
   });
 });
 
@@ -1753,9 +1860,13 @@ describe('runFundamentalScreener', () => {
     assert.ok(result.results[0].rankScore > result.results[1].rankScore);
     assert.deepEqual(result.criteria.profile_summaries.map((profile) => profile.label), [
       'Japan Semiconductor & Electronics',
+      'Japan Electronics Other',
       'Japan Materials & Chemicals',
+      'Japan Process Industries Other',
     ]);
     assert.deepEqual(result.criteria.excluded_phase2_sectors, ['Finance']);
+    assert.equal(result.sourceDetails.profileUnmatched.rows, 0);
+    assert.deepEqual(result.sourceDetails.profileUnmatched.sectors, []);
     assert.equal(result.scannerScope.market, 'japan');
     assert.equal(result.scannerScope.scopeLabel, 'JPX Prime domestic stocks snapshot');
     assert.equal(result.results.find((row) => row.symbol === '8035').companyName, 'Tokyo Electron');

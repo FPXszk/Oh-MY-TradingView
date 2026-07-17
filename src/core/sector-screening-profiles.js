@@ -69,38 +69,59 @@ function jpSectorProfile(id, label, sectors, thresholds, extra = {}) {
   };
 }
 
-function industryIncludes(row, patterns) {
-  const industry = String(row.industry ?? '').toLowerCase();
-  return patterns.some((pattern) => industry.includes(pattern));
+function normalizeIndustryName(industry) {
+  return String(industry ?? '').trim().toLowerCase().replace(/\s+/g, ' ');
 }
 
-const JP_ELECTRONICS_INDUSTRIES = [
-  'semiconductor',
-  'electronic',
-  'computer',
+function industryInSet(row, industries) {
+  return industries.has(normalizeIndustryName(row.industry));
+}
+
+const JP_ELECTRONICS_INDUSTRIES = new Set([
+  'computer communications',
+  'computer peripherals',
+  'computer processing hardware',
+  'electronic components',
+  'electronic equipment/instruments',
+  'electronic production equipment',
+  'semiconductors',
   'telecommunications equipment',
-];
+]);
 
-const JP_AUTO_INDUSTRIES = [
-  'auto',
+const JP_AUTO_INDUSTRIES = new Set([
+  'auto parts: oem',
+  'automotive aftermarket',
   'motor vehicles',
-];
+]);
 
-const JP_MACHINERY_INDUSTRIES = [
-  'industrial machinery',
+const JP_MACHINERY_INDUSTRIES = new Set([
   'electrical products',
+  'industrial machinery',
   'metal fabrication',
   'miscellaneous manufacturing',
-];
+]);
 
-const JP_MATERIALS_INDUSTRIES = [
-  'chemical',
-  'industrial specialties',
+const JP_MATERIALS_INDUSTRIES = new Set([
+  'agricultural commodities/milling',
+  'chemicals: major diversified',
+  'chemicals: specialty',
   'containers/packaging',
+  'industrial specialties',
   'pulp & paper',
-  'agricultural commodities',
   'textiles',
-];
+]);
+
+export function getMatchingProfilesForRow(row, profiles) {
+  return profiles.filter((profile) => (
+    profile.requestScopes.some((scope) => scope.sector === row.sector)
+    && (!profile.includeRow || profile.includeRow(row))
+    && (!profile.excludeRow || !profile.excludeRow(row))
+  ));
+}
+
+export function getFirstMatchingProfileForRow(row, profiles) {
+  return getMatchingProfilesForRow(row, profiles)[0] ?? null;
+}
 
 const US_TECH_THRESHOLDS = {
   rsiMin: 60,
@@ -289,22 +310,34 @@ const JP_DEFENSIVE_THRESHOLDS = {
 
 const JP_PROFILES = [
   jpSectorProfile('semiconductor-electronics', 'Japan Semiconductor & Electronics', ['Electronic Technology'], JP_SEMICONDUCTOR_ELECTRONICS_THRESHOLDS, {
-    includeRow: (row) => industryIncludes(row, JP_ELECTRONICS_INDUSTRIES),
+    includeRow: (row) => industryInSet(row, JP_ELECTRONICS_INDUSTRIES),
+  }),
+  jpSectorProfile('electronics-other', 'Japan Electronics Other', ['Electronic Technology'], JP_SEMICONDUCTOR_ELECTRONICS_THRESHOLDS, {
+    excludeRow: (row) => industryInSet(row, JP_ELECTRONICS_INDUSTRIES),
   }),
   jpSectorProfile('machinery-fa', 'Japan Machinery & FA', ['Producer Manufacturing'], JP_INDUSTRIAL_THRESHOLDS, {
-    includeRow: (row) => industryIncludes(row, JP_MACHINERY_INDUSTRIES),
+    includeRow: (row) => industryInSet(row, JP_MACHINERY_INDUSTRIES),
   }),
   jpSectorProfile('auto-components', 'Japan Auto & Components', ['Producer Manufacturing', 'Consumer Durables'], JP_CYCLICAL_THRESHOLDS, {
-    includeRow: (row) => industryIncludes(row, JP_AUTO_INDUSTRIES),
+    includeRow: (row) => industryInSet(row, JP_AUTO_INDUSTRIES),
+  }),
+  jpSectorProfile('manufacturing-other', 'Japan Manufacturing Other', ['Producer Manufacturing'], JP_INDUSTRIAL_THRESHOLDS, {
+    excludeRow: (row) => (
+      industryInSet(row, JP_MACHINERY_INDUSTRIES)
+      || industryInSet(row, JP_AUTO_INDUSTRIES)
+    ),
   }),
   jpSectorProfile('materials-chemicals', 'Japan Materials & Chemicals', ['Process Industries'], JP_MATERIALS_THRESHOLDS, {
-    includeRow: (row) => industryIncludes(row, JP_MATERIALS_INDUSTRIES),
+    includeRow: (row) => industryInSet(row, JP_MATERIALS_INDUSTRIES),
+  }),
+  jpSectorProfile('process-industries-other', 'Japan Process Industries Other', ['Process Industries'], JP_MATERIALS_THRESHOLDS, {
+    excludeRow: (row) => industryInSet(row, JP_MATERIALS_INDUSTRIES),
   }),
   jpSectorProfile('trading-distribution', 'Japan Trading & Distribution', ['Distribution Services'], JP_MATERIALS_THRESHOLDS),
   jpSectorProfile('non-energy-minerals', 'Japan Non-Energy Minerals', ['Non-Energy Minerals'], JP_MATERIALS_THRESHOLDS),
   jpSectorProfile('transportation-logistics', 'Japan Transportation & Logistics', ['Transportation'], JP_CYCLICAL_THRESHOLDS),
   jpSectorProfile('consumer-cyclicals', 'Japan Consumer Cyclicals', ['Consumer Durables', 'Consumer Services', 'Retail Trade'], JP_CYCLICAL_THRESHOLDS, {
-    excludeRow: (row) => industryIncludes(row, JP_AUTO_INDUSTRIES),
+    excludeRow: (row) => industryInSet(row, JP_AUTO_INDUSTRIES),
   }),
   jpSectorProfile('it-communications', 'Japan IT & Communications', ['Technology Services', 'Communications'], JP_TECH_COMMUNICATIONS_THRESHOLDS),
   jpSectorProfile('healthcare', 'Japan Healthcare', ['Health Technology', 'Health Services'], JP_DEFENSIVE_THRESHOLDS),

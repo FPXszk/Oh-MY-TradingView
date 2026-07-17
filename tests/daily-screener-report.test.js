@@ -956,6 +956,11 @@ describe('buildMarkdown', () => {
           matchedFilings: 0,
           supplementedRows: 0,
         },
+        profileUnmatched: {
+          rows: 0,
+          sectors: [],
+          industries: [],
+        },
       },
       ruleOf40Coverage: {
         total: 1,
@@ -986,6 +991,20 @@ describe('buildMarkdown', () => {
         profile_summaries: [
           {
             label: 'Japan Semiconductor & Electronics',
+            scope_labels: ['Electronic Technology'],
+            thresholds: {
+              rsi14_min: 55,
+              relative_volume_min: 0.8,
+              roe_min_pct: 12,
+              gross_margin_min_pct: 25,
+              fcf_margin_min_pct: 5,
+              perf_3m_min_pct: 8,
+              p_fcf_max: 140,
+            },
+          },
+          {
+            label: 'Japan Electronics Other',
+            scope_labels: ['Electronic Technology'],
             thresholds: {
               rsi14_min: 55,
               relative_volume_min: 0.8,
@@ -1351,6 +1370,8 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /2\.4% \| 4\.00 \(T1\.9\/F2\.1\) \|/);
     assert.match(markdown, /\| ユニバース \| 取引所 \| TSE \|/);
     assert.match(markdown, /\| ユニバース \| 銘柄ユニバース \| jpx-prime \|/);
+    assert.match(markdown, /\| ユニバース \| Profile未割り当て \| 0銘柄 \|/);
+    assert.match(markdown, /\| セクタープロファイル \| Japan Electronics Other \| scope: Electronic Technology \/ hard gate: Perf\.3M > 8% \/ scoring: RSI 55\+、相対出来高 0\.80x\+、ROE 12%\+、粗利率 25%\+、FCFマージン 5%\+、P\/FCF 140 は risk penalty \|/);
     assert.match(markdown, /\| 採点ポリシー \| unifiedRankScore \| Phase4候補とPhase5 Sector別Top3候補は共通母集団で1回だけ採点。Phase5表の4位・5位は表示用スコアだが、Phase4候補でもある場合は unifiedRankScore を持つ。Phase1\/Phase2の集計スコアとは別物。 \|/);
     assert.match(markdown, /\| 総合点 \(T\/F\) \| repo 独自の総合スコア \| 高いほど良い。T はテクニカル寄り、F はファンダ寄り \|/);
   });

@@ -134,15 +134,15 @@ profileUnmatchedSectors=Consumer Durables, Producer Manufacturing
 
 ## Implementation Steps
 
-- [ ] 計画外差分を確認し、今回のステージ対象から除外する。
-- [ ] `sector-screening-profiles.js` に管理された Industry 判定 helper と fallback profiles を追加する。
-- [ ] profile overlap / assignment を検証できる最小 helper を export する。
-- [ ] `fundamental-screener.js` に `profileUnmatchedRows`、`profileUnmatchedSectors`、`profileUnmatchedIndustries` を追加する。
-- [ ] `run-fundamental-screening.mjs` のログ / レポートに profile 未割り当て状況を表示する。
-- [ ] `tests/fundamental-screener.test.js` に fallback と重複防止テストを追加する。
-- [ ] `tests/daily-screener-report.test.js` にレポート表示テストを追加する。
-- [ ] 日本株スクリーナーを日本株出力先だけで再実行する。
-- [ ] 修正前後の比較を Implementation Results に記録し、計画を `completed/` へ移動する。
+- [x] 計画外差分を確認し、今回のステージ対象から除外する。
+- [x] `sector-screening-profiles.js` に管理された Industry 判定 helper と fallback profiles を追加する。
+- [x] profile overlap / assignment を検証できる最小 helper を export する。
+- [x] `fundamental-screener.js` に `profileUnmatchedRows`、`profileUnmatchedSectors`、`profileUnmatchedIndustries` を追加する。
+- [x] `run-fundamental-screening.mjs` のログ / レポートに profile 未割り当て状況を表示する。
+- [x] `tests/fundamental-screener.test.js` に fallback と重複防止テストを追加する。
+- [x] `tests/daily-screener-report.test.js` にレポート表示テストを追加する。
+- [x] 日本株スクリーナーを日本株出力先だけで再実行する。
+- [x] 修正前後の比較を Implementation Results に記録し、計画を `completed/` へ移動する。
 
 ## Validation
 
@@ -184,3 +184,53 @@ node scripts/screener/run-fundamental-screening.mjs
 - 日本株レポートで profile 未割り当て状況と fallback profile summary が確認できる。
 - `npm run test:unit`、`npm run test:contract`、`git diff --check` が成功する。
 - 計画ファイルが `docs/exec-plans/completed/` へ移動し、実装コミットが `main` に push される。
+
+## Implementation Results
+
+### Cause
+
+`e27d4d3` の 11 分類化で `Electronic Technology`、`Producer Manufacturing`、`Process Industries` の専門 profile が `includeRow()` を持つようになった一方、専門条件に合わない Industry を受ける fallback profile がなかった。そのため Phase2 の `passesProfileScope()` で、選択済み非除外セクター内の未分類 Industry が落ちていた。
+
+### Fix
+
+- `Japan Electronics Other`、`Japan Manufacturing Other`、`Japan Process Industries Other` を追加した。
+- Industry 判定を `industry.includes(pattern)` から、正規化済み Industry 名の明示セット一致へ変更した。
+- `getMatchingProfilesForRow()` / `getFirstMatchingProfileForRow()` を追加し、専門優先と重複防止をテストで固定した。
+- `profileUnmatchedRows`、`profileUnmatchedSectors`、`profileUnmatchedIndustries` を `scannerScope` と `sourceDetails.profileUnmatched` に追加した。
+- CLI ログと Markdown レポートへ `Profile未割り当て` を表示した。
+
+### Before / After
+
+| Metric | Before | After |
+|:---|---:|---:|
+| totalScanned | 313 | 313 |
+| serverFiltered | 172 | 180 |
+| phase1Filtered | 172 | 180 |
+| clientFiltered | 68 | 68 |
+| matched | 68 | 68 |
+| profileUnmatchedRows | 18 | 0 |
+| Phase4 rows | 40 | 40 |
+| Phase5 fetchedRows | 644 | 644 |
+| Phase5 clientFilteredRows | 190 | 193 |
+| Phase5 displayedRows | 61 | 61 |
+| EDINET requested | 48 | 48 |
+| EDINET supplemented | 0 | 0 |
+| EDINET errors | 0 | 0 |
+
+修正前に未割り当てだった selected non-excluded sector の Producer Manufacturing 行は fallback へ入るようになった。Consumer Durables の非自動車行は今回の Phase1 選択セクターではなく、`Japan Auto & Components` が自動車検出用に持つ request scope 由来なので、profile unmatched 異常の集計対象から外した。
+
+### Rerun Results
+
+- Japan screener: `totalScanned=313 serverFiltered=180 phase1Filtered=180 clientFiltered=68 matched=68 profileUnmatchedRows=0`
+- Japan Phase5: `fetchedRows=644 clientFilteredRows=193 displayedRows=61`
+- US screener: `totalScanned=53 serverFiltered=42 phase1Filtered=42 clientFiltered=36 matched=36 profileUnmatchedRows=0`
+
+### EDINET
+
+この Codex 実行環境では `EDINET_API_KEY` が Process / User / Machine のいずれにも見えていないため、EDINET は `enabled=false reason=missing_api_key`。`requested=48`、`supplemented=0`、`errors=0` だった。
+
+### Validation
+
+- `node --test tests/fundamental-screener.test.js tests/daily-screener-report.test.js`: pass
+- `npm run test:unit`: 870 pass
+- `npm run test:contract`: 74 pass

@@ -332,6 +332,7 @@ function buildSourceCoverageLines(result) {
   const edinet = result.sourceDetails?.edinet;
   const usSupplement = result.sourceDetails?.usFundamentalSupplement;
   const usMissingSupplement = result.sourceDetails?.usMissingMetricSupplement;
+  const profileUnmatched = result.sourceDetails?.profileUnmatched;
   const lines = [];
 
   if (usSupplement?.enabled) {
@@ -344,6 +345,12 @@ function buildSourceCoverageLines(result) {
       .join(', ');
     const suffix = fieldSummary ? ` / ${fieldSummary}` : '';
     lines.push(`- US 指標補完: ${usMissingSupplement.supplementedRows}銘柄${suffix}`);
+  }
+  if (profileUnmatched) {
+    const sectors = profileUnmatched.sectors?.length
+      ? ` / sectors ${profileUnmatched.sectors.join(', ')}`
+      : '';
+    lines.push(`- Profile未割り当て: ${profileUnmatched.rows ?? 0}銘柄${sectors}`);
   }
 
   if (!edinet) return lines;
@@ -516,6 +523,13 @@ function buildGuideRows(result) {
   }
   if (result.criteria.excluded_phase2_sectors?.length) {
     rows.push(`| ユニバース | Phase2 除外セクター | ${result.criteria.excluded_phase2_sectors.join(', ')} |`);
+  }
+  if (result.sourceDetails?.profileUnmatched) {
+    const profileUnmatched = result.sourceDetails.profileUnmatched;
+    const industries = (profileUnmatched.industries ?? [])
+      .map((entry) => `${entry.sector}/${entry.industry}: ${entry.count}`)
+      .join(', ');
+    rows.push(`| ユニバース | Profile未割り当て | ${profileUnmatched.rows ?? 0}銘柄${industries ? ` / ${industries}` : ''} |`);
   }
   if (result.criteria.profile_summaries?.length) {
     result.criteria.profile_summaries.forEach((profile) => {
@@ -902,6 +916,10 @@ async function main() {
   }
 
   console.log(`[screener] totalScanned=${result.totalScanned} serverFiltered=${result.serverFiltered} phase1Filtered=${result.phase1Filtered} clientFiltered=${result.clientFiltered} matched=${result.matched}`);
+  if (result.sourceDetails?.profileUnmatched) {
+    const unmatched = result.sourceDetails.profileUnmatched;
+    console.log(`[screener] profileUnmatchedRows=${unmatched.rows ?? 0} profileUnmatchedSectors=${unmatched.sectors?.join(',') ?? ''}`);
+  }
   if (result.sourceDetails?.phase5) {
     const phase5 = result.sourceDetails.phase5;
     console.log(`[phase5] sectorLimit=${phase5.sectorLimit}`);

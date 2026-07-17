@@ -1,6 +1,6 @@
 # スクリーニング結果 2026/07/17（金）
 
-更新: 16:07 JST
+更新: 17:58 JST
 
 セクター別取得候補 53銘柄 → ユニバース条件通過 42銘柄 → ランキング対象 36銘柄 → レポート掲載 40銘柄
 
@@ -8,10 +8,11 @@
 
 - US FCF補完: 0銘柄
 - US 指標補完: 0銘柄
+- Profile未割り当て: 0銘柄
 
 ## Phase1 セクターランキング
 
-- Phase1 ソース候補数: 2666 / reported 3933
+- Phase1 ソース候補数: 2666 / reported 3930
 - 相対強度の基準: AMEX:SPY（SPY）
 - 12M / 6M / 3M はセクター構成銘柄の平均リターンです。
 
@@ -225,6 +226,7 @@
 | 採点ポリシー | unifiedRankScore | Phase4候補とPhase5 Sector別Top3候補は共通母集団で1回だけ採点。Phase5表の4位・5位は表示用スコアだが、Phase4候補でもある場合は unifiedRankScore を持つ。Phase1/Phase2の集計スコアとは別物。 |
 | ユニバース | 取引所 | NASDAQ, NYSE |
 | 補助ポリシー | Moomoo 補助 | 売上成長率 YoY は growth scoring に使い、EPS YoY / P/FCF は TradingView 欠損時の表内指標補完に使う |
+| ユニバース | Profile未割り当て | 0銘柄 |
 | セクタープロファイル | Technology Services | scope: Technology Services / hard gate: Perf.3M > 10% / scoring: RSI 60+、相対出来高 1.00x+、ROE 20%+、粗利率 40%+、FCFマージン 15%+、P/FCF 50 は risk penalty |
 | セクタープロファイル | Transportation | scope: Transportation / hard gate: Perf.3M > 10% / scoring: RSI 60+、相対出来高 0.90x+、ROE 12%+、粗利率 25%+、FCFマージン 5%+、P/FCF 50 は risk penalty |
 | セクタープロファイル | Health Technology | scope: Health Technology / hard gate: Perf.3M > 5% / scoring: RSI 55+、相対出来高 0.90x+、ROE 12%+、粗利率 30%+、FCFマージン 8%+、P/FCF 30 は risk penalty |
