@@ -5,7 +5,7 @@
  * into the current checkout. No git operations are performed.
  */
 
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runFundamentalScreener } from '../../src/core/fundamental-screener.js';
@@ -37,6 +37,43 @@ const MARKET_CAP_BANDS_BY_MARKET = {
     { min: 0, label: 'S' },
   ],
 };
+
+function parseDotEnvValue(rawValue) {
+  const trimmed = rawValue.trim();
+  if (
+    (trimmed.startsWith('"') && trimmed.endsWith('"'))
+    || (trimmed.startsWith("'") && trimmed.endsWith("'"))
+  ) {
+    return trimmed.slice(1, -1);
+  }
+  return trimmed;
+}
+
+export function loadRepoDotEnv({
+  envFilePath = join(REPO_ROOT, '.env'),
+  env = process.env,
+} = {}) {
+  if (!existsSync(envFilePath)) return { loaded: false, applied: [] };
+
+  const applied = [];
+  const content = readFileSync(envFilePath, 'utf8');
+  content.split(/\r?\n/).forEach((line) => {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) return;
+
+    const separatorIndex = trimmed.indexOf('=');
+    if (separatorIndex < 1) return;
+
+    const key = trimmed.slice(0, separatorIndex).trim();
+    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(key)) return;
+    if (env[key] !== undefined) return;
+
+    env[key] = parseDotEnvValue(trimmed.slice(separatorIndex + 1));
+    applied.push(key);
+  });
+
+  return { loaded: true, applied };
+}
 
 function fmt(val, digits = 1, suffix = '') {
   if (val === null || val === undefined) return 'N/A';
@@ -900,6 +937,7 @@ export function buildMarkdown(result, options = {}) {
 }
 
 async function main() {
+  loadRepoDotEnv();
   console.log('[screener] Starting fundamental screener...');
   const runtime = getRuntimeConfig();
 

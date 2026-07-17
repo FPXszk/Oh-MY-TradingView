@@ -1,7 +1,10 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
-import { buildMarkdown } from '../scripts/screener/run-fundamental-screening.mjs';
+import { buildMarkdown, loadRepoDotEnv } from '../scripts/screener/run-fundamental-screening.mjs';
 
 describe('buildMarkdown', () => {
   const rankingBlocks = [
@@ -1418,5 +1421,41 @@ describe('buildMarkdown', () => {
     });
 
     assert.match(markdown, /- EDINET: invalid API key/);
+  });
+});
+
+describe('loadRepoDotEnv', () => {
+  it('loads missing values from a dotenv file without overwriting existing environment values', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'omtv-dotenv-'));
+    const envFilePath = join(dir, '.env');
+    const env = {
+      EDINET_API_KEY: 'from-existing-env',
+    };
+
+    try {
+      writeFileSync(
+        envFilePath,
+        [
+          '# local screener secrets',
+          'EDINET_API_KEY=from-dotenv',
+          'SCREENER_MARKET=japan',
+          'QUOTED_VALUE="quoted value"',
+          'INVALID-KEY=ignored',
+          '',
+        ].join('\n'),
+        'utf8',
+      );
+
+      const result = loadRepoDotEnv({ envFilePath, env });
+
+      assert.equal(result.loaded, true);
+      assert.deepEqual(result.applied, ['SCREENER_MARKET', 'QUOTED_VALUE']);
+      assert.equal(env.EDINET_API_KEY, 'from-existing-env');
+      assert.equal(env.SCREENER_MARKET, 'japan');
+      assert.equal(env.QUOTED_VALUE, 'quoted value');
+      assert.equal(env['INVALID-KEY'], undefined);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });

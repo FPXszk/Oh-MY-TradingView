@@ -23,12 +23,12 @@
 
 ## 実装ステップ
 
-- [ ] 既存の `process.env` 読み取り前に動く repo 直下 `.env` ローダーを追加する。
-- [ ] `.env` パーサーは `KEY=value`、空行、コメント、単純な引用符だけに対応する。
-- [ ] 既に `process.env.KEY` が設定済みの場合は `.env` の値で上書きしない。
-- [ ] 既存テストに `.env` 補完 / 上書き禁止の契約テストを追加する。
-- [ ] GitHub Actions 相当の日本株スクリーニング env で実行し、EDINET が `active` になることを確認する。
-- [ ] 計画ファイルを `docs/exec-plans/completed/` に移動する。
+- [x] 既存の `process.env` 読み取り前に動く repo 直下 `.env` ローダーを追加する。
+- [x] `.env` パーサーは `KEY=value`、空行、コメント、単純な引用符だけに対応する。
+- [x] 既に `process.env.KEY` が設定済みの場合は `.env` の値で上書きしない。
+- [x] 既存テストに `.env` 補完 / 上書き禁止の契約テストを追加する。
+- [x] GitHub Actions 相当の日本株スクリーニング env で実行し、EDINET が `active` になることを確認する。
+- [x] 計画ファイルを `docs/exec-plans/completed/` に移動する。
 
 ## 検証
 
