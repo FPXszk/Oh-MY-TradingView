@@ -1752,8 +1752,8 @@ describe('runFundamentalScreener', () => {
     assertRankScoresDescending(result.results);
     assert.ok(result.results[0].rankScore > result.results[1].rankScore);
     assert.deepEqual(result.criteria.profile_summaries.map((profile) => profile.label), [
-      'Japan Manufacturing',
-      'Japan Materials & Trading',
+      'Japan Semiconductor & Electronics',
+      'Japan Materials & Chemicals',
     ]);
     assert.deepEqual(result.criteria.excluded_phase2_sectors, ['Finance']);
     assert.equal(result.scannerScope.market, 'japan');

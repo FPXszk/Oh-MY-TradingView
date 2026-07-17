@@ -985,7 +985,7 @@ describe('buildMarkdown', () => {
         price_pct_of_52wk_high_min: 75,
         profile_summaries: [
           {
-            label: 'Japan Manufacturing',
+            label: 'Japan Semiconductor & Electronics',
             thresholds: {
               rsi14_min: 55,
               relative_volume_min: 0.8,

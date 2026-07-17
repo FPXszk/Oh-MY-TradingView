@@ -49,24 +49,24 @@
 
 ## Implementation Steps
 
-- [ ] 実行前の状態を保存する
+- [x] 実行前の状態を保存する
   - 確認: `git status --short --branch` で既存差分を把握し、計画外ファイルをステージしない。
-- [ ] 米国株・日本株スクリーニングを同日にローカル実行する
+- [x] 米国株・日本株スクリーニングを同日にローカル実行する
   - 米国株: `SCREENER_MARKET=america` 相当の PowerShell 環境変数を設定し、`node scripts/screener/run-fundamental-screening.mjs` を実行する。
   - 日本株: `.github/workflows/daily-screener-japan.yml` と同等の `SCREENER_MARKET=japan`, `SCREENER_EXCHANGES=TSE`, `SCREENER_SYMBOL_ALLOWLIST_KEY=jpx-prime`, `SCREENER_SELECTED_SECTOR_COUNT=5`, `SCREENER_RESULT_LIMIT=90` で実行する。
   - 確認: `docs/reports/screener/daily-ranking.md` と `docs/reports/screener/daily-ranking-jp.md` の生成日、EDINET 状態、取得件数、Phase4 / Phase5 行数を確認する。
-- [ ] 実行結果から日本株プロファイル分割の初期対象を決める
+- [x] 実行結果から日本株プロファイル分割の初期対象を決める
   - 確認: Phase1 上位セクター、Industry 上位、Phase4 / Phase5 候補を見て、今回の細分化が実データに効く範囲に絞られていることを確認する。
-- [ ] `src/core/sector-screening-profiles.js` の日本株プロファイルを細分化する
+- [x] `src/core/sector-screening-profiles.js` の日本株プロファイルを細分化する
   - 初期分割候補: 半導体・電子部品、製造装置 / FA、素材・化学、商社、消費循環、IT / 通信、医薬品・医療、防御系。
   - Finance / Utilities は今回の本格対応対象外。ただし除外が明示され続けることをテストで保つ。
   - 確認: 既存の `getSectorScreeningPlan()` と `profileSummary()` の契約を変えず、呼び出し側に大きな変更を出さない。
-- [ ] テストを更新する
+- [x] テストを更新する
   - 確認: `tests/fundamental-screener.test.js` で日本株 profile summary、request scope、Finance / Utilities 除外、Industry / Phase4 / Phase5 継続を検証する。
   - 確認: `tests/daily-screener-report.test.js` でレポートのプロファイル表示と EDINET 状態表示を検証する。
-- [ ] レポートを再生成して差分をレビューする
+- [x] レポートを再生成して差分をレビューする
   - 確認: 日本株レポートで細分化されたプロファイル名が表示され、Phase4 / Phase5 / 統合 Top40 が壊れていないことを確認する。
-- [ ] レビューして計画を完了へ移動する
+- [x] レビューして計画を完了へ移動する
   - 確認: `git diff --check`、`npm run test:unit`、必要に応じて `npm run test:contract` を実行する。
   - 確認: `docs/exec-plans/active/japan-screener-profile-refinement_20260717_1605.md` を `docs/exec-plans/completed/` へ移動する。
 
@@ -102,3 +102,11 @@
 - 関連テストと差分チェックが通っている。
 - 計画ファイルが `docs/exec-plans/completed/` に移動済み。
 - 実装コミットが Conventional Commits 形式で `main` に push 済み。
+
+## Implementation Results
+
+- 米国株レポートを 2026/07/17 で再生成した。
+- 日本株レポートを 2026/07/17 で再生成し、EDINET はローカル key なしのため `disabled (no API key)` として記録した。
+- 日本株プロファイルを 5 グループから 11 グループへ分割した。
+- Finance / Utilities の本格対応は範囲外として、既存の Phase2 除外契約を維持した。
+- `npm run test:unit` と `npm run test:contract` が成功した。

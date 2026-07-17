@@ -55,6 +55,53 @@ function usSectorProfile(id, sector, thresholds, extra = {}) {
   };
 }
 
+function jpSectorProfile(id, label, sectors, thresholds, extra = {}) {
+  return {
+    id: `jp-${id}`,
+    label,
+    phase1Labels: [...sectors],
+    requestScopes: sectors.map((sector) => ({ sector })),
+    thresholds: {
+      ...COMMON_LIMITS,
+      ...thresholds,
+    },
+    ...extra,
+  };
+}
+
+function industryIncludes(row, patterns) {
+  const industry = String(row.industry ?? '').toLowerCase();
+  return patterns.some((pattern) => industry.includes(pattern));
+}
+
+const JP_ELECTRONICS_INDUSTRIES = [
+  'semiconductor',
+  'electronic',
+  'computer',
+  'telecommunications equipment',
+];
+
+const JP_AUTO_INDUSTRIES = [
+  'auto',
+  'motor vehicles',
+];
+
+const JP_MACHINERY_INDUSTRIES = [
+  'industrial machinery',
+  'electrical products',
+  'metal fabrication',
+  'miscellaneous manufacturing',
+];
+
+const JP_MATERIALS_INDUSTRIES = [
+  'chemical',
+  'industrial specialties',
+  'containers/packaging',
+  'pulp & paper',
+  'agricultural commodities',
+  'textiles',
+];
+
 const US_TECH_THRESHOLDS = {
   rsiMin: 60,
   relativeVolumeMin: 1.0,
@@ -174,111 +221,94 @@ const US_PROFILES = [
   usSectorProfile('miscellaneous', 'Miscellaneous', US_BROAD_THRESHOLDS),
 ];
 
+const JP_SEMICONDUCTOR_ELECTRONICS_THRESHOLDS = {
+  rsiMin: 55,
+  relativeVolumeMin: 0.8,
+  grossMarginMinPct: 25,
+  fcfMarginMinPct: 5,
+  roeMinPct: 12,
+  perf3mMinPct: 8,
+  revenueGrowthMinPct: 5,
+  pFcfMax: 140,
+};
+
+const JP_INDUSTRIAL_THRESHOLDS = {
+  rsiMin: 55,
+  relativeVolumeMin: 0.8,
+  grossMarginMinPct: 20,
+  fcfMarginMinPct: 4,
+  roeMinPct: 10,
+  perf3mMinPct: 5,
+  revenueGrowthMinPct: 3,
+  pFcfMax: 80,
+};
+
+const JP_MATERIALS_THRESHOLDS = {
+  rsiMin: 55,
+  relativeVolumeMin: 0.8,
+  grossMarginMinPct: 15,
+  fcfMarginMinPct: 4,
+  roeMinPct: 10,
+  perf3mMinPct: 5,
+  revenueGrowthMinPct: 3,
+  pFcfMax: 40,
+};
+
+const JP_CYCLICAL_THRESHOLDS = {
+  rsiMin: 55,
+  relativeVolumeMin: 0.8,
+  grossMarginMinPct: 15,
+  fcfMarginMinPct: 3,
+  roeMinPct: 10,
+  perf3mMinPct: 8,
+  revenueGrowthMinPct: 3,
+  pFcfMax: 60,
+};
+
+const JP_TECH_COMMUNICATIONS_THRESHOLDS = {
+  rsiMin: 55,
+  relativeVolumeMin: 0.8,
+  grossMarginMinPct: 35,
+  fcfMarginMinPct: 5,
+  roeMinPct: 12,
+  perf3mMinPct: 8,
+  revenueGrowthMinPct: 3,
+  pFcfMax: 50,
+};
+
+const JP_DEFENSIVE_THRESHOLDS = {
+  rsiMin: 50,
+  relativeVolumeMin: 0.8,
+  grossMarginMinPct: 25,
+  fcfMarginMinPct: 5,
+  roeMinPct: 10,
+  perf3mMinPct: 5,
+  revenueGrowthMinPct: 2,
+  pFcfMax: 30,
+};
+
 const JP_PROFILES = [
-  {
-    id: 'jp-manufacturing',
-    label: 'Japan Manufacturing',
-    phase1Labels: ['Producer Manufacturing', 'Electronic Technology'],
-    requestScopes: [
-      { sector: 'Producer Manufacturing' },
-      { sector: 'Electronic Technology' },
-    ],
-    thresholds: {
-      ...COMMON_LIMITS,
-      rsiMin: 55,
-      relativeVolumeMin: 0.8,
-      grossMarginMinPct: 25,
-      fcfMarginMinPct: 5,
-      roeMinPct: 12,
-      perf3mMinPct: 8,
-      revenueGrowthMinPct: 5,
-      pFcfMax: 140,
-    },
-  },
-  {
-    id: 'jp-materials-trading',
-    label: 'Japan Materials & Trading',
-    phase1Labels: ['Process Industries', 'Distribution Services', 'Non-Energy Minerals'],
-    requestScopes: [
-      { sector: 'Process Industries' },
-      { sector: 'Distribution Services' },
-      { sector: 'Non-Energy Minerals' },
-    ],
-    thresholds: {
-      ...COMMON_LIMITS,
-      rsiMin: 55,
-      relativeVolumeMin: 0.8,
-      grossMarginMinPct: 15,
-      fcfMarginMinPct: 4,
-      roeMinPct: 10,
-      perf3mMinPct: 5,
-      revenueGrowthMinPct: 3,
-      pFcfMax: 40,
-    },
-  },
-  {
-    id: 'jp-consumer-cyclicals',
-    label: 'Japan Consumer Cyclicals',
-    phase1Labels: ['Consumer Durables', 'Consumer Services', 'Retail Trade', 'Transportation'],
-    requestScopes: [
-      { sector: 'Consumer Durables' },
-      { sector: 'Consumer Services' },
-      { sector: 'Retail Trade' },
-      { sector: 'Transportation' },
-    ],
-    thresholds: {
-      ...COMMON_LIMITS,
-      rsiMin: 55,
-      relativeVolumeMin: 0.8,
-      grossMarginMinPct: 15,
-      fcfMarginMinPct: 3,
-      roeMinPct: 10,
-      perf3mMinPct: 8,
-      revenueGrowthMinPct: 3,
-      pFcfMax: 60,
-    },
-  },
-  {
-    id: 'jp-communications',
-    label: 'Japan Communications',
-    phase1Labels: ['Communications', 'Technology Services'],
-    requestScopes: [
-      { sector: 'Communications' },
-      { sector: 'Technology Services' },
-    ],
-    thresholds: {
-      ...COMMON_LIMITS,
-      rsiMin: 55,
-      relativeVolumeMin: 0.8,
-      grossMarginMinPct: 35,
-      fcfMarginMinPct: 5,
-      roeMinPct: 12,
-      perf3mMinPct: 8,
-      revenueGrowthMinPct: 3,
-      pFcfMax: 50,
-    },
-  },
-  {
-    id: 'jp-defensive',
-    label: 'Japan Defensive',
-    phase1Labels: ['Health Technology', 'Health Services', 'Consumer Non-Durables'],
-    requestScopes: [
-      { sector: 'Health Technology' },
-      { sector: 'Health Services' },
-      { sector: 'Consumer Non-Durables' },
-    ],
-    thresholds: {
-      ...COMMON_LIMITS,
-      rsiMin: 50,
-      relativeVolumeMin: 0.8,
-      grossMarginMinPct: 25,
-      fcfMarginMinPct: 5,
-      roeMinPct: 10,
-      perf3mMinPct: 5,
-      revenueGrowthMinPct: 2,
-      pFcfMax: 30,
-    },
-  },
+  jpSectorProfile('semiconductor-electronics', 'Japan Semiconductor & Electronics', ['Electronic Technology'], JP_SEMICONDUCTOR_ELECTRONICS_THRESHOLDS, {
+    includeRow: (row) => industryIncludes(row, JP_ELECTRONICS_INDUSTRIES),
+  }),
+  jpSectorProfile('machinery-fa', 'Japan Machinery & FA', ['Producer Manufacturing'], JP_INDUSTRIAL_THRESHOLDS, {
+    includeRow: (row) => industryIncludes(row, JP_MACHINERY_INDUSTRIES),
+  }),
+  jpSectorProfile('auto-components', 'Japan Auto & Components', ['Producer Manufacturing', 'Consumer Durables'], JP_CYCLICAL_THRESHOLDS, {
+    includeRow: (row) => industryIncludes(row, JP_AUTO_INDUSTRIES),
+  }),
+  jpSectorProfile('materials-chemicals', 'Japan Materials & Chemicals', ['Process Industries'], JP_MATERIALS_THRESHOLDS, {
+    includeRow: (row) => industryIncludes(row, JP_MATERIALS_INDUSTRIES),
+  }),
+  jpSectorProfile('trading-distribution', 'Japan Trading & Distribution', ['Distribution Services'], JP_MATERIALS_THRESHOLDS),
+  jpSectorProfile('non-energy-minerals', 'Japan Non-Energy Minerals', ['Non-Energy Minerals'], JP_MATERIALS_THRESHOLDS),
+  jpSectorProfile('transportation-logistics', 'Japan Transportation & Logistics', ['Transportation'], JP_CYCLICAL_THRESHOLDS),
+  jpSectorProfile('consumer-cyclicals', 'Japan Consumer Cyclicals', ['Consumer Durables', 'Consumer Services', 'Retail Trade'], JP_CYCLICAL_THRESHOLDS, {
+    excludeRow: (row) => industryIncludes(row, JP_AUTO_INDUSTRIES),
+  }),
+  jpSectorProfile('it-communications', 'Japan IT & Communications', ['Technology Services', 'Communications'], JP_TECH_COMMUNICATIONS_THRESHOLDS),
+  jpSectorProfile('healthcare', 'Japan Healthcare', ['Health Technology', 'Health Services'], JP_DEFENSIVE_THRESHOLDS),
+  jpSectorProfile('consumer-staples', 'Japan Consumer Staples', ['Consumer Non-Durables'], JP_DEFENSIVE_THRESHOLDS),
 ];
 
 export function getProfilesForMarket(market) {
