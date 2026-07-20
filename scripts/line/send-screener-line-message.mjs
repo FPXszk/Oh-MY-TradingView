@@ -121,8 +121,12 @@ export function buildScreenerNotificationText({
     if (topSymbols.length > 0) lines.push(`Top3: ${topSymbols.join(', ')}`);
     if (audit) {
       lines.push(`監査: ${String(audit.status ?? 'unknown').toUpperCase()}`);
-      lines.push(`Top10変動: ${audit.summary?.newTop10Entries ?? 0}件`);
+      lines.push(`重大エラー: ${audit.summary?.errors ?? 0}件 / 警告: ${audit.summary?.warnings ?? 0}件`);
       lines.push(`財務指標警告: ${audit.summary?.warnings ?? 0}件`);
+      lines.push(`年次書類未取得: ${audit.summary?.annualDocumentMissingSymbols ?? audit.documentSummary?.annualDocumentMissingSymbols ?? '-'}件`);
+      lines.push(`TV fallback: ${audit.summary?.tradingViewFallbackRows ?? audit.documentSummary?.tradingViewFallbackRows ?? '-'}件`);
+      lines.push(`補完Top10 入:${audit.enteredTop10BySupplement?.length ?? audit.summary?.newTop10Entries ?? 0} 出:${audit.exitedTop10BySupplement?.length ?? audit.summary?.exitedTop10BySupplement ?? 0}`);
+      lines.push(`前回Top10 入:${audit.enteredTop10FromPreviousRun?.length ?? audit.summary?.enteredTop10FromPreviousRun ?? 0} 出:${audit.exitedTop10FromPreviousRun?.length ?? audit.summary?.exitedTop10FromPreviousRun ?? 0}`);
       const maxGain = (audit.rankChanges ?? [])[0];
       if (maxGain) {
         lines.push(`最大順位変動: ${maxGain.symbol} ${maxGain.rankDelta > 0 ? '+' : ''}${maxGain.rankDelta}位`);
@@ -135,6 +139,8 @@ export function buildScreenerNotificationText({
     if (audit) {
       lines.push(`監査: ${String(audit.status ?? 'unknown').toUpperCase()}`);
       lines.push(`重大エラー: ${audit.summary?.errors ?? 0}件`);
+      lines.push(`警告: ${audit.summary?.warnings ?? 0}件`);
+      lines.push(`年次書類未取得: ${audit.summary?.annualDocumentMissingSymbols ?? audit.documentSummary?.annualDocumentMissingSymbols ?? '-'}件`);
       (audit.criticals ?? []).slice(0, 3).forEach((entry) => {
         lines.push(`対象: ${entry.symbol ?? '-'} ${entry.metricName ?? ''} ${entry.reason ?? entry.status ?? ''}`.trim());
       });

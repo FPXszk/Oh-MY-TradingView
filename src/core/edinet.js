@@ -2,6 +2,7 @@ import { strFromU8, unzipSync } from 'fflate';
 
 const EDINET_BASE_URL = 'https://api.edinet-fsa.go.jp/api/v2';
 const DEFAULT_LOOKBACK_DAYS = 180;
+const DEFAULT_ANNUAL_LOOKBACK_DAYS = 450;
 const DEFAULT_DOCUMENT_LIST_TYPE = 2;
 const DEFAULT_DOCUMENT_DOWNLOAD_TYPE = 5;
 const ELIGIBLE_DOCUMENT_PATTERN = /有価証券報告書|四半期報告書|半期報告書/i;
@@ -208,13 +209,19 @@ function scoreFactRow(joined, period) {
   return score;
 }
 
+function factMatchesSpec(factRow, spec, period) {
+  if (!spec.concepts.some((concept) => factRow.joined.includes(concept))) return false;
+  if (factRow.periodType !== 'duration') return false;
+  if (factRow.metricStatus === 'invalid') return false;
+  if (period && factRow.relativePeriod !== period) return false;
+  return true;
+}
+
 function pickMetricValue(factRows, spec, period) {
   const candidates = [];
 
   factRows.forEach((factRow) => {
-    if (!spec.concepts.some((concept) => factRow.joined.includes(concept))) return;
-    if (factRow.periodType !== 'duration') return;
-    if (factRow.metricStatus === 'invalid') return;
+    if (!factMatchesSpec(factRow, spec, period)) return;
     if (factRow.rankEligible === false && period === 'current') return;
     const score = scoreFactRow(factRow.joined, period);
     if (score <= 0) return;
@@ -309,6 +316,68 @@ function isAnnualCurrentDuration(contextRef, documentType, periodType, relativeP
   return context.includes('currentyear') || ANNUAL_DOCUMENT_PATTERN.test(documentType ?? '');
 }
 
+function durationDays(periodStart, periodEnd) {
+  const start = Date.parse(periodStart ?? '');
+  const end = Date.parse(periodEnd ?? '');
+  if (!Number.isFinite(start) || !Number.isFinite(end) || end < start) return null;
+  return Math.round((end - start) / 86400000) + 1;
+}
+
+function isFullYearDuration(fact) {
+  const days = durationDays(fact.periodStart, fact.periodEnd);
+  return days !== null && days >= 330 && days <= 380;
+}
+
+function parseDocumentPeriod(documentType) {
+  const match = String(documentType ?? '').match(/\((\d{4})[/-](\d{2})[/-](\d{2})[－~-](\d{4})[/-](\d{2})[/-](\d{2})\)/);
+  if (!match) return { periodStart: null, periodEnd: null };
+  return {
+    periodStart: `${match[1]}-${match[2]}-${match[3]}`,
+    periodEnd: `${match[4]}-${match[5]}-${match[6]}`,
+  };
+}
+
+function shiftIsoDateYears(value, years) {
+  const match = String(value ?? '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return null;
+  return `${String(Number(match[1]) + years).padStart(4, '0')}-${match[2]}-${match[3]}`;
+}
+
+function documentPeriodForRelativePeriod(documentType, relativePeriod) {
+  const period = parseDocumentPeriod(documentType);
+  if (relativePeriod === 'prior' && period.periodStart && period.periodEnd) {
+    return {
+      periodStart: shiftIsoDateYears(period.periodStart, -1),
+      periodEnd: shiftIsoDateYears(period.periodEnd, -1),
+    };
+  }
+  return period;
+}
+
+function hasCompletePeriod(fact) {
+  return Boolean(fact.periodStart && fact.periodEnd && isFullYearDuration(fact));
+}
+
+function factSummary(fact, value = null) {
+  if (!fact) return null;
+  return {
+    conceptId: fact.conceptId,
+    label: fact.label,
+    contextRef: fact.contextRef,
+    periodStart: fact.periodStart,
+    periodEnd: fact.periodEnd,
+    periodType: fact.periodType,
+    relativePeriod: fact.relativePeriod,
+    consolidation: fact.consolidation,
+    currency: fact.currency,
+    value,
+    sourceFile: fact.sourceFile,
+    documentId: fact.documentId,
+    documentType: fact.documentType,
+    submittedAt: fact.submittedAt,
+  };
+}
+
 function buildFactRow(cells, columnMap, file, documentMeta = {}) {
   const rawValue = cells[columnMap.value] ?? '';
   const numericValue = parseLooseNumber(rawValue);
@@ -322,6 +391,13 @@ function buildFactRow(cells, columnMap, file, documentMeta = {}) {
   const relativePeriod = normalizeRelativePeriod(columnMap.relativePeriod >= 0 ? cells[columnMap.relativePeriod] : '', contextRef);
   const consolidation = normalizeConsolidation(columnMap.consolidation >= 0 ? cells[columnMap.consolidation] : '', contextRef);
   const currency = normalizeCurrency(unitId, unit);
+  const documentPeriod = documentPeriodForRelativePeriod(documentMeta.documentType, relativePeriod);
+  const periodStart = columnMap.periodStart >= 0
+    ? cells[columnMap.periodStart] || documentPeriod.periodStart
+    : documentPeriod.periodStart;
+  const periodEnd = columnMap.periodEnd >= 0
+    ? cells[columnMap.periodEnd] || documentPeriod.periodEnd
+    : documentPeriod.periodEnd;
   const warnings = [];
 
   if (numericValue === null) warnings.push('value_column_not_numeric');
@@ -343,8 +419,8 @@ function buildFactRow(cells, columnMap, file, documentMeta = {}) {
     label: columnMap.label >= 0 ? cells[columnMap.label] : null,
     contextRef,
     periodType,
-    periodStart: columnMap.periodStart >= 0 ? cells[columnMap.periodStart] || null : null,
-    periodEnd: columnMap.periodEnd >= 0 ? cells[columnMap.periodEnd] || null : null,
+    periodStart: periodStart || null,
+    periodEnd: periodEnd || null,
     instantDate: columnMap.instantDate >= 0 ? cells[columnMap.instantDate] || null : null,
     relativePeriod,
     consolidation,
@@ -360,7 +436,8 @@ function buildFactRow(cells, columnMap, file, documentMeta = {}) {
     submittedAt: documentMeta.submittedAt ?? null,
     warnings,
     metricStatus: status,
-    rankEligible: isAnnualCurrentDuration(contextRef, documentMeta.documentType, periodType, relativePeriod),
+    rankEligible: isAnnualCurrentDuration(contextRef, documentMeta.documentType, periodType, relativePeriod)
+      && Boolean(periodStart && periodEnd),
     joined: normalizeText([
       conceptId,
       columnMap.label >= 0 ? cells[columnMap.label] : '',
@@ -401,28 +478,133 @@ function roundNullable(value, digits = 2) {
   return Number(value.toFixed(digits));
 }
 
+function buildFactGroupKey(fact) {
+  return [
+    fact.documentId ?? '',
+    fact.periodStart ?? '',
+    fact.periodEnd ?? '',
+    fact.periodType ?? '',
+    fact.relativePeriod ?? '',
+    fact.consolidation ?? '',
+    fact.currency ?? '',
+  ].join('\u0000');
+}
+
+function collectFactGroups(factRows, period) {
+  const groups = new Map();
+  factRows.forEach((fact) => {
+    if (fact.periodType !== 'duration' || fact.relativePeriod !== period) return;
+    const key = buildFactGroupKey(fact);
+    if (!groups.has(key)) {
+      groups.set(key, {
+        documentId: fact.documentId ?? null,
+        periodStart: fact.periodStart ?? null,
+        periodEnd: fact.periodEnd ?? null,
+        periodType: fact.periodType ?? null,
+        relativePeriod: fact.relativePeriod ?? null,
+        consolidation: fact.consolidation ?? null,
+        currency: fact.currency ?? null,
+        sourceFiles: new Set(),
+        facts: [],
+      });
+    }
+    const group = groups.get(key);
+    group.facts.push(fact);
+    if (fact.sourceFile) group.sourceFiles.add(fact.sourceFile);
+  });
+  return [...groups.values()];
+}
+
+function selectGroupMetric(group, spec, period) {
+  const candidates = group.facts
+    .filter((fact) => factMatchesSpec(fact, spec, period))
+    .map((fact) => ({
+      score: scoreFactRow(fact.joined, period),
+      value: spec.asAbsolute ? Math.abs(fact.normalizedValue) : fact.normalizedValue,
+      fact,
+    }))
+    .filter((entry) => entry.score > 0)
+    .sort((left, right) => right.score - left.score);
+  return candidates[0] ?? null;
+}
+
+function buildMetricGroup(group, period) {
+  const revenue = selectGroupMetric(group, METRIC_SPECS.revenue, period);
+  const operatingCashFlow = selectGroupMetric(group, METRIC_SPECS.operatingCashFlow, period);
+  const capexPpe = selectGroupMetric(group, METRIC_SPECS.capexPpe, period);
+  const capexIntangibles = selectGroupMetric(group, METRIC_SPECS.capexIntangibles, period);
+  const netIncome = selectGroupMetric(group, METRIC_SPECS.netIncome, period);
+  const warnings = [];
+
+  if (!group.periodStart || !group.periodEnd) warnings.push('period_dates_missing');
+  if (!isFullYearDuration(group)) warnings.push('not_full_year_duration');
+  if (!group.consolidation) warnings.push('consolidation_unknown');
+  if (!group.currency) warnings.push('currency_unknown');
+  if (group.consolidation === 'nonConsolidated') warnings.push('non_consolidated_only_not_ranked');
+  if (!revenue) warnings.push('revenue_missing');
+  if (!operatingCashFlow) warnings.push('operating_cash_flow_missing');
+  if (!capexPpe) warnings.push('capex_ppe_missing');
+  if (capexIntangibles === null) warnings.push('capex_intangibles_not_present');
+
+  const eligible = warnings.every((warning) => (
+    warning === 'capex_intangibles_not_present'
+  )) && revenue.value > 0 && Number.isFinite(operatingCashFlow.value) && Number.isFinite(capexPpe.value);
+
+  return {
+    ...group,
+    revenue,
+    operatingCashFlow,
+    capexPpe,
+    capexIntangibles,
+    netIncome,
+    warnings,
+    rankEligible: eligible,
+  };
+}
+
+function selectMetricGroup(factRows, period) {
+  const groups = collectFactGroups(factRows, period).map((group) => buildMetricGroup(group, period));
+  return groups
+    .sort((left, right) => {
+      if (left.rankEligible !== right.rankEligible) return left.rankEligible ? -1 : 1;
+      if (left.consolidation !== right.consolidation) {
+        if (left.consolidation === 'consolidated') return -1;
+        if (right.consolidation === 'consolidated') return 1;
+      }
+      const leftSubmitted = Date.parse(left.revenue?.fact?.submittedAt ?? '');
+      const rightSubmitted = Date.parse(right.revenue?.fact?.submittedAt ?? '');
+      return (Number.isFinite(rightSubmitted) ? rightSubmitted : 0) - (Number.isFinite(leftSubmitted) ? leftSubmitted : 0);
+    })[0] ?? null;
+}
+
 function deriveSupplementalMetrics({ marketCapUsd, factRows }) {
-  const revenueCurrentFact = pickMetricValue(factRows, METRIC_SPECS.revenue, 'current');
-  const revenuePriorFact = pickMetricValue(factRows, METRIC_SPECS.revenue, 'prior');
-  const operatingCashFlowCurrentFact = pickMetricValue(factRows, METRIC_SPECS.operatingCashFlow, 'current');
-  const operatingCashFlowPriorFact = pickMetricValue(factRows, METRIC_SPECS.operatingCashFlow, 'prior');
-  const capexPpeCurrentFact = pickMetricValue(factRows, METRIC_SPECS.capexPpe, 'current');
-  const capexIntangiblesCurrentFact = pickMetricValue(factRows, METRIC_SPECS.capexIntangibles, 'current');
-  const capexPpePriorFact = pickMetricValue(factRows, METRIC_SPECS.capexPpe, 'prior');
-  const capexIntangiblesPriorFact = pickMetricValue(factRows, METRIC_SPECS.capexIntangibles, 'prior');
-  const netIncomeCurrentFact = pickMetricValue(factRows, METRIC_SPECS.netIncome, 'current');
+  const currentGroup = selectMetricGroup(factRows, 'current');
+  const priorGroup = selectMetricGroup(factRows, 'prior');
+  const revenueCurrentFact = currentGroup?.revenue ?? null;
+  const revenuePriorFact = priorGroup?.revenue ?? null;
+  const operatingCashFlowCurrentFact = currentGroup?.operatingCashFlow ?? null;
+  const operatingCashFlowPriorFact = priorGroup?.operatingCashFlow ?? null;
+  const capexPpeCurrentFact = currentGroup?.capexPpe ?? null;
+  const capexIntangiblesCurrentFact = currentGroup?.capexIntangibles ?? null;
+  const capexPpePriorFact = priorGroup?.capexPpe ?? null;
+  const capexIntangiblesPriorFact = priorGroup?.capexIntangibles ?? null;
+  const netIncomeCurrentFact = currentGroup?.netIncome ?? null;
   const revenueCurrent = revenueCurrentFact?.value ?? null;
   const revenuePrior = revenuePriorFact?.value ?? null;
   const operatingCashFlowCurrent = operatingCashFlowCurrentFact?.value ?? null;
   const operatingCashFlowPrior = operatingCashFlowPriorFact?.value ?? null;
-  const capexCurrent = (capexPpeCurrentFact?.value ?? 0) + (capexIntangiblesCurrentFact?.value ?? 0);
-  const capexPrior = (capexPpePriorFact?.value ?? 0) + (capexIntangiblesPriorFact?.value ?? 0);
+  const capexCurrent = capexPpeCurrentFact
+    ? capexPpeCurrentFact.value + (capexIntangiblesCurrentFact?.value ?? 0)
+    : null;
+  const capexPrior = capexPpePriorFact
+    ? capexPpePriorFact.value + (capexIntangiblesPriorFact?.value ?? 0)
+    : null;
   const netIncomeCurrent = netIncomeCurrentFact?.value ?? null;
 
-  const fcfCurrent = Number.isFinite(operatingCashFlowCurrent)
+  const fcfCurrent = Number.isFinite(operatingCashFlowCurrent) && Number.isFinite(capexCurrent)
     ? operatingCashFlowCurrent - capexCurrent
     : null;
-  const fcfPrior = Number.isFinite(operatingCashFlowPrior)
+  const fcfPrior = Number.isFinite(operatingCashFlowPrior) && Number.isFinite(capexPrior)
     ? operatingCashFlowPrior - capexPrior
     : null;
 
@@ -451,16 +633,25 @@ function deriveSupplementalMetrics({ marketCapUsd, factRows }) {
   if (Number.isFinite(fcfCurrent) && Number.isFinite(operatingCashFlowCurrent) && fcfCurrent > operatingCashFlowCurrent + 1) {
     warnings.push('fcf_exceeds_operating_cash_flow');
   }
-  const annualEligible = [
-    revenueCurrentFact,
-    operatingCashFlowCurrentFact,
-    capexPpeCurrentFact,
-    capexIntangiblesCurrentFact,
-  ].filter(Boolean).every((entry) => entry.fact?.rankEligible !== false);
+  if (!currentGroup) warnings.push('current_period_group_missing');
+  if (currentGroup?.warnings?.length) warnings.push(...currentGroup.warnings);
+  if (priorGroup?.warnings?.length) warnings.push(...priorGroup.warnings.map((warning) => `prior_${warning}`));
+  if (revenueCurrent !== null && revenueCurrent <= 0) warnings.push('revenue_not_positive');
+  const annualEligible = Boolean(currentGroup?.rankEligible);
   const metricStatus = warnings.some((warning) => [
     'fcf_margin_abs_gt_100',
     'pfcf_non_positive',
     'fcf_exceeds_operating_cash_flow',
+    'current_period_group_missing',
+    'period_dates_missing',
+    'not_full_year_duration',
+    'consolidation_unknown',
+    'currency_unknown',
+    'non_consolidated_only_not_ranked',
+    'revenue_missing',
+    'revenue_not_positive',
+    'operating_cash_flow_missing',
+    'capex_ppe_missing',
   ].includes(warning)) || !annualEligible
     ? 'invalid'
     : warnings.length > 0
@@ -494,13 +685,36 @@ function deriveSupplementalMetrics({ marketCapUsd, factRows }) {
       rankEligible: metricStatus !== 'invalid',
       rawValue: finalValue,
       finalValue,
+      formula: {
+        fcfTtm: 'operatingCashFlow - capexPpe - capexIntangiblesKnown',
+        fcfMargin: 'fcfTtm / revenue',
+        fcfGrowthTtm: '(fcfCurrent - fcfPrior) / abs(fcfPrior)',
+        cashFromOperationsTtm: 'operatingCashFlow',
+        cashConversion: 'fcfTtm / netIncome',
+        pFcf: 'marketCapUsd / fcfTtm',
+        revenueGrowthTtm: '(revenueCurrent - revenuePrior) / abs(revenuePrior)',
+      }[metricName],
       documentType: revenueCurrentFact?.fact?.documentType ?? null,
       periodStart: revenueCurrentFact?.fact?.periodStart ?? null,
       periodEnd: revenueCurrentFact?.fact?.periodEnd ?? null,
       consolidation: revenueCurrentFact?.fact?.consolidation ?? null,
       currency: revenueCurrentFact?.fact?.currency ?? null,
       sourceFile: revenueCurrentFact?.fact?.sourceFile ?? null,
-      warnings,
+      metricWarnings: metricName === 'fcfGrowthTtm'
+        ? warnings.filter((warning) => warning === 'fcf_growth_abs_gte_500')
+        : warnings.filter((warning) => warning !== 'fcf_growth_abs_gte_500' && !warning.startsWith('prior_')),
+      rowWarnings: warnings.filter((warning) => warning.startsWith('prior_')),
+      documentWarnings: currentGroup?.warnings ?? [],
+      warnings: metricName === 'fcfGrowthTtm'
+        ? warnings
+        : warnings.filter((warning) => warning !== 'fcf_growth_abs_gte_500'),
+      inputs: {
+        revenue: factSummary(revenueCurrentFact?.fact, revenueCurrent),
+        operatingCashFlow: factSummary(operatingCashFlowCurrentFact?.fact, operatingCashFlowCurrent),
+        capexPpe: factSummary(capexPpeCurrentFact?.fact, capexPpeCurrentFact?.value ?? null),
+        capexIntangibles: factSummary(capexIntangiblesCurrentFact?.fact, capexIntangiblesCurrentFact?.value ?? null),
+        netIncome: factSummary(netIncomeCurrentFact?.fact, netIncomeCurrent),
+      },
     }])),
     extractedFacts: {
       revenueCurrent: roundNullable(revenueCurrent, 0),
@@ -521,6 +735,20 @@ function deriveSupplementalMetrics({ marketCapUsd, factRows }) {
         capexIntangiblesPrior: capexIntangiblesPriorFact?.fact ?? null,
         netIncomeCurrent: netIncomeCurrentFact?.fact ?? null,
       },
+      group: currentGroup
+        ? {
+          documentId: currentGroup.documentId,
+          periodStart: currentGroup.periodStart,
+          periodEnd: currentGroup.periodEnd,
+          periodType: currentGroup.periodType,
+          relativePeriod: currentGroup.relativePeriod,
+          consolidation: currentGroup.consolidation,
+          currency: currentGroup.currency,
+          sourceFiles: [...currentGroup.sourceFiles],
+          rankEligible: currentGroup.rankEligible,
+          warnings: currentGroup.warnings,
+        }
+        : null,
     },
   };
 }
@@ -533,15 +761,54 @@ function parseCsvZip(buffer) {
     .map(([name, bytes]) => ({ name, text: decodeCsvText(bytes) }));
 }
 
-function buildDocumentCandidateScore(doc) {
+function isCsvEligibleDocument(doc) {
+  return doc.csvFlag === '1' || doc.csvFlag === 1;
+}
+
+function isAnnualRankingDocument(doc) {
+  const description = doc.docDescription ?? '';
+  return ANNUAL_DOCUMENT_PATTERN.test(description)
+    && !QUARTERLY_OR_HALF_PATTERN.test(description)
+    && isCsvEligibleDocument(doc);
+}
+
+function summarizeDocument(doc, purpose, selectedReason = null) {
+  if (!doc) return null;
+  return {
+    purpose,
+    documentId: doc.docID ?? null,
+    secCode: doc.secCode ?? null,
+    documentType: doc.docDescription ?? null,
+    submittedAt: doc.submitDateTime ?? null,
+    csvEligible: isCsvEligibleDocument(doc),
+    legalStatus: doc.legalStatus ?? null,
+    selectedReason,
+  };
+}
+
+function buildLatestDocumentCandidateScore(doc) {
   let score = 0;
   if (ELIGIBLE_DOCUMENT_PATTERN.test(doc.docDescription ?? '')) score += 40;
-  if (doc.csvFlag === '1' || doc.csvFlag === 1) score += 30;
+  if (isCsvEligibleDocument(doc)) score += 30;
   if (doc.legalStatus === '1' || doc.legalStatus === 1) score += 10;
   if (doc.legalStatus === '2' || doc.legalStatus === 2) score += 8;
   if (/四半期報告書/i.test(doc.docDescription ?? '')) score += 20;
   if (/半期報告書/i.test(doc.docDescription ?? '')) score += 16;
   if (/有価証券報告書/i.test(doc.docDescription ?? '')) score += 12;
+  const submittedAt = Date.parse(doc.submitDateTime ?? '');
+  if (Number.isFinite(submittedAt)) {
+    score += submittedAt / 1_000_000_000_000;
+  }
+  return score;
+}
+
+function buildAnnualDocumentCandidateScore(doc) {
+  let score = 0;
+  if (!isAnnualRankingDocument(doc)) return -Infinity;
+  score += 100;
+  if (/訂正有価証券報告書/i.test(doc.docDescription ?? '')) score += 10;
+  if (doc.legalStatus === '1' || doc.legalStatus === 1) score += 10;
+  if (doc.legalStatus === '2' || doc.legalStatus === 2) score += 8;
   const submittedAt = Date.parse(doc.submitDateTime ?? '');
   if (Number.isFinite(submittedAt)) {
     score += submittedAt / 1_000_000_000_000;
@@ -596,6 +863,7 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
   const apiKey = options.apiKey ?? process.env.EDINET_API_KEY ?? '';
   const fetchFn = options.fetch ?? globalThis.fetch;
   const lookbackDays = options.lookbackDays ?? DEFAULT_LOOKBACK_DAYS;
+  const annualLookbackDays = options.annualLookbackDays ?? DEFAULT_ANNUAL_LOOKBACK_DAYS;
   const asOfDate = options.asOfDate ? new Date(options.asOfDate) : new Date();
   const symbols = [...new Set((rows ?? []).map((row) => normalizeSymbol(row.symbol)).filter(Boolean))];
 
@@ -608,22 +876,36 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
         requestedSymbols: symbols.length,
         matchedFilings: 0,
         supplementedRows: 0,
+        lookbackDays,
+        annualLookbackDays,
       },
     };
   }
 
   try {
-    const bestDocumentBySymbol = new Map();
+    const latestDocumentBySymbol = new Map();
+    const annualDocumentBySymbol = new Map();
     const secCodeMatchedSymbols = new Set();
     const eligibleDescriptionMatchedSymbols = new Set();
     const csvEligibleMatchedSymbols = new Set();
+    const annualDescriptionMatchedSymbols = new Set();
     let documentCount = 0;
+    let documentListRequests = 0;
     let documentsWithSecCode = 0;
     let sampleCodeFields = null;
+    const startedAt = Date.now();
 
-    for (let offset = 0; offset < lookbackDays && bestDocumentBySymbol.size < symbols.length; offset += 1) {
+    const maxLookbackDays = Math.max(lookbackDays, annualLookbackDays);
+    for (let offset = 0; offset < maxLookbackDays; offset += 1) {
+      if (
+        (offset >= lookbackDays || latestDocumentBySymbol.size >= symbols.length)
+        && (offset >= annualLookbackDays || annualDocumentBySymbol.size >= symbols.length)
+      ) {
+        break;
+      }
       const dateString = toIsoDate(shiftDate(asOfDate, -offset));
       const documents = await fetchDocumentListByDate(dateString, { apiKey, fetchFn });
+      documentListRequests += 1;
       documentCount += documents.length;
       documents.forEach((doc) => {
         if (sampleCodeFields === null) {
@@ -639,13 +921,33 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
         secCodeMatchedSymbols.add(matchingSymbol);
         if (!ELIGIBLE_DOCUMENT_PATTERN.test(doc.docDescription ?? '')) return;
         eligibleDescriptionMatchedSymbols.add(matchingSymbol);
-        if (!(doc.csvFlag === '1' || doc.csvFlag === 1)) return;
-        csvEligibleMatchedSymbols.add(matchingSymbol);
+        if (isCsvEligibleDocument(doc)) csvEligibleMatchedSymbols.add(matchingSymbol);
 
-        const nextScore = buildDocumentCandidateScore(doc);
-        const current = bestDocumentBySymbol.get(matchingSymbol);
-        if (!current || nextScore > current.score) {
-          bestDocumentBySymbol.set(matchingSymbol, { doc, score: nextScore });
+        if (offset < lookbackDays) {
+          const nextLatestScore = buildLatestDocumentCandidateScore(doc);
+          const currentLatest = latestDocumentBySymbol.get(matchingSymbol);
+          if (!currentLatest || nextLatestScore > currentLatest.score) {
+            latestDocumentBySymbol.set(matchingSymbol, {
+              doc,
+              score: nextLatestScore,
+              selectedReason: 'latest_eligible_document_by_score',
+            });
+          }
+        }
+
+        if (offset < annualLookbackDays && isAnnualRankingDocument(doc)) {
+          annualDescriptionMatchedSymbols.add(matchingSymbol);
+          const nextAnnualScore = buildAnnualDocumentCandidateScore(doc);
+          const currentAnnual = annualDocumentBySymbol.get(matchingSymbol);
+          if (!currentAnnual || nextAnnualScore > currentAnnual.score) {
+            annualDocumentBySymbol.set(matchingSymbol, {
+              doc,
+              score: nextAnnualScore,
+              selectedReason: /訂正有価証券報告書/i.test(doc.docDescription ?? '')
+                ? 'amended_annual_ranking_document'
+                : 'annual_ranking_document',
+            });
+          }
         }
       });
     }
@@ -658,7 +960,8 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
     const sampleDownloads = [];
     for (const row of rows) {
       const symbol = normalizeSymbol(row.symbol);
-      const selected = bestDocumentBySymbol.get(symbol);
+      const latestSelected = latestDocumentBySymbol.get(symbol);
+      const selected = annualDocumentBySymbol.get(symbol);
       if (!selected?.doc?.docID) continue;
 
       try {
@@ -681,6 +984,8 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
         results[symbol] = {
           ...metrics,
           source: 'edinet',
+          latestDocument: summarizeDocument(latestSelected?.doc, 'latest', latestSelected?.selectedReason ?? null),
+          annualRankingDocument: summarizeDocument(selected.doc, 'annualRanking', selected.selectedReason),
           docId: selected.doc.docID,
           secCode: selected.doc.secCode ?? null,
           docDescription: selected.doc.docDescription ?? null,
@@ -693,6 +998,8 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
             symbol,
             docId: selected.doc.docID ?? null,
             docDescription: selected.doc.docDescription ?? null,
+            latestDocument: latestSelected?.doc?.docDescription ?? null,
+            annualRankingDocument: selected.doc.docDescription ?? null,
             csvFileCount: csvFiles.length,
             factRowCount: factRows.length,
           });
@@ -704,10 +1011,25 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
         }
         results[symbol] = {
           source: 'edinet',
+          latestDocument: summarizeDocument(latestSelected?.doc, 'latest', latestSelected?.selectedReason ?? null),
+          annualRankingDocument: summarizeDocument(selected.doc, 'annualRanking', selected.selectedReason),
           error: error.message,
         };
       }
     }
+
+    symbols.forEach((symbol) => {
+      if (results[symbol]) return;
+      const latestSelected = latestDocumentBySymbol.get(symbol);
+      results[symbol] = {
+        source: 'edinet',
+        metricStatus: 'invalid',
+        rankEligible: false,
+        warnings: [latestSelected ? 'only_interim_documents_found' : 'annual_document_missing'],
+        latestDocument: summarizeDocument(latestSelected?.doc, 'latest', latestSelected?.selectedReason ?? null),
+        annualRankingDocument: null,
+      };
+    });
 
     const supplementedRows = Object.values(results).filter((entry) => (
       entry.fcfMargin !== null
@@ -726,7 +1048,11 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
         documentCount,
         documentsWithSecCode,
         sampleCodeFields,
-        matchedFilings: bestDocumentBySymbol.size,
+        matchedFilings: annualDocumentBySymbol.size,
+        latestDocumentMatchedSymbols: latestDocumentBySymbol.size,
+        annualDocumentMatchedSymbols: annualDocumentBySymbol.size,
+        annualDocumentMissingSymbols: symbols.length - annualDocumentBySymbol.size,
+        interimOnlySymbols: symbols.filter((symbol) => latestDocumentBySymbol.has(symbol) && !annualDocumentBySymbol.has(symbol)).length,
         downloadedRows,
         rowsWithFactRows,
         errorRows,
@@ -735,9 +1061,13 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
         secCodeMatchedSymbols: secCodeMatchedSymbols.size,
         eligibleDescriptionMatchedSymbols: eligibleDescriptionMatchedSymbols.size,
         csvEligibleMatchedSymbols: csvEligibleMatchedSymbols.size,
+        annualDescriptionMatchedSymbols: annualDescriptionMatchedSymbols.size,
         supplementedRows,
         lookbackDays,
+        annualLookbackDays,
         asOfDate: toIsoDate(asOfDate),
+        documentListRequests,
+        elapsedMs: Date.now() - startedAt,
       },
     };
   } catch (error) {
@@ -754,6 +1084,7 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
         matchedFilings: 0,
         supplementedRows: 0,
         lookbackDays,
+        annualLookbackDays,
         asOfDate: toIsoDate(asOfDate),
         error: error.message,
       },

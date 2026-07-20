@@ -50,21 +50,36 @@ function buildTop10(rows, rankField = null, scoreField = null) {
 
 function buildRankChanges(rows) {
   return rows
-    .filter((row) => Number.isFinite(row.rankBeforeSupplement) && Number.isFinite(row.rankAfterSupplement))
+    .filter((row) => (
+      Number.isFinite(row.unifiedRankBeforeSupplement ?? row.rankBeforeSupplement)
+      && Number.isFinite(row.unifiedRankAfterSupplement ?? row.rankAfterSupplement)
+    ))
     .map((row) => ({
       symbol: row.symbol,
       companyName: row.companyNameJa ?? row.companyName ?? null,
-      rankBeforeSupplement: row.rankBeforeSupplement,
-      rankAfterSupplement: row.rankAfterSupplement,
-      rankDelta: row.rankDelta,
-      scoreBeforeSupplement: row.scoreBeforeSupplement ?? null,
-      scoreAfterSupplement: row.scoreAfterSupplement ?? row.unifiedRankScore ?? row.rankScore ?? null,
-      scoreDelta: row.scoreDelta ?? null,
-      changedMetrics: AUDITED_METRICS.filter((metricName) => {
+      rankBeforeSupplement: row.unifiedRankBeforeSupplement ?? row.rankBeforeSupplement,
+      rankAfterSupplement: row.unifiedRankAfterSupplement ?? row.rankAfterSupplement,
+      unifiedRankBeforeSupplement: row.unifiedRankBeforeSupplement ?? row.rankBeforeSupplement,
+      unifiedRankAfterSupplement: row.unifiedRankAfterSupplement ?? row.rankAfterSupplement,
+      rankDelta: row.unifiedRankDelta ?? row.rankDelta,
+      unifiedRankDelta: row.unifiedRankDelta ?? row.rankDelta,
+      scoreBeforeSupplement: row.unifiedScoreBeforeSupplement ?? row.scoreBeforeSupplement ?? null,
+      scoreAfterSupplement: row.unifiedScoreAfterSupplement ?? row.scoreAfterSupplement ?? row.unifiedRankScore ?? row.rankScore ?? null,
+      unifiedScoreBeforeSupplement: row.unifiedScoreBeforeSupplement ?? row.scoreBeforeSupplement ?? null,
+      unifiedScoreAfterSupplement: row.unifiedScoreAfterSupplement ?? row.scoreAfterSupplement ?? row.unifiedRankScore ?? row.rankScore ?? null,
+      scoreDelta: row.unifiedScoreDelta ?? row.scoreDelta ?? null,
+      unifiedScoreDelta: row.unifiedScoreDelta ?? row.scoreDelta ?? null,
+      changedMetrics: row.changedMetrics ?? AUDITED_METRICS.filter((metricName) => {
         const provenance = row.metricProvenance?.[metricName];
         return provenance?.previousValue !== undefined && provenance.previousValue !== provenance.finalValue;
       }),
-      sources: Object.fromEntries(AUDITED_METRICS.map((metricName) => [
+      metricSourcesBefore: row.metricSourcesBefore ?? {},
+      metricSourcesAfter: row.metricSourcesAfter ?? {},
+      phase4EligibleBefore: row.phase4EligibleBefore ?? row.phase4Eligible ?? false,
+      phase4EligibleAfter: row.phase4EligibleAfter ?? row.phase4Eligible ?? false,
+      phase5EligibleBefore: row.phase5EligibleBefore ?? row.phase5Eligible ?? false,
+      phase5EligibleAfter: row.phase5EligibleAfter ?? row.phase5Eligible ?? false,
+      sources: row.metricSourcesAfter ?? Object.fromEntries(AUDITED_METRICS.map((metricName) => [
         metricName,
         row.metricProvenance?.[metricName]?.source ?? null,
       ])),
@@ -121,6 +136,41 @@ function comparePreviousTop10(previousAudit, currentTop10) {
   });
 }
 
+function diffTop10(beforeTop10, afterTop10) {
+  const beforeBySymbol = new Map(beforeTop10.map((entry) => [entry.symbol, entry]));
+  const afterBySymbol = new Map(afterTop10.map((entry) => [entry.symbol, entry]));
+  return {
+    entered: afterTop10.filter((entry) => !beforeBySymbol.has(entry.symbol)),
+    exited: beforeTop10.filter((entry) => !afterBySymbol.has(entry.symbol)),
+    stayed: afterTop10
+      .filter((entry) => beforeBySymbol.has(entry.symbol))
+      .map((entry) => ({
+        ...entry,
+        previousRank: beforeBySymbol.get(entry.symbol)?.rank ?? null,
+        rankDelta: beforeBySymbol.get(entry.symbol)?.rank
+          ? beforeBySymbol.get(entry.symbol).rank - entry.rank
+          : null,
+      })),
+  };
+}
+
+function buildDocumentSummary(result, rows) {
+  const edinetMeta = result?.sourceDetails?.edinet ?? {};
+  const evidenceRows = rows.filter((row) => row.edinetSupplement || Object.values(row.metricProvenance ?? {}).some((entry) => entry?.source === 'edinet'));
+  const fallbackRows = rows.filter((row) => Object.values(row.metricProvenance ?? {}).some((entry) => entry?.source === 'tradingview'));
+  return {
+    requestedSymbols: edinetMeta.requestedSymbols ?? rows.length,
+    annualDocumentMatchedSymbols: edinetMeta.annualDocumentMatchedSymbols ?? null,
+    annualDocumentMissingSymbols: edinetMeta.annualDocumentMissingSymbols ?? null,
+    interimOnlySymbols: edinetMeta.interimOnlySymbols ?? null,
+    rankEligibleFalseMetrics: rows.reduce((sum, row) => (
+      sum + AUDITED_METRICS.filter((metricName) => row.metricProvenance?.[metricName]?.rankEligible === false).length
+    ), 0),
+    rankingEligibleRows: evidenceRows.filter((row) => row.edinetSupplement?.rankEligible !== false).length,
+    tradingViewFallbackRows: fallbackRows.length,
+  };
+}
+
 export function buildScreenerAudit(result, { previousAudit = null, generatedAt = new Date().toISOString() } = {}) {
   const rows = getRankingRows(result);
   const seen = new Set();
@@ -150,14 +200,54 @@ export function buildScreenerAudit(result, { previousAudit = null, generatedAt =
       const provenance = row.metricProvenance?.[metricName];
       return provenance?.source === 'edinet'
         && provenance.rankEligible !== false
-        && (!provenance.documentType || !provenance.consolidation || !provenance.currency);
+        && (!provenance.documentType
+          || !provenance.periodStart
+          || !provenance.periodEnd
+          || !provenance.consolidation
+          || !provenance.currency
+          || !provenance.inputs);
     })
     .map((metricName) => ({ symbol: row.symbol, metricName, reason: 'edinet_evidence_incomplete' })));
+  const edinetConsistencyErrors = rows.flatMap((row) => AUDITED_METRICS
+    .filter((metricName) => {
+      const provenance = row.metricProvenance?.[metricName];
+      if (provenance?.source !== 'edinet' || provenance.rankEligible === false) return false;
+      const warningReasons = [
+        ...(provenance.warnings ?? []),
+        ...(provenance.metricWarnings ?? []),
+        ...(provenance.rowWarnings ?? []),
+        ...(provenance.documentWarnings ?? []),
+      ];
+      return warningReasons.some((warning) => [
+        'period_dates_missing',
+        'not_full_year_duration',
+        'consolidation_unknown',
+        'currency_unknown',
+        'non_consolidated_only_not_ranked',
+        'revenue_missing',
+        'operating_cash_flow_missing',
+        'capex_ppe_missing',
+      ].includes(warning));
+    })
+    .map((metricName) => ({ symbol: row.symbol, metricName, reason: 'edinet_consistency_failure' })));
   const rankChanges = buildRankChanges(rows);
-  const top10BeforeSupplement = buildTop10(rows, 'rankBeforeSupplement', 'scoreBeforeSupplement');
-  const top10AfterSupplement = buildTop10(rows, 'rankAfterSupplement', 'scoreAfterSupplement');
+  let top10BeforeSupplement = buildTop10(rows, 'unifiedRankBeforeSupplement', 'unifiedScoreBeforeSupplement');
+  let top10AfterSupplement = buildTop10(rows, 'unifiedRankAfterSupplement', 'unifiedScoreAfterSupplement');
+  if (top10BeforeSupplement.length === 0) {
+    top10BeforeSupplement = buildTop10(rows, 'rankBeforeSupplement', 'scoreBeforeSupplement');
+  }
+  if (top10AfterSupplement.length === 0) {
+    top10AfterSupplement = buildTop10(rows, 'rankAfterSupplement', 'scoreAfterSupplement');
+  }
   const top10CurrentRun = buildTop10(rows);
   const top10PreviousRun = comparePreviousTop10(previousAudit, top10CurrentRun);
+  const supplementTop10Diff = diffTop10(top10BeforeSupplement, top10AfterSupplement);
+  const previousRunTop10 = Array.isArray(previousAudit?.currentRunTop10)
+    ? previousAudit.currentRunTop10
+    : Array.isArray(previousAudit?.top10CurrentRun)
+      ? previousAudit.top10CurrentRun
+      : [];
+  const previousTop10Diff = diffTop10(previousRunTop10, top10CurrentRun);
   const top10AfterSymbols = new Set(top10AfterSupplement.map((entry) => entry.symbol));
   const top10BeforeSymbols = new Set(top10BeforeSupplement.map((entry) => entry.symbol));
   const criticals = [
@@ -165,7 +255,9 @@ export function buildScreenerAudit(result, { previousAudit = null, generatedAt =
     ...criticalMetricAnomalies,
     ...top3RankIneligible,
     ...edinetEvidenceErrors,
+    ...edinetConsistencyErrors,
   ];
+  const documentSummary = buildDocumentSummary(result, rows);
 
   return {
     generatedAt,
@@ -177,18 +269,47 @@ export function buildScreenerAudit(result, { previousAudit = null, generatedAt =
       errors: criticals.length,
       rankChangesOverThreshold: rankChanges.filter((entry) => Math.abs(entry.rankDelta ?? 0) >= 5).length,
       newTop10Entries: [...top10AfterSymbols].filter((symbol) => !top10BeforeSymbols.has(symbol)).length,
+      exitedTop10BySupplement: supplementTop10Diff.exited.length,
+      enteredTop10FromPreviousRun: previousTop10Diff.entered.length,
+      exitedTop10FromPreviousRun: previousTop10Diff.exited.length,
+      annualDocumentMissingSymbols: documentSummary.annualDocumentMissingSymbols,
+      tradingViewFallbackRows: documentSummary.tradingViewFallbackRows,
     },
+    documentSummary,
     metricAnomalies,
     criticals,
     rankChanges,
     top10BeforeSupplement,
     top10AfterSupplement,
+    enteredTop10BySupplement: supplementTop10Diff.entered,
+    exitedTop10BySupplement: supplementTop10Diff.exited,
+    stayedTop10: supplementTop10Diff.stayed,
+    largeRankMovers: rankChanges.filter((entry) => Math.abs(entry.rankDelta ?? 0) >= 5),
+    previousRunTop10,
+    currentRunTop10: top10CurrentRun,
+    enteredTop10FromPreviousRun: previousTop10Diff.entered,
+    exitedTop10FromPreviousRun: previousTop10Diff.exited,
+    stayedTop10FromPreviousRun: previousTop10Diff.stayed,
+    previousRunRankMovers: top10PreviousRun.filter((entry) => Math.abs(entry.rankDeltaFromPrevious ?? 0) > 0),
     top10PreviousRun,
     top10CurrentRun,
     evidenceRows: rows.slice(0, 20).map((row, index) => ({
       rank: row.unifiedRank ?? index + 1,
       symbol: row.symbol,
       companyName: displayName(row),
+      unifiedRankBeforeSupplement: row.unifiedRankBeforeSupplement ?? row.rankBeforeSupplement ?? null,
+      unifiedRankAfterSupplement: row.unifiedRankAfterSupplement ?? row.rankAfterSupplement ?? null,
+      unifiedRankDelta: row.unifiedRankDelta ?? row.rankDelta ?? null,
+      unifiedScoreBeforeSupplement: row.unifiedScoreBeforeSupplement ?? row.scoreBeforeSupplement ?? null,
+      unifiedScoreAfterSupplement: row.unifiedScoreAfterSupplement ?? row.scoreAfterSupplement ?? row.unifiedRankScore ?? row.rankScore ?? null,
+      unifiedScoreDelta: row.unifiedScoreDelta ?? row.scoreDelta ?? null,
+      changedMetrics: row.changedMetrics ?? [],
+      metricSourcesBefore: row.metricSourcesBefore ?? {},
+      metricSourcesAfter: row.metricSourcesAfter ?? {},
+      phase4EligibleBefore: row.phase4EligibleBefore ?? row.phase4Eligible ?? false,
+      phase4EligibleAfter: row.phase4EligibleAfter ?? row.phase4Eligible ?? false,
+      phase5EligibleBefore: row.phase5EligibleBefore ?? row.phase5Eligible ?? false,
+      phase5EligibleAfter: row.phase5EligibleAfter ?? row.phase5Eligible ?? false,
       metricProvenance: row.metricProvenance ?? {},
       edinetSupplement: row.edinetSupplement ?? null,
     })),

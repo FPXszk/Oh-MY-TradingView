@@ -14,6 +14,7 @@ jobs:
       SCREENER_METADATA_PATH: docs/reports/screener/daily-ranking-jp-run.json
       SCREENER_AUDIT_PATH: docs/reports/screener/daily-ranking-jp-audit.json
       SCREENER_AUDIT_STRICT: 'true'
+      SCREENER_EDINET_ANNUAL_LOOKBACK_DAYS: '450'
       SCREENER_RESULT_LIMIT: '90'
       SCREENER_MARKET: japan
       SCREENER_EXCHANGES: TSE

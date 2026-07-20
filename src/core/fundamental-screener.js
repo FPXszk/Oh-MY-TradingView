@@ -1662,6 +1662,7 @@ async function buildPhase5SectorTopStocks({
       ? await _deps.getJapanSupplementalFundamentals(supplementTargets)
       : await getEdinetSupplementalFundamentalsBatch(supplementTargets, {
         apiKey: _deps?.edinetApiKey ?? process.env.EDINET_API_KEY ?? '',
+        annualLookbackDays: _deps?.edinetAnnualLookbackDays,
         fetch: fetchFn,
       });
     const supplementalMap = supplementPayload?.rows ?? {};
@@ -1774,6 +1775,82 @@ export function applyUnifiedRanks(rows, market = DEFAULT_MARKET) {
       unifiedRankScore: row.rankScore,
       unifiedRankBreakdown: row.rankBreakdown,
     }));
+}
+
+function buildBeforeSupplementRow(row) {
+  const metricProvenance = row.metricProvenance ?? {};
+  const before = { ...row };
+  PROVENANCE_METRICS.forEach((metricName) => {
+    const provenance = metricProvenance[metricName];
+    if (!provenance || provenance.previousValue === undefined) return;
+    before[metricName] = provenance.previousValue;
+  });
+  if (before.revenueGrowthTtm !== null && before.revenueGrowthTtm !== undefined
+    && before.fcfMargin !== null && before.fcfMargin !== undefined) {
+    before.ruleOf40Raw = Number((before.revenueGrowthTtm + before.fcfMargin).toFixed(2));
+    before.ruleOf40 = before.ruleOf40Raw;
+  }
+  return before;
+}
+
+function metricSourcesForRow(row) {
+  return Object.fromEntries(PROVENANCE_METRICS.map((metricName) => [
+    metricName,
+    row.metricProvenance?.[metricName]?.source ?? null,
+  ]));
+}
+
+function metricSourcesBeforeForRow(row) {
+  return Object.fromEntries(PROVENANCE_METRICS.map((metricName) => [
+    metricName,
+    row.metricProvenance?.[metricName]?.previousSource
+      ?? row.metricProvenance?.[metricName]?.source
+      ?? null,
+  ]));
+}
+
+export function attachUnifiedSupplementDiff(unifiedCandidateRows, market = DEFAULT_MARKET) {
+  if (!Array.isArray(unifiedCandidateRows) || unifiedCandidateRows.length === 0) return [];
+  const beforeRanked = applyUnifiedRanks(unifiedCandidateRows.map(buildBeforeSupplementRow), market);
+  const afterRanked = applyUnifiedRanks(unifiedCandidateRows, market);
+  const beforeByKey = new Map(beforeRanked.map((row) => [buildRowLookupKey(row), row]));
+
+  return afterRanked.map((row) => {
+    const before = beforeByKey.get(buildRowLookupKey(row));
+    const changedMetrics = PROVENANCE_METRICS.filter((metricName) => {
+      const provenance = row.metricProvenance?.[metricName];
+      return provenance?.previousValue !== undefined && provenance.previousValue !== provenance.finalValue;
+    });
+    const unifiedRankDelta = before?.unifiedRank && row.unifiedRank
+      ? before.unifiedRank - row.unifiedRank
+      : null;
+    const unifiedScoreDelta = Number.isFinite(before?.unifiedRankScore) && Number.isFinite(row.unifiedRankScore)
+      ? Number((row.unifiedRankScore - before.unifiedRankScore).toFixed(4))
+      : null;
+
+    return {
+      ...row,
+      unifiedRankBeforeSupplement: before?.unifiedRank ?? null,
+      unifiedRankAfterSupplement: row.unifiedRank ?? null,
+      unifiedScoreBeforeSupplement: before?.unifiedRankScore ?? null,
+      unifiedScoreAfterSupplement: row.unifiedRankScore ?? null,
+      unifiedRankDelta,
+      unifiedScoreDelta,
+      changedMetrics,
+      metricSourcesBefore: metricSourcesBeforeForRow(row),
+      metricSourcesAfter: metricSourcesForRow(row),
+      phase4EligibleBefore: before?.phase4Eligible ?? row.phase4Eligible ?? false,
+      phase4EligibleAfter: row.phase4Eligible ?? false,
+      phase5EligibleBefore: before?.phase5Eligible ?? row.phase5Eligible ?? false,
+      phase5EligibleAfter: row.phase5Eligible ?? false,
+      rankBeforeSupplement: before?.unifiedRank ?? row.rankBeforeSupplement ?? null,
+      rankAfterSupplement: row.unifiedRank ?? row.rankAfterSupplement ?? null,
+      scoreBeforeSupplement: before?.unifiedRankScore ?? row.scoreBeforeSupplement ?? null,
+      scoreAfterSupplement: row.unifiedRankScore ?? row.scoreAfterSupplement ?? null,
+      rankDelta: unifiedRankDelta ?? row.rankDelta ?? null,
+      scoreDelta: unifiedScoreDelta ?? row.scoreDelta ?? null,
+    };
+  });
 }
 
 export function buildUnifiedPhase4Ranking(unifiedRankedRows, limit = FINAL_STOCK_LIMIT) {
@@ -2198,6 +2275,8 @@ function applyEdinetSupplementalMetrics(row, metrics = {}) {
         docId: metrics.docId ?? null,
         submitDateTime: metrics.submitDateTime ?? null,
         docDescription: metrics.docDescription ?? null,
+        latestDocument: metrics.latestDocument ?? null,
+        annualRankingDocument: metrics.annualRankingDocument ?? null,
         metricStatus: metrics.metricStatus ?? null,
         rankEligible: metrics.rankEligible ?? null,
         warnings: metrics.warnings ?? [],
@@ -2415,6 +2494,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
       ? await getJapanSupplementalFundamentals(supplementTargets)
       : await getEdinetSupplementalFundamentalsBatch(supplementTargets, {
         apiKey: edinetApiKey,
+        annualLookbackDays: _deps?.edinetAnnualLookbackDays,
         fetch: fetchFn,
       });
 
@@ -2477,7 +2557,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     })
     : [];
   const unifiedRankedRows = supportsUnifiedScoring(market)
-    ? applyUnifiedRanks(unifiedCandidateRows, market).map((row) => stripInternalFields(row))
+    ? attachUnifiedSupplementDiff(unifiedCandidateRows, market).map((row) => stripInternalFields(row))
     : [];
   const unifiedPhase4Ranking = supportsUnifiedScoring(market)
     ? buildUnifiedPhase4Ranking(unifiedRankedRows, FINAL_STOCK_LIMIT)

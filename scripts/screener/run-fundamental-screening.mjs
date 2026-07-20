@@ -422,7 +422,7 @@ function buildSourceCoverageLines(result) {
   return [
     ...lines,
     `- EDINET: ${edinet.reason} / 対象 ${edinet.requestedSymbols}銘柄 / 書類一致 ${edinet.matchedFilings}件 / 指標補完 ${edinet.supplementedRows}銘柄`,
-    `- EDINET lookback: ${edinet.lookbackDays ?? 'N/A'}日 / as-of ${edinet.asOfDate ?? 'N/A'}`,
+    `- EDINET lookback: latest ${edinet.lookbackDays ?? 'N/A'}日 / annual ${edinet.annualLookbackDays ?? 'N/A'}日 / requests ${edinet.documentListRequests ?? 'N/A'} / as-of ${edinet.asOfDate ?? 'N/A'}`,
   ];
 }
 
@@ -437,23 +437,51 @@ function buildAuditLines(audit) {
     '## 財務データ監査',
     '',
     `- 監査結果: ${label}`,
-    `- 検証済みEDINET補完: ${audit.evidenceRows?.filter((row) => Object.values(row.metricProvenance ?? {}).some((entry) => entry?.source === 'edinet')).length ?? 0}銘柄`,
+    `- 対象銘柄数: ${audit.documentSummary?.requestedSymbols ?? '-'}`,
+    `- 年次書類取得: ${audit.documentSummary?.annualDocumentMatchedSymbols ?? '-'}銘柄 / 未取得 ${audit.summary?.annualDocumentMissingSymbols ?? audit.documentSummary?.annualDocumentMissingSymbols ?? '-'}銘柄`,
+    `- 半期・四半期のみ取得: ${audit.documentSummary?.interimOnlySymbols ?? '-'}銘柄`,
+    `- ランキング使用可能EDINET補完: ${audit.documentSummary?.rankingEligibleRows ?? audit.evidenceRows?.filter((row) => Object.values(row.metricProvenance ?? {}).some((entry) => entry?.source === 'edinet')).length ?? 0}銘柄`,
+    `- TradingViewフォールバック: ${audit.summary?.tradingViewFallbackRows ?? audit.documentSummary?.tradingViewFallbackRows ?? '-'}銘柄`,
+    `- rankEligible=false: ${audit.documentSummary?.rankEligibleFalseMetrics ?? '-'}件`,
     `- 警告: ${audit.summary?.warnings ?? 0}件`,
     `- エラー: ${audit.summary?.errors ?? 0}件`,
     `- 補完により5位以上変動: ${audit.summary?.rankChangesOverThreshold ?? 0}銘柄`,
-    `- 補完によるTop10新規流入: ${audit.summary?.newTop10Entries ?? 0}銘柄`,
+    `- 補完によるTop10新規流入: ${audit.enteredTop10BySupplement?.length ?? audit.summary?.newTop10Entries ?? 0}銘柄 / 脱落 ${audit.exitedTop10BySupplement?.length ?? audit.summary?.exitedTop10BySupplement ?? 0}銘柄`,
+    `- 前回実行からTop10新規流入: ${audit.enteredTop10FromPreviousRun?.length ?? audit.summary?.enteredTop10FromPreviousRun ?? 0}銘柄 / 脱落 ${audit.exitedTop10FromPreviousRun?.length ?? audit.summary?.exitedTop10FromPreviousRun ?? 0}銘柄`,
     '',
-    '### 補完前後の順位差分',
+    '### 補完前後の最終unified Top10',
     '',
-    '| 銘柄 | 補完前 | 補完後 | 変動 | スコア差 | 主な変更指標 | 出所 |',
-    '|---|---:|---:|---:|---:|---|---|',
+    '| 補完前 | 補完後 | 差 | 銘柄 | 補完前スコア | 補完後スコア | 変更指標 |',
+    '|---:|---:|---:|---|---:|---:|---|',
   ];
+  const top10Rows = (audit.rankChanges ?? [])
+    .filter((entry) => (entry.rankBeforeSupplement ?? 99) <= 10 || (entry.rankAfterSupplement ?? 99) <= 10)
+    .slice(0, 10);
+  if (top10Rows.length === 0) {
+    lines.push('| - | - | - | - | - | - | - |');
+  } else {
+    top10Rows.forEach((entry) => {
+      lines.push(`| ${entry.rankBeforeSupplement ?? '-'} | ${entry.rankAfterSupplement ?? '-'} | ${entry.rankDelta ?? '-'} | ${entry.symbol} | ${fmt(entry.scoreBeforeSupplement, 2)} | ${fmt(entry.scoreAfterSupplement, 2)} | ${entry.changedMetrics?.join(', ') || '-'} |`);
+    });
+  }
+  lines.push('');
+  lines.push('### Top10進入・脱落');
+  lines.push('');
+  lines.push(`- 補完でTop10入り: ${(audit.enteredTop10BySupplement ?? []).map((entry) => entry.symbol).join(', ') || '-'}`);
+  lines.push(`- 補完でTop10脱落: ${(audit.exitedTop10BySupplement ?? []).map((entry) => entry.symbol).join(', ') || '-'}`);
+  lines.push(`- 前回実行からTop10入り: ${(audit.enteredTop10FromPreviousRun ?? []).map((entry) => entry.symbol).join(', ') || '-'}`);
+  lines.push(`- 前回実行からTop10脱落: ${(audit.exitedTop10FromPreviousRun ?? []).map((entry) => entry.symbol).join(', ') || '-'}`);
+  lines.push('');
+  lines.push('### 補完前後の順位差分');
+  lines.push('');
+  lines.push('| 銘柄 | 補完前 | 補完後 | 変動 | スコア差 | 主な変更指標 | 出所 |');
+  lines.push('|---|---:|---:|---:|---:|---|---|');
   const rankChanges = (audit.rankChanges ?? []).slice(0, 10);
   if (rankChanges.length === 0) {
     lines.push('| - | - | - | - | - | - | - |');
   } else {
     rankChanges.forEach((entry) => {
-      const sources = [...new Set(Object.values(entry.sources ?? {}).filter(Boolean))].join(', ') || '-';
+      const sources = [...new Set(Object.values(entry.metricSourcesAfter ?? entry.sources ?? {}).filter(Boolean))].join(', ') || '-';
       lines.push(`| ${entry.symbol} | ${entry.rankBeforeSupplement ?? '-'} | ${entry.rankAfterSupplement ?? '-'} | ${entry.rankDelta ?? '-'} | ${fmt(entry.scoreDelta, 2)} | ${entry.changedMetrics?.join(', ') || '-'} | ${sources} |`);
     });
   }
@@ -473,18 +501,24 @@ function buildAuditLines(audit) {
   lines.push('');
   lines.push('### EDINET抽出元（上位）');
   lines.push('');
-  lines.push('| 銘柄 | 売上 | 営業CF | CAPEX | FCF | 純利益 | 対象期間 | 連結/個別 | 単位 | 書類種別 | 提出日 |');
-  lines.push('|---|---:|---:|---:|---:|---:|---|---|---|---|---|');
+  lines.push('| 銘柄 | 売上 | 営業CF | CAPEX | FCF | FCFマージン | P/FCF | 対象期間 | 連結/個別 | 単位 | 書類種別 | 提出日 | rankEligible | warning |');
+  lines.push('|---|---:|---:|---:|---:|---:|---:|---|---|---|---|---|:---:|---|');
   const evidenceRows = (audit.evidenceRows ?? [])
     .filter((entry) => entry.edinetSupplement?.extractedFacts)
     .slice(0, 10);
   if (evidenceRows.length === 0) {
-    lines.push('| - | - | - | - | - | - | - | - | - | - | - |');
+    lines.push('| - | - | - | - | - | - | - | - | - | - | - | - | - | - |');
   } else {
     evidenceRows.forEach((entry) => {
       const facts = entry.edinetSupplement.extractedFacts;
       const provenance = facts.provenance?.revenueCurrent ?? {};
-      lines.push(`| ${entry.symbol} | ${fmt(facts.revenueCurrent, 0)} | ${fmt(facts.operatingCashFlowCurrent, 0)} | ${fmt(facts.capexCurrent, 0)} | ${fmt(entry.metricProvenance?.fcfTtm?.finalValue, 0)} | ${fmt(facts.netIncomeCurrent, 0)} | ${provenance.periodStart ?? '-'}-${provenance.periodEnd ?? '-'} | ${provenance.consolidation ?? '-'} | ${provenance.currency ?? '-'} | ${entry.edinetSupplement.docDescription ?? '-'} | ${entry.edinetSupplement.submitDateTime ?? '-'} |`);
+      const fcfMargin = entry.metricProvenance?.fcfMargin;
+      const pFcf = entry.metricProvenance?.pFcf;
+      const warnings = [
+        ...(entry.edinetSupplement.warnings ?? []),
+        ...(fcfMargin?.warnings ?? []),
+      ];
+      lines.push(`| ${entry.symbol} | ${fmt(facts.revenueCurrent, 0)} | ${fmt(facts.operatingCashFlowCurrent, 0)} | ${fmt(facts.capexCurrent, 0)} | ${fmt(entry.metricProvenance?.fcfTtm?.finalValue, 0)} | ${fmt(fcfMargin?.finalValue, 2)} | ${fmt(pFcf?.finalValue, 1)} | ${provenance.periodStart ?? '-'}-${provenance.periodEnd ?? '-'} | ${provenance.consolidation ?? '-'} | ${provenance.currency ?? '-'} | ${entry.edinetSupplement.docDescription ?? '-'} | ${entry.edinetSupplement.submitDateTime ?? '-'} | ${entry.edinetSupplement.rankEligible === false ? '不可' : '可'} | ${warnings.join(', ') || '-'} |`);
     });
   }
   lines.push('');
@@ -715,6 +749,9 @@ function getRuntimeConfig() {
         : undefined,
       scopeLabel: process.env.SCREENER_SCOPE_LABEL || undefined,
       edinetApiKey: process.env.EDINET_API_KEY || undefined,
+      edinetAnnualLookbackDays: process.env.SCREENER_EDINET_ANNUAL_LOOKBACK_DAYS
+        ? Number(process.env.SCREENER_EDINET_ANNUAL_LOOKBACK_DAYS)
+        : undefined,
     },
   };
 }
