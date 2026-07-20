@@ -601,6 +601,60 @@ describe('runFundamentalScreener', () => {
     assert.equal(result.rows['4063'].cashConversion, 1.44);
   });
 
+  it('uses the explicit EDINET value column instead of the last numeric cell in a row', async () => {
+    const tsv = [
+      '"要素ID"\t"項目名"\t"コンテキストID"\t"相対年度"\t"連結・個別"\t"期間・時点"\t"ユニットID"\t"単位"\t"値"\t"不要な数値"',
+      '"jppfs_cor:NetSales"\t"NetSales"\t"CurrentYearDuration"\t"当期"\t"連結"\t"期間"\t"JPY"\t"百万円"\t"349979"\t"999999"',
+      '"jppfs_cor:NetSales"\t"NetSales"\t"Prior1YearDuration"\t"前期"\t"連結"\t"期間"\t"JPY"\t"百万円"\t"322000"\t"999999"',
+      '"jppfs_cor:NetCashProvidedByUsedInOperatingActivities"\t"OperatingCF"\t"CurrentYearDuration"\t"当期"\t"連結"\t"期間"\t"JPY"\t"百万円"\t"27554"\t"999999"',
+      '"jppfs_cor:NetCashProvidedByUsedInOperatingActivities"\t"OperatingCF"\t"Prior1YearDuration"\t"前期"\t"連結"\t"期間"\t"JPY"\t"百万円"\t"26000"\t"999999"',
+      '"jppfs_cor:PurchaseOfPropertyPlantAndEquipment"\t"CapexPPE"\t"CurrentYearDuration"\t"当期"\t"連結"\t"期間"\t"JPY"\t"百万円"\t"11162"\t"999999"',
+      '"jppfs_cor:PurchaseOfPropertyPlantAndEquipment"\t"CapexPPE"\t"Prior1YearDuration"\t"前期"\t"連結"\t"期間"\t"JPY"\t"百万円"\t"10000"\t"999999"',
+      '"jppfs_cor:ProfitLoss"\t"ProfitLoss"\t"CurrentYearDuration"\t"当期"\t"連結"\t"期間"\t"JPY"\t"百万円"\t"18000"\t"999999"',
+    ].join('\r\n');
+    const archive = zipSync({
+      'facts.csv': Buffer.from(`\uFEFF${tsv}`, 'utf16le'),
+    });
+
+    const result = await getEdinetSupplementalFundamentalsBatch(
+      [{ symbol: '4634', marketCapUsd: 204_800_000_000 }],
+      {
+        apiKey: 'dummy-key',
+        lookbackDays: 1,
+        asOfDate: '2026-06-11',
+        fetch: async (url) => {
+          const requestUrl = new URL(String(url));
+          if (requestUrl.pathname.endsWith('/documents.json')) {
+            return {
+              ok: true,
+              json: async () => ({
+                results: [
+                  {
+                    docID: 'S100VALUE',
+                    secCode: '46340',
+                    docDescription: '有価証券報告書',
+                    csvFlag: '1',
+                    legalStatus: '1',
+                    submitDateTime: '2026-06-10T00:00:00+09:00',
+                  },
+                ],
+              }),
+            };
+          }
+          return {
+            ok: true,
+            arrayBuffer: async () => archive.buffer.slice(archive.byteOffset, archive.byteOffset + archive.byteLength),
+          };
+        },
+      },
+    );
+
+    assert.equal(result.rows['4634'].fcfMargin, 4.68);
+    assert.notEqual(result.rows['4634'].fcfMargin, 69.4);
+    assert.equal(result.rows['4634'].metricStatus, 'valid');
+    assert.equal(result.rows['4634'].rankEligible, true);
+  });
+
   it('uses TradingView stock-sector US profiles and activates producer manufacturing', async () => {
     const stockBodies = [];
     const result = await runFundamentalScreener({

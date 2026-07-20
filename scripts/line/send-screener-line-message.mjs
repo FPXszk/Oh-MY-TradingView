@@ -8,6 +8,7 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const REPO_ROOT = join(__dirname, '..', '..');
 const DEFAULT_REPORT_PATH = 'docs/reports/screener/daily-ranking.md';
 const DEFAULT_METADATA_PATH = 'docs/reports/screener/daily-ranking-run.json';
+const DEFAULT_AUDIT_PATH = 'docs/reports/screener/daily-ranking-audit.json';
 const LINE_PUSH_API_URL = 'https://api.line.me/v2/bot/message/push';
 
 function readTextFileIfExists(path) {
@@ -99,6 +100,7 @@ export function buildScreenerNotificationText({
   runAttempt,
   refName,
   reportText,
+  audit,
 }) {
   const runUrl = buildGithubRunUrl(repository, runId);
   const lines = [
@@ -117,8 +119,28 @@ export function buildScreenerNotificationText({
     if (headline) lines.push(headline);
     if (phase1TopSector) lines.push(`Phase1 1位: ${phase1TopSector}`);
     if (topSymbols.length > 0) lines.push(`Top3: ${topSymbols.join(', ')}`);
+    if (audit) {
+      lines.push(`監査: ${String(audit.status ?? 'unknown').toUpperCase()}`);
+      lines.push(`Top10変動: ${audit.summary?.newTop10Entries ?? 0}件`);
+      lines.push(`財務指標警告: ${audit.summary?.warnings ?? 0}件`);
+      const maxGain = (audit.rankChanges ?? [])[0];
+      if (maxGain) {
+        lines.push(`最大順位変動: ${maxGain.symbol} ${maxGain.rankDelta > 0 ? '+' : ''}${maxGain.rankDelta}位`);
+      }
+      (audit.metricAnomalies ?? []).slice(0, 3).forEach((entry) => {
+        lines.push(`警告: ${entry.symbol} ${entry.metricName} ${entry.reasons?.[0] ?? entry.status}`);
+      });
+    }
   } else {
-    lines.push('report は未生成または未読込');
+    if (audit) {
+      lines.push(`監査: ${String(audit.status ?? 'unknown').toUpperCase()}`);
+      lines.push(`重大エラー: ${audit.summary?.errors ?? 0}件`);
+      (audit.criticals ?? []).slice(0, 3).forEach((entry) => {
+        lines.push(`対象: ${entry.symbol ?? '-'} ${entry.metricName ?? ''} ${entry.reason ?? entry.status ?? ''}`.trim());
+      });
+    } else {
+      lines.push('report は未生成または未読込');
+    }
   }
 
   if (runUrl) lines.push(`run: ${runUrl}`);
@@ -144,6 +166,7 @@ async function pushLineMessage({ channelAccessToken, requestBody }) {
 function getRuntimeInput() {
   const reportRelativePath = process.env.LINE_REPORT_PATH || DEFAULT_REPORT_PATH;
   const metadataRelativePath = process.env.LINE_METADATA_PATH || DEFAULT_METADATA_PATH;
+  const auditRelativePath = process.env.LINE_AUDIT_PATH || DEFAULT_AUDIT_PATH;
   const metadata = readJsonFileIfExists(resolveRepoFile(metadataRelativePath));
 
   return {
@@ -156,6 +179,7 @@ function getRuntimeInput() {
     runAttempt: process.env.GITHUB_RUN_ATTEMPT || metadata?.run_attempt || '',
     refName: process.env.GITHUB_REF_NAME || metadata?.ref_name || '',
     reportText: readTextFileIfExists(resolveRepoFile(reportRelativePath)),
+    audit: readJsonFileIfExists(resolveRepoFile(auditRelativePath)),
   };
 }
 

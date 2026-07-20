@@ -209,14 +209,66 @@ gh run view <RUN_ID> --log
 
 ## Implementation Results
 
-実装完了後に以下を記録する。
+### Root Cause
 
-- 確定した根本原因。
-- 修正前後の Top10。
-- 4634 / 2222 とその他異常値候補の修正前後。
-- 追加・変更したファイル一覧。
-- 実行したテストと結果。
-- 日本株実データ再実行の監査ステータス。
-- 米国株回帰確認結果。
-- GitHub Actions run id、結果、artifact、LINE 通知状況。
-- commit SHA、commit message、push 先。
+- EDINET CSV/TSV の fact 抽出が、明示的な値列ではなく行内の最後の数値を採用していた。
+- `CurrentYearDuration_NonConsolidatedMember` が `consolidated` 文字列を含むため、個別 context が連結として誤分類される経路があった。
+- 日本株 EDINET 補完で TradingView 既存値が優先される場合があり、FCF 系指標の出所とランキング使用値を指標単位で追跡できなかった。
+
+### Implemented
+
+- `src/core/edinet.js`
+  - ヘッダーから明示的な値列のみを抽出し、contextRef、期間、連結/個別、単位、currency、sourceFile、documentId を fact に保持。
+  - 個別 context を連結より先に判定し、通期 current duration を優先。
+  - CAPEX は支出額として正規化し、FCF を CFO - CAPEX で計算。
+- `src/core/fundamental-screener.js`
+  - 日本株 FCF 系指標は検証済み EDINET を優先し、metricProvenance、rankEligible、補完前後順位差分を付与。
+  - EDINET と TradingView の差分が大きい場合に warning を付与し、invalid 値をランキングから除外。
+- `src/core/screener-audit.js`
+  - 監査 JSON、異常指標、critical 判定、補完前後 Top10、前回 Top10 差分、evidenceRows を生成。
+- `scripts/screener/run-fundamental-screening.mjs`
+  - `SCREENER_AUDIT_PATH` / `SCREENER_AUDIT_STRICT`、監査レポートセクション、品質表示を追加。
+- `scripts/line/send-screener-line-message.mjs`
+  - LINE 通知に監査 status、warning/error、代表異常、順位差分を追加。
+- `.github/workflows/daily-screener-japan.yml`
+  - audit env、strict audit、audit JSON validation、artifact upload、publish、LINE env を追加。
+- `scripts/windows/github-actions/sync-daily-screener-report-to-main.ps1`
+  - optional `-AuditPath` を検証・stage 対象に追加。
+- Tests
+  - EDINET 値列誤採用、Japan audit report、LINE audit notification、workflow contract、audit critical/rank delta を追加。
+
+### Live Japan Run
+
+- Command: `.github/workflows/daily-screener-japan.yml` 相当 env で `node scripts/screener/run-fundamental-screening.mjs`
+- Result: exit 0
+- Screener: `totalScanned=311`, `serverFiltered=180`, `phase1Filtered=180`, `clientFiltered=68`, `matched=68`
+- EDINET: `requested=68`, `matchedFilings=68`, `downloaded=68`, `factRows=68`, `errors=0`, `supplemented=61`
+- Audit: `status=warning`, `validMetrics=224`, `warnings=30`, `errors=0`, `rankChangesOverThreshold=12`, `newTop10Entries=4`
+- Generated:
+  - `docs/reports/screener/daily-ranking-jp.md`
+  - `docs/reports/screener/daily-ranking-jp-audit.json`
+
+### Key Evidence
+
+- 4634 artience
+  - 修正前レポート: rank 6, FCF margin 69.4%
+  - 修正後 EDINET: revenue 349,979,000,000; CFO 27,554,000,000; CAPEX 15,420,000,000; FCF margin 3.47%; source `edinet`; status `valid`; rankEligible `true`
+- 2222 寿スピリッツ
+  - 修正前レポート: rank 7, FCF margin 85.4%
+  - 修正後 EDINET: revenue 78,781,000,000; CFO 13,801,000,000; CAPEX 2,440,000,000; FCF margin 14.42%; source `edinet`; status `valid`; rankEligible `true`
+- Current report Top10:
+  - 1 7966, 2 6448, 3 5186, 4 3407, 5 7970, 6 4634, 7 3946, 8 7735, 9 6323, 10 6237
+
+### Validation
+
+- `node --test tests/daily-screener-contract.test.js`: pass 4
+- `node --test tests/daily-screener-report.test.js tests/screener-audit.test.js tests/line-screener-notify.test.js tests/fundamental-screener.test.js tests/daily-screener-contract.test.js`: pass 52
+- `git diff --check`: pass
+- `npm run test:unit`: pass 875
+- `npm run test:contract`: pass 74
+- 米国株回帰: `SCREENER_MARKET=america` の workflow 相当 env で exit 0。US default では audit JSON を出さず既存レポート形状を維持。
+
+### Pending Finalization
+
+- この計画を `docs/exec-plans/completed/` へ移動する。
+- 実装 commit/push 後、`Daily Fundamental Screener Japan` GitHub Actions を実行して run id、artifact、LINE 通知状況を確認する。

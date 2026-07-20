@@ -5,6 +5,8 @@ const DEFAULT_LOOKBACK_DAYS = 180;
 const DEFAULT_DOCUMENT_LIST_TYPE = 2;
 const DEFAULT_DOCUMENT_DOWNLOAD_TYPE = 5;
 const ELIGIBLE_DOCUMENT_PATTERN = /有価証券報告書|四半期報告書|半期報告書/i;
+const ANNUAL_DOCUMENT_PATTERN = /有価証券報告書/i;
+const QUARTERLY_OR_HALF_PATTERN = /四半期報告書|半期報告書/i;
 
 const METRIC_SPECS = {
   revenue: {
@@ -58,8 +60,13 @@ const METRIC_SPECS = {
 
 function normalizeText(value) {
   return String(value ?? '')
+    .normalize('NFKC')
     .toLowerCase()
     .replace(/[\s_\-:./\\()[\]{}]+/g, '');
+}
+
+function normalizeHeaderName(value) {
+  return normalizeText(value).replace(/[・、，,]/g, '');
 }
 
 function normalizeSecurityCode(value) {
@@ -114,6 +121,11 @@ function parseLooseNumber(value) {
   const normalized = trimmed.replace(/,/g, '').replace(/\u2212/g, '-');
   if (!/^-?\d+(\.\d+)?$/.test(normalized)) return null;
   const numeric = Number(normalized);
+  return Number.isFinite(numeric) ? numeric : null;
+}
+
+function parseScale(value) {
+  const numeric = parseLooseNumber(value);
   return Number.isFinite(numeric) ? numeric : null;
 }
 
@@ -180,7 +192,8 @@ function detectDelimiter(text) {
 
 function scoreFactRow(joined, period) {
   let score = 0;
-  if (joined.includes('consolidated')) score += 8;
+  if (joined.includes('nonconsolidated')) score -= 8;
+  else if (joined.includes('consolidated')) score += 8;
   if (joined.includes('summaryofbusinessresults')) score += 6;
   if (period === 'current') {
     if (joined.includes('currentyear')) score += 10;
@@ -200,31 +213,178 @@ function pickMetricValue(factRows, spec, period) {
 
   factRows.forEach((factRow) => {
     if (!spec.concepts.some((concept) => factRow.joined.includes(concept))) return;
+    if (factRow.periodType !== 'duration') return;
+    if (factRow.metricStatus === 'invalid') return;
+    if (factRow.rankEligible === false && period === 'current') return;
     const score = scoreFactRow(factRow.joined, period);
     if (score <= 0) return;
     candidates.push({
       score,
-      value: spec.asAbsolute ? Math.abs(factRow.value) : factRow.value,
+      value: spec.asAbsolute ? Math.abs(factRow.normalizedValue) : factRow.normalizedValue,
+      fact: factRow,
     });
   });
 
   candidates.sort((left, right) => right.score - left.score);
-  return candidates[0]?.value ?? null;
+  return candidates[0] ?? null;
 }
 
-function collectFactRows(csvFiles) {
+function findHeaderIndex(headers, aliases) {
+  const normalizedAliases = aliases.map(normalizeHeaderName);
+  return headers.findIndex((header) => normalizedAliases.includes(normalizeHeaderName(header)));
+}
+
+function buildColumnMap(headers) {
+  const aliases = {
+    conceptId: ['要素ID', 'elementId', 'conceptId', 'concept'],
+    label: ['項目名', 'label', 'itemName'],
+    contextRef: ['コンテキストID', 'contextRef', 'contextID'],
+    relativePeriod: ['相対年度', 'relativePeriod'],
+    consolidation: ['連結・個別', '連結個別', 'consolidatedOrNonConsolidated', 'consolidation'],
+    periodType: ['期間・時点', '期間時点', 'periodType'],
+    periodStart: ['期間開始日', 'periodStart', 'startDate'],
+    periodEnd: ['期間終了日', 'periodEnd', 'endDate'],
+    instantDate: ['時点日', 'instantDate'],
+    unitId: ['ユニットID', 'unitId'],
+    unit: ['単位', 'unit', 'currency'],
+    scale: ['スケール', 'scale'],
+    decimals: ['decimals', '精度'],
+    value: ['値', 'value', 'amount', '金額'],
+  };
+
+  return Object.fromEntries(
+    Object.entries(aliases).map(([key, values]) => [key, findHeaderIndex(headers, values)]),
+  );
+}
+
+function isUsableColumnMap(columnMap) {
+  return columnMap.conceptId >= 0 && columnMap.contextRef >= 0 && columnMap.value >= 0;
+}
+
+function normalizePeriodType(value, contextRef) {
+  const text = normalizeText(`${value}|${contextRef}`);
+  if (text.includes('instant') || text.includes('時点')) return 'instant';
+  if (text.includes('duration') || text.includes('期間')) return 'duration';
+  return null;
+}
+
+function normalizeRelativePeriod(value, contextRef) {
+  const text = normalizeText(`${value}|${contextRef}`);
+  if (text.includes('currentyear') || text.includes('currentperiod') || text.includes('当期')) return 'current';
+  if (text.includes('prioryear') || text.includes('previousyear') || text.includes('prior1year') || text.includes('前期')) return 'prior';
+  if (text.includes('currentquarter')) return 'currentQuarter';
+  return null;
+}
+
+function normalizeConsolidation(value, contextRef) {
+  const text = normalizeText(`${value}|${contextRef}`);
+  if (text.includes('nonconsolidated') || text.includes('個別')) return 'nonConsolidated';
+  if (text.includes('consolidated') || text.includes('連結')) return 'consolidated';
+  return null;
+}
+
+function normalizeCurrency(unitId, unit) {
+  const text = normalizeText(`${unitId}|${unit}`);
+  if (text.includes('jpy') || text.includes('円')) return 'JPY';
+  if (text.includes('usd')) return 'USD';
+  return null;
+}
+
+function unitMultiplier(unit, scale) {
+  const explicitScale = parseScale(scale);
+  if (Number.isFinite(explicitScale)) return 10 ** explicitScale;
+  const text = normalizeText(unit);
+  if (text.includes('千円')) return 1_000;
+  if (text.includes('百万円')) return 1_000_000;
+  if (text.includes('億円')) return 100_000_000;
+  if (text.includes('円') || text.includes('jpy')) return 1;
+  return null;
+}
+
+function isAnnualCurrentDuration(contextRef, documentType, periodType, relativePeriod) {
+  const context = normalizeText(contextRef);
+  if (periodType !== 'duration' || relativePeriod !== 'current') return false;
+  if (context.includes('quarter') || context.includes('半期') || context.includes('四半期')) return false;
+  if (QUARTERLY_OR_HALF_PATTERN.test(documentType ?? '')) return false;
+  return context.includes('currentyear') || ANNUAL_DOCUMENT_PATTERN.test(documentType ?? '');
+}
+
+function buildFactRow(cells, columnMap, file, documentMeta = {}) {
+  const rawValue = cells[columnMap.value] ?? '';
+  const numericValue = parseLooseNumber(rawValue);
+  const conceptId = cells[columnMap.conceptId] ?? '';
+  const contextRef = cells[columnMap.contextRef] ?? '';
+  const unitId = columnMap.unitId >= 0 ? cells[columnMap.unitId] : '';
+  const unit = columnMap.unit >= 0 ? cells[columnMap.unit] : '';
+  const scale = columnMap.scale >= 0 ? cells[columnMap.scale] : null;
+  const multiplier = unitMultiplier(unit || unitId, scale);
+  const periodType = normalizePeriodType(columnMap.periodType >= 0 ? cells[columnMap.periodType] : '', contextRef);
+  const relativePeriod = normalizeRelativePeriod(columnMap.relativePeriod >= 0 ? cells[columnMap.relativePeriod] : '', contextRef);
+  const consolidation = normalizeConsolidation(columnMap.consolidation >= 0 ? cells[columnMap.consolidation] : '', contextRef);
+  const currency = normalizeCurrency(unitId, unit);
+  const warnings = [];
+
+  if (numericValue === null) warnings.push('value_column_not_numeric');
+  if (periodType === null) warnings.push('period_type_unknown');
+  if (relativePeriod === null) warnings.push('relative_period_unknown');
+  if (consolidation === null) warnings.push('consolidation_unknown');
+  if (currency === null) warnings.push('currency_unknown');
+  if (multiplier === null) warnings.push('unit_unknown');
+
+  const normalizedValue = numericValue !== null && multiplier !== null
+    ? numericValue * multiplier
+    : null;
+  const status = warnings.some((warning) => warning.endsWith('_unknown') || warning === 'value_column_not_numeric')
+    ? 'invalid'
+    : 'valid';
+
+  return {
+    conceptId,
+    label: columnMap.label >= 0 ? cells[columnMap.label] : null,
+    contextRef,
+    periodType,
+    periodStart: columnMap.periodStart >= 0 ? cells[columnMap.periodStart] || null : null,
+    periodEnd: columnMap.periodEnd >= 0 ? cells[columnMap.periodEnd] || null : null,
+    instantDate: columnMap.instantDate >= 0 ? cells[columnMap.instantDate] || null : null,
+    relativePeriod,
+    consolidation,
+    unitId: unitId || null,
+    currency,
+    scale,
+    decimals: columnMap.decimals >= 0 ? cells[columnMap.decimals] || null : null,
+    rawValue,
+    normalizedValue,
+    sourceFile: file.name,
+    documentId: documentMeta.documentId ?? null,
+    documentType: documentMeta.documentType ?? null,
+    submittedAt: documentMeta.submittedAt ?? null,
+    warnings,
+    metricStatus: status,
+    rankEligible: isAnnualCurrentDuration(contextRef, documentMeta.documentType, periodType, relativePeriod),
+    joined: normalizeText([
+      conceptId,
+      columnMap.label >= 0 ? cells[columnMap.label] : '',
+      contextRef,
+      columnMap.relativePeriod >= 0 ? cells[columnMap.relativePeriod] : '',
+      consolidation,
+      periodType,
+    ].join('|')),
+  };
+}
+
+function collectFactRows(csvFiles, documentMeta = {}) {
   const factRows = [];
 
   csvFiles.forEach((file) => {
     const rows = parseDelimited(file.text, detectDelimiter(file.text));
-    rows.forEach((cells) => {
-      const numericValues = cells.map(parseLooseNumber).filter((value) => value !== null);
-      if (numericValues.length === 0) return;
-      factRows.push({
-        fileName: file.name,
-        joined: normalizeText(cells.join('|')),
-        value: numericValues[numericValues.length - 1],
-      });
+    if (rows.length === 0) return;
+    const headerIndex = rows.findIndex((cells) => isUsableColumnMap(buildColumnMap(cells)));
+    if (headerIndex === -1) return;
+    const columnMap = buildColumnMap(rows[headerIndex]);
+    rows.slice(headerIndex + 1).forEach((cells) => {
+      const fact = buildFactRow(cells, columnMap, file, documentMeta);
+      if (fact.normalizedValue === null) return;
+      factRows.push(fact);
     });
   });
 
@@ -242,15 +402,22 @@ function roundNullable(value, digits = 2) {
 }
 
 function deriveSupplementalMetrics({ marketCapUsd, factRows }) {
-  const revenueCurrent = pickMetricValue(factRows, METRIC_SPECS.revenue, 'current');
-  const revenuePrior = pickMetricValue(factRows, METRIC_SPECS.revenue, 'prior');
-  const operatingCashFlowCurrent = pickMetricValue(factRows, METRIC_SPECS.operatingCashFlow, 'current');
-  const operatingCashFlowPrior = pickMetricValue(factRows, METRIC_SPECS.operatingCashFlow, 'prior');
-  const capexCurrent = (pickMetricValue(factRows, METRIC_SPECS.capexPpe, 'current') ?? 0)
-    + (pickMetricValue(factRows, METRIC_SPECS.capexIntangibles, 'current') ?? 0);
-  const capexPrior = (pickMetricValue(factRows, METRIC_SPECS.capexPpe, 'prior') ?? 0)
-    + (pickMetricValue(factRows, METRIC_SPECS.capexIntangibles, 'prior') ?? 0);
-  const netIncomeCurrent = pickMetricValue(factRows, METRIC_SPECS.netIncome, 'current');
+  const revenueCurrentFact = pickMetricValue(factRows, METRIC_SPECS.revenue, 'current');
+  const revenuePriorFact = pickMetricValue(factRows, METRIC_SPECS.revenue, 'prior');
+  const operatingCashFlowCurrentFact = pickMetricValue(factRows, METRIC_SPECS.operatingCashFlow, 'current');
+  const operatingCashFlowPriorFact = pickMetricValue(factRows, METRIC_SPECS.operatingCashFlow, 'prior');
+  const capexPpeCurrentFact = pickMetricValue(factRows, METRIC_SPECS.capexPpe, 'current');
+  const capexIntangiblesCurrentFact = pickMetricValue(factRows, METRIC_SPECS.capexIntangibles, 'current');
+  const capexPpePriorFact = pickMetricValue(factRows, METRIC_SPECS.capexPpe, 'prior');
+  const capexIntangiblesPriorFact = pickMetricValue(factRows, METRIC_SPECS.capexIntangibles, 'prior');
+  const netIncomeCurrentFact = pickMetricValue(factRows, METRIC_SPECS.netIncome, 'current');
+  const revenueCurrent = revenueCurrentFact?.value ?? null;
+  const revenuePrior = revenuePriorFact?.value ?? null;
+  const operatingCashFlowCurrent = operatingCashFlowCurrentFact?.value ?? null;
+  const operatingCashFlowPrior = operatingCashFlowPriorFact?.value ?? null;
+  const capexCurrent = (capexPpeCurrentFact?.value ?? 0) + (capexIntangiblesCurrentFact?.value ?? 0);
+  const capexPrior = (capexPpePriorFact?.value ?? 0) + (capexIntangiblesPriorFact?.value ?? 0);
+  const netIncomeCurrent = netIncomeCurrentFact?.value ?? null;
 
   const fcfCurrent = Number.isFinite(operatingCashFlowCurrent)
     ? operatingCashFlowCurrent - capexCurrent
@@ -275,6 +442,30 @@ function deriveSupplementalMetrics({ marketCapUsd, factRows }) {
   const ruleOf40 = revenueGrowthTtm !== null && fcfMargin !== null
     ? roundNullable(revenueGrowthTtm + fcfMargin)
     : null;
+  const warnings = [];
+  if (fcfMargin !== null && Math.abs(fcfMargin) > 50) warnings.push('fcf_margin_abs_gt_50');
+  if (fcfMargin !== null && Math.abs(fcfMargin) > 100) warnings.push('fcf_margin_abs_gt_100');
+  if (pFcf !== null && pFcf <= 0) warnings.push('pfcf_non_positive');
+  if (cashConversion !== null && Math.abs(cashConversion) >= 5) warnings.push('cash_conversion_abs_gte_5');
+  if (fcfGrowthTtm !== null && Math.abs(fcfGrowthTtm) >= 500) warnings.push('fcf_growth_abs_gte_500');
+  if (Number.isFinite(fcfCurrent) && Number.isFinite(operatingCashFlowCurrent) && fcfCurrent > operatingCashFlowCurrent + 1) {
+    warnings.push('fcf_exceeds_operating_cash_flow');
+  }
+  const annualEligible = [
+    revenueCurrentFact,
+    operatingCashFlowCurrentFact,
+    capexPpeCurrentFact,
+    capexIntangiblesCurrentFact,
+  ].filter(Boolean).every((entry) => entry.fact?.rankEligible !== false);
+  const metricStatus = warnings.some((warning) => [
+    'fcf_margin_abs_gt_100',
+    'pfcf_non_positive',
+    'fcf_exceeds_operating_cash_flow',
+  ].includes(warning)) || !annualEligible
+    ? 'invalid'
+    : warnings.length > 0
+      ? 'warning'
+      : 'valid';
 
   return {
     revenueGrowthTtm,
@@ -286,6 +477,31 @@ function deriveSupplementalMetrics({ marketCapUsd, factRows }) {
     netIncomeTtm: roundNullable(netIncomeCurrent, 0),
     fcfTtm: roundNullable(fcfCurrent, 0),
     ruleOf40,
+    metricStatus,
+    rankEligible: metricStatus !== 'invalid',
+    warnings,
+    metricProvenance: Object.fromEntries([
+      ['fcfTtm', fcfCurrent],
+      ['fcfMargin', fcfMargin],
+      ['fcfGrowthTtm', fcfGrowthTtm],
+      ['cashFromOperationsTtm', operatingCashFlowCurrent],
+      ['cashConversion', cashConversion],
+      ['pFcf', pFcf],
+      ['revenueGrowthTtm', revenueGrowthTtm],
+    ].map(([metricName, finalValue]) => [metricName, {
+      source: 'edinet',
+      status: metricStatus,
+      rankEligible: metricStatus !== 'invalid',
+      rawValue: finalValue,
+      finalValue,
+      documentType: revenueCurrentFact?.fact?.documentType ?? null,
+      periodStart: revenueCurrentFact?.fact?.periodStart ?? null,
+      periodEnd: revenueCurrentFact?.fact?.periodEnd ?? null,
+      consolidation: revenueCurrentFact?.fact?.consolidation ?? null,
+      currency: revenueCurrentFact?.fact?.currency ?? null,
+      sourceFile: revenueCurrentFact?.fact?.sourceFile ?? null,
+      warnings,
+    }])),
     extractedFacts: {
       revenueCurrent: roundNullable(revenueCurrent, 0),
       revenuePrior: roundNullable(revenuePrior, 0),
@@ -294,6 +510,17 @@ function deriveSupplementalMetrics({ marketCapUsd, factRows }) {
       capexCurrent: roundNullable(capexCurrent, 0),
       capexPrior: roundNullable(capexPrior, 0),
       netIncomeCurrent: roundNullable(netIncomeCurrent, 0),
+      provenance: {
+        revenueCurrent: revenueCurrentFact?.fact ?? null,
+        revenuePrior: revenuePriorFact?.fact ?? null,
+        operatingCashFlowCurrent: operatingCashFlowCurrentFact?.fact ?? null,
+        operatingCashFlowPrior: operatingCashFlowPriorFact?.fact ?? null,
+        capexPpeCurrent: capexPpeCurrentFact?.fact ?? null,
+        capexIntangiblesCurrent: capexIntangiblesCurrentFact?.fact ?? null,
+        capexPpePrior: capexPpePriorFact?.fact ?? null,
+        capexIntangiblesPrior: capexIntangiblesPriorFact?.fact ?? null,
+        netIncomeCurrent: netIncomeCurrentFact?.fact ?? null,
+      },
     },
   };
 }
@@ -437,7 +664,11 @@ export async function getEdinetSupplementalFundamentalsBatch(rows, options = {})
       try {
         const archive = await downloadDocumentCsv(selected.doc.docID, { apiKey, fetchFn });
         const csvFiles = parseCsvZip(archive);
-        const factRows = collectFactRows(csvFiles);
+        const factRows = collectFactRows(csvFiles, {
+          documentId: selected.doc.docID,
+          documentType: selected.doc.docDescription ?? null,
+          submittedAt: selected.doc.submitDateTime ?? null,
+        });
         downloadedRows += 1;
         if (factRows.length > 0) {
           rowsWithFactRows += 1;

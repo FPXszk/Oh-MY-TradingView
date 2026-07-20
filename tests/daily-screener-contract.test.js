@@ -70,8 +70,16 @@ describe('Daily Fundamental Screener workflow', () => {
       'Japan workflow must write a dedicated markdown report');
     assert.match(workflow, /SCREENER_METADATA_PATH:\s+docs\/reports\/screener\/daily-ranking-jp-run\.json/,
       'Japan workflow must write dedicated metadata');
+    assert.match(workflow, /SCREENER_AUDIT_PATH:\s+docs\/reports\/screener\/daily-ranking-jp-audit\.json/,
+      'Japan workflow must write a dedicated audit artifact');
+    assert.match(workflow, /SCREENER_AUDIT_STRICT:\s+'true'/,
+      'Japan workflow must fail strict audit criticals');
     assert.match(workflow, /EDINET_API_KEY:\s+\$\{\{\s*secrets\.EDINET_API_KEY\s*\}\}/,
       'Japan workflow must pass the EDINET API key when available');
+    assert.match(workflow, /actions\/upload-artifact@v4[\s\S]*?path:\s*\|[\s\S]*?\$\{\{\s*env\.SCREENER_REPORT_PATH\s*\}\}[\s\S]*?\$\{\{\s*env\.SCREENER_METADATA_PATH\s*\}\}[\s\S]*?\$\{\{\s*env\.SCREENER_AUDIT_PATH\s*\}\}/,
+      'Japan artifact upload must keep report, run metadata, and audit JSON');
+    assert.match(workflow, /-AuditPath "\$\{\{\s*env\.SCREENER_AUDIT_PATH\s*\}\}"/,
+      'Japan publish step must include the audit path');
     assert.match(workflow, /name:\s+Notify LINE on success/,
       'Japan workflow must send a LINE notification after a successful run');
     assert.match(workflow, /name:\s+Notify LINE on failure/,
@@ -91,8 +99,12 @@ describe('daily screener Windows native publish script', () => {
       'publish script must accept an overridable report path');
     assert.match(script, /\[string\]\$MetadataPath = 'docs\/reports\/screener\/daily-ranking-run\.json'/,
       'publish script must accept an overridable metadata path');
+    assert.match(script, /\[string\]\$AuditPath = ''/,
+      'publish script must accept an optional audit path');
     assert.match(script, /git add -- \$ReportPath \$MetadataPath/,
       'publish script must stage only the configured screener report files');
+    assert.match(script, /git add -- \$ReportPath \$MetadataPath \$AuditPath/,
+      'publish script must include the configured audit file when provided');
     assert.match(script, /git push origin HEAD:main/,
       'publish script must push the Windows checkout commit to main');
   });

@@ -279,6 +279,81 @@ function applyEpsGrowthMeta(row) {
   };
 }
 
+const PROVENANCE_METRICS = [
+  'fcfTtm',
+  'fcfMargin',
+  'fcfGrowthTtm',
+  'cashFromOperationsTtm',
+  'cashConversion',
+  'pFcf',
+  'revenueGrowthTtm',
+];
+
+function classifyTradingViewMetric(metricName, value) {
+  const warnings = [];
+  let status = 'valid';
+  let rankEligible = true;
+  if (value === null || value === undefined) {
+    return {
+      status: 'invalid',
+      rankEligible: false,
+      warnings: ['missing'],
+    };
+  }
+  if (!Number.isFinite(Number(value))) {
+    return {
+      status: 'invalid',
+      rankEligible: false,
+      warnings: ['non_finite'],
+    };
+  }
+  if (metricName === 'fcfMargin' && Math.abs(value) >= 50) {
+    warnings.push('fcf_margin_abs_gte_50_without_verified_primary_source');
+    status = Math.abs(value) > 100 ? 'invalid' : 'warning';
+    rankEligible = false;
+  }
+  if (metricName === 'pFcf' && value <= 0) {
+    warnings.push('pfcf_non_positive');
+    status = 'invalid';
+    rankEligible = false;
+  }
+  if (metricName === 'cashConversion' && Math.abs(value) >= 5) {
+    warnings.push('cash_conversion_abs_gte_5');
+    status = status === 'valid' ? 'warning' : status;
+  }
+  if (metricName === 'fcfGrowthTtm' && Math.abs(value) >= 500) {
+    warnings.push('fcf_growth_abs_gte_500');
+    status = status === 'valid' ? 'warning' : status;
+  }
+  return {
+    status,
+    rankEligible,
+    warnings,
+  };
+}
+
+function buildTradingViewMetricProvenance(row) {
+  return Object.fromEntries(PROVENANCE_METRICS.map((metricName) => {
+    const value = row[metricName] ?? null;
+    const classification = classifyTradingViewMetric(metricName, value);
+    return [metricName, {
+      source: 'tradingview',
+      status: classification.status,
+      rankEligible: classification.rankEligible,
+      rawValue: value,
+      finalValue: classification.rankEligible ? value : null,
+      warnings: classification.warnings,
+    }];
+  }));
+}
+
+function mergeMetricProvenance(existing = {}, incoming = {}) {
+  return {
+    ...existing,
+    ...Object.fromEntries(Object.entries(incoming).filter(([, value]) => value)),
+  };
+}
+
 function uniqueStrings(values) {
   return [...new Set((values || []).filter((value) => typeof value === 'string' && value.trim() !== ''))];
 }
@@ -362,6 +437,15 @@ function normalizeRow(row) {
       ? Number((revenueGrowthTtm + fcfMargin).toFixed(2))
       : null;
   const epsGrowthMeta = buildEpsGrowthMeta({ eps, epsGrowthTtm });
+  const metricProvenance = buildTradingViewMetricProvenance({
+    fcfTtm,
+    fcfMargin,
+    fcfGrowthTtm,
+    cashFromOperationsTtm,
+    cashConversion,
+    pFcf,
+    revenueGrowthTtm,
+  });
 
   return {
     symbol,
@@ -403,6 +487,7 @@ function normalizeRow(row) {
     revenueGrowthTtm,
     ruleOf40Raw,
     pFcf,
+    metricProvenance,
     evEbitda,
     debtToEquity,
     netDebt,
@@ -2036,31 +2121,87 @@ async function applyUsMissingMetricSupplements(rows, {
 }
 
 function shouldUseEdinetSupplement(row) {
-  return row?.exchange === 'TSE' && (
-    row.fcfMargin === null
-    || row.fcfGrowthTtm === null
-    || row.pFcf === null
-    || row.cashConversion === null
-    || row.ruleOf40Raw === null
-  );
+  return row?.exchange === 'TSE';
 }
 
 function applyEdinetSupplementalMetrics(row, metrics = {}) {
+  const metricProvenance = { ...(row.metricProvenance ?? {}) };
+  const edinetProvenance = metrics.metricProvenance ?? {};
+  const chooseMetric = (metricName) => {
+    const currentValue = row[metricName] ?? null;
+    const currentProvenance = metricProvenance[metricName]
+      ?? buildTradingViewMetricProvenance({ [metricName]: currentValue })[metricName];
+    const edinetMetric = edinetProvenance[metricName]
+      ?? (
+        metrics.source === 'edinet'
+        && metrics[metricName] !== null
+        && metrics[metricName] !== undefined
+          ? {
+            source: 'edinet',
+            status: metrics.metricStatus ?? 'valid',
+            rankEligible: metrics.rankEligible ?? true,
+            rawValue: metrics[metricName],
+            finalValue: metrics[metricName],
+            documentType: metrics.docDescription ?? null,
+            warnings: metrics.warnings ?? [],
+          }
+          : null
+      );
+    if (
+      edinetMetric
+      && edinetMetric.rankEligible !== false
+      && edinetMetric.status !== 'invalid'
+      && metrics[metricName] !== null
+      && metrics[metricName] !== undefined
+    ) {
+      const difference = currentValue !== null && currentValue !== undefined
+        ? Number((metrics[metricName] - currentValue).toFixed(4))
+        : null;
+      metricProvenance[metricName] = {
+        ...edinetMetric,
+        source: 'edinet',
+        rawValue: edinetMetric.rawValue ?? metrics[metricName],
+        finalValue: metrics[metricName],
+        previousSource: currentProvenance.source,
+        previousValue: currentValue,
+        difference,
+        warnings: [
+          ...(edinetMetric.warnings ?? []),
+          ...(
+            metricName === 'fcfMargin'
+            && difference !== null
+            && Math.abs(difference) >= 20
+              ? ['tradingview_edinet_fcf_margin_diff_gte_20pt']
+              : []
+          ),
+        ],
+      };
+      return metrics[metricName];
+    }
+    metricProvenance[metricName] = currentProvenance;
+    return currentProvenance.rankEligible === false ? null : currentValue;
+  };
+
   const merged = {
     ...row,
-    revenueGrowthTtm: row.revenueGrowthTtm ?? metrics.revenueGrowthTtm ?? null,
-    fcfTtm: row.fcfTtm ?? metrics.fcfTtm ?? null,
-    fcfMargin: row.fcfMargin ?? metrics.fcfMargin ?? null,
-    fcfGrowthTtm: row.fcfGrowthTtm ?? metrics.fcfGrowthTtm ?? null,
-    cashFromOperationsTtm: row.cashFromOperationsTtm ?? metrics.cashFromOperationsTtm ?? null,
+    revenueGrowthTtm: chooseMetric('revenueGrowthTtm'),
+    fcfTtm: chooseMetric('fcfTtm'),
+    fcfMargin: chooseMetric('fcfMargin'),
+    fcfGrowthTtm: chooseMetric('fcfGrowthTtm'),
+    cashFromOperationsTtm: chooseMetric('cashFromOperationsTtm'),
     netIncomeTtm: row.netIncomeTtm ?? metrics.netIncomeTtm ?? null,
-    cashConversion: row.cashConversion ?? metrics.cashConversion ?? null,
-    pFcf: row.pFcf ?? metrics.pFcf ?? null,
+    cashConversion: chooseMetric('cashConversion'),
+    pFcf: chooseMetric('pFcf'),
+    metricProvenance: mergeMetricProvenance(row.metricProvenance, metricProvenance),
     edinetSupplement: metrics.source === 'edinet'
       ? {
         docId: metrics.docId ?? null,
         submitDateTime: metrics.submitDateTime ?? null,
         docDescription: metrics.docDescription ?? null,
+        metricStatus: metrics.metricStatus ?? null,
+        rankEligible: metrics.rankEligible ?? null,
+        warnings: metrics.warnings ?? [],
+        extractedFacts: metrics.extractedFacts ?? null,
       }
       : null,
   };
@@ -2253,6 +2394,20 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     usMissingMetricSupplementMeta = buildMissingMetricSupplementMeta(clientFiltered);
   }
 
+  const rankingBlocks = getRankingBlocks(market);
+  let rankBeforeSupplementLookup = new Map();
+  if (market === 'japan' && clientFiltered.length > 0) {
+    rankBeforeSupplementLookup = new Map(
+      applyBlockRanks(clientFiltered, rankingBlocks)
+        .sort((a, b) => b.rankScore - a.rankScore)
+        .map((row, index) => [buildRowLookupKey(row), {
+          rankBeforeSupplement: index + 1,
+          scoreBeforeSupplement: row.rankScore,
+          rankBreakdownBeforeSupplement: row.rankBreakdown,
+        }]),
+    );
+  }
+
   let edinetSupplementMeta = null;
   if (market === 'japan' && clientFiltered.length > 0) {
     const supplementTargets = clientFiltered.filter(shouldUseEdinetSupplement);
@@ -2269,8 +2424,20 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   }
 
   const themedRows = applyLocalizedCompanyNames(applyThemeTaxonomy(clientFiltered, market), market);
-  const rankingBlocks = getRankingBlocks(market);
-  const ranked = applyBlockRanks(themedRows, rankingBlocks).sort((a, b) => b.rankScore - a.rankScore);
+  const ranked = applyBlockRanks(themedRows, rankingBlocks)
+    .sort((a, b) => b.rankScore - a.rankScore)
+    .map((row, index) => {
+      const before = rankBeforeSupplementLookup.get(buildRowLookupKey(row));
+      if (!before) return row;
+      return {
+        ...row,
+        ...before,
+        rankAfterSupplement: index + 1,
+        scoreAfterSupplement: row.rankScore,
+        rankDelta: before.rankBeforeSupplement - (index + 1),
+        scoreDelta: Number((row.rankScore - before.scoreBeforeSupplement).toFixed(4)),
+      };
+    });
   const matched = ranked.slice(0, effectiveLimit).map(stripInternalFields);
   const sectorRanking = summarizeSectors(ranked);
   const phase4CandidateRows = supportsIndustryHierarchy(market)

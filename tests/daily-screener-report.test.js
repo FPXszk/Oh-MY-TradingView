@@ -1361,9 +1361,9 @@ describe('buildMarkdown', () => {
     assert.doesNotMatch(markdown, /## Phase2 中テーマランキング \(Electronic Technology\)/);
     assert.doesNotMatch(markdown, /## Phase3 小テーマランキング/);
     assert.match(markdown, /## Phase4 個別銘柄ランキング/);
-    assert.match(markdown, /\| 順位 \| 出所 \| セクター \| Industry \| テーマ \| シンボル \| 市場 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCFマージン \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \(T\/F\) \|/);
-    assert.match(markdown, /\| 1 \| Phase4 \| Consumer Durables \| Motor Vehicles \| Electronic Components \/ Passives \/ RF Modules \| \*\*7203 \(トヨタ自動車\)\*\* \| TSE \| ¥4\.50T \(L\) \|/);
-    assert.match(markdown, /\| 2 \| Phase5 \| Producer Manufacturing \| Industrial Machinery \| Industrial Automation \/ Factory Automation \| \*\*6501 \(日立製作所\)\*\* \| TSE \| ¥18\.00T \(XL\) \|/);
+    assert.match(markdown, /\| 順位 \| 出所 \| セクター \| Industry \| テーマ \| シンボル \| 市場 \| 品質 \| 時価総額 \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCFマージン \| 売上YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \(T\/F\) \|/);
+    assert.match(markdown, /\| 1 \| Phase4 \| Consumer Durables \| Motor Vehicles \| Electronic Components \/ Passives \/ RF Modules \| \*\*7203 \(トヨタ自動車\)\*\* \| TSE \| - \| ¥4\.50T \(L\) \|/);
+    assert.match(markdown, /\| 2 \| Phase5 \| Producer Manufacturing \| Industrial Machinery \| Industrial Automation \/ Factory Automation \| \*\*6501 \(日立製作所\)\*\* \| TSE \| - \| ¥18\.00T \(XL\) \|/);
     assert.match(markdown, /## Phase5 Sector別 個別銘柄ランキング/);
     assert.match(markdown, /\| Sector Rank \| Sector内Rank \| Sector \| Industry \| Theme \| Symbol \| Market \| Market Cap \| 12M \| 6M \| 3M \| 52w \| ROIC \| GP\/A \| FCF Margin \| Revenue YoY \| Rule40 \| EPS YoY \| P\/FCF \| ATR% \| 総合点 \(T\/F\) \|/);
     assert.match(markdown, /\| 2 \| 1 \| Producer Manufacturing \| Industrial Machinery \| Industrial Automation \/ Factory Automation \| \*\*6501 \(日立製作所\)\*\* \| TSE \| ¥18\.00T \(XL\) \|/);
@@ -1377,6 +1377,122 @@ describe('buildMarkdown', () => {
     assert.match(markdown, /\| セクタープロファイル \| Japan Electronics Other \| scope: Electronic Technology \/ hard gate: Perf\.3M > 8% \/ scoring: RSI 55\+、相対出来高 0\.80x\+、ROE 12%\+、粗利率 25%\+、FCFマージン 5%\+、P\/FCF 140 は risk penalty \|/);
     assert.match(markdown, /\| 採点ポリシー \| unifiedRankScore \| Phase4候補とPhase5 Sector別Top3候補は共通母集団で1回だけ採点。Phase5表の4位・5位は表示用スコアだが、Phase4候補でもある場合は unifiedRankScore を持つ。Phase1\/Phase2の集計スコアとは別物。 \|/);
     assert.match(markdown, /\| 総合点 \(T\/F\) \| repo 独自の総合スコア \| 高いほど良い。T はテクニカル寄り、F はファンダ寄り \|/);
+  });
+
+  it('renders the Japan financial audit section and quality badge', () => {
+    const result = {
+      retrieved_at: '2026-07-20T12:00:00.000Z',
+      totalScanned: 2,
+      serverFiltered: 2,
+      phase1Filtered: 2,
+      clientFiltered: 2,
+      matched: 1,
+      enrichedWithYahoo: true,
+      sourceDetails: {
+        edinet: {
+          enabled: true,
+          reason: 'active',
+          requestedSymbols: 1,
+          matchedFilings: 1,
+          supplementedRows: 1,
+          lookbackDays: 180,
+          asOfDate: '2026-07-20',
+        },
+        profileUnmatched: { rows: 0, sectors: [], industries: [] },
+      },
+      ruleOf40Coverage: { total: 0, complete: 0, revenueOnly: 0, fcfOnly: 0, missingBoth: 0, completePct: 0 },
+      rankingBlocks: rankingBlocksJapan,
+      scannerScope: { market: 'japan', serverLimit: 90 },
+      criteria: {
+        price_pct_of_52wk_high_min: 75,
+        profile_summaries: [],
+        industry_ranking: { missing_industry_count: 0 },
+        japan_fundamentals_policy: '検証済みEDINETを優先',
+      },
+      sectorMomentum: { rankings: [] },
+      industryRanking: [{ sector: 'Process Industries', industry: 'Industrial Specialties' }],
+      results: [
+        {
+          symbol: '4634',
+          exchange: 'TSE',
+          rankScore: 90,
+          rankBreakdown: rankBreakdown(1),
+        },
+      ],
+      unifiedRankedRows: [],
+      unifiedPhase4Ranking: [
+        {
+          symbol: '4634',
+          exchange: 'TSE',
+          unifiedRank: 1,
+          unifiedRankScore: 90,
+          rankScore: 90,
+          sourceBuckets: ['phase4'],
+          sector: 'Process Industries',
+          industry: 'Industrial Specialties',
+          companyNameJa: 'artience',
+          marketCapUsd: 200_000_000_000,
+          perfY: 40,
+          perf6m: 20,
+          perf3m: 10,
+          pctOf52wHigh: 98,
+          roic: 5,
+          grossProfitToAssets: 15,
+          fcfMargin: 4.68,
+          revenueGrowthTtm: 1.3,
+          ruleOf40: 5.98,
+          pFcf: 12,
+          atrPct: 2,
+          rankBreakdown: rankBreakdown(1),
+          metricProvenance: {
+            fcfMargin: {
+              source: 'edinet',
+              status: 'warning',
+              rankEligible: true,
+              finalValue: 4.68,
+              warnings: ['tradingview_edinet_fcf_margin_diff_gte_20pt'],
+            },
+          },
+        },
+      ],
+      unifiedPhase5SectorTopStocks: [],
+      phase5SectorTopStocks: [],
+      audit: {
+        status: 'warning',
+        summary: { warnings: 1, errors: 0, rankChangesOverThreshold: 1, newTop10Entries: 1 },
+        rankChanges: [
+          {
+            symbol: '4634',
+            rankBeforeSupplement: 6,
+            rankAfterSupplement: 1,
+            rankDelta: 5,
+            scoreDelta: 20,
+            changedMetrics: ['fcfMargin'],
+            sources: { fcfMargin: 'edinet' },
+          },
+        ],
+        metricAnomalies: [
+          {
+            symbol: '4634',
+            metricName: 'fcfMargin',
+            value: 4.68,
+            status: 'warning',
+            rankEligible: true,
+            source: 'edinet',
+            reasons: ['tradingview_edinet_fcf_margin_diff_gte_20pt'],
+          },
+        ],
+        evidenceRows: [],
+      },
+    };
+
+    const markdown = buildMarkdown(result, { currencySymbol: '¥' });
+
+    assert.match(markdown, /## 財務データ監査/);
+    assert.match(markdown, /- 監査結果: WARNING/);
+    assert.match(markdown, /\| 4634 \| 6 \| 1 \| 5 \| 20\.00 \| fcfMargin \| edinet \|/);
+    assert.match(markdown, /\| 4634 \| fcfMargin \| 4\.68 \| warning \| 可 \| edinet \|/);
+    assert.match(markdown, /\| 1 \| Phase4 \| Process Industries \| Industrial Specialties \| Unclassified \/ 細粒度タグなし \| \*\*4634 \(artience\)\*\* \| TSE \| WARN \|/);
   });
 
   it('renders an explicit EDINET invalid API key state', () => {

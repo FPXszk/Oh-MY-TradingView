@@ -1,0 +1,196 @@
+const AUDITED_METRICS = [
+  'fcfTtm',
+  'fcfMargin',
+  'fcfGrowthTtm',
+  'cashFromOperationsTtm',
+  'cashConversion',
+  'pFcf',
+  'revenueGrowthTtm',
+];
+
+function rowKey(row) {
+  return `${row.exchange ?? ''}:${row.symbol ?? ''}`.toUpperCase();
+}
+
+function displayName(row) {
+  return row.companyNameJa ? `${row.symbol} (${row.companyNameJa})` : row.symbol;
+}
+
+function getRankingRows(result) {
+  if (Array.isArray(result?.unifiedPhase4Ranking) && result.unifiedPhase4Ranking.length > 0) {
+    return result.unifiedPhase4Ranking;
+  }
+  if (Array.isArray(result?.finalStockRanking) && result.finalStockRanking.length > 0) {
+    return result.finalStockRanking;
+  }
+  return Array.isArray(result?.results) ? result.results : [];
+}
+
+function isFiniteMetric(value) {
+  return value === null || value === undefined || Number.isFinite(Number(value));
+}
+
+function buildTop10(rows, rankField = null, scoreField = null) {
+  return rows
+    .filter((row) => !rankField || (Number.isFinite(row[rankField]) && row[rankField] <= 10))
+    .sort((left, right) => {
+      const leftRank = rankField ? left[rankField] : rows.indexOf(left) + 1;
+      const rightRank = rankField ? right[rankField] : rows.indexOf(right) + 1;
+      return leftRank - rightRank;
+    })
+    .slice(0, 10)
+    .map((row, index) => ({
+      rank: rankField ? row[rankField] : index + 1,
+      symbol: row.symbol,
+      exchange: row.exchange ?? null,
+      companyName: row.companyNameJa ?? row.companyName ?? null,
+      score: scoreField ? row[scoreField] ?? null : row.unifiedRankScore ?? row.rankScore ?? null,
+    }));
+}
+
+function buildRankChanges(rows) {
+  return rows
+    .filter((row) => Number.isFinite(row.rankBeforeSupplement) && Number.isFinite(row.rankAfterSupplement))
+    .map((row) => ({
+      symbol: row.symbol,
+      companyName: row.companyNameJa ?? row.companyName ?? null,
+      rankBeforeSupplement: row.rankBeforeSupplement,
+      rankAfterSupplement: row.rankAfterSupplement,
+      rankDelta: row.rankDelta,
+      scoreBeforeSupplement: row.scoreBeforeSupplement ?? null,
+      scoreAfterSupplement: row.scoreAfterSupplement ?? row.unifiedRankScore ?? row.rankScore ?? null,
+      scoreDelta: row.scoreDelta ?? null,
+      changedMetrics: AUDITED_METRICS.filter((metricName) => {
+        const provenance = row.metricProvenance?.[metricName];
+        return provenance?.previousValue !== undefined && provenance.previousValue !== provenance.finalValue;
+      }),
+      sources: Object.fromEntries(AUDITED_METRICS.map((metricName) => [
+        metricName,
+        row.metricProvenance?.[metricName]?.source ?? null,
+      ])),
+    }))
+    .sort((left, right) => Math.abs(right.rankDelta ?? 0) - Math.abs(left.rankDelta ?? 0));
+}
+
+function buildMetricAnomalies(rows) {
+  const anomalies = [];
+  rows.forEach((row, rowIndex) => {
+    AUDITED_METRICS.forEach((metricName) => {
+      const provenance = row.metricProvenance?.[metricName];
+      const value = row[metricName] ?? provenance?.finalValue ?? null;
+      const warnings = provenance?.warnings ?? [];
+      const status = provenance?.status ?? 'valid';
+      if (status === 'valid' && warnings.length === 0 && isFiniteMetric(value)) return;
+      anomalies.push({
+        symbol: row.symbol,
+        companyName: row.companyNameJa ?? row.companyName ?? null,
+        rank: row.unifiedRank ?? rowIndex + 1,
+        metricName,
+        value,
+        status: !isFiniteMetric(value) ? 'invalid' : status,
+        rankEligible: provenance?.rankEligible ?? true,
+        source: provenance?.source ?? 'unknown',
+        reasons: !isFiniteMetric(value) ? ['non_finite'] : warnings,
+        documentType: provenance?.documentType ?? row.edinetSupplement?.docDescription ?? null,
+        periodStart: provenance?.periodStart ?? null,
+        periodEnd: provenance?.periodEnd ?? null,
+        consolidation: provenance?.consolidation ?? null,
+        currency: provenance?.currency ?? null,
+        sourceFile: provenance?.sourceFile ?? null,
+      });
+    });
+  });
+  return anomalies;
+}
+
+function comparePreviousTop10(previousAudit, currentTop10) {
+  const previous = Array.isArray(previousAudit?.top10CurrentRun) ? previousAudit.top10CurrentRun : [];
+  const previousBySymbol = new Map(previous.map((entry) => [entry.symbol, entry]));
+  return currentTop10.map((entry) => {
+    const before = previousBySymbol.get(entry.symbol);
+    return {
+      ...entry,
+      previousRank: before?.rank ?? null,
+      previousScore: before?.score ?? null,
+      rankDeltaFromPrevious: before?.rank ? before.rank - entry.rank : null,
+      scoreDeltaFromPrevious: Number.isFinite(before?.score) && Number.isFinite(entry.score)
+        ? Number((entry.score - before.score).toFixed(4))
+        : null,
+      isNewTop10FromPrevious: !before,
+    };
+  });
+}
+
+export function buildScreenerAudit(result, { previousAudit = null, generatedAt = new Date().toISOString() } = {}) {
+  const rows = getRankingRows(result);
+  const seen = new Set();
+  const errors = [];
+  rows.forEach((row, index) => {
+    const key = rowKey(row);
+    if (seen.has(key)) errors.push({ symbol: row.symbol, reason: 'duplicate_symbol' });
+    seen.add(key);
+    const score = row.unifiedRankScore ?? row.rankScore;
+    if (!Number.isFinite(Number(score))) {
+      errors.push({ symbol: row.symbol, reason: 'score_non_finite', rank: index + 1 });
+    }
+  });
+
+  const metricAnomalies = buildMetricAnomalies(rows);
+  const criticalMetricAnomalies = metricAnomalies.filter((entry) => (
+    entry.status === 'invalid'
+    && entry.rankEligible === false
+    && rows.find((row) => row.symbol === entry.symbol)?.[entry.metricName] !== null
+    && rows.find((row) => row.symbol === entry.symbol)?.[entry.metricName] !== undefined
+  ));
+  const top3RankIneligible = rows.slice(0, 3).flatMap((row) => AUDITED_METRICS
+    .filter((metricName) => row.metricProvenance?.[metricName]?.rankEligible === false && row[metricName] !== null && row[metricName] !== undefined)
+    .map((metricName) => ({ symbol: row.symbol, metricName, reason: 'top3_rank_ineligible_metric_used' })));
+  const edinetEvidenceErrors = rows.flatMap((row) => AUDITED_METRICS
+    .filter((metricName) => {
+      const provenance = row.metricProvenance?.[metricName];
+      return provenance?.source === 'edinet'
+        && provenance.rankEligible !== false
+        && (!provenance.documentType || !provenance.consolidation || !provenance.currency);
+    })
+    .map((metricName) => ({ symbol: row.symbol, metricName, reason: 'edinet_evidence_incomplete' })));
+  const rankChanges = buildRankChanges(rows);
+  const top10BeforeSupplement = buildTop10(rows, 'rankBeforeSupplement', 'scoreBeforeSupplement');
+  const top10AfterSupplement = buildTop10(rows, 'rankAfterSupplement', 'scoreAfterSupplement');
+  const top10CurrentRun = buildTop10(rows);
+  const top10PreviousRun = comparePreviousTop10(previousAudit, top10CurrentRun);
+  const top10AfterSymbols = new Set(top10AfterSupplement.map((entry) => entry.symbol));
+  const top10BeforeSymbols = new Set(top10BeforeSupplement.map((entry) => entry.symbol));
+  const criticals = [
+    ...errors,
+    ...criticalMetricAnomalies,
+    ...top3RankIneligible,
+    ...edinetEvidenceErrors,
+  ];
+
+  return {
+    generatedAt,
+    market: result?.scannerScope?.market ?? 'unknown',
+    status: criticals.length > 0 ? 'critical' : metricAnomalies.length > 0 || rankChanges.some((entry) => Math.abs(entry.rankDelta ?? 0) >= 5) ? 'warning' : 'ok',
+    summary: {
+      validMetrics: rows.reduce((sum, row) => sum + AUDITED_METRICS.filter((metricName) => row.metricProvenance?.[metricName]?.status === 'valid').length, 0),
+      warnings: metricAnomalies.filter((entry) => entry.status === 'warning').length,
+      errors: criticals.length,
+      rankChangesOverThreshold: rankChanges.filter((entry) => Math.abs(entry.rankDelta ?? 0) >= 5).length,
+      newTop10Entries: [...top10AfterSymbols].filter((symbol) => !top10BeforeSymbols.has(symbol)).length,
+    },
+    metricAnomalies,
+    criticals,
+    rankChanges,
+    top10BeforeSupplement,
+    top10AfterSupplement,
+    top10PreviousRun,
+    top10CurrentRun,
+    evidenceRows: rows.slice(0, 20).map((row, index) => ({
+      rank: row.unifiedRank ?? index + 1,
+      symbol: row.symbol,
+      companyName: displayName(row),
+      metricProvenance: row.metricProvenance ?? {},
+      edinetSupplement: row.edinetSupplement ?? null,
+    })),
+  };
+}

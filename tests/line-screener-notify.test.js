@@ -17,6 +17,12 @@ describe('LINE screener notification helpers', () => {
       runId: '26924672477',
       runAttempt: '1',
       refName: 'main',
+      audit: {
+        status: 'warning',
+        summary: { newTop10Entries: 1, warnings: 2 },
+        rankChanges: [{ symbol: '4634', rankDelta: 5 }],
+        metricAnomalies: [{ symbol: '4634', metricName: 'fcfMargin', reasons: ['diff'] }],
+      },
       reportText: [
         '# スクリーニング結果 2026/06/04（木）',
         '',
@@ -43,6 +49,8 @@ describe('LINE screener notification helpers', () => {
     assert.match(text, /daily-screener 完了/);
     assert.match(text, /Phase1 1位: Electronic Technology/);
     assert.match(text, /Top3: WDC, STX, MU/);
+    assert.match(text, /監査: WARNING/);
+    assert.match(text, /財務指標警告: 2件/);
     assert.match(text, /run: https:\/\/github\.com\/FPXszk\/Oh-MY-TradingView\/actions\/runs\/26924672477/);
   });
 
@@ -54,12 +62,18 @@ describe('LINE screener notification helpers', () => {
       runId: '26950254326',
       runAttempt: '2',
       refName: 'main',
+      audit: {
+        status: 'critical',
+        summary: { errors: 1 },
+        criticals: [{ symbol: '2222', metricName: 'fcfMargin', reason: 'top3_rank_ineligible_metric_used' }],
+      },
       reportText: '',
     });
 
     assert.match(text, /daily-screener-japan 失敗/);
     assert.match(text, /run_attempt: 2/);
-    assert.match(text, /report は未生成または未読込/);
+    assert.match(text, /監査: CRITICAL/);
+    assert.match(text, /重大エラー: 1件/);
   });
 
   it('skips notification when the required LINE secrets are absent', () => {

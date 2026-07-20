@@ -6,7 +6,9 @@ param(
 
     [string]$ReportPath = 'docs/reports/screener/daily-ranking.md',
 
-    [string]$MetadataPath = 'docs/reports/screener/daily-ranking-run.json'
+    [string]$MetadataPath = 'docs/reports/screener/daily-ranking-run.json',
+
+    [string]$AuditPath = ''
 )
 
 $ErrorActionPreference = 'Stop'
@@ -23,6 +25,9 @@ function Resolve-CheckoutFile {
 
 Resolve-CheckoutFile -RelativePath $ReportPath | Out-Null
 Resolve-CheckoutFile -RelativePath $MetadataPath | Out-Null
+if (-not [string]::IsNullOrWhiteSpace($AuditPath)) {
+    Resolve-CheckoutFile -RelativePath $AuditPath | Out-Null
+}
 
 $origin = (& git remote get-url origin).Trim()
 if ($LASTEXITCODE -ne 0) {
@@ -60,7 +65,11 @@ if ($head -ne $originMain) {
     throw 'checkout HEAD must match origin/main before publishing reports'
 }
 
-& git add -- $ReportPath $MetadataPath
+if ([string]::IsNullOrWhiteSpace($AuditPath)) {
+    & git add -- $ReportPath $MetadataPath
+} else {
+    & git add -- $ReportPath $MetadataPath $AuditPath
+}
 if ($LASTEXITCODE -ne 0) {
     throw 'git add failed'
 }

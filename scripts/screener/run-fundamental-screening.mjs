@@ -9,10 +9,12 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runFundamentalScreener } from '../../src/core/fundamental-screener.js';
+import { buildScreenerAudit } from '../../src/core/screener-audit.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(__dirname, '..', '..');
 const DEFAULT_REPORT_PATH = join(REPO_ROOT, 'docs', 'reports', 'screener', 'daily-ranking.md');
+const DEFAULT_AUDIT_PATH = join(REPO_ROOT, 'docs', 'reports', 'screener', 'daily-ranking-audit.json');
 const DEFAULT_CURRENCY_SYMBOL = '$';
 const TECHNICAL_BREAKDOWN_KEYS = ['priceMomentum', 'sectorStrength'];
 const FUNDAMENTAL_BREAKDOWN_KEYS = ['quality', 'growth', 'riskValue', 'ruleOf40'];
@@ -291,17 +293,30 @@ function buildRankingMetricCells(row, market, populationSize, currencySymbol) {
   ];
 }
 
+function formatDataQuality(row) {
+  const provenance = row.metricProvenance ?? {};
+  const statuses = Object.values(provenance);
+  if (statuses.some((entry) => entry?.rankEligible === false || entry?.status === 'invalid')) return 'INVALID';
+  if (statuses.some((entry) => entry?.status === 'warning' || (entry?.warnings ?? []).length > 0)) return 'WARN';
+  if (statuses.some((entry) => entry?.source === 'edinet')) return 'EDINET✓';
+  if (statuses.some((entry) => entry?.source === 'tradingview')) return 'TV';
+  return '-';
+}
+
 function buildPhase4RankingRow(row, rank, market, populationSize, currencySymbol, includeThemeColumn = false) {
   const metricCells = buildRankingMetricCells(row, market, populationSize, currencySymbol).join(' | ');
   const themeCell = includeThemeColumn ? ` | ${formatThemeLine(row)}` : '';
-  return `| ${rank} | ${formatSourceBuckets(row.sourceBuckets)} | ${row.sector ?? 'Unknown'} | ${row.industry ?? 'Unknown'}${themeCell} | **${formatSymbolWithCompanyName(row, market)}** | ${row.exchange ?? '-'} | ${metricCells} |`;
+  const qualityCell = market === 'japan' ? ` | ${formatDataQuality(row)}` : '';
+  return `| ${rank} | ${formatSourceBuckets(row.sourceBuckets)} | ${row.sector ?? 'Unknown'} | ${row.industry ?? 'Unknown'}${themeCell} | **${formatSymbolWithCompanyName(row, market)}** | ${row.exchange ?? '-'}${qualityCell} | ${metricCells} |`;
 }
 
-function appendPhase4RankingTableHeader(lines, includeThemeColumn = false) {
+function appendPhase4RankingTableHeader(lines, includeThemeColumn = false, market = null) {
   const themeHeader = includeThemeColumn ? ' テーマ |' : '';
   const themeAlign = includeThemeColumn ? ':---|' : '';
-  lines.push(`| 順位 | 出所 | セクター | Industry |${themeHeader} シンボル | 市場 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCFマージン | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 (T/F) |`);
-  lines.push(`|:---:|:---:|:---|:---|${themeAlign}:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|:---|---:|---:|---:|`);
+  const qualityHeader = market === 'japan' ? ' 品質 |' : '';
+  const qualityAlign = market === 'japan' ? ':---:|' : '';
+  lines.push(`| 順位 | 出所 | セクター | Industry |${themeHeader} シンボル | 市場 |${qualityHeader} 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCFマージン | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 (T/F) |`);
+  lines.push(`|:---:|:---:|:---|:---|${themeAlign}:---|:---:|${qualityAlign}:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|:---|---:|---:|---:|`);
 }
 
 function formatSourceBuckets(sourceBuckets) {
@@ -409,6 +424,71 @@ function buildSourceCoverageLines(result) {
     `- EDINET: ${edinet.reason} / 対象 ${edinet.requestedSymbols}銘柄 / 書類一致 ${edinet.matchedFilings}件 / 指標補完 ${edinet.supplementedRows}銘柄`,
     `- EDINET lookback: ${edinet.lookbackDays ?? 'N/A'}日 / as-of ${edinet.asOfDate ?? 'N/A'}`,
   ];
+}
+
+function buildAuditLines(audit) {
+  if (!audit) return [];
+  const label = audit.status === 'critical'
+    ? 'CRITICAL'
+    : audit.status === 'warning'
+      ? 'WARNING'
+      : 'OK';
+  const lines = [
+    '## 財務データ監査',
+    '',
+    `- 監査結果: ${label}`,
+    `- 検証済みEDINET補完: ${audit.evidenceRows?.filter((row) => Object.values(row.metricProvenance ?? {}).some((entry) => entry?.source === 'edinet')).length ?? 0}銘柄`,
+    `- 警告: ${audit.summary?.warnings ?? 0}件`,
+    `- エラー: ${audit.summary?.errors ?? 0}件`,
+    `- 補完により5位以上変動: ${audit.summary?.rankChangesOverThreshold ?? 0}銘柄`,
+    `- 補完によるTop10新規流入: ${audit.summary?.newTop10Entries ?? 0}銘柄`,
+    '',
+    '### 補完前後の順位差分',
+    '',
+    '| 銘柄 | 補完前 | 補完後 | 変動 | スコア差 | 主な変更指標 | 出所 |',
+    '|---|---:|---:|---:|---:|---|---|',
+  ];
+  const rankChanges = (audit.rankChanges ?? []).slice(0, 10);
+  if (rankChanges.length === 0) {
+    lines.push('| - | - | - | - | - | - | - |');
+  } else {
+    rankChanges.forEach((entry) => {
+      const sources = [...new Set(Object.values(entry.sources ?? {}).filter(Boolean))].join(', ') || '-';
+      lines.push(`| ${entry.symbol} | ${entry.rankBeforeSupplement ?? '-'} | ${entry.rankAfterSupplement ?? '-'} | ${entry.rankDelta ?? '-'} | ${fmt(entry.scoreDelta, 2)} | ${entry.changedMetrics?.join(', ') || '-'} | ${sources} |`);
+    });
+  }
+  lines.push('');
+  lines.push('### 異常値・要確認指標');
+  lines.push('');
+  lines.push('| 銘柄 | 指標 | 値 | 状態 | ランキング利用 | 出所 | 理由 |');
+  lines.push('|---|---|---:|---|:---:|---|---|');
+  const anomalies = (audit.metricAnomalies ?? []).slice(0, 20);
+  if (anomalies.length === 0) {
+    lines.push('| - | - | - | OK | - | - | - |');
+  } else {
+    anomalies.forEach((entry) => {
+      lines.push(`| ${entry.symbol} | ${entry.metricName} | ${fmt(entry.value, 2)} | ${entry.status} | ${entry.rankEligible ? '可' : '不可'} | ${entry.source} | ${entry.reasons?.join(', ') || '-'} |`);
+    });
+  }
+  lines.push('');
+  lines.push('### EDINET抽出元（上位）');
+  lines.push('');
+  lines.push('| 銘柄 | 売上 | 営業CF | CAPEX | FCF | 純利益 | 対象期間 | 連結/個別 | 単位 | 書類種別 | 提出日 |');
+  lines.push('|---|---:|---:|---:|---:|---:|---|---|---|---|---|');
+  const evidenceRows = (audit.evidenceRows ?? [])
+    .filter((entry) => entry.edinetSupplement?.extractedFacts)
+    .slice(0, 10);
+  if (evidenceRows.length === 0) {
+    lines.push('| - | - | - | - | - | - | - | - | - | - | - |');
+  } else {
+    evidenceRows.forEach((entry) => {
+      const facts = entry.edinetSupplement.extractedFacts;
+      const provenance = facts.provenance?.revenueCurrent ?? {};
+      lines.push(`| ${entry.symbol} | ${fmt(facts.revenueCurrent, 0)} | ${fmt(facts.operatingCashFlowCurrent, 0)} | ${fmt(facts.capexCurrent, 0)} | ${fmt(entry.metricProvenance?.fcfTtm?.finalValue, 0)} | ${fmt(facts.netIncomeCurrent, 0)} | ${provenance.periodStart ?? '-'}-${provenance.periodEnd ?? '-'} | ${provenance.consolidation ?? '-'} | ${provenance.currency ?? '-'} | ${entry.edinetSupplement.docDescription ?? '-'} | ${entry.edinetSupplement.submitDateTime ?? '-'} |`);
+    });
+  }
+  lines.push('');
+  return lines;
 }
 
 function buildMarketLines(label, entries) {
@@ -594,8 +674,14 @@ function formatUsdThreshold(value) {
 }
 
 function getRuntimeConfig() {
+  const market = process.env.SCREENER_MARKET || 'america';
+  const auditEnabled = Boolean(process.env.SCREENER_AUDIT_PATH) || market === 'japan';
   return {
     reportPath: process.env.SCREENER_REPORT_PATH ? join(REPO_ROOT, process.env.SCREENER_REPORT_PATH) : DEFAULT_REPORT_PATH,
+    auditPath: auditEnabled
+      ? (process.env.SCREENER_AUDIT_PATH ? join(REPO_ROOT, process.env.SCREENER_AUDIT_PATH) : DEFAULT_AUDIT_PATH)
+      : null,
+    auditStrict: process.env.SCREENER_AUDIT_STRICT === 'true',
     title: process.env.SCREENER_REPORT_TITLE || null,
     currencySymbol: process.env.SCREENER_CURRENCY_SYMBOL || DEFAULT_CURRENCY_SYMBOL,
     workflowLabel: process.env.SCREENER_WORKFLOW_LABEL || 'daily-screener',
@@ -603,7 +689,7 @@ function getRuntimeConfig() {
       ? Number(process.env.SCREENER_RESULT_LIMIT)
       : 90,
     screenerOptions: {
-      market: process.env.SCREENER_MARKET || 'america',
+      market,
       exchangeAllowlist: parseExchangeAllowlist(process.env.SCREENER_EXCHANGES),
       forcePhase1Sectors: parseCsvList(process.env.SCREENER_FORCE_PHASE1_SECTORS),
       extraPhase1Sectors: parseCsvList(process.env.SCREENER_EXTRA_PHASE1_SECTORS),
@@ -631,6 +717,15 @@ function getRuntimeConfig() {
       edinetApiKey: process.env.EDINET_API_KEY || undefined,
     },
   };
+}
+
+function readJsonIfExists(path) {
+  if (!path || !existsSync(path)) return null;
+  try {
+    return JSON.parse(readFileSync(path, 'utf8'));
+  } catch {
+    return null;
+  }
 }
 
 export function buildMarkdown(result, options = {}) {
@@ -768,7 +863,7 @@ export function buildMarkdown(result, options = {}) {
       if (!phase4Rows || phase4Rows.length === 0) {
         lines.push('- 個別銘柄ランキングは算出できませんでした。');
       } else {
-        appendPhase4RankingTableHeader(lines, includeThemeColumn);
+        appendPhase4RankingTableHeader(lines, includeThemeColumn, market);
         phase4Rows.forEach((row, index) => {
           lines.push(buildPhase4RankingRow(row, row.unifiedRank ?? index + 1, market, stockPopulationSize, currencySymbol, includeThemeColumn));
         });
@@ -906,6 +1001,10 @@ export function buildMarkdown(result, options = {}) {
     lines.push('');
   }
 
+  if (market === 'japan' && result.audit) {
+    lines.push(...buildAuditLines(result.audit));
+  }
+
   lines.push('---');
   lines.push('');
   lines.push('**スコア算出:**');
@@ -988,6 +1087,16 @@ async function main() {
     }
   }
 
+  const audit = runtime.auditPath
+    ? buildScreenerAudit(result, { previousAudit: readJsonIfExists(runtime.auditPath) })
+    : null;
+  if (audit) {
+    result = {
+      ...result,
+      audit,
+    };
+  }
+
   const md = buildMarkdown(result, {
     title: runtime.title,
     currencySymbol: runtime.currencySymbol,
@@ -995,6 +1104,15 @@ async function main() {
   mkdirSync(dirname(runtime.reportPath), { recursive: true });
   writeFileSync(runtime.reportPath, md, 'utf8');
   console.log(`[screener] Report written to ${runtime.reportPath}`);
+  if (audit && runtime.auditPath) {
+    mkdirSync(dirname(runtime.auditPath), { recursive: true });
+    writeFileSync(runtime.auditPath, JSON.stringify(audit, null, 2), 'utf8');
+    console.log(`[screener] Audit written to ${runtime.auditPath} status=${audit.status}`);
+  }
+  if (audit && runtime.auditStrict && audit.status === 'critical') {
+    console.error(`[screener] audit critical errors=${audit.summary.errors}`);
+    process.exitCode = 1;
+  }
 }
 
 if (process.argv[1] && process.argv[1] === fileURLToPath(import.meta.url)) {

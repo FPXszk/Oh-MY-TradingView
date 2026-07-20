@@ -12,6 +12,8 @@ jobs:
       SCREENER_WORKFLOW_LABEL: daily-screener-japan
       SCREENER_REPORT_PATH: docs/reports/screener/daily-ranking-jp.md
       SCREENER_METADATA_PATH: docs/reports/screener/daily-ranking-jp-run.json
+      SCREENER_AUDIT_PATH: docs/reports/screener/daily-ranking-jp-audit.json
+      SCREENER_AUDIT_STRICT: 'true'
       SCREENER_RESULT_LIMIT: '90'
       SCREENER_MARKET: japan
       SCREENER_EXCHANGES: TSE
@@ -44,6 +46,9 @@ jobs:
           if (-not (Test-Path '${{ env.SCREENER_REPORT_PATH }}')) {
             throw '${{ env.SCREENER_REPORT_PATH }} was not created by the screener step'
           }
+          if (-not (Test-Path '${{ env.SCREENER_AUDIT_PATH }}')) {
+            throw '${{ env.SCREENER_AUDIT_PATH }} was not created by the screener step'
+          }
 
       - name: Write screener run metadata
         shell: pwsh
@@ -75,6 +80,7 @@ jobs:
           path: |
             ${{ env.SCREENER_REPORT_PATH }}
             ${{ env.SCREENER_METADATA_PATH }}
+            ${{ env.SCREENER_AUDIT_PATH }}
           if-no-files-found: warn
 
       - name: Publish screener report to main
@@ -84,6 +90,7 @@ jobs:
           powershell -NoProfile -ExecutionPolicy Bypass -File scripts/windows/github-actions/sync-daily-screener-report-to-main.ps1 `
             -ReportPath "${{ env.SCREENER_REPORT_PATH }}" `
             -MetadataPath "${{ env.SCREENER_METADATA_PATH }}" `
+            -AuditPath "${{ env.SCREENER_AUDIT_PATH }}" `
             -CommitMessage "docs: daily screener japan report run ${{ github.run_id }}-${{ github.run_attempt }}"
 
       - name: Notify LINE on success
@@ -95,6 +102,7 @@ jobs:
           LINE_WORKFLOW_LABEL: ${{ env.SCREENER_WORKFLOW_LABEL }}
           LINE_REPORT_PATH: ${{ env.SCREENER_REPORT_PATH }}
           LINE_METADATA_PATH: ${{ env.SCREENER_METADATA_PATH }}
+          LINE_AUDIT_PATH: ${{ env.SCREENER_AUDIT_PATH }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_RUN_ID: ${{ github.run_id }}
           GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
@@ -110,6 +118,7 @@ jobs:
           LINE_WORKFLOW_LABEL: ${{ env.SCREENER_WORKFLOW_LABEL }}
           LINE_REPORT_PATH: ${{ env.SCREENER_REPORT_PATH }}
           LINE_METADATA_PATH: ${{ env.SCREENER_METADATA_PATH }}
+          LINE_AUDIT_PATH: ${{ env.SCREENER_AUDIT_PATH }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_RUN_ID: ${{ github.run_id }}
           GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
