@@ -1,10 +1,10 @@
 {
   "workflow": "daily-screener-japan",
   "report_path": "docs/reports/screener/daily-ranking-jp.md",
-  "run_id": "29758586364",
+  "run_id": "29761670126",
   "run_attempt": "1",
-  "run_number": "36",
+  "run_number": "37",
   "ref_name": "main",
-  "sha": "b97425d1567d00a62e25a5baa3cae71093ac3db4",
-  "generated_at": "2026-07-20T16:14:07Z"
+  "sha": "7da4a9a3136b3b94bc5fb9ed692711f52ba70f2d",
+  "generated_at": "2026-07-20T16:57:03Z"
 }
