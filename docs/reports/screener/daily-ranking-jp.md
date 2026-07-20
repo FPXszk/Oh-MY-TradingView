@@ -1,6 +1,6 @@
 # スクリーニング結果 2026/07/20（月）
 
-更新: 23:53 JST
+更新: 23:58 JST
 
 セクター別取得候補 311銘柄 → ユニバース条件通過 180銘柄 → ランキング対象 68銘柄 → レポート掲載 40銘柄
 
@@ -75,45 +75,45 @@
 | 順位 | 出所 | セクター | Industry | テーマ | シンボル | 市場 | 品質 | 時価総額 | 12M | 6M | 3M | 52w | ROIC | GP/A | FCFマージン | 売上YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 (T/F) |
 |:---:|:---:|:---|:---|:---|:---|:---:|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|:---|---:|---:|---:|
 | 1 | Phase5 | Consumer Services | Other Consumer Services | Unclassified / 細粒度タグなし | **2371 (カカクコム)** | TSE | TV | ¥710.1B (M+) | 36.3% | 56.5% | 68.8% | 98.0% | 28.5% | 29.4% | 26.1% | 20.0% | 46.1 | -6.2% | 29.1 | 1.5% | 69.23 (T31.0/F38.2) |
-| 2 | Both | Process Industries | Industrial Specialties | Chemicals / Materials / 細粒度タグなし | **7966 (リンテック)** | TSE | EDINET✓ | ¥460.7B (M) | 125.6% | 43.7% | 37.8% | 91.8% | 6.7% | 23.8% | 5.7% | 1.1% | 6.8 | 25.2% | 25.3 | 4.1% | 68.59 (T41.3/F27.3) |
-| 3 | Both | Process Industries | Industrial Specialties | Chemicals / Materials / 細粒度タグなし | **5186 (ニッタ)** | TSE | WARN | ¥179.9B (M-) | 66.0% | 51.0% | 43.7% | 96.2% | 8.5% | 13.5% | 5.7% | 1.7% | 7.4 | 12.4% | 34.6 | 3.3% | 67.52 (T43.4/F24.1) |
-| 4 | Phase5 | Technology Services | Internet Software/Services | AI / Data Center / AI Infrastructure | **6098 (リクルートホールディングス)** | TSE | TV | ¥17.40T (XL) | 57.3% | 38.3% | 75.6% | 99.5% | 28.3% | 76.7% | 17.8% | 3.9% | 21.8 | 30.1% | 27.2 | 3.1% | 66.96 (T30.9/F36.0) |
-| 5 | Both | Electronic Technology | Computer Peripherals | Electronic Components / 細粒度タグなし | **6448 (ブラザー工業)** | TSE | EDINET✓ | ¥973.8B (M+) | 50.9% | 16.8% | 23.2% | 97.1% | 8.3% | 37.3% | 8.8% | -12.2% | -3.4 | 25.1% | 12.1 | 2.3% | 66.85 (T33.2/F33.6) |
+| 2 | Both | Process Industries | Industrial Specialties | Chemicals / Materials / 細粒度タグなし | **7966 (リンテック)** | TSE | EDINET✓ | ¥460.7B (M) | 125.6% | 43.7% | 37.8% | 91.8% | 6.7% | 23.8% | 5.7% | 1.1% | 6.8 | 25.2% | 25.3 | 4.1% | 69.16 (T41.3/F27.9) |
+| 3 | Both | Process Industries | Industrial Specialties | Chemicals / Materials / 細粒度タグなし | **5186 (ニッタ)** | TSE | WARN | ¥179.9B (M-) | 66.0% | 51.0% | 43.7% | 96.2% | 8.5% | 13.5% | 5.7% | 1.7% | 7.4 | 12.4% | 34.6 | 3.3% | 68.20 (T43.4/F24.8) |
+| 4 | Both | Electronic Technology | Computer Peripherals | Electronic Components / 細粒度タグなし | **6448 (ブラザー工業)** | TSE | EDINET✓ | ¥973.8B (M+) | 50.9% | 16.8% | 23.2% | 97.1% | 8.3% | 37.3% | 8.8% | -12.2% | -3.4 | 25.1% | 12.1 | 2.3% | 67.80 (T33.2/F34.6) |
+| 5 | Phase5 | Technology Services | Internet Software/Services | AI / Data Center / AI Infrastructure | **6098 (リクルートホールディングス)** | TSE | TV | ¥17.40T (XL) | 57.3% | 38.3% | 75.6% | 99.5% | 28.3% | 76.7% | 17.8% | 3.9% | 21.8 | 30.1% | 27.2 | 3.1% | 66.96 (T30.9/F36.0) |
 | 6 | Phase5 | Consumer Non-Durables | Food: Specialty/Candy | Unclassified / 細粒度タグなし | **2222 (寿スピリッツ)** | TSE | EDINET✓ | ¥404.5B (M) | 25.8% | 42.8% | 29.9% | 97.5% | 28.5% | 80.5% | 14.4% | 8.9% | 23.3 | 4.3% | 35.6 | 2.7% | 64.79 (T28.0/F36.8) |
 | 7 | Both | Producer Manufacturing | Auto Parts: OEM | Unclassified / 細粒度タグなし | **7236 (ティラド)** | TSE | EDINET✓ | ¥87.3B (S) | 222.9% | 69.0% | 64.5% | 92.9% | 13.1% | 23.2% | 3.0% | 1.9% | 4.9 | 122.0% | 17.8 | 4.2% | 64.54 (T37.3/F27.2) |
-| 8 | Both | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **7735 (ＳＣＲＥＥＮホールディングス)** | TSE | TV | ¥3.08T (L) | 173.3% | 86.6% | 48.9% | 83.5% | 20.2% | 32.3% | 11.1% | -3.1% | 8.0 | -5.1% | 46.9 | 7.8% | 62.60 (T34.0/F28.6) |
-| 9 | Both | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **6237 (イワキポンプ)** | TSE | EDINET✓ | ¥96.5B (S) | 69.2% | 55.1% | 63.5% | 94.0% | 11.6% | 33.6% | 5.3% | 4.2% | 9.5 | 7.9% | 38.5 | 5.5% | 62.56 (T35.7/F26.8) |
+| 8 | Both | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **6237 (イワキポンプ)** | TSE | EDINET✓ | ¥96.5B (S) | 69.2% | 55.1% | 63.5% | 94.0% | 11.6% | 33.6% | 5.3% | 4.2% | 9.5 | 7.9% | 38.5 | 5.5% | 63.43 (T35.7/F27.7) |
+| 9 | Both | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **7735 (ＳＣＲＥＥＮホールディングス)** | TSE | TV | ¥3.08T (L) | 173.3% | 86.6% | 48.9% | 83.5% | 20.2% | 32.3% | 11.1% | -3.1% | 8.0 | -5.1% | 46.9 | 7.8% | 62.85 (T34.0/F28.8) |
 | 10 | Both | Process Industries | Containers/Packaging | Chemicals / Materials / 細粒度タグなし | **3946 (トーモク)** | TSE | EDINET✓ | ¥71.0B (S) | 43.9% | 18.7% | 26.8% | 98.3% | 5.1% | 18.1% | 2.4% | 2.0% | 4.4 | 12.9% | 13.3 | 2.0% | 62.36 (T38.6/F23.8) |
-| 11 | Phase4 | Process Industries | Industrial Specialties | Chemicals / Materials / 細粒度タグなし | **4634 (ａｒｔｉｅｎｃｅ)** | TSE | EDINET✓ | ¥204.8B (M-) | 45.4% | 24.1% | 13.4% | 98.9% | 4.7% | 16.8% | 3.5% | -0.3% | 3.2 | -12.9% | 16.9 | 2.4% | 61.97 (T37.6/F24.3) |
-| 12 | Phase4 | Process Industries | Chemicals: Specialty | Chemicals / Materials / Advanced Materials | **7970 (信越ポリマー)** | TSE | EDINET✓ | ¥193.3B (M-) | 36.5% | 11.6% | 11.8% | 93.8% | 7.8% | 22.6% | 8.9% | 4.1% | 13.0 | 5.1% | 18.9 | 3.2% | 61.33 (T29.2/F32.1) |
-| 13 | Phase4 | Process Industries | Chemicals: Specialty | Chemicals / Materials / Advanced Materials | **3407 (旭化成)** | TSE | EDINET✓ | ¥2.49T (L) | 80.9% | 22.7% | 13.5% | 96.0% | 5.6% | 24.4% | 3.0% | 1.2% | 4.2 | 19.4% | 27.0 | 2.7% | 61.32 (T37.9/F23.5) |
-| 14 | Both | Electronic Technology | Semiconductors | AI / Data Center / Data Center Memory | **6323 (ローツェ)** | TSE | EDINET✓ | ¥775.2B (M+) | 131.7% | 41.4% | 16.9% | 84.7% | 16.2% | 25.9% | 20.8% | 3.5% | 24.3 | 11.0% | 29.0 | 8.8% | 61.17 (T30.7/F30.4) |
+| 11 | Phase4 | Process Industries | Industrial Specialties | Chemicals / Materials / 細粒度タグなし | **4634 (ａｒｔｉｅｎｃｅ)** | TSE | EDINET✓ | ¥204.8B (M-) | 45.4% | 24.1% | 13.4% | 98.9% | 4.7% | 16.8% | 3.5% | -0.3% | 3.2 | -12.9% | 16.9 | 2.4% | 62.30 (T37.6/F24.7) |
+| 12 | Phase4 | Process Industries | Chemicals: Specialty | Chemicals / Materials / Advanced Materials | **7970 (信越ポリマー)** | TSE | EDINET✓ | ¥193.3B (M-) | 36.5% | 11.6% | 11.8% | 93.8% | 7.8% | 22.6% | 8.9% | 4.1% | 13.0 | 5.1% | 18.9 | 3.2% | 62.17 (T29.2/F32.9) |
+| 13 | Both | Electronic Technology | Semiconductors | AI / Data Center / Data Center Memory | **6323 (ローツェ)** | TSE | EDINET✓ | ¥775.2B (M+) | 131.7% | 41.4% | 16.9% | 84.7% | 16.2% | 25.9% | 20.8% | 3.5% | 24.3 | 11.0% | 29.0 | 8.8% | 61.96 (T30.7/F31.2) |
+| 14 | Phase4 | Process Industries | Chemicals: Specialty | Chemicals / Materials / Advanced Materials | **3407 (旭化成)** | TSE | EDINET✓ | ¥2.49T (L) | 80.9% | 22.7% | 13.5% | 96.0% | 5.6% | 24.4% | 3.0% | 1.2% | 4.2 | 19.4% | 27.0 | 2.7% | 61.93 (T37.9/F24.1) |
 | 15 | Phase5 | Retail Trade | Catalog/Specialty Distribution | Unclassified / 細粒度タグなし | **8005 (スクロール)** | TSE | EDINET✓ | ¥59.3B (S) | 61.1% | 25.1% | 26.4% | 94.9% | 7.5% | 62.1% | 6.8% | 5.4% | 12.2 | -35.0% | 9.8 | 1.6% | 60.89 (T26.3/F34.6) |
 | 16 | Phase5 | Retail Trade | Specialty Stores | Unclassified / 細粒度タグなし | **2674 (ハードオフコーポレーション)** | TSE | EDINET✓ | ¥38.1B (S) | 62.4% | 30.7% | 32.0% | 97.6% | 12.8% | 84.4% | 2.4% | 17.1% | 19.6 | 8.8% | 39.8 | 2.9% | 60.54 (T30.4/F30.2) |
-| 17 | Phase4 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **6266 (タツモ)** | TSE | EDINET✓ | ¥67.2B (S) | 107.6% | 75.8% | 69.1% | 84.0% | 9.0% | 21.2% | 22.4% | -1.2% | 21.2 | -39.5% | 8.5 | 8.4% | 60.05 (T33.1/F26.9) |
-| 18 | Phase4 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **6136 (オーエスジー)** | TSE | INVALID | ¥346.3B (M) | 100.8% | 47.0% | 26.5% | 88.6% | 9.3% | 26.1% | N/A% | 13.0% | 売上13.0% / FCF欠け | 65.7% | N/A | 4.6% | 59.47 (T30.9/F28.5) |
+| 17 | Phase4 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **6136 (オーエスジー)** | TSE | INVALID | ¥346.3B (M) | 100.8% | 47.0% | 26.5% | 88.6% | 9.3% | 26.1% | N/A% | 13.0% | 売上13.0% / FCF欠け | 65.7% | N/A | 4.6% | 60.22 (T30.9/F29.3) |
+| 18 | Phase4 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **6266 (タツモ)** | TSE | EDINET✓ | ¥67.2B (S) | 107.6% | 75.8% | 69.1% | 84.0% | 9.0% | 21.2% | 22.4% | -1.2% | 21.2 | -39.5% | 8.5 | 8.4% | 60.05 (T33.1/F26.9) |
 | 19 | Phase4 | Process Industries | Pulp & Paper | Chemicals / Materials / 細粒度タグなし | **3708 (特種東海製紙)** | TSE | EDINET✓ | ¥76.8B (S) | 58.9% | 20.8% | 27.5% | 97.6% | 4.6% | 9.3% | 1.5% | 0.7% | 2.2 | 22.3% | 52.2 | 2.2% | 59.29 (T39.5/F19.7) |
-| 20 | Phase4 | Process Industries | Agricultural Commodities/Milling | Chemicals / Materials / 細粒度タグなし | **1375 (ユキグニファクトリー)** | TSE | EDINET✓ | ¥46.0B (S) | 3.6% | 6.8% | 9.3% | 97.0% | 11.0% | 37.2% | 6.4% | 2.6% | 9.0 | 97.0% | 18.9 | 1.4% | 58.54 (T25.0/F33.6) |
-| 21 | Phase5 | Distribution Services | Medical Distributors | Unclassified / 細粒度タグなし | **8283 (ＰＡＬＴＡＣ)** | TSE | EDINET✓ | ¥405.0B (M) | 57.7% | 32.4% | 40.6% | 98.9% | 7.5% | 17.2% | 1.8% | 4.2% | 6.0 | -2.0% | 17.9 | 0.4% | 58.51 (T32.2/F26.3) |
-| 22 | Both | Transportation | Trucking | Unclassified / 細粒度タグなし | **9304 (澁澤倉庫)** | TSE | WARN | ¥120.4B (M-) | 87.1% | 47.8% | 47.5% | 95.1% | 7.2% | 7.1% | 4.5% | 1.4% | 6.0 | 32.7% | 33.3 | 3.7% | 58.47 (T37.4/F21.1) |
+| 20 | Both | Transportation | Trucking | Unclassified / 細粒度タグなし | **9304 (澁澤倉庫)** | TSE | WARN | ¥120.4B (M-) | 87.1% | 47.8% | 47.5% | 95.1% | 7.2% | 7.1% | 4.5% | 1.4% | 6.0 | 32.7% | 33.3 | 3.7% | 59.10 (T37.4/F21.7) |
+| 21 | Phase4 | Process Industries | Agricultural Commodities/Milling | Chemicals / Materials / 細粒度タグなし | **1375 (ユキグニファクトリー)** | TSE | EDINET✓ | ¥46.0B (S) | 3.6% | 6.8% | 9.3% | 97.0% | 11.0% | 37.2% | 6.4% | 2.6% | 9.0 | 97.0% | 18.9 | 1.4% | 58.54 (T25.0/F33.6) |
+| 22 | Phase5 | Distribution Services | Medical Distributors | Unclassified / 細粒度タグなし | **8283 (ＰＡＬＴＡＣ)** | TSE | EDINET✓ | ¥405.0B (M) | 57.7% | 32.4% | 40.6% | 98.9% | 7.5% | 17.2% | 1.8% | 4.2% | 6.0 | -2.0% | 17.9 | 0.4% | 58.51 (T32.2/F26.3) |
 | 23 | Phase5 | Consumer Non-Durables | Beverages: Alcoholic | Unclassified / 細粒度タグなし | **2503 (キリンホールディングス)** | TSE | WARN | ¥2.36T (L) | 45.8% | 21.2% | 10.7% | 98.6% | 7.5% | 34.7% | 7.7% | -25.8% | -18.1 | 165.3% | 12.4 | 2.3% | 58.17 (T25.4/F32.8) |
 | 24 | Phase5 | Consumer Services | Restaurants | Unclassified / 細粒度タグなし | **3091 (ブロンコビリー)** | TSE | EDINET✓ | ¥71.5B (S) | 38.9% | 22.6% | 10.0% | 99.1% | 10.7% | 77.8% | 6.4% | 13.5% | 19.9 | 46.6% | 37.1 | 2.2% | 57.94 (T23.0/F34.9) |
-| 25 | Phase5 | Consumer Services | Restaurants | Unclassified / 細粒度タグなし | **7581 (サイゼリヤ)** | TSE | INVALID | ¥370.9B (M) | 50.8% | 20.8% | 45.0% | 97.7% | 8.8% | 79.7% | N/A% | 16.1% | 売上16.1% / FCF欠け | 12.4% | N/A | 3.7% | 57.52 (T28.8/F28.7) |
-| 26 | Both | Transportation | Air Freight/Couriers | Unclassified / 細粒度タグなし | **9147 (ＮＩＰＰＯＮ　ＥＸＰＲＥＳＳホールディングス)** | TSE | WARN | ¥1.30T (L) | 66.0% | 54.3% | 39.2% | 96.1% | 0.4% | 10.5% | 5.2% | -2.4% | 2.8 | -81.2% | 9.8 | 2.7% | 57.51 (T37.4/F20.1) |
-| 27 | Phase5 | Retail Trade | Department Stores | Unclassified / 細粒度タグなし | **3099 (三越伊勢丹ホールディングス)** | TSE | EDINET✓ | ¥1.37T (L) | 77.9% | 51.5% | 21.9% | 92.9% | 11.5% | 27.6% | 11.0% | -1.8% | 9.2 | 50.5% | 22.8 | 3.1% | 57.21 (T27.1/F30.1) |
-| 28 | Phase5 | Communications | Major Telecommunications | AI / Data Center / AI Infrastructure | **3774 (インターネットイニシアティブ)** | TSE | EDINET✓ | ¥628.4B (M+) | 27.4% | 31.9% | 30.8% | 96.4% | 13.7% | 21.9% | 8.7% | 10.4% | 19.1 | 21.3% | 20.6 | 2.5% | 57.05 (T23.5/F33.5) |
-| 29 | Phase5 | Technology Services | Internet Software/Services | AI / Data Center / AI Infrastructure | **2410 (キャリアデザインセンター)** | TSE | INVALID | ¥14.9B (S) | 49.7% | 13.1% | 17.7% | 97.7% | 26.8% | 129.5% | N/A% | 4.8% | 売上4.8% / FCF欠け | 23.0% | N/A | 1.5% | 56.90 (T21.4/F35.5) |
-| 30 | Phase4 | Process Industries | Agricultural Commodities/Milling | Chemicals / Materials / 細粒度タグなし | **2060 (フィード・ワン)** | TSE | EDINET✓ | ¥48.0B (S) | 19.4% | 17.7% | 13.6% | 96.3% | 8.2% | 25.4% | 1.6% | -1.8% | -0.2 | 18.4% | 10.1 | 2.0% | 56.63 (T30.1/F26.6) |
-| 31 | Phase4 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **6135 (牧野フライス製作所)** | TSE | WARN | ¥348.8B (M) | 26.0% | 32.8% | 24.2% | 90.5% | 7.8% | 19.5% | 5.7% | 11.5% | 17.2 | 46.2% | 23.4 | 2.8% | 56.27 (T25.6/F30.7) |
-| 32 | Phase4 | Producer Manufacturing | Industrial Machinery | Semiconductor Equipment / Semiconductor Production Equipment | **8035 (東京エレクトロン)** | TSE | EDINET✓ | ¥29.59T (XL) | 134.4% | 54.9% | 44.3% | 80.1% | 28.9% | 38.7% | -0.9% | 5.8% | 4.9 | 6.1% | 90.2 | 7.0% | 56.23 (T31.5/F24.8) |
-| 33 | Both | Electronic Technology | Computer Peripherals | Electronic Components / 細粒度タグなし | **6724 (セイコーエプソン)** | TSE | EDINET✓ | ¥900.5B (M+) | 48.9% | 36.7% | 30.8% | 89.9% | 1.9% | 32.6% | 4.1% | -10.4% | -6.3 | -66.3% | 15.6 | 3.4% | 55.56 (T31.4/F24.1) |
-| 34 | Phase4 | Process Industries | Agricultural Commodities/Milling | Chemicals / Materials / 細粒度タグなし | **2053 (中部飼料)** | TSE | EDINET✓ | ¥58.0B (S) | 15.5% | 8.4% | 10.8% | 96.6% | 7.3% | 20.0% | 3.4% | 0.9% | 4.3 | 61.2% | 8.1 | 1.9% | 55.40 (T26.4/F29.0) |
-| 35 | Phase4 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **6284 (日精エー・エス・ビー機械)** | TSE | INVALID | ¥134.9B (M-) | 43.4% | 37.8% | 12.3% | 89.7% | 13.5% | 27.0% | N/A% | 8.9% | 売上8.9% / FCF欠け | 18.5% | N/A | 3.8% | 55.22 (T24.7/F30.5) |
+| 25 | Both | Transportation | Air Freight/Couriers | Unclassified / 細粒度タグなし | **9147 (ＮＩＰＰＯＮ　ＥＸＰＲＥＳＳホールディングス)** | TSE | WARN | ¥1.30T (L) | 66.0% | 54.3% | 39.2% | 96.1% | 0.4% | 10.5% | 5.2% | -2.4% | 2.8 | -81.2% | 9.8 | 2.7% | 57.89 (T37.4/F20.5) |
+| 26 | Phase5 | Consumer Services | Restaurants | Unclassified / 細粒度タグなし | **7581 (サイゼリヤ)** | TSE | INVALID | ¥370.9B (M) | 50.8% | 20.8% | 45.0% | 97.7% | 8.8% | 79.7% | N/A% | 16.1% | 売上16.1% / FCF欠け | 12.4% | N/A | 3.7% | 57.52 (T28.8/F28.7) |
+| 27 | Phase4 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **6135 (牧野フライス製作所)** | TSE | WARN | ¥348.8B (M) | 26.0% | 32.8% | 24.2% | 90.5% | 7.8% | 19.5% | 5.7% | 11.5% | 17.2 | 46.2% | 23.4 | 2.8% | 57.37 (T25.6/F31.8) |
+| 28 | Phase5 | Retail Trade | Department Stores | Unclassified / 細粒度タグなし | **3099 (三越伊勢丹ホールディングス)** | TSE | EDINET✓ | ¥1.37T (L) | 77.9% | 51.5% | 21.9% | 92.9% | 11.5% | 27.6% | 11.0% | -1.8% | 9.2 | 50.5% | 22.8 | 3.1% | 57.21 (T27.1/F30.1) |
+| 29 | Phase5 | Communications | Major Telecommunications | AI / Data Center / AI Infrastructure | **3774 (インターネットイニシアティブ)** | TSE | EDINET✓ | ¥628.4B (M+) | 27.4% | 31.9% | 30.8% | 96.4% | 13.7% | 21.9% | 8.7% | 10.4% | 19.1 | 21.3% | 20.6 | 2.5% | 57.05 (T23.5/F33.5) |
+| 30 | Phase5 | Technology Services | Internet Software/Services | AI / Data Center / AI Infrastructure | **2410 (キャリアデザインセンター)** | TSE | INVALID | ¥14.9B (S) | 49.7% | 13.1% | 17.7% | 97.7% | 26.8% | 129.5% | N/A% | 4.8% | 売上4.8% / FCF欠け | 23.0% | N/A | 1.5% | 56.90 (T21.4/F35.5) |
+| 31 | Phase4 | Process Industries | Agricultural Commodities/Milling | Chemicals / Materials / 細粒度タグなし | **2060 (フィード・ワン)** | TSE | EDINET✓ | ¥48.0B (S) | 19.4% | 17.7% | 13.6% | 96.3% | 8.2% | 25.4% | 1.6% | -1.8% | -0.2 | 18.4% | 10.1 | 2.0% | 56.79 (T30.2/F26.6) |
+| 32 | Phase4 | Producer Manufacturing | Industrial Machinery | Semiconductor Equipment / Semiconductor Production Equipment | **8035 (東京エレクトロン)** | TSE | EDINET✓ | ¥29.59T (XL) | 134.4% | 54.9% | 44.3% | 80.1% | 28.9% | 38.7% | -0.9% | 5.8% | 4.9 | 6.1% | 90.2 | 7.0% | 56.70 (T31.5/F25.2) |
+| 33 | Phase4 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **6284 (日精エー・エス・ビー機械)** | TSE | INVALID | ¥134.9B (M-) | 43.4% | 37.8% | 12.3% | 89.7% | 13.5% | 27.0% | N/A% | 8.9% | 売上8.9% / FCF欠け | 18.5% | N/A | 3.8% | 56.46 (T24.7/F31.8) |
+| 34 | Both | Electronic Technology | Computer Peripherals | Electronic Components / 細粒度タグなし | **6724 (セイコーエプソン)** | TSE | EDINET✓ | ¥900.5B (M+) | 48.9% | 36.7% | 30.8% | 89.9% | 1.9% | 32.6% | 4.1% | -10.4% | -6.3 | -66.3% | 15.6 | 3.4% | 56.38 (T31.4/F25.0) |
+| 35 | Phase4 | Process Industries | Agricultural Commodities/Milling | Chemicals / Materials / 細粒度タグなし | **2053 (中部飼料)** | TSE | EDINET✓ | ¥58.0B (S) | 15.5% | 8.4% | 10.8% | 96.6% | 7.3% | 20.0% | 3.4% | 0.9% | 4.3 | 61.2% | 8.1 | 1.9% | 55.24 (T26.2/F29.0) |
 | 36 | Phase5 | Consumer Durables | Recreational Products | Unclassified / 細粒度タグなし | **7867 (タカラトミー)** | TSE | EDINET✓ | ¥316.6B (M) | 9.8% | 22.2% | 28.9% | 96.8% | 10.4% | 66.7% | 4.6% | 8.1% | 12.7 | -27.9% | 25.5 | 2.4% | 54.95 (T22.3/F32.6) |
 | 37 | Phase5 | Consumer Non-Durables | Household/Personal Care | Unclassified / 細粒度タグなし | **7956 (ピジョン)** | TSE | EDINET✓ | ¥242.8B (M-) | 18.7% | 23.4% | 20.3% | 95.3% | 10.2% | 51.2% | 9.0% | 0.5% | 9.5 | -2.9% | 430.6 | 2.0% | 54.59 (T21.8/F32.7) |
-| 38 | Phase4 | Process Industries | Chemicals: Major Diversified | Chemicals / Materials / Advanced Materials | **4189 (ＫＨネオケム)** | TSE | WARN | ¥111.0B (M-) | 11.4% | 17.8% | 5.7% | 95.7% | 9.8% | 20.0% | 7.8% | -3.9% | 3.9 | -7.6% | 12.4 | 2.5% | 54.30 (T24.9/F29.4) |
-| 39 | Phase5 | Technology Services | Packaged Software | Unclassified / 細粒度タグなし | **3763 (プロシップ)** | TSE | EDINET✓ | ¥52.2B (S) | 22.1% | 4.3% | 29.1% | 95.8% | 21.9% | 33.4% | 24.5% | 10.7% | 35.2 | 11.6% | 25.4 | 3.2% | 54.29 (T16.7/F37.6) |
-| 40 | Phase4 | Process Industries | Chemicals: Specialty | Chemicals / Materials / Advanced Materials | **4027 (テイカ)** | TSE | INVALID | ¥47.9B (S) | 87.0% | 84.1% | 27.8% | 94.4% | -1.3% | 9.8% | -2.5% | 2.9% | 0.4 | 赤字転落 (raw -136.4%) | N/A | 4.2% | 53.94 (T39.2/F14.7) |
+| 38 | Phase4 | Process Industries | Industrial Specialties | Chemicals / Materials / 細粒度タグなし | **4095 (日本パーカライジング)** | TSE | WARN | ¥193.0B (M-) | 24.2% | 9.2% | 9.5% | 87.5% | 6.5% | 16.9% | 9.6% | 4.4% | 14.1 | 4.6% | 14.5 | 2.4% | 54.45 (T21.5/F32.9) |
+| 39 | Phase4 | Process Industries | Chemicals: Major Diversified | Chemicals / Materials / Advanced Materials | **4189 (ＫＨネオケム)** | TSE | WARN | ¥111.0B (M-) | 11.4% | 17.8% | 5.7% | 95.7% | 9.8% | 20.0% | 7.8% | -3.9% | 3.9 | -7.6% | 12.4 | 2.5% | 54.34 (T24.7/F29.6) |
+| 40 | Phase5 | Technology Services | Packaged Software | Unclassified / 細粒度タグなし | **3763 (プロシップ)** | TSE | EDINET✓ | ¥52.2B (S) | 22.1% | 4.3% | 29.1% | 95.8% | 21.9% | 33.4% | 24.5% | 10.7% | 35.2 | 11.6% | 25.4 | 3.2% | 54.29 (T16.7/F37.6) |
 
 ## Phase5 Sector別 個別銘柄ランキング
 
@@ -123,25 +123,25 @@
 
 | Sector Rank | Sector内Rank | Sector | Industry | Theme | Symbol | Market | Market Cap | 12M | 6M | 3M | 52w | ROIC | GP/A | FCF Margin | Revenue YoY | Rule40 | EPS YoY | P/FCF | ATR% | 総合点 (T/F) |
 |:---:|:---:|:---|:---|:---|:---|:---:|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|:---|---:|---:|---:|
-| 2 | 1 | Process Industries | Industrial Specialties | Chemicals / Materials / 細粒度タグなし | **7966 (リンテック)** | TSE | ¥460.7B (M) | 125.6% | 43.7% | 37.8% | 91.8% | 6.7% | 23.8% | 5.7% | 1.1% | 6.8 | 25.2% | 25.3 | 4.1% | 68.59 (T41.3/F27.3) |
-| 2 | 2 | Process Industries | Industrial Specialties | Chemicals / Materials / 細粒度タグなし | **5186 (ニッタ)** | TSE | ¥179.9B (M-) | 66.0% | 51.0% | 43.7% | 96.2% | 8.5% | 13.5% | 5.7% | 1.7% | 7.4 | 12.4% | 34.6 | 3.3% | 67.52 (T43.4/F24.1) |
+| 2 | 1 | Process Industries | Industrial Specialties | Chemicals / Materials / 細粒度タグなし | **7966 (リンテック)** | TSE | ¥460.7B (M) | 125.6% | 43.7% | 37.8% | 91.8% | 6.7% | 23.8% | 5.7% | 1.1% | 6.8 | 25.2% | 25.3 | 4.1% | 69.16 (T41.3/F27.9) |
+| 2 | 2 | Process Industries | Industrial Specialties | Chemicals / Materials / 細粒度タグなし | **5186 (ニッタ)** | TSE | ¥179.9B (M-) | 66.0% | 51.0% | 43.7% | 96.2% | 8.5% | 13.5% | 5.7% | 1.7% | 7.4 | 12.4% | 34.6 | 3.3% | 68.20 (T43.4/F24.8) |
 | 2 | 3 | Process Industries | Containers/Packaging | Chemicals / Materials / 細粒度タグなし | **3946 (トーモク)** | TSE | ¥71.0B (S) | 43.9% | 18.7% | 26.8% | 98.3% | 5.1% | 18.1% | 2.4% | 2.0% | 4.4 | 12.9% | 13.3 | 2.0% | 62.36 (T38.6/F23.8) |
-| 2 | 4 | Process Industries | Industrial Specialties | Chemicals / Materials / 細粒度タグなし | **4634 (ａｒｔｉｅｎｃｅ)** | TSE | ¥204.8B (M-) | 45.4% | 24.1% | 13.4% | 98.9% | 4.7% | 16.8% | 3.5% | -0.3% | 3.2 | -12.9% | 16.9 | 2.4% | 61.97 (T37.6/F24.3) |
-| 2 | 5 | Process Industries | Chemicals: Specialty | Chemicals / Materials / Advanced Materials | **3407 (旭化成)** | TSE | ¥2.49T (L) | 80.9% | 22.7% | 13.5% | 96.0% | 5.6% | 24.4% | 3.0% | 1.2% | 4.2 | 19.4% | 27.0 | 2.7% | 61.32 (T37.9/F23.5) |
-| 3 | 1 | Electronic Technology | Computer Peripherals | Electronic Components / 細粒度タグなし | **6448 (ブラザー工業)** | TSE | ¥973.8B (M+) | 50.9% | 16.8% | 23.2% | 97.1% | 8.3% | 37.3% | 8.8% | -12.2% | -3.4 | 25.1% | 12.1 | 2.3% | 66.85 (T33.2/F33.6) |
-| 3 | 2 | Electronic Technology | Semiconductors | AI / Data Center / Data Center Memory | **6323 (ローツェ)** | TSE | ¥775.2B (M+) | 131.7% | 41.4% | 16.9% | 84.7% | 16.2% | 25.9% | 20.8% | 3.5% | 24.3 | 11.0% | 29.0 | 8.8% | 61.17 (T30.7/F30.4) |
-| 3 | 3 | Electronic Technology | Computer Peripherals | Electronic Components / 細粒度タグなし | **6724 (セイコーエプソン)** | TSE | ¥900.5B (M+) | 48.9% | 36.7% | 30.8% | 89.9% | 1.9% | 32.6% | 4.1% | -10.4% | -6.3 | -66.3% | 15.6 | 3.4% | 55.56 (T31.4/F24.1) |
+| 2 | 4 | Process Industries | Industrial Specialties | Chemicals / Materials / 細粒度タグなし | **4634 (ａｒｔｉｅｎｃｅ)** | TSE | ¥204.8B (M-) | 45.4% | 24.1% | 13.4% | 98.9% | 4.7% | 16.8% | 3.5% | -0.3% | 3.2 | -12.9% | 16.9 | 2.4% | 62.30 (T37.6/F24.7) |
+| 2 | 5 | Process Industries | Chemicals: Specialty | Chemicals / Materials / Advanced Materials | **3407 (旭化成)** | TSE | ¥2.49T (L) | 80.9% | 22.7% | 13.5% | 96.0% | 5.6% | 24.4% | 3.0% | 1.2% | 4.2 | 19.4% | 27.0 | 2.7% | 61.93 (T37.9/F24.1) |
+| 3 | 1 | Electronic Technology | Computer Peripherals | Electronic Components / 細粒度タグなし | **6448 (ブラザー工業)** | TSE | ¥973.8B (M+) | 50.9% | 16.8% | 23.2% | 97.1% | 8.3% | 37.3% | 8.8% | -12.2% | -3.4 | 25.1% | 12.1 | 2.3% | 67.80 (T33.2/F34.6) |
+| 3 | 2 | Electronic Technology | Semiconductors | AI / Data Center / Data Center Memory | **6323 (ローツェ)** | TSE | ¥775.2B (M+) | 131.7% | 41.4% | 16.9% | 84.7% | 16.2% | 25.9% | 20.8% | 3.5% | 24.3 | 11.0% | 29.0 | 8.8% | 61.96 (T30.7/F31.2) |
+| 3 | 3 | Electronic Technology | Computer Peripherals | Electronic Components / 細粒度タグなし | **6724 (セイコーエプソン)** | TSE | ¥900.5B (M+) | 48.9% | 36.7% | 30.8% | 89.9% | 1.9% | 32.6% | 4.1% | -10.4% | -6.3 | -66.3% | 15.6 | 3.4% | 56.38 (T31.4/F25.0) |
 | 3 | 4 | Electronic Technology | Computer Peripherals | Electronic Components / 細粒度タグなし | **6287 (サトー)** | TSE | ¥79.3B (S) | 16.8% | 0.9% | 10.4% | 95.4% | 5.3% | 44.9% | 5.0% | 5.6% | 10.6 | -28.9% | 9.6 | 1.8% | 53.30 (T20.1/F33.2) |
-| 3 | 5 | Electronic Technology | Computer Communications | Electronic Components / 細粒度タグなし | **4212 (積水樹脂)** | TSE | ¥81.4B (S) | 25.1% | 20.3% | 16.5% | 92.1% | 3.9% | 17.1% | 3.5% | 5.3% | 8.8 | 15.6% | 30.2 | 2.8% | 48.48 (T25.1/F23.3) |
-| 4 | 1 | Transportation | Trucking | Unclassified / 細粒度タグなし | **9304 (澁澤倉庫)** | TSE | ¥120.4B (M-) | 87.1% | 47.8% | 47.5% | 95.1% | 7.2% | 7.1% | 4.5% | 1.4% | 6.0 | 32.7% | 33.3 | 3.7% | 58.47 (T37.4/F21.1) |
-| 4 | 2 | Transportation | Air Freight/Couriers | Unclassified / 細粒度タグなし | **9147 (ＮＩＰＰＯＮ　ＥＸＰＲＥＳＳホールディングス)** | TSE | ¥1.30T (L) | 66.0% | 54.3% | 39.2% | 96.1% | 0.4% | 10.5% | 5.2% | -2.4% | 2.8 | -81.2% | 9.8 | 2.7% | 57.51 (T37.4/F20.1) |
-| 4 | 3 | Transportation | Trucking | Unclassified / 細粒度タグなし | **9076 (セイノーホールディングス)** | TSE | ¥403.1B (M) | 20.5% | 11.9% | 8.7% | 97.5% | 5.0% | 12.1% | 2.4% | 10.3% | 12.6 | 35.8% | 21.1 | 1.7% | 47.98 (T22.3/F25.7) |
+| 3 | 5 | Electronic Technology | Computer Communications | Electronic Components / 細粒度タグなし | **4212 (積水樹脂)** | TSE | ¥81.4B (S) | 25.1% | 20.3% | 16.5% | 92.1% | 3.9% | 17.1% | 3.5% | 5.3% | 8.8 | 15.6% | 30.2 | 2.8% | 48.32 (T25.0/F23.3) |
+| 4 | 1 | Transportation | Trucking | Unclassified / 細粒度タグなし | **9304 (澁澤倉庫)** | TSE | ¥120.4B (M-) | 87.1% | 47.8% | 47.5% | 95.1% | 7.2% | 7.1% | 4.5% | 1.4% | 6.0 | 32.7% | 33.3 | 3.7% | 59.10 (T37.4/F21.7) |
+| 4 | 2 | Transportation | Air Freight/Couriers | Unclassified / 細粒度タグなし | **9147 (ＮＩＰＰＯＮ　ＥＸＰＲＥＳＳホールディングス)** | TSE | ¥1.30T (L) | 66.0% | 54.3% | 39.2% | 96.1% | 0.4% | 10.5% | 5.2% | -2.4% | 2.8 | -81.2% | 9.8 | 2.7% | 57.89 (T37.4/F20.5) |
+| 4 | 3 | Transportation | Trucking | Unclassified / 細粒度タグなし | **9076 (セイノーホールディングス)** | TSE | ¥403.1B (M) | 20.5% | 11.9% | 8.7% | 97.5% | 5.0% | 12.1% | 2.4% | 10.3% | 12.6 | 35.8% | 21.1 | 1.7% | 49.06 (T22.3/F26.8) |
 | 4 | 4 | Transportation | Airlines | Unclassified / 細粒度タグなし | **9201 (日本航空)** | TSE | ¥1.27T (L) | -2.5% | -1.8% | 13.9% | 88.8% | 7.3% | 45.4% | 9.2% | 9.4% | 18.6 | 29.1% | 6.7 | 2.1% | 54.36 (T1.6/F52.8) |
-| 4 | 5 | Transportation | Air Freight/Couriers | Unclassified / 細粒度タグなし | **9069 (センコーグループホールディングス)** | TSE | ¥373.5B (M) | 7.9% | 2.4% | 15.0% | 100.0% | 3.8% | 17.8% | 3.6% | 8.1% | 11.6 | 3.7% | 146.1 | 2.1% | 47.51 (T23.7/F23.8) |
-| 5 | 1 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **6237 (イワキポンプ)** | TSE | ¥96.5B (S) | 69.2% | 55.1% | 63.5% | 94.0% | 11.6% | 33.6% | 5.3% | 4.2% | 9.5 | 7.9% | 38.5 | 5.5% | 62.56 (T35.7/F26.8) |
+| 4 | 5 | Transportation | Air Freight/Couriers | Unclassified / 細粒度タグなし | **9069 (センコーグループホールディングス)** | TSE | ¥373.5B (M) | 7.9% | 2.4% | 15.0% | 100.0% | 3.8% | 17.8% | 3.6% | 8.1% | 11.6 | 3.7% | 146.1 | 2.1% | 48.48 (T23.7/F24.8) |
+| 5 | 1 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **6237 (イワキポンプ)** | TSE | ¥96.5B (S) | 69.2% | 55.1% | 63.5% | 94.0% | 11.6% | 33.6% | 5.3% | 4.2% | 9.5 | 7.9% | 38.5 | 5.5% | 63.43 (T35.7/F27.7) |
 | 5 | 2 | Producer Manufacturing | Auto Parts: OEM | Unclassified / 細粒度タグなし | **7236 (ティラド)** | TSE | ¥87.3B (S) | 222.9% | 69.0% | 64.5% | 92.9% | 13.1% | 23.2% | 3.0% | 1.9% | 4.9 | 122.0% | 17.8 | 4.2% | 64.54 (T37.3/F27.2) |
-| 5 | 3 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **7735 (ＳＣＲＥＥＮホールディングス)** | TSE | ¥3.08T (L) | 173.3% | 86.6% | 48.9% | 83.5% | 20.2% | 32.3% | 11.1% | -3.1% | 8.0 | -5.1% | 46.9 | 7.8% | 62.60 (T34.0/F28.6) |
-| 5 | 4 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **6136 (オーエスジー)** | TSE | ¥346.3B (M) | 100.8% | 47.0% | 26.5% | 88.6% | 9.3% | 26.1% | N/A% | 13.0% | 売上13.0% / FCF欠け | 65.7% | N/A | 4.6% | 59.47 (T30.9/F28.5) |
+| 5 | 3 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **7735 (ＳＣＲＥＥＮホールディングス)** | TSE | ¥3.08T (L) | 173.3% | 86.6% | 48.9% | 83.5% | 20.2% | 32.3% | 11.1% | -3.1% | 8.0 | -5.1% | 46.9 | 7.8% | 62.85 (T34.0/F28.8) |
+| 5 | 4 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **6136 (オーエスジー)** | TSE | ¥346.3B (M) | 100.8% | 47.0% | 26.5% | 88.6% | 9.3% | 26.1% | N/A% | 13.0% | 売上13.0% / FCF欠け | 65.7% | N/A | 4.6% | 60.22 (T30.9/F29.3) |
 | 5 | 5 | Producer Manufacturing | Industrial Machinery | Unclassified / 細粒度タグなし | **6266 (タツモ)** | TSE | ¥67.2B (S) | 107.6% | 75.8% | 69.1% | 84.0% | 9.0% | 21.2% | 22.4% | -1.2% | 21.2 | -39.5% | 8.5 | 8.4% | 60.05 (T33.1/F26.9) |
 | 6 | 1 | Consumer Non-Durables | Food: Specialty/Candy | Unclassified / 細粒度タグなし | **2222 (寿スピリッツ)** | TSE | ¥404.5B (M) | 25.8% | 42.8% | 29.9% | 97.5% | 28.5% | 80.5% | 14.4% | 8.9% | 23.3 | 4.3% | 35.6 | 2.7% | 64.79 (T28.0/F36.8) |
 | 6 | 2 | Consumer Non-Durables | Beverages: Alcoholic | Unclassified / 細粒度タグなし | **2503 (キリンホールディングス)** | TSE | ¥2.36T (L) | 45.8% | 21.2% | 10.7% | 98.6% | 7.5% | 34.7% | 7.7% | -25.8% | -18.1 | 165.3% | 12.4 | 2.3% | 58.17 (T25.4/F32.8) |
@@ -189,25 +189,25 @@
 
 - 監査結果: WARNING
 - 検証済みEDINET補完: 16銘柄
-- 警告: 30件
+- 警告: 37件
 - エラー: 0件
-- 補完により5位以上変動: 12銘柄
+- 補完により5位以上変動: 13銘柄
 - 補完によるTop10新規流入: 4銘柄
 
 ### 補完前後の順位差分
 
 | 銘柄 | 補完前 | 補完後 | 変動 | スコア差 | 主な変更指標 | 出所 |
 |---|---:|---:|---:|---:|---|---|
-| 6266 | 46 | 21 | 25 | 6.71 | fcfTtm, fcfMargin, fcfGrowthTtm, cashFromOperationsTtm, cashConversion, pFcf, revenueGrowthTtm | edinet |
-| 4189 | 49 | 25 | 24 | 5.81 | fcfTtm, fcfMargin, fcfGrowthTtm, cashFromOperationsTtm, cashConversion, pFcf, revenueGrowthTtm | edinet |
-| 6135 | 36 | 16 | 20 | 3.82 | fcfTtm, fcfMargin, fcfGrowthTtm, cashFromOperationsTtm, cashConversion, pFcf, revenueGrowthTtm | edinet |
-| 8035 | 6 | 23 | -17 | -7.64 | fcfTtm, fcfMargin, fcfGrowthTtm, cashFromOperationsTtm, cashConversion, revenueGrowthTtm | edinet, tradingview |
-| 2053 | 41 | 24 | 17 | 3.22 | fcfTtm, fcfMargin, fcfGrowthTtm, cashFromOperationsTtm, cashConversion, pFcf, revenueGrowthTtm | edinet |
+| 6266 | 47 | 22 | 25 | 6.71 | fcfTtm, fcfMargin, fcfGrowthTtm, cashFromOperationsTtm, cashConversion, pFcf, revenueGrowthTtm | edinet |
+| 4189 | 50 | 26 | 24 | 5.80 | fcfTtm, fcfMargin, fcfGrowthTtm, cashFromOperationsTtm, cashConversion, pFcf, revenueGrowthTtm | edinet |
+| 4095 | 45 | 24 | 21 | 5.31 | fcfTtm, fcfMargin, fcfGrowthTtm, cashFromOperationsTtm, cashConversion, pFcf, revenueGrowthTtm | edinet |
+| 6135 | 34 | 15 | 19 | 3.82 | fcfTtm, fcfMargin, fcfGrowthTtm, cashFromOperationsTtm, cashConversion, pFcf, revenueGrowthTtm | edinet |
+| 8035 | 5 | 23 | -18 | -7.66 | fcfTtm, fcfMargin, fcfGrowthTtm, cashFromOperationsTtm, cashConversion, revenueGrowthTtm | edinet, tradingview |
+| 2053 | 42 | 25 | 17 | 3.22 | fcfTtm, fcfMargin, fcfGrowthTtm, cashFromOperationsTtm, cashConversion, pFcf, revenueGrowthTtm | edinet |
 | 7970 | 18 | 5 | 13 | 4.85 | fcfTtm, fcfMargin, fcfGrowthTtm, cashFromOperationsTtm, cashConversion, pFcf, revenueGrowthTtm | edinet |
-| 6724 | 10 | 22 | -12 | -3.28 | revenueGrowthTtm | tradingview, edinet |
-| 6323 | 20 | 9 | 11 | 4.41 | fcfTtm, fcfMargin, fcfGrowthTtm, cashFromOperationsTtm, cashConversion, pFcf, revenueGrowthTtm | edinet |
-| 2060 | 29 | 20 | 9 | 1.65 | fcfTtm, fcfMargin, fcfGrowthTtm, cashFromOperationsTtm, cashConversion, pFcf, revenueGrowthTtm | edinet |
-| 4634 | 12 | 6 | 6 | 3.23 | fcfTtm, fcfMargin, fcfGrowthTtm, cashFromOperationsTtm, cashConversion, pFcf, revenueGrowthTtm | edinet |
+| 2060 | 33 | 20 | 13 | 1.65 | fcfTtm, fcfMargin, fcfGrowthTtm, cashFromOperationsTtm, cashConversion, pFcf, revenueGrowthTtm | edinet |
+| 6323 | 20 | 8 | 12 | 4.43 | fcfTtm, fcfMargin, fcfGrowthTtm, cashFromOperationsTtm, cashConversion, pFcf, revenueGrowthTtm | edinet |
+| 6724 | 10 | 19 | -9 | -3.28 | revenueGrowthTtm | tradingview, edinet |
 
 ### 異常値・要確認指標
 
@@ -241,12 +241,12 @@
 | 2371 | N/A | N/A | 0 | 24608000000 | N/A | --- | - | - | 半期報告書－第31期(2025/10/01－2026/09/30) | 2026-05-14 15:35 |
 | 7966 | 319385000000 | 33450000000 | 15231000000 | 18219000000 | 17379000000 | --- | consolidated | JPY | 有価証券報告書－第132期(2025/04/01－2026/03/31) | 2026-06-17 13:44 |
 | 5186 | 91834000000 | 9612000000 | 4417000000 | 5195000000 | 13591000000 | --- | consolidated | JPY | 有価証券報告書－第97期(2025/04/01－2026/03/31) | 2026-06-23 14:34 |
-| 6098 | N/A | N/A | 0 | 658729000000 | N/A | --- | - | - | 半期報告書－第23期(2025/07/01－2026/06/30) | 2026-02-12 15:32 |
 | 6448 | 459966000000 | N/A | 0 | 78533000000 | 35877000000 | --- | nonConsolidated | JPY | 有価証券報告書－第134期(2025/04/01－2026/03/31) | 2026-06-22 15:35 |
+| 6098 | N/A | N/A | 0 | 658729000000 | N/A | --- | - | - | 半期報告書－第23期(2025/07/01－2026/06/30) | 2026-02-12 15:32 |
 | 2222 | 78781000000 | 13801000000 | 2440000000 | 11361000000 | 12557000000 | --- | consolidated | JPY | 有価証券報告書－第74期(2025/04/01－2026/03/31) | 2026-06-23 12:00 |
 | 7236 | 162278000000 | 12558000000 | 7650000000 | 4908000000 | 8774000000 | --- | consolidated | JPY | 有価証券報告書－第124期(2025/04/01－2026/03/31) | 2026-06-05 09:03 |
-| 7735 | N/A | N/A | 0 | 67200000000 | N/A | --- | - | - | 半期報告書－第67期(2025/09/01－2026/08/31) | 2026-04-14 15:37 |
 | 6237 | 47692294000 | 5251083000 | 2742351000 | 2508732000 | 4905297000 | --- | consolidated | JPY | 有価証券報告書－第71期(2025/04/01－2026/03/31) | 2026-06-24 13:33 |
+| 7735 | N/A | N/A | 0 | 67200000000 | N/A | --- | - | - | 半期報告書－第67期(2025/09/01－2026/08/31) | 2026-04-14 15:37 |
 | 3946 | 224090000000 | 15172000000 | 9854000000 | 5318000000 | 7470000000 | --- | consolidated | JPY | 有価証券報告書－第87期(2025/04/01－2026/03/31) | 2026-06-22 09:34 |
 
 ---

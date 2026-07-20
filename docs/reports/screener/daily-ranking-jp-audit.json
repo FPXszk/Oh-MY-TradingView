@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-07-20T14:53:38.055Z",
+  "generatedAt": "2026-07-20T14:58:44.240Z",
   "market": "japan",
   "status": "warning",
   "summary": {
-    "validMetrics": 224,
-    "warnings": 30,
+    "validMetrics": 219,
+    "warnings": 37,
     "errors": 0,
-    "rankChangesOverThreshold": 12,
+    "rankChangesOverThreshold": 13,
     "newTop10Entries": 4
   },
   "metricAnomalies": [
@@ -146,7 +146,7 @@
     {
       "symbol": "6136",
       "companyName": "オーエスジー",
-      "rank": 18,
+      "rank": 17,
       "metricName": "fcfTtm",
       "value": null,
       "status": "invalid",
@@ -165,7 +165,7 @@
     {
       "symbol": "6136",
       "companyName": "オーエスジー",
-      "rank": 18,
+      "rank": 17,
       "metricName": "fcfMargin",
       "value": null,
       "status": "invalid",
@@ -184,7 +184,7 @@
     {
       "symbol": "6136",
       "companyName": "オーエスジー",
-      "rank": 18,
+      "rank": 17,
       "metricName": "fcfGrowthTtm",
       "value": null,
       "status": "invalid",
@@ -203,7 +203,7 @@
     {
       "symbol": "6136",
       "companyName": "オーエスジー",
-      "rank": 18,
+      "rank": 17,
       "metricName": "cashFromOperationsTtm",
       "value": null,
       "status": "invalid",
@@ -222,7 +222,7 @@
     {
       "symbol": "6136",
       "companyName": "オーエスジー",
-      "rank": 18,
+      "rank": 17,
       "metricName": "cashConversion",
       "value": null,
       "status": "invalid",
@@ -241,7 +241,7 @@
     {
       "symbol": "6136",
       "companyName": "オーエスジー",
-      "rank": 18,
+      "rank": 17,
       "metricName": "pFcf",
       "value": null,
       "status": "invalid",
@@ -260,7 +260,7 @@
     {
       "symbol": "9304",
       "companyName": "澁澤倉庫",
-      "rank": 22,
+      "rank": 20,
       "metricName": "fcfTtm",
       "value": 3612000000,
       "status": "warning",
@@ -279,7 +279,7 @@
     {
       "symbol": "9304",
       "companyName": "澁澤倉庫",
-      "rank": 22,
+      "rank": 20,
       "metricName": "fcfMargin",
       "value": 4.53,
       "status": "warning",
@@ -298,7 +298,7 @@
     {
       "symbol": "9304",
       "companyName": "澁澤倉庫",
-      "rank": 22,
+      "rank": 20,
       "metricName": "fcfGrowthTtm",
       "value": 2329.63,
       "status": "warning",
@@ -317,7 +317,7 @@
     {
       "symbol": "9304",
       "companyName": "澁澤倉庫",
-      "rank": 22,
+      "rank": 20,
       "metricName": "cashFromOperationsTtm",
       "value": 5742000000,
       "status": "warning",
@@ -336,7 +336,7 @@
     {
       "symbol": "9304",
       "companyName": "澁澤倉庫",
-      "rank": 22,
+      "rank": 20,
       "metricName": "cashConversion",
       "value": 0.56,
       "status": "warning",
@@ -355,7 +355,7 @@
     {
       "symbol": "9304",
       "companyName": "澁澤倉庫",
-      "rank": 22,
+      "rank": 20,
       "metricName": "pFcf",
       "value": 33.3,
       "status": "warning",
@@ -374,7 +374,7 @@
     {
       "symbol": "9304",
       "companyName": "澁澤倉庫",
-      "rank": 22,
+      "rank": 20,
       "metricName": "revenueGrowthTtm",
       "value": 1.42,
       "status": "warning",
@@ -410,123 +410,9 @@
       "sourceFile": null
     },
     {
-      "symbol": "7581",
-      "companyName": "サイゼリヤ",
-      "rank": 25,
-      "metricName": "fcfTtm",
-      "value": null,
-      "status": "invalid",
-      "rankEligible": false,
-      "source": "tradingview",
-      "reasons": [
-        "missing"
-      ],
-      "documentType": "半期報告書－第54期(2025/09/01－2026/08/31)",
-      "periodStart": null,
-      "periodEnd": null,
-      "consolidation": null,
-      "currency": null,
-      "sourceFile": null
-    },
-    {
-      "symbol": "7581",
-      "companyName": "サイゼリヤ",
-      "rank": 25,
-      "metricName": "fcfMargin",
-      "value": null,
-      "status": "invalid",
-      "rankEligible": false,
-      "source": "tradingview",
-      "reasons": [
-        "missing"
-      ],
-      "documentType": "半期報告書－第54期(2025/09/01－2026/08/31)",
-      "periodStart": null,
-      "periodEnd": null,
-      "consolidation": null,
-      "currency": null,
-      "sourceFile": null
-    },
-    {
-      "symbol": "7581",
-      "companyName": "サイゼリヤ",
-      "rank": 25,
-      "metricName": "fcfGrowthTtm",
-      "value": null,
-      "status": "invalid",
-      "rankEligible": false,
-      "source": "tradingview",
-      "reasons": [
-        "missing"
-      ],
-      "documentType": "半期報告書－第54期(2025/09/01－2026/08/31)",
-      "periodStart": null,
-      "periodEnd": null,
-      "consolidation": null,
-      "currency": null,
-      "sourceFile": null
-    },
-    {
-      "symbol": "7581",
-      "companyName": "サイゼリヤ",
-      "rank": 25,
-      "metricName": "cashFromOperationsTtm",
-      "value": null,
-      "status": "invalid",
-      "rankEligible": false,
-      "source": "tradingview",
-      "reasons": [
-        "missing"
-      ],
-      "documentType": "半期報告書－第54期(2025/09/01－2026/08/31)",
-      "periodStart": null,
-      "periodEnd": null,
-      "consolidation": null,
-      "currency": null,
-      "sourceFile": null
-    },
-    {
-      "symbol": "7581",
-      "companyName": "サイゼリヤ",
-      "rank": 25,
-      "metricName": "cashConversion",
-      "value": null,
-      "status": "invalid",
-      "rankEligible": false,
-      "source": "tradingview",
-      "reasons": [
-        "missing"
-      ],
-      "documentType": "半期報告書－第54期(2025/09/01－2026/08/31)",
-      "periodStart": null,
-      "periodEnd": null,
-      "consolidation": null,
-      "currency": null,
-      "sourceFile": null
-    },
-    {
-      "symbol": "7581",
-      "companyName": "サイゼリヤ",
-      "rank": 25,
-      "metricName": "pFcf",
-      "value": null,
-      "status": "invalid",
-      "rankEligible": false,
-      "source": "tradingview",
-      "reasons": [
-        "missing"
-      ],
-      "documentType": "半期報告書－第54期(2025/09/01－2026/08/31)",
-      "periodStart": null,
-      "periodEnd": null,
-      "consolidation": null,
-      "currency": null,
-      "sourceFile": null
-    },
-    {
       "symbol": "9147",
       "companyName": "ＮＩＰＰＯＮ　ＥＸＰＲＥＳＳホールディングス",
-      "rank": 26,
+      "rank": 25,
       "metricName": "cashConversion",
       "value": 22.22,
       "status": "warning",
@@ -543,9 +429,9 @@
       "sourceFile": null
     },
     {
-      "symbol": "2410",
-      "companyName": "キャリアデザインセンター",
-      "rank": 29,
+      "symbol": "7581",
+      "companyName": "サイゼリヤ",
+      "rank": 26,
       "metricName": "fcfTtm",
       "value": null,
       "status": "invalid",
@@ -554,7 +440,7 @@
       "reasons": [
         "missing"
       ],
-      "documentType": "半期報告書－第35期(2025/10/01－2026/09/30)",
+      "documentType": "半期報告書－第54期(2025/09/01－2026/08/31)",
       "periodStart": null,
       "periodEnd": null,
       "consolidation": null,
@@ -562,9 +448,9 @@
       "sourceFile": null
     },
     {
-      "symbol": "2410",
-      "companyName": "キャリアデザインセンター",
-      "rank": 29,
+      "symbol": "7581",
+      "companyName": "サイゼリヤ",
+      "rank": 26,
       "metricName": "fcfMargin",
       "value": null,
       "status": "invalid",
@@ -573,7 +459,7 @@
       "reasons": [
         "missing"
       ],
-      "documentType": "半期報告書－第35期(2025/10/01－2026/09/30)",
+      "documentType": "半期報告書－第54期(2025/09/01－2026/08/31)",
       "periodStart": null,
       "periodEnd": null,
       "consolidation": null,
@@ -581,9 +467,9 @@
       "sourceFile": null
     },
     {
-      "symbol": "2410",
-      "companyName": "キャリアデザインセンター",
-      "rank": 29,
+      "symbol": "7581",
+      "companyName": "サイゼリヤ",
+      "rank": 26,
       "metricName": "fcfGrowthTtm",
       "value": null,
       "status": "invalid",
@@ -592,7 +478,7 @@
       "reasons": [
         "missing"
       ],
-      "documentType": "半期報告書－第35期(2025/10/01－2026/09/30)",
+      "documentType": "半期報告書－第54期(2025/09/01－2026/08/31)",
       "periodStart": null,
       "periodEnd": null,
       "consolidation": null,
@@ -600,9 +486,9 @@
       "sourceFile": null
     },
     {
-      "symbol": "2410",
-      "companyName": "キャリアデザインセンター",
-      "rank": 29,
+      "symbol": "7581",
+      "companyName": "サイゼリヤ",
+      "rank": 26,
       "metricName": "cashFromOperationsTtm",
       "value": null,
       "status": "invalid",
@@ -611,7 +497,7 @@
       "reasons": [
         "missing"
       ],
-      "documentType": "半期報告書－第35期(2025/10/01－2026/09/30)",
+      "documentType": "半期報告書－第54期(2025/09/01－2026/08/31)",
       "periodStart": null,
       "periodEnd": null,
       "consolidation": null,
@@ -619,9 +505,9 @@
       "sourceFile": null
     },
     {
-      "symbol": "2410",
-      "companyName": "キャリアデザインセンター",
-      "rank": 29,
+      "symbol": "7581",
+      "companyName": "サイゼリヤ",
+      "rank": 26,
       "metricName": "cashConversion",
       "value": null,
       "status": "invalid",
@@ -630,7 +516,7 @@
       "reasons": [
         "missing"
       ],
-      "documentType": "半期報告書－第35期(2025/10/01－2026/09/30)",
+      "documentType": "半期報告書－第54期(2025/09/01－2026/08/31)",
       "periodStart": null,
       "periodEnd": null,
       "consolidation": null,
@@ -638,9 +524,9 @@
       "sourceFile": null
     },
     {
-      "symbol": "2410",
-      "companyName": "キャリアデザインセンター",
-      "rank": 29,
+      "symbol": "7581",
+      "companyName": "サイゼリヤ",
+      "rank": 26,
       "metricName": "pFcf",
       "value": null,
       "status": "invalid",
@@ -649,7 +535,7 @@
       "reasons": [
         "missing"
       ],
-      "documentType": "半期報告書－第35期(2025/10/01－2026/09/30)",
+      "documentType": "半期報告書－第54期(2025/09/01－2026/08/31)",
       "periodStart": null,
       "periodEnd": null,
       "consolidation": null,
@@ -659,7 +545,7 @@
     {
       "symbol": "6135",
       "companyName": "牧野フライス製作所",
-      "rank": 31,
+      "rank": 27,
       "metricName": "fcfTtm",
       "value": 14928000000,
       "status": "warning",
@@ -678,7 +564,7 @@
     {
       "symbol": "6135",
       "companyName": "牧野フライス製作所",
-      "rank": 31,
+      "rank": 27,
       "metricName": "fcfMargin",
       "value": 5.72,
       "status": "warning",
@@ -697,7 +583,7 @@
     {
       "symbol": "6135",
       "companyName": "牧野フライス製作所",
-      "rank": 31,
+      "rank": 27,
       "metricName": "fcfGrowthTtm",
       "value": 1186.46,
       "status": "warning",
@@ -716,7 +602,7 @@
     {
       "symbol": "6135",
       "companyName": "牧野フライス製作所",
-      "rank": 31,
+      "rank": 27,
       "metricName": "cashFromOperationsTtm",
       "value": 33227000000,
       "status": "warning",
@@ -735,7 +621,7 @@
     {
       "symbol": "6135",
       "companyName": "牧野フライス製作所",
-      "rank": 31,
+      "rank": 27,
       "metricName": "cashConversion",
       "value": 0.71,
       "status": "warning",
@@ -754,7 +640,7 @@
     {
       "symbol": "6135",
       "companyName": "牧野フライス製作所",
-      "rank": 31,
+      "rank": 27,
       "metricName": "pFcf",
       "value": 23.4,
       "status": "warning",
@@ -773,7 +659,7 @@
     {
       "symbol": "6135",
       "companyName": "牧野フライス製作所",
-      "rank": 31,
+      "rank": 27,
       "metricName": "revenueGrowthTtm",
       "value": 11.51,
       "status": "warning",
@@ -790,9 +676,123 @@
       "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E01496-000_2026-03-31_01_2026-06-19.csv"
     },
     {
+      "symbol": "2410",
+      "companyName": "キャリアデザインセンター",
+      "rank": 30,
+      "metricName": "fcfTtm",
+      "value": null,
+      "status": "invalid",
+      "rankEligible": false,
+      "source": "tradingview",
+      "reasons": [
+        "missing"
+      ],
+      "documentType": "半期報告書－第35期(2025/10/01－2026/09/30)",
+      "periodStart": null,
+      "periodEnd": null,
+      "consolidation": null,
+      "currency": null,
+      "sourceFile": null
+    },
+    {
+      "symbol": "2410",
+      "companyName": "キャリアデザインセンター",
+      "rank": 30,
+      "metricName": "fcfMargin",
+      "value": null,
+      "status": "invalid",
+      "rankEligible": false,
+      "source": "tradingview",
+      "reasons": [
+        "missing"
+      ],
+      "documentType": "半期報告書－第35期(2025/10/01－2026/09/30)",
+      "periodStart": null,
+      "periodEnd": null,
+      "consolidation": null,
+      "currency": null,
+      "sourceFile": null
+    },
+    {
+      "symbol": "2410",
+      "companyName": "キャリアデザインセンター",
+      "rank": 30,
+      "metricName": "fcfGrowthTtm",
+      "value": null,
+      "status": "invalid",
+      "rankEligible": false,
+      "source": "tradingview",
+      "reasons": [
+        "missing"
+      ],
+      "documentType": "半期報告書－第35期(2025/10/01－2026/09/30)",
+      "periodStart": null,
+      "periodEnd": null,
+      "consolidation": null,
+      "currency": null,
+      "sourceFile": null
+    },
+    {
+      "symbol": "2410",
+      "companyName": "キャリアデザインセンター",
+      "rank": 30,
+      "metricName": "cashFromOperationsTtm",
+      "value": null,
+      "status": "invalid",
+      "rankEligible": false,
+      "source": "tradingview",
+      "reasons": [
+        "missing"
+      ],
+      "documentType": "半期報告書－第35期(2025/10/01－2026/09/30)",
+      "periodStart": null,
+      "periodEnd": null,
+      "consolidation": null,
+      "currency": null,
+      "sourceFile": null
+    },
+    {
+      "symbol": "2410",
+      "companyName": "キャリアデザインセンター",
+      "rank": 30,
+      "metricName": "cashConversion",
+      "value": null,
+      "status": "invalid",
+      "rankEligible": false,
+      "source": "tradingview",
+      "reasons": [
+        "missing"
+      ],
+      "documentType": "半期報告書－第35期(2025/10/01－2026/09/30)",
+      "periodStart": null,
+      "periodEnd": null,
+      "consolidation": null,
+      "currency": null,
+      "sourceFile": null
+    },
+    {
+      "symbol": "2410",
+      "companyName": "キャリアデザインセンター",
+      "rank": 30,
+      "metricName": "pFcf",
+      "value": null,
+      "status": "invalid",
+      "rankEligible": false,
+      "source": "tradingview",
+      "reasons": [
+        "missing"
+      ],
+      "documentType": "半期報告書－第35期(2025/10/01－2026/09/30)",
+      "periodStart": null,
+      "periodEnd": null,
+      "consolidation": null,
+      "currency": null,
+      "sourceFile": null
+    },
+    {
       "symbol": "6284",
       "companyName": "日精エー・エス・ビー機械",
-      "rank": 35,
+      "rank": 33,
       "metricName": "fcfTtm",
       "value": null,
       "status": "invalid",
@@ -811,7 +811,7 @@
     {
       "symbol": "6284",
       "companyName": "日精エー・エス・ビー機械",
-      "rank": 35,
+      "rank": 33,
       "metricName": "fcfMargin",
       "value": null,
       "status": "invalid",
@@ -830,7 +830,7 @@
     {
       "symbol": "6284",
       "companyName": "日精エー・エス・ビー機械",
-      "rank": 35,
+      "rank": 33,
       "metricName": "fcfGrowthTtm",
       "value": null,
       "status": "invalid",
@@ -849,7 +849,7 @@
     {
       "symbol": "6284",
       "companyName": "日精エー・エス・ビー機械",
-      "rank": 35,
+      "rank": 33,
       "metricName": "cashFromOperationsTtm",
       "value": null,
       "status": "invalid",
@@ -868,7 +868,7 @@
     {
       "symbol": "6284",
       "companyName": "日精エー・エス・ビー機械",
-      "rank": 35,
+      "rank": 33,
       "metricName": "cashConversion",
       "value": null,
       "status": "invalid",
@@ -887,7 +887,7 @@
     {
       "symbol": "6284",
       "companyName": "日精エー・エス・ビー機械",
-      "rank": 35,
+      "rank": 33,
       "metricName": "pFcf",
       "value": null,
       "status": "invalid",
@@ -904,9 +904,142 @@
       "sourceFile": null
     },
     {
+      "symbol": "4095",
+      "companyName": "日本パーカライジング",
+      "rank": 38,
+      "metricName": "fcfTtm",
+      "value": 13272000000,
+      "status": "warning",
+      "rankEligible": true,
+      "source": "edinet",
+      "reasons": [
+        "fcf_growth_abs_gte_500"
+      ],
+      "documentType": "有価証券報告書－第141期(2025/04/01－2026/03/31)",
+      "periodStart": null,
+      "periodEnd": null,
+      "consolidation": "consolidated",
+      "currency": "JPY",
+      "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00898-000_2026-03-31_01_2026-06-25.csv"
+    },
+    {
+      "symbol": "4095",
+      "companyName": "日本パーカライジング",
+      "rank": 38,
+      "metricName": "fcfMargin",
+      "value": 9.61,
+      "status": "warning",
+      "rankEligible": true,
+      "source": "edinet",
+      "reasons": [
+        "fcf_growth_abs_gte_500"
+      ],
+      "documentType": "有価証券報告書－第141期(2025/04/01－2026/03/31)",
+      "periodStart": null,
+      "periodEnd": null,
+      "consolidation": "consolidated",
+      "currency": "JPY",
+      "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00898-000_2026-03-31_01_2026-06-25.csv"
+    },
+    {
+      "symbol": "4095",
+      "companyName": "日本パーカライジング",
+      "rank": 38,
+      "metricName": "fcfGrowthTtm",
+      "value": 1070.18,
+      "status": "warning",
+      "rankEligible": true,
+      "source": "edinet",
+      "reasons": [
+        "fcf_growth_abs_gte_500"
+      ],
+      "documentType": "有価証券報告書－第141期(2025/04/01－2026/03/31)",
+      "periodStart": null,
+      "periodEnd": null,
+      "consolidation": "consolidated",
+      "currency": "JPY",
+      "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00898-000_2026-03-31_01_2026-06-25.csv"
+    },
+    {
+      "symbol": "4095",
+      "companyName": "日本パーカライジング",
+      "rank": 38,
+      "metricName": "cashFromOperationsTtm",
+      "value": 25402000000,
+      "status": "warning",
+      "rankEligible": true,
+      "source": "edinet",
+      "reasons": [
+        "fcf_growth_abs_gte_500"
+      ],
+      "documentType": "有価証券報告書－第141期(2025/04/01－2026/03/31)",
+      "periodStart": null,
+      "periodEnd": null,
+      "consolidation": "consolidated",
+      "currency": "JPY",
+      "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00898-000_2026-03-31_01_2026-06-25.csv"
+    },
+    {
+      "symbol": "4095",
+      "companyName": "日本パーカライジング",
+      "rank": 38,
+      "metricName": "cashConversion",
+      "value": 0.93,
+      "status": "warning",
+      "rankEligible": true,
+      "source": "edinet",
+      "reasons": [
+        "fcf_growth_abs_gte_500"
+      ],
+      "documentType": "有価証券報告書－第141期(2025/04/01－2026/03/31)",
+      "periodStart": null,
+      "periodEnd": null,
+      "consolidation": "consolidated",
+      "currency": "JPY",
+      "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00898-000_2026-03-31_01_2026-06-25.csv"
+    },
+    {
+      "symbol": "4095",
+      "companyName": "日本パーカライジング",
+      "rank": 38,
+      "metricName": "pFcf",
+      "value": 14.5,
+      "status": "warning",
+      "rankEligible": true,
+      "source": "edinet",
+      "reasons": [
+        "fcf_growth_abs_gte_500"
+      ],
+      "documentType": "有価証券報告書－第141期(2025/04/01－2026/03/31)",
+      "periodStart": null,
+      "periodEnd": null,
+      "consolidation": "consolidated",
+      "currency": "JPY",
+      "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00898-000_2026-03-31_01_2026-06-25.csv"
+    },
+    {
+      "symbol": "4095",
+      "companyName": "日本パーカライジング",
+      "rank": 38,
+      "metricName": "revenueGrowthTtm",
+      "value": 4.44,
+      "status": "warning",
+      "rankEligible": true,
+      "source": "edinet",
+      "reasons": [
+        "fcf_growth_abs_gte_500"
+      ],
+      "documentType": "有価証券報告書－第141期(2025/04/01－2026/03/31)",
+      "periodStart": null,
+      "periodEnd": null,
+      "consolidation": "consolidated",
+      "currency": "JPY",
+      "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00898-000_2026-03-31_01_2026-06-25.csv"
+    },
+    {
       "symbol": "4189",
       "companyName": "ＫＨネオケム",
-      "rank": 38,
+      "rank": 39,
       "metricName": "fcfTtm",
       "value": 8981000000,
       "status": "warning",
@@ -925,7 +1058,7 @@
     {
       "symbol": "4189",
       "companyName": "ＫＨネオケム",
-      "rank": 38,
+      "rank": 39,
       "metricName": "fcfMargin",
       "value": 7.8,
       "status": "warning",
@@ -944,7 +1077,7 @@
     {
       "symbol": "4189",
       "companyName": "ＫＨネオケム",
-      "rank": 38,
+      "rank": 39,
       "metricName": "fcfGrowthTtm",
       "value": 646.95,
       "status": "warning",
@@ -963,7 +1096,7 @@
     {
       "symbol": "4189",
       "companyName": "ＫＨネオケム",
-      "rank": 38,
+      "rank": 39,
       "metricName": "cashFromOperationsTtm",
       "value": 13783000000,
       "status": "warning",
@@ -982,7 +1115,7 @@
     {
       "symbol": "4189",
       "companyName": "ＫＨネオケム",
-      "rank": 38,
+      "rank": 39,
       "metricName": "cashConversion",
       "value": 1.13,
       "status": "warning",
@@ -1001,7 +1134,7 @@
     {
       "symbol": "4189",
       "companyName": "ＫＨネオケム",
-      "rank": 38,
+      "rank": 39,
       "metricName": "pFcf",
       "value": 12.4,
       "status": "warning",
@@ -1020,7 +1153,7 @@
     {
       "symbol": "4189",
       "companyName": "ＫＨネオケム",
-      "rank": 38,
+      "rank": 39,
       "metricName": "revenueGrowthTtm",
       "value": -3.89,
       "status": "warning",
@@ -1035,44 +1168,6 @@
       "consolidation": "consolidated",
       "currency": "JPY",
       "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E32642-000_2025-12-31_01_2026-03-25.csv"
-    },
-    {
-      "symbol": "4027",
-      "companyName": "テイカ",
-      "rank": 40,
-      "metricName": "cashConversion",
-      "value": null,
-      "status": "invalid",
-      "rankEligible": false,
-      "source": "tradingview",
-      "reasons": [
-        "missing"
-      ],
-      "documentType": "有価証券報告書－第160期(2025/04/01－2026/03/31)",
-      "periodStart": null,
-      "periodEnd": null,
-      "consolidation": null,
-      "currency": null,
-      "sourceFile": null
-    },
-    {
-      "symbol": "4027",
-      "companyName": "テイカ",
-      "rank": 40,
-      "metricName": "pFcf",
-      "value": null,
-      "status": "invalid",
-      "rankEligible": false,
-      "source": "tradingview",
-      "reasons": [
-        "missing"
-      ],
-      "documentType": "有価証券報告書－第160期(2025/04/01－2026/03/31)",
-      "periodStart": null,
-      "periodEnd": null,
-      "consolidation": null,
-      "currency": null,
-      "sourceFile": null
     }
   ],
   "criticals": [],
@@ -1080,8 +1175,8 @@
     {
       "symbol": "6266",
       "companyName": "タツモ",
-      "rankBeforeSupplement": 46,
-      "rankAfterSupplement": 21,
+      "rankBeforeSupplement": 47,
+      "rankAfterSupplement": 22,
       "rankDelta": 25,
       "scoreBeforeSupplement": 49.91,
       "scoreAfterSupplement": 56.62,
@@ -1108,12 +1203,40 @@
     {
       "symbol": "4189",
       "companyName": "ＫＨネオケム",
-      "rankBeforeSupplement": 49,
-      "rankAfterSupplement": 25,
+      "rankBeforeSupplement": 50,
+      "rankAfterSupplement": 26,
       "rankDelta": 24,
-      "scoreBeforeSupplement": 49.69,
-      "scoreAfterSupplement": 55.5,
-      "scoreDelta": 5.81,
+      "scoreBeforeSupplement": 49.49,
+      "scoreAfterSupplement": 55.29,
+      "scoreDelta": 5.8,
+      "changedMetrics": [
+        "fcfTtm",
+        "fcfMargin",
+        "fcfGrowthTtm",
+        "cashFromOperationsTtm",
+        "cashConversion",
+        "pFcf",
+        "revenueGrowthTtm"
+      ],
+      "sources": {
+        "fcfTtm": "edinet",
+        "fcfMargin": "edinet",
+        "fcfGrowthTtm": "edinet",
+        "cashFromOperationsTtm": "edinet",
+        "cashConversion": "edinet",
+        "pFcf": "edinet",
+        "revenueGrowthTtm": "edinet"
+      }
+    },
+    {
+      "symbol": "4095",
+      "companyName": "日本パーカライジング",
+      "rankBeforeSupplement": 45,
+      "rankAfterSupplement": 24,
+      "rankDelta": 21,
+      "scoreBeforeSupplement": 50.53,
+      "scoreAfterSupplement": 55.84,
+      "scoreDelta": 5.31,
       "changedMetrics": [
         "fcfTtm",
         "fcfMargin",
@@ -1136,11 +1259,11 @@
     {
       "symbol": "6135",
       "companyName": "牧野フライス製作所",
-      "rankBeforeSupplement": 36,
-      "rankAfterSupplement": 16,
-      "rankDelta": 20,
-      "scoreBeforeSupplement": 53.71,
-      "scoreAfterSupplement": 57.53,
+      "rankBeforeSupplement": 34,
+      "rankAfterSupplement": 15,
+      "rankDelta": 19,
+      "scoreBeforeSupplement": 54.75,
+      "scoreAfterSupplement": 58.57,
       "scoreDelta": 3.82,
       "changedMetrics": [
         "fcfTtm",
@@ -1164,12 +1287,12 @@
     {
       "symbol": "8035",
       "companyName": "東京エレクトロン",
-      "rankBeforeSupplement": 6,
+      "rankBeforeSupplement": 5,
       "rankAfterSupplement": 23,
-      "rankDelta": -17,
-      "scoreBeforeSupplement": 63.79,
-      "scoreAfterSupplement": 56.15,
-      "scoreDelta": -7.64,
+      "rankDelta": -18,
+      "scoreBeforeSupplement": 63.97,
+      "scoreAfterSupplement": 56.31,
+      "scoreDelta": -7.66,
       "changedMetrics": [
         "fcfTtm",
         "fcfMargin",
@@ -1191,8 +1314,8 @@
     {
       "symbol": "2053",
       "companyName": "中部飼料",
-      "rankBeforeSupplement": 41,
-      "rankAfterSupplement": 24,
+      "rankBeforeSupplement": 42,
+      "rankAfterSupplement": 25,
       "rankDelta": 17,
       "scoreBeforeSupplement": 52.38,
       "scoreAfterSupplement": 55.6,
@@ -1222,59 +1345,9 @@
       "rankBeforeSupplement": 18,
       "rankAfterSupplement": 5,
       "rankDelta": 13,
-      "scoreBeforeSupplement": 57.91,
-      "scoreAfterSupplement": 62.76,
+      "scoreBeforeSupplement": 58.59,
+      "scoreAfterSupplement": 63.44,
       "scoreDelta": 4.85,
-      "changedMetrics": [
-        "fcfTtm",
-        "fcfMargin",
-        "fcfGrowthTtm",
-        "cashFromOperationsTtm",
-        "cashConversion",
-        "pFcf",
-        "revenueGrowthTtm"
-      ],
-      "sources": {
-        "fcfTtm": "edinet",
-        "fcfMargin": "edinet",
-        "fcfGrowthTtm": "edinet",
-        "cashFromOperationsTtm": "edinet",
-        "cashConversion": "edinet",
-        "pFcf": "edinet",
-        "revenueGrowthTtm": "edinet"
-      }
-    },
-    {
-      "symbol": "6724",
-      "companyName": "セイコーエプソン",
-      "rankBeforeSupplement": 10,
-      "rankAfterSupplement": 22,
-      "rankDelta": -12,
-      "scoreBeforeSupplement": 59.63,
-      "scoreAfterSupplement": 56.35,
-      "scoreDelta": -3.28,
-      "changedMetrics": [
-        "revenueGrowthTtm"
-      ],
-      "sources": {
-        "fcfTtm": "tradingview",
-        "fcfMargin": "tradingview",
-        "fcfGrowthTtm": "tradingview",
-        "cashFromOperationsTtm": "tradingview",
-        "cashConversion": "tradingview",
-        "pFcf": "tradingview",
-        "revenueGrowthTtm": "edinet"
-      }
-    },
-    {
-      "symbol": "6323",
-      "companyName": "ローツェ",
-      "rankBeforeSupplement": 20,
-      "rankAfterSupplement": 9,
-      "rankDelta": 11,
-      "scoreBeforeSupplement": 56.71,
-      "scoreAfterSupplement": 61.12,
-      "scoreDelta": 4.41,
       "changedMetrics": [
         "fcfTtm",
         "fcfMargin",
@@ -1297,9 +1370,9 @@
     {
       "symbol": "2060",
       "companyName": "フィード・ワン",
-      "rankBeforeSupplement": 29,
+      "rankBeforeSupplement": 33,
       "rankAfterSupplement": 20,
-      "rankDelta": 9,
+      "rankDelta": 13,
       "scoreBeforeSupplement": 55.04,
       "scoreAfterSupplement": 56.69,
       "scoreDelta": 1.65,
@@ -1323,14 +1396,91 @@
       }
     },
     {
+      "symbol": "6323",
+      "companyName": "ローツェ",
+      "rankBeforeSupplement": 20,
+      "rankAfterSupplement": 8,
+      "rankDelta": 12,
+      "scoreBeforeSupplement": 57.31,
+      "scoreAfterSupplement": 61.74,
+      "scoreDelta": 4.43,
+      "changedMetrics": [
+        "fcfTtm",
+        "fcfMargin",
+        "fcfGrowthTtm",
+        "cashFromOperationsTtm",
+        "cashConversion",
+        "pFcf",
+        "revenueGrowthTtm"
+      ],
+      "sources": {
+        "fcfTtm": "edinet",
+        "fcfMargin": "edinet",
+        "fcfGrowthTtm": "edinet",
+        "cashFromOperationsTtm": "edinet",
+        "cashConversion": "edinet",
+        "pFcf": "edinet",
+        "revenueGrowthTtm": "edinet"
+      }
+    },
+    {
+      "symbol": "6724",
+      "companyName": "セイコーエプソン",
+      "rankBeforeSupplement": 10,
+      "rankAfterSupplement": 19,
+      "rankDelta": -9,
+      "scoreBeforeSupplement": 60.28,
+      "scoreAfterSupplement": 57,
+      "scoreDelta": -3.28,
+      "changedMetrics": [
+        "revenueGrowthTtm"
+      ],
+      "sources": {
+        "fcfTtm": "tradingview",
+        "fcfMargin": "tradingview",
+        "fcfGrowthTtm": "tradingview",
+        "cashFromOperationsTtm": "tradingview",
+        "cashConversion": "tradingview",
+        "pFcf": "tradingview",
+        "revenueGrowthTtm": "edinet"
+      }
+    },
+    {
+      "symbol": "9304",
+      "companyName": "澁澤倉庫",
+      "rankBeforeSupplement": 8,
+      "rankAfterSupplement": 16,
+      "rankDelta": -8,
+      "scoreBeforeSupplement": 60.93,
+      "scoreAfterSupplement": 58.19,
+      "scoreDelta": -2.74,
+      "changedMetrics": [
+        "fcfTtm",
+        "fcfMargin",
+        "fcfGrowthTtm",
+        "cashConversion",
+        "pFcf",
+        "revenueGrowthTtm"
+      ],
+      "sources": {
+        "fcfTtm": "edinet",
+        "fcfMargin": "edinet",
+        "fcfGrowthTtm": "edinet",
+        "cashFromOperationsTtm": "edinet",
+        "cashConversion": "edinet",
+        "pFcf": "edinet",
+        "revenueGrowthTtm": "edinet"
+      }
+    },
+    {
       "symbol": "4634",
       "companyName": "ａｒｔｉｅｎｃｅ",
-      "rankBeforeSupplement": 12,
+      "rankBeforeSupplement": 13,
       "rankAfterSupplement": 6,
-      "rankDelta": 6,
-      "scoreBeforeSupplement": 59.43,
-      "scoreAfterSupplement": 62.66,
-      "scoreDelta": 3.23,
+      "rankDelta": 7,
+      "scoreBeforeSupplement": 59.41,
+      "scoreAfterSupplement": 62.65,
+      "scoreDelta": 3.24,
       "changedMetrics": [
         "fcfTtm",
         "fcfMargin",
@@ -1353,9 +1503,9 @@
     {
       "symbol": "1375",
       "companyName": "ユキグニファクトリー",
-      "rankBeforeSupplement": 11,
+      "rankBeforeSupplement": 12,
       "rankAfterSupplement": 17,
-      "rankDelta": -6,
+      "rankDelta": -5,
       "scoreBeforeSupplement": 59.5,
       "scoreAfterSupplement": 57.41,
       "scoreDelta": -2.09,
@@ -1369,33 +1519,6 @@
         "cashFromOperationsTtm": "tradingview",
         "cashConversion": "tradingview",
         "pFcf": "tradingview",
-        "revenueGrowthTtm": "edinet"
-      }
-    },
-    {
-      "symbol": "9304",
-      "companyName": "澁澤倉庫",
-      "rankBeforeSupplement": 9,
-      "rankAfterSupplement": 15,
-      "rankDelta": -6,
-      "scoreBeforeSupplement": 60.54,
-      "scoreAfterSupplement": 57.81,
-      "scoreDelta": -2.73,
-      "changedMetrics": [
-        "fcfTtm",
-        "fcfMargin",
-        "fcfGrowthTtm",
-        "cashConversion",
-        "pFcf",
-        "revenueGrowthTtm"
-      ],
-      "sources": {
-        "fcfTtm": "edinet",
-        "fcfMargin": "edinet",
-        "fcfGrowthTtm": "edinet",
-        "cashFromOperationsTtm": "edinet",
-        "cashConversion": "edinet",
-        "pFcf": "edinet",
         "revenueGrowthTtm": "edinet"
       }
     },
@@ -1427,33 +1550,13 @@
       }
     },
     {
-      "symbol": "6136",
-      "companyName": "オーエスジー",
-      "rankBeforeSupplement": 17,
-      "rankAfterSupplement": 13,
-      "rankDelta": 4,
-      "scoreBeforeSupplement": 58.04,
-      "scoreAfterSupplement": 58.04,
-      "scoreDelta": 0,
-      "changedMetrics": [],
-      "sources": {
-        "fcfTtm": "tradingview",
-        "fcfMargin": "tradingview",
-        "fcfGrowthTtm": "tradingview",
-        "cashFromOperationsTtm": "tradingview",
-        "cashConversion": "tradingview",
-        "pFcf": "tradingview",
-        "revenueGrowthTtm": "tradingview"
-      }
-    },
-    {
       "symbol": "7735",
       "companyName": "ＳＣＲＥＥＮホールディングス",
-      "rankBeforeSupplement": 5,
-      "rankAfterSupplement": 8,
+      "rankBeforeSupplement": 6,
+      "rankAfterSupplement": 9,
       "rankDelta": -3,
-      "scoreBeforeSupplement": 63.82,
-      "scoreAfterSupplement": 61.51,
+      "scoreBeforeSupplement": 63.71,
+      "scoreAfterSupplement": 61.4,
       "scoreDelta": -2.31,
       "changedMetrics": [],
       "sources": {
@@ -1467,14 +1570,56 @@
       }
     },
     {
-      "symbol": "6237",
-      "companyName": "イワキポンプ",
-      "rankBeforeSupplement": 13,
-      "rankAfterSupplement": 10,
+      "symbol": "6136",
+      "companyName": "オーエスジー",
+      "rankBeforeSupplement": 17,
+      "rankAfterSupplement": 14,
       "rankDelta": 3,
-      "scoreBeforeSupplement": 59.41,
-      "scoreAfterSupplement": 60.47,
-      "scoreDelta": 1.06,
+      "scoreBeforeSupplement": 58.6,
+      "scoreAfterSupplement": 58.6,
+      "scoreDelta": 0,
+      "changedMetrics": [],
+      "sources": {
+        "fcfTtm": "tradingview",
+        "fcfMargin": "tradingview",
+        "fcfGrowthTtm": "tradingview",
+        "cashFromOperationsTtm": "tradingview",
+        "cashConversion": "tradingview",
+        "pFcf": "tradingview",
+        "revenueGrowthTtm": "tradingview"
+      }
+    },
+    {
+      "symbol": "9147",
+      "companyName": "ＮＩＰＰＯＮ　ＥＸＰＲＥＳＳホールディングス",
+      "rankBeforeSupplement": 15,
+      "rankAfterSupplement": 18,
+      "rankDelta": -3,
+      "scoreBeforeSupplement": 58.88,
+      "scoreAfterSupplement": 57.13,
+      "scoreDelta": -1.75,
+      "changedMetrics": [
+        "revenueGrowthTtm"
+      ],
+      "sources": {
+        "fcfTtm": "tradingview",
+        "fcfMargin": "tradingview",
+        "fcfGrowthTtm": "tradingview",
+        "cashFromOperationsTtm": "tradingview",
+        "cashConversion": "tradingview",
+        "pFcf": "tradingview",
+        "revenueGrowthTtm": "edinet"
+      }
+    },
+    {
+      "symbol": "3946",
+      "companyName": "トーモク",
+      "rankBeforeSupplement": 9,
+      "rankAfterSupplement": 7,
+      "rankDelta": 2,
+      "scoreBeforeSupplement": 60.84,
+      "scoreAfterSupplement": 62.22,
+      "scoreDelta": 1.38,
       "changedMetrics": [
         "fcfTtm",
         "fcfMargin",
@@ -1523,17 +1668,15 @@
       }
     },
     {
-      "symbol": "9147",
-      "companyName": "ＮＩＰＰＯＮ　ＥＸＰＲＥＳＳホールディングス",
-      "rankBeforeSupplement": 16,
-      "rankAfterSupplement": 18,
-      "rankDelta": -2,
-      "scoreBeforeSupplement": 58.85,
-      "scoreAfterSupplement": 57.12,
-      "scoreDelta": -1.73,
-      "changedMetrics": [
-        "revenueGrowthTtm"
-      ],
+      "symbol": "6284",
+      "companyName": "日精エー・エス・ビー機械",
+      "rankBeforeSupplement": 29,
+      "rankAfterSupplement": 27,
+      "rankDelta": 2,
+      "scoreBeforeSupplement": 55.31,
+      "scoreAfterSupplement": 55.28,
+      "scoreDelta": -0.03,
+      "changedMetrics": [],
       "sources": {
         "fcfTtm": "tradingview",
         "fcfMargin": "tradingview",
@@ -1541,7 +1684,7 @@
         "cashFromOperationsTtm": "tradingview",
         "cashConversion": "tradingview",
         "pFcf": "tradingview",
-        "revenueGrowthTtm": "edinet"
+        "revenueGrowthTtm": "tradingview"
       }
     },
     {
@@ -1550,9 +1693,9 @@
       "rankBeforeSupplement": 4,
       "rankAfterSupplement": 3,
       "rankDelta": 1,
-      "scoreBeforeSupplement": 65.09,
-      "scoreAfterSupplement": 67.47,
-      "scoreDelta": 2.38,
+      "scoreBeforeSupplement": 65.54,
+      "scoreAfterSupplement": 67.94,
+      "scoreDelta": 2.4,
       "changedMetrics": [
         "fcfTtm",
         "fcfMargin",
@@ -1573,14 +1716,14 @@
       }
     },
     {
-      "symbol": "3946",
-      "companyName": "トーモク",
-      "rankBeforeSupplement": 8,
-      "rankAfterSupplement": 7,
+      "symbol": "6237",
+      "companyName": "イワキポンプ",
+      "rankBeforeSupplement": 11,
+      "rankAfterSupplement": 10,
       "rankDelta": 1,
-      "scoreBeforeSupplement": 60.84,
-      "scoreAfterSupplement": 62.22,
-      "scoreDelta": 1.38,
+      "scoreBeforeSupplement": 60.13,
+      "scoreAfterSupplement": 61.19,
+      "scoreDelta": 1.06,
       "changedMetrics": [
         "fcfTtm",
         "fcfMargin",
@@ -1606,8 +1749,8 @@
       "rankBeforeSupplement": 3,
       "rankAfterSupplement": 4,
       "rankDelta": -1,
-      "scoreBeforeSupplement": 68.84,
-      "scoreAfterSupplement": 65.09,
+      "scoreBeforeSupplement": 69.19,
+      "scoreAfterSupplement": 65.44,
       "scoreDelta": -3.75,
       "changedMetrics": [
         "fcfTtm",
@@ -1628,34 +1771,14 @@
       }
     },
     {
-      "symbol": "6284",
-      "companyName": "日精エー・エス・ビー機械",
-      "rankBeforeSupplement": 33,
-      "rankAfterSupplement": 32,
-      "rankDelta": 1,
-      "scoreBeforeSupplement": 54.09,
-      "scoreAfterSupplement": 54.04,
-      "scoreDelta": -0.05,
-      "changedMetrics": [],
-      "sources": {
-        "fcfTtm": "tradingview",
-        "fcfMargin": "tradingview",
-        "fcfGrowthTtm": "tradingview",
-        "cashFromOperationsTtm": "tradingview",
-        "cashConversion": "tradingview",
-        "pFcf": "tradingview",
-        "revenueGrowthTtm": "tradingview"
-      }
-    },
-    {
       "symbol": "7966",
       "companyName": "リンテック",
       "rankBeforeSupplement": 1,
       "rankAfterSupplement": 1,
       "rankDelta": 0,
-      "scoreBeforeSupplement": 71.99,
-      "scoreAfterSupplement": 70.16,
-      "scoreDelta": -1.83,
+      "scoreBeforeSupplement": 72.29,
+      "scoreAfterSupplement": 70.49,
+      "scoreDelta": -1.8,
       "changedMetrics": [
         "fcfTtm",
         "fcfMargin",
@@ -1680,9 +1803,9 @@
       "rankBeforeSupplement": 2,
       "rankAfterSupplement": 2,
       "rankDelta": 0,
-      "scoreBeforeSupplement": 71.15,
-      "scoreAfterSupplement": 68.63,
-      "scoreDelta": -2.52,
+      "scoreBeforeSupplement": 71.97,
+      "scoreAfterSupplement": 69.46,
+      "scoreDelta": -2.51,
       "changedMetrics": [
         "revenueGrowthTtm"
       ],
@@ -1695,32 +1818,6 @@
         "pFcf": "tradingview",
         "revenueGrowthTtm": "edinet"
       }
-    },
-    {
-      "symbol": "4027",
-      "companyName": "テイカ",
-      "rankBeforeSupplement": 35,
-      "rankAfterSupplement": 35,
-      "rankDelta": 0,
-      "scoreBeforeSupplement": 53.74,
-      "scoreAfterSupplement": 52.46,
-      "scoreDelta": -1.28,
-      "changedMetrics": [
-        "fcfTtm",
-        "fcfMargin",
-        "fcfGrowthTtm",
-        "cashFromOperationsTtm",
-        "revenueGrowthTtm"
-      ],
-      "sources": {
-        "fcfTtm": "edinet",
-        "fcfMargin": "edinet",
-        "fcfGrowthTtm": "edinet",
-        "cashFromOperationsTtm": "edinet",
-        "cashConversion": "tradingview",
-        "pFcf": "tradingview",
-        "revenueGrowthTtm": "edinet"
-      }
     }
   ],
   "top10BeforeSupplement": [
@@ -1729,42 +1826,42 @@
       "symbol": "7966",
       "exchange": "TSE",
       "companyName": "リンテック",
-      "score": 71.99
+      "score": 72.29
     },
     {
       "rank": 2,
       "symbol": "6448",
       "exchange": "TSE",
       "companyName": "ブラザー工業",
-      "score": 71.15
+      "score": 71.97
     },
     {
       "rank": 3,
       "symbol": "3407",
       "exchange": "TSE",
       "companyName": "旭化成",
-      "score": 68.84
+      "score": 69.19
     },
     {
       "rank": 4,
       "symbol": "5186",
       "exchange": "TSE",
       "companyName": "ニッタ",
-      "score": 65.09
+      "score": 65.54
     },
     {
       "rank": 5,
-      "symbol": "7735",
-      "exchange": "TSE",
-      "companyName": "ＳＣＲＥＥＮホールディングス",
-      "score": 63.82
-    },
-    {
-      "rank": 6,
       "symbol": "8035",
       "exchange": "TSE",
       "companyName": "東京エレクトロン",
-      "score": 63.79
+      "score": 63.97
+    },
+    {
+      "rank": 6,
+      "symbol": "7735",
+      "exchange": "TSE",
+      "companyName": "ＳＣＲＥＥＮホールディングス",
+      "score": 63.71
     },
     {
       "rank": 7,
@@ -1775,24 +1872,24 @@
     },
     {
       "rank": 8,
+      "symbol": "9304",
+      "exchange": "TSE",
+      "companyName": "澁澤倉庫",
+      "score": 60.93
+    },
+    {
+      "rank": 9,
       "symbol": "3946",
       "exchange": "TSE",
       "companyName": "トーモク",
       "score": 60.84
     },
     {
-      "rank": 9,
-      "symbol": "9304",
-      "exchange": "TSE",
-      "companyName": "澁澤倉庫",
-      "score": 60.54
-    },
-    {
       "rank": 10,
       "symbol": "6724",
       "exchange": "TSE",
       "companyName": "セイコーエプソン",
-      "score": 59.63
+      "score": 60.28
     }
   ],
   "top10AfterSupplement": [
@@ -1801,42 +1898,42 @@
       "symbol": "7966",
       "exchange": "TSE",
       "companyName": "リンテック",
-      "score": 70.16
+      "score": 70.49
     },
     {
       "rank": 2,
       "symbol": "6448",
       "exchange": "TSE",
       "companyName": "ブラザー工業",
-      "score": 68.63
+      "score": 69.46
     },
     {
       "rank": 3,
       "symbol": "5186",
       "exchange": "TSE",
       "companyName": "ニッタ",
-      "score": 67.47
+      "score": 67.94
     },
     {
       "rank": 4,
       "symbol": "3407",
       "exchange": "TSE",
       "companyName": "旭化成",
-      "score": 65.09
+      "score": 65.44
     },
     {
       "rank": 5,
       "symbol": "7970",
       "exchange": "TSE",
       "companyName": "信越ポリマー",
-      "score": 62.76
+      "score": 63.44
     },
     {
       "rank": 6,
       "symbol": "4634",
       "exchange": "TSE",
       "companyName": "ａｒｔｉｅｎｃｅ",
-      "score": 62.66
+      "score": 62.65
     },
     {
       "rank": 7,
@@ -1847,24 +1944,24 @@
     },
     {
       "rank": 8,
-      "symbol": "7735",
-      "exchange": "TSE",
-      "companyName": "ＳＣＲＥＥＮホールディングス",
-      "score": 61.51
-    },
-    {
-      "rank": 9,
       "symbol": "6323",
       "exchange": "TSE",
       "companyName": "ローツェ",
-      "score": 61.12
+      "score": 61.74
+    },
+    {
+      "rank": 9,
+      "symbol": "7735",
+      "exchange": "TSE",
+      "companyName": "ＳＣＲＥＥＮホールディングス",
+      "score": 61.4
     },
     {
       "rank": 10,
       "symbol": "6237",
       "exchange": "TSE",
       "companyName": "イワキポンプ",
-      "score": 60.47
+      "score": 61.19
     }
   ],
   "top10PreviousRun": [
@@ -1885,11 +1982,11 @@
       "symbol": "7966",
       "exchange": "TSE",
       "companyName": "リンテック",
-      "score": 68.59,
+      "score": 69.16,
       "previousRank": 2,
       "previousScore": 68.59,
       "rankDeltaFromPrevious": 0,
-      "scoreDeltaFromPrevious": 0,
+      "scoreDeltaFromPrevious": 0.57,
       "isNewTop10FromPrevious": false
     },
     {
@@ -1897,34 +1994,34 @@
       "symbol": "5186",
       "exchange": "TSE",
       "companyName": "ニッタ",
-      "score": 67.52,
+      "score": 68.2,
       "previousRank": 3,
       "previousScore": 67.52,
       "rankDeltaFromPrevious": 0,
-      "scoreDeltaFromPrevious": 0,
+      "scoreDeltaFromPrevious": 0.68,
       "isNewTop10FromPrevious": false
     },
     {
       "rank": 4,
+      "symbol": "6448",
+      "exchange": "TSE",
+      "companyName": "ブラザー工業",
+      "score": 67.8,
+      "previousRank": 5,
+      "previousScore": 66.85,
+      "rankDeltaFromPrevious": 1,
+      "scoreDeltaFromPrevious": 0.95,
+      "isNewTop10FromPrevious": false
+    },
+    {
+      "rank": 5,
       "symbol": "6098",
       "exchange": "TSE",
       "companyName": "リクルートホールディングス",
       "score": 66.96,
       "previousRank": 4,
       "previousScore": 66.96,
-      "rankDeltaFromPrevious": 0,
-      "scoreDeltaFromPrevious": 0,
-      "isNewTop10FromPrevious": false
-    },
-    {
-      "rank": 5,
-      "symbol": "6448",
-      "exchange": "TSE",
-      "companyName": "ブラザー工業",
-      "score": 66.85,
-      "previousRank": 5,
-      "previousScore": 66.85,
-      "rankDeltaFromPrevious": 0,
+      "rankDeltaFromPrevious": -1,
       "scoreDeltaFromPrevious": 0,
       "isNewTop10FromPrevious": false
     },
@@ -1954,26 +2051,26 @@
     },
     {
       "rank": 8,
-      "symbol": "7735",
+      "symbol": "6237",
       "exchange": "TSE",
-      "companyName": "ＳＣＲＥＥＮホールディングス",
-      "score": 62.6,
-      "previousRank": 8,
-      "previousScore": 62.6,
-      "rankDeltaFromPrevious": 0,
-      "scoreDeltaFromPrevious": 0,
+      "companyName": "イワキポンプ",
+      "score": 63.43,
+      "previousRank": 9,
+      "previousScore": 62.56,
+      "rankDeltaFromPrevious": 1,
+      "scoreDeltaFromPrevious": 0.87,
       "isNewTop10FromPrevious": false
     },
     {
       "rank": 9,
-      "symbol": "6237",
+      "symbol": "7735",
       "exchange": "TSE",
-      "companyName": "イワキポンプ",
-      "score": 62.56,
-      "previousRank": 9,
-      "previousScore": 62.56,
-      "rankDeltaFromPrevious": 0,
-      "scoreDeltaFromPrevious": 0,
+      "companyName": "ＳＣＲＥＥＮホールディングス",
+      "score": 62.85,
+      "previousRank": 8,
+      "previousScore": 62.6,
+      "rankDeltaFromPrevious": -1,
+      "scoreDeltaFromPrevious": 0.25,
       "isNewTop10FromPrevious": false
     },
     {
@@ -2002,28 +2099,28 @@
       "symbol": "7966",
       "exchange": "TSE",
       "companyName": "リンテック",
-      "score": 68.59
+      "score": 69.16
     },
     {
       "rank": 3,
       "symbol": "5186",
       "exchange": "TSE",
       "companyName": "ニッタ",
-      "score": 67.52
+      "score": 68.2
     },
     {
       "rank": 4,
+      "symbol": "6448",
+      "exchange": "TSE",
+      "companyName": "ブラザー工業",
+      "score": 67.8
+    },
+    {
+      "rank": 5,
       "symbol": "6098",
       "exchange": "TSE",
       "companyName": "リクルートホールディングス",
       "score": 66.96
-    },
-    {
-      "rank": 5,
-      "symbol": "6448",
-      "exchange": "TSE",
-      "companyName": "ブラザー工業",
-      "score": 66.85
     },
     {
       "rank": 6,
@@ -2041,17 +2138,17 @@
     },
     {
       "rank": 8,
-      "symbol": "7735",
-      "exchange": "TSE",
-      "companyName": "ＳＣＲＥＥＮホールディングス",
-      "score": 62.6
-    },
-    {
-      "rank": 9,
       "symbol": "6237",
       "exchange": "TSE",
       "companyName": "イワキポンプ",
-      "score": 62.56
+      "score": 63.43
+    },
+    {
+      "rank": 9,
+      "symbol": "7735",
+      "exchange": "TSE",
+      "companyName": "ＳＣＲＥＥＮホールディングス",
+      "score": 62.85
     },
     {
       "rank": 10,
@@ -2959,97 +3056,6 @@
     },
     {
       "rank": 4,
-      "symbol": "6098",
-      "companyName": "6098 (リクルートホールディングス)",
-      "metricProvenance": {
-        "fcfTtm": {
-          "source": "tradingview",
-          "status": "valid",
-          "rankEligible": true,
-          "rawValue": 658729000000,
-          "finalValue": 658729000000,
-          "warnings": []
-        },
-        "fcfMargin": {
-          "source": "tradingview",
-          "status": "valid",
-          "rankEligible": true,
-          "rawValue": 17.816241952684504,
-          "finalValue": 17.816241952684504,
-          "warnings": []
-        },
-        "fcfGrowthTtm": {
-          "source": "tradingview",
-          "status": "valid",
-          "rankEligible": true,
-          "rawValue": 9.348585353545415,
-          "finalValue": 9.348585353545415,
-          "warnings": []
-        },
-        "cashFromOperationsTtm": {
-          "source": "tradingview",
-          "status": "valid",
-          "rankEligible": true,
-          "rawValue": 669431000000,
-          "finalValue": 669431000000,
-          "warnings": []
-        },
-        "cashConversion": {
-          "source": "tradingview",
-          "status": "valid",
-          "rankEligible": true,
-          "rawValue": 1.33,
-          "finalValue": 1.33,
-          "warnings": []
-        },
-        "pFcf": {
-          "source": "tradingview",
-          "status": "valid",
-          "rankEligible": true,
-          "rawValue": 27.210277996995273,
-          "finalValue": 27.210277996995273,
-          "warnings": []
-        },
-        "revenueGrowthTtm": {
-          "source": "tradingview",
-          "status": "valid",
-          "rankEligible": true,
-          "rawValue": 3.9318022486716715,
-          "finalValue": 3.9318022486716715,
-          "warnings": []
-        }
-      },
-      "edinetSupplement": {
-        "docId": "S100XKLC",
-        "submitDateTime": "2026-02-12 15:32",
-        "docDescription": "半期報告書－第23期(2025/07/01－2026/06/30)",
-        "metricStatus": "valid",
-        "rankEligible": true,
-        "warnings": [],
-        "extractedFacts": {
-          "revenueCurrent": null,
-          "revenuePrior": null,
-          "operatingCashFlowCurrent": null,
-          "operatingCashFlowPrior": null,
-          "capexCurrent": 0,
-          "capexPrior": 0,
-          "netIncomeCurrent": null,
-          "provenance": {
-            "revenueCurrent": null,
-            "revenuePrior": null,
-            "operatingCashFlowCurrent": null,
-            "operatingCashFlowPrior": null,
-            "capexPpeCurrent": null,
-            "capexIntangiblesCurrent": null,
-            "capexPpePrior": null,
-            "capexIntangiblesPrior": null,
-            "netIncomeCurrent": null
-          }
-        }
-      }
-    },
-    {
-      "rank": 5,
       "symbol": "6448",
       "companyName": "6448 (ブラザー工業)",
       "metricProvenance": {
@@ -3216,6 +3222,97 @@
               "rankEligible": true,
               "joined": "jpcrpcornetincomelosssummaryofbusinessresults|当期純利益又は当期純損失△、経営指標等|currentyeardurationnonconsolidatedmember|当期|nonconsolidated|duration"
             }
+          }
+        }
+      }
+    },
+    {
+      "rank": 5,
+      "symbol": "6098",
+      "companyName": "6098 (リクルートホールディングス)",
+      "metricProvenance": {
+        "fcfTtm": {
+          "source": "tradingview",
+          "status": "valid",
+          "rankEligible": true,
+          "rawValue": 658729000000,
+          "finalValue": 658729000000,
+          "warnings": []
+        },
+        "fcfMargin": {
+          "source": "tradingview",
+          "status": "valid",
+          "rankEligible": true,
+          "rawValue": 17.816241952684504,
+          "finalValue": 17.816241952684504,
+          "warnings": []
+        },
+        "fcfGrowthTtm": {
+          "source": "tradingview",
+          "status": "valid",
+          "rankEligible": true,
+          "rawValue": 9.348585353545415,
+          "finalValue": 9.348585353545415,
+          "warnings": []
+        },
+        "cashFromOperationsTtm": {
+          "source": "tradingview",
+          "status": "valid",
+          "rankEligible": true,
+          "rawValue": 669431000000,
+          "finalValue": 669431000000,
+          "warnings": []
+        },
+        "cashConversion": {
+          "source": "tradingview",
+          "status": "valid",
+          "rankEligible": true,
+          "rawValue": 1.33,
+          "finalValue": 1.33,
+          "warnings": []
+        },
+        "pFcf": {
+          "source": "tradingview",
+          "status": "valid",
+          "rankEligible": true,
+          "rawValue": 27.210277996995273,
+          "finalValue": 27.210277996995273,
+          "warnings": []
+        },
+        "revenueGrowthTtm": {
+          "source": "tradingview",
+          "status": "valid",
+          "rankEligible": true,
+          "rawValue": 3.9318022486716715,
+          "finalValue": 3.9318022486716715,
+          "warnings": []
+        }
+      },
+      "edinetSupplement": {
+        "docId": "S100XKLC",
+        "submitDateTime": "2026-02-12 15:32",
+        "docDescription": "半期報告書－第23期(2025/07/01－2026/06/30)",
+        "metricStatus": "valid",
+        "rankEligible": true,
+        "warnings": [],
+        "extractedFacts": {
+          "revenueCurrent": null,
+          "revenuePrior": null,
+          "operatingCashFlowCurrent": null,
+          "operatingCashFlowPrior": null,
+          "capexCurrent": 0,
+          "capexPrior": 0,
+          "netIncomeCurrent": null,
+          "provenance": {
+            "revenueCurrent": null,
+            "revenuePrior": null,
+            "operatingCashFlowCurrent": null,
+            "operatingCashFlowPrior": null,
+            "capexPpeCurrent": null,
+            "capexIntangiblesCurrent": null,
+            "capexPpePrior": null,
+            "capexIntangiblesPrior": null,
+            "netIncomeCurrent": null
           }
         }
       }
@@ -3962,97 +4059,6 @@
     },
     {
       "rank": 8,
-      "symbol": "7735",
-      "companyName": "7735 (ＳＣＲＥＥＮホールディングス)",
-      "metricProvenance": {
-        "fcfTtm": {
-          "source": "tradingview",
-          "status": "valid",
-          "rankEligible": true,
-          "rawValue": 67200000000,
-          "finalValue": 67200000000,
-          "warnings": []
-        },
-        "fcfMargin": {
-          "source": "tradingview",
-          "status": "valid",
-          "rankEligible": true,
-          "rawValue": 11.093722141880782,
-          "finalValue": 11.093722141880782,
-          "warnings": []
-        },
-        "fcfGrowthTtm": {
-          "source": "tradingview",
-          "status": "valid",
-          "rankEligible": true,
-          "rawValue": 35.900339750849376,
-          "finalValue": 35.900339750849376,
-          "warnings": []
-        },
-        "cashFromOperationsTtm": {
-          "source": "tradingview",
-          "status": "valid",
-          "rankEligible": true,
-          "rawValue": 92707000000,
-          "finalValue": 92707000000,
-          "warnings": []
-        },
-        "cashConversion": {
-          "source": "tradingview",
-          "status": "valid",
-          "rankEligible": true,
-          "rawValue": 0.73,
-          "finalValue": 0.73,
-          "warnings": []
-        },
-        "pFcf": {
-          "source": "tradingview",
-          "status": "valid",
-          "rankEligible": true,
-          "rawValue": 46.8667728827381,
-          "finalValue": 46.8667728827381,
-          "warnings": []
-        },
-        "revenueGrowthTtm": {
-          "source": "tradingview",
-          "status": "valid",
-          "rankEligible": true,
-          "rawValue": -3.122016284191284,
-          "finalValue": -3.122016284191284,
-          "warnings": []
-        }
-      },
-      "edinetSupplement": {
-        "docId": "S100XYSX",
-        "submitDateTime": "2026-04-14 15:37",
-        "docDescription": "半期報告書－第67期(2025/09/01－2026/08/31)",
-        "metricStatus": "valid",
-        "rankEligible": true,
-        "warnings": [],
-        "extractedFacts": {
-          "revenueCurrent": null,
-          "revenuePrior": null,
-          "operatingCashFlowCurrent": null,
-          "operatingCashFlowPrior": null,
-          "capexCurrent": 0,
-          "capexPrior": 0,
-          "netIncomeCurrent": null,
-          "provenance": {
-            "revenueCurrent": null,
-            "revenuePrior": null,
-            "operatingCashFlowCurrent": null,
-            "operatingCashFlowPrior": null,
-            "capexPpeCurrent": null,
-            "capexIntangiblesCurrent": null,
-            "capexPpePrior": null,
-            "capexIntangiblesPrior": null,
-            "netIncomeCurrent": null
-          }
-        }
-      }
-    },
-    {
-      "rank": 9,
       "symbol": "6237",
       "companyName": "6237 (イワキポンプ)",
       "metricProvenance": {
@@ -4369,6 +4375,97 @@
               "rankEligible": true,
               "joined": "jppfscorprofitloss|当期純利益又は当期純損失△平成26年3月28日財規等改正後|currentyearduration|当期|consolidated|duration"
             }
+          }
+        }
+      }
+    },
+    {
+      "rank": 9,
+      "symbol": "7735",
+      "companyName": "7735 (ＳＣＲＥＥＮホールディングス)",
+      "metricProvenance": {
+        "fcfTtm": {
+          "source": "tradingview",
+          "status": "valid",
+          "rankEligible": true,
+          "rawValue": 67200000000,
+          "finalValue": 67200000000,
+          "warnings": []
+        },
+        "fcfMargin": {
+          "source": "tradingview",
+          "status": "valid",
+          "rankEligible": true,
+          "rawValue": 11.093722141880782,
+          "finalValue": 11.093722141880782,
+          "warnings": []
+        },
+        "fcfGrowthTtm": {
+          "source": "tradingview",
+          "status": "valid",
+          "rankEligible": true,
+          "rawValue": 35.900339750849376,
+          "finalValue": 35.900339750849376,
+          "warnings": []
+        },
+        "cashFromOperationsTtm": {
+          "source": "tradingview",
+          "status": "valid",
+          "rankEligible": true,
+          "rawValue": 92707000000,
+          "finalValue": 92707000000,
+          "warnings": []
+        },
+        "cashConversion": {
+          "source": "tradingview",
+          "status": "valid",
+          "rankEligible": true,
+          "rawValue": 0.73,
+          "finalValue": 0.73,
+          "warnings": []
+        },
+        "pFcf": {
+          "source": "tradingview",
+          "status": "valid",
+          "rankEligible": true,
+          "rawValue": 46.8667728827381,
+          "finalValue": 46.8667728827381,
+          "warnings": []
+        },
+        "revenueGrowthTtm": {
+          "source": "tradingview",
+          "status": "valid",
+          "rankEligible": true,
+          "rawValue": -3.122016284191284,
+          "finalValue": -3.122016284191284,
+          "warnings": []
+        }
+      },
+      "edinetSupplement": {
+        "docId": "S100XYSX",
+        "submitDateTime": "2026-04-14 15:37",
+        "docDescription": "半期報告書－第67期(2025/09/01－2026/08/31)",
+        "metricStatus": "valid",
+        "rankEligible": true,
+        "warnings": [],
+        "extractedFacts": {
+          "revenueCurrent": null,
+          "revenuePrior": null,
+          "operatingCashFlowCurrent": null,
+          "operatingCashFlowPrior": null,
+          "capexCurrent": 0,
+          "capexPrior": 0,
+          "netIncomeCurrent": null,
+          "provenance": {
+            "revenueCurrent": null,
+            "revenuePrior": null,
+            "operatingCashFlowCurrent": null,
+            "operatingCashFlowPrior": null,
+            "capexPpeCurrent": null,
+            "capexIntangiblesCurrent": null,
+            "capexPpePrior": null,
+            "capexIntangiblesPrior": null,
+            "netIncomeCurrent": null
           }
         }
       }
@@ -5485,376 +5582,6 @@
     },
     {
       "rank": 13,
-      "symbol": "3407",
-      "companyName": "3407 (旭化成)",
-      "metricProvenance": {
-        "fcfTtm": {
-          "source": "edinet",
-          "status": "valid",
-          "rankEligible": true,
-          "rawValue": 92054000000,
-          "finalValue": 92054000000,
-          "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
-          "periodStart": null,
-          "periodEnd": null,
-          "consolidation": "consolidated",
-          "currency": "JPY",
-          "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
-          "warnings": [],
-          "previousSource": "tradingview",
-          "previousValue": 109433000000,
-          "difference": -17379000000
-        },
-        "fcfMargin": {
-          "source": "edinet",
-          "status": "valid",
-          "rankEligible": true,
-          "rawValue": 2.99,
-          "finalValue": 2.99,
-          "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
-          "periodStart": null,
-          "periodEnd": null,
-          "consolidation": "consolidated",
-          "currency": "JPY",
-          "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
-          "warnings": [],
-          "previousSource": "tradingview",
-          "previousValue": 3.559369719678452,
-          "difference": -0.5694
-        },
-        "fcfGrowthTtm": {
-          "source": "edinet",
-          "status": "valid",
-          "rankEligible": true,
-          "rawValue": 10.18,
-          "finalValue": 10.18,
-          "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
-          "periodStart": null,
-          "periodEnd": null,
-          "consolidation": "consolidated",
-          "currency": "JPY",
-          "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
-          "warnings": [],
-          "previousSource": "tradingview",
-          "previousValue": 9.646811281999899,
-          "difference": 0.5332
-        },
-        "cashFromOperationsTtm": {
-          "source": "edinet",
-          "status": "valid",
-          "rankEligible": true,
-          "rawValue": 303104000000,
-          "finalValue": 303104000000,
-          "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
-          "periodStart": null,
-          "periodEnd": null,
-          "consolidation": "consolidated",
-          "currency": "JPY",
-          "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
-          "warnings": [],
-          "previousSource": "tradingview",
-          "previousValue": 303104000000,
-          "difference": 0
-        },
-        "cashConversion": {
-          "source": "edinet",
-          "status": "valid",
-          "rankEligible": true,
-          "rawValue": 0.56,
-          "finalValue": 0.56,
-          "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
-          "periodStart": null,
-          "periodEnd": null,
-          "consolidation": "consolidated",
-          "currency": "JPY",
-          "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
-          "warnings": [],
-          "previousSource": "tradingview",
-          "previousValue": 0.69,
-          "difference": -0.13
-        },
-        "pFcf": {
-          "source": "edinet",
-          "status": "valid",
-          "rankEligible": true,
-          "rawValue": 27,
-          "finalValue": 27,
-          "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
-          "periodStart": null,
-          "periodEnd": null,
-          "consolidation": "consolidated",
-          "currency": "JPY",
-          "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
-          "warnings": [],
-          "previousSource": "tradingview",
-          "previousValue": 22.676968419891622,
-          "difference": 4.323
-        },
-        "revenueGrowthTtm": {
-          "source": "edinet",
-          "status": "valid",
-          "rankEligible": true,
-          "rawValue": 1.22,
-          "finalValue": 1.22,
-          "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
-          "periodStart": null,
-          "periodEnd": null,
-          "consolidation": "consolidated",
-          "currency": "JPY",
-          "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
-          "warnings": [],
-          "previousSource": "tradingview",
-          "previousValue": 1.2245366956045345,
-          "difference": -0.0045
-        }
-      },
-      "edinetSupplement": {
-        "docId": "S100YGRD",
-        "submitDateTime": "2026-06-24 13:25",
-        "docDescription": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
-        "metricStatus": "valid",
-        "rankEligible": true,
-        "warnings": [],
-        "extractedFacts": {
-          "revenueCurrent": 3074505000000,
-          "revenuePrior": 3037312000000,
-          "operatingCashFlowCurrent": 303104000000,
-          "operatingCashFlowPrior": 301489000000,
-          "capexCurrent": 211050000000,
-          "capexPrior": 217939000000,
-          "netIncomeCurrent": 163539000000,
-          "provenance": {
-            "revenueCurrent": {
-              "conceptId": "jppfs_cor:NetSales",
-              "label": "売上高",
-              "contextRef": "CurrentYearDuration",
-              "periodType": "duration",
-              "periodStart": null,
-              "periodEnd": null,
-              "instantDate": null,
-              "relativePeriod": "current",
-              "consolidation": "consolidated",
-              "unitId": "JPY",
-              "currency": "JPY",
-              "scale": null,
-              "decimals": null,
-              "rawValue": "3074505000000",
-              "normalizedValue": 3074505000000,
-              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
-              "documentId": "S100YGRD",
-              "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
-              "submittedAt": "2026-06-24 13:25",
-              "warnings": [],
-              "metricStatus": "valid",
-              "rankEligible": true,
-              "joined": "jppfscornetsales|売上高|currentyearduration|当期|consolidated|duration"
-            },
-            "revenuePrior": {
-              "conceptId": "jppfs_cor:NetSales",
-              "label": "売上高",
-              "contextRef": "Prior1YearDuration",
-              "periodType": "duration",
-              "periodStart": null,
-              "periodEnd": null,
-              "instantDate": null,
-              "relativePeriod": "prior",
-              "consolidation": "consolidated",
-              "unitId": "JPY",
-              "currency": "JPY",
-              "scale": null,
-              "decimals": null,
-              "rawValue": "3037312000000",
-              "normalizedValue": 3037312000000,
-              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
-              "documentId": "S100YGRD",
-              "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
-              "submittedAt": "2026-06-24 13:25",
-              "warnings": [],
-              "metricStatus": "valid",
-              "rankEligible": false,
-              "joined": "jppfscornetsales|売上高|prior1yearduration|前期|consolidated|duration"
-            },
-            "operatingCashFlowCurrent": {
-              "conceptId": "jppfs_cor:NetCashProvidedByUsedInOperatingActivities",
-              "label": "営業活動によるキャッシュ・フロー",
-              "contextRef": "CurrentYearDuration",
-              "periodType": "duration",
-              "periodStart": null,
-              "periodEnd": null,
-              "instantDate": null,
-              "relativePeriod": "current",
-              "consolidation": "consolidated",
-              "unitId": "JPY",
-              "currency": "JPY",
-              "scale": null,
-              "decimals": null,
-              "rawValue": "303104000000",
-              "normalizedValue": 303104000000,
-              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
-              "documentId": "S100YGRD",
-              "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
-              "submittedAt": "2026-06-24 13:25",
-              "warnings": [],
-              "metricStatus": "valid",
-              "rankEligible": true,
-              "joined": "jppfscornetcashprovidedbyusedinoperatingactivities|営業活動によるキャッシュ・フロー|currentyearduration|当期|consolidated|duration"
-            },
-            "operatingCashFlowPrior": {
-              "conceptId": "jppfs_cor:NetCashProvidedByUsedInOperatingActivities",
-              "label": "営業活動によるキャッシュ・フロー",
-              "contextRef": "Prior1YearDuration",
-              "periodType": "duration",
-              "periodStart": null,
-              "periodEnd": null,
-              "instantDate": null,
-              "relativePeriod": "prior",
-              "consolidation": "consolidated",
-              "unitId": "JPY",
-              "currency": "JPY",
-              "scale": null,
-              "decimals": null,
-              "rawValue": "301489000000",
-              "normalizedValue": 301489000000,
-              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
-              "documentId": "S100YGRD",
-              "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
-              "submittedAt": "2026-06-24 13:25",
-              "warnings": [],
-              "metricStatus": "valid",
-              "rankEligible": false,
-              "joined": "jppfscornetcashprovidedbyusedinoperatingactivities|営業活動によるキャッシュ・フロー|prior1yearduration|前期|consolidated|duration"
-            },
-            "capexPpeCurrent": {
-              "conceptId": "jppfs_cor:PurchaseOfPropertyPlantAndEquipmentInvCF",
-              "label": "有形固定資産の取得による支出、投資活動によるキャッシュ・フロー",
-              "contextRef": "CurrentYearDuration",
-              "periodType": "duration",
-              "periodStart": null,
-              "periodEnd": null,
-              "instantDate": null,
-              "relativePeriod": "current",
-              "consolidation": "consolidated",
-              "unitId": "JPY",
-              "currency": "JPY",
-              "scale": null,
-              "decimals": null,
-              "rawValue": "-193671000000",
-              "normalizedValue": -193671000000,
-              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
-              "documentId": "S100YGRD",
-              "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
-              "submittedAt": "2026-06-24 13:25",
-              "warnings": [],
-              "metricStatus": "valid",
-              "rankEligible": true,
-              "joined": "jppfscorpurchaseofpropertyplantandequipmentinvcf|有形固定資産の取得による支出、投資活動によるキャッシュ・フロー|currentyearduration|当期|consolidated|duration"
-            },
-            "capexIntangiblesCurrent": {
-              "conceptId": "jppfs_cor:PurchaseOfIntangibleAssetsInvCF",
-              "label": "無形固定資産の取得による支出、投資活動によるキャッシュ・フロー",
-              "contextRef": "CurrentYearDuration",
-              "periodType": "duration",
-              "periodStart": null,
-              "periodEnd": null,
-              "instantDate": null,
-              "relativePeriod": "current",
-              "consolidation": "consolidated",
-              "unitId": "JPY",
-              "currency": "JPY",
-              "scale": null,
-              "decimals": null,
-              "rawValue": "-17379000000",
-              "normalizedValue": -17379000000,
-              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
-              "documentId": "S100YGRD",
-              "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
-              "submittedAt": "2026-06-24 13:25",
-              "warnings": [],
-              "metricStatus": "valid",
-              "rankEligible": true,
-              "joined": "jppfscorpurchaseofintangibleassetsinvcf|無形固定資産の取得による支出、投資活動によるキャッシュ・フロー|currentyearduration|当期|consolidated|duration"
-            },
-            "capexPpePrior": {
-              "conceptId": "jppfs_cor:PurchaseOfPropertyPlantAndEquipmentInvCF",
-              "label": "有形固定資産の取得による支出、投資活動によるキャッシュ・フロー",
-              "contextRef": "Prior1YearDuration",
-              "periodType": "duration",
-              "periodStart": null,
-              "periodEnd": null,
-              "instantDate": null,
-              "relativePeriod": "prior",
-              "consolidation": "consolidated",
-              "unitId": "JPY",
-              "currency": "JPY",
-              "scale": null,
-              "decimals": null,
-              "rawValue": "-201684000000",
-              "normalizedValue": -201684000000,
-              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
-              "documentId": "S100YGRD",
-              "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
-              "submittedAt": "2026-06-24 13:25",
-              "warnings": [],
-              "metricStatus": "valid",
-              "rankEligible": false,
-              "joined": "jppfscorpurchaseofpropertyplantandequipmentinvcf|有形固定資産の取得による支出、投資活動によるキャッシュ・フロー|prior1yearduration|前期|consolidated|duration"
-            },
-            "capexIntangiblesPrior": {
-              "conceptId": "jppfs_cor:PurchaseOfIntangibleAssetsInvCF",
-              "label": "無形固定資産の取得による支出、投資活動によるキャッシュ・フロー",
-              "contextRef": "Prior1YearDuration",
-              "periodType": "duration",
-              "periodStart": null,
-              "periodEnd": null,
-              "instantDate": null,
-              "relativePeriod": "prior",
-              "consolidation": "consolidated",
-              "unitId": "JPY",
-              "currency": "JPY",
-              "scale": null,
-              "decimals": null,
-              "rawValue": "-16255000000",
-              "normalizedValue": -16255000000,
-              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
-              "documentId": "S100YGRD",
-              "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
-              "submittedAt": "2026-06-24 13:25",
-              "warnings": [],
-              "metricStatus": "valid",
-              "rankEligible": false,
-              "joined": "jppfscorpurchaseofintangibleassetsinvcf|無形固定資産の取得による支出、投資活動によるキャッシュ・フロー|prior1yearduration|前期|consolidated|duration"
-            },
-            "netIncomeCurrent": {
-              "conceptId": "jppfs_cor:ProfitLoss",
-              "label": "当期純利益又は当期純損失（△）（平成26年3月28日財規等改正後）",
-              "contextRef": "CurrentYearDuration",
-              "periodType": "duration",
-              "periodStart": null,
-              "periodEnd": null,
-              "instantDate": null,
-              "relativePeriod": "current",
-              "consolidation": "consolidated",
-              "unitId": "JPY",
-              "currency": "JPY",
-              "scale": null,
-              "decimals": null,
-              "rawValue": "163539000000",
-              "normalizedValue": 163539000000,
-              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
-              "documentId": "S100YGRD",
-              "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
-              "submittedAt": "2026-06-24 13:25",
-              "warnings": [],
-              "metricStatus": "valid",
-              "rankEligible": true,
-              "joined": "jppfscorprofitloss|当期純利益又は当期純損失△平成26年3月28日財規等改正後|currentyearduration|当期|consolidated|duration"
-            }
-          }
-        }
-      }
-    },
-    {
-      "rank": 14,
       "symbol": "6323",
       "companyName": "6323 (ローツェ)",
       "metricProvenance": {
@@ -6214,6 +5941,376 @@
               "documentId": "S100Y5GM",
               "documentType": "有価証券報告書－第41期(2025/03/01－2026/02/28)",
               "submittedAt": "2026-05-22 13:42",
+              "warnings": [],
+              "metricStatus": "valid",
+              "rankEligible": true,
+              "joined": "jppfscorprofitloss|当期純利益又は当期純損失△平成26年3月28日財規等改正後|currentyearduration|当期|consolidated|duration"
+            }
+          }
+        }
+      }
+    },
+    {
+      "rank": 14,
+      "symbol": "3407",
+      "companyName": "3407 (旭化成)",
+      "metricProvenance": {
+        "fcfTtm": {
+          "source": "edinet",
+          "status": "valid",
+          "rankEligible": true,
+          "rawValue": 92054000000,
+          "finalValue": 92054000000,
+          "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
+          "periodStart": null,
+          "periodEnd": null,
+          "consolidation": "consolidated",
+          "currency": "JPY",
+          "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
+          "warnings": [],
+          "previousSource": "tradingview",
+          "previousValue": 109433000000,
+          "difference": -17379000000
+        },
+        "fcfMargin": {
+          "source": "edinet",
+          "status": "valid",
+          "rankEligible": true,
+          "rawValue": 2.99,
+          "finalValue": 2.99,
+          "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
+          "periodStart": null,
+          "periodEnd": null,
+          "consolidation": "consolidated",
+          "currency": "JPY",
+          "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
+          "warnings": [],
+          "previousSource": "tradingview",
+          "previousValue": 3.559369719678452,
+          "difference": -0.5694
+        },
+        "fcfGrowthTtm": {
+          "source": "edinet",
+          "status": "valid",
+          "rankEligible": true,
+          "rawValue": 10.18,
+          "finalValue": 10.18,
+          "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
+          "periodStart": null,
+          "periodEnd": null,
+          "consolidation": "consolidated",
+          "currency": "JPY",
+          "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
+          "warnings": [],
+          "previousSource": "tradingview",
+          "previousValue": 9.646811281999899,
+          "difference": 0.5332
+        },
+        "cashFromOperationsTtm": {
+          "source": "edinet",
+          "status": "valid",
+          "rankEligible": true,
+          "rawValue": 303104000000,
+          "finalValue": 303104000000,
+          "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
+          "periodStart": null,
+          "periodEnd": null,
+          "consolidation": "consolidated",
+          "currency": "JPY",
+          "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
+          "warnings": [],
+          "previousSource": "tradingview",
+          "previousValue": 303104000000,
+          "difference": 0
+        },
+        "cashConversion": {
+          "source": "edinet",
+          "status": "valid",
+          "rankEligible": true,
+          "rawValue": 0.56,
+          "finalValue": 0.56,
+          "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
+          "periodStart": null,
+          "periodEnd": null,
+          "consolidation": "consolidated",
+          "currency": "JPY",
+          "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
+          "warnings": [],
+          "previousSource": "tradingview",
+          "previousValue": 0.69,
+          "difference": -0.13
+        },
+        "pFcf": {
+          "source": "edinet",
+          "status": "valid",
+          "rankEligible": true,
+          "rawValue": 27,
+          "finalValue": 27,
+          "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
+          "periodStart": null,
+          "periodEnd": null,
+          "consolidation": "consolidated",
+          "currency": "JPY",
+          "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
+          "warnings": [],
+          "previousSource": "tradingview",
+          "previousValue": 22.676968419891622,
+          "difference": 4.323
+        },
+        "revenueGrowthTtm": {
+          "source": "edinet",
+          "status": "valid",
+          "rankEligible": true,
+          "rawValue": 1.22,
+          "finalValue": 1.22,
+          "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
+          "periodStart": null,
+          "periodEnd": null,
+          "consolidation": "consolidated",
+          "currency": "JPY",
+          "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
+          "warnings": [],
+          "previousSource": "tradingview",
+          "previousValue": 1.2245366956045345,
+          "difference": -0.0045
+        }
+      },
+      "edinetSupplement": {
+        "docId": "S100YGRD",
+        "submitDateTime": "2026-06-24 13:25",
+        "docDescription": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
+        "metricStatus": "valid",
+        "rankEligible": true,
+        "warnings": [],
+        "extractedFacts": {
+          "revenueCurrent": 3074505000000,
+          "revenuePrior": 3037312000000,
+          "operatingCashFlowCurrent": 303104000000,
+          "operatingCashFlowPrior": 301489000000,
+          "capexCurrent": 211050000000,
+          "capexPrior": 217939000000,
+          "netIncomeCurrent": 163539000000,
+          "provenance": {
+            "revenueCurrent": {
+              "conceptId": "jppfs_cor:NetSales",
+              "label": "売上高",
+              "contextRef": "CurrentYearDuration",
+              "periodType": "duration",
+              "periodStart": null,
+              "periodEnd": null,
+              "instantDate": null,
+              "relativePeriod": "current",
+              "consolidation": "consolidated",
+              "unitId": "JPY",
+              "currency": "JPY",
+              "scale": null,
+              "decimals": null,
+              "rawValue": "3074505000000",
+              "normalizedValue": 3074505000000,
+              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
+              "documentId": "S100YGRD",
+              "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
+              "submittedAt": "2026-06-24 13:25",
+              "warnings": [],
+              "metricStatus": "valid",
+              "rankEligible": true,
+              "joined": "jppfscornetsales|売上高|currentyearduration|当期|consolidated|duration"
+            },
+            "revenuePrior": {
+              "conceptId": "jppfs_cor:NetSales",
+              "label": "売上高",
+              "contextRef": "Prior1YearDuration",
+              "periodType": "duration",
+              "periodStart": null,
+              "periodEnd": null,
+              "instantDate": null,
+              "relativePeriod": "prior",
+              "consolidation": "consolidated",
+              "unitId": "JPY",
+              "currency": "JPY",
+              "scale": null,
+              "decimals": null,
+              "rawValue": "3037312000000",
+              "normalizedValue": 3037312000000,
+              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
+              "documentId": "S100YGRD",
+              "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
+              "submittedAt": "2026-06-24 13:25",
+              "warnings": [],
+              "metricStatus": "valid",
+              "rankEligible": false,
+              "joined": "jppfscornetsales|売上高|prior1yearduration|前期|consolidated|duration"
+            },
+            "operatingCashFlowCurrent": {
+              "conceptId": "jppfs_cor:NetCashProvidedByUsedInOperatingActivities",
+              "label": "営業活動によるキャッシュ・フロー",
+              "contextRef": "CurrentYearDuration",
+              "periodType": "duration",
+              "periodStart": null,
+              "periodEnd": null,
+              "instantDate": null,
+              "relativePeriod": "current",
+              "consolidation": "consolidated",
+              "unitId": "JPY",
+              "currency": "JPY",
+              "scale": null,
+              "decimals": null,
+              "rawValue": "303104000000",
+              "normalizedValue": 303104000000,
+              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
+              "documentId": "S100YGRD",
+              "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
+              "submittedAt": "2026-06-24 13:25",
+              "warnings": [],
+              "metricStatus": "valid",
+              "rankEligible": true,
+              "joined": "jppfscornetcashprovidedbyusedinoperatingactivities|営業活動によるキャッシュ・フロー|currentyearduration|当期|consolidated|duration"
+            },
+            "operatingCashFlowPrior": {
+              "conceptId": "jppfs_cor:NetCashProvidedByUsedInOperatingActivities",
+              "label": "営業活動によるキャッシュ・フロー",
+              "contextRef": "Prior1YearDuration",
+              "periodType": "duration",
+              "periodStart": null,
+              "periodEnd": null,
+              "instantDate": null,
+              "relativePeriod": "prior",
+              "consolidation": "consolidated",
+              "unitId": "JPY",
+              "currency": "JPY",
+              "scale": null,
+              "decimals": null,
+              "rawValue": "301489000000",
+              "normalizedValue": 301489000000,
+              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
+              "documentId": "S100YGRD",
+              "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
+              "submittedAt": "2026-06-24 13:25",
+              "warnings": [],
+              "metricStatus": "valid",
+              "rankEligible": false,
+              "joined": "jppfscornetcashprovidedbyusedinoperatingactivities|営業活動によるキャッシュ・フロー|prior1yearduration|前期|consolidated|duration"
+            },
+            "capexPpeCurrent": {
+              "conceptId": "jppfs_cor:PurchaseOfPropertyPlantAndEquipmentInvCF",
+              "label": "有形固定資産の取得による支出、投資活動によるキャッシュ・フロー",
+              "contextRef": "CurrentYearDuration",
+              "periodType": "duration",
+              "periodStart": null,
+              "periodEnd": null,
+              "instantDate": null,
+              "relativePeriod": "current",
+              "consolidation": "consolidated",
+              "unitId": "JPY",
+              "currency": "JPY",
+              "scale": null,
+              "decimals": null,
+              "rawValue": "-193671000000",
+              "normalizedValue": -193671000000,
+              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
+              "documentId": "S100YGRD",
+              "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
+              "submittedAt": "2026-06-24 13:25",
+              "warnings": [],
+              "metricStatus": "valid",
+              "rankEligible": true,
+              "joined": "jppfscorpurchaseofpropertyplantandequipmentinvcf|有形固定資産の取得による支出、投資活動によるキャッシュ・フロー|currentyearduration|当期|consolidated|duration"
+            },
+            "capexIntangiblesCurrent": {
+              "conceptId": "jppfs_cor:PurchaseOfIntangibleAssetsInvCF",
+              "label": "無形固定資産の取得による支出、投資活動によるキャッシュ・フロー",
+              "contextRef": "CurrentYearDuration",
+              "periodType": "duration",
+              "periodStart": null,
+              "periodEnd": null,
+              "instantDate": null,
+              "relativePeriod": "current",
+              "consolidation": "consolidated",
+              "unitId": "JPY",
+              "currency": "JPY",
+              "scale": null,
+              "decimals": null,
+              "rawValue": "-17379000000",
+              "normalizedValue": -17379000000,
+              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
+              "documentId": "S100YGRD",
+              "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
+              "submittedAt": "2026-06-24 13:25",
+              "warnings": [],
+              "metricStatus": "valid",
+              "rankEligible": true,
+              "joined": "jppfscorpurchaseofintangibleassetsinvcf|無形固定資産の取得による支出、投資活動によるキャッシュ・フロー|currentyearduration|当期|consolidated|duration"
+            },
+            "capexPpePrior": {
+              "conceptId": "jppfs_cor:PurchaseOfPropertyPlantAndEquipmentInvCF",
+              "label": "有形固定資産の取得による支出、投資活動によるキャッシュ・フロー",
+              "contextRef": "Prior1YearDuration",
+              "periodType": "duration",
+              "periodStart": null,
+              "periodEnd": null,
+              "instantDate": null,
+              "relativePeriod": "prior",
+              "consolidation": "consolidated",
+              "unitId": "JPY",
+              "currency": "JPY",
+              "scale": null,
+              "decimals": null,
+              "rawValue": "-201684000000",
+              "normalizedValue": -201684000000,
+              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
+              "documentId": "S100YGRD",
+              "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
+              "submittedAt": "2026-06-24 13:25",
+              "warnings": [],
+              "metricStatus": "valid",
+              "rankEligible": false,
+              "joined": "jppfscorpurchaseofpropertyplantandequipmentinvcf|有形固定資産の取得による支出、投資活動によるキャッシュ・フロー|prior1yearduration|前期|consolidated|duration"
+            },
+            "capexIntangiblesPrior": {
+              "conceptId": "jppfs_cor:PurchaseOfIntangibleAssetsInvCF",
+              "label": "無形固定資産の取得による支出、投資活動によるキャッシュ・フロー",
+              "contextRef": "Prior1YearDuration",
+              "periodType": "duration",
+              "periodStart": null,
+              "periodEnd": null,
+              "instantDate": null,
+              "relativePeriod": "prior",
+              "consolidation": "consolidated",
+              "unitId": "JPY",
+              "currency": "JPY",
+              "scale": null,
+              "decimals": null,
+              "rawValue": "-16255000000",
+              "normalizedValue": -16255000000,
+              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
+              "documentId": "S100YGRD",
+              "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
+              "submittedAt": "2026-06-24 13:25",
+              "warnings": [],
+              "metricStatus": "valid",
+              "rankEligible": false,
+              "joined": "jppfscorpurchaseofintangibleassetsinvcf|無形固定資産の取得による支出、投資活動によるキャッシュ・フロー|prior1yearduration|前期|consolidated|duration"
+            },
+            "netIncomeCurrent": {
+              "conceptId": "jppfs_cor:ProfitLoss",
+              "label": "当期純利益又は当期純損失（△）（平成26年3月28日財規等改正後）",
+              "contextRef": "CurrentYearDuration",
+              "periodType": "duration",
+              "periodStart": null,
+              "periodEnd": null,
+              "instantDate": null,
+              "relativePeriod": "current",
+              "consolidation": "consolidated",
+              "unitId": "JPY",
+              "currency": "JPY",
+              "scale": null,
+              "decimals": null,
+              "rawValue": "163539000000",
+              "normalizedValue": 163539000000,
+              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00877-000_2026-03-31_01_2026-06-24.csv",
+              "documentId": "S100YGRD",
+              "documentType": "有価証券報告書－第135期(2025/04/01－2026/03/31)",
+              "submittedAt": "2026-06-24 13:25",
               "warnings": [],
               "metricStatus": "valid",
               "rankEligible": true,
@@ -6965,6 +7062,109 @@
     },
     {
       "rank": 17,
+      "symbol": "6136",
+      "companyName": "6136 (オーエスジー)",
+      "metricProvenance": {
+        "fcfTtm": {
+          "source": "tradingview",
+          "status": "invalid",
+          "rankEligible": false,
+          "rawValue": null,
+          "finalValue": null,
+          "warnings": [
+            "missing"
+          ]
+        },
+        "fcfMargin": {
+          "source": "tradingview",
+          "status": "invalid",
+          "rankEligible": false,
+          "rawValue": null,
+          "finalValue": null,
+          "warnings": [
+            "missing"
+          ]
+        },
+        "fcfGrowthTtm": {
+          "source": "tradingview",
+          "status": "invalid",
+          "rankEligible": false,
+          "rawValue": null,
+          "finalValue": null,
+          "warnings": [
+            "missing"
+          ]
+        },
+        "cashFromOperationsTtm": {
+          "source": "tradingview",
+          "status": "invalid",
+          "rankEligible": false,
+          "rawValue": null,
+          "finalValue": null,
+          "warnings": [
+            "missing"
+          ]
+        },
+        "cashConversion": {
+          "source": "tradingview",
+          "status": "invalid",
+          "rankEligible": false,
+          "rawValue": null,
+          "finalValue": null,
+          "warnings": [
+            "missing"
+          ]
+        },
+        "pFcf": {
+          "source": "tradingview",
+          "status": "invalid",
+          "rankEligible": false,
+          "rawValue": null,
+          "finalValue": null,
+          "warnings": [
+            "missing"
+          ]
+        },
+        "revenueGrowthTtm": {
+          "source": "tradingview",
+          "status": "valid",
+          "rankEligible": true,
+          "rawValue": 12.951188244464628,
+          "finalValue": 12.951188244464628,
+          "warnings": []
+        }
+      },
+      "edinetSupplement": {
+        "docId": "S100YQA5",
+        "submitDateTime": "2026-07-14 09:37",
+        "docDescription": "半期報告書－第114期(2025/12/01－2026/11/30)",
+        "metricStatus": "valid",
+        "rankEligible": true,
+        "warnings": [],
+        "extractedFacts": {
+          "revenueCurrent": null,
+          "revenuePrior": null,
+          "operatingCashFlowCurrent": null,
+          "operatingCashFlowPrior": null,
+          "capexCurrent": 0,
+          "capexPrior": 0,
+          "netIncomeCurrent": null,
+          "provenance": {
+            "revenueCurrent": null,
+            "revenuePrior": null,
+            "operatingCashFlowCurrent": null,
+            "operatingCashFlowPrior": null,
+            "capexPpeCurrent": null,
+            "capexIntangiblesCurrent": null,
+            "capexPpePrior": null,
+            "capexIntangiblesPrior": null,
+            "netIncomeCurrent": null
+          }
+        }
+      }
+    },
+    {
+      "rank": 18,
       "symbol": "6266",
       "companyName": "6266 (タツモ)",
       "metricProvenance": {
@@ -7329,109 +7529,6 @@
               "rankEligible": true,
               "joined": "jppfscorprofitloss|当期純利益又は当期純損失△平成26年3月28日財規等改正後|currentyearduration|当期|consolidated|duration"
             }
-          }
-        }
-      }
-    },
-    {
-      "rank": 18,
-      "symbol": "6136",
-      "companyName": "6136 (オーエスジー)",
-      "metricProvenance": {
-        "fcfTtm": {
-          "source": "tradingview",
-          "status": "invalid",
-          "rankEligible": false,
-          "rawValue": null,
-          "finalValue": null,
-          "warnings": [
-            "missing"
-          ]
-        },
-        "fcfMargin": {
-          "source": "tradingview",
-          "status": "invalid",
-          "rankEligible": false,
-          "rawValue": null,
-          "finalValue": null,
-          "warnings": [
-            "missing"
-          ]
-        },
-        "fcfGrowthTtm": {
-          "source": "tradingview",
-          "status": "invalid",
-          "rankEligible": false,
-          "rawValue": null,
-          "finalValue": null,
-          "warnings": [
-            "missing"
-          ]
-        },
-        "cashFromOperationsTtm": {
-          "source": "tradingview",
-          "status": "invalid",
-          "rankEligible": false,
-          "rawValue": null,
-          "finalValue": null,
-          "warnings": [
-            "missing"
-          ]
-        },
-        "cashConversion": {
-          "source": "tradingview",
-          "status": "invalid",
-          "rankEligible": false,
-          "rawValue": null,
-          "finalValue": null,
-          "warnings": [
-            "missing"
-          ]
-        },
-        "pFcf": {
-          "source": "tradingview",
-          "status": "invalid",
-          "rankEligible": false,
-          "rawValue": null,
-          "finalValue": null,
-          "warnings": [
-            "missing"
-          ]
-        },
-        "revenueGrowthTtm": {
-          "source": "tradingview",
-          "status": "valid",
-          "rankEligible": true,
-          "rawValue": 12.951188244464628,
-          "finalValue": 12.951188244464628,
-          "warnings": []
-        }
-      },
-      "edinetSupplement": {
-        "docId": "S100YQA5",
-        "submitDateTime": "2026-07-14 09:37",
-        "docDescription": "半期報告書－第114期(2025/12/01－2026/11/30)",
-        "metricStatus": "valid",
-        "rankEligible": true,
-        "warnings": [],
-        "extractedFacts": {
-          "revenueCurrent": null,
-          "revenuePrior": null,
-          "operatingCashFlowCurrent": null,
-          "operatingCashFlowPrior": null,
-          "capexCurrent": 0,
-          "capexPrior": 0,
-          "netIncomeCurrent": null,
-          "provenance": {
-            "revenueCurrent": null,
-            "revenuePrior": null,
-            "operatingCashFlowCurrent": null,
-            "operatingCashFlowPrior": null,
-            "capexPpeCurrent": null,
-            "capexIntangiblesCurrent": null,
-            "capexPpePrior": null,
-            "capexIntangiblesPrior": null,
-            "netIncomeCurrent": null
           }
         }
       }
@@ -7808,171 +7905,385 @@
     },
     {
       "rank": 20,
-      "symbol": "1375",
-      "companyName": "1375 (ユキグニファクトリー)",
+      "symbol": "9304",
+      "companyName": "9304 (澁澤倉庫)",
       "metricProvenance": {
         "fcfTtm": {
-          "source": "tradingview",
-          "status": "valid",
+          "source": "edinet",
+          "status": "warning",
           "rankEligible": true,
-          "rawValue": 2439000000,
-          "finalValue": 2439000000,
-          "warnings": []
+          "rawValue": 3612000000,
+          "finalValue": 3612000000,
+          "documentType": "有価証券報告書－第179期(2025/04/01－2026/03/31)",
+          "periodStart": null,
+          "periodEnd": null,
+          "consolidation": "consolidated",
+          "currency": "JPY",
+          "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E04286-000_2026-03-31_01_2026-06-24.csv",
+          "warnings": [
+            "fcf_growth_abs_gte_500"
+          ],
+          "previousSource": "tradingview",
+          "previousValue": 3999000000,
+          "difference": -387000000
         },
         "fcfMargin": {
-          "source": "tradingview",
-          "status": "valid",
+          "source": "edinet",
+          "status": "warning",
           "rankEligible": true,
-          "rawValue": 6.444708680142687,
-          "finalValue": 6.444708680142687,
-          "warnings": []
+          "rawValue": 4.53,
+          "finalValue": 4.53,
+          "documentType": "有価証券報告書－第179期(2025/04/01－2026/03/31)",
+          "periodStart": null,
+          "periodEnd": null,
+          "consolidation": "consolidated",
+          "currency": "JPY",
+          "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E04286-000_2026-03-31_01_2026-06-24.csv",
+          "warnings": [
+            "fcf_growth_abs_gte_500"
+          ],
+          "previousSource": "tradingview",
+          "previousValue": 5.015048908954101,
+          "difference": -0.485
         },
         "fcfGrowthTtm": {
-          "source": "tradingview",
-          "status": "valid",
+          "source": "edinet",
+          "status": "warning",
           "rankEligible": true,
-          "rawValue": -26.4031382015691,
-          "finalValue": -26.4031382015691,
-          "warnings": []
+          "rawValue": 2329.63,
+          "finalValue": 2329.63,
+          "documentType": "有価証券報告書－第179期(2025/04/01－2026/03/31)",
+          "periodStart": null,
+          "periodEnd": null,
+          "consolidation": "consolidated",
+          "currency": "JPY",
+          "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E04286-000_2026-03-31_01_2026-06-24.csv",
+          "warnings": [
+            "fcf_growth_abs_gte_500"
+          ],
+          "previousSource": "tradingview",
+          "previousValue": 1786.3207547169811,
+          "difference": 543.3092
         },
         "cashFromOperationsTtm": {
-          "source": "tradingview",
-          "status": "valid",
+          "source": "edinet",
+          "status": "warning",
           "rankEligible": true,
-          "rawValue": 4534000000,
-          "finalValue": 4534000000,
-          "warnings": []
+          "rawValue": 5742000000,
+          "finalValue": 5742000000,
+          "documentType": "有価証券報告書－第179期(2025/04/01－2026/03/31)",
+          "periodStart": null,
+          "periodEnd": null,
+          "consolidation": "consolidated",
+          "currency": "JPY",
+          "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E04286-000_2026-03-31_01_2026-06-24.csv",
+          "warnings": [
+            "fcf_growth_abs_gte_500"
+          ],
+          "previousSource": "tradingview",
+          "previousValue": 5742000000,
+          "difference": 0
         },
         "cashConversion": {
-          "source": "tradingview",
-          "status": "valid",
+          "source": "edinet",
+          "status": "warning",
           "rankEligible": true,
-          "rawValue": 0.82,
-          "finalValue": 0.82,
-          "warnings": []
+          "rawValue": 0.56,
+          "finalValue": 0.56,
+          "documentType": "有価証券報告書－第179期(2025/04/01－2026/03/31)",
+          "periodStart": null,
+          "periodEnd": null,
+          "consolidation": "consolidated",
+          "currency": "JPY",
+          "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E04286-000_2026-03-31_01_2026-06-24.csv",
+          "warnings": [
+            "fcf_growth_abs_gte_500"
+          ],
+          "previousSource": "tradingview",
+          "previousValue": 0.63,
+          "difference": -0.07
         },
         "pFcf": {
-          "source": "tradingview",
-          "status": "valid",
+          "source": "edinet",
+          "status": "warning",
           "rankEligible": true,
-          "rawValue": 18.85399498400984,
-          "finalValue": 18.85399498400984,
-          "warnings": []
+          "rawValue": 33.3,
+          "finalValue": 33.3,
+          "documentType": "有価証券報告書－第179期(2025/04/01－2026/03/31)",
+          "periodStart": null,
+          "periodEnd": null,
+          "consolidation": "consolidated",
+          "currency": "JPY",
+          "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E04286-000_2026-03-31_01_2026-06-24.csv",
+          "warnings": [
+            "fcf_growth_abs_gte_500"
+          ],
+          "previousSource": "tradingview",
+          "previousValue": 28.175104159289823,
+          "difference": 5.1249
         },
         "revenueGrowthTtm": {
           "source": "edinet",
-          "status": "valid",
+          "status": "warning",
           "rankEligible": true,
-          "rawValue": 2.57,
-          "finalValue": 2.57,
-          "documentType": "有価証券報告書－第9期(2025/04/01－2026/03/31)",
+          "rawValue": 1.42,
+          "finalValue": 1.42,
+          "documentType": "有価証券報告書－第179期(2025/04/01－2026/03/31)",
           "periodStart": null,
           "periodEnd": null,
-          "consolidation": "nonConsolidated",
+          "consolidation": "consolidated",
           "currency": "JPY",
-          "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00007-000_2026-03-31_01_2026-06-25.csv",
-          "warnings": [],
+          "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E04286-000_2026-03-31_01_2026-06-24.csv",
+          "warnings": [
+            "fcf_growth_abs_gte_500"
+          ],
           "previousSource": "tradingview",
-          "previousValue": 2.0025874615923667,
-          "difference": 0.5674
+          "previousValue": 1.4245738997710506,
+          "difference": -0.0046
         }
       },
       "edinetSupplement": {
-        "docId": "S100YK0W",
-        "submitDateTime": "2026-06-25 15:30",
-        "docDescription": "有価証券報告書－第9期(2025/04/01－2026/03/31)",
-        "metricStatus": "valid",
+        "docId": "S100YI5J",
+        "submitDateTime": "2026-06-24 12:40",
+        "docDescription": "有価証券報告書－第179期(2025/04/01－2026/03/31)",
+        "metricStatus": "warning",
         "rankEligible": true,
-        "warnings": [],
+        "warnings": [
+          "fcf_growth_abs_gte_500"
+        ],
         "extractedFacts": {
-          "revenueCurrent": 35372000000,
-          "revenuePrior": 34486000000,
-          "operatingCashFlowCurrent": null,
-          "operatingCashFlowPrior": null,
-          "capexCurrent": 0,
-          "capexPrior": 0,
-          "netIncomeCurrent": 1568000000,
+          "revenueCurrent": 79740000000,
+          "revenuePrior": 78620000000,
+          "operatingCashFlowCurrent": 5742000000,
+          "operatingCashFlowPrior": 6350000000,
+          "capexCurrent": 2130000000,
+          "capexPrior": 6512000000,
+          "netIncomeCurrent": 6404000000,
           "provenance": {
             "revenueCurrent": {
-              "conceptId": "jpcrp_cor:NetSalesSummaryOfBusinessResults",
-              "label": "売上高、経営指標等",
-              "contextRef": "CurrentYearDuration_NonConsolidatedMember",
+              "conceptId": "jppfs_cor:OperatingRevenue1",
+              "label": "営業収益",
+              "contextRef": "CurrentYearDuration",
               "periodType": "duration",
               "periodStart": null,
               "periodEnd": null,
               "instantDate": null,
               "relativePeriod": "current",
-              "consolidation": "nonConsolidated",
+              "consolidation": "consolidated",
               "unitId": "JPY",
               "currency": "JPY",
               "scale": null,
               "decimals": null,
-              "rawValue": "35372000000",
-              "normalizedValue": 35372000000,
-              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00007-000_2026-03-31_01_2026-06-25.csv",
-              "documentId": "S100YK0W",
-              "documentType": "有価証券報告書－第9期(2025/04/01－2026/03/31)",
-              "submittedAt": "2026-06-25 15:30",
+              "rawValue": "79740000000",
+              "normalizedValue": 79740000000,
+              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E04286-000_2026-03-31_01_2026-06-24.csv",
+              "documentId": "S100YI5J",
+              "documentType": "有価証券報告書－第179期(2025/04/01－2026/03/31)",
+              "submittedAt": "2026-06-24 12:40",
               "warnings": [],
               "metricStatus": "valid",
               "rankEligible": true,
-              "joined": "jpcrpcornetsalessummaryofbusinessresults|売上高、経営指標等|currentyeardurationnonconsolidatedmember|当期|nonconsolidated|duration"
+              "joined": "jppfscoroperatingrevenue1|営業収益|currentyearduration|当期|consolidated|duration"
             },
             "revenuePrior": {
-              "conceptId": "jpcrp_cor:NetSalesSummaryOfBusinessResults",
-              "label": "売上高、経営指標等",
-              "contextRef": "Prior1YearDuration_NonConsolidatedMember",
+              "conceptId": "jppfs_cor:OperatingRevenue1",
+              "label": "営業収益",
+              "contextRef": "Prior1YearDuration",
               "periodType": "duration",
               "periodStart": null,
               "periodEnd": null,
               "instantDate": null,
               "relativePeriod": "prior",
-              "consolidation": "nonConsolidated",
+              "consolidation": "consolidated",
               "unitId": "JPY",
               "currency": "JPY",
               "scale": null,
               "decimals": null,
-              "rawValue": "34486000000",
-              "normalizedValue": 34486000000,
-              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00007-000_2026-03-31_01_2026-06-25.csv",
-              "documentId": "S100YK0W",
-              "documentType": "有価証券報告書－第9期(2025/04/01－2026/03/31)",
-              "submittedAt": "2026-06-25 15:30",
+              "rawValue": "78620000000",
+              "normalizedValue": 78620000000,
+              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E04286-000_2026-03-31_01_2026-06-24.csv",
+              "documentId": "S100YI5J",
+              "documentType": "有価証券報告書－第179期(2025/04/01－2026/03/31)",
+              "submittedAt": "2026-06-24 12:40",
               "warnings": [],
               "metricStatus": "valid",
               "rankEligible": false,
-              "joined": "jpcrpcornetsalessummaryofbusinessresults|売上高、経営指標等|prior1yeardurationnonconsolidatedmember|前期|nonconsolidated|duration"
+              "joined": "jppfscoroperatingrevenue1|営業収益|prior1yearduration|前期|consolidated|duration"
             },
-            "operatingCashFlowCurrent": null,
-            "operatingCashFlowPrior": null,
-            "capexPpeCurrent": null,
-            "capexIntangiblesCurrent": null,
-            "capexPpePrior": null,
-            "capexIntangiblesPrior": null,
-            "netIncomeCurrent": {
-              "conceptId": "jpcrp_cor:NetIncomeLossSummaryOfBusinessResults",
-              "label": "当期純利益又は当期純損失（△）、経営指標等",
-              "contextRef": "CurrentYearDuration_NonConsolidatedMember",
+            "operatingCashFlowCurrent": {
+              "conceptId": "jppfs_cor:NetCashProvidedByUsedInOperatingActivities",
+              "label": "営業活動によるキャッシュ・フロー",
+              "contextRef": "CurrentYearDuration",
               "periodType": "duration",
               "periodStart": null,
               "periodEnd": null,
               "instantDate": null,
               "relativePeriod": "current",
-              "consolidation": "nonConsolidated",
+              "consolidation": "consolidated",
               "unitId": "JPY",
               "currency": "JPY",
               "scale": null,
               "decimals": null,
-              "rawValue": "1568000000",
-              "normalizedValue": 1568000000,
-              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E00007-000_2026-03-31_01_2026-06-25.csv",
-              "documentId": "S100YK0W",
-              "documentType": "有価証券報告書－第9期(2025/04/01－2026/03/31)",
-              "submittedAt": "2026-06-25 15:30",
+              "rawValue": "5742000000",
+              "normalizedValue": 5742000000,
+              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E04286-000_2026-03-31_01_2026-06-24.csv",
+              "documentId": "S100YI5J",
+              "documentType": "有価証券報告書－第179期(2025/04/01－2026/03/31)",
+              "submittedAt": "2026-06-24 12:40",
               "warnings": [],
               "metricStatus": "valid",
               "rankEligible": true,
-              "joined": "jpcrpcornetincomelosssummaryofbusinessresults|当期純利益又は当期純損失△、経営指標等|currentyeardurationnonconsolidatedmember|当期|nonconsolidated|duration"
+              "joined": "jppfscornetcashprovidedbyusedinoperatingactivities|営業活動によるキャッシュ・フロー|currentyearduration|当期|consolidated|duration"
+            },
+            "operatingCashFlowPrior": {
+              "conceptId": "jppfs_cor:NetCashProvidedByUsedInOperatingActivities",
+              "label": "営業活動によるキャッシュ・フロー",
+              "contextRef": "Prior1YearDuration",
+              "periodType": "duration",
+              "periodStart": null,
+              "periodEnd": null,
+              "instantDate": null,
+              "relativePeriod": "prior",
+              "consolidation": "consolidated",
+              "unitId": "JPY",
+              "currency": "JPY",
+              "scale": null,
+              "decimals": null,
+              "rawValue": "6350000000",
+              "normalizedValue": 6350000000,
+              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E04286-000_2026-03-31_01_2026-06-24.csv",
+              "documentId": "S100YI5J",
+              "documentType": "有価証券報告書－第179期(2025/04/01－2026/03/31)",
+              "submittedAt": "2026-06-24 12:40",
+              "warnings": [],
+              "metricStatus": "valid",
+              "rankEligible": false,
+              "joined": "jppfscornetcashprovidedbyusedinoperatingactivities|営業活動によるキャッシュ・フロー|prior1yearduration|前期|consolidated|duration"
+            },
+            "capexPpeCurrent": {
+              "conceptId": "jppfs_cor:PurchaseOfPropertyPlantAndEquipmentInvCF",
+              "label": "有形固定資産の取得による支出、投資活動によるキャッシュ・フロー",
+              "contextRef": "CurrentYearDuration",
+              "periodType": "duration",
+              "periodStart": null,
+              "periodEnd": null,
+              "instantDate": null,
+              "relativePeriod": "current",
+              "consolidation": "consolidated",
+              "unitId": "JPY",
+              "currency": "JPY",
+              "scale": null,
+              "decimals": null,
+              "rawValue": "-1743000000",
+              "normalizedValue": -1743000000,
+              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E04286-000_2026-03-31_01_2026-06-24.csv",
+              "documentId": "S100YI5J",
+              "documentType": "有価証券報告書－第179期(2025/04/01－2026/03/31)",
+              "submittedAt": "2026-06-24 12:40",
+              "warnings": [],
+              "metricStatus": "valid",
+              "rankEligible": true,
+              "joined": "jppfscorpurchaseofpropertyplantandequipmentinvcf|有形固定資産の取得による支出、投資活動によるキャッシュ・フロー|currentyearduration|当期|consolidated|duration"
+            },
+            "capexIntangiblesCurrent": {
+              "conceptId": "jppfs_cor:PurchaseOfIntangibleAssetsInvCF",
+              "label": "無形固定資産の取得による支出、投資活動によるキャッシュ・フロー",
+              "contextRef": "CurrentYearDuration",
+              "periodType": "duration",
+              "periodStart": null,
+              "periodEnd": null,
+              "instantDate": null,
+              "relativePeriod": "current",
+              "consolidation": "consolidated",
+              "unitId": "JPY",
+              "currency": "JPY",
+              "scale": null,
+              "decimals": null,
+              "rawValue": "-387000000",
+              "normalizedValue": -387000000,
+              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E04286-000_2026-03-31_01_2026-06-24.csv",
+              "documentId": "S100YI5J",
+              "documentType": "有価証券報告書－第179期(2025/04/01－2026/03/31)",
+              "submittedAt": "2026-06-24 12:40",
+              "warnings": [],
+              "metricStatus": "valid",
+              "rankEligible": true,
+              "joined": "jppfscorpurchaseofintangibleassetsinvcf|無形固定資産の取得による支出、投資活動によるキャッシュ・フロー|currentyearduration|当期|consolidated|duration"
+            },
+            "capexPpePrior": {
+              "conceptId": "jppfs_cor:PurchaseOfPropertyPlantAndEquipmentInvCF",
+              "label": "有形固定資産の取得による支出、投資活動によるキャッシュ・フロー",
+              "contextRef": "Prior1YearDuration",
+              "periodType": "duration",
+              "periodStart": null,
+              "periodEnd": null,
+              "instantDate": null,
+              "relativePeriod": "prior",
+              "consolidation": "consolidated",
+              "unitId": "JPY",
+              "currency": "JPY",
+              "scale": null,
+              "decimals": null,
+              "rawValue": "-6138000000",
+              "normalizedValue": -6138000000,
+              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E04286-000_2026-03-31_01_2026-06-24.csv",
+              "documentId": "S100YI5J",
+              "documentType": "有価証券報告書－第179期(2025/04/01－2026/03/31)",
+              "submittedAt": "2026-06-24 12:40",
+              "warnings": [],
+              "metricStatus": "valid",
+              "rankEligible": false,
+              "joined": "jppfscorpurchaseofpropertyplantandequipmentinvcf|有形固定資産の取得による支出、投資活動によるキャッシュ・フロー|prior1yearduration|前期|consolidated|duration"
+            },
+            "capexIntangiblesPrior": {
+              "conceptId": "jppfs_cor:PurchaseOfIntangibleAssetsInvCF",
+              "label": "無形固定資産の取得による支出、投資活動によるキャッシュ・フロー",
+              "contextRef": "Prior1YearDuration",
+              "periodType": "duration",
+              "periodStart": null,
+              "periodEnd": null,
+              "instantDate": null,
+              "relativePeriod": "prior",
+              "consolidation": "consolidated",
+              "unitId": "JPY",
+              "currency": "JPY",
+              "scale": null,
+              "decimals": null,
+              "rawValue": "-374000000",
+              "normalizedValue": -374000000,
+              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E04286-000_2026-03-31_01_2026-06-24.csv",
+              "documentId": "S100YI5J",
+              "documentType": "有価証券報告書－第179期(2025/04/01－2026/03/31)",
+              "submittedAt": "2026-06-24 12:40",
+              "warnings": [],
+              "metricStatus": "valid",
+              "rankEligible": false,
+              "joined": "jppfscorpurchaseofintangibleassetsinvcf|無形固定資産の取得による支出、投資活動によるキャッシュ・フロー|prior1yearduration|前期|consolidated|duration"
+            },
+            "netIncomeCurrent": {
+              "conceptId": "jppfs_cor:ProfitLoss",
+              "label": "当期純利益又は当期純損失（△）（平成26年3月28日財規等改正後）",
+              "contextRef": "CurrentYearDuration",
+              "periodType": "duration",
+              "periodStart": null,
+              "periodEnd": null,
+              "instantDate": null,
+              "relativePeriod": "current",
+              "consolidation": "consolidated",
+              "unitId": "JPY",
+              "currency": "JPY",
+              "scale": null,
+              "decimals": null,
+              "rawValue": "6404000000",
+              "normalizedValue": 6404000000,
+              "sourceFile": "XBRL_TO_CSV/jpcrp030000-asr-001_E04286-000_2026-03-31_01_2026-06-24.csv",
+              "documentId": "S100YI5J",
+              "documentType": "有価証券報告書－第179期(2025/04/01－2026/03/31)",
+              "submittedAt": "2026-06-24 12:40",
+              "warnings": [],
+              "metricStatus": "valid",
+              "rankEligible": true,
+              "joined": "jppfscorprofitloss|当期純利益又は当期純損失△平成26年3月28日財規等改正後|currentyearduration|当期|consolidated|duration"
             }
           }
         }
