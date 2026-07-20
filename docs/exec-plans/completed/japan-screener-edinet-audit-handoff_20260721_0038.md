@@ -63,4 +63,13 @@ git diff --check
 
 ## Implementation Results
 
-実装完了後に記録する。
+- `docs/handoffs/japan-screener-edinet-audit-handoff_20260721.md` を作成した。
+- 引き継ぎ書には以下を記録した。
+  - 実装 commit / Actions publish commit / artifact / LINE skip 状況。
+  - EDINET fact 抽出、ランキング統合、監査 JSON、レポート、Actions、LINE の変更概要。
+  - 根本原因。
+  - 2026-07-20 の workflow run `29752950551` に基づく実データ検証結果。
+  - 次担当者が読むべきファイルと開始手順。
+  - 次に改善する場合の候補と注意点。
+- コード、workflow、生成済み日次レポートは変更していない。
+- 検証: `git diff --check` を実行予定。
