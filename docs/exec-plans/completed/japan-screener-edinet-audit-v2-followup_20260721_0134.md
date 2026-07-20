@@ -143,44 +143,44 @@ populationSize
 
 ## 実装ステップ
 
-- [ ] 1. 年次書類の periodEnd 最優先選択を実装する。
+- [x] 1. 年次書類の periodEnd 最優先選択を実装する。
   - 確認: 新しい通常有報が古い訂正有報より優先される。
   - 確認: 同一期では訂正有報が優先され、同一期の複数訂正有報では submitDateTime 最新が選ばれる。
   - 確認: periodEnd 不明候補は periodEnd 判定済み候補より低く評価される。
 
-- [ ] 2. EDINET download/parse cache と meta 計測を追加する。
+- [x] 2. EDINET download/parse cache と meta 計測を追加する。
   - 確認: 同一 docID の download/parse が1回になり、cache hit 数が meta に残る。
 
-- [ ] 3. 成長率用 current/prior group 整合性を実装する。
+- [x] 3. 成長率用 current/prior group 整合性を実装する。
   - 確認: 連結/通貨/決算月/duration/period sequence/concept family/capex policy 不一致で成長率だけ `rankEligible=false`。
   - 確認: 当期 FCF margin と P/FCF は正常なら巻き添えで invalid にならない。
 
-- [ ] 4. metric-specific provenance を整理し、`edinetEvidence` と `finalMetrics` を分離する。
+- [x] 4. metric-specific provenance を整理し、`edinetEvidence` と `finalMetrics` を分離する。
   - 確認: EDINET 計算不能時に EDINET 計算列は N/A、最終採用値は TradingView fallback と表示される。
 
-- [ ] 5. Phase4/Phase5 raw universe を集約し、EDINET batch を1回へ統合する。
+- [x] 5. Phase4/Phase5 raw universe を集約し、EDINET batch を1回へ統合する。
   - 確認: Phase4-only、Phase5-only、Both に同じ supplemental map が共有される。
 
-- [ ] 6. 補完前/補完後の Phase4/Phase5/unified ranking state を別々に構築する。
+- [x] 6. 補完前/補完後の Phase4/Phase5/unified ranking state を別々に構築する。
   - 確認: 値を戻して再採点するだけではなく、候補選定から2系統で再構築される。
 
-- [ ] 7. 監査母集団を補完前後候補ユニオンに変更する。
+- [x] 7. 監査母集団を補完前後候補ユニオンに変更する。
   - 確認: 補完前のみ、補完後のみ、両方存在の各銘柄が監査 JSON に残る。
   - 確認: 補完前 Top10 から補完後候補外になった銘柄が `exitedTop10BySupplement` に入る。
 
-- [ ] 8. critical/warning 条件を追加する。
+- [x] 8. critical/warning 条件を追加する。
   - 確認: 添付指示の critical/warning 候補を fixture で検証する。
 
-- [ ] 9. Markdown と LINE 通知を更新する。
+- [x] 9. Markdown と LINE 通知を更新する。
   - 確認: EDINET取得状況、候補母集団、Top10差分、EDINET一次情報、最終採用値が表示される。
 
-- [ ] 10. focused tests、unit、contract、US/JP 実データ回帰を実行する。
+- [x] 10. focused tests、unit、contract、US/JP 実データ回帰を実行する。
   - 確認: 既存テストを削除、skip、弱体化しない。
 
-- [ ] 11. GitHub Actions `Daily Fundamental Screener Japan` を実行し、artifact と publish を確認する。
+- [x] 11. GitHub Actions `Daily Fundamental Screener Japan` を実行し、artifact と publish を確認する。
   - 確認: `daily-ranking-jp.md`、`daily-ranking-jp-audit.json`、`daily-ranking-jp-run.json` が artifact に含まれる。
 
-- [ ] 12. active plan を completed へ移動し、実装完了 commit/push を行う。
+- [x] 12. active plan を completed へ移動し、実装完了 commit/push を行う。
   - 確認: 最終的に `main...origin/main` ahead/behind 0/0、working tree clean。
 
 ## テスト計画
