@@ -268,7 +268,15 @@ gh run view <RUN_ID> --log
 - `npm run test:contract`: pass 74
 - 米国株回帰: `SCREENER_MARKET=america` の workflow 相当 env で exit 0。US default では audit JSON を出さず既存レポート形状を維持。
 
-### Pending Finalization
+### Finalization
 
-- この計画を `docs/exec-plans/completed/` へ移動する。
-- 実装 commit/push 後、`Daily Fundamental Screener Japan` GitHub Actions を実行して run id、artifact、LINE 通知状況を確認する。
+- Plan commit: `223e9ce7bee34c1df4307fc7db664c13597867b0`, `docs:japan-screener-edinet-ranking-audit_20260720_2322`
+- Implementation commit: `fda76ec965b294bb2e80239b188ec08422fbbb7b`, `fix: audit EDINET metrics for Japan screener`
+- GitHub Actions run: `29752950551`, conclusion `success`
+- Workflow publish commit: `29b4a671fc8ff39c5d280fddffbf58dfdd92c973`, `docs: daily screener japan report run 29752950551-1`
+- Artifact: `screener-report-japan-29752950551`, artifact id `8465433031`, upload log includes:
+  - `docs/reports/screener/daily-ranking-jp.md`
+  - `docs/reports/screener/daily-ranking-jp-run.json`
+  - `docs/reports/screener/daily-ranking-jp-audit.json`
+- LINE success step executed and skipped sending because `LINE_CHANNEL_ACCESS_TOKEN` / `LINE_TO_USER_ID` were not set.
+- Local checkout was fast-forwarded to `origin/main` after the workflow publish.
