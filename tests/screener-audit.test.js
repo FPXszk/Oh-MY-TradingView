@@ -140,4 +140,56 @@ describe('buildScreenerAudit', () => {
     assert.equal(audit.status, 'critical');
     assert.equal(audit.criticals.some((entry) => entry.reason === 'edinet_evidence_incomplete'), true);
   });
+
+  it('audits the union of before and after supplement candidate populations', () => {
+    const audit = buildScreenerAudit({
+      scannerScope: { market: 'japan' },
+      unifiedScoringMeta: {
+        candidatePopulationBeforeCount: 1,
+        candidatePopulationAfterCount: 1,
+        candidatePopulationUnionCount: 2,
+        enteredCandidatePopulationCount: 1,
+        exitedCandidatePopulationCount: 1,
+      },
+      unifiedAuditRows: [
+        {
+          symbol: 'BEFORE',
+          exchange: 'TSE',
+          presentBeforeSupplement: true,
+          presentAfterSupplement: false,
+          unifiedRankBeforeSupplement: 8,
+          unifiedRankAfterSupplement: null,
+          unifiedScoreBeforeSupplement: 80,
+          unifiedScoreAfterSupplement: null,
+          unifiedRankScore: 80,
+          exitedCandidatePopulation: true,
+          phase4EligibleBefore: true,
+          phase4EligibleAfter: false,
+          metricProvenance: {},
+        },
+        {
+          symbol: 'AFTER',
+          exchange: 'TSE',
+          presentBeforeSupplement: false,
+          presentAfterSupplement: true,
+          unifiedRankBeforeSupplement: null,
+          unifiedRankAfterSupplement: 9,
+          unifiedScoreBeforeSupplement: null,
+          unifiedScoreAfterSupplement: 82,
+          unifiedRankScore: 82,
+          enteredCandidatePopulation: true,
+          phase5EligibleBefore: false,
+          phase5EligibleAfter: true,
+          metricProvenance: {},
+        },
+      ],
+    });
+
+    assert.equal(audit.status, 'warning');
+    assert.equal(audit.summary.candidatePopulationUnionCount, 2);
+    assert.equal(audit.summary.enteredCandidatePopulationCount, 1);
+    assert.equal(audit.summary.exitedCandidatePopulationCount, 1);
+    assert.equal(audit.exitedTop10BySupplement[0].symbol, 'BEFORE');
+    assert.equal(audit.enteredTop10BySupplement[0].symbol, 'AFTER');
+  });
 });

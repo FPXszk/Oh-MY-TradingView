@@ -438,11 +438,15 @@ function buildAuditLines(audit) {
     '',
     `- 監査結果: ${label}`,
     `- 対象銘柄数: ${audit.documentSummary?.requestedSymbols ?? '-'}`,
+    `- EDINET対象内訳: Phase4 ${audit.documentSummary?.phase4RequestedSymbols ?? '-'} / Phase5 ${audit.documentSummary?.phase5RequestedSymbols ?? '-'} / 重複 ${audit.documentSummary?.overlapSymbols ?? '-'}`,
+    `- EDINET取得: list requests ${audit.documentSummary?.documentListRequests ?? '-'} / downloads ${audit.documentSummary?.documentDownloads ?? '-'} / download cache ${audit.documentSummary?.documentDownloadCacheHits ?? '-'} / parse cache ${audit.documentSummary?.parsedDocumentCacheHits ?? '-'}`,
     `- 年次書類取得: ${audit.documentSummary?.annualDocumentMatchedSymbols ?? '-'}銘柄 / 未取得 ${audit.summary?.annualDocumentMissingSymbols ?? audit.documentSummary?.annualDocumentMissingSymbols ?? '-'}銘柄`,
     `- 半期・四半期のみ取得: ${audit.documentSummary?.interimOnlySymbols ?? '-'}銘柄`,
     `- ランキング使用可能EDINET補完: ${audit.documentSummary?.rankingEligibleRows ?? audit.evidenceRows?.filter((row) => Object.values(row.metricProvenance ?? {}).some((entry) => entry?.source === 'edinet')).length ?? 0}銘柄`,
     `- TradingViewフォールバック: ${audit.summary?.tradingViewFallbackRows ?? audit.documentSummary?.tradingViewFallbackRows ?? '-'}銘柄`,
     `- rankEligible=false: ${audit.documentSummary?.rankEligibleFalseMetrics ?? '-'}件`,
+    `- 補完前候補: ${audit.summary?.candidatePopulationBeforeCount ?? audit.documentSummary?.candidatePopulationBeforeCount ?? '-'} / 補完後候補 ${audit.summary?.candidatePopulationAfterCount ?? audit.documentSummary?.candidatePopulationAfterCount ?? '-'} / ユニオン ${audit.summary?.candidatePopulationUnionCount ?? audit.documentSummary?.candidatePopulationUnionCount ?? '-'}`,
+    `- 候補へ進入: ${audit.summary?.enteredCandidatePopulationCount ?? audit.documentSummary?.enteredCandidatePopulationCount ?? 0}銘柄 / 脱落 ${audit.summary?.exitedCandidatePopulationCount ?? audit.documentSummary?.exitedCandidatePopulationCount ?? 0}銘柄`,
     `- 警告: ${audit.summary?.warnings ?? 0}件`,
     `- エラー: ${audit.summary?.errors ?? 0}件`,
     `- 補完により5位以上変動: ${audit.summary?.rankChangesOverThreshold ?? 0}銘柄`,
@@ -499,26 +503,38 @@ function buildAuditLines(audit) {
     });
   }
   lines.push('');
-  lines.push('### EDINET抽出元（上位）');
+  lines.push('### EDINET一次情報・計算結果（上位）');
   lines.push('');
-  lines.push('| 銘柄 | 売上 | 営業CF | CAPEX | FCF | FCFマージン | P/FCF | 対象期間 | 連結/個別 | 単位 | 書類種別 | 提出日 | rankEligible | warning |');
-  lines.push('|---|---:|---:|---:|---:|---:|---:|---|---|---|---|---|:---:|---|');
+  lines.push('| 銘柄 | EDINET売上 | EDINET営業CF | EDINET PPE CAPEX | EDINET無形CAPEX | EDINET計算FCF | EDINET計算FCFマージン | EDINET計算P/FCF | EDINET rankEligible | 対象期間 | 連結/個別 | 通貨 | 書類種別 | 提出日 | 警告 |');
+  lines.push('|---|---:|---:|---:|---:|---:|---:|---:|:---:|---|---|---|---|---|---|');
   const evidenceRows = (audit.evidenceRows ?? [])
     .filter((entry) => entry.edinetSupplement?.extractedFacts)
     .slice(0, 10);
   if (evidenceRows.length === 0) {
-    lines.push('| - | - | - | - | - | - | - | - | - | - | - | - | - | - |');
+    lines.push('| - | - | - | - | - | - | - | - | - | - | - | - | - | - | - |');
   } else {
     evidenceRows.forEach((entry) => {
       const facts = entry.edinetSupplement.extractedFacts;
+      const evidence = entry.edinetEvidence ?? entry.edinetSupplement.edinetEvidence ?? {};
       const provenance = facts.provenance?.revenueCurrent ?? {};
-      const fcfMargin = entry.metricProvenance?.fcfMargin;
-      const pFcf = entry.metricProvenance?.pFcf;
       const warnings = [
         ...(entry.edinetSupplement.warnings ?? []),
-        ...(fcfMargin?.warnings ?? []),
+        ...(entry.metricProvenance?.fcfMargin?.warnings ?? []),
       ];
-      lines.push(`| ${entry.symbol} | ${fmt(facts.revenueCurrent, 0)} | ${fmt(facts.operatingCashFlowCurrent, 0)} | ${fmt(facts.capexCurrent, 0)} | ${fmt(entry.metricProvenance?.fcfTtm?.finalValue, 0)} | ${fmt(fcfMargin?.finalValue, 2)} | ${fmt(pFcf?.finalValue, 1)} | ${provenance.periodStart ?? '-'}-${provenance.periodEnd ?? '-'} | ${provenance.consolidation ?? '-'} | ${provenance.currency ?? '-'} | ${entry.edinetSupplement.docDescription ?? '-'} | ${entry.edinetSupplement.submitDateTime ?? '-'} | ${entry.edinetSupplement.rankEligible === false ? '不可' : '可'} | ${warnings.join(', ') || '-'} |`);
+      lines.push(`| ${entry.symbol} | ${fmt(evidence.revenue, 0)} | ${fmt(evidence.operatingCashFlow, 0)} | ${fmt(evidence.capexPpe, 0)} | ${fmt(evidence.capexIntangibles, 0)} | ${fmt(evidence.fcf, 0)} | ${fmt(evidence.fcfMargin, 2)} | ${fmt(evidence.pFcf, 1)} | ${evidence.rankEligible === false ? '不可' : '可'} | ${provenance.periodStart ?? '-'}-${provenance.periodEnd ?? '-'} | ${provenance.consolidation ?? '-'} | ${provenance.currency ?? '-'} | ${entry.edinetSupplement.docDescription ?? '-'} | ${entry.edinetSupplement.submitDateTime ?? '-'} | ${warnings.join(', ') || '-'} |`);
+    });
+  }
+  lines.push('');
+  lines.push('### 最終採用値・フォールバック結果（上位）');
+  lines.push('');
+  lines.push('| 銘柄 | 最終採用FCF | 最終採用FCFマージン | 最終採用P/FCF | 最終採用元 |');
+  lines.push('|---|---:|---:|---:|---|');
+  if (evidenceRows.length === 0) {
+    lines.push('| - | - | - | - | - |');
+  } else {
+    evidenceRows.forEach((entry) => {
+      const finalMetrics = entry.finalMetrics ?? entry.edinetSupplement.finalMetrics ?? {};
+      lines.push(`| ${entry.symbol} | ${fmt(finalMetrics.fcf, 0)} | ${fmt(finalMetrics.fcfMargin, 2)} | ${fmt(finalMetrics.pFcf, 1)} | ${finalMetrics.source ?? 'N/A'} |`);
     });
   }
   lines.push('');

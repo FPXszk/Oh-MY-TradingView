@@ -1656,7 +1656,7 @@ async function buildPhase5SectorTopStocks({
         : undefined,
     });
   }
-  if (market === 'japan' && clientFiltered.length > 0) {
+  if (market === 'japan' && clientFiltered.length > 0 && !_deps?.skipJapanEdinetSupplement) {
     const supplementTargets = clientFiltered.filter(shouldUseEdinetSupplement);
     const supplementPayload = _deps?.getJapanSupplementalFundamentals
       ? await _deps.getJapanSupplementalFundamentals(supplementTargets)
@@ -1709,6 +1709,8 @@ async function buildPhase5SectorTopStocks({
   return {
     rows: displayedRows,
     candidateRows,
+    rawRows: clientFiltered.map((row) => stripInternalFields(row)),
+    rankedRows: ranked.map((row) => stripInternalFields(row)),
     sectorLabels: phase5SectorLabels,
     meta: {
       enabled: true,
@@ -1723,6 +1725,59 @@ async function buildPhase5SectorTopStocks({
       displayedRows: displayedRows.length,
       unifiedCandidateRows: candidateRows.length,
     },
+  };
+}
+
+function buildPhase5CandidateState(rawRows, {
+  market,
+  phase5SectorLabels = [],
+  rankingBlocks = getRankingBlocks(market),
+} = {}) {
+  const ranked = applyBlockRanks(
+    applyLocalizedCompanyNames(applyThemeTaxonomy(rawRows, market), market),
+    rankingBlocks,
+  );
+  const candidateRows = [];
+  const displayedRows = [];
+  phase5SectorLabels.forEach((sector, sectorIndex) => {
+    const sectorRows = ranked
+      .filter((row) => row.sector === sector)
+      .sort((a, b) => {
+        if ((b.rankScore ?? -Infinity) !== (a.rankScore ?? -Infinity)) {
+          return (b.rankScore ?? -Infinity) - (a.rankScore ?? -Infinity);
+        }
+        return (a.symbol ?? '').localeCompare(b.symbol ?? '');
+      });
+
+    sectorRows
+      .slice(0, PHASE5_TOP_STOCKS_PER_SECTOR)
+      .forEach((row, rowIndex) => {
+        displayedRows.push(stripInternalFields({
+          ...row,
+          phase5SectorRank: sectorIndex + 1,
+          phase5SectorStockRank: rowIndex + 1,
+        }));
+      });
+
+    sectorRows
+      .slice(0, PHASE5_UNIFIED_CANDIDATE_TOP_STOCKS_PER_SECTOR)
+      .forEach((row, rowIndex) => {
+        candidateRows.push(stripInternalFields({
+          ...row,
+          phase5SectorRank: sectorIndex + 1,
+          phase5SectorStockRank: rowIndex + 1,
+        }));
+      });
+  });
+  return {
+    candidateRows,
+    rankedRows: ranked.map((row) => stripInternalFields(row)),
+    rows: displayedRows,
+    candidateKeys: new Set(candidateRows.map(buildRowLookupKey)),
+    phase4CandidateKeys: new Set(),
+    phase5CandidateKeys: new Set(candidateRows.map(buildRowLookupKey)),
+    rankingBlocks,
+    populationSize: rawRows.length,
   };
 }
 
@@ -1775,6 +1830,115 @@ export function applyUnifiedRanks(rows, market = DEFAULT_MARKET) {
       unifiedRankScore: row.rankScore,
       unifiedRankBreakdown: row.rankBreakdown,
     }));
+}
+
+function buildPhase4CandidateState(rawRows, {
+  market,
+  shouldFilterBySelectedIndustries = false,
+  selectedIndustryKeys = new Set(),
+  rankingBlocks = getRankingBlocks(market),
+} = {}) {
+  const rankedRows = applyBlockRanks(
+    applyLocalizedCompanyNames(applyThemeTaxonomy(rawRows, market), market),
+    rankingBlocks,
+  )
+    .sort((a, b) => {
+      if ((b.rankScore ?? -Infinity) !== (a.rankScore ?? -Infinity)) {
+        return (b.rankScore ?? -Infinity) - (a.rankScore ?? -Infinity);
+      }
+      return (a.symbol ?? '').localeCompare(b.symbol ?? '');
+    });
+  const candidateRows = supportsIndustryHierarchy(market)
+    ? rankedRows
+      .filter((row) => (
+        !shouldFilterBySelectedIndustries
+        || selectedIndustryKeys.has(`${row.sector}\u0000${row.industry}`)
+      ))
+      .map((row) => stripInternalFields(row))
+    : [];
+  return {
+    candidateRows,
+    rankedRows: rankedRows.map((row) => stripInternalFields(row)),
+    candidateKeys: new Set(candidateRows.map(buildRowLookupKey)),
+    phase4CandidateKeys: new Set(candidateRows.map(buildRowLookupKey)),
+    phase5CandidateKeys: new Set(),
+    rankingBlocks,
+    populationSize: rawRows.length,
+  };
+}
+
+function buildUnifiedRankingState({ phase4State, phase5State, market }) {
+  const candidateRows = buildUnifiedCandidateRows({
+    phase4Rows: phase4State?.candidateRows ?? [],
+    phase5Rows: phase5State?.candidateRows ?? [],
+  });
+  const rankedRows = applyUnifiedRanks(candidateRows, market);
+  return {
+    candidateRows,
+    rankedRows,
+    candidateKeys: new Set(candidateRows.map(buildRowLookupKey)),
+    phase4CandidateKeys: phase4State?.phase4CandidateKeys ?? new Set(),
+    phase5CandidateKeys: phase5State?.phase5CandidateKeys ?? new Set(),
+    rankingBlocks: getRankingBlocks(market),
+    populationSize: candidateRows.length,
+  };
+}
+
+function attachUnifiedSupplementDiffFromStates(beforeState, afterState, market = DEFAULT_MARKET) {
+  const beforeRanked = beforeState?.rankedRows ?? [];
+  const afterRanked = afterState?.rankedRows ?? [];
+  const beforeByKey = new Map(beforeRanked.map((row) => [buildRowLookupKey(row), row]));
+  const afterByKey = new Map(afterRanked.map((row) => [buildRowLookupKey(row), row]));
+  const keys = new Set([...beforeByKey.keys(), ...afterByKey.keys()]);
+  return [...keys].map((key) => {
+    const before = beforeByKey.get(key);
+    const after = afterByKey.get(key);
+    const row = after ?? before;
+    const changedMetrics = PROVENANCE_METRICS.filter((metricName) => {
+      const beforeValue = before?.[metricName] ?? before?.metricProvenance?.[metricName]?.finalValue ?? null;
+      const afterValue = after?.[metricName] ?? after?.metricProvenance?.[metricName]?.finalValue ?? null;
+      return beforeValue !== afterValue;
+    });
+    const unifiedRankDelta = before?.unifiedRank && after?.unifiedRank
+      ? before.unifiedRank - after.unifiedRank
+      : null;
+    const unifiedScoreDelta = Number.isFinite(before?.unifiedRankScore) && Number.isFinite(after?.unifiedRankScore)
+      ? Number((after.unifiedRankScore - before.unifiedRankScore).toFixed(4))
+      : null;
+    return stripInternalFields({
+      ...row,
+      presentBeforeSupplement: Boolean(before),
+      presentAfterSupplement: Boolean(after),
+      sourceBucketsBefore: before?.sourceBuckets ?? [],
+      sourceBucketsAfter: after?.sourceBuckets ?? [],
+      phase4EligibleBefore: before?.phase4Eligible ?? false,
+      phase4EligibleAfter: after?.phase4Eligible ?? false,
+      phase5EligibleBefore: before?.phase5Eligible ?? false,
+      phase5EligibleAfter: after?.phase5Eligible ?? false,
+      enteredCandidatePopulation: !before && Boolean(after),
+      exitedCandidatePopulation: Boolean(before) && !after,
+      unifiedRankBeforeSupplement: before?.unifiedRank ?? null,
+      unifiedRankAfterSupplement: after?.unifiedRank ?? null,
+      unifiedScoreBeforeSupplement: before?.unifiedRankScore ?? null,
+      unifiedScoreAfterSupplement: after?.unifiedRankScore ?? null,
+      unifiedRankDelta,
+      unifiedScoreDelta,
+      changedMetrics,
+      metricSourcesBefore: before ? metricSourcesForRow(before) : {},
+      metricSourcesAfter: after ? metricSourcesForRow(after) : {},
+      rankBeforeSupplement: before?.unifiedRank ?? null,
+      rankAfterSupplement: after?.unifiedRank ?? null,
+      scoreBeforeSupplement: before?.unifiedRankScore ?? null,
+      scoreAfterSupplement: after?.unifiedRankScore ?? null,
+      rankDelta: unifiedRankDelta,
+      scoreDelta: unifiedScoreDelta,
+      auditMarket: market,
+    });
+  }).sort((left, right) => {
+    const leftRank = left.unifiedRankAfterSupplement ?? left.unifiedRankBeforeSupplement ?? Number.POSITIVE_INFINITY;
+    const rightRank = right.unifiedRankAfterSupplement ?? right.unifiedRankBeforeSupplement ?? Number.POSITIVE_INFINITY;
+    return leftRank - rightRank;
+  });
 }
 
 function buildBeforeSupplementRow(row) {
@@ -2281,9 +2445,34 @@ function applyEdinetSupplementalMetrics(row, metrics = {}) {
         rankEligible: metrics.rankEligible ?? null,
         warnings: metrics.warnings ?? [],
         extractedFacts: metrics.extractedFacts ?? null,
+        edinetEvidence: {
+          revenue: metrics.extractedFacts?.revenueCurrent ?? null,
+          operatingCashFlow: metrics.extractedFacts?.operatingCashFlowCurrent ?? null,
+          capexPpe: metrics.extractedFacts?.capexPpeCurrent ?? null,
+          capexIntangibles: metrics.extractedFacts?.capexIntangiblesCurrent ?? null,
+          fcf: metrics.metricProvenance?.fcfTtm?.rankEligible === true ? metrics.metricProvenance.fcfTtm.finalValue : null,
+          fcfMargin: metrics.metricProvenance?.fcfMargin?.rankEligible === true ? metrics.metricProvenance.fcfMargin.finalValue : null,
+          pFcf: metrics.metricProvenance?.pFcf?.rankEligible === true ? metrics.metricProvenance.pFcf.finalValue : null,
+          rankEligible: metrics.rankEligible ?? false,
+        },
+        finalMetrics: null,
       }
       : null,
   };
+  if (merged.edinetSupplement) {
+    merged.edinetSupplement.finalMetrics = {
+      fcf: merged.fcfTtm ?? null,
+      fcfMargin: merged.fcfMargin ?? null,
+      pFcf: merged.pFcf ?? null,
+      source: merged.metricProvenance?.fcfMargin?.source === 'edinet'
+        || merged.metricProvenance?.fcfTtm?.source === 'edinet'
+        || merged.metricProvenance?.pFcf?.source === 'edinet'
+        ? 'EDINET'
+        : (merged.fcfTtm !== null || merged.fcfMargin !== null || merged.pFcf !== null)
+          ? 'TradingView fallback'
+          : 'N/A',
+    };
+  }
 
   const ruleOf40Raw = merged.revenueGrowthTtm !== null && merged.fcfMargin !== null
     ? Number((merged.revenueGrowthTtm + merged.fcfMargin).toFixed(2))
@@ -2474,69 +2663,6 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   }
 
   const rankingBlocks = getRankingBlocks(market);
-  let rankBeforeSupplementLookup = new Map();
-  if (market === 'japan' && clientFiltered.length > 0) {
-    rankBeforeSupplementLookup = new Map(
-      applyBlockRanks(clientFiltered, rankingBlocks)
-        .sort((a, b) => b.rankScore - a.rankScore)
-        .map((row, index) => [buildRowLookupKey(row), {
-          rankBeforeSupplement: index + 1,
-          scoreBeforeSupplement: row.rankScore,
-          rankBreakdownBeforeSupplement: row.rankBreakdown,
-        }]),
-    );
-  }
-
-  let edinetSupplementMeta = null;
-  if (market === 'japan' && clientFiltered.length > 0) {
-    const supplementTargets = clientFiltered.filter(shouldUseEdinetSupplement);
-    const supplementPayload = getJapanSupplementalFundamentals
-      ? await getJapanSupplementalFundamentals(supplementTargets)
-      : await getEdinetSupplementalFundamentalsBatch(supplementTargets, {
-        apiKey: edinetApiKey,
-        annualLookbackDays: _deps?.edinetAnnualLookbackDays,
-        fetch: fetchFn,
-      });
-
-    const supplementalMap = supplementPayload?.rows ?? {};
-    edinetSupplementMeta = supplementPayload?.meta ?? null;
-    clientFiltered = clientFiltered.map((row) => applyEdinetSupplementalMetrics(row, supplementalMap[row.symbol]));
-  }
-
-  const themedRows = applyLocalizedCompanyNames(applyThemeTaxonomy(clientFiltered, market), market);
-  const ranked = applyBlockRanks(themedRows, rankingBlocks)
-    .sort((a, b) => b.rankScore - a.rankScore)
-    .map((row, index) => {
-      const before = rankBeforeSupplementLookup.get(buildRowLookupKey(row));
-      if (!before) return row;
-      return {
-        ...row,
-        ...before,
-        rankAfterSupplement: index + 1,
-        scoreAfterSupplement: row.rankScore,
-        rankDelta: before.rankBeforeSupplement - (index + 1),
-        scoreDelta: Number((row.rankScore - before.scoreBeforeSupplement).toFixed(4)),
-      };
-    });
-  const matched = ranked.slice(0, effectiveLimit).map(stripInternalFields);
-  const sectorRanking = summarizeSectors(ranked);
-  const phase4CandidateRows = supportsIndustryHierarchy(market)
-    ? ranked
-      .filter((row) => (
-        !shouldFilterBySelectedIndustries
-        || industrySummary.selectedIndustryKeys.has(`${row.sector}\u0000${row.industry}`)
-      ))
-      .sort((a, b) => {
-        if ((b.rankScore ?? -Infinity) !== (a.rankScore ?? -Infinity)) {
-          return (b.rankScore ?? -Infinity) - (a.rankScore ?? -Infinity);
-        }
-        return (a.symbol ?? '').localeCompare(b.symbol ?? '');
-      })
-      .map((row) => stripInternalFields(row))
-    : [];
-  const finalStockRanking = supportsIndustryHierarchy(market)
-    ? phase4CandidateRows.slice(0, FINAL_STOCK_LIMIT)
-    : industrySummary.finalStockRanking;
   const phase5 = await buildPhase5SectorTopStocks({
     market,
     scannerUrl,
@@ -2548,33 +2674,134 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     marketCapMinUsd,
     enrichWithYahoo,
     getFundamentals,
-    _deps,
+    _deps: market === 'japan'
+      ? { ...(_deps ?? {}), skipJapanEdinetSupplement: true }
+      : _deps,
   });
+  const phase4RowsBeforeSupplement = clientFiltered;
+  const phase5RowsBeforeSupplement = phase5.rawRows ?? [];
+  let edinetSupplementMeta = null;
+  let clientFilteredAfterSupplement = clientFiltered;
+  let phase5RowsAfterSupplement = phase5RowsBeforeSupplement;
+  if (market === 'japan' && (clientFiltered.length > 0 || phase5RowsBeforeSupplement.length > 0)) {
+    const phase4Targets = clientFiltered.filter(shouldUseEdinetSupplement);
+    const phase5Targets = phase5RowsBeforeSupplement.filter(shouldUseEdinetSupplement);
+    const targetsByKey = new Map();
+    [...phase4Targets, ...phase5Targets].forEach((row) => {
+      const key = buildRowLookupKey(row);
+      if (key && key !== ':') targetsByKey.set(key, row);
+    });
+    const supplementTargets = [...targetsByKey.values()];
+    const supplementPayload = getJapanSupplementalFundamentals
+      ? await getJapanSupplementalFundamentals(supplementTargets)
+      : await getEdinetSupplementalFundamentalsBatch(supplementTargets, {
+        apiKey: edinetApiKey,
+        annualLookbackDays: _deps?.edinetAnnualLookbackDays,
+        fetch: fetchFn,
+      });
+
+    const supplementalMap = supplementPayload?.rows ?? {};
+    const phase4Keys = new Set(phase4Targets.map(buildRowLookupKey));
+    const phase5Keys = new Set(phase5Targets.map(buildRowLookupKey));
+    const overlapSymbols = [...phase4Keys].filter((key) => phase5Keys.has(key)).length;
+    edinetSupplementMeta = {
+      ...(supplementPayload?.meta ?? {}),
+      uniqueRequestedSymbols: supplementTargets.length,
+      phase4RequestedSymbols: phase4Targets.length,
+      phase5RequestedSymbols: phase5Targets.length,
+      overlapSymbols,
+    };
+    clientFilteredAfterSupplement = clientFiltered.map((row) => applyEdinetSupplementalMetrics(row, supplementalMap[row.symbol]));
+    phase5RowsAfterSupplement = phase5RowsBeforeSupplement.map((row) => applyEdinetSupplementalMetrics(row, supplementalMap[row.symbol]));
+    clientFiltered = clientFilteredAfterSupplement;
+  }
+
+  const phase4BeforeState = market === 'japan'
+    ? buildPhase4CandidateState(phase4RowsBeforeSupplement, {
+      market,
+      shouldFilterBySelectedIndustries,
+      selectedIndustryKeys: industrySummary.selectedIndustryKeys,
+      rankingBlocks,
+    })
+    : null;
+  const phase4AfterState = buildPhase4CandidateState(clientFilteredAfterSupplement, {
+    market,
+    shouldFilterBySelectedIndustries,
+    selectedIndustryKeys: industrySummary.selectedIndustryKeys,
+    rankingBlocks,
+  });
+  const phase5BeforeState = market === 'japan'
+    ? buildPhase5CandidateState(phase5RowsBeforeSupplement, {
+      market,
+      phase5SectorLabels: phase5.sectorLabels ?? [],
+      rankingBlocks,
+    })
+    : null;
+  const phase5AfterState = market === 'japan'
+    ? buildPhase5CandidateState(phase5RowsAfterSupplement, {
+      market,
+      phase5SectorLabels: phase5.sectorLabels ?? [],
+      rankingBlocks,
+    })
+    : null;
+  const ranked = phase4AfterState.rankedRows;
+  const matched = ranked.slice(0, effectiveLimit).map(stripInternalFields);
+  const sectorRanking = summarizeSectors(ranked);
+  const phase4CandidateRows = phase4AfterState.candidateRows;
+  const finalStockRanking = supportsIndustryHierarchy(market)
+    ? phase4CandidateRows.slice(0, FINAL_STOCK_LIMIT)
+    : industrySummary.finalStockRanking;
   const unifiedCandidateRows = supportsUnifiedScoring(market)
     ? buildUnifiedCandidateRows({
       phase4Rows: phase4CandidateRows,
-      phase5Rows: phase5.candidateRows ?? phase5.rows,
+      phase5Rows: market === 'japan'
+        ? phase5AfterState.candidateRows
+        : phase5.candidateRows ?? phase5.rows,
     })
     : [];
+  const unifiedBeforeState = market === 'japan' && supportsUnifiedScoring(market)
+    ? buildUnifiedRankingState({ phase4State: phase4BeforeState, phase5State: phase5BeforeState, market })
+    : null;
+  const unifiedAfterState = supportsUnifiedScoring(market)
+    ? buildUnifiedRankingState({
+      phase4State: phase4AfterState,
+      phase5State: market === 'japan' ? phase5AfterState : { candidateRows: phase5.candidateRows ?? phase5.rows },
+      market,
+    })
+    : null;
   const unifiedRankedRows = supportsUnifiedScoring(market)
-    ? attachUnifiedSupplementDiff(unifiedCandidateRows, market).map((row) => stripInternalFields(row))
+    ? (market === 'japan'
+      ? unifiedAfterState.rankedRows.map((row) => stripInternalFields(row))
+      : attachUnifiedSupplementDiff(unifiedCandidateRows, market).map((row) => stripInternalFields(row)))
+    : [];
+  const unifiedAuditRows = market === 'japan' && supportsUnifiedScoring(market)
+    ? attachUnifiedSupplementDiffFromStates(unifiedBeforeState, unifiedAfterState, market)
     : [];
   const unifiedPhase4Ranking = supportsUnifiedScoring(market)
     ? buildUnifiedPhase4Ranking(unifiedRankedRows, FINAL_STOCK_LIMIT)
     : [];
   const unifiedPhase5SectorTopStocks = supportsUnifiedScoring(market)
-    ? buildUnifiedPhase5SectorTopStocks(unifiedRankedRows, phase5.sectorLabels ?? [], phase5.rows)
+    ? buildUnifiedPhase5SectorTopStocks(
+      unifiedRankedRows,
+      phase5.sectorLabels ?? [],
+      market === 'japan' ? phase5AfterState.rows : phase5.rows,
+    )
     : [];
   const unifiedScoringMeta = {
     enabled: supportsUnifiedScoring(market),
     candidateCount: unifiedCandidateRows.length,
     phase4CandidateCount: phase4CandidateRows.length,
-    phase5CandidateCount: (phase5.candidateRows ?? []).length,
+    phase5CandidateCount: market === 'japan' ? phase5AfterState.candidateRows.length : (phase5.candidateRows ?? []).length,
     phase5UnifiedCandidateTopStocksPerSector: PHASE5_UNIFIED_CANDIDATE_TOP_STOCKS_PER_SECTOR,
     dedupedCount: unifiedCandidateRows.length,
     phase4OnlyCount: unifiedCandidateRows.filter((row) => row.phase4Eligible && !row.phase5Eligible).length,
     phase5OnlyCount: unifiedCandidateRows.filter((row) => row.phase5Eligible && !row.phase4Eligible).length,
     bothCount: unifiedCandidateRows.filter((row) => row.phase4Eligible && row.phase5Eligible).length,
+    candidatePopulationBeforeCount: unifiedBeforeState?.candidateRows.length ?? null,
+    candidatePopulationAfterCount: unifiedAfterState?.candidateRows.length ?? unifiedCandidateRows.length,
+    candidatePopulationUnionCount: unifiedAuditRows.length || unifiedCandidateRows.length,
+    enteredCandidatePopulationCount: unifiedAuditRows.filter((row) => row.enteredCandidatePopulation).length,
+    exitedCandidatePopulationCount: unifiedAuditRows.filter((row) => row.exitedCandidatePopulation).length,
     rankingBlocks: rankingBlocks.map((block) => ({
       key: block.key,
       label: block.label,
@@ -2649,7 +2876,7 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
   }
   if (ranked.length > 0) {
     criteria.theme_taxonomy_policy = {
-      version: themedRows[0]?.themeTaxonomyVersion ?? `${market}-theme-prototype-v1`,
+      version: ranked[0]?.themeTaxonomyVersion ?? `${market}-theme-prototype-v1`,
       scope: supportsIndustryHierarchy(market)
         ? `${market} Phase4 matched candidates only`
         : `${market} Phase2 matched candidates only`,
@@ -2754,9 +2981,10 @@ export async function runFundamentalScreener({ limit, enrichWithYahoo = false, _
     industryRanking: industrySummary.rankings,
     finalStockRanking,
     hiddenPhase4Candidates,
-    phase5SectorTopStocks: phase5.rows,
+    phase5SectorTopStocks: market === 'japan' ? phase5AfterState.rows : phase5.rows,
     unifiedCandidateRows,
     unifiedRankedRows,
+    unifiedAuditRows,
     unifiedPhase4Ranking,
     unifiedPhase5SectorTopStocks,
     unifiedScoringMeta,

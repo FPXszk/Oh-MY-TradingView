@@ -1490,6 +1490,8 @@ describe('buildMarkdown', () => {
 
     assert.match(markdown, /## 財務データ監査/);
     assert.match(markdown, /- 監査結果: WARNING/);
+    assert.match(markdown, /### EDINET一次情報・計算結果/);
+    assert.match(markdown, /### 最終採用値・フォールバック結果/);
     assert.match(markdown, /\| 4634 \| 6 \| 1 \| 5 \| 20\.00 \| fcfMargin \| edinet \|/);
     assert.match(markdown, /\| 4634 \| fcfMargin \| 4\.68 \| warning \| 可 \| edinet \|/);
     assert.match(markdown, /\| 1 \| Phase4 \| Process Industries \| Industrial Specialties \| Unclassified \/ 細粒度タグなし \| \*\*4634 \(artience\)\*\* \| TSE \| WARN \|/);

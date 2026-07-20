@@ -124,7 +124,9 @@ export function buildScreenerNotificationText({
       lines.push(`重大エラー: ${audit.summary?.errors ?? 0}件 / 警告: ${audit.summary?.warnings ?? 0}件`);
       lines.push(`財務指標警告: ${audit.summary?.warnings ?? 0}件`);
       lines.push(`年次書類未取得: ${audit.summary?.annualDocumentMissingSymbols ?? audit.documentSummary?.annualDocumentMissingSymbols ?? '-'}件`);
+      lines.push(`候補母集団 入:${audit.summary?.enteredCandidatePopulationCount ?? audit.documentSummary?.enteredCandidatePopulationCount ?? 0} 出:${audit.summary?.exitedCandidatePopulationCount ?? audit.documentSummary?.exitedCandidatePopulationCount ?? 0}`);
       lines.push(`TV fallback: ${audit.summary?.tradingViewFallbackRows ?? audit.documentSummary?.tradingViewFallbackRows ?? '-'}件`);
+      lines.push(`EDINET対象: ${audit.documentSummary?.requestedSymbols ?? '-'}件 / cache:${audit.documentSummary?.documentDownloadCacheHits ?? 0}`);
       lines.push(`補完Top10 入:${audit.enteredTop10BySupplement?.length ?? audit.summary?.newTop10Entries ?? 0} 出:${audit.exitedTop10BySupplement?.length ?? audit.summary?.exitedTop10BySupplement ?? 0}`);
       lines.push(`前回Top10 入:${audit.enteredTop10FromPreviousRun?.length ?? audit.summary?.enteredTop10FromPreviousRun ?? 0} 出:${audit.exitedTop10FromPreviousRun?.length ?? audit.summary?.exitedTop10FromPreviousRun ?? 0}`);
       const maxGain = (audit.rankChanges ?? [])[0];
@@ -141,6 +143,7 @@ export function buildScreenerNotificationText({
       lines.push(`重大エラー: ${audit.summary?.errors ?? 0}件`);
       lines.push(`警告: ${audit.summary?.warnings ?? 0}件`);
       lines.push(`年次書類未取得: ${audit.summary?.annualDocumentMissingSymbols ?? audit.documentSummary?.annualDocumentMissingSymbols ?? '-'}件`);
+      lines.push(`候補母集団 入:${audit.summary?.enteredCandidatePopulationCount ?? audit.documentSummary?.enteredCandidatePopulationCount ?? 0} 出:${audit.summary?.exitedCandidatePopulationCount ?? audit.documentSummary?.exitedCandidatePopulationCount ?? 0}`);
       (audit.criticals ?? []).slice(0, 3).forEach((entry) => {
         lines.push(`対象: ${entry.symbol ?? '-'} ${entry.metricName ?? ''} ${entry.reason ?? entry.status ?? ''}`.trim());
       });

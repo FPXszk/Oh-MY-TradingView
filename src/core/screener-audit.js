@@ -17,6 +17,9 @@ function displayName(row) {
 }
 
 function getRankingRows(result) {
+  if (Array.isArray(result?.unifiedAuditRows) && result.unifiedAuditRows.length > 0) {
+    return result.unifiedAuditRows;
+  }
   if (Array.isArray(result?.unifiedPhase4Ranking) && result.unifiedPhase4Ranking.length > 0) {
     return result.unifiedPhase4Ranking;
   }
@@ -52,7 +55,7 @@ function buildRankChanges(rows) {
   return rows
     .filter((row) => (
       Number.isFinite(row.unifiedRankBeforeSupplement ?? row.rankBeforeSupplement)
-      && Number.isFinite(row.unifiedRankAfterSupplement ?? row.rankAfterSupplement)
+      || Number.isFinite(row.unifiedRankAfterSupplement ?? row.rankAfterSupplement)
     ))
     .map((row) => ({
       symbol: row.symbol,
@@ -156,13 +159,26 @@ function diffTop10(beforeTop10, afterTop10) {
 
 function buildDocumentSummary(result, rows) {
   const edinetMeta = result?.sourceDetails?.edinet ?? {};
+  const unifiedMeta = result?.unifiedScoringMeta ?? result?.sourceDetails?.unifiedScoring ?? {};
   const evidenceRows = rows.filter((row) => row.edinetSupplement || Object.values(row.metricProvenance ?? {}).some((entry) => entry?.source === 'edinet'));
   const fallbackRows = rows.filter((row) => Object.values(row.metricProvenance ?? {}).some((entry) => entry?.source === 'tradingview'));
   return {
-    requestedSymbols: edinetMeta.requestedSymbols ?? rows.length,
+    requestedSymbols: edinetMeta.uniqueRequestedSymbols ?? edinetMeta.requestedSymbols ?? rows.length,
+    phase4RequestedSymbols: edinetMeta.phase4RequestedSymbols ?? null,
+    phase5RequestedSymbols: edinetMeta.phase5RequestedSymbols ?? null,
+    overlapSymbols: edinetMeta.overlapSymbols ?? null,
+    documentListRequests: edinetMeta.documentListRequests ?? null,
+    documentDownloads: edinetMeta.documentDownloads ?? edinetMeta.downloadedRows ?? null,
+    documentDownloadCacheHits: edinetMeta.documentDownloadCacheHits ?? null,
+    parsedDocumentCacheHits: edinetMeta.parsedDocumentCacheHits ?? null,
     annualDocumentMatchedSymbols: edinetMeta.annualDocumentMatchedSymbols ?? null,
     annualDocumentMissingSymbols: edinetMeta.annualDocumentMissingSymbols ?? null,
     interimOnlySymbols: edinetMeta.interimOnlySymbols ?? null,
+    candidatePopulationBeforeCount: unifiedMeta.candidatePopulationBeforeCount ?? null,
+    candidatePopulationAfterCount: unifiedMeta.candidatePopulationAfterCount ?? null,
+    candidatePopulationUnionCount: unifiedMeta.candidatePopulationUnionCount ?? rows.length,
+    enteredCandidatePopulationCount: unifiedMeta.enteredCandidatePopulationCount ?? rows.filter((row) => row.enteredCandidatePopulation).length,
+    exitedCandidatePopulationCount: unifiedMeta.exitedCandidatePopulationCount ?? rows.filter((row) => row.exitedCandidatePopulation).length,
     rankEligibleFalseMetrics: rows.reduce((sum, row) => (
       sum + AUDITED_METRICS.filter((metricName) => row.metricProvenance?.[metricName]?.rankEligible === false).length
     ), 0),
@@ -230,6 +246,18 @@ export function buildScreenerAudit(result, { previousAudit = null, generatedAt =
       ].includes(warning));
     })
     .map((metricName) => ({ symbol: row.symbol, metricName, reason: 'edinet_consistency_failure' })));
+  const rankingPopulationErrors = [];
+  if (result?.scannerScope?.market === 'japan' && result?.unifiedScoringMeta?.candidatePopulationUnionCount !== undefined) {
+    if (!Array.isArray(result?.unifiedAuditRows) || result.unifiedAuditRows.length === 0) {
+      rankingPopulationErrors.push({ reason: 'ranking_union_population_missing' });
+    }
+    rows.forEach((row) => {
+      if ((row.presentBeforeSupplement && !Number.isFinite(row.unifiedRankBeforeSupplement))
+        || (row.presentAfterSupplement && !Number.isFinite(row.unifiedRankAfterSupplement))) {
+        rankingPopulationErrors.push({ symbol: row.symbol, reason: 'unified_candidate_rank_missing' });
+      }
+    });
+  }
   const rankChanges = buildRankChanges(rows);
   let top10BeforeSupplement = buildTop10(rows, 'unifiedRankBeforeSupplement', 'unifiedScoreBeforeSupplement');
   let top10AfterSupplement = buildTop10(rows, 'unifiedRankAfterSupplement', 'unifiedScoreAfterSupplement');
@@ -256,13 +284,21 @@ export function buildScreenerAudit(result, { previousAudit = null, generatedAt =
     ...top3RankIneligible,
     ...edinetEvidenceErrors,
     ...edinetConsistencyErrors,
+    ...rankingPopulationErrors,
   ];
   const documentSummary = buildDocumentSummary(result, rows);
 
   return {
     generatedAt,
     market: result?.scannerScope?.market ?? 'unknown',
-    status: criticals.length > 0 ? 'critical' : metricAnomalies.length > 0 || rankChanges.some((entry) => Math.abs(entry.rankDelta ?? 0) >= 5) ? 'warning' : 'ok',
+    status: criticals.length > 0
+      ? 'critical'
+      : metricAnomalies.length > 0
+        || rankChanges.some((entry) => Math.abs(entry.rankDelta ?? 0) >= 5)
+        || documentSummary.enteredCandidatePopulationCount > 0
+        || documentSummary.exitedCandidatePopulationCount > 0
+          ? 'warning'
+          : 'ok',
     summary: {
       validMetrics: rows.reduce((sum, row) => sum + AUDITED_METRICS.filter((metricName) => row.metricProvenance?.[metricName]?.status === 'valid').length, 0),
       warnings: metricAnomalies.filter((entry) => entry.status === 'warning').length,
@@ -274,6 +310,11 @@ export function buildScreenerAudit(result, { previousAudit = null, generatedAt =
       exitedTop10FromPreviousRun: previousTop10Diff.exited.length,
       annualDocumentMissingSymbols: documentSummary.annualDocumentMissingSymbols,
       tradingViewFallbackRows: documentSummary.tradingViewFallbackRows,
+      candidatePopulationBeforeCount: documentSummary.candidatePopulationBeforeCount,
+      candidatePopulationAfterCount: documentSummary.candidatePopulationAfterCount,
+      candidatePopulationUnionCount: documentSummary.candidatePopulationUnionCount,
+      enteredCandidatePopulationCount: documentSummary.enteredCandidatePopulationCount,
+      exitedCandidatePopulationCount: documentSummary.exitedCandidatePopulationCount,
     },
     documentSummary,
     metricAnomalies,
@@ -293,7 +334,7 @@ export function buildScreenerAudit(result, { previousAudit = null, generatedAt =
     previousRunRankMovers: top10PreviousRun.filter((entry) => Math.abs(entry.rankDeltaFromPrevious ?? 0) > 0),
     top10PreviousRun,
     top10CurrentRun,
-    evidenceRows: rows.slice(0, 20).map((row, index) => ({
+    evidenceRows: rows.map((row, index) => ({
       rank: row.unifiedRank ?? index + 1,
       symbol: row.symbol,
       companyName: displayName(row),
@@ -312,6 +353,8 @@ export function buildScreenerAudit(result, { previousAudit = null, generatedAt =
       phase5EligibleAfter: row.phase5EligibleAfter ?? row.phase5Eligible ?? false,
       metricProvenance: row.metricProvenance ?? {},
       edinetSupplement: row.edinetSupplement ?? null,
+      edinetEvidence: row.edinetSupplement?.edinetEvidence ?? null,
+      finalMetrics: row.edinetSupplement?.finalMetrics ?? null,
     })),
   };
 }

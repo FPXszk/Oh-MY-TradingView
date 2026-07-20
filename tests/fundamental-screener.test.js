@@ -812,6 +812,179 @@ describe('runFundamentalScreener', () => {
     assert.match(result.rows['4634'].warnings.join(','), /capex_ppe_missing/);
   });
 
+  it('selects annual documents by periodEnd before amended status', async () => {
+    const tsv = [
+      '"要素ID"\t"項目名"\t"コンテキストID"\t"相対年度"\t"連結・個別"\t"期間・時点"\t"期間開始日"\t"期間終了日"\t"ユニットID"\t"単位"\t"値"',
+      '"jppfs_cor:NetSales"\t"NetSales"\t"CurrentYearDuration"\t"当期"\t"連結"\t"期間"\t"2024-09-01"\t"2025-08-31"\t"JPY"\t"円"\t"1000"',
+      '"jppfs_cor:NetCashProvidedByUsedInOperatingActivities"\t"OperatingCF"\t"CurrentYearDuration"\t"当期"\t"連結"\t"期間"\t"2024-09-01"\t"2025-08-31"\t"JPY"\t"円"\t"150"',
+      '"jppfs_cor:PurchaseOfPropertyPlantAndEquipment"\t"Capex"\t"CurrentYearDuration"\t"当期"\t"連結"\t"期間"\t"2024-09-01"\t"2025-08-31"\t"JPY"\t"円"\t"20"',
+    ].join('\r\n');
+    const archive = zipSync({ 'facts.csv': Buffer.from(`\uFEFF${tsv}`, 'utf16le') });
+
+    const result = await getEdinetSupplementalFundamentalsBatch(
+      [{ symbol: '7581', marketCapUsd: 13_000 }],
+      {
+        apiKey: 'dummy-key',
+        lookbackDays: 1,
+        annualLookbackDays: 1,
+        asOfDate: '2026-06-11',
+        fetch: async (url) => {
+          const requestUrl = new URL(String(url));
+          if (requestUrl.pathname.endsWith('/documents.json')) {
+            return {
+              ok: true,
+              json: async () => ({
+                results: [
+                  {
+                    docID: 'S100OLDAMEND',
+                    secCode: '75810',
+                    docDescription: '訂正有価証券報告書（自 2023/09/01 至 2024/08/31）',
+                    csvFlag: '1',
+                    legalStatus: '1',
+                    submitDateTime: '2026-06-11T00:00:00+09:00',
+                  },
+                  {
+                    docID: 'S100NEWNORMAL',
+                    secCode: '75810',
+                    docDescription: '有価証券報告書（自 2024/09/01 至 2025/08/31）',
+                    csvFlag: '1',
+                    legalStatus: '1',
+                    submitDateTime: '2026-06-10T00:00:00+09:00',
+                  },
+                ],
+              }),
+            };
+          }
+          assert.match(requestUrl.pathname, /S100NEWNORMAL/);
+          return {
+            ok: true,
+            arrayBuffer: async () => archive.buffer.slice(archive.byteOffset, archive.byteOffset + archive.byteLength),
+          };
+        },
+      },
+    );
+
+    assert.equal(result.rows['7581'].annualRankingDocument.documentId, 'S100NEWNORMAL');
+    assert.equal(result.rows['7581'].annualRankingDocument.periodEnd, '2025-08-31');
+    assert.equal(result.rows['7581'].annualRankingDocument.selectedReason, 'latest_period_end');
+  });
+
+  it('prefers amended annual documents only within the same period and then latest submission', async () => {
+    const tsv = [
+      '"要素ID"\t"項目名"\t"コンテキストID"\t"相対年度"\t"連結・個別"\t"期間・時点"\t"期間開始日"\t"期間終了日"\t"ユニットID"\t"単位"\t"値"',
+      '"jppfs_cor:NetSales"\t"NetSales"\t"CurrentYearDuration"\t"当期"\t"連結"\t"期間"\t"2024-09-01"\t"2025-08-31"\t"JPY"\t"円"\t"1000"',
+      '"jppfs_cor:NetCashProvidedByUsedInOperatingActivities"\t"OperatingCF"\t"CurrentYearDuration"\t"当期"\t"連結"\t"期間"\t"2024-09-01"\t"2025-08-31"\t"JPY"\t"円"\t"150"',
+      '"jppfs_cor:PurchaseOfPropertyPlantAndEquipment"\t"Capex"\t"CurrentYearDuration"\t"当期"\t"連結"\t"期間"\t"2024-09-01"\t"2025-08-31"\t"JPY"\t"円"\t"20"',
+    ].join('\r\n');
+    const archive = zipSync({ 'facts.csv': Buffer.from(`\uFEFF${tsv}`, 'utf16le') });
+
+    const result = await getEdinetSupplementalFundamentalsBatch(
+      [{ symbol: '7581', marketCapUsd: 13_000 }],
+      {
+        apiKey: 'dummy-key',
+        lookbackDays: 1,
+        annualLookbackDays: 1,
+        asOfDate: '2026-06-11',
+        fetch: async (url) => {
+          const requestUrl = new URL(String(url));
+          if (requestUrl.pathname.endsWith('/documents.json')) {
+            return {
+              ok: true,
+              json: async () => ({
+                results: [
+                  {
+                    docID: 'S100NORMAL',
+                    secCode: '75810',
+                    docDescription: '有価証券報告書（自 2024/09/01 至 2025/08/31）',
+                    csvFlag: '1',
+                    legalStatus: '1',
+                    submitDateTime: '2026-06-10T00:00:00+09:00',
+                  },
+                  {
+                    docID: 'S100AMENDOLD',
+                    secCode: '75810',
+                    docDescription: '訂正有価証券報告書（自 2024/09/01 至 2025/08/31）',
+                    csvFlag: '1',
+                    legalStatus: '1',
+                    submitDateTime: '2026-06-11T00:00:00+09:00',
+                  },
+                  {
+                    docID: 'S100AMENDNEW',
+                    secCode: '75810',
+                    docDescription: '訂正有価証券報告書（自 2024/09/01 至 2025/08/31）',
+                    csvFlag: '1',
+                    legalStatus: '1',
+                    submitDateTime: '2026-06-12T00:00:00+09:00',
+                  },
+                ],
+              }),
+            };
+          }
+          assert.match(requestUrl.pathname, /S100AMENDNEW/);
+          return {
+            ok: true,
+            arrayBuffer: async () => archive.buffer.slice(archive.byteOffset, archive.byteOffset + archive.byteLength),
+          };
+        },
+      },
+    );
+
+    assert.equal(result.rows['7581'].annualRankingDocument.documentId, 'S100AMENDNEW');
+    assert.equal(result.rows['7581'].annualRankingDocument.isAmended, true);
+    assert.equal(result.rows['7581'].annualRankingDocument.selectedReason, 'latest_submission_for_same_period');
+  });
+
+  it('invalidates only growth metrics when current and prior EDINET groups are incompatible', async () => {
+    const tsv = [
+      '"要素ID"\t"項目名"\t"コンテキストID"\t"相対年度"\t"連結・個別"\t"期間・時点"\t"期間開始日"\t"期間終了日"\t"ユニットID"\t"単位"\t"値"',
+      '"jppfs_cor:NetSales"\t"NetSales"\t"CurrentYearDuration"\t"当期"\t"連結"\t"期間"\t"2025-01-01"\t"2025-12-31"\t"JPY"\t"円"\t"1000"',
+      '"jppfs_cor:NetCashProvidedByUsedInOperatingActivities"\t"OperatingCF"\t"CurrentYearDuration"\t"当期"\t"連結"\t"期間"\t"2025-01-01"\t"2025-12-31"\t"JPY"\t"円"\t"150"',
+      '"jppfs_cor:PurchaseOfPropertyPlantAndEquipment"\t"Capex"\t"CurrentYearDuration"\t"当期"\t"連結"\t"期間"\t"2025-01-01"\t"2025-12-31"\t"JPY"\t"円"\t"20"',
+      '"jppfs_cor:NetSales"\t"NetSales"\t"Prior1YearDuration_NonConsolidatedMember"\t"前期"\t"個別"\t"期間"\t"2024-01-01"\t"2024-12-31"\t"JPY"\t"円"\t"900"',
+      '"jppfs_cor:NetCashProvidedByUsedInOperatingActivities"\t"OperatingCF"\t"Prior1YearDuration_NonConsolidatedMember"\t"前期"\t"個別"\t"期間"\t"2024-01-01"\t"2024-12-31"\t"JPY"\t"円"\t"120"',
+      '"jppfs_cor:PurchaseOfPropertyPlantAndEquipment"\t"Capex"\t"Prior1YearDuration_NonConsolidatedMember"\t"前期"\t"個別"\t"期間"\t"2024-01-01"\t"2024-12-31"\t"JPY"\t"円"\t"10"',
+    ].join('\r\n');
+    const archive = zipSync({ 'facts.csv': Buffer.from(`\uFEFF${tsv}`, 'utf16le') });
+
+    const result = await getEdinetSupplementalFundamentalsBatch(
+      [{ symbol: '5186', marketCapUsd: 13_000 }],
+      {
+        apiKey: 'dummy-key',
+        lookbackDays: 1,
+        asOfDate: '2026-06-11',
+        fetch: async (url) => {
+          const requestUrl = new URL(String(url));
+          if (requestUrl.pathname.endsWith('/documents.json')) {
+            return {
+              ok: true,
+              json: async () => ({
+                results: [{
+                  docID: 'S100GROWTH',
+                  secCode: '51860',
+                  docDescription: '有価証券報告書',
+                  csvFlag: '1',
+                  legalStatus: '1',
+                  submitDateTime: '2026-06-11T00:00:00+09:00',
+                }],
+              }),
+            };
+          }
+          return {
+            ok: true,
+            arrayBuffer: async () => archive.buffer.slice(archive.byteOffset, archive.byteOffset + archive.byteLength),
+          };
+        },
+      },
+    );
+
+    assert.equal(result.rows['5186'].fcfMargin, 13);
+    assert.equal(result.rows['5186'].metricProvenance.fcfMargin.rankEligible, true);
+    assert.equal(result.rows['5186'].revenueGrowthTtm, null);
+    assert.equal(result.rows['5186'].fcfGrowthTtm, null);
+    assert.equal(result.rows['5186'].metricProvenance.revenueGrowthTtm.rankEligible, false);
+    assert.match(result.rows['5186'].metricProvenance.revenueGrowthTtm.warnings.join(','), /current_prior_consolidation_mismatch/);
+  });
+
   it('uses TradingView stock-sector US profiles and activates producer manufacturing', async () => {
     const stockBodies = [];
     const result = await runFundamentalScreener({
@@ -2138,6 +2311,7 @@ describe('runFundamentalScreener', () => {
   });
 
   it('supplements missing Japan FCF metrics from EDINET before ranking', async () => {
+    let supplementCallCount = 0;
     const result = await runFundamentalScreener({
       limit: 10,
       enrichWithYahoo: false,
@@ -2149,9 +2323,11 @@ describe('runFundamentalScreener', () => {
         symbolAllowlistByKey: {
           'jp-prime-mini': ['4063', '8035'],
         },
-        getJapanSupplementalFundamentals: async (rows) => ({
-          rows: Object.fromEntries(rows.map((row) => [row.symbol, row.symbol === '4063'
-            ? {
+        getJapanSupplementalFundamentals: async (rows) => {
+          supplementCallCount += 1;
+          return {
+            rows: Object.fromEntries(rows.map((row) => [row.symbol, row.symbol === '4063'
+              ? {
               source: 'edinet',
               fcfMargin: 14,
               fcfGrowthTtm: 18,
@@ -2166,17 +2342,18 @@ describe('runFundamentalScreener', () => {
               submitDateTime: '2026-05-10T00:00:00+09:00',
               docDescription: '四半期報告書',
             }
-            : {}])),
-          meta: {
-            enabled: true,
-            reason: 'active',
-            requestedSymbols: rows.length,
-            matchedFilings: 1,
-            supplementedRows: 1,
-            lookbackDays: 120,
-            asOfDate: '2026-06-04',
-          },
-        }),
+              : {}])),
+            meta: {
+              enabled: true,
+              reason: 'active',
+              requestedSymbols: rows.length,
+              matchedFilings: 1,
+              supplementedRows: 1,
+              lookbackDays: 120,
+              asOfDate: '2026-06-04',
+            },
+          };
+        },
         fetch: createMockFetch({
           stockBodies: [],
           benchmarkPayload: {
@@ -2292,6 +2469,9 @@ describe('runFundamentalScreener', () => {
     assert.equal(result.unifiedPhase4Ranking.find((row) => row.symbol === '4063')?.pFcf, 22);
     assert.equal(result.sourceDetails.edinet.enabled, true);
     assert.equal(result.sourceDetails.edinet.supplementedRows, 1);
+    assert.equal(supplementCallCount, 1);
+    assert.equal(result.sourceDetails.edinet.uniqueRequestedSymbols >= 1, true);
+    assert.equal(result.unifiedAuditRows.length >= result.unifiedCandidateRows.length, true);
     assert.match(result.source, /edinet/);
   });
 
