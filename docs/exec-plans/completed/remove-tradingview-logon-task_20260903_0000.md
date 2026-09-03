@@ -19,12 +19,12 @@
 
 ## 実装・検証
 
-- [ ] タスクの実行コマンドと、停止対象のプロセスを確認する。
-- [ ] `OhMyTradingViewRunnerAutostart` を停止・削除し、タスク一覧に存在しないことを確認する。
-- [ ] TradingView、Moomoo Desktop、OpenD と対象の子プロセスを停止し、9222 と9226がリッスンしていないことを確認する。
-- [ ] デスクトップの MUMU バッチを実行する。
-- [ ] OpenD プロセスが起動し、Moomoo Desktop の `http://127.0.0.1:9226/json/version` が応答することを確認する。
-- [ ] レビュー後、この計画を `docs/exec-plans/completed/` に移動し、計画コミットとは別に実装コミットを作成・プッシュする。
+- [x] タスクの実行コマンドと、停止対象のプロセスを確認した。
+- [x] `OhMyTradingViewRunnerAutostart` を管理者権限で削除し、タスク一覧に存在しないことを確認した。
+- [x] TradingView、Moomoo Desktop、OpenD と対象の子プロセスを停止し、9222 と9226がリッスンしていないことを確認した。
+- [x] デスクトップの MUMU バッチを実行した。
+- [x] OpenD プロセスと Moomoo Desktop を起動し、`http://127.0.0.1:9226/json/version` のCDP応答を確認した。
+- [x] レビュー後、この計画を `docs/exec-plans/completed/` に移動し、計画コミットとは別に実装コミットを作成・プッシュする。
 
 ## 対象外
 
