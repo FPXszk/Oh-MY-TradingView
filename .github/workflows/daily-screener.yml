@@ -11,6 +11,7 @@ jobs:
     env:
       SCREENER_WORKFLOW_LABEL: daily-screener
       SCREENER_REPORT_PATH: docs/reports/screener/daily-ranking.md
+      SCREENER_HTML_PATH: docs/reports/screener/daily-ranking.html
       SCREENER_METADATA_PATH: docs/reports/screener/daily-ranking-run.json
       SCREENER_RESULT_LIMIT: '90'
       SCREENER_MARKET: america
@@ -37,11 +38,17 @@ jobs:
       - name: Run fundamental screener
         run: node scripts/screener/run-fundamental-screening.mjs
 
+      - name: Render screener HTML report
+        run: node scripts/screener/render-markdown-report.mjs --input "${{ env.SCREENER_REPORT_PATH }}" --output "${{ env.SCREENER_HTML_PATH }}"
+
       - name: Validate screener report output
         shell: pwsh
         run: |
           if (-not (Test-Path '${{ env.SCREENER_REPORT_PATH }}')) {
             throw '${{ env.SCREENER_REPORT_PATH }} was not created by the screener step'
+          }
+          if (-not (Test-Path '${{ env.SCREENER_HTML_PATH }}')) {
+            throw '${{ env.SCREENER_HTML_PATH }} was not created by the HTML render step'
           }
 
       - name: Write screener run metadata
@@ -73,6 +80,7 @@ jobs:
           name: screener-report-${{ github.run_id }}
           path: |
             ${{ env.SCREENER_REPORT_PATH }}
+            ${{ env.SCREENER_HTML_PATH }}
             ${{ env.SCREENER_METADATA_PATH }}
           if-no-files-found: warn
 
@@ -82,6 +90,7 @@ jobs:
         run: |
           powershell -NoProfile -ExecutionPolicy Bypass -File scripts/windows/github-actions/sync-daily-screener-report-to-main.ps1 `
             -ReportPath "${{ env.SCREENER_REPORT_PATH }}" `
+            -HtmlPath "${{ env.SCREENER_HTML_PATH }}" `
             -MetadataPath "${{ env.SCREENER_METADATA_PATH }}" `
             -CommitMessage "docs: daily screener report run ${{ github.run_id }}-${{ github.run_attempt }}"
 

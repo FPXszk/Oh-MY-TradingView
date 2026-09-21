@@ -6,6 +6,8 @@ param(
 
     [string]$ReportPath = 'docs/reports/screener/daily-ranking.md',
 
+    [string]$HtmlPath = 'docs/reports/screener/daily-ranking.html',
+
     [string]$MetadataPath = 'docs/reports/screener/daily-ranking-run.json',
 
     [string]$AuditPath = ''
@@ -24,6 +26,7 @@ function Resolve-CheckoutFile {
 }
 
 Resolve-CheckoutFile -RelativePath $ReportPath | Out-Null
+Resolve-CheckoutFile -RelativePath $HtmlPath | Out-Null
 Resolve-CheckoutFile -RelativePath $MetadataPath | Out-Null
 if (-not [string]::IsNullOrWhiteSpace($AuditPath)) {
     Resolve-CheckoutFile -RelativePath $AuditPath | Out-Null
@@ -66,9 +69,9 @@ if ($head -ne $originMain) {
 }
 
 if ([string]::IsNullOrWhiteSpace($AuditPath)) {
-    & git add -- $ReportPath $MetadataPath
+    & git add -- $ReportPath $HtmlPath $MetadataPath
 } else {
-    & git add -- $ReportPath $MetadataPath $AuditPath
+    & git add -- $ReportPath $HtmlPath $MetadataPath $AuditPath
 }
 if ($LASTEXITCODE -ne 0) {
     throw 'git add failed'

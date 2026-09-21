@@ -43,16 +43,16 @@
 
 ## 実装手順と検証
 
-- [ ] `marked` を追加し、共通 Markdown-to-HTML 変換スクリプトを実装する。
-- [ ] HTML に UTF-8、読みやすい余白・配色、sticky header、横スクロール可能な表スタイルを付ける。
-- [ ] 米国株・日本株 workflow に市場別 HTML パス、変換ステップ、存在検証を追加する。
-- [ ] artifact upload と main 公開処理へ HTML を追加する。
-- [ ] 変換単体テストと workflow／公開スクリプトの契約テストを追加する。
-- [ ] `node --test tests/screener-html-report.test.js tests/daily-screener-contract.test.js` を実行する。
-- [ ] `npm run test:unit` を実行する。
-- [ ] 現在の米国株・日本株 Markdown を一時出力先へ変換し、主要見出しと表が HTML に存在することを確認する。
-- [ ] diff をレビューし、変更が本計画の対象だけであることを確認する。
-- [ ] 本計画を `docs/exec-plans/completed/` へ移し、Conventional Commit で実装をコミットして main へ push する。
+- [x] `marked` を追加し、共通 Markdown-to-HTML 変換スクリプトを実装する。
+- [x] HTML に UTF-8、読みやすい余白・配色、sticky header、横スクロール可能な表スタイルを付ける。
+- [x] 米国株・日本株 workflow に市場別 HTML パス、変換ステップ、存在検証を追加する。
+- [x] artifact upload と main 公開処理へ HTML を追加する。
+- [x] 変換単体テストと workflow／公開スクリプトの契約テストを追加する。
+- [x] `node --test tests/screener-html-report.test.js tests/daily-screener-contract.test.js` を実行する。
+- [x] `npm run test:unit` を実行する。
+- [x] 現在の米国株・日本株 Markdown を一時出力先へ変換し、主要見出しと表が HTML に存在することを確認する。
+- [x] diff をレビューし、変更が本計画の対象だけであることを確認する。
+- [x] 本計画を `docs/exec-plans/completed/` へ移し、Conventional Commit で実装をコミットして main へ push する。
 
 ## リスク
 

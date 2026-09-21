@@ -39,6 +39,14 @@ describe('Daily Fundamental Screener workflow', () => {
       'workflow must call the Windows native sync PowerShell script');
     assert.match(workflow, /SCREENER_METADATA_PATH:\s+docs\/reports\/screener\/daily-ranking-run\.json/,
       'workflow must generate and handle per-run metadata');
+    assert.match(workflow, /SCREENER_HTML_PATH:\s+docs\/reports\/screener\/daily-ranking\.html/,
+      'US workflow must write a dedicated HTML report');
+    assert.match(workflow, /name:\s+Render screener HTML report[\s\S]*?render-markdown-report\.mjs/,
+      'US workflow must render HTML after generating the markdown report');
+    assert.match(workflow, /actions\/upload-artifact@v4[\s\S]*?\$\{\{\s*env\.SCREENER_HTML_PATH\s*\}\}/,
+      'US artifact upload must include the HTML report');
+    assert.match(workflow, /-HtmlPath "\$\{\{\s*env\.SCREENER_HTML_PATH\s*\}\}"/,
+      'US publish step must include the HTML path');
     assert.match(workflow, /actions\/upload-artifact@v4[\s\S]*?path:\s*\|[\s\S]*?\$\{\{\s*env\.SCREENER_REPORT_PATH\s*\}\}[\s\S]*?\$\{\{\s*env\.SCREENER_METADATA_PATH\s*\}\}/,
       'artifact upload must keep both the report and the run metadata');
     assert.match(workflow, /name:\s+Notify LINE on success/,
@@ -70,6 +78,12 @@ describe('Daily Fundamental Screener workflow', () => {
       'Japan workflow must write a dedicated markdown report');
     assert.match(workflow, /SCREENER_METADATA_PATH:\s+docs\/reports\/screener\/daily-ranking-jp-run\.json/,
       'Japan workflow must write dedicated metadata');
+    assert.match(workflow, /SCREENER_HTML_PATH:\s+docs\/reports\/screener\/daily-ranking-jp\.html/,
+      'Japan workflow must write a dedicated HTML report');
+    assert.match(workflow, /name:\s+Render screener HTML report[\s\S]*?render-markdown-report\.mjs/,
+      'Japan workflow must render HTML after generating the markdown report');
+    assert.match(workflow, /actions\/upload-artifact@v4[\s\S]*?\$\{\{\s*env\.SCREENER_HTML_PATH\s*\}\}/,
+      'Japan artifact upload must include the HTML report');
     assert.match(workflow, /SCREENER_AUDIT_PATH:\s+docs\/reports\/screener\/daily-ranking-jp-audit\.json/,
       'Japan workflow must write a dedicated audit artifact');
     assert.match(workflow, /SCREENER_AUDIT_STRICT:\s+'true'/,
@@ -80,6 +94,8 @@ describe('Daily Fundamental Screener workflow', () => {
       'Japan artifact upload must keep report, run metadata, and audit JSON');
     assert.match(workflow, /-AuditPath "\$\{\{\s*env\.SCREENER_AUDIT_PATH\s*\}\}"/,
       'Japan publish step must include the audit path');
+    assert.match(workflow, /-HtmlPath "\$\{\{\s*env\.SCREENER_HTML_PATH\s*\}\}"/,
+      'Japan publish step must include the HTML path');
     assert.match(workflow, /name:\s+Notify LINE on success/,
       'Japan workflow must send a LINE notification after a successful run');
     assert.match(workflow, /name:\s+Notify LINE on failure/,
@@ -99,11 +115,13 @@ describe('daily screener Windows native publish script', () => {
       'publish script must accept an overridable report path');
     assert.match(script, /\[string\]\$MetadataPath = 'docs\/reports\/screener\/daily-ranking-run\.json'/,
       'publish script must accept an overridable metadata path');
+    assert.match(script, /\[string\]\$HtmlPath = 'docs\/reports\/screener\/daily-ranking\.html'/,
+      'publish script must accept an overridable HTML path');
     assert.match(script, /\[string\]\$AuditPath = ''/,
       'publish script must accept an optional audit path');
-    assert.match(script, /git add -- \$ReportPath \$MetadataPath/,
+    assert.match(script, /git add -- \$ReportPath \$HtmlPath \$MetadataPath/,
       'publish script must stage only the configured screener report files');
-    assert.match(script, /git add -- \$ReportPath \$MetadataPath \$AuditPath/,
+    assert.match(script, /git add -- \$ReportPath \$HtmlPath \$MetadataPath \$AuditPath/,
       'publish script must include the configured audit file when provided');
     assert.match(script, /git push origin HEAD:main/,
       'publish script must push the Windows checkout commit to main');

@@ -11,6 +11,7 @@ jobs:
     env:
       SCREENER_WORKFLOW_LABEL: daily-screener-japan
       SCREENER_REPORT_PATH: docs/reports/screener/daily-ranking-jp.md
+      SCREENER_HTML_PATH: docs/reports/screener/daily-ranking-jp.html
       SCREENER_METADATA_PATH: docs/reports/screener/daily-ranking-jp-run.json
       SCREENER_AUDIT_PATH: docs/reports/screener/daily-ranking-jp-audit.json
       SCREENER_AUDIT_STRICT: 'true'
@@ -41,11 +42,17 @@ jobs:
       - name: Run Japan fundamental screener
         run: node scripts/screener/run-fundamental-screening.mjs
 
+      - name: Render screener HTML report
+        run: node scripts/screener/render-markdown-report.mjs --input "${{ env.SCREENER_REPORT_PATH }}" --output "${{ env.SCREENER_HTML_PATH }}"
+
       - name: Validate screener report output
         shell: pwsh
         run: |
           if (-not (Test-Path '${{ env.SCREENER_REPORT_PATH }}')) {
             throw '${{ env.SCREENER_REPORT_PATH }} was not created by the screener step'
+          }
+          if (-not (Test-Path '${{ env.SCREENER_HTML_PATH }}')) {
+            throw '${{ env.SCREENER_HTML_PATH }} was not created by the HTML render step'
           }
           if (-not (Test-Path '${{ env.SCREENER_AUDIT_PATH }}')) {
             throw '${{ env.SCREENER_AUDIT_PATH }} was not created by the screener step'
@@ -80,6 +87,7 @@ jobs:
           name: screener-report-japan-${{ github.run_id }}
           path: |
             ${{ env.SCREENER_REPORT_PATH }}
+            ${{ env.SCREENER_HTML_PATH }}
             ${{ env.SCREENER_METADATA_PATH }}
             ${{ env.SCREENER_AUDIT_PATH }}
           if-no-files-found: warn
@@ -90,6 +98,7 @@ jobs:
         run: |
           powershell -NoProfile -ExecutionPolicy Bypass -File scripts/windows/github-actions/sync-daily-screener-report-to-main.ps1 `
             -ReportPath "${{ env.SCREENER_REPORT_PATH }}" `
+            -HtmlPath "${{ env.SCREENER_HTML_PATH }}" `
             -MetadataPath "${{ env.SCREENER_METADATA_PATH }}" `
             -AuditPath "${{ env.SCREENER_AUDIT_PATH }}" `
             -CommitMessage "docs: daily screener japan report run ${{ github.run_id }}-${{ github.run_attempt }}"
